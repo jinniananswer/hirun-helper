@@ -49,11 +49,11 @@ public class MybatisPlusConfig {
 	 */
 	@Bean
 	public SqlExplainInterceptor sqlExplainInterceptor() {
+		SqlExplainInterceptor sqlExplainInterceptor = new SqlExplainInterceptor();
 
 		List<ISqlParser> sqlParserList = new ArrayList<>();
 		sqlParserList.add(new BlockAttackSqlParser());
 
-		SqlExplainInterceptor sqlExplainInterceptor = new SqlExplainInterceptor();
 		sqlExplainInterceptor.setSqlParserList(sqlParserList);
 		return sqlExplainInterceptor;
 	}
