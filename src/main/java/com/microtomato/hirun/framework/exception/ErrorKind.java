@@ -24,7 +24,12 @@ public enum ErrorKind {
 	/**
 	 * 已存在
 	 */
-	ALREADY_EXIST(400002),;
+	ALREADY_EXIST(400002),
+
+	/**
+	 * 不匹配
+	 */
+	MISMATCHING(100001);
 
 	private int code;
 
