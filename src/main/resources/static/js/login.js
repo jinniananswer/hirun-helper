@@ -9,7 +9,7 @@ layui.define(['ajax', 'form', 'layer'],function(exports){
             });
         },
         login : function(formData) {
-            layui.ajax.post('/api/hr/staff/save', formData);
+            layui.ajax.post('/api/user/user/login', formData);
         }
     };
     exports('loginer', loginer);
