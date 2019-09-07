@@ -17,34 +17,39 @@
 
 <body>
 <h1></h1>
-<div class=" w3l-login-form">
-    <h2>Micro-Tomato Login</h2>
-    <form action="#" method="POST">
+<div class=" w3l-login-form layui-form">
+    <h2>系统登陆</h2>
 
-        <div class=" w3l-form-group">
-            <div class="group">
-                <i class="fas fa-user"></i>
-                <input type="text" class="form-control" placeholder="Username" required="required" />
-            </div>
+    <div class=" w3l-form-group">
+        <div class="group">
+            <i class="fas fa-user"></i>
+            <input type="text" class="form-control" name="username" id="username" placeholder="Username" required="required" />
         </div>
-        <div class=" w3l-form-group">
-            <div class="group">
-                <i class="fas fa-unlock"></i>
-                <input type="password" class="form-control" placeholder="Password" required="required" />
-            </div>
+    </div>
+    <div class=" w3l-form-group">
+        <div class="group">
+            <i class="fas fa-unlock"></i>
+            <input type="password" name="password" id="password" class="form-control" placeholder="Password" required="required" />
         </div>
-        <div class="forgot">
-            <a href="#">忘记密码</a>
-            <p><input type="checkbox">Remember Me</p>
-        </div>
-        <button type="submit">登陆</button>
-    </form>
-    <p class=" w3l-register-p">没有帐号？请先<a href="#" class="register">注册</a></p>
+    </div>
+    <div class="forgot">
+        <a href="#">忘记密码</a>
+        <p><input type="checkbox" lay-skin="primary"/>Remember Me</p>
+    </div>
+    <button type="submit" lay-submit lay-filter="LAY-user-login-submit">登陆</button>
 </div>
 <footer>
     <p class="copyright-agileinfo"> &copy; Micro-Tomato. All Rights Reserved</p>
 </footer>
-
+<script>
+    layui.extend(
+        {
+            loginer : "{/}/js/login"
+        }
+    ).use('loginer',function(args){
+        layui.loginer.init();
+    });
+</script>
 </body>
 
 </html>
