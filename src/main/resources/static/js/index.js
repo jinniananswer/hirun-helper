@@ -1,5 +1,9 @@
 
-layui.define(['setter', 'admin'], function(exports){
+layui.extend({
+    setter: 'config' //配置模块
+    ,admin: 'admin' //核心模块
+    ,view: 'view' //视图渲染模块
+}).define(['setter', 'admin'], function(exports){
     var setter = layui.setter
         ,element = layui.element
         ,admin = layui.admin
