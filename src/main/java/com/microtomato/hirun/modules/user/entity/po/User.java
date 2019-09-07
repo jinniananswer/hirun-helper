@@ -1,24 +1,28 @@
 package com.microtomato.hirun.modules.user.entity.po;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import java.time.LocalDateTime;
-import com.microtomato.hirun.framework.data.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.microtomato.hirun.framework.data.BaseEntity;
+import com.microtomato.hirun.framework.utils.EncryptorUtil;
+import com.microtomato.hirun.modules.user.exception.PasswordException;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
+import org.apache.commons.lang3.StringUtils;
+
+import java.time.LocalDateTime;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author jinnian
- * @since 2019-07-29
+ * @since 2019-09-05
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -72,5 +76,14 @@ public class User extends BaseEntity {
     @TableField("UPDATE_TIME")
     private LocalDateTime updateTime;
 
+    public boolean login(String password) {
+        String encryptPassword = EncryptorUtil.encryptMd5(password);
+        if (StringUtils.equals(this.password, encryptPassword)) {
+            return true;
+        }
+        else {
+            throw new PasswordException("密码不正确!");
+        }
+    }
 
 }

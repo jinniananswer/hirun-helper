@@ -9,8 +9,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * </p>
  *
  * @author jinnian
- * @since 2019-07-29
+ * @since 2019-09-05
  */
 public interface IUserService extends IService<User> {
 
+    User login(String username, String password);
 }
