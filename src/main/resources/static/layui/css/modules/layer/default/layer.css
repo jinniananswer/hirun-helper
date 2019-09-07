@@ -118,6 +118,14 @@ html #layuicss-layer{display: none; position: absolute; width: 1989px;}
 .layui-layer-molv .layui-layer-title{background: #009f95; color:#fff; border: none;}
 .layui-layer-molv .layui-layer-btn a{background: #009f95; border-color: #009f95;}
 .layui-layer-molv .layui-layer-btn .layui-layer-btn1{background:#92B8B1;}
+.layui-layer-red .layui-layer-title{background: #ff4835; color:#fff; border: none;}
+.layui-layer-red .layui-layer-btn a{background: #ff4835; border-color: #ff4835;}
+.layui-layer-red .layui-layer-btn .layui-layer-btn1{background:#ff4835;}
+.layui-layer-red .layui-layer-content{padding: 20px; line-height: 22px;}
+.layui-layer-dark .layui-layer-title{background: #333; color:#fff; border: none;}
+.layui-layer-dark .layui-layer-btn a{background: #333; border-color: #333;}
+.layui-layer-dark .layui-layer-btn .layui-layer-btn1{background:#333;}
+.layui-layer-dark .layui-layer-content{padding: 20px; line-height: 22px;}
 
 
 /**
