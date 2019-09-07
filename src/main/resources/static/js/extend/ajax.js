@@ -29,7 +29,7 @@ layui.define(['layer', 'jquery'], function(exports){
                         closeBtn : 0,
                         icon : 6,
                         title : '提示信息',
-                        skin : 'layui-layer-admin layui-anim layui-anim-upbit'
+                        skin : 'layui-layer-admin layui-anim'
                     }, function(){
                         document.location.reload();
                     }, function(){
