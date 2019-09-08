@@ -23,20 +23,20 @@
     <div class=" w3l-form-group">
         <div class="group">
             <i class="fas fa-user"></i>
-            <input type="text" class="form-control" name="username" id="username" placeholder="Username" required="required" />
+            <input type="text" class="form-control" name="username" id="username" placeholder="请输入手机号码" required  lay-verify="phone" />
         </div>
     </div>
     <div class=" w3l-form-group">
         <div class="group">
             <i class="fas fa-unlock"></i>
-            <input type="password" name="password" id="password" class="form-control" placeholder="Password" required="required" />
+            <input type="password" name="password" id="password" class="form-control" placeholder="请输入登陆密码" required  lay-verify="required" />
         </div>
     </div>
     <div class="forgot">
         <a href="#">忘记密码</a>
         <p><input type="checkbox" lay-skin="primary"/>Remember Me</p>
     </div>
-    <button type="submit" lay-submit lay-filter="LAY-user-login-submit">登陆</button>
+    <button id="lay-submit" type="submit" lay-submit lay-filter="LAY-user-login-submit">登陆</button>
 </div>
 <footer>
     <p class="copyright-agileinfo"> &copy; Micro-Tomato. All Rights Reserved</p>
