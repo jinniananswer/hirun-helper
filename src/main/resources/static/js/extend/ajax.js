@@ -26,14 +26,12 @@ layui.define(['layer', 'jquery'], function(exports){
                 layer.closeAll('loading');
                 if (code != '0') {
                     //后端有报错
-                    layer.open({
-                        type : 100,
-                        skin : 'layui-layer-red', //样式类名
+                    layer.msg(data.code + ":" + data.message,{
+                        time : -1,
                         closeBtn : 1, //显示关闭按钮
                         anim : 2,
                         shadeClose: false, //开启遮罩关闭
-                        shade : [0.5, '#fff'],
-                        content : data.message
+                        shade : [0.5, '#fff']
                     });
                 } else if (successFunc == null || typeof(successFunc) == "undefined" || typeof(successFunc) != "function") {
                     layer.confirm('操作成功，点击确定按钮刷新本页面，点击关闭按钮关闭本界面？', {
