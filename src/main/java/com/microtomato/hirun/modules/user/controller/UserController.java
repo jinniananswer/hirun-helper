@@ -25,7 +25,6 @@ public class UserController {
     @Autowired
     private IUserService userServiceImpl;
 
-
     @PostMapping("/login")
     @RestResult
     public User login(String username, String password) {
