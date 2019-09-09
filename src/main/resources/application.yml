@@ -12,9 +12,9 @@ server:
 # 日志
 logging:
   level:
-    root: INFO
-    com.baomidou.mybatisplus: INFO
-    com.microtomato: DEBUG
+    root: info
+    com.baomidou.mybatisplus: info
+    com.microtomato: debug
 
 spring:
   datasource:

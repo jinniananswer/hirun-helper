@@ -20,6 +20,11 @@ import java.util.Map;
 @Configuration
 public class DruidConfig {
 
+	/**
+	 * Druid 统计页面登录帐号/密码配置
+	 *
+	 * @return
+	 */
 	@Bean
 	public ServletRegistrationBean druidStatViewServlet() {
 		ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean(new StatViewServlet(), "/druid/*");

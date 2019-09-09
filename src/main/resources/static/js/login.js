@@ -26,7 +26,7 @@ layui.define(['ajax', 'form', 'layer'],function(exports){
         },
 
         login : function(formData) {
-            layui.ajax.post('/api/user/user/login', formData, function(data){
+            layui.ajax.post('/login', formData, function(data) {
                 window.location.href = "/";
             });
         }
