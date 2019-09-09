@@ -82,7 +82,7 @@
                     <span>tomato-admin</span>
                 </div>
 
-                <ul class="layui-nav layui-nav-tree" lay-shrink="all" id="LAY-system-side-menu" lay-filter="layadmin-system-side-menu">
+                <ul class="layui-nav layui-nav-tree" lay-shrink="all" id="layadmin-system-side-menu" lay-filter="layadmin-system-side-menu">
 
                 </ul>
             </div>
@@ -124,6 +124,43 @@
         <div class="layadmin-body-shade" layadmin-event="shade"></div>
     </div>
 </div>
+<script id="menuRoot" type="text/html">
+    {{#  layui.each(d, function(index, item){ }}
+    <li class="layui-nav-item" id="menu_{{ item.node.menuId }}">
+        <a href="javascript:;">
+            {{#  if(item.node.icoUrl  != null){ }}
+                <i class="layui-icon {{ item.node.icoUrl }}"></i>
+            {{# } }}
+            <cite>{{ item.node.title }}</cite>
+        </a>
+    </li>
+    {{#  }); }}
+</script>
+<script id="menuChild" type="text/html">
+    <dl class="layui-nav-child">
+    {{#  layui.each(d, function(index, item){ }}
+        <dd id="menu_{{ item.node.menuId }}">
+            {{#  if(item.node.menuUrl == null){ }}
+                <a>
+                    {{#  if(item.node.icoUrl  != null){ }}
+                    <i class="layui-icon {{ item.node.icoUrl }}"></i>
+                    {{# } }}
+                    <cite>{{ item.node.title }}</cite>
+                </a>
+            {{# } }}
+            {{#  if(item.node.menuUrl  != null){ }}
+                <a lay-href={{ item.node.menuUrl }}>
+                    {{#  if(item.node.icoUrl  != null){ }}
+                    <i class="layui-icon {{ item.node.icoUrl }}"></i>
+                    {{# } }}
+                    <cite>{{ item.node.title }}</cite>
+                </a>
+            {{# } }}
+        </dd>
+
+    {{#  }); }}
+    </dl>
+</script>
 <script>
     layui.extend(
         {
