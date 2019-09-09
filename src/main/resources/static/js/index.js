@@ -71,53 +71,45 @@ layui.extend({
     });
 });
 
-layui.define(['ajax', 'element'],function(exports){
+layui.define(['ajax', 'element', 'laytpl'],function(exports){
  	var $ = layui.$;
+ 	var laytpl = layui.laytpl;
  	var index = {
  		loadMenus : function() {
 			layui.ajax.get('/api/system/menu/list', '', function (data) {
                 var json = eval(data);
                 var menus = json.rows;
-                var html = [];
-                $.each(menus, function (i, item) {
-                    //循环获取数据
-                    var name = item.text;
-                    var icon = item.icon;
-                    html.push("<li  class=\"layui-nav-item\">");
-                    html.push("<a href=\"javascript:;\">");
-                    if(icon) {
-                        html.push("<i class=\"layui-icon "+icon+"\"></i>");
-                    }
-                    html.push("<cite>"+name+"</cite>");
-                    html.push("</a>");
-                    var children = item.children;
-                    index.recursiveChildren(children, html);
-                    html.push("</li>");
-                });
+                var rootTpl = document.getElementById("menuRoot").innerHTML;
+                var menu = document.getElementById("layadmin-system-side-menu");
 
-                $("#LAY-system-side-menu").html(html.join(""));
+                laytpl(rootTpl).render(menus, function(html){
+                    menu.innerHTML = html;
+                    $.each(menus, function (i, item) {
+                        var children = item.children;
+                        var menuId = item.node.menuId;
+                        if (children && children.length > 0) {
+                            index.recursiveChildren(children, menuId);
+                        }
+                    });
+                });
                 layui.element.render('nav', 'layadmin-system-side-menu');
             });
 	 	},
 
-		recursiveChildren : function(children, html) {
- 			if(children && children.length > 0) {
-                html.push("<dl class=\"layui-nav-child\">");
-                $.each(children, function(i, t){
-                    html.push("<dd>");
-                    var url = t.url;
-                    var icon = t.icon;
-                    if(url == null || url == "" || url == "undfined") {
-                        html.push("<a>"+t.text+"</a>");
+		recursiveChildren : function(children, menuId) {
+            var childTpl = document.getElementById("menuChild").innerHTML;
+            var childMenu = document.getElementById("menu_"+menuId);
+
+            laytpl(childTpl).render(children, function(html){
+                childMenu.innerHTML = childMenu.innerHTML + html;
+                $.each(children, function (i, item) {
+                    var childrenMenus = item.children;
+                    var childMenuId = item.node.menuId;
+                    if (childrenMenus && childrenMenus.length > 0) {
+                        index.recursiveChildren(childrenMenus, childMenuId);
                     }
-                    else {
-                        html.push("<a lay-href=\"" + t.url + "\">" + t.text + "</a>");
-                    }
-                    index.recursiveChildren(t.children, html);
-                    html.push("</dd>");
                 });
-                html.push("</dl>");
-			}
+            });
 		}
 	};
 	exports('index', index);
