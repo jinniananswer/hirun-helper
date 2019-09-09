@@ -1,4 +1,4 @@
-package com.microtomato.hirun.modules.system.menu.entity.po;
+package com.microtomato.hirun.modules.system.entity.po;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;

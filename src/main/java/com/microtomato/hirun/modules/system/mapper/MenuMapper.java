@@ -1,6 +1,6 @@
-package com.microtomato.hirun.modules.system.menu.mapper;
+package com.microtomato.hirun.modules.system.mapper;
 
-import com.microtomato.hirun.modules.system.menu.entity.po.Menu;
+import com.microtomato.hirun.modules.system.entity.po.Menu;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 

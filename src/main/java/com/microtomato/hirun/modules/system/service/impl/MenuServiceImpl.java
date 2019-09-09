@@ -1,8 +1,8 @@
-package com.microtomato.hirun.modules.system.menu.service.impl;
+package com.microtomato.hirun.modules.system.service.impl;
 
-import com.microtomato.hirun.modules.system.menu.entity.po.Menu;
-import com.microtomato.hirun.modules.system.menu.mapper.MenuMapper;
-import com.microtomato.hirun.modules.system.menu.service.IMenuService;
+import com.microtomato.hirun.modules.system.entity.po.Menu;
+import com.microtomato.hirun.modules.system.mapper.MenuMapper;
+import com.microtomato.hirun.modules.system.service.IMenuService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;

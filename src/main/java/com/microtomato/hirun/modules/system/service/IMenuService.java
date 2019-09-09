@@ -1,7 +1,7 @@
-package com.microtomato.hirun.modules.system.menu.service;
+package com.microtomato.hirun.modules.system.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.microtomato.hirun.modules.system.menu.entity.po.Menu;
+import com.microtomato.hirun.modules.system.entity.po.Menu;
 
 import java.util.List;
 

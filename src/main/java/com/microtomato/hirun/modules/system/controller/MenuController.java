@@ -1,11 +1,11 @@
-package com.microtomato.hirun.modules.system.menu.controller;
+package com.microtomato.hirun.modules.system.controller;
 
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.data.TreeNode;
 import com.microtomato.hirun.framework.utils.ArrayUtil;
 import com.microtomato.hirun.framework.utils.TreeUtil;
-import com.microtomato.hirun.modules.system.menu.entity.po.Menu;
-import com.microtomato.hirun.modules.system.menu.service.IMenuService;
+import com.microtomato.hirun.modules.system.entity.po.Menu;
+import com.microtomato.hirun.modules.system.service.IMenuService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
