@@ -1,9 +1,5 @@
-package com.microtomato.hirun.framework.config;
+package com.microtomato.hirun.framework.security;
 
-import com.microtomato.hirun.framework.security.CustomAuthenticationFailHandler;
-import com.microtomato.hirun.framework.security.CustomAuthenticationSuccessHandler;
-import com.microtomato.hirun.framework.security.CustomPasswordEncoder;
-import com.microtomato.hirun.framework.security.CustomUserDetailsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -58,7 +54,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		http.csrf().disable();
 		http.authorizeRequests()
 			.antMatchers("/css/**", "/img/**", "/js/**", "/layui/**", "/webfonts/**").permitAll()
-			.antMatchers("/login/**", "/api/**").permitAll()
+			.antMatchers("/login/**").permitAll()
 			.anyRequest().authenticated()
 			.and()
 				.formLogin().loginPage("/login")

@@ -1,8 +1,8 @@
 package com.microtomato.hirun.framework.utils;
 
+import com.microtomato.hirun.framework.security.UserContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  * Web上下文工具类
@@ -18,18 +18,18 @@ public class WebContextUtil {
 	 *
 	 * @return
 	 */
-	private static final UserDetails getUserDetails() {
+	public static final UserContext getUserContext() {
 
-		UserDetails userDetails = null;
+		UserContext userContext = null;
 		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-		if (principal instanceof UserDetails) {
-			userDetails = (UserDetails) principal;
+		if (principal instanceof UserContext) {
+			userContext = (UserContext) principal;
 		} else {
-			log.error("principal is not UserDetails, " + principal);
+			log.error("principal is not UserContext, " + principal);
 		}
 
-		return userDetails;
+		return userContext;
 	}
 
 }

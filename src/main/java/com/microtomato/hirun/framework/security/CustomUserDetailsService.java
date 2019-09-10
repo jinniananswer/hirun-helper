@@ -5,6 +5,7 @@ import com.microtomato.hirun.modules.user.entity.po.User;
 import com.microtomato.hirun.modules.user.entity.po.UserFunc;
 import com.microtomato.hirun.modules.user.service.impl.UserFuncServiceImpl;
 import com.microtomato.hirun.modules.user.service.impl.UserServiceImpl;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -61,12 +62,17 @@ public class CustomUserDetailsService implements UserDetailsService {
 		grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
 		grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_USER"));
 
-		return new org.springframework.security.core.userdetails.User(username,
-			userFromDatabase.getPassword(),
-			true,
-			true,
-			true,
-			true,
-			grantedAuthorities);
+		UserContext userContext = new UserContext();
+		BeanUtils.copyProperties(userFromDatabase, userContext);
+		userContext.setGrantedAuthorities(grantedAuthorities);
+		return userContext;
+
+//		return new org.springframework.security.core.userdetails.User(username,
+//			userFromDatabase.getPassword(),
+//			true,
+//			true,
+//			true,
+//			true,
+//			grantedAuthorities);
 	}
 }
