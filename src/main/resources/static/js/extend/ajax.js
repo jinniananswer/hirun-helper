@@ -26,7 +26,7 @@ layui.define(['layer', 'jquery'], function(exports){
                 layer.closeAll('loading');
                 if (code != '0') {
                     //后端有报错
-                    layer.msg(data.code + ":" + data.message,{
+                    layer.msg(data.code + ": " + data.message,{
                         time : -1,
                         closeBtn : 1, //显示关闭按钮
                         anim : 2,

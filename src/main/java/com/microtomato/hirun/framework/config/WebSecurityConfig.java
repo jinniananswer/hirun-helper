@@ -1,5 +1,7 @@
 package com.microtomato.hirun.framework.config;
 
+import com.microtomato.hirun.framework.security.CustomAuthenticationFailHandler;
+import com.microtomato.hirun.framework.security.CustomAuthenticationSuccessHandler;
 import com.microtomato.hirun.framework.security.CustomPasswordEncoder;
 import com.microtomato.hirun.framework.security.CustomUserDetailsService;
 import lombok.extern.slf4j.Slf4j;
@@ -22,10 +24,16 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
-	private CustomUserDetailsService userDetailsService;
+	private CustomUserDetailsService customUserDetailsService;
 
 	@Autowired
 	private CustomPasswordEncoder customPasswordEncoder;
+
+	@Autowired
+	private CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
+
+	@Autowired
+	private CustomAuthenticationFailHandler customAuthenticationFailHandler;
 
 	/**
 	 * 设置自定义的 userDetailsService, 密码加密器
@@ -35,7 +43,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	 */
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.userDetailsService(userDetailsService)
+		auth.userDetailsService(customUserDetailsService)
 			.passwordEncoder(customPasswordEncoder);
 	}
 
@@ -54,6 +62,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.anyRequest().authenticated()
 			.and()
 				.formLogin().loginPage("/login")
+				.successHandler(customAuthenticationSuccessHandler)
+				.failureHandler(customAuthenticationFailHandler)
 			.and()
 				.httpBasic();
 

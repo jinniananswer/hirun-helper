@@ -10,8 +10,8 @@
     <link rel="stylesheet" href="../static/css/admin.css" th:href="@{css/admin.css}" media="all">
     <link rel="stylesheet" href="../static/css/style.css" th:href="@{css/style.css}" media="all">
     <link rel="stylesheet" href="../static/css/fontawesome-all.css" th:href="@{css/fontawesome-all.css}" media="all">
-<!--    <script src="../static/layui/layui.js" th:src="@{layui/layui.js}"></script>-->
-<!--    <script src="../static/js/base.js" th:src="@{js/base.js}"></script>-->
+    <script src="../static/layui/layui.js" th:src="@{layui/layui.js}"></script>
+    <script src="../static/js/base.js" th:src="@{js/base.js}"></script>
 </head>
 
 <body>
@@ -19,7 +19,6 @@
 
 <div class=" w3l-login-form layui-form">
     <h2>系统登陆</h2>
-    <form method="post" action="/login">
     <div class=" w3l-form-group">
         <div class="group">
             <i class="fas fa-user"></i>
@@ -37,20 +36,19 @@
         <p><input type="checkbox" lay-skin="primary"/>Remember Me</p>
     </div>
     <button id="lay-submit" type="submit" lay-submit lay-filter="LAY-user-login-submit">登陆</button>
-    </form>
 </div>
 <footer>
     <p class="copyright-agileinfo"> &copy; Micro-Tomato. All Rights Reserved</p>
 </footer>
-<!--<script>-->
-<!--    layui.extend(-->
-<!--        {-->
-<!--            loginer : "{/}/js/login"-->
-<!--        }-->
-<!--    ).use('loginer',function(args){-->
-<!--        layui.loginer.init();-->
-<!--    });-->
-<!--</script>-->
+<script>
+    layui.extend(
+        {
+            loginer : "{/}/js/login"
+        }
+    ).use('loginer',function(args) {
+        layui.loginer.init();
+    });
+</script>
 </body>
 
 </html>

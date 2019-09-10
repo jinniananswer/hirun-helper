@@ -28,6 +28,7 @@ public class WebContextUtil {
 		} else {
 			log.error("principal is not UserDetails, " + principal);
 		}
+
 		return userDetails;
 	}
 

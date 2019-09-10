@@ -1,5 +1,6 @@
 package com.microtomato.hirun.modules.user.service.impl;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.microtomato.hirun.modules.user.entity.po.UserFunc;
 import com.microtomato.hirun.modules.user.mapper.UserFuncMapper;
 import com.microtomato.hirun.modules.user.service.IUserFuncService;
@@ -17,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Service
+@DS("ins")
 public class UserFuncServiceImpl extends ServiceImpl<UserFuncMapper, UserFunc> implements IUserFuncService {
 
 }
