@@ -29,17 +29,18 @@ public final class MD5Util {
 	 * @return
 	 */
 	public static String hexdigest(byte[] bytes) {
-		MessageDigest alg = null;
+		MessageDigest digest = null;
 		try {
-			alg = MessageDigest.getInstance("MD5");
+			digest = MessageDigest.getInstance("MD5");
 		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
+			throw new IllegalStateException("No MD5 algorithm available!");
 		}
-		alg.update(bytes);
-		return new BigInteger(1, alg.digest()).toString(32);
+		digest.update(bytes);
+		return new BigInteger(1, digest.digest()).toString(32);
 	}
 
 	public static void main(String[] args) throws Exception {
+		// 711be3iidqb6lrsln0avp0v21u
 		System.out.println(hexdigest("123456"));
 	}
 }

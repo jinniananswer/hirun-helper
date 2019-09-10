@@ -1,13 +1,15 @@
 server:
   port: 8080
   servlet.context-path: /
+  servlet:
+    session:
+      timeout: PT1H
 
   # 开启 HTTPS 支持，首先应创建 keystore: keytool -keystore mykeys.jks -genkey -alias tomcat -keyalg RSA
 #  ssl:
 #    key-store: classpath:mykeys.jks
 #    key-store-password: spring
 #    key-password: spring
-
 
 # 日志
 logging:
