@@ -25,7 +25,7 @@ layui.extend({
         },
 
         selectOrg : function() {
-            layui.orgTree.init('orgTree');
+            layui.orgTree.init('orgTree', 'orgId', 'orgPath');
 
         },
 
