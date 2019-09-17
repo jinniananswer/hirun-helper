@@ -2,23 +2,35 @@ layui.define(['layer', 'jquery'], function(exports){
     var $ = layui.$;
     var layer = layui.layer;
     var obj = {
-        get : function(url, param, successFunc, errFunc) {
-            this.execute(url, param, 'GET', successFunc, errFunc, false);
+        get : function(url, param, successFunc, errFunc, needLoad) {
+            if (needLoad == null || typeof(needLoad) == "undefined") {
+                needLoad = true;
+            }
+            this.execute(url, param, 'GET', successFunc, errFunc, false, needLoad);
         },
 
-        post : function(url, param, successFunc, errFunc) {
-            this.execute(url, param, 'POST', successFunc, errFunc, false);
+        post : function(url, param, successFunc, errFunc, needLoad) {
+            if (needLoad == null || typeof(needLoad) == "undefined") {
+                needLoad = true;
+            }
+            this.execute(url, param, 'POST', successFunc, errFunc, false, needLoad);
         },
 
-        getAsync : function(url, param ,successFunc, errFunc) {
-            this.execute(url, param, 'GET', successFunc, errFunc, true);
+        getAsync : function(url, param ,successFunc, errFunc, needLoad) {
+            if (needLoad == null || typeof(needLoad) == "undefined") {
+                needLoad = true;
+            }
+            this.execute(url, param, 'GET', successFunc, errFunc, true, needLoad);
         },
 
-        postAsync : function(url, param, successFunc, errFunc) {
-            this.execute(url, param, 'POST', successFunc, errFunc, true);
+        postAsync : function(url, param, successFunc, errFunc, needLoad) {
+            if (needLoad == null || typeof(needLoad) == "undefined") {
+                needLoad = true;
+            }
+            this.execute(url, param, 'POST', successFunc, errFunc, true, needLoad);
         },
 
-        execute : function(url, param, type, successFunc, errFunc, async) {
+        execute : function(url, param, type, successFunc, errFunc, async, needLoad) {
             var successMethod = null;
 
             successMethod = function(data) {
@@ -64,9 +76,12 @@ layui.define(['layer', 'jquery'], function(exports){
                     });
                 };
             }
-            layer.load(1,{
-                shade: [0.3,'#fff'] //0.1透明度的白色背景
-            });
+            if (needLoad) {
+                layer.load(1,{
+                    shade: [0.3,'#fff'] //0.1透明度的白色背景
+                });
+            }
+
             $.ajax(
                 {
                     url:url,

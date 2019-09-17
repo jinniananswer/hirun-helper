@@ -5,6 +5,7 @@ layui.config(
 ).extend(
     {
         redirect : "redirect",
-        ajax : "ajax"
+        ajax : "ajax",
+        select : "select"
     }
 );
