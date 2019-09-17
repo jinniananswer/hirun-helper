@@ -1,4 +1,4 @@
-layui.define(['ajax', 'tree'], function(exports){
+layui.define(['ajax', 'tree', 'layer'], function(exports){
     var $ = layui.$;
     var obj = {
         init : function(treeDivId, valueControlId, displayControlId) {
@@ -7,7 +7,9 @@ layui.define(['ajax', 'tree'], function(exports){
                     elem: "#"+treeDivId,
                     data: data.rows,
                     click: function(obj) {
-
+                        $("#"+valueControlId).val(obj.data.id);
+                        $("#"+displayControlId).val(obj.data.path);
+                        layer.closeAll('page');
                     }
                 });
 
