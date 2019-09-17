@@ -15,9 +15,15 @@ public class TreeNode<T> {
 
     private String id;
 
+    private String title;
+
     private String parentId;
 
     T node;
+
+    private boolean spread;
+
+    private String path;
 
     List<TreeNode> children;
 }
