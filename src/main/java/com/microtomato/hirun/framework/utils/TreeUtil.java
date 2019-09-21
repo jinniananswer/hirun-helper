@@ -1,7 +1,7 @@
 package com.microtomato.hirun.framework.utils;
 
 import com.microtomato.hirun.framework.data.TreeNode;
-import org.thymeleaf.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +27,7 @@ public class TreeUtil {
         }
 
         for (TreeNode root : roots) {
+            root.setPath(root.getTitle());
             buildChildren(root, nodes);
         }
 
@@ -47,6 +48,9 @@ public class TreeUtil {
         for (TreeNode child : nodes) {
             if (StringUtils.equals(child.getParentId(), node.getId())) {
                 children.add(child);
+                String path = node.getPath() + "-" + child.getTitle();
+                child.setPath(path);
+
                 buildChildren(child, nodes);
             }
         }
