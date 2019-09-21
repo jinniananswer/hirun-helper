@@ -1,6 +1,9 @@
 # 查询
 
-> 框架生成语句为: SELECT ... FROM user
+#### 全表查询 
+```SQL
+SELECT ... FROM user
+```
 ```Java
 public void selectAll() {
     List<User> userList = userMapper.selectList(null);
@@ -8,80 +11,105 @@ public void selectAll() {
 }
 ```
 
-> 根据主键 ID 查询, 
->> 框架生成语句为: SELECT ... FROM user WHERE id = 123123131231 
+#### 根据主键 ID 查询
+```SQL
+SELECT ... FROM user WHERE id = 123123131231
+```
+
 ```Java
 public void selectById() {
     User user = userMapper.selectById(123123131231L);
 }
 ```
 
-/**
- * 根据多个 ID 查询。
- * 框架生成语句为: SELECT ... FROM user WHERE id IN (1111111, 222222, 3333333)
- */
+#### 根据多个 ID 查询
+```SQL
+SELECT ... FROM user WHERE id IN (1111111, 222222, 3333333)
+```
+
+```Java
 public void selectByIds() {
     List<Long> idsList = Arrays.asList(1111111L, 222222L, 3333333L);
     List<User> userList = userMapper.selectBatchIds(idsList);
     userList.forEach(System.out::println);
 }
+```
 
-/**
- * 通过 Map 传入查询条件参数
- * 框架生成的语句为: SELECT id, name, age, email, manager_id, create_time FROM user WHERE name = '林子' AND age = 29
- */
+#### 通过 Map 传入查询条件参数
+```SQL
+SELECT id, name, age, email, manager_id, create_time 
+  FROM user 
+ WHERE name = '林子' AND age = 29
+```
+```Java
 public void selectByMap() {
     Map<String, Object> map = new HashMap<>();
     map.put("name", "林子"); // 注意: key 是数据库中的列名，不是实体类的属性名!
     map.put("age", 29);
     List<User> userList = userMapper.selectByMap(map);
 }
+```
 
-/**
- * 通过条件构造器
- * 框架生成的语句为: SELECT id, name, age, email, manager_id, create_time FROM user WHERE name like %周% AND age < 40
- */
+#### 通过条件构造器
+```SQL
+SELECT id, name, age, email, manager_id, create_time 
+  FROM user 
+ WHERE name like %周% AND age < 40
+```
+
+```Java
 public void selectByWrapper1() {
     QueryWrapper<User> queryWrapper = new QueryWrapper<>();
     queryWrapper.like("name", "周").lt("age", 40);
     List<User> userList = userMapper.selectList(queryWrapper);
 }
 
-
 public void selectByWrapper2() {
     QueryWrapper<User> queryWrapper = new QueryWrapper<>();
     queryWrapper.like("name", "周").lt("age", 40);
     List<User> userList = userMapper.selectList(queryWrapper);
 }
+```
 
-/**
- * 通过条件构造器
- * 框架生成的语句为: SELECT id, name, age, email, manager_id, create_time FROM user WHERE name like %周% AND age BETWEEN 20 AND 40 AND email IS NOT NULL
- */
+#### 通过条件构造器
+```SQL
+SELECT id, name, age, email, manager_id, create_time 
+  FROM user 
+ WHERE name like %周% AND age BETWEEN 20 AND 40 AND email IS NOT NULL
+```
+```Java
 public void selectByWrapper2() {
 	QueryWrapper<User> queryWrapper = new QueryWrapper<>();
 	queryWrapper.like("name", "周").between("age", 20, 40).isNotNull("email");
 	List<User> list = userMapper.selectList(queryWrapper);
 	list.forEach(System.out::println);
 }
+```
+#### 通过条件构造器
+```SQL
+SELECT id, name, age, email, manager_id, create_time 
+  FROM user 
+ WHERE name like 王% OR age >= 25 ORDER BY age DESC, id ASC
+```
 
-/**
- * 通过条件构造器
- * 框架生成的语句为: SELECT id, name, age, email, manager_id, create_time FROM user WHERE name like 王% OR age >= 25 ORDER BY age DESC, id ASC
- */
+```Java
 public void selectByWrapper3() {
 	QueryWrapper<User> queryWrapper = new QueryWrapper<>();
 	queryWrapper.likeRight("name", "王").or().ge("age", 25).orderByDesc("age").orderByAsc("id");
 	List<User> list = userMapper.selectList(queryWrapper);
 	list.forEach(System.out::println);
 }
+```
 
-/**
- * 通过条件构造器
- * 框架生成的语句为: SELECT id, name, age, email, manager_id, create_time FROM user
- *                  WHERE date_format(create_time, '%Y-%m-%d') = '2019-02-14'
- *                    AND manager_id IN (SELECT id FROM user WHERE name LIKE '王%')
- */
+#### 通过条件构造器
+```SQL 
+SELECT id, name, age, email, manager_id, create_time
+ FROM user
+WHERE date_format(create_time, '%Y-%m-%d') = '2019-02-14'
+  AND manager_id IN (SELECT id FROM user WHERE name LIKE '王%')
+```
+
+```Java
 public void selectByWrapper4() {
 	QueryWrapper<User> queryWrapper = new QueryWrapper<>();
 	// {0} 可以防止 SQL 注入风险。
@@ -89,81 +117,101 @@ public void selectByWrapper4() {
 	List<User> list = userMapper.selectList(queryWrapper);
 	list.forEach(System.out::println);
 }
+```
 
-/**
- * 通过条件构造器
- * 框架生成的语句为: SELECT id, name, age, email, manager_id, create_time FROM user
- *                  WHERE name LIKE '王%' AND (age < 40 OR email IS NOT NULL)
- */
+#### 通过条件构造器
+```SQL
+SELECT id, name, age, email, manager_id, create_time FROM user
+ WHERE name LIKE '王%' AND (age < 40 OR email IS NOT NULL)
+```
+
+```Java
 public void selectByWrapper5() {
 	QueryWrapper<User> queryWrapper = new QueryWrapper<>();
 	queryWrapper.likeRight("name", "王").and(qw -> qw.lt("age", 40).or().isNotNull("email"));
 	List<User> list = userMapper.selectList(queryWrapper);
 	list.forEach(System.out::println);
 }
+```
 
-/**
- * 通过条件构造器
- * 框架生成的语句为: SELECT id, name, age, email, manager_id, create_time FROM user
- *                  WHERE name LIKE '王%' OR (age < 40 AND age >20 AND email IS NOT NULL)
- */
+#### 通过条件构造器
+```SQL
+SELECT id, name, age, email, manager_id, create_time FROM user
+ WHERE name LIKE '王%' OR (age < 40 AND age >20 AND email IS NOT NULL)
+```
+
+```Java
 public void selectByWrapper6() {
 	QueryWrapper<User> queryWrapper = new QueryWrapper<>();
 	queryWrapper.likeRight("name", "王").or(qw -> qw.lt("age", 40).gt("age", 20).isNotNull("email"));
 	List<User> list = userMapper.selectList(queryWrapper);
 	list.forEach(System.out::println);
 }
+```
 
-/**
- * 通过条件构造器
- * 框架生成的语句为: SELECT id, name, age, email, manager_id, create_time FROM user
- *                  WHERE (age < 40 OR email IS NOT NULL)
- *                    AND name LIKE '王%'
- */
+#### 通过条件构造器
+```SQL
+SELECT id, name, age, email, manager_id, create_time FROM user
+ WHERE (age < 40 OR email IS NOT NULL)
+   AND name LIKE '王%'
+```
+```Java
 public void selectByWrapper7() {
 	QueryWrapper<User> queryWrapper = new QueryWrapper<>();
 	queryWrapper.nested(qw -> qw.lt("age", 40).or().isNotNull("email")).likeRight("name", "王");
 	List<User> list = userMapper.selectList(queryWrapper);
 	list.forEach(System.out::println);
 }
+```
 
-/**
- * 通过条件构造器
- * 框架生成的语句为: SELECT id, name, age, email, manager_id, create_time FROM user WHERE age IN (30,31,34,35)
- */
+#### 通过条件构造器
+```SQL
+SELECT id, name, age, email, manager_id, create_time FROM user WHERE age IN (30,31,34,35)
+```
+
+```Java
 public void selectByWrapper8() {
 	QueryWrapper<User> queryWrapper = new QueryWrapper<>();
 	queryWrapper.in("age", Arrays.asList(30, 31, 34, 35));
 	List<User> list = userMapper.selectList(queryWrapper);
 	list.forEach(System.out::println);
 }
+```
 
-/**
- * 通过条件构造器，限定查询数据条数 LIMIT，注意：这里要慎重使用，有 SQL 注入风险！
- * 框架生成的语句为: SELECT id, name, age, email, manager_id, create_time FROM user WHERE age IN (30,31,34,35) LIMIT 1
- */
+#### 通过条件构造器，限定查询数据条数 LIMIT，注意：这里要慎重使用，有 SQL 注入风险！
+```SQL
+SELECT id, name, age, email, manager_id, create_time FROM user WHERE age IN (30,31,34,35) LIMIT 1
+```
+
+```Java
 public void selectByWrapper9() {
 	QueryWrapper<User> queryWrapper = new QueryWrapper<>();
 	queryWrapper.in("age", Arrays.asList(30, 31, 34, 35)).last("LIMIT 1");
 	List<User> list = userMapper.selectList(queryWrapper);
 	list.forEach(System.out::println);
 }
+```
 
-/**
- * 通过条件构造器，指定需要的列
- * 框架生成的语句为: SELECT id, name FROM user WHERE name LIKE '雨%' age < 40
- */
+#### 通过条件构造器，指定需要的列
+```SQL
+SELECT id, name FROM user WHERE name LIKE '雨%' age < 40
+```
+
+```Java
 public void selectByWrapperWithColumn() {
 	QueryWrapper<User> queryWrapper = new QueryWrapper<>();
 	queryWrapper.select("id", "name").likeRight("name", "雨").lt("age", 40);
 	List<User> list = userMapper.selectList(queryWrapper);
 	list.forEach(System.out::println);
 }
+```
 
-/**
- * 通过条件构造器，排除特定的列
- * 框架生成的语句为: SELECT id, name, age, email FROM user WHERE name LIKE '雨%' age < 40
- */
+#### 通过条件构造器，排除特定的列
+```SQL
+SELECT id, name, age, email FROM user WHERE name LIKE '雨%' age < 40
+```
+
+```Java
 public void selectByWrapperWithoutColumn() {
 	QueryWrapper<User> queryWrapper = new QueryWrapper<>();
 	queryWrapper.select(User.class, info -> !info.getColumn().equals("create_time") && !info.getColumn().equals("manager_id"))
@@ -171,10 +219,10 @@ public void selectByWrapperWithoutColumn() {
 	List<User> list = userMapper.selectList(queryWrapper);
 	list.forEach(System.out::println);
 }
+```
 
-/**
- * 动态条件，类似于 SQLParser
- */
+#### 动态条件，类似于 SQLParser
+```Java
 public void selectByCondition(String name, String email) {
 	QueryWrapper<User> queryWrapper = new QueryWrapper<>();
 	queryWrapper.eq(StringUtils.isNotEmpty(name), "name", name);    // 当 name 有值时才会加到 查询条件中。
@@ -182,11 +230,14 @@ public void selectByCondition(String name, String email) {
 	List<User> list = userMapper.selectList(queryWrapper);
 	list.forEach(System.out::println);
 }
+```
 
-/**
- * 实体作为条件构造器，类似于 SQLParser
- * 框架生成的语句为: SELECT id, name, age, email, manager_id, create_time FROM user WHERE name = '刘玉红' AND age = 32
- */
+#### 实体作为条件构造器，类似于 SQLParser
+```SQL
+SELECT id, name, age, email, manager_id, create_time FROM user WHERE name = '刘玉红' AND age = 32
+```
+
+```Java
 public void selectByWrapperEntity() {
 	User whereUser = new User();
 	whereUser.setName("刘玉红");
@@ -196,11 +247,14 @@ public void selectByWrapperEntity() {
 	List<User> list = userMapper.selectList(queryWrapper);
 	list.forEach(System.out::println);
 }
+```
 
-/**
- * Map 作为条件构造器
- * 框架生成的语句为: SELECT id, name, age, email, manager_id, create_time FROM user WHERE name = '刘玉红' AND age = 25 AND email IS NULL
- */
+#### Map 作为条件构造器
+```SQL
+SELECT id, name, age, email, manager_id, create_time FROM user WHERE name = '刘玉红' AND age = 25 AND email IS NULL
+```
+
+```Java
 public void selectByWrapperAllEq() {
 	Map<String, Object> params = new HashMap<>();
 	params.put("name", "刘玉红");
@@ -213,11 +267,15 @@ public void selectByWrapperAllEq() {
 	List<User> list = userMapper.selectList(queryWrapper);
 	list.forEach(System.out::println);
 }
+```
 
-/**
- * Map 作为条件构造器，null 值自动忽略
- * 框架生成的语句为: SELECT id, name, age, email, manager_id, create_time FROM user WHERE name = '刘玉红' AND age = 25
- */
+#### Map 作为条件构造器，null 值自动忽略
+```SQL
+SELECT id, name, age, email, manager_id, create_time 
+  FROM user WHERE name = '刘玉红' AND age = 25
+```
+
+```Java
 public void selectByWrapperAllEq() {
 	Map<String, Object> params = new HashMap<>();
 	params.put("name", "刘玉红");
@@ -230,24 +288,30 @@ public void selectByWrapperAllEq() {
 	List<User> list = userMapper.selectList(queryWrapper);
 	list.forEach(System.out::println);
 }
+```
 
-/**
- * 返回 List<Map> 结果集
- * 应用场景: 当表字段特别多的时候，你只需要查询其中的少数几列，没必要返回泛型为实体的类，因为绝大部分的字段都是 null，这样不优雅。
- * SQL: SELECT id,name FROM user WHERE name like '王%' AND age < 50
- */
+#### 返回 List<Map> 结果集
+##### 应用场景: 当表字段特别多的时候，你只需要查询其中的少数几列，没必要返回泛型为实体的类，因为绝大部分的字段都是 null，这样不优雅。
+```SQL
+SELECT id,name FROM user WHERE name like '王%' AND age < 50
+```
+
+```Java
 public void selectByWrapperMaps() {
 	QueryWrapper<User> queryWrapper = new QueryWrapper<>();
 	queryWrapper.select("id", "name").likeRight("name", "王").lt("age", 50);
 	List<Map<String, Object>> list = userMapper.selectMaps(queryWrapper);
 	list.forEach(System.out::println);
 }
+```
 
-/**
- * 返回 List<Map> 结果集
- * 应用场景: 当查询的不是表里的某一条记录，而是一个统计数据时。
- * SQL: SELECT avg(age) avg_age, min(age) min_age, max(age) max_age FROM user GROUP BY sum(age) < {0} HAVING sum(age) < 500
- */
+#### 返回 List<Map> 结果集
+##### 应用场景: 当查询的不是表里的某一条记录，而是一个统计数据时。
+```SQL
+SELECT avg(age) avg_age, min(age) min_age, max(age) max_age FROM user GROUP BY sum(age) < {0} HAVING sum(age) < 500
+```
+
+```Java
 public void selectByWrapperMaps() {
 	QueryWrapper<User> queryWrapper = new QueryWrapper<>();
 	queryWrapper.select("avg(age) avg_age", "min(age) min_age", "max(age) max_age")
@@ -256,57 +320,72 @@ public void selectByWrapperMaps() {
 	List<Map<String, Object>> list = userMapper.selectMaps(queryWrapper);
 	list.forEach(System.out::println);
 }
+```
 
-/**
- * 返回 List<Map> 结果集
- * 应用场景: 不论 select 语句选择了几列，返回的 Object 只有第一列的数据。只返回一列的时候可以考虑用它。
- * SQL: SELECT id,name FROM user WHERE name like '王%' AND age < 50
- */
+#### 返回 List<Map> 结果集
+##### 应用场景: 不论 select 语句选择了几列，返回的 Object 只有第一列的数据。只返回一列的时候可以考虑用它。
+```SQL
+SELECT id,name FROM user WHERE name like '王%' AND age < 50
+```
+
+```Java
 public void selectByWrapperObjs() {
 	QueryWrapper<User> queryWrapper = new QueryWrapper<>();
 	queryWrapper.select("id", "name").likeRight("name", "王").lt("age", 50);
 	List<Object> list = userMapper.selectObjs(queryWrapper);
 	list.forEach(System.out::println);
 }
+```
 
-/**
- * SQL: SELECT COUNT(1) FROM user WHERE name like '王%' AND age < 50
- */
+```SQL
+SELECT COUNT(1) FROM user WHERE name like '王%' AND age < 50
+```
+
+```Java
 public void selectByWrapperCount() {
 	QueryWrapper<User> queryWrapper = new QueryWrapper<>();
 	queryWrapper.likeRight("name", "王").lt("age", 50);
 	Integer count = userMapper.selectCount(queryWrapper);
 	System.out.println("记录数: " + count);
 }
+```
 
-/**
- * 如果查询出多条会直接报错: TooManyResultsException
- * SQL: SELECT id, name, age, email, manager_id, create_time FROM user WHERE name = '刘玉红' AND age = 50
- */
+#### 如果查询出多条会直接报错: TooManyResultsException
+```SQL
+SELECT id, name, age, email, manager_id, create_time FROM user WHERE name = '刘玉红' AND age = 50
+```
+
+```Java
 public void selectByWrapperOne() {
 	QueryWrapper<User> queryWrapper = new QueryWrapper<>();
 	queryWrapper.likeRight("name", "刘玉红").lt("age", 50);
 	User user = userMapper.selectOne(queryWrapper);
 	System.out.println(user);
 }
+```
 
-/**
- * 基于 Lambda 表达式的条件构造器，这是 MP 最出彩的部分，应重点掌握！
- * 优势: 可以防止列名误写。
- * SQL: SELECT id, name, age, email, manager_id, create_time FROM user WHERE name LIKE '刘玉红%' AND age < 25
- */
+#### 基于 Lambda 表达式的条件构造器，这是 MP 最出彩的部分，应重点掌握！
+#### 优势: 可以防止列名误写。
+```SQL
+SELECT id, name, age, email, manager_id, create_time FROM user WHERE name LIKE '刘玉红%' AND age < 25
+```
+
+```Java
 public void selectLambda() {
 	LambdaQueryWrapper<User> lambdaQueryWrapper = Wrappers.lambdaQuery();
 	lambdaQueryWrapper.likeRight(User::getName, "刘玉红").lt(User::getAge, 25);
 	List<User> users = userMapper.selectList(lambdaQueryWrapper);
 	users.forEach(System.out::println);
 }
+```
 
-/**
- * 基于 Lambda 表达式的条件构造器，带括号的
- * 优势: 可以防止列名误写。
- * SQL: SELECT id, name, age, email, manager_id, create_time FROM user WHERE name LIKE '%雨%' AND (age < 40 OR email IS NOT NULL)
- */
+#### 基于 Lambda 表达式的条件构造器，带括号的
+#### 优势: 可以防止列名误写。
+```SQL
+SELECT id, name, age, email, manager_id, create_time FROM user WHERE name LIKE '%雨%' AND (age < 40 OR email IS NOT NULL)
+```
+
+```Java
 public void selectLambda() {
 	LambdaQueryWrapper<User> lambdaQueryWrapper = Wrappers.lambdaQuery();
 	lambdaQueryWrapper.like(User::getName, "雨")
@@ -314,11 +393,10 @@ public void selectLambda() {
 	List<User> users = userMapper.selectList(lambdaQueryWrapper);
 	users.forEach(System.out::println);
 }
+```
 
-+---------------------------+
-|         分页查询           |
-+---------------------------+
-
+#### 分页查询
+```Java
 @EnableTransactionManagement
 @Configuration
 @MapperScan("com.hitech.skeleton.**.mapper")
@@ -333,12 +411,16 @@ public class MybatisPlusConfig {
 		return paginationInterceptor;
 	}
 }
+```
 
-/**
- * 分页查询
- * SQL1:  SELECT COUNT(1) FROM user WHERE age >= 26
- * SQL2:  SELECT id, name, age, email, manager_id, create_time FROM user WHERE age >= 26 LIMIT ?,?
- */
+#### 分页查询
+```SQL
+SQL1: SELECT COUNT(1) FROM user WHERE age >= 26
+SQL2: SELECT id, name, age, email, manager_id, create_time 
+        FROM user WHERE age >= 26 LIMIT ?,?
+```
+
+```Java
 public void selectPage() {
 	QueryWrapper<User> queryWrapper = new QueryWrapper<>();
 	queryWrapper.ge("age", 26);
@@ -349,12 +431,16 @@ public void selectPage() {
 	System.out.println("总记录数: " + iPage.getTotal());
 	users.forEach(System.out::println);
 }
+```
 
-/**
- * 分页查询 返回 Map
- * SQL1:  SELECT COUNT(1) FROM user WHERE age >= 26
- * SQL2:  SELECT id, name, age, email, manager_id, create_time FROM user WHERE age >= 26 LIMIT ?,?
- */
+#### 分页查询 返回 Map
+```SQL
+SQL1: SELECT COUNT(1) FROM user WHERE age >= 26
+SQL2: SELECT id, name, age, email, manager_id, create_time 
+        FROM user WHERE age >= 26 LIMIT ?,?
+```
+
+```Java
 public void selectMapPage() {
 	QueryWrapper<User> queryWrapper = new QueryWrapper<>();
 	queryWrapper.ge("age", 26);
@@ -365,11 +451,14 @@ public void selectMapPage() {
 	List<Map<String, Object>> users =  iPage.getRecords();
 	users.forEach(System.out::println);
 }
+```
 
-/**
- * 分页查询 不返回总记录数，有些场景其实并不需要返回总记录数，消耗太大。因此只会运行有一条 SQL
- * SQL1:  SELECT id, name, age, email, manager_id, create_time FROM user WHERE age >= 26 LIMIT ?,?
- */
+#### 分页查询 不返回总记录数，有些场景其实并不需要返回总记录数，消耗太大。因此只会运行有一条 SQL
+```SQL
+SQL1:  SELECT id, name, age, email, manager_id, create_time FROM user WHERE age >= 26 LIMIT ?,?
+```
+
+```Java
 public void selectPageWithoutCount() {
 	QueryWrapper<User> queryWrapper = new QueryWrapper<>();
 	queryWrapper.ge("age", 26);
@@ -380,25 +469,29 @@ public void selectPageWithoutCount() {
 	List<User> users =  iPage.getRecords();
 	users.forEach(System.out::println);
 }
+```
 
-
-// 多表关联的分页查询，这里演示的是单表，多表是一样的，关键是写好 Xml 文件里的 SQL
+#### 多表关联的分页查询，这里演示的是单表，多表是一样的，关键是写好 Xml 文件里的 SQL
+```Java
 // UserMapper.java 中增加接口
 @Mapper
 public interface UserMapper extends BaseMapper<User> {
-	IPage<User> selectUserPage(Page<User> page, @Param(Constants.WRAPPER) Wrapper<User> wrapper);
+    IPage<User> selectUserPage(Page<User> page, @Param(Constants.WRAPPER) Wrapper<User> wrapper);
 }
 
 // UserMapper.xml 中增加接口语句配置
 <select id="selectUserPage" resultType="com.hitech.skeleton.modules.demo.entity.po.User" >
     SELECT * FROM user ${ew.customSqlSegment}
 </select>
+```
 
-/**
- * 分页查询 不返回总记录数，有些场景其实并不需要返回总记录数，消耗太大。因此只会运行有一条 SQL
- * SQL1:  SELECT COUNT(1) FROM user WHERE age >= 26
- * SQL2:  SELECT * FROM user WHERE age >= 26 LIMIT ?,?
- */
+#### 分页查询 不返回总记录数，有些场景其实并不需要返回总记录数，消耗太大。因此只会运行有一条 SQL
+```SQL
+SQL1:  SELECT COUNT(1) FROM user WHERE age >= 26
+SQL2:  SELECT * FROM user WHERE age >= 26 LIMIT ?,?
+```
+
+```Java
 public void selectPageWithoutCount() {
 	QueryWrapper<User> queryWrapper = new QueryWrapper<>();
 	queryWrapper.ge("age", 26);
@@ -409,15 +502,16 @@ public void selectPageWithoutCount() {
 	List<User> users =  iPage.getRecords();
 	users.forEach(System.out::println);
 }
+```
 
-+---------------------------+
-|         更新操作           |
-+---------------------------+
+# 更新操作
 
-/**
- * 按 ID 进行更新，实体中 id 必须有数据，其它字段不为 null 的情况下，会设置到 set 语句中。
- * SQL: UPDATE user set email = 'wtf2@qq.com', age = 26 WHERE id = 101010101001
- */
+#### 按 ID 进行更新，实体中 id 必须有数据，其它字段不为 null 的情况下，会设置到 set 语句中。
+```SQL
+UPDATE user set email = 'wtf2@qq.com', age = 26 WHERE id = 101010101001
+```
+
+```Java
 public void updateById() {
 	User user = new User();
 	user.setId(101010101001L);
@@ -427,11 +521,14 @@ public void updateById() {
 	int rows = userMapper.updateById(user);
 	System.out.println("影响记录数: " + rows);
 }
+```
 
-/**
- * 按 条件构造器 进行更新，实体中不为 null 的属性，会设置到 set 语句中。
- * SQL: UPDATE user set email = 'wtf2@163.com', age = 27 WHERE name = '李毅伟' AND age = 28
- */
+#### 按 条件构造器 进行更新，实体中不为 null 的属性，会设置到 set 语句中。
+```SQL
+UPDATE user set email = 'wtf2@163.com', age = 27 WHERE name = '李毅伟' AND age = 28
+```
+
+```Java
 public void updateByWrapper() {
 	UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
 	updateWrapper.eq("name", "李毅伟").eq("age", 28);
@@ -444,55 +541,68 @@ public void updateByWrapper() {
 	int rows = userMapper.update(user, updateWrapper);
 	System.out.println("影响记录数: " + rows);
 }
+```
 
-/**
- * 更新少量字段时，无需构造实体，实体中不为 null 的属性，会设置到 set 语句中。
- * SQL: UPDATE user SET email = 'wtf2@163.com', age = 27 WHERE name = '李毅伟' AND age = 28
- */
+#### 更新少量字段时，无需构造实体，实体中不为 null 的属性，会设置到 set 语句中。
+```SQL
+UPDATE user SET email = 'wtf2@163.com', age = 27 WHERE name = '李毅伟' AND age = 28
+```
+
+```Java
 public void updateWithoutEntity() {
 	UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
 	updateWrapper.eq("name", "李毅伟").eq("age", 28).set("email", "wtf2@163.com").set("age", 27);
 	int rows = userMapper.update(null, updateWrapper);
 	System.out.println("影响记录数: " + rows);
 }
+```
 
-/**
- * 基于 Lambda 语法，有防误写能力。
- * SQL: UPDATE user SET email = 'wtf2@163.com', age = 27 WHERE name = '李毅伟' AND age = 28
- */
+#### 基于 Lambda 语法，有防误写能力。
+```SQL
+UPDATE user SET email = 'wtf2@163.com', age = 27 WHERE name = '李毅伟' AND age = 28
+```
+
+```Java
 public void updateByLambda() {
 	LambdaUpdateWrapper<User> lambdaUpdateWrapper = Wrappers.lambdaUpdate();
 	lambdaUpdateWrapper.eq(User::getName, "李毅伟").eq(User::getAge, 28).set(User::getEmail, "wtf2@163.com").set(User::getAge, 27);
 	int rows = userMapper.update(null, lambdaUpdateWrapper);
 	System.out.println("影响记录数: " + rows);
 }
+```
 
-/**
- * 链式更新，极为简洁
- * SQL: UPDATE user SET email = 'wtf2@163.com', age = 27 WHERE name = '李毅伟' AND age = 28
- */
+#### 链式更新，极为简洁
+```SQL
+UPDATE user SET email = 'wtf2@163.com', age = 27 WHERE name = '李毅伟' AND age = 28
+```
+
+```Java
 public void updateByLambdaChain() {
 	boolean update = new LambdaUpdateChainWrapper<>(userMapper).eq(User::getName, "李毅伟").eq(User::getAge, 28)
-		.set(User::getEmail, "wtf2@163.com").set(User::getAge, 27).update();
+	​	.set(User::getEmail, "wtf2@163.com").set(User::getAge, 27).update();
 	System.out.println("是否更新成功: " + update);
 }
+```
 
-+---------------------------+
-|         删除操作           |
-+---------------------------+
+# 删除操作
 
-/**
- * 根据 ID 主键来删除
- * SQL: DELETE FROM user WHERE id = 1010101010
- */
+#### 根据 ID 主键来删除
+```SQL
+DELETE FROM user WHERE id = 1010101010
+```
+
+```Java
 public void deleteById() {
 	int rows = userMapper.deleteById(1010101010L);
 	System.out.println("影响记录数: " + rows);
 }
+```
 
-/**
- * SQL: DELETE FROM user WHERE name = '王天风' AND age = 30
- */
+```SQL
+DELETE FROM user WHERE name = '王天风' AND age = 30
+```
+
+```Java
 public void deleteByMap() {
 
 	Map<String, Object> map = new HashMap<>();
@@ -502,34 +612,37 @@ public void deleteByMap() {
 	int rows = userMapper.deleteByMap(map);
 	System.out.println("影响记录数: " + rows);
 }
+```
 
-/**
- * 根据 ID 批量删除
- * SQL: DELETE FROM user WHERE id IN (111, 222, 333)
- */
+#### 根据 ID 批量删除
+```SQL
+DELETE FROM user WHERE id IN (111, 222, 333)
+
+```
+```Java
 public void deleteBatchIds() {
 	int rows = userMapper.deleteBatchIds(Arrays.asList(111L, 222L, 333L));
 	System.out.println("影响记录数: " + rows);
 }
+```
 
-/**
- *
- * SQL: DELETE FROM user WHERE age = 27 OR age > 41
- */
+```SQL
+DELETE FROM user WHERE age = 27 OR age > 41
+```
+```Java
 public void deleteByWrapper() {
 	LambdaQueryWrapper<User> lambdaQueryWrapper = Wrappers.<User>lambdaQuery();
 	lambdaQueryWrapper.eq(User::getAge, 27).or().gt(User::getAge, 41);
 	int rows = userMapper.delete(lambdaQueryWrapper);
 	System.out.println("影响记录数: " + rows);
 }
+```
 
-+---------------------------+
-|       Active Record       |
-|          活动记录          |
-+---------------------------+
-是一种领域模型模式，特点是一个模型类对应关系数据库中的一个表，模型实例对应一条记录。
-Active Record 一直广受动态语言的喜爱，而 Java 这类静态语言往往只能望叹其优雅。MP 的作者在 AR 的道路上做了一定探索。
+# Active Record 活动记录
 
+> 是一种领域模型模式，特点是一个模型类对应关系数据库中的一个表，模型实例对应一条记录。Active Record 一直广受动态语言的喜爱，而 Java 这类静态语言往往只能望叹其优雅。MP 的作者在 AR 的道路上做了一定探索。
+
+```Java
 /**
  * Active Record 实战
  *
@@ -599,9 +712,7 @@ public void delete() {
 	System.out.println("状态: " + delete);
 }
 
-/**
- * Active Record 实战
- * <p>
+/* Active Record 实战
  * 注意: PO 类必须继承 Model<T>
  * PO 实例里有 id 时会先根据 id 查询，有记录时 update，没记录返回，执行 insert
  * SQL: SELECT id,name,age,email,manager_id,create_time FROM person WHERE id = ?
@@ -614,150 +725,4 @@ public void insertOrUpdate() {
 	boolean state = person.insertOrUpdate();
 	System.out.println("状态: " + state);
 }
-
-
-
-
-
-
-
-
-public void insertOne() {
-    // 插入
-    User user = new User();
-    user.setName("小羊");
-    user.setAge(3);
-    user.setEmail("abc@mp.com");
-    assertThat(mapper.insert(user)).isGreaterThan(0);
-    // 成功直接拿回写的 ID
-    assertThat(user.getId()).isNotNull();
-}
-
-public void delete() {
-    assertThat(mapper.deleteById(3L)).isGreaterThan(0);
-    assertThat(mapper.delete(new QueryWrapper<User>()
-            .lambda().eq(User::getName, "Sandy"))).isGreaterThan(0);
-}
-
-public void update() {
-    assertThat(mapper.updateById(new User().setId(1L).setEmail("ab@c.c"))).isGreaterThan(0);
-    assertThat(mapper.update(new User().setName("mp"),
-            Wrappers.<User>lambdaUpdate()
-                    .set(User::getAge, 3)
-                    .eq(User::getId, 2))).isGreaterThan(0);
-}
-
-public void select() {
-    assertThat(mapper.selectById(1L).getEmail()).isEqualTo("ab@c.c");
-    User user = mapper.selectOne(new QueryWrapper<User>().lambda().eq(User::getId, 2));
-    assertThat(user.getName()).isEqualTo("mp");
-    assertThat(user.getAge()).isEqualTo(3);
-}
-
-@Test
-public void orderBy() {
-    List<User> users = mapper.selectList(Wrappers.<User>query().orderByAsc("age"));
-    assertThat(users).isNotEmpty();
-}
-
-@Test
-public void selectMaps() {
-    List<Map<String, Object>> mapList = mapper.selectMaps(Wrappers.<User>query().orderByAsc("age"));
-    assertThat(mapList).isNotEmpty();
-    assertThat(mapList.get(0)).isNotEmpty();
-    System.out.println(mapList.get(0));
-}
-
-@Test
-public void selectMapsPage() {
-    IPage<Map<String, Object>> page = mapper.selectMapsPage(new Page<>(1, 5), Wrappers.<User>query().orderByAsc("age"));
-    assertThat(page).isNotNull();
-    assertThat(page.getRecords()).isNotEmpty();
-    assertThat(page.getRecords().get(0)).isNotEmpty();
-    System.out.println(page.getRecords().get(0));
-}
-
-@Test
-public void orderByLambda() {
-    List<User> users = mapper.selectList(Wrappers.<User>lambdaQuery().orderByAsc(User::getAge));
-    assertThat(users).isNotEmpty();
-}
-
-    @Test
-public void tests() {
-    System.out.println("----- 普通查询 ------");
-    List<User> plainUsers = userMapper.selectList(new QueryWrapper<User>().eq("role_id", 2L));
-    List<User> lambdaUsers = userMapper.selectList(new QueryWrapper<User>().lambda().eq(User::getRoleId, 2L));
-    Assert.assertEquals(plainUsers.size(), lambdaUsers.size());
-    print(plainUsers);
-
-    System.out.println("----- 带子查询(sql注入) ------");
-    List<User> plainUsers2 = userMapper.selectList(new QueryWrapper<User>()
-            .inSql("role_id", "select id from role where id = 2"));
-    List<User> lambdaUsers2 = userMapper.selectList(new QueryWrapper<User>().lambda()
-            .inSql(User::getRoleId, "select id from role where id = 2"));
-    Assert.assertEquals(plainUsers2.size(), lambdaUsers2.size());
-    print(plainUsers2);
-
-    System.out.println("----- 带嵌套查询 ------");
-    List<User> plainUsers3 = userMapper.selectList(new QueryWrapper<User>()
-            .nested(i -> i.eq("role_id", 2L).or().eq("role_id", 3L))
-            .and(i -> i.ge("age", 20)));
-    List<User> lambdaUsers3 = userMapper.selectList(new QueryWrapper<User>().lambda()
-            .nested(i -> i.eq(User::getRoleId, 2L).or().eq(User::getRoleId, 3L))
-            .and(i -> i.ge(User::getAge, 20)));
-    Assert.assertEquals(plainUsers3.size(), lambdaUsers3.size());
-    print(plainUsers3);
-
-    System.out.println("----- 自定义(sql注入) ------");
-    List<User> plainUsers4 = userMapper.selectList(new QueryWrapper<User>().apply("role_id = 2"));
-    print(plainUsers4);
-
-    UpdateWrapper<User> uw = new UpdateWrapper<>();
-    uw.set("email", null);
-    uw.eq("id",4);
-    userMapper.update(new User(), uw);
-    User u4 = userMapper.selectById(4);
-    Assert.assertNull(u4.getEmail());
-
-
-}
-
-@Test
-public void lambdaQueryWrapper(){
-    System.out.println("----- 普通查询 ------");
-    List<User> plainUsers = userMapper.selectList(new LambdaQueryWrapper<User>().eq(User::getRoleId, 2L));
-    List<User> lambdaUsers = userMapper.selectList(new QueryWrapper<User>().lambda().eq(User::getRoleId, 2L));
-    Assert.assertEquals(plainUsers.size(), lambdaUsers.size());
-    print(plainUsers);
-
-    System.out.println("----- 带子查询(sql注入) ------");
-    List<User> plainUsers2 = userMapper.selectList(new LambdaQueryWrapper<User>()
-            .inSql(User::getRoleId, "select id from role where id = 2"));
-    List<User> lambdaUsers2 = userMapper.selectList(new QueryWrapper<User>().lambda()
-            .inSql(User::getRoleId, "select id from role where id = 2"));
-    Assert.assertEquals(plainUsers2.size(), lambdaUsers2.size());
-    print(plainUsers2);
-
-    System.out.println("----- 带嵌套查询 ------");
-    List<User> plainUsers3 = userMapper.selectList(new LambdaQueryWrapper<User>()
-            .nested(i -> i.eq(User::getRoleId, 2L).or().eq(User::getRoleId, 3L))
-            .and(i -> i.ge(User::getAge, 20)));
-    List<User> lambdaUsers3 = userMapper.selectList(new QueryWrapper<User>().lambda()
-            .nested(i -> i.eq(User::getRoleId, 2L).or().eq(User::getRoleId, 3L))
-            .and(i -> i.ge(User::getAge, 20)));
-    Assert.assertEquals(plainUsers3.size(), lambdaUsers3.size());
-    print(plainUsers3);
-
-    System.out.println("----- 自定义(sql注入) ------");
-    List<User> plainUsers4 = userMapper.selectList(new QueryWrapper<User>()
-            .apply("role_id = 2"));
-    print(plainUsers4);
-
-    UpdateWrapper<User> uw = new UpdateWrapper<>();
-    uw.set("email", null);
-    uw.eq("id",4);
-    userMapper.update(new User(), uw);
-    User u4 = userMapper.selectById(4);
-    Assert.assertNull(u4.getEmail());
-}
+```
