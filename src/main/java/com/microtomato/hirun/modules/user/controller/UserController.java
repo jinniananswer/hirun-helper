@@ -1,13 +1,17 @@
 package com.microtomato.hirun.modules.user.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.modules.user.entity.po.User;
 import com.microtomato.hirun.modules.user.service.IUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * <p>
@@ -31,4 +35,15 @@ public class UserController {
         User user = userServiceImpl.login(username, password);
         return user;
     }
+
+    @GetMapping("/list")
+    @RestResult
+    public List<User> list() {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.last("LIMIT 50");
+        List<User> userList = userServiceImpl.list(queryWrapper);
+        log.info(userList.toString());
+        return userList;
+    }
+
 }

@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * <p>
- *  前端控制器
+ * 前端控制器
  * </p>
  *
  * @author jinnian
@@ -28,30 +28,30 @@ import java.util.List;
 @RequestMapping("/api/system/menu/")
 public class MenuController {
 
-    @Autowired
-    private IMenuService menuServiceImpl;
+	@Autowired
+	private IMenuService menuServiceImpl;
 
-    @GetMapping("/list")
-    @RestResult
-    public List<TreeNode> getMenuTree() {
-        List<Menu> menus = menuServiceImpl.listAllMenus();
+	@GetMapping("/list")
+	@RestResult
+	public List<TreeNode> getMenuTree() {
+		List<Menu> menus = menuServiceImpl.listAllMenus();
 
-        if (ArrayUtil.isEmpty(menus)) {
-            return null;
-        }
+		if (ArrayUtil.isEmpty(menus)) {
+			return null;
+		}
 
-        List<TreeNode> nodes = new ArrayList<TreeNode>();
-        for (Menu menu : menus) {
-            TreeNode node = new TreeNode();
-            node.setId(menu.getMenuId() + "");
-            if (menu.getParentMenuId() != null) {
-                node.setParentId(menu.getParentMenuId() + "");
-            }
-            node.setNode(menu);
-            nodes.add(node);
-        }
+		List<TreeNode> nodes = new ArrayList<TreeNode>();
+		for (Menu menu : menus) {
+			TreeNode node = new TreeNode();
+			node.setId(menu.getMenuId() + "");
+			if (menu.getParentMenuId() != null) {
+				node.setParentId(menu.getParentMenuId() + "");
+			}
+			node.setNode(menu);
+			nodes.add(node);
+		}
 
-        List<TreeNode> tree = TreeUtil.build(nodes);
-        return tree;
-    }
+		List<TreeNode> tree = TreeUtil.build(nodes);
+		return tree;
+	}
 }

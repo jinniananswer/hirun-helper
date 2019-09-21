@@ -1,3 +1,46 @@
+# TODO
+    权限设计。
+    消息中心，WebSocket。
+    大型文件上传。
+    数据统计，通过后台任务来跑，日报，月报。导出 Excel 有合并单元格要求。
+    大数据练手环境。
+
++------------+
+   权限设计
++------------+
+
+1.确认是不是就在 sys, ins 两个账号下新增表，或者对现有的表进行改造？
+2.原先的权限是不是仅仅只对应菜单权限?
+3.新的权限系统实际是将菜单权限看作一类特殊权限。
+4.权限表实际上是定义的功能权限。控制界面上的按钮是否展示、某些函数是否能调用等。
+
+
+-- user---menu-----org------user_org---都有
+
+-- 现有的表:
+-- ins_org
+-- ins_user_role
+-- ins_user
+-- sys_menu
+-- sys_func
+
+-- 我设计的表:
+-- user 用户表
+-- user_role 用户角色关联
+-- role 角色表
+-- permission_role 角色权限关联
+-- permission 权限表
+-- menu 菜单表
+-- menu_role 角色菜单关联
+-- org 组织表
+-- user_org 用户组织关联
+
+
+LayUI学习视频: https://www.php.cn/code/30329.html
+
+# 将菜单看作是一种特殊的权限。
+# RBAC, 一种基于角色的权限访问控制。Role-Based Access Control
+
 # 测试数据:
     13723885094
     820311
