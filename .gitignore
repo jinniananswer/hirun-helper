@@ -4,6 +4,7 @@
 *.iml
 *.ipr
 .gradle
+build
 out
 
 ### Mac ###
