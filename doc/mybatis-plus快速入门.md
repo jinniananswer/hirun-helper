@@ -1,31 +1,20 @@
-mybatis-plus-sample-active-record
-mybatis-plus-sample-cascade
-mybatis-plus-sample-deluxe
-mybatis-plus-sample-enum -- 不知道其应用场景
-mybatis-plus-sample-logic-delete
-mybatis-plus-sample-sql-injector
-mybatis-plus-sample-tenant -- 多租户
+# 查询
 
-+---------------------------+
-|    Mybatis plus 示例      |
-+---------------------------+
-
-/**
- * 全表查询
- * 框架生成语句为: SELECT ... FROM user
- */
+> 框架生成语句为: SELECT ... FROM user
+```Java
 public void selectAll() {
     List<User> userList = userMapper.selectList(null);
     userList.forEach(System.out::println);
 }
+```
 
-/**
- * 根据主键 ID 查询
- * 框架生成语句为: SELECT ... FROM user WHERE id = 123123131231
- */
+> 根据主键 ID 查询, 
+>> 框架生成语句为: SELECT ... FROM user WHERE id = 123123131231 
+```Java
 public void selectById() {
     User user = userMapper.selectById(123123131231L);
 }
+```
 
 /**
  * 根据多个 ID 查询。
