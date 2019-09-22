@@ -40,7 +40,7 @@ public class MenuController {
 			return null;
 		}
 
-		List<TreeNode> nodes = new ArrayList<TreeNode>();
+		List<TreeNode> nodes = new ArrayList<>();
 		for (Menu menu : menus) {
 			TreeNode node = new TreeNode();
 			node.setId(menu.getMenuId() + "");

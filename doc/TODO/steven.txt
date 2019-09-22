@@ -14,25 +14,25 @@
 3.新的权限系统实际是将菜单权限看作一类特殊权限。
 4.权限表实际上是定义的功能权限。控制界面上的按钮是否展示、某些函数是否能调用等。
 
-
--- user---menu-----org------user_org---都有
-
 -- 现有的表:
--- ins_org
--- ins_user_role
--- ins_user
--- sys_menu
--- sys_func
+-- ins_user -- 用户表
+-- ins_user_func -- 用户权限表
+-- ins_org  -- 组织表
+-- ins_user_role -- 用户角色表(没有使用)
+
+-- sys_menu -- 菜单表
+-- sys_func -- 权限表, 以 MENU_ 开头的都是菜单权限
+
 
 -- 我设计的表:
--- user 用户表
--- user_role 用户角色关联
--- role 角色表
--- permission_role 角色权限关联
--- permission 权限表
--- menu 菜单表
--- menu_role 角色菜单关联
--- org 组织表
+-- user 用户表                         -> ins_user 无需调整
+-- user_role 用户角色关联               -> ins_user_role
+-- role 角色表                         -> ins_role
+-- permission_role 角色权限关联         -> ins_func_role
+-- permission 权限表                   -> sys_func 无需调整
+-- menu 菜单表                         -> sys_menu 无需调整
+-- menu_role 角色菜单关联               -> ins_menu_role
+-- org 组织表                          -> ins_org 无需调整
 -- user_org 用户组织关联
 
 
@@ -44,3 +44,6 @@ LayUI学习视频: https://www.php.cn/code/30329.html
 # 测试数据:
     13723885094
     820311
+
+    13787235663
+    123456

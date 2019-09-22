@@ -30,8 +30,6 @@ public class MySQLGenerator {
     /**
      * 以下是代码生成前需要修改的部分:
      */
-    private static String author = "jinnian";
-
     private static String url = "jdbc:mysql://39.106.228.124:3306/sys?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC";
     private static String driver = "com.mysql.cj.jdbc.Driver";
     private static String schemaName = "sys";
@@ -70,6 +68,7 @@ public class MySQLGenerator {
         System.out.println("数据源: " + schemaName);
         String moduleName = scanner("请输入本次构建的模块名");
         String databaseName = scanner("请输入本次构建连接的数据库");
+        String author = scanner("请输入开发者名字");
         switchDatabase(databaseName);
         String[] tables = scanner("请输入本次构建的表名(多个表明用英文逗号隔开)").split(",");
 

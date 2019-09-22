@@ -56,14 +56,10 @@ public class Menu extends BaseEntity {
     @TableField("PARENT_MENU_ID")
     private Integer parentMenuId;
 
-    @TableField("FUNC_ID")
-    private Integer funcId;
-
     @TableField("ICO_URL")
     private String icoUrl;
 
     @TableField("IS_COMMON_USE")
     private String isCommonUse;
-
 
 }
