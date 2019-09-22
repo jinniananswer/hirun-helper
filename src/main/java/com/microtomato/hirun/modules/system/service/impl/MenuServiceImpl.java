@@ -1,8 +1,10 @@
 package com.microtomato.hirun.modules.system.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.security.Role;
+import com.microtomato.hirun.framework.utils.Constants;
 import com.microtomato.hirun.framework.utils.WebContextUtil;
 import com.microtomato.hirun.modules.system.entity.po.Menu;
 import com.microtomato.hirun.modules.system.mapper.MenuMapper;
@@ -41,20 +43,27 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 		Set<Integer> myMenuIds = new HashSet<>();
 		List<Role> roles = WebContextUtil.getUserContext().getRoles();
 		for (Role role : roles) {
-			List<MenuRole> menuRoleList = menuRoleServiceImpl.list(new QueryWrapper<MenuRole>().lambda().eq(MenuRole::getRoleId, role.getId()));
+			LambdaQueryWrapper<MenuRole> lambdaQueryWrapper = Wrappers.lambdaQuery();
+			lambdaQueryWrapper.eq(MenuRole::getRoleId, role.getId()).eq(MenuRole::getStatus, Constants.STATUS_OK);
+			List<MenuRole> menuRoleList = menuRoleServiceImpl.list(lambdaQueryWrapper);
 			menuRoleList.forEach(menuRole -> myMenuIds.add(menuRole.getMenuId()));
 		}
+
+		Set<String> menuUrls = new HashSet<>();
 
 		// 过滤
 		Map<Integer, Menu> filteredMenuMap = new HashMap<>(20);
 		for (Menu currMenu : menuMap.values()) {
 			if (myMenuIds.contains(currMenu.getMenuId())) {
 				filteredMenuMap.put(currMenu.getMenuId(), currMenu);
+				menuUrls.add(currMenu.getMenuUrl());
 
 				// 递归增加父菜单
 				addParentMenus(currMenu, filteredMenuMap, menuMap);
 			}
 		}
+
+		WebContextUtil.getUserContext().setMenuUrls(menuUrls);
 
 		return new ArrayList(filteredMenuMap.values());
 	}

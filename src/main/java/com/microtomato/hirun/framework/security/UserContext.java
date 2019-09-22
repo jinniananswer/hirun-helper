@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 登录后的用户上下文
@@ -51,6 +52,11 @@ public class UserContext implements UserDetails {
 	 * 权限，角色
 	 */
 	private Collection<GrantedAuthority> grantedAuthorities;
+
+	/**
+	 * 拥有的菜单 url
+	 */
+	private Set<String> menuUrls;
 
 	/**
 	 * 账户是否没过期
