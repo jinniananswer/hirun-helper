@@ -2,9 +2,13 @@ package com.microtomato.hirun.modules.user.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.microtomato.hirun.framework.annotation.RestResult;
+import com.microtomato.hirun.framework.security.UserContext;
+import com.microtomato.hirun.framework.utils.WebContextUtil;
 import com.microtomato.hirun.modules.user.entity.po.User;
+import com.microtomato.hirun.modules.user.exception.PasswordException;
 import com.microtomato.hirun.modules.user.service.IUserService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,4 +50,18 @@ public class UserController {
         return userList;
     }
 
+    @PostMapping("/changeStaffPassword")
+    @RestResult
+    public boolean changeStaffPassword(String oldPassword,String password ,String repassword ){
+        if(!StringUtils.equals(password,repassword)){
+            throw new PasswordException("新密码与确认输入不一致，请重新输入。");
+        }
+
+        UserContext userContext = WebContextUtil.getUserContext();
+        Integer userId=userContext.getUserId();
+
+        boolean changeResult=userServiceImpl.changeStaffPassword(userId,oldPassword,repassword);
+
+        return changeResult;
+    }
 }
