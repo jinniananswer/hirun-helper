@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
  * <p>
- *  服务类
+ * 服务类
  * </p>
  *
  * @author jinnian
@@ -15,5 +15,5 @@ public interface IUserService extends IService<User> {
 
     User login(String username, String password);
 
-    boolean changeStaffPassword(Integer userId,String oldPassword,String newPassword);
+    boolean changeStaffPassword(Integer userId, String oldPassword, String newPassword);
 }
