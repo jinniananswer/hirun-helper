@@ -19,7 +19,7 @@ import java.util.List;
 
 /**
  * <p>
- *  前端控制器
+ * 前端控制器
  * </p>
  *
  * @author jinnian
@@ -52,15 +52,15 @@ public class UserController {
 
     @PostMapping("/changeStaffPassword")
     @RestResult
-    public boolean changeStaffPassword(String oldPassword,String password ,String repassword ){
-        if(!StringUtils.equals(password,repassword)){
+    public boolean changeStaffPassword(String oldPassword, String password, String repassword) {
+        if (!StringUtils.equals(password, repassword)) {
             throw new PasswordException("新密码与确认输入不一致，请重新输入。");
         }
 
         UserContext userContext = WebContextUtil.getUserContext();
-        Integer userId=userContext.getUserId();
+        Integer userId = userContext.getUserId();
 
-        boolean changeResult=userServiceImpl.changeStaffPassword(userId,oldPassword,repassword);
+        boolean changeResult = userServiceImpl.changeStaffPassword(userId, oldPassword, repassword);
 
         return changeResult;
     }
