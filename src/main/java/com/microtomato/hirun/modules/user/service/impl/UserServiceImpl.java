@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author jinnian
@@ -52,20 +52,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
      */
     @Override
 
-    public boolean changeStaffPassword(Integer userId,String oldPassword,String newPassword){
-        boolean reslut=false;
+    public boolean changeStaffPassword(Integer userId, String oldPassword, String newPassword) {
+        boolean reslut = false;
         //校验老密码
-        boolean verifyResult=verifyOldPassword(userId,oldPassword);
-        if(verifyResult){
-            User user=new User();
+        boolean verifyResult = verifyOldPassword(userId, oldPassword);
+        if (verifyResult) {
+            User user = new User();
             user.setUserId(userId);
             user.setPassword(MD5Util.hexdigest(newPassword));
             user.setUpdateUserId(userId);
             user.setUpdateTime(LocalDateTime.now());
 
-            int rows=userMapper.updateById(user);
-            if(rows>0){
-                reslut=true;
+            int rows = userMapper.updateById(user);
+            if (rows > 0) {
+                reslut = true;
             }
         }
         return reslut;
@@ -74,17 +74,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     /**
      * 校验老密码
+     *
      * @param userId
      * @param oldpassword
      * @return
      */
-    public  boolean verifyOldPassword(Integer userId,String oldpassword){
-        User user=this.getById(userId);
+    private boolean verifyOldPassword(Integer userId, String oldpassword) {
+        User user = this.getById(userId);
         String encryptPassword = MD5Util.hexdigest(oldpassword);
         if (StringUtils.equals(user.getPassword(), encryptPassword)) {
             return true;
-        }
-        else {
+        } else {
             throw new PasswordException("原始密码不正确!");
         }
     }
