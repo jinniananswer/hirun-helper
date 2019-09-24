@@ -13,24 +13,24 @@ import java.io.Serializable;
 @Data
 public class Result implements Serializable {
 
-    /**
-     * 数据行数
-     */
-    private Integer total;
+	/**
+	 * 数据行数
+	 */
+	private Integer total;
 
-    /**
-     * 数据
-     */
-    private Object rows;
+	/**
+	 * 数据
+	 */
+	private Object rows;
 
-    /**
-     * 返回编码 0: 正常, 非0: 异常
-     */
-    private Integer code;
+	/**
+	 * 返回编码 0: 正常, 非0: 异常
+	 */
+	private Integer code;
 
-    /**
-     * 异常时返回的错误信息
-     */
-    private String message;
+	/**
+	 * 异常时返回的错误信息
+	 */
+	private String message;
 
 }

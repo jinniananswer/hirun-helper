@@ -504,6 +504,87 @@ public void selectPageWithoutCount() {
 }
 ```
 
+#### 多表关联 返回扁平化 List<Map<String, Object>>
+```java
+@Select(
+	"SELECT e.exam_id, e.name, e.pass_score, e.times, s.score, s.employee_id, s.exam_time\n" +
+		" FROM ins_exam e, ins_exam_score s \n" +
+		"WHERE e.`EXAM_ID` = s.`EXAM_ID`\n" +
+		"  AND e.exam_id = #{examId}")
+List<Map<String, Object>> queryByExamId(Integer examId);
+```
+
+#### 多表关联 返回扁平化数据对象 List<T>
+```java
+@Select(
+	"SELECT e.exam_id, e.name, e.pass_score, e.times, s.score, s.employee_id, s.exam_time\n" +
+		" FROM ins_exam e, ins_exam_score s \n" +
+		"WHERE e.`EXAM_ID` = s.`EXAM_ID`\n" +
+		"  AND e.exam_id = #{examId}")
+@Results(
+	value = {
+		@Result(property = "examId", column = "EXAM_ID"),
+		@Result(property = "name", column = "NAME"),
+		@Result(property = "passScore", column = "PASS_SCORE"),
+		@Result(property = "times", column = "TIMES"),
+		@Result(property = "employeeId", column = "EMPLOYEE_ID"),
+		@Result(property = "score", column = "SCORE"),
+		@Result(property = "examTime", column = "EXAM_TIME")
+	}
+)
+/**
+ * 多表关联，扁平化结构
+ */
+List<ExamResult> queryByExamId(Integer examId);
+```
+
+#### 多表关联，实现一对多查询
+```java
+@Data
+@EqualsAndHashCode
+@Accessors(chain = true)
+@NoArgsConstructor
+@AllArgsConstructor
+public class ExamResultNesting extends BaseEntity {
+
+	@TableField(value = "EXAM_ID")
+	private Integer examId;
+
+	@TableField("NAME")
+	private String name;
+
+	@TableField("PASS_SCORE")
+	private Integer passScore;
+
+	@TableField("TIMES")
+	private Integer times;
+
+	/**
+	 * 课程分数
+	 */
+	private List<ExamScore> examScores;
+
+}
+```
+
+```java
+@Select("select * from ins_exam where exam_id = #{examId}")
+@Results(
+	value = {
+		@Result(property = "examId", column = "EXAM_ID"),
+		@Result(property = "name", column = "NAME"),
+		@Result(property = "passScore", column = "PASS_SCORE"),
+		@Result(property = "times", column = "TIMES"),
+		@Result(property = "examScores",
+			column = "EXAM_ID",
+			many = @Many(
+			select = "com.microtomato.hirun.modules.steven.mapper.ExamScoreMapper.getByExamId"
+		))
+	}
+)
+List<ExamResultNesting> queryByExamIdNesting(Integer examId);
+```
+
 # 更新操作
 
 #### 按 ID 进行更新，实体中 id 必须有数据，其它字段不为 null 的情况下，会设置到 set 语句中。
