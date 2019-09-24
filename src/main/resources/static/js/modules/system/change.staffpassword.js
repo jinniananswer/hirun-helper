@@ -15,7 +15,7 @@ layui.define(['ajax', 'form', 'layer'], function (exports) {
             form.on('submit(changeStaffPassword)', function (data) {
                 var filed = data.field;
                 if (filed.password !== filed.repassword) {
-                    return layer.msg("两次密码输入不一致",);
+                    return layer.msg("两次密码输入不一致");
                 }
 
                 layui.changestaffpwd.changestaffpwd(data.field);
