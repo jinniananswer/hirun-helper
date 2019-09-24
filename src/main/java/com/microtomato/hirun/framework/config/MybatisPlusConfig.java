@@ -22,55 +22,55 @@ import java.util.List;
 @MapperScan("com.microtomato.hirun.**.mapper")
 public class MybatisPlusConfig {
 
-	/**
-	 * 乐观锁拦截器
-	 *
-	 * @return
-	 */
-	//@Bean
-	public OptimisticLockerInterceptor optimisticLockerInterceptor() {
-		OptimisticLockerInterceptor optimisticLockerInterceptor = new OptimisticLockerInterceptor();
-		return optimisticLockerInterceptor;
-	}
+    /**
+     * 乐观锁拦截器
+     *
+     * @return 返回乐观锁拦截器
+     * // @Bean
+     */
+    public OptimisticLockerInterceptor optimisticLockerInterceptor() {
+        OptimisticLockerInterceptor optimisticLockerInterceptor = new OptimisticLockerInterceptor();
+        return optimisticLockerInterceptor;
+    }
 
-	/**
-	 * 分页插件
-	 */
-	@Bean
-	public PaginationInterceptor paginationInterceptor() {
-		PaginationInterceptor paginationInterceptor = new PaginationInterceptor();
-		return paginationInterceptor;
-	}
+    /**
+     * 分页插件
+     */
+    @Bean
+    public PaginationInterceptor paginationInterceptor() {
+        PaginationInterceptor paginationInterceptor = new PaginationInterceptor();
+        return paginationInterceptor;
+    }
 
-	/**
-	 * 利用攻击 SQL 阻断解析器，来防止 "全表更新"，"全表删除" 等高危操作。
-	 *
-	 * @return
-	 */
-	@Bean
-	public SqlExplainInterceptor sqlExplainInterceptor() {
-		SqlExplainInterceptor sqlExplainInterceptor = new SqlExplainInterceptor();
+    /**
+     * 利用攻击 SQL 阻断解析器，来防止 "全表更新"，"全表删除" 等高危操作。
+     *
+     * @return
+     */
+    @Bean
+    public SqlExplainInterceptor sqlExplainInterceptor() {
+        SqlExplainInterceptor sqlExplainInterceptor = new SqlExplainInterceptor();
 
-		List<ISqlParser> sqlParserList = new ArrayList<>();
-		sqlParserList.add(new BlockAttackSqlParser());
+        List<ISqlParser> sqlParserList = new ArrayList<>();
+        sqlParserList.add(new BlockAttackSqlParser());
 
-		sqlExplainInterceptor.setSqlParserList(sqlParserList);
-		return sqlExplainInterceptor;
-	}
+        sqlExplainInterceptor.setSqlParserList(sqlParserList);
+        return sqlExplainInterceptor;
+    }
 
-	/**
-	 * 性能分析拦截器，用于输出每条 SQL 语句及其执行时间，仅开发、测试环境使用，生产环境不推荐。
-	 */
-	@Bean
-//	@Profile({"dev","test"})
-	public PerformanceInterceptor performanceInterceptor() {
-		PerformanceInterceptor performanceInterceptor = new PerformanceInterceptor();
-		// SQL 格式化开关
-		performanceInterceptor.setFormat(false);
-		// SQL 最长执行时间，超过自动停止运行，单位毫秒
-		performanceInterceptor.setMaxTime(1000);
-		return performanceInterceptor;
-	}
+    /**
+     * 性能分析拦截器，用于输出每条 SQL 语句及其执行时间，仅开发、测试环境使用，生产环境不推荐。
+     * // @Profile({"dev","test"})
+     */
+    @Bean
+    public PerformanceInterceptor performanceInterceptor() {
+        PerformanceInterceptor performanceInterceptor = new PerformanceInterceptor();
+        // SQL 格式化开关
+        performanceInterceptor.setFormat(false);
+        // SQL 最长执行时间，超过自动停止运行，单位毫秒
+        performanceInterceptor.setMaxTime(1000);
+        return performanceInterceptor;
+    }
 
 
 }

@@ -15,11 +15,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @EnableCaching
 public class CachingConfig {
-	
-	@Bean
-	public CacheManager cacheManager() {
-		// 基于 java.util.concurrent.ConcurrentHashMap 的简易缓存管理器。
-		return new ConcurrentMapCacheManager();
-	}
+
+    @Bean
+    public CacheManager cacheManager() {
+        // 基于 java.util.concurrent.ConcurrentHashMap 的简易缓存管理器。
+        return new ConcurrentMapCacheManager();
+    }
 
 }

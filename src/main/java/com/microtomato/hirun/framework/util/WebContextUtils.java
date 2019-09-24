@@ -1,4 +1,4 @@
-package com.microtomato.hirun.framework.utils;
+package com.microtomato.hirun.framework.util;
 
 import com.microtomato.hirun.framework.security.UserContext;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
  * @date 2019-04-29
  */
 @Slf4j
-public class WebContextUtil {
+public class WebContextUtils {
 
 	/**
 	 * 获取当前登录用户信息

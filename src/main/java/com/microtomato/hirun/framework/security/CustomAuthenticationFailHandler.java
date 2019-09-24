@@ -2,7 +2,7 @@ package com.microtomato.hirun.framework.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microtomato.hirun.framework.data.Result;
-import com.microtomato.hirun.framework.utils.ResultUtil;
+import com.microtomato.hirun.framework.util.ResultUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
@@ -32,7 +32,7 @@ public class CustomAuthenticationFailHandler implements AuthenticationFailureHan
 
 		log.info("Authentication failure: {}", exception.getMessage());
 
-		Result result = ResultUtil.failure(400001, "用户名或密码不正确！" + exception.getMessage());
+		Result result = ResultUtils.failure(400001, "用户名或密码不正确！" + exception.getMessage());
 		response.setContentType("application/json;charset=UTF-8");
 		response.getWriter().write(objectMapper.writeValueAsString(result));
 	}

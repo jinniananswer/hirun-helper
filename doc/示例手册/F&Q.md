@@ -10,7 +10,7 @@
 
 #### 获取登录上下文:
 ```java
-UserContext userContext = WebContextUtil.getUserContext();
+UserContext userContext = WebContextUtils.getUserContext();
 userContext.getMobileNo(); // 手机号码
 userContext.getUsername(); // 用户名
 userContext.getUserId();   // 用户ID

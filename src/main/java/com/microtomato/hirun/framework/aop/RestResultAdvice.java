@@ -1,7 +1,7 @@
 package com.microtomato.hirun.framework.aop;
 
 import com.microtomato.hirun.framework.annotation.RestResult;
-import com.microtomato.hirun.framework.utils.ResultUtil;
+import com.microtomato.hirun.framework.util.ResultUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
@@ -32,7 +32,7 @@ public class RestResultAdvice implements ResponseBodyAdvice {
 	                              Class selectedConverterType,
 	                              ServerHttpRequest request,
 	                              ServerHttpResponse response) {
-		return ResultUtil.success(body);
+		return ResultUtils.success(body);
 
 	}
 }

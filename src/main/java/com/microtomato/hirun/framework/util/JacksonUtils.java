@@ -1,4 +1,4 @@
-package com.microtomato.hirun.framework.utils;
+package com.microtomato.hirun.framework.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author Steven
  * @date 2019-04-29
  */
-public class JacksonUtil {
+public class JacksonUtils {
 
 	public static final String toJson(Object o) {
 		ObjectMapper mapper = new ObjectMapper();

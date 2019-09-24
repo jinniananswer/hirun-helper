@@ -2,8 +2,8 @@ package com.microtomato.hirun.modules.system.controller;
 
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.data.TreeNode;
-import com.microtomato.hirun.framework.utils.ArrayUtil;
-import com.microtomato.hirun.framework.utils.TreeUtil;
+import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.framework.util.TreeUtils;
 import com.microtomato.hirun.modules.system.entity.po.Menu;
 import com.microtomato.hirun.modules.system.service.IMenuService;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +36,7 @@ public class MenuController {
 	public List<TreeNode> getMenuTree() {
 		List<Menu> menus = menuServiceImpl.listAllMenus();
 
-		if (ArrayUtil.isEmpty(menus)) {
+		if (ArrayUtils.isEmpty(menus)) {
 			return null;
 		}
 
@@ -51,7 +51,7 @@ public class MenuController {
 			nodes.add(node);
 		}
 
-		List<TreeNode> tree = TreeUtil.build(nodes);
+		List<TreeNode> tree = TreeUtils.build(nodes);
 		return tree;
 	}
 }

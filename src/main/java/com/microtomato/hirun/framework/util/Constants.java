@@ -1,4 +1,4 @@
-package com.microtomato.hirun.framework.utils;
+package com.microtomato.hirun.framework.util;
 
 /**
  * 通用常量

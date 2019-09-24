@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.microtomato.hirun.framework.data.BaseEntity;
-import com.microtomato.hirun.framework.utils.MD5Util;
+import com.microtomato.hirun.framework.util.EncryptUtils;
 import com.microtomato.hirun.modules.user.exception.PasswordException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -77,7 +77,7 @@ public class User extends BaseEntity {
     private LocalDateTime updateTime;
 
     public boolean login(String password) {
-        String encryptPassword = MD5Util.hexdigest(password);
+        String encryptPassword = EncryptUtils.passwordEncode(password);
         if (StringUtils.equals(this.password, encryptPassword)) {
             return true;
         }

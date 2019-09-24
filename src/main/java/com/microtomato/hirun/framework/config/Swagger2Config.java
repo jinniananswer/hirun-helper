@@ -26,12 +26,12 @@ public class Swagger2Config {
     @Bean
     public Docket createRestApi() {
         return new Docket(DocumentationType.SWAGGER_2)
-                .apiInfo(apiInfo())
-                .select()
-                // 为当前包路径
-                .apis(RequestHandlerSelectors.basePackage("com.microtomato"))
-                .paths(PathSelectors.any())
-                .build();
+            .apiInfo(apiInfo())
+            .select()
+            // 为当前包路径
+            .apis(RequestHandlerSelectors.basePackage("com.microtomato"))
+            .paths(PathSelectors.any())
+            .build();
     }
 
     /**
@@ -41,15 +41,15 @@ public class Swagger2Config {
      */
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                // 页面标题
-                .title("RESTful API 文档")
-                // 创建人
-                .contact(new Contact("jinnian", "http://www.baidu.com", "38103152@qq.com"))
-                // 版本号
-                .version("1.0")
-                // 描述
-                .description("API 描述")
-                .build();
+            // 页面标题
+            .title("RESTful API 文档")
+            // 创建人
+            .contact(new Contact("jinnian", "http://www.baidu.com", "38103152@qq.com"))
+            // 版本号
+            .version("1.0")
+            // 描述
+            .description("API 描述")
+            .build();
     }
 
 }

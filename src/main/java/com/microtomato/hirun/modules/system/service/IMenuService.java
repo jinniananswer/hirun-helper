@@ -15,5 +15,10 @@ import java.util.List;
  */
 public interface IMenuService extends IService<Menu> {
 
+    /**
+     * 获取所有菜单
+     *
+     * @return 菜单列表
+     */
     List<Menu> listAllMenus();
 }

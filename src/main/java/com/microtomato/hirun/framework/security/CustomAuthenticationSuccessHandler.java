@@ -2,7 +2,7 @@ package com.microtomato.hirun.framework.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microtomato.hirun.framework.data.Result;
-import com.microtomato.hirun.framework.utils.ResultUtil;
+import com.microtomato.hirun.framework.util.ResultUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -33,7 +33,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 		// Authentication接口封装认证信息
 		log.info("Authentication success: {}", authentication.getName());
 
-		Result result = ResultUtil.success(authentication);
+		Result result = ResultUtils.success(authentication);
 		response.setContentType("application/json;charset=UTF-8");
 		response.getWriter().write(objectMapper.writeValueAsString(result));
 	}

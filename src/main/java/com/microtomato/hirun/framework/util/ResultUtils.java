@@ -1,4 +1,4 @@
-package com.microtomato.hirun.framework.utils;
+package com.microtomato.hirun.framework.util;
 
 import com.microtomato.hirun.framework.data.Result;
 import lombok.Data;
@@ -10,7 +10,7 @@ import java.util.List;
  * @date 2019-04-25
  */
 @Data
-public class ResultUtil {
+public class ResultUtils {
 
     public static Result success() {
         Result result = new Result();

@@ -24,72 +24,72 @@ import javax.sql.DataSource;
 @Slf4j
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-	@Autowired
-	private DataSource dataSource;
+    @Autowired
+    private DataSource dataSource;
 
-	@Autowired
-	private CustomUserDetailsService customUserDetailsService;
+    @Autowired
+    private CustomUserDetailsServiceImpl customUserDetailsService;
 
-	@Autowired
-	private CustomPasswordEncoder customPasswordEncoder;
+    @Autowired
+    private CustomPasswordEncoder customPasswordEncoder;
 
-	@Autowired
-	private CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
+    @Autowired
+    private CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
-	@Autowired
-	private CustomAuthenticationFailHandler customAuthenticationFailHandler;
+    @Autowired
+    private CustomAuthenticationFailHandler customAuthenticationFailHandler;
 
-	/**
-	 * 设置自定义的 userDetailsService, 密码加密器
-	 *
-	 * @param auth
-	 * @throws Exception
-	 */
-	@Override
-	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.userDetailsService(customUserDetailsService)
-			.passwordEncoder(customPasswordEncoder);
-	}
+    /**
+     * 设置自定义的 userDetailsService, 密码加密器
+     *
+     * @param auth
+     * @throws Exception
+     */
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(customUserDetailsService)
+            .passwordEncoder(customPasswordEncoder);
+    }
 
-	/**
-	 * Http 资源认证
-	 *
-	 * @param http
-	 * @throws Exception
-	 */
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
+    /**
+     * Http 资源认证
+     *
+     * @param http
+     * @throws Exception
+     */
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
 
-		http.csrf().disable();
-		http.authorizeRequests()
-			.antMatchers("/css/**", "/img/**", "/js/**", "/layui/**", "/webfonts/**").permitAll()
-			.antMatchers("/login/**").permitAll()
-			.anyRequest().authenticated()
-			.and()
-				.formLogin().loginPage("/login")
-				.successHandler(customAuthenticationSuccessHandler)
-				.failureHandler(customAuthenticationFailHandler)
-			.and()
-				.rememberMe()
-				// 两周之内登陆过不用重新登陆
-				.tokenValiditySeconds(60 * 60 * 24 * 14)
-				.tokenRepository(persistentTokenRepository())
-			.and()
-				.httpBasic();
+        http.csrf().disable();
+        http.authorizeRequests()
+            .antMatchers("/css/**", "/img/**", "/js/**", "/layui/**", "/webfonts/**").permitAll()
+            .antMatchers("/login/**").permitAll()
+            .anyRequest().authenticated()
+            .and()
+            .formLogin().loginPage("/login")
+            .successHandler(customAuthenticationSuccessHandler)
+            .failureHandler(customAuthenticationFailHandler)
+            .and()
+            .rememberMe()
+            // 两周之内登陆过不用重新登陆
+            .tokenValiditySeconds(60 * 60 * 24 * 14)
+            .tokenRepository(persistentTokenRepository())
+            .and()
+            .httpBasic();
 
-		// 默认情况下 SpringSecurity 通过设置 X-Frame-Options: DENY 防止网页被 Frame，我们这需要警用该功能。
-		http.headers().frameOptions().disable();
-	}
+        // 默认情况下 SpringSecurity 通过设置 X-Frame-Options: DENY 防止网页被 Frame，我们这需要警用该功能。
+        http.headers().frameOptions().disable();
+    }
 
-	/**
-	 * 持久化 remember-me token
-	 */
-	@Bean
-	public PersistentTokenRepository persistentTokenRepository() {
-		JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
-		tokenRepository.setDataSource(dataSource);
+    /**
+     * 持久化 remember-me token
+     */
+    @Bean
+    public PersistentTokenRepository persistentTokenRepository() {
+        JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
+        tokenRepository.setDataSource(dataSource);
         tokenRepository.setCreateTableOnStartup(false);
-		return tokenRepository;
-	}
+        return tokenRepository;
+    }
 
 }

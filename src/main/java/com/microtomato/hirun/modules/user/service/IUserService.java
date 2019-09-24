@@ -13,7 +13,22 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IUserService extends IService<User> {
 
+    /**
+     * 登录
+     *
+     * @param username
+     * @param password
+     * @return
+     */
     User login(String username, String password);
 
+    /**
+     * 修改员工密码
+     *
+     * @param userId 用户ID
+     * @param oldPassword 老密码
+     * @param newPassword 新密码
+     * @return 密码修改成功与否
+     */
     boolean changeStaffPassword(Integer userId, String oldPassword, String newPassword);
 }

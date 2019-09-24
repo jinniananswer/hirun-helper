@@ -4,8 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.security.Role;
-import com.microtomato.hirun.framework.utils.Constants;
-import com.microtomato.hirun.framework.utils.WebContextUtil;
+import com.microtomato.hirun.framework.util.Constants;
+import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.system.entity.po.Menu;
 import com.microtomato.hirun.modules.system.mapper.MenuMapper;
 import com.microtomato.hirun.modules.system.service.IMenuService;
@@ -41,7 +41,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 
 		// 查询用户归属角色下对应的菜单集
 		Set<Integer> myMenuIds = new HashSet<>();
-		List<Role> roles = WebContextUtil.getUserContext().getRoles();
+		List<Role> roles = WebContextUtils.getUserContext().getRoles();
 		for (Role role : roles) {
 			LambdaQueryWrapper<MenuRole> lambdaQueryWrapper = Wrappers.lambdaQuery();
 			lambdaQueryWrapper.eq(MenuRole::getRoleId, role.getId()).eq(MenuRole::getStatus, Constants.STATUS_OK);
@@ -63,7 +63,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 			}
 		}
 
-		WebContextUtil.getUserContext().setMenuUrls(menuUrls);
+		WebContextUtils.getUserContext().setMenuUrls(menuUrls);
 
 		return new ArrayList(filteredMenuMap.values());
 	}

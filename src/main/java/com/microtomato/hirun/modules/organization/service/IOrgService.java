@@ -15,5 +15,10 @@ import java.util.List;
  */
 public interface IOrgService extends IService<Org> {
 
+    /**
+     * 获取所有组织
+     *
+     * @return 组织列表
+     */
     List<Org> listAllOrgs();
 }

@@ -20,28 +20,28 @@ import java.util.Map;
 @Configuration
 public class DruidConfig {
 
-	/**
-	 * Druid 统计页面登录帐号/密码配置
-	 *
-	 * @return
-	 */
-	@Bean
-	public ServletRegistrationBean druidStatViewServlet() {
-		ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean(new StatViewServlet(), "/druid/*");
-		Map<String, String> initParams = new HashMap<>();
-		initParams.put("loginUsername", "admin");
-		initParams.put("loginPassword", "123456");
-		servletRegistrationBean.setInitParameters(initParams);
-		return servletRegistrationBean;
-	}
+    /**
+     * Druid 统计页面登录帐号/密码配置
+     *
+     * @return
+     */
+    @Bean
+    public ServletRegistrationBean druidStatViewServlet() {
+        ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean(new StatViewServlet(), "/druid/*");
+        Map<String, String> initParams = new HashMap<>(2);
+        initParams.put("loginUsername", "admin");
+        initParams.put("loginPassword", "123456");
+        servletRegistrationBean.setInitParameters(initParams);
+        return servletRegistrationBean;
+    }
 
-	@Bean
-	public FilterRegistrationBean druidWebStatFilter() {
-		FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean(new WebStatFilter());
-		Map<String, String> initParams = new HashMap<>();
-		initParams.put("exclusions", "*.js,*.css,/druid/*");
-		filterRegistrationBean.setInitParameters(initParams);
-		filterRegistrationBean.setUrlPatterns(Arrays.asList("/*"));
-		return filterRegistrationBean;
-	}
+    @Bean
+    public FilterRegistrationBean druidWebStatFilter() {
+        FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean(new WebStatFilter());
+        Map<String, String> initParams = new HashMap<>(2);
+        initParams.put("exclusions", "*.js,*.css,/druid/*");
+        filterRegistrationBean.setInitParameters(initParams);
+        filterRegistrationBean.setUrlPatterns(Arrays.asList("/*"));
+        return filterRegistrationBean;
+    }
 }

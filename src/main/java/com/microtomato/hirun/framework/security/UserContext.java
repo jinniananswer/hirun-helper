@@ -18,93 +18,93 @@ import java.util.Set;
 @Data
 public class UserContext implements UserDetails {
 
-	/**
-	 * 用户 Id
-	 */
-	private Integer userId;
+    /**
+     * 用户 Id
+     */
+    private Integer userId;
 
-	/**
-	 * 用户名
-	 */
-	private String username;
+    /**
+     * 用户名
+     */
+    private String username;
 
-	/**
-	 * 拥有的角色集
-	 */
-	private List<Role> roles;
+    /**
+     * 拥有的角色集
+     */
+    private List<Role> roles;
 
-	/**
-	 * 用户密码
-	 */
-	private String password;
+    /**
+     * 用户密码
+     */
+    private String password;
 
-	/**
-	 * 手机号码
-	 */
-	private String mobileNo;
+    /**
+     * 手机号码
+     */
+    private String mobileNo;
 
-	/**
-	 * 用户状态
-	 */
-	private String status;
+    /**
+     * 用户状态
+     */
+    private String status;
 
-	/**
-	 * 权限，角色
-	 */
-	private Collection<GrantedAuthority> grantedAuthorities;
+    /**
+     * 权限，角色
+     */
+    private Collection<GrantedAuthority> grantedAuthorities;
 
-	/**
-	 * 拥有的菜单 url
-	 */
-	private Set<String> menuUrls;
+    /**
+     * 拥有的菜单 url
+     */
+    private Set<String> menuUrls;
 
-	/**
-	 * 账户是否没过期
-	 *
-	 * @return
-	 */
-	@Override
-	@JsonIgnore
-	public boolean isAccountNonExpired() {
-		return true;
-	}
+    /**
+     * 账户是否没过期
+     *
+     * @return
+     */
+    @Override
+    @JsonIgnore
+    public boolean isAccountNonExpired() {
+        return true;
+    }
 
-	/**
-	 * 账户是否没被锁定
-	 *
-	 * @return
-	 */
-	@Override
-	@JsonIgnore
-	public boolean isAccountNonLocked() {
-		return true;
-	}
+    /**
+     * 账户是否没被锁定
+     *
+     * @return
+     */
+    @Override
+    @JsonIgnore
+    public boolean isAccountNonLocked() {
+        return true;
+    }
 
-	/**
-	 * 账户密码是否没过期
-	 *
-	 * @return
-	 */
-	@Override
-	@JsonIgnore
-	public boolean isCredentialsNonExpired() {
-		return true;
-	}
+    /**
+     * 账户密码是否没过期
+     *
+     * @return
+     */
+    @Override
+    @JsonIgnore
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
 
-	/**
-	 * 账户是否可用
-	 *
-	 * @return
-	 */
-	@Override
-	public boolean isEnabled() {
-		return "0".equals(status);
-	}
+    /**
+     * 账户是否可用
+     *
+     * @return
+     */
+    @Override
+    public boolean isEnabled() {
+        return "0".equals(status);
+    }
 
-	@Override
-	@JsonIgnore
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return grantedAuthorities;
-	}
+    @Override
+    @JsonIgnore
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return grantedAuthorities;
+    }
 
 }

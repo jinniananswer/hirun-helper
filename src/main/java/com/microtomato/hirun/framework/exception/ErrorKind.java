@@ -11,33 +11,33 @@ package com.microtomato.hirun.framework.exception;
  */
 public enum ErrorKind {
 
-	/**
-	 * MybatisPlus通用异常
-	 */
-	MABATIS_PLIUS_EXCEPTION(400003),
+    /**
+     * MybatisPlus通用异常
+     */
+    MABATIS_PLIUS_EXCEPTION(400003),
 
-	/**
-	 * 不存在
-	 */
-	NOT_FOUND(400001),
+    /**
+     * 不存在
+     */
+    NOT_FOUND(400001),
 
-	/**
-	 * 已存在
-	 */
-	ALREADY_EXIST(400002),
+    /**
+     * 已存在
+     */
+    ALREADY_EXIST(400002),
 
-	/**
-	 * 不匹配
-	 */
-	MISMATCHING(100001);
+    /**
+     * 不匹配
+     */
+    MISMATCHING(100001);
 
-	private int code;
+    private int code;
 
-	ErrorKind(int code) {
-		this.code = code;
-	}
+    ErrorKind(int code) {
+        this.code = code;
+    }
 
-	public int getCode() {
-		return this.code;
-	}
+    public int getCode() {
+        return this.code;
+    }
 }

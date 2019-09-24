@@ -1,6 +1,6 @@
 package com.microtomato.hirun.framework.security;
 
-import com.microtomato.hirun.framework.utils.MD5Util;
+import com.microtomato.hirun.framework.util.EncryptUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -16,12 +16,12 @@ public class CustomPasswordEncoder implements PasswordEncoder {
 	@Override
 	public String encode(CharSequence rawPassword) {
 		String password = String.valueOf(rawPassword);
-		return MD5Util.hexdigest(password);
+		return EncryptUtils.passwordEncode(password);
 	}
 
 	@Override
 	public boolean matches(CharSequence rawPassword, String encodedPassword) {
-		String password = MD5Util.hexdigest(String.valueOf(rawPassword));
+		String password = EncryptUtils.passwordEncode(String.valueOf(rawPassword));
 		if (password.equals(encodedPassword)) {
 			return true;
 		} else {

@@ -1,4 +1,4 @@
-package com.microtomato.hirun.framework.utils;
+package com.microtomato.hirun.framework.util;
 
 import com.microtomato.hirun.framework.exception.cases.AlreadyExistException;
 import com.microtomato.hirun.framework.exception.cases.NotFoundException;
@@ -9,7 +9,7 @@ import static com.microtomato.hirun.framework.exception.ErrorKind.NOT_FOUND;
 /**
  * @author Steven
  */
-public final class ValidationUtil {
+public final class ValidationUtils {
 
     public static void isNotFound(Boolean b, String entity, String parameter, Object value) {
         if (!b) {

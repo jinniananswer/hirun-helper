@@ -2,8 +2,8 @@ package com.microtomato.hirun.modules.organization.controller;
 
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.data.TreeNode;
-import com.microtomato.hirun.framework.utils.ArrayUtil;
-import com.microtomato.hirun.framework.utils.TreeUtil;
+import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.framework.util.TreeUtils;
 import com.microtomato.hirun.modules.organization.entity.po.Org;
 import com.microtomato.hirun.modules.organization.service.IOrgService;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +36,7 @@ public class OrgController {
     public List<TreeNode> listWithTree() {
         List<Org> orgs = orgServiceImpl.listAllOrgs();
 
-        if (ArrayUtil.isEmpty(orgs)) {
+        if (ArrayUtils.isEmpty(orgs)) {
             return null;
         }
 
@@ -54,7 +54,7 @@ public class OrgController {
             node.setNode(org);
             nodes.add(node);
         }
-        List<TreeNode> tree = TreeUtil.build(nodes);
+        List<TreeNode> tree = TreeUtils.build(nodes);
         return tree;
     }
 

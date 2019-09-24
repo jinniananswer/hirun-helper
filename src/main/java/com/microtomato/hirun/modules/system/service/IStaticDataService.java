@@ -15,5 +15,11 @@ import java.util.List;
  */
 public interface IStaticDataService extends IService<StaticData> {
 
+    /**
+     * 根据 codeType 获取静态配置数据
+     *
+     * @param codeType
+     * @return 静态数据列表
+     */
     List<StaticData> getStaticDatas(String codeType);
 }

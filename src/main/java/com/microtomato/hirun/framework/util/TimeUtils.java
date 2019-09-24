@@ -1,4 +1,4 @@
-package com.microtomato.hirun.framework.utils;
+package com.microtomato.hirun.framework.util;
 
 import java.sql.Timestamp;
 import java.time.*;
@@ -14,104 +14,128 @@ import java.util.GregorianCalendar;
  * @Date 2018/4/16 12:05
  * @Description:
  */
-public class TimeTool {
+public class TimeUtils {
 
     /**
      * the milli second of a day
      */
     public static final long DAYMILLI = 24 * 60 * 60 * 1000;
+
     /**
      * the milli seconds of an hour
      */
     public static final long HOURMILLI = 60 * 60 * 1000;
+
     /**
      * the milli seconds of a minute
      */
     public static final long MINUTEMILLI = 60 * 1000;
+
     /**
      * the milli seconds of a second
      */
     public static final long SECONDMILLI = 1000;
+
     /**
      * added time
      */
     public static final String TIMETO = " 23:59:59";
+
     /**
      * flag before
      */
     public static final transient int BEFORE = 1;
+
     /**
      * flag after
      */
     public static final transient int AFTER = 2;
+
     /**
      * flag equal
      */
     public static final transient int EQUAL = 3;
+
     /**
      * date format dd/MMM/yyyy:HH:mm:ss +0900
      */
     public static final String TIME_PATTERN_LONG = "dd/MMM/yyyy:HH:mm:ss +0900";
+
     /**
      * date format dd/MM/yyyy:HH:mm:ss +0900
      */
     public static final String TIME_PATTERN_LONG2 = "dd/MM/yyyy:HH:mm:ss +0900";
+
     /**
      * date format dd/MM/yy HH:mm:ss
      */
     public static final String TIME_PATTERN_SHORT = "dd/MM/yy HH:mm:ss";
+
     /**
      * date format dd/MM/yy HH24:mm
      */
     public static final String TIME_PATTERN_SHORT_1 = "yyyy/MM/dd HH:mm";
+
     /**
      * date format yyyy年MM月dd日 HH:mm:ss
      */
     public static final String TIME_PATTERN_SHORT_2 = "yyyy年MM月dd日 HH:mm:ss";
+
     /**
      * date format yyyyMMddHHmmss
      */
     public static final String TIME_PATTERN_SESSION = "yyyyMMddHHmmss";
+
     /**
      * date format yyyyMMddHHmmssSSS
      */
     public static final String TIME_PATTERN_MILLISECOND = "yyyyMMddHHmmssSSS";
+
     /**
      * date format yyyyMMdd
      */
     public static final String DATE_FMT_0 = "yyyyMMdd";
+
     /**
      * date format yyyy/MM/dd
      */
     public static final String DATE_FMT_1 = "yyyy/MM/dd";
+
     /**
      * date format yyyy/MM/dd hh:mm:ss
      */
     public static final String DATE_FMT_2 = "yyyy/MM/dd hh:mm:ss";
+
     /**
      * date format yyyy-MM-dd
      */
     public static final String DATE_FMT_3 = "yyyy-MM-dd";
+
     /**
      * date format yyyy年MM月dd日
      */
     public static final String DATE_FMT_4 = "yyyy年MM月dd日";
+
     /**
      * date format yyyy-MM-dd HH
      */
     public static final String DATE_FMT_5 = "yyyy-MM-dd HH";
+
     /**
      * date format yyyy-MM
      */
     public static final String DATE_FMT_6 = "yyyy-MM";
+
     /**
      * date format MM月dd日 HH:mm
      */
     public static final String DATE_FMT_7 = "MM月dd日 HH:mm";
+
     /**
      * date format MM月dd日 HH:mm
      */
     public static final String DATE_FMT_8 = "HH:mm:ss";
+
     /**
      * date format MM月dd日 HH:mm
      */
@@ -133,27 +157,27 @@ public class TimeTool {
      */
     public static final String TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
 
-    public static String now(){
-        LocalDateTime localDateTime =  LocalDateTime.now();
+    public static String now() {
+        LocalDateTime localDateTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(TIME_PATTERN);
         String now = localDateTime.format(formatter);
         return now;
     }
 
-    public static String now(String format){
-        LocalDateTime localDateTime =  LocalDateTime.now();
+    public static String now(String format) {
+        LocalDateTime localDateTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
         String now = localDateTime.format(formatter);
         return now;
     }
 
-    public static String today(){
+    public static String today() {
         return now("yyyy-MM-dd");
     }
 
-    public static String addMonths(String dateTime, String pattern,  int month){
+    public static String addMonths(String dateTime, String pattern, int month) {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(pattern);
-        LocalDate time = LocalDate.parse(dateTime,dateTimeFormatter);
+        LocalDate time = LocalDate.parse(dateTime, dateTimeFormatter);
         LocalDate nextTime = time.plus(month, ChronoUnit.MONTHS);
         return nextTime.format(dateTimeFormatter);
     }
@@ -193,7 +217,6 @@ public class TimeTool {
         return null;
     }
 
-
     /**
      * 根据时间获取当月有多少天数
      *
@@ -214,7 +237,6 @@ public class TimeTool {
     public static int getWeekOfDate(Date date) {
         return dateToLocalDateTime(date).getDayOfWeek().getValue();
     }
-
 
     /**
      * 计算两个日期LocalDate相差的天数，不考虑日期前后，返回结果>=0
@@ -264,7 +286,6 @@ public class TimeTool {
         return Math.abs(Period.between(before.toLocalDate(), after.toLocalDate()).getYears());
     }
 
-
     /**
      * 根据传入日期返回星期几
      *
@@ -277,7 +298,6 @@ public class TimeTool {
         return cal.get(Calendar.DAY_OF_WEEK);
     }
 
-
     /**
      * 获取指定日期的当月的月份数
      *
@@ -288,7 +308,6 @@ public class TimeTool {
         return dateToLocalDateTime(date).getMonth().getValue();
 
     }
-
 
     /**
      * 特定日期的当月第一天
@@ -312,7 +331,6 @@ public class TimeTool {
         LocalDate localDate = dateToLocalDate(date);
         return LocalDate.of(localDate.getYear(), localDate.getMonth(), lastDay);
     }
-
 
     /**
      * 特定日期的当年第一天
@@ -419,7 +437,6 @@ public class TimeTool {
         return (int) (end.toEpochSecond(ZoneOffset.UTC) - localDateTime.toEpochSecond(ZoneOffset.UTC));
     }
 
-
     /**
      * 增加或减少年/月/周/天/小时/分/秒数
      *
@@ -443,7 +460,7 @@ public class TimeTool {
     public static String addTime(String date, String format, ChronoUnit chronoUnit, int num) {
         LocalDateTime localDateTime = stringToLocalDateTime(date, format);
         LocalDateTime plusDateTime = localDateTime.plus(num, chronoUnit);
-        return TimeTool.formatLocalDateTimeToString(plusDateTime, format);
+        return TimeUtils.formatLocalDateTimeToString(plusDateTime, format);
     }
 
     /**
@@ -481,7 +498,6 @@ public class TimeTool {
     public static LocalDateTime dateToLocalDateTime(Date date) {
         long nanoOfSecond = (date.getTime() % 1000) * 1000000;
         LocalDateTime localDateTime = LocalDateTime.ofEpochSecond(date.getTime() / 1000, (int) nanoOfSecond, ZoneOffset.of("+8"));
-
         return localDateTime;
     }
 
@@ -493,7 +509,6 @@ public class TimeTool {
      */
     public static LocalDateTime timestampToLocalDateTime(Timestamp date) {
         LocalDateTime localDateTime = LocalDateTime.ofEpochSecond(date.getTime() / 1000, date.getNanos(), ZoneOffset.of("+8"));
-
         return localDateTime;
     }
 
@@ -504,7 +519,6 @@ public class TimeTool {
      * @return LocalDate
      */
     public static LocalDate dateToLocalDate(Date date) {
-
         return dateToLocalDateTime(date).toLocalDate();
     }
 
@@ -515,7 +529,6 @@ public class TimeTool {
      * @return LocalDate
      */
     public static LocalDate timestampToLocalDate(Timestamp date) {
-
         return timestampToLocalDateTime(date).toLocalDate();
     }
 
@@ -539,7 +552,6 @@ public class TimeTool {
      * @return 1:第一个比第二个大；0：第一个与第二个相同；-1：第一个比第二个小
      */
     public static int compareTwoTime(LocalDateTime time1, LocalDateTime time2) {
-
         if (time1.isAfter(time2)) {
             return 1;
         } else if (time1.isBefore(time2)) {
@@ -557,8 +569,8 @@ public class TimeTool {
      * @return 1:第一个比第二个大；0：第一个与第二个相同；-1：第一个比第二个小
      */
     public static int compareTwoTime(String date1, String date2) {
-        LocalDateTime localDateTime1 = stringToLocalDateTime(date1, TimeTool.TIME_PATTERN);
-        LocalDateTime localDateTime2 = stringToLocalDateTime(date2, TimeTool.TIME_PATTERN);
+        LocalDateTime localDateTime1 = stringToLocalDateTime(date1, TimeUtils.TIME_PATTERN);
+        LocalDateTime localDateTime2 = stringToLocalDateTime(date2, TimeUtils.TIME_PATTERN);
         if (localDateTime1.isAfter(localDateTime2)) {
             return 1;
         } else if (localDateTime1.isBefore(localDateTime2)) {
@@ -621,7 +633,7 @@ public class TimeTool {
      * @param endTime
      * @return
      */
-    public static boolean isTimeInRange(Date startTime, Date endTime) throws Exception {
+    public static boolean isTimeInRange(Date startTime, Date endTime) {
         LocalDateTime now = getCurrentLocalDateTime();
         LocalDateTime start = dateToLocalDateTime(startTime);
         LocalDateTime end = dateToLocalDateTime(endTime);
@@ -630,17 +642,18 @@ public class TimeTool {
 
     /**
      * 字符串转时间撮,必须是年月日，时分秒
+     *
      * @param date
      * @return
      * @throws Exception
      */
-    public static long strToTime4DateTime(String date, String pattern) throws Exception {
+    public static long strToTime4DateTime(String date, String pattern) {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(pattern);
-        LocalDateTime ldtStart = LocalDateTime.parse(date,dateTimeFormatter);
+        LocalDateTime ldtStart = LocalDateTime.parse(date, dateTimeFormatter);
         return ldtStart.toEpochSecond(ZoneOffset.of("+8"));
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         System.out.println(now());
     }
 }
