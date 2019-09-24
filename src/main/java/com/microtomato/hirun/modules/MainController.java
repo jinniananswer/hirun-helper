@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Set;
 
 /**
  * 菜单导航控制器
@@ -16,6 +17,8 @@ import javax.servlet.http.HttpServletRequest;
  **/
 @Controller
 public class MainController {
+
+	private static final String OPEN_URL = "openUrl?url=";
 
 	@GetMapping("/")
 	public String index() {
@@ -38,7 +41,8 @@ public class MainController {
 		String url = request.getParameter("url");
 
 		// 添加 URL 校验，防止手工拼菜单地址。
-		if (WebContextUtil.getUserContext().getMenuUrls().contains("openUrl?url=" + url)) {
+		Set<String> menuUrls = WebContextUtil.getUserContext().getMenuUrls();
+		if (menuUrls.contains(OPEN_URL + url)) {
 			return url;
 		} else {
 			return "/error/no-right";

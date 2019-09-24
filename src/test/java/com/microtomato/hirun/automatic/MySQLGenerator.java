@@ -102,6 +102,7 @@ public class MySQLGenerator {
         globalConfig.setOutputDir(outPutDir);
         globalConfig.setAuthor(author);
         globalConfig.setOpen(false);
+        globalConfig.setEntityName("%sDO");
         autoGenerator.setGlobalConfig(globalConfig);
 
         // 数据源配置
@@ -118,7 +119,7 @@ public class MySQLGenerator {
         PackageConfig packageConfig = new PackageConfig();
         packageConfig.setModuleName(moduleName);
         packageConfig.setParent(parentPackege);
-        packageConfig.setEntity("entity.po");
+        packageConfig.setEntity("entity.data");
         autoGenerator.setPackageInfo(packageConfig);
 
         // 自定义配置
@@ -160,7 +161,7 @@ public class MySQLGenerator {
         //strategy.setSuperEntityClass(BaseEntity.class);
         strategy.setSuperEntityClass("com.microtomato.hirun.framework.data.BaseEntity");
         strategy.setSuperEntityColumns("");
-        strategy.setControllerMappingHyphenStyle(true);
+        strategy.setControllerMappingHyphenStyle(false);
         //strategy.setTablePrefix(packageConfig.getModuleName() + "_");
         strategy.setEntityTableFieldAnnotationEnable(true);
 
