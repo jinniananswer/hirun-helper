@@ -88,7 +88,6 @@ layui.define(['ajax', 'tree', 'layer'], function(exports){
             var result = '';
             var children = node.children;
 
-            console.log(JSON.stringify(node));
             if (children == null || children.length <= 0) {
                 return node.id + "$" + node.title;
             } else {
