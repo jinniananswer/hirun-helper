@@ -66,13 +66,9 @@ layui.define(['layer', 'jquery'], function(exports){
             if(errFunc == null || typeof(errFunc) == "undefined" || typeof(errFunc) != "function") {
                 errFunc = function(data){
                     layer.closeAll('loading');
-                    layer.open({
-                        type : 1,
-                        skin : 'layui-layer-red', //样式类名
-                        closeBtn: 1, //不显示关闭按钮
-                        anim : 2,
-                        shadeClose : true, //开启遮罩关闭
-                        content : "对不起，55555555555，偶们的系统出错了，赶紧联系管理员吧"
+                    layer.alert('对不起，55555555555，偶们的系统出错了，赶紧联系管理员吧', {
+                        skin: 'layui-layer-molv'
+                        ,closeBtn: 0
                     });
                 };
             }
