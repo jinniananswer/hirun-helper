@@ -25,7 +25,7 @@ import java.util.List;
 public class EmployeeJobRoleServiceImpl extends ServiceImpl<EmployeeJobRoleMapper, EmployeeJobRole> implements IEmployeeJobRoleService {
 
     @Override
-    public EmployeeJobRole getValidJobRole(Integer employeeId) {
+    public EmployeeJobRole getValidJobRole(Long employeeId) {
         String now = TimeUtils.now();
         List<EmployeeJobRole> jobRoles = this.list(new QueryWrapper<EmployeeJobRole>().lambda().eq(EmployeeJobRole::getEmployeeId, employeeId).le(EmployeeJobRole::getStartDate, now).ge(EmployeeJobRole::getEndDate, now));
         if (ArrayUtils.isEmpty(jobRoles)) {

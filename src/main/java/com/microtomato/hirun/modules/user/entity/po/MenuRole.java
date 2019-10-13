@@ -34,13 +34,13 @@ public class MenuRole extends BaseEntity {
      * ID
      */
     @TableId(value = "ID", type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     /**
      * 角色ID
      */
     @TableField("ROLE_ID")
-    private Integer roleId;
+    private Long roleId;
 
     /**
      * 菜单ID
@@ -76,13 +76,13 @@ public class MenuRole extends BaseEntity {
      * 创建用户
      */
     @TableField("CREATE_USER_ID")
-    private Integer createUserId;
+    private Long createUserId;
 
     /**
      * 更新用户
      */
     @TableField("UPDATE_USER_ID")
-    private Integer updateUserId;
+    private Long updateUserId;
 
 
 }

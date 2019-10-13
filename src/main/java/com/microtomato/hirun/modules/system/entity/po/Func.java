@@ -30,7 +30,7 @@ public class Func extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "FUNC_ID", type = IdType.AUTO)
-    private Integer funcId;
+    private Long funcId;
 
     @TableField("FUNC_CODE")
     private String funcCode;

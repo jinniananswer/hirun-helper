@@ -31,10 +31,10 @@ public class EmployeeJobRole extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "JOB_ROLE_ID", type = IdType.AUTO)
-    private Integer jobRoleId;
+    private Long jobRoleId;
 
     @TableField("EMPLOYEE_ID")
-    private Integer employeeId;
+    private Long employeeId;
 
     @TableField("JOB_ROLE")
     private String jobRole;
@@ -43,10 +43,10 @@ public class EmployeeJobRole extends BaseEntity {
     private String jobRoleNature;
 
     @TableField("ORG_ID")
-    private Integer orgId;
+    private Long orgId;
 
     @TableField("PARENT_EMPLOYEE_ID")
-    private Integer parentEmployeeId;
+    private Long parentEmployeeId;
 
     @TableField("START_DATE")
     private LocalDateTime startDate;
@@ -58,13 +58,13 @@ public class EmployeeJobRole extends BaseEntity {
     private String remark;
 
     @TableField("CREATE_USER_ID")
-    private Integer createUserId;
+    private Long createUserId;
 
     @TableField("CREATE_DATE")
     private LocalDateTime createDate;
 
     @TableField("UPDATE_USER_ID")
-    private Integer updateUserId;
+    private Long updateUserId;
 
     @TableField("UPDATE_TIME")
     private LocalDateTime updateTime;

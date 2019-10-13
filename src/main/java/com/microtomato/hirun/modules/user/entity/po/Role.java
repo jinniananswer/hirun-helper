@@ -34,7 +34,7 @@ public class Role extends BaseEntity {
      * ROLE_ID
      */
     @TableId(value = "ROLE_ID", type = IdType.AUTO)
-    private Integer roleId;
+    private Long roleId;
 
     /**
      * 角色类型（'O':组织角色, 'T':职称角色）
@@ -76,13 +76,13 @@ public class Role extends BaseEntity {
      * 创建用户
      */
     @TableField("CREATE_USER_ID")
-    private Integer createUserId;
+    private Long createUserId;
 
     /**
      * 更新用户
      */
     @TableField("UPDATE_USER_ID")
-    private Integer updateUserId;
+    private Long updateUserId;
 
     /**
      * 角色描述

@@ -62,7 +62,7 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
 
         // 查用户角色对应的所有权限
         for (UserRole userRole : userRoles) {
-            Integer roleId = userRole.getRoleId();
+            Long roleId = userRole.getRoleId();
             List<FuncRole> funcRoleList = funcRoleServiceImpl.list(new QueryWrapper<FuncRole>().lambda().eq(FuncRole::getRoleId, roleId));
             funcRoleList.forEach(funcRole -> funcSet.add(funcRole.getFuncId().toString()));
         }

@@ -31,7 +31,7 @@ public class Org extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "ORG_ID", type = IdType.AUTO)
-    private Integer orgId;
+    private Long orgId;
 
     @TableField("NAME")
     private String name;
@@ -43,13 +43,13 @@ public class Org extends BaseEntity {
     private String type;
 
     @TableField("CONTACT_NO")
-    private Integer contactNo;
+    private Long contactNo;
 
     @TableField("ENTERPRISE_ID")
-    private Integer enterpriseId;
+    private Long enterpriseId;
 
     @TableField("PARENT_ORG_ID")
-    private Integer parentOrgId;
+    private Long parentOrgId;
 
     @TableField("CITY")
     private String city;
@@ -61,13 +61,13 @@ public class Org extends BaseEntity {
     private String status;
 
     @TableField("CREATE_USER_ID")
-    private Integer createUserId;
+    private Long createUserId;
 
     @TableField("CREATE_DATE")
     private LocalDateTime createDate;
 
     @TableField("UPDATE_USER_ID")
-    private Integer updateUserId;
+    private Long updateUserId;
 
     @TableField("UPDATE_TIME")
     private LocalDateTime updateTime;

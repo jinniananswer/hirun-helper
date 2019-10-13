@@ -33,7 +33,7 @@ public class StaticData extends BaseEntity {
      * 员工ID，唯一主键
      */
     @TableId(value = "DATA_ID", type = IdType.AUTO)
-    private Integer dataId;
+    private Long dataId;
 
     /**
      * 员工工号

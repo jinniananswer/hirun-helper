@@ -33,10 +33,10 @@ public class Employee extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "EMPLOYEE_ID", type = IdType.AUTO)
-    private Integer employeeId;
+    private Long employeeId;
 
     @TableField("USER_ID")
-    private Integer userId;
+    private Long userId;
 
     @TableField("NAME")
     private String name;
@@ -105,13 +105,13 @@ public class Employee extends BaseEntity {
     private String remark;
 
     @TableField("CREATE_USER_ID")
-    private Integer createUserId;
+    private Long createUserId;
 
     @TableField("CREATE_DATE")
     private LocalDateTime createDate;
 
     @TableField("UPDATE_USER_ID")
-    private Integer updateUserId;
+    private Long updateUserId;
 
     @TableField("UPDATE_TIME")
     private LocalDateTime updateTime;

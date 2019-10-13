@@ -13,5 +13,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IEmployeeJobRoleService extends IService<EmployeeJobRole> {
 
-    EmployeeJobRole getValidJobRole(Integer employeeId);
+    EmployeeJobRole getValidJobRole(Long employeeId);
 }

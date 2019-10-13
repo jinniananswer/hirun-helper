@@ -34,19 +34,19 @@ public class FuncRole extends BaseEntity {
      * ID
      */
     @TableId(value = "FUNC_ROLE_ID", type = IdType.AUTO)
-    private Integer funcRoleId;
+    private Long funcRoleId;
 
     /**
      * 角色ID
      */
     @TableField("ROLE_ID")
-    private Integer roleId;
+    private Long roleId;
 
     /**
      * 权限ID
      */
     @TableField("FUNC_ID")
-    private Integer funcId;
+    private Long funcId;
 
     /**
      * 是否有效（0:有效）
@@ -76,13 +76,13 @@ public class FuncRole extends BaseEntity {
      * 创建用户
      */
     @TableField("CREATE_USER_ID")
-    private Integer createUserId;
+    private Long createUserId;
 
     /**
      * 更新用户
      */
     @TableField("UPDATE_USER_ID")
-    private Integer updateUserId;
+    private Long updateUserId;
 
 
 }
