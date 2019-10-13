@@ -52,7 +52,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
      */
     @Override
 
-    public boolean changeStaffPassword(Integer userId, String oldPassword, String newPassword) {
+    public boolean changeStaffPassword(Long userId, String oldPassword, String newPassword) {
         boolean reslut = false;
         //校验老密码
         boolean verifyResult = verifyOldPassword(userId, oldPassword);
@@ -79,7 +79,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
      * @param oldpassword
      * @return
      */
-    private boolean verifyOldPassword(Integer userId, String oldpassword) {
+    private boolean verifyOldPassword(Long userId, String oldpassword) {
         User user = this.getById(userId);
         String encryptPassword = EncryptUtils.passwordEncode(oldpassword);
         if (StringUtils.equals(user.getPassword(), encryptPassword)) {

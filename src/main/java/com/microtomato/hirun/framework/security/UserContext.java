@@ -21,7 +21,7 @@ public class UserContext implements UserDetails {
     /**
      * 用户 Id
      */
-    private Integer userId;
+    private Long userId;
 
     /**
      * 用户名

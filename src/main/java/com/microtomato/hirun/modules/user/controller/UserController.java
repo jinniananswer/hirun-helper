@@ -58,7 +58,7 @@ public class UserController {
         }
 
         UserContext userContext = WebContextUtils.getUserContext();
-        Integer userId = userContext.getUserId();
+        Long userId = userContext.getUserId();
 
         boolean changeResult = userServiceImpl.changeStaffPassword(userId, oldPassword, repassword);
 

@@ -30,5 +30,5 @@ public interface IUserService extends IService<User> {
      * @param newPassword 新密码
      * @return 密码修改成功与否
      */
-    boolean changeStaffPassword(Integer userId, String oldPassword, String newPassword);
+    boolean changeStaffPassword(Long userId, String oldPassword, String newPassword);
 }

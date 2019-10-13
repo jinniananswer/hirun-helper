@@ -38,7 +38,7 @@ public class User extends BaseEntity {
      * 用户ID
      */
     @TableId(value = "USER_ID", type = IdType.AUTO)
-    private Integer userId;
+    private Long userId;
 
     /**
      * 用户名
@@ -68,10 +68,10 @@ public class User extends BaseEntity {
     private LocalDateTime removeDate;
 
     @TableField("CREATE_USER_ID")
-    private Integer createUserId;
+    private Long createUserId;
 
     @TableField("UPDATE_USER_ID")
-    private Integer updateUserId;
+    private Long updateUserId;
 
     @TableField("UPDATE_TIME")
     private LocalDateTime updateTime;
