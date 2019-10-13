@@ -46,7 +46,7 @@ public class MenuRole extends BaseEntity {
      * 菜单ID
      */
     @TableField("MENU_ID")
-    private Integer menuId;
+    private Long menuId;
 
     /**
      * 是否有效（0:有效）

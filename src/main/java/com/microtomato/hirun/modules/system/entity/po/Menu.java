@@ -13,11 +13,11 @@ import lombok.NoArgsConstructor;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
- * @author jinnian
- * @since 2019-09-05
+ * @author Steven
+ * @since 2019-09-29
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -30,36 +30,61 @@ public class Menu extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 员工ID，唯一主键
+     * 菜单ID，唯一主键
      */
     @TableId(value = "MENU_ID", type = IdType.AUTO)
-    private Integer menuId;
+    private Long menuId;
 
     /**
-     * 员工工号
+     * 菜单标题
      */
     @TableField("TITLE")
     private String title;
 
+    /**
+     * 菜单描述
+     */
     @TableField("MENU_DESC")
     private String menuDesc;
 
+    /**
+     * 菜单地址
+     */
     @TableField("MENU_URL")
     private String menuUrl;
 
+    /**
+     * 菜单域
+     */
     @TableField("DOMAIN_ID")
     private Integer domainId;
 
+    /**
+     * 菜单层级
+     */
     @TableField("MENU_LEVEL")
     private Integer menuLevel;
 
+    /**
+     * 父菜单ID
+     */
     @TableField("PARENT_MENU_ID")
-    private Integer parentMenuId;
+    private Long parentMenuId;
 
+    /**
+     * 菜单图标
+     */
     @TableField("ICO_URL")
     private String icoUrl;
 
     @TableField("IS_COMMON_USE")
     private String isCommonUse;
+
+    /**
+     * 是否为嵌入页面
+     */
+    @TableField("is_embed_page")
+    private Boolean embedPage;
+
 
 }

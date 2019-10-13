@@ -36,11 +36,16 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 	@Override
 	public List<Menu> listAllMenus() {
 
+		Menu m = new Menu();
+
 		// 查询全部菜单
-		Map<Integer, Menu> menuMap = listToMap(this.list());
+		LambdaQueryWrapper<Menu> wrapper = Wrappers.lambdaQuery();
+		wrapper.eq(Menu::getEmbedPage, false);
+		List<Menu> menuList = this.list(wrapper);
+		Map<Long, Menu> menuMap = listToMap(menuList);
 
 		// 查询用户归属角色下对应的菜单集
-		Set<Integer> myMenuIds = new HashSet<>();
+		Set<Long> myMenuIds = new HashSet<>();
 		List<Role> roles = WebContextUtils.getUserContext().getRoles();
 		for (Role role : roles) {
 			LambdaQueryWrapper<MenuRole> lambdaQueryWrapper = Wrappers.lambdaQuery();
@@ -52,7 +57,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 		Set<String> menuUrls = new HashSet<>();
 
 		// 过滤
-		Map<Integer, Menu> filteredMenuMap = new HashMap<>(20);
+		Map<Long, Menu> filteredMenuMap = new HashMap<>(20);
 		for (Menu currMenu : menuMap.values()) {
 			if (myMenuIds.contains(currMenu.getMenuId())) {
 				filteredMenuMap.put(currMenu.getMenuId(), currMenu);
@@ -75,8 +80,8 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 	 * @param filteredMenuMap
 	 * @param menuMap
 	 */
-	private void addParentMenus(Menu currMenu, Map<Integer, Menu> filteredMenuMap, Map<Integer, Menu> menuMap) {
-		Integer parentMenuId = currMenu.getParentMenuId();
+	private void addParentMenus(Menu currMenu, Map<Long, Menu> filteredMenuMap, Map<Long, Menu> menuMap) {
+		Long parentMenuId = currMenu.getParentMenuId();
 		if (null != parentMenuId) {
 			Menu parentMenu = menuMap.get(parentMenuId);
 			filteredMenuMap.put(parentMenu.getMenuId(), parentMenu);
@@ -90,8 +95,8 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 	 * @param menus
 	 * @return
 	 */
-	private Map<Integer, Menu> listToMap(List<Menu> menus) {
-		Map<Integer, Menu> menuMap = new HashMap<>(menus.size());
+	private Map<Long, Menu> listToMap(List<Menu> menus) {
+		Map<Long, Menu> menuMap = new HashMap<>(menus.size());
 		menus.forEach(
 			menu -> menuMap.put(menu.getMenuId(), menu)
 		);

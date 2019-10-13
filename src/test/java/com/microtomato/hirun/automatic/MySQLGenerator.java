@@ -163,6 +163,7 @@ public class MySQLGenerator {
         strategy.setControllerMappingHyphenStyle(true);
         //strategy.setTablePrefix(packageConfig.getModuleName() + "_");
         strategy.setEntityTableFieldAnnotationEnable(true);
+        strategy.setEntityBooleanColumnRemoveIsPrefix(true);
 
         TemplateConfig templateConfig = new TemplateConfig();
         templateConfig.setController("/automatically/controller.java");
