@@ -30,46 +30,46 @@ public class Org extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "ORG_ID", type = IdType.AUTO)
+    @TableId(value = "org_id", type = IdType.AUTO)
     private Long orgId;
 
-    @TableField("NAME")
+    @TableField("name")
     private String name;
 
     /**
      * 1-事业部 2-子公司 3-部门 4--店面 5-小组
      */
-    @TableField("TYPE")
+    @TableField("type")
     private String type;
 
-    @TableField("CONTACT_NO")
+    @TableField("contact_no")
     private Long contactNo;
 
-    @TableField("ENTERPRISE_ID")
+    @TableField("enterprise_id")
     private Long enterpriseId;
 
-    @TableField("PARENT_ORG_ID")
+    @TableField("parent_org_id")
     private Long parentOrgId;
 
-    @TableField("CITY")
+    @TableField("city")
     private String city;
 
-    @TableField("AREA")
+    @TableField("area")
     private String area;
 
-    @TableField("STATUS")
+    @TableField("status")
     private String status;
 
-    @TableField("CREATE_USER_ID")
+    @TableField("create_user_id")
     private Long createUserId;
 
-    @TableField("CREATE_DATE")
+    @TableField("create_date")
     private LocalDateTime createDate;
 
-    @TableField("UPDATE_USER_ID")
+    @TableField("update_user_id")
     private Long updateUserId;
 
-    @TableField("UPDATE_TIME")
+    @TableField("update_time")
     private LocalDateTime updateTime;
 
 

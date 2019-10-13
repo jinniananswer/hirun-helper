@@ -30,19 +30,19 @@ public class UserRole extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "USER_ROLE_ID", type = IdType.AUTO)
+    @TableId(value = "user_role_id", type = IdType.AUTO)
     private Long userRoleId;
 
-    @TableField("USER_ID")
+    @TableField("user_id")
     private Long userId;
 
-    @TableField("ROLE_ID")
+    @TableField("role_id")
     private Long roleId;
 
-    @TableField("UPDATE_USER_ID")
+    @TableField("update_user_id")
     private Long updateUserId;
 
-    @TableField("UPDATE_TIME")
+    @TableField("update_time")
     private LocalDateTime updateTime;
 
 

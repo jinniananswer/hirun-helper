@@ -37,43 +37,43 @@ public class User extends BaseEntity {
     /**
      * 用户ID
      */
-    @TableId(value = "USER_ID", type = IdType.AUTO)
+    @TableId(value = "user_id", type = IdType.AUTO)
     private Long userId;
 
     /**
      * 用户名
      */
-    @TableField("USERNAME")
+    @TableField("username")
     private String username;
 
     /**
      * 用户密码
      */
-    @TableField("PASSWORD")
+    @TableField("password")
     private String password;
 
     /**
      * 手机号码
      */
-    @TableField("MOBILE_NO")
+    @TableField("mobile_no")
     private String mobileNo;
 
-    @TableField("STATUS")
+    @TableField("status")
     private String status;
 
-    @TableField("CREATE_DATE")
+    @TableField("create_date")
     private LocalDateTime createDate;
 
-    @TableField("REMOVE_DATE")
+    @TableField("remove_date")
     private LocalDateTime removeDate;
 
-    @TableField("CREATE_USER_ID")
+    @TableField("create_user_id")
     private Long createUserId;
 
-    @TableField("UPDATE_USER_ID")
+    @TableField("update_user_id")
     private Long updateUserId;
 
-    @TableField("UPDATE_TIME")
+    @TableField("update_time")
     private LocalDateTime updateTime;
 
     public boolean login(String password) {

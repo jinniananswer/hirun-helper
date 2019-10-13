@@ -32,88 +32,88 @@ public class Employee extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "EMPLOYEE_ID", type = IdType.AUTO)
+    @TableId(value = "employee_id", type = IdType.AUTO)
     private Long employeeId;
 
-    @TableField("USER_ID")
+    @TableField("user_id")
     private Long userId;
 
-    @TableField("NAME")
+    @TableField("name")
     private String name;
 
-    @TableField("SEX")
+    @TableField("sex")
     private String sex;
 
-    @TableField("IDENTITY_NO")
+    @TableField("identity_no")
     private String identityNo;
 
-    @TableField("MOBILE_NO")
+    @TableField("mobile_no")
     private String mobileNo;
 
-    @TableField("HOME_ADDRESS")
+    @TableField("home_address")
     private String homeAddress;
 
-    @TableField("NATIVE_PROV")
+    @TableField("native_prov")
     private Integer nativeProv;
 
-    @TableField("NATIVE_CITY")
+    @TableField("native_city")
     private Integer nativeCity;
 
-    @TableField("NATIVE_REGION")
+    @TableField("native_region")
     private Integer nativeRegion;
 
-    @TableField("IN_DATE")
+    @TableField("in_date")
     private LocalDateTime inDate;
 
-    @TableField("REGULAR_DATE")
+    @TableField("regular_date")
     private LocalDateTime regularDate;
 
-    @TableField("DESTROY_DATE")
+    @TableField("destroy_date")
     private LocalDateTime destroyDate;
 
-    @TableField("JOB_DATE")
+    @TableField("job_date")
     private LocalDate jobDate;
 
     /**
      * 1-全职　2-兼职  3-外聘
      */
-    @TableField("WORK_NATURE")
+    @TableField("work_nature")
     private String workNature;
 
-    @TableField("WORKPLACE")
+    @TableField("workplace")
     private String workplace;
 
-    @TableField("EDUCATION_LEVEL")
+    @TableField("education_level")
     private String educationLevel;
 
-    @TableField("MAJOR")
+    @TableField("major")
     private String major;
 
-    @TableField("SCHOOL")
+    @TableField("school")
     private String school;
 
-    @TableField("CERTIFICATE_NO")
+    @TableField("certificate_no")
     private String certificateNo;
 
-    @TableField("BEFORE_HIRUN_YEAR")
+    @TableField("before_hirun_year")
     private String beforeHirunYear;
 
-    @TableField("STATUS")
+    @TableField("status")
     private String status;
 
-    @TableField("REMARK")
+    @TableField("remark")
     private String remark;
 
-    @TableField("CREATE_USER_ID")
+    @TableField("create_user_id")
     private Long createUserId;
 
-    @TableField("CREATE_DATE")
+    @TableField("create_date")
     private LocalDateTime createDate;
 
-    @TableField("UPDATE_USER_ID")
+    @TableField("update_user_id")
     private Long updateUserId;
 
-    @TableField("UPDATE_TIME")
+    @TableField("update_time")
     private LocalDateTime updateTime;
 
 

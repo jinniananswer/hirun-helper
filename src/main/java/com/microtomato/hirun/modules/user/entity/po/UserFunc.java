@@ -30,37 +30,37 @@ public class UserFunc extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "USER_FUNC_ID", type = IdType.AUTO)
+    @TableId(value = "user_func_id", type = IdType.AUTO)
     private Long userFuncId;
 
-    @TableField("USER_ID")
+    @TableField("user_id")
     private Long userId;
 
-    @TableField("FUNC_ID")
+    @TableField("func_id")
     private Long funcId;
 
-    @TableField("START_DATE")
+    @TableField("start_date")
     private LocalDateTime startDate;
 
-    @TableField("END_DATE")
+    @TableField("end_date")
     private LocalDateTime endDate;
 
-    @TableField("STATUS")
+    @TableField("status")
     private String status;
 
-    @TableField("REMARK")
+    @TableField("remark")
     private String remark;
 
-    @TableField("CREATE_USER_ID")
+    @TableField("create_user_id")
     private Long createUserId;
 
-    @TableField("CREATE_DATE")
+    @TableField("create_date")
     private LocalDateTime createDate;
 
-    @TableField("UPDATE_USER_ID")
+    @TableField("update_user_id")
     private Long updateUserId;
 
-    @TableField("UPDATE_TIME")
+    @TableField("update_time")
     private LocalDateTime updateTime;
 
 

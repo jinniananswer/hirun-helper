@@ -29,19 +29,19 @@ public class Func extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "FUNC_ID", type = IdType.AUTO)
+    @TableId(value = "func_id", type = IdType.AUTO)
     private Long funcId;
 
-    @TableField("FUNC_CODE")
+    @TableField("func_code")
     private String funcCode;
 
-    @TableField("TYPE")
+    @TableField("type")
     private String type;
 
-    @TableField("FUNC_DESC")
+    @TableField("func_desc")
     private String funcDesc;
 
-    @TableField("STATUS")
+    @TableField("status")
     private String status;
 
 

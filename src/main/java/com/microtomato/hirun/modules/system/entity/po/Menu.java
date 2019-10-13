@@ -32,52 +32,52 @@ public class Menu extends BaseEntity {
     /**
      * 菜单ID，唯一主键
      */
-    @TableId(value = "MENU_ID", type = IdType.AUTO)
+    @TableId(value = "menu_id", type = IdType.AUTO)
     private Long menuId;
 
     /**
      * 菜单标题
      */
-    @TableField("TITLE")
+    @TableField("title")
     private String title;
 
     /**
      * 菜单描述
      */
-    @TableField("MENU_DESC")
+    @TableField("menu_desc")
     private String menuDesc;
 
     /**
      * 菜单地址
      */
-    @TableField("MENU_URL")
+    @TableField("menu_url")
     private String menuUrl;
 
     /**
      * 菜单域
      */
-    @TableField("DOMAIN_ID")
+    @TableField("domain_id")
     private Integer domainId;
 
     /**
      * 菜单层级
      */
-    @TableField("MENU_LEVEL")
+    @TableField("menu_level")
     private Integer menuLevel;
 
     /**
      * 父菜单ID
      */
-    @TableField("PARENT_MENU_ID")
+    @TableField("parent_menu_id")
     private Long parentMenuId;
 
     /**
      * 菜单图标
      */
-    @TableField("ICO_URL")
+    @TableField("ico_url")
     private String icoUrl;
 
-    @TableField("IS_COMMON_USE")
+    @TableField("is_common_use")
     private String isCommonUse;
 
     /**

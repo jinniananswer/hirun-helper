@@ -30,43 +30,43 @@ public class EmployeeJobRole extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "JOB_ROLE_ID", type = IdType.AUTO)
+    @TableId(value = "job_role_id", type = IdType.AUTO)
     private Long jobRoleId;
 
-    @TableField("EMPLOYEE_ID")
+    @TableField("employee_id")
     private Long employeeId;
 
-    @TableField("JOB_ROLE")
+    @TableField("job_role")
     private String jobRole;
 
-    @TableField("JOB_ROLE_NATURE")
+    @TableField("job_role_nature")
     private String jobRoleNature;
 
-    @TableField("ORG_ID")
+    @TableField("org_id")
     private Long orgId;
 
-    @TableField("PARENT_EMPLOYEE_ID")
+    @TableField("parent_employee_id")
     private Long parentEmployeeId;
 
-    @TableField("START_DATE")
+    @TableField("start_date")
     private LocalDateTime startDate;
 
-    @TableField("END_DATE")
+    @TableField("end_date")
     private LocalDateTime endDate;
 
-    @TableField("REMARK")
+    @TableField("remark")
     private String remark;
 
-    @TableField("CREATE_USER_ID")
+    @TableField("create_user_id")
     private Long createUserId;
 
-    @TableField("CREATE_DATE")
+    @TableField("create_date")
     private LocalDateTime createDate;
 
-    @TableField("UPDATE_USER_ID")
+    @TableField("update_user_id")
     private Long updateUserId;
 
-    @TableField("UPDATE_TIME")
+    @TableField("update_time")
     private LocalDateTime updateTime;
 
 

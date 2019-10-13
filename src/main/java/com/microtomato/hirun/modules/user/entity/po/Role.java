@@ -33,61 +33,61 @@ public class Role extends BaseEntity {
     /**
      * ROLE_ID
      */
-    @TableId(value = "ROLE_ID", type = IdType.AUTO)
+    @TableId(value = "role_id", type = IdType.AUTO)
     private Long roleId;
 
     /**
      * 角色类型（'O':组织角色, 'T':职称角色）
      */
-    @TableField("ROLE_TYPE")
+    @TableField("role_type")
     private String roleType;
 
     /**
      * 角色名
      */
-    @TableField("ROLE_NAME")
+    @TableField("role_name")
     private String roleName;
 
     /**
      * 是否有效（0:有效）
      */
-    @TableField("STATUS")
+    @TableField("status")
     private String status;
 
     /**
      * 创建时间
      */
-    @TableField("CREATE_DATE")
+    @TableField("create_date")
     private LocalDateTime createDate;
 
     /**
      * 修改时间
      */
-    @TableField("UPDATE_TIME")
+    @TableField("update_time")
     private LocalDateTime updateTime;
 
     /**
      * 失效时间
      */
-    @TableField("REMOVE_DATE")
+    @TableField("remove_date")
     private LocalDateTime removeDate;
 
     /**
      * 创建用户
      */
-    @TableField("CREATE_USER_ID")
+    @TableField("create_user_id")
     private Long createUserId;
 
     /**
      * 更新用户
      */
-    @TableField("UPDATE_USER_ID")
+    @TableField("update_user_id")
     private Long updateUserId;
 
     /**
      * 角色描述
      */
-    @TableField("REMARK")
+    @TableField("remark")
     private String remark;
 
 
