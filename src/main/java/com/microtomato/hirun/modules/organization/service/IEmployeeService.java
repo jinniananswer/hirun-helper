@@ -1,7 +1,9 @@
 package com.microtomato.hirun.modules.organization.service;
 
-import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.microtomato.hirun.modules.organization.entity.po.Employee;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +15,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IEmployeeService extends IService<Employee> {
 
+    List<Employee> searchByNameMobileNo(String searchText);
 }

@@ -1,17 +1,18 @@
 package com.microtomato.hirun.modules.organization.entity.po;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
-import java.time.LocalDate;
-import com.baomidou.mybatisplus.annotation.TableId;
-import java.time.LocalDateTime;
-import com.microtomato.hirun.framework.data.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.microtomato.hirun.framework.data.BaseEntity;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -45,6 +46,9 @@ public class Employee extends BaseEntity {
 
     @TableField("IDENTITY_NO")
     private String identityNo;
+
+    @TableField("MOBILE_NO")
+    private String mobileNo;
 
     @TableField("HOME_ADDRESS")
     private String homeAddress;
