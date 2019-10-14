@@ -46,6 +46,6 @@ public class MainController {
         } else {
             return NO_RIGHT_PAGE;
         }
-
     }
+
 }
