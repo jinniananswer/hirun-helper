@@ -51,10 +51,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
      * 变更用户密码
      */
     @Override
-
     public boolean changeStaffPassword(Long userId, String oldPassword, String newPassword) {
         boolean reslut = false;
-        //校验老密码
+        // 校验老密码
         boolean verifyResult = verifyOldPassword(userId, oldPassword);
         if (verifyResult) {
             User user = new User();
