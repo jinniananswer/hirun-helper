@@ -62,7 +62,7 @@ layui.extend({
                 var html = [];
                 for (var i=0;i<length;i++) {
                     var employee = employees[i];
-                    html.push("<div class=\"caller-item\">");
+                    html.push("<div class=\"caller-item\" style='cursor:pointer' onclick='layui.selectEmployee.back(\""+employee.employeeId+"\",\""+employee.name+"\",\""+valueControlId+"\",\""+displayControlId+"\")'>");
                     var sex = employee.sex;
                     if (sex == "1") {
                         html.push("<img src=\"/img/male.jpg\" alt=\"\" class=\"caller-img caller-fl\">");
@@ -93,6 +93,12 @@ layui.extend({
 
                 //parent.layer.closeAll('loading');
             });
+        },
+
+        back : function(employeeId, name, valueControlId, displayControlId) {
+            $("#"+valueControlId).val(employeeId);
+            $("#"+displayControlId).val(name);
+            layui.layer.closeAll('page');
         },
 
         confirm : function(treeDivId, valueControlId, displayControlId) {
