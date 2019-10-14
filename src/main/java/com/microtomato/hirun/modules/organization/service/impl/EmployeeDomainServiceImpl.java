@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.organization.service.impl;
 
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.modules.organization.entity.domain.EmployeeDO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeJobRoleDTO;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
@@ -41,6 +42,9 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
     @Autowired
     private IStaticDataService staticDataService;
 
+    @Autowired
+    private EmployeeDO employeeDO;
+
     @Override
     public List<EmployeeDTO> selectEmployee(String searchText) {
         List<Employee> employees = employeeService.searchByNameMobileNo(searchText);
@@ -67,5 +71,24 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             employeeDTOs.add(employeeDTO);
         }
         return employeeDTOs;
+    }
+
+    /**
+     * 新员工入职
+     * @param employeeDTO
+     */
+    @Override
+    public void employeeEntry(EmployeeDTO employeeDTO) {
+        Employee employee = new Employee();
+        BeanUtils.copyProperties(employeeDTO, employee);
+
+        EmployeeJobRole jobRole = null;
+        EmployeeJobRoleDTO jobRoleDTO = employeeDTO.getEmployeeJobRole();
+        if (jobRoleDTO != null) {
+            jobRole = new EmployeeJobRole();
+            BeanUtils.copyProperties(jobRoleDTO, jobRole);
+        }
+
+        employeeDO.newEntry(employee, jobRole);
     }
 }

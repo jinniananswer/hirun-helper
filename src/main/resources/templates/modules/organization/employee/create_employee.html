@@ -186,7 +186,7 @@
                                 <label class="layui-form-label">第一学历</label>
                                 <div class="layui-input-block">
                                     <div class="layui-form" lay-filter="firstEducationLevel">
-                                        <select id="firstEducationLevel" name="firstEducationLevel" lay-verify="required">
+                                        <select id="firstEducationLevel" name="firstEducationLevel">
 
                                         </select>
                                     </div>
@@ -196,7 +196,7 @@
                                 <label class="layui-form-label">最高学历</label>
                                 <div class="layui-input-block">
                                     <div class="layui-form" lay-filter="highestEducationLevel">
-                                        <select id="highestEducationLevel" name="highestEducationLevel" lay-verify="required">
+                                        <select id="highestEducationLevel" name="highestEducationLevel">
 
                                         </select>
                                     </div>
@@ -206,7 +206,7 @@
                                 <label class="layui-form-label">学校类型</label>
                                 <div class="layui-input-block">
                                     <div class="layui-form" lay-filter="schoolType">
-                                        <select id="schoolType" name="schoolType" lay-verify="required">
+                                        <select id="schoolType" name="schoolType">
 
                                         </select>
                                     </div>
@@ -215,33 +215,33 @@
                             <div class="layui-form-item">
                                 <label class="layui-form-label">毕业院校</label>
                                 <div class="layui-input-block">
-                                    <input type="text" name="school" required lay-verify="required" placeholder="请输入毕业院校" autocomplete="off" class="layui-input"/>
+                                    <input type="text" name="school" placeholder="请输入毕业院校" autocomplete="off" class="layui-input"/>
                                 </div>
                             </div>
                             <div class="layui-form-item">
                                 <label class="layui-form-label">专业</label>
                                 <div class="layui-input-block">
-                                    <input type="text" name="major" required lay-verify="required" placeholder="请输入专业名称" autocomplete="off" class="layui-input"/>
+                                    <input type="text" name="major" placeholder="请输入专业名称" autocomplete="off" class="layui-input"/>
                                 </div>
                             </div>
                             <div class="layui-form-item">
                                 <label class="layui-form-label">证书编号</label>
                                 <div class="layui-input-block">
-                                    <input type="text" name="certificateNo" required lay-verify="required" placeholder="请输入毕业证书编号" autocomplete="off" class="layui-input"/>
+                                    <input type="text" name="certificateNo" placeholder="请输入毕业证书编号" autocomplete="off" class="layui-input"/>
                                 </div>
                             </div>
                             <div class="layui-form-item">
                                 <label class="layui-form-label">技术职称</label>
                                 <div class="layui-input-block">
-                                    <input type="text" name="techTitle" required lay-verify="required" placeholder="请输入国家认定技术职称" autocomplete="off" class="layui-input"/>
+                                    <input type="text" name="techTitle" placeholder="请输入国家认定技术职称" autocomplete="off" class="layui-input"/>
                                 </div>
                             </div>
                         </div>
                         <div class="layui-tab-item" id="workTab">
                             <div class="layui-form-item">
-                                <label class="layui-form-label layui-required">就业日期</label>
+                                <label class="layui-form-label">就业日期</label>
                                 <div class="layui-input-block">
-                                    <input type="text" id="jobDate" name="jobDate" required  lay-verify="required" placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input"/>
+                                    <input type="text" id="jobDate" name="jobDate" placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input"/>
                                 </div>
                             </div>
                             <div class="layui-form-item">
@@ -314,20 +314,20 @@
                 <div class="layui-inline">
                     <label class="layui-form-label">开始时间</label>
                     <div class="layui-input-inline">
-                        <input type="text" id="workStartDate_{{d}}" name="employeeWorkExperiences[{{d}}].startDate" required lay-verify="required" placeholder="入职前工作经历时间" autocomplete="off" class="layui-input"/>
+                        <input type="text" id="workStartDate_{{d}}" name="employeeWorkExperiences[{{d}}].startDate" placeholder="入职前工作经历时间" autocomplete="off" class="layui-input"/>
                     </div>
                 </div>
                 <div class="layui-inline">
                     <label class="layui-form-label">结束时间</label>
                     <div class="layui-input-inline">
-                        <input type="text" id="workEndDate_{{d}}" name="employeeWorkExperiences[{{d}}].endDate" required lay-verify="required" placeholder="入职前工作经历时间" autocomplete="off" class="layui-input"/>
+                        <input type="text" id="workEndDate_{{d}}" name="employeeWorkExperiences[{{d}}].endDate" placeholder="入职前工作经历时间" autocomplete="off" class="layui-input"/>
                     </div>
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">工作内容</label>
                 <div class="layui-input-block">
-                    <input type="text" id="workContent_{{d}}" name="employeeWorkExperiences[{{d}}].content" required lay-verify="required" placeholder="请输入入职前工作具体内容" autocomplete="off" class="layui-input"/>
+                    <input type="text" id="workContent_{{d}}" name="employeeWorkExperiences[{{d}}].content" placeholder="请输入入职前工作具体内容" autocomplete="off" class="layui-input"/>
                 </div>
             </div>
         </div>

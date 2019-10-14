@@ -79,7 +79,6 @@ layui.define(['layer', 'jquery'], function(exports){
                     type: type,
                     dataType: 'json',
                     async: async,
-                    timeout: 5000,
                     success: successMethod,
                     error: errFunc
                 }
