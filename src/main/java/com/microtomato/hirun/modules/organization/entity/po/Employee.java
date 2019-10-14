@@ -71,6 +71,15 @@ public class Employee extends BaseEntity {
     @TableField("destroy_date")
     private LocalDateTime destroyDate;
 
+    @TableField("destroy_way")
+    private String destroyWay;
+
+    @TableField("destroy_reason")
+    private String destroyReason;
+
+    @TableField("destroy_times")
+    private Integer destroyTimes;
+
     @TableField("job_date")
     private LocalDate jobDate;
 
