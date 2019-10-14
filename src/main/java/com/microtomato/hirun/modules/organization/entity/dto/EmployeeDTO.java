@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 public class EmployeeDTO {
 
-    private int employeeId;
+    private String employeeId;
 
     private String name;
 
@@ -29,21 +29,21 @@ public class EmployeeDTO {
 
     private String natives;
 
-    private String nativeProv;
+    private Integer nativeProv;
 
-    private String nativeCity;
+    private Integer nativeCity;
 
-    private String nativeRegion;
+    private Integer nativeRegion;
 
     private String nativeAddress;
 
     private String home;
 
-    private String homeProv;
+    private Integer homeProv;
 
-    private String homeCity;
+    private Integer homeCity;
 
-    private String homeRegion;
+    private Integer homeRegion;
 
     private String homeAddress;
 

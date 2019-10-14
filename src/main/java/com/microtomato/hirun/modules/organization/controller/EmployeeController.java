@@ -37,12 +37,7 @@ public class EmployeeController {
     @PostMapping("/create")
     @RestResult
     public Map create(EmployeeDTO employee) {
-        log.debug("================name:"+employee.getName());
-        log.debug("================natives:"+employee.getNatives());
-        log.debug("================workExperiences:"+employee.getEmployeeWorkExperiences());
-        log.debug("================workExperiences:"+employee.getEmployeeWorkExperiences().size());
-        log.debug("================workExperiences:"+employee.getEmployeeWorkExperiences().get(0).getStartDate());
-        log.debug("================workExperiences:"+employee.getEmployeeWorkExperiences().get(1));
+        employeeDomainServiceImpl.employeeEntry(employee);
         return new HashMap();
     }
 
