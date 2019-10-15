@@ -52,14 +52,14 @@ public final class TextClient implements IMemCache {
 	private SockIOPool pool;
 
 	/**
-	 * memcached限制key的最大长度为250byte。
+	 * memcached 限制 key 的最大长度为 250byte。
 	 */
 	private static final int MAX_KEYSIZE = 250;
 	
 	/**
-	 * memcached限制单个value最大体积为1MB。
+	 * memcached 限制单个 value 最大体积为 1MB。
 	 */
-	private static final int MAX_VALUESIZE = 1024 * 1024; // VALUE最大容量1M
+	private static final int MAX_VALUESIZE = 1024 * 1024;
 	
 	/**
 	 * 对象序列化与反序列化接口。
@@ -68,15 +68,17 @@ public final class TextClient implements IMemCache {
 
 	/**
 	 * 构造函数
-	 * 
+	 *
 	 * @param address 缓存服务器地址集
 	 * @param poolSize 连接池大小
+	 * @param heartbeatSecond 心跳周期
+	 * @param useNIO 是否启用 NIO 模式
 	 */
 	public TextClient(MemCacheAddress[] address, int poolSize, int heartbeatSecond, boolean useNIO) {
 		try {
 			this.pool = new SockIOPool(address, poolSize, heartbeatSecond, useNIO);
 		} catch (Exception e) {
-			log.error("初始化memcached连接池出错！" + StringUtils.join(address, ','), e);
+			log.error("初始化 memcached 连接池出错！" + StringUtils.join(address, ','), e);
 		}
 	}
 		
@@ -233,7 +235,8 @@ public final class TextClient implements IMemCache {
 
 		byte[] datas = null;
 
-		if (flag > 1) { // 原生类型，不走默认的序列化，提升性能
+		if (flag > 1) {
+			// 原生类型，不走默认的序列化，提升性能
 			datas = FastConvertor.encode(value, flag);
 		} else {
 			datas = SERIALIZER.encode(value);
@@ -243,24 +246,23 @@ public final class TextClient implements IMemCache {
 		if (datas.length > MAX_VALUESIZE) {
 			int gzipBefore = datas.length;
 			
-			if (flag > 1) { // 压缩时，统一按普通对象处理
+			if (flag > 1) {
+				// 压缩时，统一按普通对象处理
 				datas = SERIALIZER.encode(value);
 			}
 			
 			datas = SERIALIZER.encodeGzip(datas);
-			flag = 1; // 置成压缩标识
+			// 置成压缩标识
+			flag = 1;
 			
 			log.warn("cacheKey=" + bizCacheKey);
 			log.warn("对象过大，开启压缩，压缩前" + gzipBefore + "byte，压缩后:" + datas.length + "byte，" + (datas.length > MAX_VALUESIZE ? ("仍不满足缓存条件！") : ("满足缓存条件。")));
 		}
-		
-		long cStart = System.currentTimeMillis();
+
 		ISockIO io = pool.getSock(cacheKey);
-		long eStart = System.currentTimeMillis();
-		long cCost = eStart - cStart;
-		
+
 		if (null == io) {
-			log.error("从MemCache连接池获取SockIO对象为空!");
+			log.error("从 MemCache 连接池获取 SockIO 对象为空!");
 			return false;
 		}
 		
@@ -438,9 +440,11 @@ public final class TextClient implements IMemCache {
 			io.write(SPACE);
 			io.write(IOUtil.encode(flag));
 			io.write(SPACE);
-			io.write(IOUtil.encode(secTTL)); // 超时标志
+			// 超时标志
+			io.write(IOUtil.encode(secTTL));
 			io.write(SPACE);
-			io.write(IOUtil.encode(datas.length)); // 对象大小
+			// 对象大小
+			io.write(IOUtil.encode(datas.length));
 			io.write(CRLF);
 			io.write(datas);
 			io.write(CRLF);

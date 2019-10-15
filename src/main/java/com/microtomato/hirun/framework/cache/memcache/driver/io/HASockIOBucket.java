@@ -102,7 +102,8 @@ public class HASockIOBucket extends SockIOBucket {
 			
 			if (sock.init()) {
 				masterSocks.add(sock);
-			} else { // 如果连不上, 就没必要初始化第二次，不卡
+			} else {
+				// 如果连不上, 就没必要初始化第二次，不卡
 				break;
 			}
 		}
@@ -129,7 +130,8 @@ public class HASockIOBucket extends SockIOBucket {
 			}
 			return true;
 		} else {
-			if (slaveSocks.size() == 1) { // 主地址不可用的情况下，启用备地址
+			if (slaveSocks.size() == 1) {
+				// 主地址不可用的情况下，启用备地址
 				this.stateCode = STATE_EROK;
 				
 				// 1. 备地址再初始化(poolSize - 1)个连接
@@ -150,7 +152,8 @@ public class HASockIOBucket extends SockIOBucket {
 				return true;
 			} else {
 				this.stateCode = STATE_ERER;
-				this.close(); // 释放主地址资源
+				// 释放主地址资源
+				this.close();
 				return false;
 			}
 		}
