@@ -3,14 +3,10 @@ package com.microtomato.hirun.framework.cache.memcache.driver.io;
 import java.io.IOException;
 
 /**
- * Copyright: Copyright (c) 2013 Asiainfo-Linkage
- * 
- * @className: ISockIO
- * @description: SockIO接口
- * 
- * @version: v1.0.0
- * @author: zhoulin2
- * @date: 2013-3-19
+ * SockIO 接口
+ *
+ * @author Steven
+ * @date 2019-10-15
  */
 public interface ISockIO {
 		

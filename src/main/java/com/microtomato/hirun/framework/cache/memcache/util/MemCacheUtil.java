@@ -10,14 +10,10 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Copyright: Copyright (c) 2013 Asiainfo-Linkage
- * 
- * @className: MemCacheUtil
- * @description: MemCacheUtil工具类
- * 
- * @version: v1.0.0
- * @author: zhoulin2
- * @date: 2013-4-23
+ * MemCacheUtil 工具类
+ *
+ * @author Steven
+ * @date 2019-10-15
  */
 public final class MemCacheUtil {
 

@@ -5,14 +5,10 @@ import com.microtomato.hirun.framework.cache.memcache.interfaces.IMemCache;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Copyright: Copyright (c) 2013 Asiainfo-Linkage
- * 
- * @className: SharedCache
- * @description: 共享缓存
- * 
- * @version: v1.0.0
- * @author: zhoulin2
- * @date: 2013-6-13
+ * 共享缓存
+ *
+ * @author Steven
+ * @date 2019-10-15
  */
 @Slf4j
 public final class SharedCache {

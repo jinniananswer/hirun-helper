@@ -18,14 +18,10 @@ import java.util.Arrays;
 import java.util.Date;
 
 /**
- * Copyright: Copyright (c) 2013 Asiainfo-Linkage
- * 
- * @className: TextClient
- * @description: 基于文本协议的客户端
- * 
- * @version: v1.0.0
- * @author: zhoulin2
- * @date: 2013-3-19
+ * TextClient 基于文本协议的客户端
+ *
+ * @author Steven
+ * @date 2019-10-15
  */
 @Slf4j
 public final class TextClient implements IMemCache {

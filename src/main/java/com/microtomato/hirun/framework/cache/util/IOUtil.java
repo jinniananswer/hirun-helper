@@ -1,14 +1,10 @@
 package com.microtomato.hirun.framework.cache.util;
 
 /**
- * Copyright: Copyright (c) 2013 Asiainfo-Linkage
- * 
- * @className: IOUtil
- * @description: 数字编码工具类
- * 
- * @version: v1.0.0
- * @author: zhoulin2
- * @date: 2013-8-5
+ * 数字编码工具类
+ *
+ * @author Steven
+ * @date 2019-10-15
  */
 public final class IOUtil {
 		

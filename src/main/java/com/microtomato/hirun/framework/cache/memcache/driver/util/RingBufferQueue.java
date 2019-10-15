@@ -3,14 +3,10 @@ package com.microtomato.hirun.framework.cache.memcache.driver.util;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Copyright: Copyright (c) 2013 Asiainfo-Linkage
- * 
- * @className: RingBufferQueue
- * @description: 环形并发队列
- * 
- * @version: v1.0.0
- * @author: zhoulin2
- * @date: 2013-8-18
+ * 环形并发队列
+ *
+ * @author Steven
+ * @date 2019-10-15
  */
 public class RingBufferQueue<E> {
 	

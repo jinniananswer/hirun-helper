@@ -20,4 +20,5 @@ public class Mapping {
      * 指定连接的集群
      */
     private String connect;
+
 }

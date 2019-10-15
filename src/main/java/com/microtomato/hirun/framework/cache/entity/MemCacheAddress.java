@@ -4,14 +4,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Copyright: Copyright (c) 2014 Asiainfo
- * 
- * @className: MemCacheAddress
- * @description: MemCache地址对象
- * 
- * @version: v1.0.0
- * @author: zhoulin2
- * @date: 2014-7-14
+ * MemCache 地址对象
+ *
+ * @author Steven
+ * @date 2019-10-15
  */
 @Getter
 @Setter

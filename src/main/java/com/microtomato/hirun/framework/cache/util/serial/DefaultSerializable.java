@@ -5,14 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.*;
 
 /**
- * Copyright: Copyright (c) 2013 Asiainfo-Linkage
- * 
- * @className: DefaultSerializable
- * @description: 默认Java序列化与反序列化实现
- * 
- * @version: v1.0.0
- * @author: zhoulin2
- * @date: 2013-3-20
+ * 默认基于 Java 序列化与反序列化实现
+ *
+ * @author Steven
+ * @date 2019-10-15
  */
 @Slf4j
 public class DefaultSerializable extends AbstractSerializable {

@@ -9,14 +9,10 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 /**
- * Copyright: Copyright (c) 2013 Asiainfo-Linkage
- * 
- * @className: AbstractSerializable
- * @description: 序列化与反序列化抽象类
- * 
- * @version: v1.0.0
- * @author: zhoulin2
- * @date: 2013-2-25
+ * 序列化和反序列化抽象类
+ *
+ * @author Steven
+ * @date 2019-10-15
  */
 @Slf4j
 public abstract class AbstractSerializable implements ISerializable {

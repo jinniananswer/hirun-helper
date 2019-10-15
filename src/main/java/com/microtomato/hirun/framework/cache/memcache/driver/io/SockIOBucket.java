@@ -3,14 +3,10 @@ package com.microtomato.hirun.framework.cache.memcache.driver.io;
 import java.io.IOException;
 
 /**
- * Copyright: Copyright (c) 2013 Asiainfo-Linkage
- * 
- * @className: SockIOBucket
- * @description: SockIO桶
- * 
- * @version: v1.0.0
- * @author: zhoulin2
- * @date: 2013-3-24
+ * SockIO 桶
+ *
+ * @author Steven
+ * @date 2019-10-15
  */
 public abstract class SockIOBucket implements Comparable<SockIOBucket> {
 

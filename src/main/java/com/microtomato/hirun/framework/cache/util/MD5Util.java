@@ -6,14 +6,10 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 /**
- * Copyright: Copyright (c) 2015 Asiainfo
- * 
- * @className: MD5Util
- * @description: MD5工具
- * 
- * @version: v1.0.0
- * @author: zhoulin2
- * @date: 2015-7-26
+ * MD5 工具类
+ *
+ * @author Steven
+ * @date 2019-10-15
  */
 @Slf4j
 public final class MD5Util {

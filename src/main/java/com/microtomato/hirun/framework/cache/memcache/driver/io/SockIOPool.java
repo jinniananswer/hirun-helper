@@ -11,14 +11,10 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Copyright: Copyright (c) 2013 Asiainfo-Linkage
- * 
- * @className: SockIOPool
- * @description: Socket连接池
- * 
- * @version: v1.0.0
- * @author: zhoulin2
- * @date: 2013-3-24
+ * Socket 连接池
+ *
+ * @author Steven
+ * @date 2019-10-15
  */
 @Slf4j
 public class SockIOPool {

@@ -11,14 +11,10 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
 /**
- * Copyright: Copyright (c) 2013 Asiainfo-Linkage
- * 
- * @className: SockNIO
- * @description: 基于NIO实现
- * 
- * @version: v1.0.0
- * @author: zhoulin2
- * @date: 2013-3-24
+ * 基于 NIO 实现
+ *
+ * @author Steven
+ * @date 2019-10-15
  */
 @Slf4j
 public class SockNIO implements ISockIO {

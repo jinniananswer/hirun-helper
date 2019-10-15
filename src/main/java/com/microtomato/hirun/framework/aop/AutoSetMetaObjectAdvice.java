@@ -28,7 +28,6 @@ public class AutoSetMetaObjectAdvice implements MetaObjectHandler {
         LocalDateTime localDateTime = LocalDateTime.now();
         this.setInsertFieldValByName(GMT_CREATE, localDateTime, metaObject);
         this.setInsertFieldValByName(GMT_MODIFIED, localDateTime, metaObject);
-
     }
 
     /**

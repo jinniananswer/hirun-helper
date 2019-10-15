@@ -11,14 +11,10 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 
 /**
- * Copyright: Copyright (c) 2013 Asiainfo-Linkage
- * 
- * @className: SockOIO
- * @description: 基于OIO实现
- * 
- * @version: v1.0.0
- * @author: zhoulin2
- * @date: 2013-3-24
+ * 基于 OIO 实现
+ *
+ * @author Steven
+ * @date 2019-10-15
  */
 @Slf4j
 public class SockBIO implements ISockIO {

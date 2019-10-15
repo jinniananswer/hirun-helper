@@ -7,14 +7,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Copyright: Copyright (c) 2013 Asiainfo
- * 
- * @className: SimpleSockIOBucket
- * @description: 无备地址的SockIO桶
- * 
- * @version: v1.0.0
- * @author: zhoulin2
- * @date: 2013-3-24
+ * 无备地址的 SockIO 桶
+ *
+ * @author Steven
+ * @date 2019-10-15
  */
 @Slf4j
 public class SimpleSockIOBucket extends SockIOBucket {

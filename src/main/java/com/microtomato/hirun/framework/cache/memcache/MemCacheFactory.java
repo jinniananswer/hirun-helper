@@ -14,13 +14,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Copyright: Copyright (c) 2013 Asiainfo
+ * MemCache 工厂类
  *
- * @className: MemCacheFactory
- * @description: Memcache工厂类
- * @version: v1.0.0
- * @author: zhoulin2
- * @date: 2013-3-18
+ * @author Steven
+ * @date 2019-10-15
  */
 @Slf4j
 public final class MemCacheFactory {
