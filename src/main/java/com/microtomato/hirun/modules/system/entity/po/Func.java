@@ -1,15 +1,14 @@
 package com.microtomato.hirun.modules.system.entity.po;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.*;
 import com.microtomato.hirun.framework.data.BaseEntity;
-import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -44,5 +43,15 @@ public class Func extends BaseEntity {
     @TableField("status")
     private String status;
 
+    @TableField(value = "create_user_id", fill = FieldFill.INSERT)
+    private Long createUserId;
 
+    @TableField(value = "create_date", fill = FieldFill.INSERT)
+    private LocalDateTime createDate;
+
+    @TableField(value = "update_user_id", fill = FieldFill.INSERT_UPDATE)
+    private Long updateUserId;
+
+    @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
+    private LocalDateTime updateTime;
 }

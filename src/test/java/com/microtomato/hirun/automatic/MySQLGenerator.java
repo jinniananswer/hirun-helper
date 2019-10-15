@@ -86,10 +86,10 @@ public class MySQLGenerator {
 
         // 自定义需要填充的字段
         List<TableFill> tableFillList = new ArrayList<>();
-        TableFill createField = new TableFill("gmt_create", FieldFill.INSERT);
-        TableFill modifiedField = new TableFill("gmt_modified", FieldFill.INSERT_UPDATE);
-        tableFillList.add(createField);
-        tableFillList.add(modifiedField);
+        tableFillList.add(new TableFill("create_date", FieldFill.INSERT));
+        tableFillList.add(new TableFill("create_user_id", FieldFill.INSERT));
+        tableFillList.add(new TableFill("update_time", FieldFill.INSERT_UPDATE));
+        tableFillList.add(new TableFill("update_user_id", FieldFill.INSERT_UPDATE));
 
         // 代码生成器
         AutoGenerator autoGenerator = new AutoGenerator();
@@ -147,12 +147,13 @@ public class MySQLGenerator {
 
         // 策略配置
         StrategyConfig strategy = new StrategyConfig();
-        // strategy.setTableFillList(tableFillList);
+        strategy.setTableFillList(tableFillList);
         if ("ins".equals(databaseName)) {
             strategy.setTablePrefix("ins");
         } else {
             strategy.setTablePrefix("sys");
         }
+
         strategy.setNaming(NamingStrategy.underline_to_camel);
         strategy.setColumnNaming(NamingStrategy.underline_to_camel);
         strategy.setEntityLombokModel(true);
@@ -160,7 +161,7 @@ public class MySQLGenerator {
         strategy.setRestControllerStyle(true);
         //strategy.setSuperEntityClass(BaseEntity.class);
         strategy.setSuperEntityClass("com.microtomato.hirun.framework.data.BaseEntity");
-        strategy.setSuperEntityColumns(new String[] {"create_date", "update_time", "create_user_id", "update_user_id"});
+        //strategy.setSuperEntityColumns(new String[] {"create_date", "update_time", "create_user_id", "update_user_id"});
         strategy.setControllerMappingHyphenStyle(true);
         //strategy.setTablePrefix(packageConfig.getModuleName() + "_");
         strategy.setEntityTableFieldAnnotationEnable(true);
