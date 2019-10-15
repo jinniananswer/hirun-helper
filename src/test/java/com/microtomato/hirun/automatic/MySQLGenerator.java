@@ -46,6 +46,7 @@ public class MySQLGenerator {
             username = "ins";
         }
     }
+
     /**
      * <p>
      * 读取控制台内容
@@ -159,7 +160,7 @@ public class MySQLGenerator {
         strategy.setRestControllerStyle(true);
         //strategy.setSuperEntityClass(BaseEntity.class);
         strategy.setSuperEntityClass("com.microtomato.hirun.framework.data.BaseEntity");
-        strategy.setSuperEntityColumns("");
+        strategy.setSuperEntityColumns(new String[] {"create_date", "update_time", "create_user_id", "update_user_id"});
         strategy.setControllerMappingHyphenStyle(true);
         //strategy.setTablePrefix(packageConfig.getModuleName() + "_");
         strategy.setEntityTableFieldAnnotationEnable(true);

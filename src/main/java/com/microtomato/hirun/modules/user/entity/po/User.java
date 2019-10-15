@@ -61,20 +61,8 @@ public class User extends BaseEntity {
     @TableField("status")
     private String status;
 
-    @TableField("create_date")
-    private LocalDateTime createDate;
-
     @TableField("remove_date")
     private LocalDateTime removeDate;
-
-    @TableField("create_user_id")
-    private Long createUserId;
-
-    @TableField("update_user_id")
-    private Long updateUserId;
-
-    @TableField("update_time")
-    private LocalDateTime updateTime;
 
     public boolean login(String password) {
         String encryptPassword = EncryptUtils.passwordEncode(password);

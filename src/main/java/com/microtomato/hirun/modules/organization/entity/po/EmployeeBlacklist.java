@@ -60,9 +60,6 @@ public class EmployeeBlacklist extends BaseEntity {
     @TableField("end_time")
     private LocalDateTime endTime;
 
-    @TableField("create_user_id")
-    private Long createUserId;
-
     @TableField("create_time")
     private LocalDateTime createTime;
 

@@ -1,9 +1,6 @@
 package com.microtomato.hirun.modules.organization.entity.po;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.microtomato.hirun.framework.data.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -112,18 +109,5 @@ public class Employee extends BaseEntity {
 
     @TableField("remark")
     private String remark;
-
-    @TableField("create_user_id")
-    private Long createUserId;
-
-    @TableField("create_date")
-    private LocalDateTime createDate;
-
-    @TableField("update_user_id")
-    private Long updateUserId;
-
-    @TableField("update_time")
-    private LocalDateTime updateTime;
-
 
 }

@@ -39,11 +39,4 @@ public class UserRole extends BaseEntity {
     @TableField("role_id")
     private Long roleId;
 
-    @TableField("update_user_id")
-    private Long updateUserId;
-
-    @TableField("update_time")
-    private LocalDateTime updateTime;
-
-
 }

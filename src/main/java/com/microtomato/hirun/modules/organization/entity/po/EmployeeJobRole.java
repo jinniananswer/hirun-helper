@@ -57,17 +57,5 @@ public class EmployeeJobRole extends BaseEntity {
     @TableField("remark")
     private String remark;
 
-    @TableField("create_user_id")
-    private Long createUserId;
-
-    @TableField("create_date")
-    private LocalDateTime createDate;
-
-    @TableField("update_user_id")
-    private Long updateUserId;
-
-    @TableField("update_time")
-    private LocalDateTime updateTime;
-
 
 }

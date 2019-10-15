@@ -55,34 +55,12 @@ public class MenuRole extends BaseEntity {
     private String status;
 
     /**
-     * 创建时间
-     */
-    @TableField("create_date")
-    private LocalDateTime createDate;
-
-    /**
-     * 修改时间
-     */
-    @TableField("update_time")
-    private LocalDateTime updateTime;
-
-    /**
      * 失效时间
      */
     @TableField("remove_date")
     private LocalDateTime removeDate;
 
-    /**
-     * 创建用户
-     */
-    @TableField("create_user_id")
-    private Long createUserId;
 
-    /**
-     * 更新用户
-     */
-    @TableField("update_user_id")
-    private Long updateUserId;
 
 
 }
