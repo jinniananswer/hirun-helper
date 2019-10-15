@@ -53,7 +53,7 @@ public class EmployeeDO {
         if (this.isBlack()) {
             //如果是黑名单， 则不予录用
         }
-        log.debug("---------------------------mapper--------------------------"+this.employeeMapper);
+        employeeData.setStatus("0");
         int employeeId = employeeMapper.insert(employeeData);
         this.allocateJob(jobRole);
     }
