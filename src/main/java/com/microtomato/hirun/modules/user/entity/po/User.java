@@ -1,9 +1,6 @@
 package com.microtomato.hirun.modules.user.entity.po;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.microtomato.hirun.framework.data.BaseEntity;
 import com.microtomato.hirun.framework.util.EncryptUtils;
 import com.microtomato.hirun.modules.user.exception.PasswordException;
@@ -61,19 +58,13 @@ public class User extends BaseEntity {
     @TableField("status")
     private String status;
 
-    @TableField("create_date")
-    private LocalDateTime createDate;
-
     @TableField("remove_date")
     private LocalDateTime removeDate;
 
-    @TableField("create_user_id")
-    private Long createUserId;
-
-    @TableField("update_user_id")
+    @TableField(value = "update_user_id", fill = FieldFill.INSERT_UPDATE)
     private Long updateUserId;
 
-    @TableField("update_time")
+    @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
 
     public boolean login(String password) {

@@ -1,11 +1,9 @@
 package com.microtomato.hirun.modules.user.entity.po;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.*;
+
 import java.time.LocalDateTime;
 import com.microtomato.hirun.framework.data.BaseEntity;
-import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -55,34 +53,20 @@ public class FuncRole extends BaseEntity {
     private String status;
 
     /**
-     * 创建时间
-     */
-    @TableField("create_date")
-    private LocalDateTime createDate;
-
-    /**
-     * 修改时间
-     */
-    @TableField("update_time")
-    private LocalDateTime updateTime;
-
-    /**
      * 失效时间
      */
     @TableField("remove_date")
     private LocalDateTime removeDate;
 
-    /**
-     * 创建用户
-     */
-    @TableField("create_user_id")
+    @TableField(value = "create_user_id", fill = FieldFill.INSERT)
     private Long createUserId;
 
-    /**
-     * 更新用户
-     */
-    @TableField("update_user_id")
+    @TableField(value = "create_date", fill = FieldFill.INSERT)
+    private LocalDateTime createDate;
+
+    @TableField(value = "update_user_id", fill = FieldFill.INSERT_UPDATE)
     private Long updateUserId;
 
-
+    @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
+    private LocalDateTime updateTime;
 }

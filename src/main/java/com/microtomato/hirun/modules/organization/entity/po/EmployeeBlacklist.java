@@ -17,43 +17,55 @@ import lombok.NoArgsConstructor;
  * 
  * </p>
  *
- * @author jinnian
- * @since 2019-10-09
+ * @author liuhui
+ * @since 2019-10-14
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("ins_employee_job_role")
-public class EmployeeJobRole extends BaseEntity {
+@TableName("ins_employee_blacklist")
+public class EmployeeBlacklist extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "job_role_id", type = IdType.AUTO)
-    private Long jobRoleId;
+    @TableId(value = "id", type = IdType.AUTO)
+    private Long id;
 
     @TableField("employee_id")
     private Long employeeId;
 
-    @TableField("job_role")
-    private String jobRole;
+    @TableField("user_id")
+    private Long userId;
 
-    @TableField("job_role_nature")
-    private String jobRoleNature;
+    /**
+     * 姓名
+     */
+    @TableField("name")
+    private String name;
 
-    @TableField("org_id")
-    private Long orgId;
+    /**
+     * 证件号码
+     */
+    @TableField("identity_no")
+    private String identityNo;
 
-    @TableField("parent_employee_id")
-    private Long parentEmployeeId;
+    @TableField("mobile_no")
+    private String mobileNo;
 
-    @TableField("start_date")
-    private LocalDateTime startDate;
+    @TableField("start_time")
+    private LocalDateTime startTime;
 
-    @TableField("end_date")
-    private LocalDateTime endDate;
+    @TableField("end_time")
+    private LocalDateTime endTime;
 
+    @TableField("create_time")
+    private LocalDateTime createTime;
+
+    /**
+     * 备注
+     */
     @TableField("remark")
     private String remark;
 

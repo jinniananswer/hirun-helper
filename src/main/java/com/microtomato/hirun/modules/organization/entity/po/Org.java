@@ -60,17 +60,4 @@ public class Org extends BaseEntity {
     @TableField("status")
     private String status;
 
-    @TableField("create_user_id")
-    private Long createUserId;
-
-    @TableField("create_date")
-    private LocalDateTime createDate;
-
-    @TableField("update_user_id")
-    private Long updateUserId;
-
-    @TableField("update_time")
-    private LocalDateTime updateTime;
-
-
 }

@@ -68,7 +68,7 @@ public class MybatisPlusConfig {
         // SQL 格式化开关
         performanceInterceptor.setFormat(false);
         // SQL 最长执行时间，超过自动停止运行，单位毫秒
-        performanceInterceptor.setMaxTime(1000);
+        performanceInterceptor.setMaxTime(5000);
         return performanceInterceptor;
     }
 
