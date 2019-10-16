@@ -1,12 +1,16 @@
 package com.microtomato.hirun.modules.organization.entity.po;
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import java.time.LocalDateTime;
 import com.microtomato.hirun.framework.data.BaseEntity;
-import lombok.AllArgsConstructor;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 /**
  * <p>
@@ -56,15 +60,4 @@ public class Org extends BaseEntity {
     @TableField("status")
     private String status;
 
-    @TableField(value="create_time", fill = FieldFill.INSERT)
-    private String createTime;
-
-    @TableField(value="create_user_id", fill = FieldFill.INSERT)
-    private String createUserId;
-
-    @TableField(value="update_time", fill = FieldFill.INSERT_UPDATE)
-    private String updateTime;
-
-    @TableField(value="update_user_id", fill = FieldFill.INSERT_UPDATE)
-    private String updateUserId;
 }
