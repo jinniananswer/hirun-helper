@@ -17,9 +17,9 @@ import java.nio.channels.SocketChannel;
  * @date 2019-10-15
  */
 @Slf4j
-public class SockNIO implements ISockIO {
+public class SockNIO implements ISockio {
 
-	private SockIOBucket bucket;
+	private BaseSockIoBucket bucket;
 	private String host;
 	private int port;
 	private SocketChannel channel;
@@ -40,7 +40,7 @@ public class SockNIO implements ISockIO {
 	 * @param version
 	 * @param isMaster
 	 */
-	public SockNIO(SockIOBucket bucket, String host, int port, int version, boolean isMaster) {
+	public SockNIO(BaseSockIoBucket bucket, String host, int port, int version, boolean isMaster) {
 		this.bucket = bucket;
 		this.host = host;
 		this.port = port;
@@ -91,8 +91,10 @@ public class SockNIO implements ISockIO {
 			int size = 0;
 			int remain = 0;
 			while ((remain = len - written) > 0) {
-				size = writeBuffer.remaining(); // 缓冲区还能容纳的字节数
-				size = size < remain ? size : remain; // Math.min(缓冲区还能容纳字节数, 还剩多少字节要write);
+				// 缓冲区还能容纳的字节数
+				size = writeBuffer.remaining();
+				// Math.min(缓冲区还能容纳字节数, 还剩多少字节要write);
+				size = size < remain ? size : remain;
 				writeBuffer.put(b, off + written, size);
 				flush();
 				written += size;
@@ -207,11 +209,11 @@ public class SockNIO implements ISockIO {
 
 	@Override
 	public void release() {
-		this.bucket.returnSockIO(this);
+		this.bucket.returnSockio(this);
 	}
 
 	@Override
-	public SockIOBucket getBucket() {
+	public BaseSockIoBucket getBucket() {
 		return this.bucket;
 	}
 

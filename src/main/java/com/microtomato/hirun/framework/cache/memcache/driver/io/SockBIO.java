@@ -17,11 +17,11 @@ import java.net.Socket;
  * @date 2019-10-15
  */
 @Slf4j
-public class SockBIO implements ISockIO {
+public class SockBIO implements ISockio {
 
 	private static final int BUFFED_INITSIZE = 1024 * 64;
 	
-	private SockIOBucket bucket;
+	private BaseSockIoBucket bucket;
 	private String host;
 	private int port;
 	private int timeout = 5000;
@@ -46,7 +46,7 @@ public class SockBIO implements ISockIO {
 	 * @param isMaster
 	 * @throws IOException
 	 */
-	public SockBIO(SockIOBucket bucket, String host, int port, int version, boolean isMaster) {
+	public SockBIO(BaseSockIoBucket bucket, String host, int port, int version, boolean isMaster) {
 		this.bucket = bucket;
 		this.host = host;
 		this.port = port;
@@ -216,14 +216,14 @@ public class SockBIO implements ISockIO {
 	 */
 	@Override
 	public void release() {
-		this.bucket.returnSockIO(this);
+		this.bucket.returnSockio(this);
 	}
 	
 	/**
 	 * 获得连接所归属的桶
 	 */
 	@Override
-	public SockIOBucket getBucket() {
+	public BaseSockIoBucket getBucket() {
 		return bucket;
 	}
 

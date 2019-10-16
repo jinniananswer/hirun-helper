@@ -8,7 +8,7 @@ import java.io.IOException;
  * @author Steven
  * @date 2019-10-15
  */
-public interface ISockIO {
+public interface ISockio {
 
 	/**
 	 * 初始化
@@ -82,7 +82,7 @@ public interface ISockIO {
 	 *
 	 * @return 返回桶对象
 	 */
-	SockIOBucket getBucket();
+	BaseSockIoBucket getBucket();
 
 	/**
 	 * 获取主机地址

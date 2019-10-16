@@ -14,7 +14,7 @@ import java.security.NoSuchAlgorithmException;
 @Slf4j
 public final class MD5Util {
 
-	private static final char[] hexchar = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+	private static final char[] HEXCHAR = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
 	private MD5Util() { }
 
@@ -48,8 +48,8 @@ public final class MD5Util {
 		StringBuilder sb = new StringBuilder(digest.length * 2);
 		
 		for (int i = 0, size = digest.length; i < size; i++) {
-			sb.append(hexchar[(digest[i] & 0xf0) >>> 4]);
-			sb.append(hexchar[digest[i] & 0x0f]);
+			sb.append(HEXCHAR[(digest[i] & 0xf0) >>> 4]);
+			sb.append(HEXCHAR[digest[i] & 0x0f]);
 		}
 		
 		return sb.toString();

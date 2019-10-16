@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public final class SharedCache {
 
-	private static final IMemCache cache = MemCacheFactory.getCache("shc_cache");
+	private static final IMemCache CACHE = MemCacheFactory.getCache("shc_cache");
 		
 	/**
 	 * 往共享缓存中存一个K-V
@@ -26,7 +26,7 @@ public final class SharedCache {
 		if (log.isDebugEnabled()) {
 			log.debug("set cacheKey:" + cacheKey);
 		}
-		return cache.set(cacheKey, value);
+		return CACHE.set(cacheKey, value);
 	}
 	
 	/**
@@ -34,14 +34,14 @@ public final class SharedCache {
 	 * 
 	 * @param cacheKey
 	 * @param value
-	 * @param secTTL
+	 * @param ttl
 	 * @return
 	 */
-	public static final boolean set(final String cacheKey, final Object value, int secTTL) {
+	public static final boolean set(final String cacheKey, final Object value, int ttl) {
 		if (log.isDebugEnabled()) {
-			log.debug("set cacheKey:" + cacheKey + ", secTTL:" + secTTL);
+			log.debug("set cacheKey:" + cacheKey + ", ttl:" + ttl);
 		}
-		return cache.set(cacheKey, value, secTTL);
+		return CACHE.set(cacheKey, value, ttl);
 	}
 	
 	/**
@@ -54,7 +54,7 @@ public final class SharedCache {
 		if (log.isDebugEnabled()) {
 			log.debug("keyExist cacheKey:" + cacheKey);
 		}
-		return cache.keyExists(cacheKey);
+		return CACHE.keyExists(cacheKey);
 	}
 	
 	/**
@@ -67,7 +67,7 @@ public final class SharedCache {
 		if (log.isDebugEnabled()) {
 			log.debug("get cacheKey:" + cacheKey);
 		}
-		return cache.get(cacheKey);
+		return CACHE.get(cacheKey);
 	}
 	
 	/**
@@ -80,21 +80,21 @@ public final class SharedCache {
 		if (log.isDebugEnabled()) {
 			log.debug("delete cacheKey:" + cacheKey);
 		}
-		return cache.delete(cacheKey);
+		return CACHE.delete(cacheKey);
 	}
 	
 	/**
 	 * 在共享缓存中将Key所对应的Value延迟
 	 * 
 	 * @param cacheKey
-	 * @param secTTL
+	 * @param ttl
 	 * @return
 	 */
-	public static final boolean touch(final String cacheKey, int secTTL) {
+	public static final boolean touch(final String cacheKey, int ttl) {
 		if (log.isDebugEnabled()) {
-			log.debug("touch cacheKey:" + cacheKey + ", secTTL:" + secTTL);
+			log.debug("touch cacheKey:" + cacheKey + ", ttl:" + ttl);
 		}
-		return cache.touch(cacheKey, secTTL);
+		return CACHE.touch(cacheKey, ttl);
 	}
 	
 }

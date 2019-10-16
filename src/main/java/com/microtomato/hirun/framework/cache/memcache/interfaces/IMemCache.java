@@ -32,10 +32,10 @@ public interface IMemCache {
 	 * 
 	 * @param cacheKey
 	 * @param value
-	 * @param secTTL
+	 * @param ttl
 	 * @return
 	 */
-	boolean add(String cacheKey, long value, int secTTL);
+	boolean add(String cacheKey, long value, int ttl);
 	
 	/**
 	 * 往缓存指定KEY的VALUE后里添加数据
@@ -89,41 +89,41 @@ public interface IMemCache {
 
 	boolean set(String cacheKey, Long value);
 
-	boolean set(String cacheKey, Byte value, int secTTL);
+	boolean set(String cacheKey, Byte value, int ttl);
 	
-	boolean set(String cacheKey, Integer value, int secTTL);
+	boolean set(String cacheKey, Integer value, int ttl);
 	
-	boolean set(String cacheKey, Character value, int secTTL);
+	boolean set(String cacheKey, Character value, int ttl);
 	
-	boolean set(String cacheKey, String value, int secTTL);
+	boolean set(String cacheKey, String value, int ttl);
 	
-	boolean set(String cacheKey, StringBuffer value, int secTTL);
+	boolean set(String cacheKey, StringBuffer value, int ttl);
 
-	boolean set(String cacheKey, StringBuilder value, int secTTL);
+	boolean set(String cacheKey, StringBuilder value, int ttl);
 	
-	boolean set(String cacheKey, Float value, int secTTL);
+	boolean set(String cacheKey, Float value, int ttl);
 	
-	boolean set(String cacheKey, Short value, int secTTL);
+	boolean set(String cacheKey, Short value, int ttl);
 	
-	boolean set(String cacheKey, Double value, int secTTL);
+	boolean set(String cacheKey, Double value, int ttl);
 	
-	boolean set(String cacheKey, Date value, int secTTL);
+	boolean set(String cacheKey, Date value, int ttl);
 	
-	boolean set(String cacheKey, byte[] value, int secTTL);
+	boolean set(String cacheKey, byte[] value, int ttl);
 	
-	boolean set(String cacheKey, Boolean value, int secTTL);
+	boolean set(String cacheKey, Boolean value, int ttl);
 
-	boolean set(String cacheKey, Long value, int secTTL);
+	boolean set(String cacheKey, Long value, int ttl);
 	
 	/**
 	 * 在缓存中存放一个K-V键值对，同名键会被覆盖。设置多少秒后超时
 	 * 
 	 * @param cacheKey
 	 * @param value
-	 * @param secTTL 多少秒后超时
+	 * @param ttl 多少秒后超时
 	 * @return 执行成功返回true，否则返回false。
 	 */
-	boolean set(String cacheKey, Object value, int secTTL);
+	boolean set(String cacheKey, Object value, int ttl);
 	
 	/**
 	 * 删除缓存中cacheKey对应的缓存对象
@@ -160,10 +160,10 @@ public interface IMemCache {
 	 * 注：memcached会确保计数器线程安全的执行。
 	 * 
 	 * @param cacheKey
-	 * @param secTTL 超时时间，单位:秒
+	 * @param ttl 超时时间，单位:秒
 	 * @return 返回计数器的当前值
 	 */
-	long incrWithTTL(String cacheKey, int secTTL);
+	long incrWithTtl(String cacheKey, int ttl);
 	
 	/**
 	 * 递增计数器（线程安全），步长为inc，带超时，超时是指key生成的那个时间。
@@ -172,10 +172,10 @@ public interface IMemCache {
 	 * 
 	 * @param cacheKey
 	 * @param inc 步长
-	 * @param secTTL 超时时间，单位:秒
+	 * @param ttl 超时时间，单位:秒
 	 * @return 返回计数器的当前值
 	 */
-	long incrWithTTL(String cacheKey, int inc, int secTTL);
+	long incrWithTtl(String cacheKey, int inc, int ttl);
 	
 	/**
 	 * 递减计数器， 步长为1，当递减到0时，始终为0。
@@ -204,9 +204,9 @@ public interface IMemCache {
 	 * 注：memcached-1.4.15，及以上版本开始支持！
 	 * 
 	 * @param cacheKey
-	 * @param secTTL
+	 * @param ttl
 	 * @return 成功touch返回true，否则返回false
 	 */
-	boolean touch(String cacheKey, int secTTL);
+	boolean touch(String cacheKey, int ttl);
 
 }

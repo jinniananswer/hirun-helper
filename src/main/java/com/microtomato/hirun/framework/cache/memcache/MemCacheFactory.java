@@ -22,7 +22,7 @@ import java.util.Map;
 @Slf4j
 public final class MemCacheFactory {
 
-    private static final Map<String, IMemCache> caches = new HashMap<>();
+    private static final Map<String, IMemCache> CACHE_MAP = new HashMap<>();
 
     /**
      * 不可能的值，为默认值而设计，防止缓存被击穿。
@@ -55,10 +55,10 @@ public final class MemCacheFactory {
                     MemCacheAddress[] address = memCacheCluster.getAddress().toArray(new MemCacheAddress[0]);
                     int poolSize = memCacheCluster.getPoolSize();
                     int heartbeatSecond = memCacheCluster.getHeartbeatSecond();
-                    boolean isUseNIO = memCacheCluster.isUseNIO();
+                    boolean isUseNio = memCacheCluster.isUseNio();
 
-                    IMemCache cache = new TextClient(address, poolSize, heartbeatSecond, isUseNIO);
-                    caches.put(clusterName, cache);
+                    IMemCache cache = new TextClient(address, poolSize, heartbeatSecond, isUseNio);
+                    CACHE_MAP.put(clusterName, cache);
 
                     if (log.isInfoEnabled()) {
                         log.info("------ memcached连接池初始化成功! ------");
@@ -74,7 +74,7 @@ public final class MemCacheFactory {
                         log.info("连接数量: " + poolSize);
                         log.info("心跳周期: " + heartbeatSecond);
 
-                        log.info("IO模式: " + (isUseNIO ? "NIO" : "BIO") + "\n");
+                        log.info("IO模式: " + (isUseNio ? "NIO" : "BIO") + "\n");
                     }
                 }
 
@@ -92,7 +92,7 @@ public final class MemCacheFactory {
      */
     public static IMemCache getCache(String cacheName) {
 
-        IMemCache cache = caches.get(cacheName);
+        IMemCache cache = CACHE_MAP.get(cacheName);
 
         if (null == cache) {
             throw new IllegalArgumentException(cacheName + "连接池中没有可用的连接，请确认缓存地址是否配置正确、缓存是否开启！");

@@ -1,7 +1,7 @@
 package com.microtomato.hirun.framework.cache.memcache.client;
 
 import com.microtomato.hirun.framework.cache.entity.MemCacheAddress;
-import com.microtomato.hirun.framework.cache.memcache.driver.io.ISockIO;
+import com.microtomato.hirun.framework.cache.memcache.driver.io.ISockio;
 import com.microtomato.hirun.framework.cache.memcache.driver.io.SockIOPool;
 import com.microtomato.hirun.framework.cache.memcache.driver.util.FastConvertor;
 import com.microtomato.hirun.framework.cache.memcache.interfaces.IMemCache;
@@ -72,11 +72,11 @@ public final class TextClient implements IMemCache {
 	 * @param address 缓存服务器地址集
 	 * @param poolSize 连接池大小
 	 * @param heartbeatSecond 心跳周期
-	 * @param useNIO 是否启用 NIO 模式
+	 * @param useNio 是否启用 NIO 模式
 	 */
-	public TextClient(MemCacheAddress[] address, int poolSize, int heartbeatSecond, boolean useNIO) {
+	public TextClient(MemCacheAddress[] address, int poolSize, int heartbeatSecond, boolean useNio) {
 		try {
-			this.pool = new SockIOPool(address, poolSize, heartbeatSecond, useNIO);
+			this.pool = new SockIOPool(address, poolSize, heartbeatSecond, useNio);
 		} catch (Exception e) {
 			log.error("初始化 memcached 连接池出错！" + StringUtils.join(address, ','), e);
 		}
@@ -153,76 +153,76 @@ public final class TextClient implements IMemCache {
 	}
 
 	@Override
-	public boolean set(String cacheKey, Object value, int secTTL) {
-		return set(cacheKey, value, secTTL, FastConvertor.MARKER_OTHERS);
+	public boolean set(String cacheKey, Object value, int ttl) {
+		return set(cacheKey, value, ttl, FastConvertor.MARKER_OTHERS);
 	}
 
 	@Override
-	public boolean set(String cacheKey, Byte value, int secTTL) {
-		return set(cacheKey, value, secTTL, FastConvertor.MARKER_BYTE);
+	public boolean set(String cacheKey, Byte value, int ttl) {
+		return set(cacheKey, value, ttl, FastConvertor.MARKER_BYTE);
 	}
 
 	@Override
-	public boolean set(String cacheKey, Integer value, int secTTL) {
-		return set(cacheKey, value, secTTL, FastConvertor.MARKER_INTEGER);
+	public boolean set(String cacheKey, Integer value, int ttl) {
+		return set(cacheKey, value, ttl, FastConvertor.MARKER_INTEGER);
 	}
 
 	@Override
-	public boolean set(String cacheKey, Character value, int secTTL) {
-		return set(cacheKey, value, secTTL, FastConvertor.MARKER_CHARACTER);
+	public boolean set(String cacheKey, Character value, int ttl) {
+		return set(cacheKey, value, ttl, FastConvertor.MARKER_CHARACTER);
 	}
 
 	@Override
-	public boolean set(String cacheKey, String value, int secTTL) {
-		return set(cacheKey, value, secTTL, FastConvertor.MARKER_STRING);
+	public boolean set(String cacheKey, String value, int ttl) {
+		return set(cacheKey, value, ttl, FastConvertor.MARKER_STRING);
 	}
 
 	@Override
-	public boolean set(String cacheKey, StringBuffer value, int secTTL) {
-		return set(cacheKey, value, secTTL, FastConvertor.MARKER_STRINGBUFFER);
+	public boolean set(String cacheKey, StringBuffer value, int ttl) {
+		return set(cacheKey, value, ttl, FastConvertor.MARKER_STRINGBUFFER);
 	}
 
 	@Override
-	public boolean set(String cacheKey, StringBuilder value, int secTTL) {
-		return set(cacheKey, value, secTTL, FastConvertor.MARKER_STRINGBUILDER);
+	public boolean set(String cacheKey, StringBuilder value, int ttl) {
+		return set(cacheKey, value, ttl, FastConvertor.MARKER_STRINGBUILDER);
 	}
 
 	@Override
-	public boolean set(String cacheKey, Float value, int secTTL) {
-		return set(cacheKey, value, secTTL, FastConvertor.MARKER_FLOAT);
+	public boolean set(String cacheKey, Float value, int ttl) {
+		return set(cacheKey, value, ttl, FastConvertor.MARKER_FLOAT);
 	}
 
 	@Override
-	public boolean set(String cacheKey, Short value, int secTTL) {
-		return set(cacheKey, value, secTTL, FastConvertor.MARKER_SHORT);
+	public boolean set(String cacheKey, Short value, int ttl) {
+		return set(cacheKey, value, ttl, FastConvertor.MARKER_SHORT);
 	}
 
 	@Override
-	public boolean set(String cacheKey, Double value, int secTTL) {
-		return set(cacheKey, value, secTTL, FastConvertor.MARKER_DOUBLE);
+	public boolean set(String cacheKey, Double value, int ttl) {
+		return set(cacheKey, value, ttl, FastConvertor.MARKER_DOUBLE);
 	}
 
 	@Override
-	public boolean set(String cacheKey, Date value, int secTTL) {
-		return set(cacheKey, value, secTTL, FastConvertor.MARKER_DATE);
+	public boolean set(String cacheKey, Date value, int ttl) {
+		return set(cacheKey, value, ttl, FastConvertor.MARKER_DATE);
 	}
 
 	@Override
-	public boolean set(String cacheKey, byte[] value, int secTTL) {
-		return set(cacheKey, value, secTTL, FastConvertor.MARKER_BYTEARR);
+	public boolean set(String cacheKey, byte[] value, int ttl) {
+		return set(cacheKey, value, ttl, FastConvertor.MARKER_BYTEARR);
 	}
 
 	@Override
-	public boolean set(String cacheKey, Boolean value, int secTTL) {
-		return set(cacheKey, value, secTTL, FastConvertor.MARKER_BOOLEAN);
+	public boolean set(String cacheKey, Boolean value, int ttl) {
+		return set(cacheKey, value, ttl, FastConvertor.MARKER_BOOLEAN);
 	}
 
 	@Override
-	public boolean set(String cacheKey, Long value, int secTTL) {
-		return set(cacheKey, value, secTTL, FastConvertor.MARKER_LONG);
+	public boolean set(String cacheKey, Long value, int ttl) {
+		return set(cacheKey, value, ttl, FastConvertor.MARKER_LONG);
 	}
 
-	private boolean set(String bizCacheKey, Object value, int secTTL, int flag) {
+	private boolean set(String bizCacheKey, Object value, int ttl, int flag) {
 		String cacheKey = bizCacheKey;
 		
 		if (null == cacheKey || null == value) {
@@ -259,7 +259,7 @@ public final class TextClient implements IMemCache {
 			log.warn("对象过大，开启压缩，压缩前" + gzipBefore + "byte，压缩后:" + datas.length + "byte，" + (datas.length > MAX_VALUESIZE ? ("仍不满足缓存条件！") : ("满足缓存条件。")));
 		}
 
-		ISockIO io = pool.getSock(cacheKey);
+		ISockio io = pool.getSock(cacheKey);
 
 		if (null == io) {
 			log.error("从 MemCache 连接池获取 SockIO 对象为空!");
@@ -274,7 +274,7 @@ public final class TextClient implements IMemCache {
 			io.write(SPACE);
 			io.write(IOUtil.encode(flag));
 			io.write(SPACE);
-			io.write(IOUtil.encode(secTTL));
+			io.write(IOUtil.encode(ttl));
 			io.write(SPACE);
 			io.write(IOUtil.encode(datas.length));
 			io.write(CRLF);
@@ -329,7 +329,7 @@ public final class TextClient implements IMemCache {
 
 		Object rtn = null;
 		long cStart = System.currentTimeMillis();
-		ISockIO io = pool.getSock(cacheKey);
+		ISockio io = pool.getSock(cacheKey);
 		long eStart = System.currentTimeMillis();
 		long cCost = eStart - cStart;
 		
@@ -378,7 +378,9 @@ public final class TextClient implements IMemCache {
 
 				io.readLineBytes();
 				bytes = io.readLineBytes();
-				if (null == bytes) return rtn;
+				if (null == bytes) {
+					return rtn;
+				}
 				if (Arrays.equals(bytes, SERVER_STATUS_BYTES_END)) {
 					if (flag > 1) { // 原生类型，不走默认的序列化，提升性能。
 						rtn = FastConvertor.decode(datas, flag);
@@ -408,7 +410,7 @@ public final class TextClient implements IMemCache {
 	}
 	
 	@Override
-	public boolean add(String cacheKey, long value, int secTTL) {
+	public boolean add(String cacheKey, long value, int ttl) {
 
 		if (null == cacheKey) {
 			return false;
@@ -421,7 +423,7 @@ public final class TextClient implements IMemCache {
 		int flag = FastConvertor.MARKER_LONG;
 		
 		long cStart = System.currentTimeMillis();
-		ISockIO io = pool.getSock(cacheKey);
+		ISockio io = pool.getSock(cacheKey);
 		long eStart = System.currentTimeMillis();
 		long cCost = eStart - cStart;
 		
@@ -441,7 +443,7 @@ public final class TextClient implements IMemCache {
 			io.write(IOUtil.encode(flag));
 			io.write(SPACE);
 			// 超时标志
-			io.write(IOUtil.encode(secTTL));
+			io.write(IOUtil.encode(ttl));
 			io.write(SPACE);
 			// 对象大小
 			io.write(IOUtil.encode(datas.length));
@@ -489,7 +491,7 @@ public final class TextClient implements IMemCache {
 		}
 		
 		long cStart = System.currentTimeMillis();
-		ISockIO io = pool.getSock(cacheKey);
+		ISockio io = pool.getSock(cacheKey);
 		long eStart = System.currentTimeMillis();
 		long cCost = eStart - cStart;
 		
@@ -548,7 +550,7 @@ public final class TextClient implements IMemCache {
 		}
 
 		long cStart = System.currentTimeMillis();
-		ISockIO io = pool.getSock(cacheKey);
+		ISockio io = pool.getSock(cacheKey);
 		long eStart = System.currentTimeMillis();
 		long cCost = eStart - cStart;
 		
@@ -590,28 +592,32 @@ public final class TextClient implements IMemCache {
 
 	@Override
 	public long incr(String cacheKey) {
-		return incrWithTTL(cacheKey, 1, 0);
+		return incrWithTtl(cacheKey, 1, 0);
 	}
 
 	@Override
 	public long incr(String cacheKey, int inc) {
-		return incrWithTTL(cacheKey, inc, 0); // 默认不超时
+		return incrWithTtl(cacheKey, inc, 0); // 默认不超时
 	}
 	
 	@Override
-	public long incrWithTTL(String cacheKey, int secTTL) {
-		return incrWithTTL(cacheKey, 1, secTTL);
+	public long incrWithTtl(String cacheKey, int ttl) {
+		return incrWithTtl(cacheKey, 1, ttl);
 	}
 	
 	@Override
-	public long incrWithTTL(String cacheKey, int inc, int secTTL) {
+	public long incrWithTtl(String cacheKey, int inc, int ttl) {
 		
-		if (null == cacheKey)  return -1;
+		if (null == cacheKey) {
+			return -1;
+		}
 		cacheKey = sanitizeKey(cacheKey);
-		if (null == cacheKey)  return -1;
+		if (null == cacheKey) {
+			return -1;
+		}
 
 		long cStart = System.currentTimeMillis();
-		ISockIO io = pool.getSock(cacheKey);
+		ISockio io = pool.getSock(cacheKey);
 		long eStart = System.currentTimeMillis();
 		
 		if (null == io) {
@@ -640,7 +646,7 @@ public final class TextClient implements IMemCache {
 				io.write(SPACE);
 				io.write(IOUtil.encode(FastConvertor.MARKER_STRING));
 				io.write(SPACE);
-				io.write(IOUtil.encode(secTTL)); // 超时标志
+				io.write(IOUtil.encode(ttl)); // 超时标志
 				io.write(SPACE);
 				io.write(IOUtil.encode(data.length)); // 对象大小
 				io.write(CRLF);
@@ -694,7 +700,7 @@ public final class TextClient implements IMemCache {
 		}
 
 		long cStart = System.currentTimeMillis();
-		ISockIO io = pool.getSock(cacheKey);
+		ISockio io = pool.getSock(cacheKey);
 		long eStart = System.currentTimeMillis();
 		long cCost = eStart - cStart;
 		
@@ -739,7 +745,7 @@ public final class TextClient implements IMemCache {
 	}
 
 	@Override
-	public boolean touch(String cacheKey, int secTTL) {
+	public boolean touch(String cacheKey, int ttl) {
 
 		if (null == cacheKey) {
 			return false;
@@ -750,7 +756,7 @@ public final class TextClient implements IMemCache {
 		}
 
 		long cStart = System.currentTimeMillis();
-		ISockIO io = pool.getSock(cacheKey);
+		ISockio io = pool.getSock(cacheKey);
 		long eStart = System.currentTimeMillis();
 		long cCost = eStart - cStart;
 		
@@ -765,7 +771,7 @@ public final class TextClient implements IMemCache {
 			io.write(SPACE);
 			io.write(cacheKey.getBytes());
 			io.write(SPACE);
-			io.write(IOUtil.encode(secTTL));
+			io.write(IOUtil.encode(ttl));
 			io.write(CRLF);
 			io.flush();
 

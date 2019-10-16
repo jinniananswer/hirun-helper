@@ -23,7 +23,7 @@ public final class MemCacheUtil {
 
 	public static Map<String, Object> statsSlabs(String address) {
 		
-		Map<String, Object> rtn = new HashMap<String, Object>();
+		Map<String, Object> rtn = new HashMap<>(16);
 		
 		Socket socket = null;
 		BufferedInputStream in = null;
@@ -42,14 +42,6 @@ public final class MemCacheUtil {
 			String cmd = readLine(in);
 			while (!"END".equals(cmd)) {
 				cmd = cmd.substring(5);
-				if (cmd.equals("active_slabs")) {
-					//rtn.put("", value);
-				}
-				
-				if (cmd.equals("total_malloced")) {
-					
-				}
-				
 				String[] items = StringUtils.split(cmd, " ");
 				rtn.put(items[1], items[2]);
 				cmd = readLine(in);
@@ -59,9 +51,15 @@ public final class MemCacheUtil {
 			return null;
 		} finally {
 			try {
-				if (null != in)     in.close();
-				if (null != out)    out.close();
-				if (null != socket) socket.close();
+				if (null != in) {
+					in.close();
+				}
+				if (null != out) {
+					out.close();
+				}
+				if (null != socket) {
+					socket.close();
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -98,9 +96,15 @@ public final class MemCacheUtil {
 			return null;
 		} finally {
 			try {
-				if (null != in)     in.close();
-				if (null != out)    out.close();
-				if (null != socket) socket.close();
+				if (null != in)     {
+					in.close();
+				}
+				if (null != out) {
+					out.close();
+				}
+				if (null != socket) {
+					socket.close();
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -108,17 +112,16 @@ public final class MemCacheUtil {
 
 		return rtn;
 	}
-	
+
 	/**
 	 * 缓存信息收集
-	 * 
-	 * @param cacheName
+	 *
+	 * @param address
 	 * @return
-	 * @throws IOException
 	 */
 	public static Map<String, String> stats(String address) {
 
-		Map<String, String> rtn = new HashMap<String, String>();
+		Map<String, String> rtn = new HashMap<>(16);
 		
 		Socket socket = null;
 		BufferedInputStream in = null;
@@ -144,9 +147,15 @@ public final class MemCacheUtil {
 			return null;
 		} finally {
 			try {
-				if (null != in)     in.close();
-				if (null != out)    out.close();
-				if (null != socket) socket.close();
+				if (null != in) {
+					in.close();
+				}
+				if (null != out) {
+					out.close();
+				}
+				if (null != socket) {
+					socket.close();
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

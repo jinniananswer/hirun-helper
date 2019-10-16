@@ -22,24 +22,24 @@ public class SockIOPool {
 	/**
 	 * 一个Pool可以跨多个memcached实例，每个实例是一个SockIOBucket桶，根据cacheKey的hash值定位到桶
 	 */
-	private List<SockIOBucket> buckets = new ArrayList<SockIOBucket>();
+	private List<BaseSockIoBucket> buckets = new ArrayList<BaseSockIoBucket>();
 
 	/**
 	 * 挂掉的桶列表
 	 */
-	private List<SockIOBucket> deadBuckets = new ArrayList<SockIOBucket>();
+	private List<BaseSockIoBucket> deadBuckets = new ArrayList<BaseSockIoBucket>();
 
 	private int heartbeatSecond = 5;
-	
+
 	/**
 	 * 连接池的构造函数
-	 * 
-	 * @param address
-	 *            地址(复数)
-	 * @param poolSize
-	 *            连接池大小
+	 *
+	 * @param address 地址(复数)
+	 * @param poolSize 连接池大小
+	 * @param heartbeatSecond 心跳间隔，单位: 秒
+	 * @param useNio 是否启用 NIO 模式
 	 */
-	public SockIOPool(MemCacheAddress[] address, int poolSize, int heartbeatSecond, boolean useNIO) {
+	public SockIOPool(MemCacheAddress[] address, int poolSize, int heartbeatSecond, boolean useNio) {
 		
 		this.heartbeatSecond = heartbeatSecond;
 		
@@ -62,15 +62,15 @@ public class SockIOPool {
 				}
 			}
 			
-			SockIOBucket bucket = null;
+			BaseSockIoBucket bucket = null;
 
 			try {
 				if (null == addr.getSlave()) {
-					bucket = new SimpleSockIOBucket(masterHost, masterPort, poolSize, useNIO);
+					bucket = new SimpleBaseSockIoBucket(masterHost, masterPort, poolSize, useNio);
 				} else {
 					String slaveHost = slavePart[0];
 					int slavePort = Integer.parseInt(slavePart[1]);
-					bucket = new HASockIOBucket(masterHost, masterPort, slaveHost, slavePort, poolSize, useNIO);
+					bucket = new HABaseSockIoBucket(masterHost, masterPort, slaveHost, slavePort, poolSize, useNio);
 				}
 				
 				buckets.add(bucket);
@@ -95,7 +95,7 @@ public class SockIOPool {
 	 * @param cacheKey
 	 * @return
 	 */
-	public ISockIO getSock(String cacheKey) {
+	public ISockio getSock(String cacheKey) {
 		int hashCode = hash(cacheKey);
 		int divisor = buckets.size();
 
@@ -106,8 +106,8 @@ public class SockIOPool {
 		int position = hashCode % divisor;
 		position = (position < 0) ? -position : position;
 
-		SockIOBucket bucket = buckets.get(position);
-		return bucket.borrowSockIO();
+		BaseSockIoBucket bucket = buckets.get(position);
+		return bucket.borrowSockio();
 	}
 
 	/**
@@ -149,20 +149,20 @@ public class SockIOPool {
 		 */
 		private void bucketHeartbeat() {
 			try {
-				Iterator<SockIOBucket> iter = buckets.iterator();
+				Iterator<BaseSockIoBucket> iter = buckets.iterator();
 				while (iter.hasNext()) {
-					SockIOBucket bucket = iter.next();
+					BaseSockIoBucket bucket = iter.next();
 					
 					int preStateCode = bucket.getStateCode();
 					int curStateCode = bucket.healthCheck();
 					
-					if (SockIOBucket.STATE_ER == curStateCode || SockIOBucket.STATE_ERER == curStateCode) {
+					if (BaseSockIoBucket.STATE_ER == curStateCode || BaseSockIoBucket.STATE_ERER == curStateCode) {
 						bucket.close();
 						iter.remove();
 						deadBuckets.add(bucket);
 						log.error("memcached桶心跳失败！" + bucket.getAddress());
 					} else if (preStateCode != curStateCode) { // 触发状态变更
-						log.info("桶状态变更: " + SockIOBucket.STATES[preStateCode] + " -> " + SockIOBucket.STATES[curStateCode]);
+						log.info("桶状态变更: " + BaseSockIoBucket.STATES[preStateCode] + " -> " + BaseSockIoBucket.STATES[curStateCode]);
 						
 						// 1. 回收资源
 						bucket.close();
@@ -185,9 +185,9 @@ public class SockIOPool {
 		 */
 		private void bucketReconnect() {
 			
-			Iterator<SockIOBucket> iter = deadBuckets.iterator();
+			Iterator<BaseSockIoBucket> iter = deadBuckets.iterator();
 			while (iter.hasNext()) {
-				SockIOBucket bucket = iter.next();
+				BaseSockIoBucket bucket = iter.next();
 				try {
 					boolean success = bucket.init();
 					if (!success) {
@@ -199,7 +199,7 @@ public class SockIOPool {
 					
 					Collections.sort(buckets);
 					log.info("-------------------------");
-					for (SockIOBucket bkt : buckets) {
+					for (BaseSockIoBucket bkt : buckets) {
 						log.info("-- " + bkt.getAddress());
 					}
 					log.info("-------------------------");
