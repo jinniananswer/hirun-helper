@@ -110,4 +110,16 @@ public class Employee extends BaseEntity {
     @TableField("remark")
     private String remark;
 
+    @TableField(value="create_time", fill = FieldFill.INSERT)
+    private String createTime;
+
+    @TableField(value="create_user_id", fill = FieldFill.INSERT)
+    private String createUserId;
+
+    @TableField(value="update_time", fill = FieldFill.INSERT_UPDATE)
+    private String updateTime;
+
+    @TableField(value="update_user_id", fill = FieldFill.INSERT_UPDATE)
+    private String updateUserId;
+
 }
