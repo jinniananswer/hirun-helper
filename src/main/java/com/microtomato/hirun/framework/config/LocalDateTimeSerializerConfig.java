@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -56,6 +57,35 @@ public class LocalDateTimeSerializerConfig {
                     default:
                         // 格式: yyyy-MM-dd HH:mm:ss
                         return LocalDateTime.parse(source, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                }
+            }
+        };
+    }
+
+    /**
+     * Json 对象里的 String 自动转换成 LocalDateTime
+     *
+     * @return 转换器
+     */
+    @Bean
+    public Converter<String, LocalDate> LocalDateConvert() {
+        return new Converter<String, LocalDate>() {
+            @Override
+            public LocalDate convert(String source) {
+                if (StringUtils.isBlank(source)) {
+                    return null;
+                }
+
+                switch (source.length()) {
+                    case 8:
+                        // 格式: yyyyMMDD
+                        return LocalDate.parse(source, DateTimeFormatter.ofPattern("yyyyMMdd"));
+                    case 10:
+                        // 格式: yyyy-MM-DD
+                        return LocalDate.parse(source, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                    default:
+                        // 格式: yyyy-MM-dd HH:mm:ss
+                        return LocalDate.parse(source, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
                 }
             }
         };
