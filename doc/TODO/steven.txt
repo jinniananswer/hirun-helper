@@ -1,6 +1,7 @@
 模板:
 LocalDateTime (重要!)
-
+新库 create_date -> create_time
+单点登陆：新老系统集成。
 
 +--------------------+
    系统割接步骤梳理

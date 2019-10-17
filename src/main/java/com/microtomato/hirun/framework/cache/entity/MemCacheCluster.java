@@ -31,7 +31,7 @@ public class MemCacheCluster {
 	/**
 	 * 是否启用 NIO
 	 */
-	private boolean useNIO = false;
+	private boolean useNio = false;
 
 	/**
 	 * 集群实例地址集合

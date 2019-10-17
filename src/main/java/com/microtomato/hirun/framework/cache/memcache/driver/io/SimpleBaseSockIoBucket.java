@@ -13,9 +13,9 @@ import java.util.concurrent.TimeUnit;
  * @date 2019-10-15
  */
 @Slf4j
-public class SimpleSockIOBucket extends SockIOBucket {
+public class SimpleBaseSockIoBucket extends BaseSockIoBucket {
 
-	private boolean useNIO = true;
+	private boolean useNio = true;
 	
 	private String masterHost;
 	private int masterPort;
@@ -31,13 +31,13 @@ public class SimpleSockIOBucket extends SockIOBucket {
 	 */
 	private int version = 0;
 	
-	private LinkedBlockingQueue<ISockIO> masterSocks = new LinkedBlockingQueue<ISockIO>();
+	private LinkedBlockingQueue<ISockio> masterSocks = new LinkedBlockingQueue<ISockio>();
 	
-	public SimpleSockIOBucket(String masterHost, int masterPort, int poolSize, boolean useNIO) {
+	public SimpleBaseSockIoBucket(String masterHost, int masterPort, int poolSize, boolean useNio) {
 		this.masterHost = masterHost;
 		this.masterPort = masterPort;
 		this.poolSize = poolSize;
-		this.useNIO = useNIO;
+		this.useNio = useNio;
 	}
 	
 	/**
@@ -53,8 +53,8 @@ public class SimpleSockIOBucket extends SockIOBucket {
 		
 		for (int i = 0; i < this.poolSize; i++) {
 			
-			ISockIO sock = null;
-			if (this.useNIO) {
+			ISockio sock = null;
+			if (this.useNio) {
 				sock = new SockNIO(this, masterHost, masterPort, version, true);
 			} else {
 				sock = new SockBIO(this, masterHost, masterPort, version, true);
@@ -86,7 +86,7 @@ public class SimpleSockIOBucket extends SockIOBucket {
 		
 		for (int i = 0; i < poolSize; i++) {
 			try {
-				ISockIO sock = masterSocks.poll();
+				ISockio sock = masterSocks.poll();
 				if (null != sock) {
 					sock.close();
 				}
@@ -104,8 +104,8 @@ public class SimpleSockIOBucket extends SockIOBucket {
 	 * @return
 	 */
 	@Override
-	public ISockIO borrowSockIO() {
-		return borrowSockIO(5);
+	public ISockio borrowSockio() {
+		return borrowSockio(5);
 	}
 	
 	/**
@@ -114,9 +114,9 @@ public class SimpleSockIOBucket extends SockIOBucket {
 	 * @return
 	 */
 	@Override
-	public ISockIO borrowSockIO(long timeout) {
+	public ISockio borrowSockio(long timeout) {
 		
-		ISockIO sock = null;
+		ISockio sock = null;
 		
 		try {
 			// 当连接池为空时，会堵塞一段时间
@@ -135,7 +135,7 @@ public class SimpleSockIOBucket extends SockIOBucket {
 	 * @param sock
 	 */
 	@Override
-	public void returnSockIO(ISockIO sock) {
+	public void returnSockio(ISockio sock) {
 		if (this.version != sock.getVersion()) {
 			// 连接的版本号和桶的版本号不一致，说明是前次桶资源释放不完全。
 			try {
@@ -148,12 +148,12 @@ public class SimpleSockIOBucket extends SockIOBucket {
 		masterSocks.offer(sock);
 	}
 	
-	public boolean addSock(ISockIO sock) {
+	public boolean addSock(ISockio sock) {
 		return masterSocks.add(sock);
 	}
 
 	@Override
-	public boolean delSock(ISockIO sock) {
+	public boolean delSock(ISockio sock) {
 		return masterSocks.remove(sock);
 	}
 	
@@ -162,7 +162,7 @@ public class SimpleSockIOBucket extends SockIOBucket {
 		
 		int curStateCode = STATE_ER;
 		
-		ISockIO io = this.borrowSockIO(); // 直接从连接池取连接，来判断桶的状态
+		ISockio io = this.borrowSockio(); // 直接从连接池取连接，来判断桶的状态
 		if (null != io) {
 			curStateCode = io.isAlive() ? STATE_OK : STATE_ER;
 			io.release(); // 记得释放
@@ -170,8 +170,8 @@ public class SimpleSockIOBucket extends SockIOBucket {
 		} 
 		
 		// 连接池取不到链接，尝试创建一个链接，来判断桶的状态
-		ISockIO sock = null;
-		if (this.useNIO) {
+		ISockio sock = null;
+		if (this.useNio) {
 			sock = new SockNIO(this, masterHost, masterPort, version, true);
 		} else {
 			sock = new SockBIO(this, masterHost, masterPort, version, true);
@@ -203,7 +203,7 @@ public class SimpleSockIOBucket extends SockIOBucket {
 	}
 
 	@Override
-	public int compareTo(SockIOBucket o) {
+	public int compareTo(BaseSockIoBucket o) {
 		return getAddress().compareTo(o.getAddress());
 	}
 	

@@ -50,6 +50,8 @@ public final class FastConvertor {
 			case MARKER_STRINGBUILDER: datas = encode((StringBuilder)obj);  break;
 			case MARKER_DATE:          datas = encode((Date)obj);           break;
 			case MARKER_BYTEARR:       datas = encode((byte[])obj);         break;
+			default:
+				throw new IllegalArgumentException("wrong parameter flag: " + flag);
 		}		
 		return datas;
 	}
@@ -63,8 +65,11 @@ public final class FastConvertor {
 	public static final byte[] encode(Boolean value) {
 		byte[] b = new byte[1];
 
-		if (value.booleanValue()) b[0] = 1;
-		else					  b[0] = 0;
+		if (value.booleanValue()) {
+			b[0] = 1;
+		} else {
+			b[0] = 0;
+		}
 
 		return b;
 	}
@@ -240,6 +245,8 @@ public final class FastConvertor {
 			case MARKER_STRINGBUILDER: obj = decodeStringBuilder(datas); break;
 			case MARKER_DATE:          obj = decodeDate(datas);          break;			
 			case MARKER_BYTEARR:       obj = decodeByteArr(datas);       break;
+			default:
+				throw new IllegalArgumentException("wrong parameter flag: " + flag);
 		}
 		
 		return obj;
