@@ -19,7 +19,7 @@ public class AutoSetMetaObjectAdvice implements MetaObjectHandler {
     /**
      * 记录创建时间
      */
-    private static final String CREATE_DATE = "createDate";
+    private static final String CREATE_TIME = "createTime";
 
     /**
      * 记录更新时间
@@ -46,7 +46,7 @@ public class AutoSetMetaObjectAdvice implements MetaObjectHandler {
         Long userId = WebContextUtils.getUserContext().getUserId();
         LocalDateTime localDateTime = LocalDateTime.now();
 
-        this.setInsertFieldValByName(CREATE_DATE, localDateTime, metaObject);
+        this.setInsertFieldValByName(CREATE_TIME, localDateTime, metaObject);
         this.setInsertFieldValByName(UPDATE_TIME, localDateTime, metaObject);
         this.setInsertFieldValByName(CREATE_USER_ID, userId, metaObject);
         this.setInsertFieldValByName(UPDATE_USER_ID, userId, metaObject);
