@@ -2,6 +2,8 @@ package com.microtomato.hirun.modules.organization.entity.dto;
 
 import lombok.Data;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -47,9 +49,9 @@ public class EmployeeDTO {
 
     private String homeAddress;
 
-    private String inDate;
+    private LocalDateTime inDate;
 
-    private String regularDate;
+    private LocalDateTime regularDate;
 
     private String workNature;
 
@@ -57,7 +59,7 @@ public class EmployeeDTO {
 
     private String firstEducationLevel;
 
-    private String highestEducationLevel;
+    private String educationLevel;
 
     private String schoolType;
 
@@ -69,7 +71,7 @@ public class EmployeeDTO {
 
     private String techTitle;
 
-    private String jobDate;
+    private LocalDate jobDate;
 
     private EmployeeJobRoleDTO employeeJobRole;
 

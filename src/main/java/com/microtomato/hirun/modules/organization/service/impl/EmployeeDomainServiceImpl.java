@@ -12,6 +12,7 @@ import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleServic
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import com.microtomato.hirun.modules.organization.service.IOrgService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
+import com.microtomato.hirun.modules.user.entity.domain.UserDO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,9 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
 
     @Autowired
     private EmployeeDO employeeDO;
+
+    @Autowired
+    private UserDO userDO;
 
     @Override
     public List<EmployeeDTO> selectEmployee(String searchText) {
@@ -81,6 +85,10 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
     public void employeeEntry(EmployeeDTO employeeDTO) {
         Employee employee = new Employee();
         BeanUtils.copyProperties(employeeDTO, employee);
+
+        //默认创建用户
+        Long userId = this.userDO.create(employee.getMobileNo(), null);
+        employee.setUserId(userId);
 
         EmployeeJobRole jobRole = null;
         EmployeeJobRoleDTO jobRoleDTO = employeeDTO.getEmployeeJobRole();

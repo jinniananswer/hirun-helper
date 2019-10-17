@@ -44,8 +44,23 @@ public class Employee extends BaseEntity {
     @TableField("identity_no")
     private String identityNo;
 
+    @TableField("birthday_type")
+    private String birthdayType;
+
+    @TableField("birthday")
+    private LocalDate birthday;
+
     @TableField("mobile_no")
     private String mobileNo;
+
+    @TableField("home_prov")
+    private Integer homeProv;
+
+    @TableField("home_city")
+    private Integer homeCity;
+
+    @TableField("home_region")
+    private Integer homeRegion;
 
     @TableField("home_address")
     private String homeAddress;
@@ -58,6 +73,9 @@ public class Employee extends BaseEntity {
 
     @TableField("native_region")
     private Integer nativeRegion;
+
+    @TableField("native_address")
+    private String nativeAddress;
 
     @TableField("in_date")
     private LocalDateTime inDate;
@@ -92,11 +110,20 @@ public class Employee extends BaseEntity {
     @TableField("education_level")
     private String educationLevel;
 
+    @TableField("first_education_level")
+    private String firstEducationLevel;
+
     @TableField("major")
     private String major;
 
     @TableField("school")
     private String school;
+
+    @TableField("school_type")
+    private String schoolType;
+
+    @TableField("tech_title")
+    private String techTitle;
 
     @TableField("certificate_no")
     private String certificateNo;
@@ -111,15 +138,15 @@ public class Employee extends BaseEntity {
     private String remark;
 
     @TableField(value="create_time", fill = FieldFill.INSERT)
-    private String createTime;
+    private LocalDateTime createTime;
 
     @TableField(value="create_user_id", fill = FieldFill.INSERT)
-    private String createUserId;
+    private Long createUserId;
 
     @TableField(value="update_time", fill = FieldFill.INSERT_UPDATE)
-    private String updateTime;
+    private LocalDateTime updateTime;
 
     @TableField(value="update_user_id", fill = FieldFill.INSERT_UPDATE)
-    private String updateUserId;
+    private Long updateUserId;
 
 }

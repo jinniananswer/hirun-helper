@@ -1,16 +1,14 @@
 package com.microtomato.hirun.modules.organization.entity.po;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import java.time.LocalDateTime;
+import com.baomidou.mybatisplus.annotation.*;
 import com.microtomato.hirun.framework.data.BaseEntity;
-import com.baomidou.mybatisplus.annotation.TableField;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
+
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -58,14 +56,14 @@ public class EmployeeJobRole extends BaseEntity {
     private String remark;
 
     @TableField(value="create_time", fill = FieldFill.INSERT)
-    private String createTime;
+    private LocalDateTime createTime;
 
     @TableField(value="create_user_id", fill = FieldFill.INSERT)
-    private String createUserId;
+    private Long createUserId;
 
     @TableField(value="update_time", fill = FieldFill.INSERT_UPDATE)
-    private String updateTime;
+    private LocalDateTime updateTime;
 
     @TableField(value="update_user_id", fill = FieldFill.INSERT_UPDATE)
-    private String updateUserId;
+    private Long updateUserId;
 }

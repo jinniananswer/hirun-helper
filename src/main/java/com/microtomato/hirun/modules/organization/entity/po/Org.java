@@ -8,6 +8,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+import java.time.LocalDateTime;
+
 /**
  * <p>
  * 
@@ -57,14 +59,14 @@ public class Org extends BaseEntity {
     private String status;
 
     @TableField(value="create_time", fill = FieldFill.INSERT)
-    private String createTime;
+    private LocalDateTime createTime;
 
     @TableField(value="create_user_id", fill = FieldFill.INSERT)
-    private String createUserId;
+    private Long createUserId;
 
     @TableField(value="update_time", fill = FieldFill.INSERT_UPDATE)
-    private String updateTime;
+    private LocalDateTime updateTime;
 
     @TableField(value="update_user_id", fill = FieldFill.INSERT_UPDATE)
-    private String updateUserId;
+    private Long updateUserId;
 }
