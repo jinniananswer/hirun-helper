@@ -1,12 +1,15 @@
 layui.extend({
     orgTree: 'org'
-}).define(['ajax', 'table', 'element', 'orgTree', 'layer', 'form'], function (exports) {
+}).define(['ajax', 'table', 'element', 'orgTree', 'layer', 'form','select'], function (exports) {
     var $ = layui.$;
     var table = layui.table;
     var layer = layui.layer;
     var form = layui.form;
     var employee = {
         init: function () {
+
+            layui.select.init('sex', 'SEX', '', true);
+
             table.render({
                 elem: "#employee_table",
                 height: 312,

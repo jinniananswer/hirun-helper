@@ -74,21 +74,20 @@
         <div class="layui-form-item" >
             <label class="layui-form-label">离职次数</label>
             <div class="layui-input-block" style="">
-                <select name="destroyTimes" lay-verify="">
+                <select name="destroyTimes" id="destroyTimes">
                     <option value="1" selected>1</option>
                     <option value="2">2</option>
                 </select>
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">离职方式</label>
-            <div class="layui-input-block" style="">
-                <select name="destroyWay" lay-verify="">
-                    <option value="1">主动离职</option>
-                    <option value="2">裸辞</option>
-                    <option value="3">绩效优化</option>
-                    <option value="4">解除劳动合同</option>
-                </select>
+            <label class="layui-form-label layui-required">离职方式</label>
+            <div class="layui-input-block"  >
+                <div class="layui-form" lay-filter="destroyWay">
+                    <select id="destroyWay" name="createType" lay-destroyWay="required">
+
+                    </select>
+                </div>
             </div>
         </div>
         <div class="layui-form-item">

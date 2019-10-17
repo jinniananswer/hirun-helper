@@ -32,11 +32,11 @@
                             <div class="layui-inline">
                                 <label class="layui-form-label">性别：</label>
                                 <div class="layui-input-block">
-                                    <select name="sex" id="sex">
-                                        <option value=""></option>
-                                        <option value="1">男</option>
-                                        <option value="0">女</option>
-                                    </select>
+                                    <div class="layui-form" lay-filter="sex">
+                                        <select id="sex" name="sex" lay-destroyWay="required">
+
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                             <div class="layui-inline">
