@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.organization.service;
 
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeDTO;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeDestroyInfoDTO;
 
 import java.util.List;
 
@@ -15,4 +16,6 @@ public interface IEmployeeDomainService {
     List<EmployeeDTO> selectEmployee(String searchText);
 
     void employeeEntry(EmployeeDTO employeeDTO);
+
+    boolean destroyEmployee(EmployeeDestroyInfoDTO employeeDestroyInfoDTO);
 }

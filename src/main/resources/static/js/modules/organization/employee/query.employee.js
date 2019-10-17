@@ -23,7 +23,7 @@ layui.extend({
                 },
                 cols: [
                     [
-                        {field: 'userId', title: 'ID', width: 80, sort: true, fixed: 'left'},
+                        {field: 'employeeId', title: 'ID', width: 80, sort: true, fixed: 'left'},
                         {field: 'name', title: '姓名', width: 120},
                         {
                             field: 'sex', title: '性别', width: 80, sort: true, templet: function (d) {
@@ -35,6 +35,7 @@ layui.extend({
                             }
                         },
                         {field: 'identityNo', title: '身份证号码', width: 200},
+                        {field: 'mobileNo', title: '电话号码', width: 150},
                         {field: 'inDate', title: '入职时间', width: 200},
                         {
                             field: 'status', title: '状态', width: 100, templet: function (d) {
@@ -67,6 +68,8 @@ layui.extend({
                         sex: $("select[name='sex']").val(),
                         orgId: $("input[name='orgId']").val(),
                         mobile: $("input[name='mobile']").val(),
+                        status: $("select[name='employeestatus']").val(),
+
                     }
                 })
             });
@@ -75,7 +78,7 @@ layui.extend({
                 var data = obj.data;//获取当前行数据
                 var layEvent = obj.event;
                 if (layEvent === 'remove') {
-                    employee.quit(data);
+                    employee.destroy(data);
                 } else if (layEvent === 'callout') {
 
                 } else if (layEvent === 'holiday') {
@@ -94,19 +97,21 @@ layui.extend({
 
         },
 
-        quit: function (data) {
+        destroy: function (data) {
             layer.open({
                 type: 2,
                 title: '员工离职',
-                content: 'openUrl?url=/modules/organization/employee/remove_employee',
+                content: 'openUrl?url=/modules/organization/employee/destroy_employee',
                 maxmin: true,
                 btn: ['确定', '取消'],
-                area: ['550px', '550px'],
+                area: ['550px', '700px'],
                 skin: 'layui-layer-molv',
                 success: function (layero, index) {
                     var body = layer.getChildFrame('body', index);
                     body.find('#employeeId').val(data.employeeId);
                     body.find('#name').val(data.name);
+                    body.find('#identityNo').val(data.identityNo);
+                    body.find('#mobileNo').val(data.mobileNo);
                     form.render();
                 },
                 yes: function (index, layero) {
@@ -117,8 +122,8 @@ layui.extend({
             });
         },
 
-        selectOrg: function () {
-            layui.orgTree.init('orgTree', 'orgId', 'orgPath');
+        selectOrg : function() {
+            layui.orgTree.init('orgTree', 'orgId', 'orgPath', false);
         },
 
 
