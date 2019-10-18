@@ -19,6 +19,13 @@ layui.extend({
                 html.push("</div>");
 
                 employeeDiv.html(html.join(""));
+
+                $('#'+searchTextId).bind('keyup', function(event) {
+                    if (event.keyCode == "13") {
+                        //回车执行查询
+                        layui.selectEmployee.search(searchTextId, valueControlId, displayControlId);
+                    }
+                });
             }
             this.open(employeeDivId, showCheckbox, valueControlId, displayControlId);
         },
@@ -54,10 +61,11 @@ layui.extend({
 
             layui.ajax.get('/api/organization/employee/selectEmployee', 'searchText='+searchText, function (data) {
                 var employees = data.rows;
+                $("#"+searchTextId+"_items").empty();
                 if (employees == null || employees.length <= 0) {
                     return;
                 }
-                $("#"+searchTextId+"_items").empty();
+
                 var length = employees.length;
                 var html = [];
                 for (var i=0;i<length;i++) {

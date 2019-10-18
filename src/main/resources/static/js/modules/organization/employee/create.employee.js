@@ -13,12 +13,11 @@ layui.extend({
 
         init : function() {
             layui.select.init('createType', 'CREATE_EMPLOYEE_TYPE', '1', false);
-            layui.select.init('educationLevel', 'SEX', '1', false);
             layui.select.init('birthdayType', 'BIRTHDAY_TYPE', '1', false);
             layui.select.init('workNature', 'JOB_NATURE', '1', false);
-            layui.select.init('jobRole', 'JOB_ROLE', '1', true);
+            layui.select.init('jobRole', 'JOB_ROLE', null, true, '请选择或搜索岗位');
             layui.select.init('firstEducationLevel', 'EDUCATION_LEVEL', '3', false);
-            layui.select.init('highestEducationLevel', 'EDUCATION_LEVEL', '3', false);
+            layui.select.init('educationLevel', 'EDUCATION_LEVEL', '3', false);
             layui.select.init('schoolType', 'SCHOOL_TYPE', '1', false);
 
             layui.element.on('tab(employeeTab)', function(data){
@@ -39,8 +38,7 @@ layui.extend({
             });
 
             laydate.render({
-                elem: '#jobDate',
-                type: 'month'
+                elem: '#jobDate'
             });
 
             laydate.render({
@@ -59,7 +57,7 @@ layui.extend({
                 districtname: "nativeRegion",
                 level: 'nativeRegion',// 级别
             });
-            registerPicker.setValue("湖南省/长沙市/");
+            registerPicker.setValue("湖南省/长沙市/天心区");
 
             var homePicker = new layui.citypicker("#home-city-picker", {
                 provincename:"homeProv",
@@ -67,7 +65,7 @@ layui.extend({
                 districtname: "homeRegion",
                 level: 'homeRegion',// 级别
             });
-            homePicker.setValue("湖南省/长沙市/");
+            homePicker.setValue("湖南省/长沙市/天心区");
 
             form.on('submit(btnSubmit)', function(data){
                 layui.employee.create(data.field);
@@ -83,8 +81,21 @@ layui.extend({
             layui.selectEmployee.init('parentEmployeeList', 'employeeSearch', 'parentEmployeeId', 'parentEmployeeName', false);
         },
 
+        previous : function() {
+            this.currentTab--;
+            if (this.currentTab <= 1) {
+                $("#previous").css("display", "none");
+            }
+
+            layui.element.tabChange('employeeTab', this.currentTab);
+            return false;
+        },
+
         next : function() {
             this.currentTab++;
+            if (this.currentTab > 1) {
+                $("#previous").css("display", "");
+            }
             layui.element.tabChange('employeeTab', this.currentTab);
             return false;
         },

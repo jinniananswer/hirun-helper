@@ -138,7 +138,7 @@
                                 <label class="layui-form-label layui-required">岗位性质</label>
                                 <div class="layui-input-block">
                                     <div class="layui-form" lay-filter="workNature">
-                                        <select id="workNature" name="workNature" lay-verify="required">
+                                        <select id="employeeJobRole.workNature" name="employeeJobRole.workNature" lay-verify="required">
 
                                         </select>
                                     </div>
@@ -147,21 +147,21 @@
                             <div class="layui-form-item">
                                 <label class="layui-form-label">折算比例</label>
                                 <div class="layui-input-block">
-                                    <input type="text" name="discountRate" readonly placeholder="" autocomplete="off" class="layui-input"/>
+                                    <input type="text" id="employeeJobRole.discountRate" name="employeeJobRole.discountRate" readonly placeholder="" autocomplete="off" class="layui-input"/>
                                 </div>
                             </div>
                             <div class="layui-form-item">
                                 <label class="layui-form-label">归属部门</label>
                                 <div class="layui-input-block">
                                     <input type="text" id="orgPath" name="orgPath" onclick="layui.employee.selectOrg();" placeholder="请点击选择部门" autocomplete="off" class="layui-input"/>
-                                    <input type="hidden" id="orgId" name="orgId"/>
+                                    <input type="hidden" id="employeeJobRole.orgId" name="employeeJobRole.orgId"/>
                                 </div>
                             </div>
                             <div class="layui-form-item">
                                 <label class="layui-form-label layui-required">岗位</label>
                                 <div class="layui-input-block">
                                     <div class="layui-form" lay-filter="jobRole">
-                                        <select id="jobRole" name="jobRole" lay-verify="required" lay-search>
+                                        <select id="jobRole" name="employeeJobRole.jobRole" lay-verify="required" lay-search>
 
                                         </select>
                                     </div>
@@ -171,13 +171,13 @@
                                 <label class="layui-form-label">直属上级</label>
                                 <div class="layui-input-block">
                                     <input type="text" id="parentEmployeeName" name="parentEmployeeName" onclick="layui.employee.selectParentEmployee();" placeholder="请点击选择直属上级" autocomplete="off" class="layui-input"/>
-                                    <input type="hidden" id="parentEmployeeId" name="parentEmployeeId"/>
+                                    <input type="hidden" id="employeeJobRole.parentEmployeeId" name="employeeJobRole.parentEmployeeId"/>
                                 </div>
                             </div>
                             <div class="layui-form-item">
-                                <label class="layui-form-label">职级</label>
+                                <label class="layui-form-label">职称</label>
                                 <div class="layui-input-block">
-                                    <input type="text" id="jobGrade" name="jobGrade" placeholder="请输入职级" autocomplete="off" class="layui-input"/>
+                                    <input type="text" id="jobGrade" name="employeeJobRole.jobGrade" placeholder="请输入职称" autocomplete="off" class="layui-input"/>
                                 </div>
                             </div>
                         </div>
@@ -196,7 +196,7 @@
                                 <label class="layui-form-label">最高学历</label>
                                 <div class="layui-input-block">
                                     <div class="layui-form" lay-filter="highestEducationLevel">
-                                        <select id="highestEducationLevel" name="highestEducationLevel">
+                                        <select id="educationLevel" name="educationLevel">
 
                                         </select>
                                     </div>
@@ -283,6 +283,7 @@
                         <div class="layui-tab-item"></div>
                         <div class="layui-tab-item">6</div>
                         <div>
+                            <button id="previous" class="layui-btn layui-btn-lg" onclick="layui.employee.previous();" style="display: none">上一步</button>
                             <button id="next" class="layui-btn layui-btn-lg" onclick="layui.employee.next();">下一步</button>
                             <button id="btnSubmit" class="layui-btn layui-btn-danger layui-btn-lg" lay-submit lay-filter="btnSubmit">立即提交</button>
                         </div>

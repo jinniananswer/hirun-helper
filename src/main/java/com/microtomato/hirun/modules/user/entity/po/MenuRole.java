@@ -1,14 +1,14 @@
 package com.microtomato.hirun.modules.user.entity.po;
 
 import com.baomidou.mybatisplus.annotation.*;
-
-import java.time.LocalDateTime;
 import com.microtomato.hirun.framework.data.BaseEntity;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
+
+import java.time.LocalDateTime;
 
 /**
  * <p>
