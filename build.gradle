@@ -9,6 +9,25 @@ group = 'com.microtomato'
 version = '1.0.0'
 sourceCompatibility = '1.8'
 
+classes {
+    dependsOn 'copySql', 'copyResources'
+}
+
+
+task copyResources(type:Copy) {
+    from 'src/main/java'
+    into "$buildDir/classes"
+}
+
+task copySql(type:Copy) {
+    logger.info("拷贝 *Mapper.xml 文件")
+
+    from 'src/main/java'
+    //into "build/classes/java/main"
+    into "$buildDir/classes/java/main"
+    include '**/*.xml'
+}
+
 repositories {
     maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
 }
@@ -26,6 +45,7 @@ dependencies {
     implementation 'com.baomidou:dynamic-datasource-spring-boot-starter:2.5.6'
     implementation 'com.baomidou:mybatis-plus-boot-starter:3.1.0'
     implementation 'com.baomidou:mybatis-plus:3.1.0'
+
     implementation 'com.alibaba:druid-spring-boot-starter:1.1.20'
     implementation 'commons-codec:commons-codec:1.13'
     implementation "org.apache.commons:commons-lang3:3.8.1"

@@ -10,6 +10,7 @@ import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 /**
  * <p>
@@ -22,5 +23,6 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 @DS("ins")
 public interface EmployeeMapper extends BaseMapper<Employee> {
+    
     IPage<Employee> selectEmployeePage(Page<Employee> page, @Param(Constants.WRAPPER) Wrapper<Employee> wrapper);
 }
