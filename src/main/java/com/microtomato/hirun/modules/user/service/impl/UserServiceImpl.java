@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.exception.ErrorKind;
 import com.microtomato.hirun.framework.exception.cases.NotFoundException;
 import com.microtomato.hirun.framework.util.EncryptUtils;
+import com.microtomato.hirun.modules.user.entity.domain.UserDO;
 import com.microtomato.hirun.modules.user.entity.po.User;
 import com.microtomato.hirun.modules.user.exception.PasswordException;
 import com.microtomato.hirun.modules.user.mapper.UserMapper;
@@ -32,6 +33,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Autowired
     private UserMapper userMapper;
 
+    @Autowired
+    private UserDO userDO;
+
     @Override
     public User login(String username, String password) {
         User user = this.getOne(new QueryWrapper<User>().lambda().eq(User::getUsername, username));
@@ -39,7 +43,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             throw new NotFoundException("根据输入的用户名找不到用户信息，请确认用户名是否正确", ErrorKind.NOT_FOUND.getCode());
         }
 
-        boolean result = user.login(password);
+        boolean result = this.userDO.login(user, password);
         if (result) {
             return user;
         }
