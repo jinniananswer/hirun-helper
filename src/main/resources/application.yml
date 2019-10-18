@@ -15,7 +15,7 @@ server:
 logging:
   level:
     root: info
-    com.baomidou.mybatisplus: debug
+    com.baomidou.mybatisplus: info
     com.microtomato: debug
 
 spring:
