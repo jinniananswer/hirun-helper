@@ -9,25 +9,6 @@ group = 'com.microtomato'
 version = '1.0.0'
 sourceCompatibility = '1.8'
 
-classes {
-    dependsOn 'copySql', 'copyResources'
-}
-
-
-task copyResources(type:Copy) {
-    from 'src/main/java'
-    into "$buildDir/classes"
-}
-
-task copySql(type:Copy) {
-    logger.info("拷贝 *Mapper.xml 文件")
-
-    from 'src/main/java'
-    //into "build/classes/java/main"
-    into "$buildDir/classes/java/main"
-    include '**/*.xml'
-}
-
 repositories {
     maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
 }
