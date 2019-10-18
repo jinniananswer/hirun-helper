@@ -32,17 +32,18 @@
                             <div class="layui-inline">
                                 <label class="layui-form-label">性别：</label>
                                 <div class="layui-input-block">
-                                    <select name="sex" id="sex">
-                                        <option value=""></option>
-                                        <option value="0">男</option>
-                                        <option value="1">女</option>
-                                    </select>
+                                    <div class="layui-form" lay-filter="sex">
+                                        <select id="sex" name="sex" lay-destroyWay="required">
+
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                             <div class="layui-inline">
                                 <label class="layui-form-label">部门：</label>
                                 <div class="layui-input-block">
-                                    <input type="text" id="orgId" name="orgId" onclick="layui.employee.selectOrg();" placeholder="请点击选择部门" autocomplete="off" class="layui-input">
+                                    <input type="text" id="orgPath" name="orgPath" onclick="layui.employee.selectOrg();" placeholder="请点击选择部门" autocomplete="off" class="layui-input"/>
+                                    <input type="hidden" id="orgId" name="orgId"/>
                                 </div>
                             </div>
 

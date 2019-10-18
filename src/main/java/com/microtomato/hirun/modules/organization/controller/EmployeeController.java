@@ -1,7 +1,11 @@
 package com.microtomato.hirun.modules.organization.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeDTO;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeDestroyInfoDTO;
+import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.service.IEmployeeDomainService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import lombok.extern.slf4j.Slf4j;
@@ -45,5 +49,20 @@ public class EmployeeController {
     @RestResult
     public List<EmployeeDTO> selectEmployee(String searchText) {
         return employeeDomainServiceImpl.selectEmployee(searchText);
+    }
+
+    @GetMapping("/employeeList")
+    @RestResult
+    public IPage<Employee> employeeList(String name, String sex, String orgId, String mobile, String status, Integer page, Integer limit) {
+        Page<Employee> employeePage = new Page<>(page, limit);
+        IPage<Employee> employeeList = employeeServiceImpl.queryEmployeeList(name, sex, orgId, mobile,status,employeePage);
+        return employeeList;
+    }
+
+    @PostMapping("/destroyEmployee")
+    @RestResult
+    public boolean destroyEmployee(EmployeeDestroyInfoDTO employeeDestroyInfoDTO) {
+        boolean destroyRusult=employeeDomainServiceImpl.destroyEmployee(employeeDestroyInfoDTO);
+        return destroyRusult;
     }
 }

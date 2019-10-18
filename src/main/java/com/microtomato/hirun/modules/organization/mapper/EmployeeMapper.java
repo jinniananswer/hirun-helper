@@ -1,9 +1,16 @@
 package com.microtomato.hirun.modules.organization.mapper;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Constants;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 /**
  * <p>
@@ -16,5 +23,6 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 @DS("ins")
 public interface EmployeeMapper extends BaseMapper<Employee> {
-
+    
+    IPage<Employee> selectEmployeePage(Page<Employee> page, @Param(Constants.WRAPPER) Wrapper<Employee> wrapper);
 }

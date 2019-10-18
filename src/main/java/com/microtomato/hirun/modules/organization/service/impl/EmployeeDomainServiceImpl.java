@@ -1,19 +1,21 @@
 package com.microtomato.hirun.modules.organization.service.impl;
 
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.framework.util.TimeUtils;
+import com.microtomato.hirun.modules.organization.entity.domain.EmployeeBlackListDO;
 import com.microtomato.hirun.modules.organization.entity.domain.EmployeeDO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeDTO;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeDestroyInfoDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeJobRoleDTO;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
+import com.microtomato.hirun.modules.organization.entity.po.EmployeeBlacklist;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
 import com.microtomato.hirun.modules.organization.entity.po.Org;
-import com.microtomato.hirun.modules.organization.service.IEmployeeDomainService;
-import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
-import com.microtomato.hirun.modules.organization.service.IEmployeeService;
-import com.microtomato.hirun.modules.organization.service.IOrgService;
+import com.microtomato.hirun.modules.organization.service.*;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import com.microtomato.hirun.modules.user.entity.domain.UserDO;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -49,6 +51,10 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
     @Autowired
     private UserDO userDO;
 
+    @Autowired
+    private EmployeeBlackListDO employeeBlackListDO;
+
+
     @Override
     public List<EmployeeDTO> selectEmployee(String searchText) {
         List<Employee> employees = employeeService.searchByNameMobileNo(searchText);
@@ -79,6 +85,7 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
 
     /**
      * 新员工入职
+     *
      * @param employeeDTO
      */
     @Override
@@ -99,4 +106,39 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
 
         employeeDO.newEntry(employee, jobRole);
     }
+
+    /**
+     * 员工离职
+     *
+     * @param employeeDestroyInfoDTO
+     */
+    @Override
+    public boolean destroyEmployee(EmployeeDestroyInfoDTO employeeDestroyInfoDTO) {
+        boolean destroyResult = false;
+        //修改employee状态
+        Employee employee = new Employee();
+        BeanUtils.copyProperties(employeeDestroyInfoDTO, employee);
+        employee.setStatus("1");
+        employeeService.updateById(employee);
+
+        //todo 根据社保停买时间更新社保记录
+
+        //todo 根据离职时间终止合同记录
+
+        //如果为永不录用插入黑名单表
+        if (StringUtils.equals(employeeDestroyInfoDTO.getIsBlackList(), "on")) {
+            EmployeeBlacklist employeeBlacklist = new EmployeeBlacklist();
+            BeanUtils.copyProperties(employeeDestroyInfoDTO, employeeBlacklist);
+            employeeBlacklist.setStartTime(employeeDestroyInfoDTO.getDestroyDate());
+            employeeBlacklist.setEndTime(TimeUtils.stringToLocalDateTime("2999-12-31 00:00:00", "yyyy-MM-dd HH:mm:ss"));
+            employeeBlackListDO.newEntry(employeeBlacklist);
+        }
+
+        //todo 调系统管理接口暂停操作员账号
+
+        //根据调权限管理的返回结果决定返回boolean
+        return true;
+    }
+
+
 }

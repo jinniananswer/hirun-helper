@@ -15,7 +15,7 @@ server:
 logging:
   level:
     root: info
-    com.baomidou.mybatisplus: info
+    com.baomidou.mybatisplus: debug
     com.microtomato: debug
 
 spring:
@@ -80,4 +80,3 @@ rest:
 
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml
-

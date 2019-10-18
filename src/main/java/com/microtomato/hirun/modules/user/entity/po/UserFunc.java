@@ -52,8 +52,8 @@ public class UserFunc extends BaseEntity {
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)
     private Long createUserId;
 
-    @TableField(value = "create_date", fill = FieldFill.INSERT)
-    private LocalDateTime createDate;
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
+    private LocalDateTime createTime;
 
     @TableField(value = "update_user_id", fill = FieldFill.INSERT_UPDATE)
     private Long updateUserId;
