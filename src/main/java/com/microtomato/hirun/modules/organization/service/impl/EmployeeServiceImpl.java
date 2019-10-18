@@ -42,17 +42,17 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
     /**
      * 查询员工档案
      */
-    public IPage<Employee> queryEmployeeList(String name, String sex, String orgId, String mobileNo,String status, Integer page, Integer limit) {
+    public IPage<Employee> queryEmployeeList(String name, String sex, String orgId, String mobileNo, String status, Page<Employee> employeePage) {
         QueryWrapper<Employee> queryWrapper = new QueryWrapper<>();
 
-        queryWrapper.like(StringUtils.isNotEmpty(name),"NAME",name);
-        queryWrapper.eq(StringUtils.isNotEmpty(sex),"SEX",sex);
-        queryWrapper.like(StringUtils.isNotEmpty(mobileNo),"MOBILE_NO",mobileNo);
-        queryWrapper.eq(StringUtils.isNotEmpty(status),"STATUS",status);
+        queryWrapper.like(StringUtils.isNotEmpty(name), "NAME", name);
+        queryWrapper.eq(StringUtils.isNotEmpty(sex), "SEX", sex);
+        queryWrapper.like(StringUtils.isNotEmpty(mobileNo), "MOBILE_NO", mobileNo);
+        queryWrapper.eq(StringUtils.isNotEmpty(status), "STATUS", status);
 
+        //IPage<Employee> iPage = employeeMapper.selectPage(pageEmployee, queryWrapper);
+        IPage<Employee> iPage = employeeMapper.selectEmployeePage(employeePage, queryWrapper);
 
-        Page<Employee> pageEmployee = new Page<>(page, limit);
-        IPage<Employee> iPage = employeeMapper.selectPage(pageEmployee, queryWrapper);
         return iPage;
     }
 

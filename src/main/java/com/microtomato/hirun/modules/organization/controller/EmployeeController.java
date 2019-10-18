@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.organization.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeDestroyInfoDTO;
@@ -53,8 +54,8 @@ public class EmployeeController {
     @GetMapping("/employeeList")
     @RestResult
     public IPage<Employee> employeeList(String name, String sex, String orgId, String mobile, String status, Integer page, Integer limit) {
-        log.info("" + page);
-        IPage<Employee> employeeList = employeeServiceImpl.queryEmployeeList(name, sex, orgId, mobile,status, page, limit);
+        Page<Employee> employeePage = new Page<>(page, limit);
+        IPage<Employee> employeeList = employeeServiceImpl.queryEmployeeList(name, sex, orgId, mobile,status,employeePage);
         return employeeList;
     }
 
