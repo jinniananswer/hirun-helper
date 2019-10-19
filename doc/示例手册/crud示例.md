@@ -585,6 +585,40 @@ public class ExamResultNesting extends BaseEntity {
 List<ExamResultNesting> queryByExamIdNesting(Integer examId);
 ```
 
+#### 多表关联 + 条件构造器
+```java
+@Slf4j
+@Service
+public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> implements IEmployeeService {
+
+    @Autowired
+    private EmployeeMapper employeeMapper;
+    
+    @Override
+    public IPage<EmployeeExampleDTO> selectEmployeePageExample(String name, Long orgId, Long jobRole) {
+        Page<EmployeeExampleDTO> page = new Page<>(1, 10);
+        QueryWrapper<EmployeeExampleDTO> queryWrapper = new QueryWrapper<>();
+        queryWrapper.apply("b.employee_id = a.employee_id AND now() < b.end_date AND c.org_id = b.org_id");
+        queryWrapper.like(StringUtils.isNotEmpty(name), "a.name", name);
+        queryWrapper.eq(null != orgId, "b.org_id", orgId);
+        queryWrapper.eq(null != jobRole, "b.job_role", jobRole);
+        IPage<EmployeeExampleDTO> employeeExampleDTOIPage = employeeMapper.selectEmployeePageExample(page, queryWrapper);
+        return employeeExampleDTOIPage;
+    }
+
+}
+
+@Mapper
+@DS("ins")
+public interface EmployeeMapper extends BaseMapper<Employee> {
+    
+    @Select("SELECT a.name, a.employee_id, a.sex, a.mobile_no, a.identity_no, a.status, date_format( a.in_date, '%Y-%m-%d' ) in_date, b.job_role, c.org_id, c.name org_name\n" +
+        "FROM ins_employee a, ins_employee_job_role b, ins_org c\n" +
+        "${ew.customSqlSegment}")
+    IPage<EmployeeExampleDTO> selectEmployeePageExample(Page<EmployeeExampleDTO> page, @Param(Constants.WRAPPER) Wrapper wrapper);
+}
+```
+
 # 更新操作
 
 #### 按 ID 进行更新，实体中 id 必须有数据，其它字段不为 null 的情况下，会设置到 set 语句中。
