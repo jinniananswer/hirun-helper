@@ -1,12 +1,13 @@
-layui.define(function(exports){
+layui.define(['layer'], function(exports){
     var obj = {
-        open : function(url) {
-
+        open : function(url, title) {
+            var topLayui = parent === self ? layui : top.layui;
+            topLayui.index.openTabsPage(url, title);
         },
 
         close : function() {
             top.layui.admin.closeThisTabs();
         }
     };
-    exports('redirectTo', obj);
+    exports('redirect', obj);
 });
