@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeExampleDTO;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.mapper.EmployeeMapper;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
@@ -54,6 +55,21 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         IPage<Employee> iPage = employeeMapper.selectEmployeePage(employeePage, queryWrapper);
 
         return iPage;
+    }
+
+    /**
+     * 测试（后期删除）
+     */
+    @Override
+    public IPage<EmployeeExampleDTO> selectEmployeePageExample(String name, Long orgId, Long jobRole) {
+        Page<EmployeeExampleDTO> page = new Page<>(1, 10);
+        QueryWrapper<EmployeeExampleDTO> queryWrapper = new QueryWrapper<>();
+        queryWrapper.apply("b.employee_id = a.employee_id AND now() < b.end_date AND c.org_id = b.org_id");
+        queryWrapper.like(StringUtils.isNotEmpty(name), "a.name", name);
+        queryWrapper.eq(null != orgId, "b.org_id", orgId);
+        queryWrapper.eq(null != jobRole, "b.job_role", jobRole);
+        IPage<EmployeeExampleDTO> employeeExampleDTOIPage = employeeMapper.selectEmployeePageExample(page, queryWrapper);
+        return employeeExampleDTOIPage;
     }
 
 }
