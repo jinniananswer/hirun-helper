@@ -135,22 +135,6 @@
                                 </div>
                             </div>
                             <div class="layui-form-item">
-                                <label class="layui-form-label layui-required">岗位性质</label>
-                                <div class="layui-input-block">
-                                    <div class="layui-form" lay-filter="workNature">
-                                        <select id="workNature" name="employeeJobRole.workNature" lay-verify="required">
-
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="layui-form-item">
-                                <label class="layui-form-label">折算比例</label>
-                                <div class="layui-input-block">
-                                    <input type="text" id="employeeJobRole.discountRate" name="employeeJobRole.discountRate" readonly placeholder="" autocomplete="off" class="layui-input"/>
-                                </div>
-                            </div>
-                            <div class="layui-form-item">
                                 <label class="layui-form-label">归属部门</label>
                                 <div class="layui-input-block">
                                     <input type="text" id="orgPath" name="orgPath" onclick="layui.employee.selectOrg();" placeholder="请点击选择部门" autocomplete="off" class="layui-input"/>
@@ -165,6 +149,22 @@
 
                                         </select>
                                     </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label layui-required">岗位性质</label>
+                                <div class="layui-input-block">
+                                    <div class="layui-form" lay-filter="workNature">
+                                        <select id="workNature" name="employeeJobRole.workNature" lay-verify="required">
+
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">折算比例</label>
+                                <div class="layui-input-block">
+                                    <input type="text" id="employeeJobRole.discountRate" name="employeeJobRole.discountRate" readonly placeholder="" autocomplete="off" class="layui-input"/>
                                 </div>
                             </div>
                             <div class="layui-form-item">
@@ -195,7 +195,7 @@
                             <div class="layui-form-item">
                                 <label class="layui-form-label">最高学历</label>
                                 <div class="layui-input-block">
-                                    <div class="layui-form" lay-filter="highestEducationLevel">
+                                    <div class="layui-form" lay-filter="educationLevel">
                                         <select id="educationLevel" name="educationLevel">
 
                                         </select>
