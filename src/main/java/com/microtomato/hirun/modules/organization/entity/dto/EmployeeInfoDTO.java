@@ -2,9 +2,7 @@ package com.microtomato.hirun.modules.organization.entity.dto;
 
 import lombok.Data;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * @program: hirun-helper
@@ -12,7 +10,7 @@ import java.util.List;
  * @author: liuhui7
  **/
 @Data
-public class EmployeeQueryInfoDTO {
+public class EmployeeInfoDTO {
 
     private Long employeeId;
 
@@ -63,6 +61,12 @@ public class EmployeeQueryInfoDTO {
     private String parentEmployeeName;
 
     private String jobLevel;
+
+    private String jobNature;
+
+    private String discountRate;
+
+    private String isMain;
 
     private String isBlackList;
 }

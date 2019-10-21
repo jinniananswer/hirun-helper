@@ -7,8 +7,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeExampleDTO;
-import com.microtomato.hirun.modules.organization.entity.dto.EmployeeQueryInfoDTO;
-import com.microtomato.hirun.modules.organization.entity.dto.SearchEmployeeDTO;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeInfoDTO;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -33,7 +32,7 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
             " and a.status = '0' \n" +
             " and b.employee_id = a.employee_id\n" +
             " and c.org_id = b.org_id")
-    List<SearchEmployeeDTO> searchByNameMobileNo(String text);
+    List<EmployeeInfoDTO> searchByNameMobileNo(String text);
 
 
     /**
@@ -59,5 +58,5 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
             " ins_employee a, ins_employee_job_role b, ins_org c \n" +
             " ${ew.customSqlSegment}"
     )
-    IPage<EmployeeQueryInfoDTO> selectEmployeePage(Page<EmployeeQueryInfoDTO> page, @Param(Constants.WRAPPER) Wrapper wrapper);
+    IPage<EmployeeInfoDTO> selectEmployeePage(Page<EmployeeInfoDTO> page, @Param(Constants.WRAPPER) Wrapper wrapper);
 }

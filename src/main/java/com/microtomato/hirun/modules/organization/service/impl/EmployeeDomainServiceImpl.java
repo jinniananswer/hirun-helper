@@ -63,14 +63,14 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
 
 
     @Override
-    public List<SearchEmployeeDTO> selectEmployee(String searchText) {
-        List<SearchEmployeeDTO> employees = employeeMapper.searchByNameMobileNo(searchText);
+    public List<EmployeeInfoDTO> selectEmployee(String searchText) {
+        List<EmployeeInfoDTO> employees = employeeMapper.searchByNameMobileNo(searchText);
 
         if (ArrayUtils.isEmpty(employees)) {
             return null;
         }
 
-        for (SearchEmployeeDTO employee : employees) {
+        for (EmployeeInfoDTO employee : employees) {
             employee.setJobRoleName(staticDataService.getCodeName("JOB_ROLE", employee.getJobRole()));
         }
         return employees;
@@ -150,20 +150,20 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
 
     /**
      * 员工档案信息查询
-     * @param employeeQueryInfoDTO
+     * @param employeeInfoDTO
      * @param page
      * @return
      */
     @Override
-    public IPage<EmployeeQueryInfoDTO> queryEmployeeList(EmployeeQueryInfoDTO employeeQueryInfoDTO, Page<EmployeeQueryInfoDTO> page) {
-        IPage<EmployeeQueryInfoDTO> iPage=employeeService.queryEmployeeList(employeeQueryInfoDTO,page);
+    public IPage<EmployeeInfoDTO> queryEmployeeList(EmployeeInfoDTO employeeInfoDTO, Page<EmployeeInfoDTO> page) {
+        IPage<EmployeeInfoDTO> iPage=employeeService.queryEmployeeList(employeeInfoDTO,page);
         if(iPage==null){
             return null;
         }
-        List<EmployeeQueryInfoDTO> employeeDTOList=new ArrayList<EmployeeQueryInfoDTO>();
-        for(EmployeeQueryInfoDTO employeeQueryInfoDTOResult :iPage.getRecords()){
-            employeeQueryInfoDTOResult.setJobRoleName(staticDataService.getCodeName("JOB_ROLE", employeeQueryInfoDTOResult.getJobRole()));
-            employeeDTOList.add(employeeQueryInfoDTOResult);
+        List<EmployeeInfoDTO> employeeDTOList=new ArrayList<EmployeeInfoDTO>();
+        for(EmployeeInfoDTO employeeInfoDTOResult :iPage.getRecords()){
+            employeeInfoDTOResult.setJobRoleName(staticDataService.getCodeName("JOB_ROLE", employeeInfoDTOResult.getJobRole()));
+            employeeDTOList.add(employeeInfoDTOResult);
         }
         return iPage.setRecords(employeeDTOList);
     }

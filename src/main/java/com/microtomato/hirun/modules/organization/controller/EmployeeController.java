@@ -45,15 +45,15 @@ public class EmployeeController {
 
     @GetMapping("/searchEmployee")
     @RestResult
-    public List<SearchEmployeeDTO> searchEmployee(String searchText) {
+    public List<EmployeeInfoDTO> searchEmployee(String searchText) {
         return employeeDomainServiceImpl.selectEmployee(searchText);
     }
 
     @GetMapping("/selectEmployeeList")
     @RestResult
-    public IPage<EmployeeQueryInfoDTO> employeeList(EmployeeQueryInfoDTO employeeQueryInfoDTO, Integer page, Integer limit) {
-        Page<EmployeeQueryInfoDTO> employeeInfoDTOPage = new Page<>(page, limit);
-        IPage<EmployeeQueryInfoDTO> employeeList = employeeDomainServiceImpl.queryEmployeeList(employeeQueryInfoDTO,employeeInfoDTOPage);
+    public IPage<EmployeeInfoDTO> employeeList(EmployeeInfoDTO employeeInfoDTO, Integer page, Integer limit) {
+        Page<EmployeeInfoDTO> employeeInfoDTOPage = new Page<>(page, limit);
+        IPage<EmployeeInfoDTO> employeeList = employeeDomainServiceImpl.queryEmployeeList(employeeInfoDTO,employeeInfoDTOPage);
         return employeeList;
     }
 
