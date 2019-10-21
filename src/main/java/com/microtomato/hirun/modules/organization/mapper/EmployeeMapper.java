@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeExampleDTO;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeQueryInfoDTO;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -36,5 +37,17 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
         "${ew.customSqlSegment}")
     IPage<EmployeeExampleDTO> selectEmployeePageExample(Page<EmployeeExampleDTO> page, @Param(Constants.WRAPPER) Wrapper wrapper);
 
-    IPage<Employee> selectEmployeePage(Page<Employee> page, @Param(Constants.WRAPPER) Wrapper<Employee> wrapper);
+    /**
+     * 查询员工档案信息
+     * @param page
+     * @param wrapper
+     * @return
+     */
+    @Select("select a.name,a.employee_id,a.sex,a.mobile_no ,a.identity_no,a.status employee_status, date_format(a.in_date,'%Y-%m-%d') in_date," +
+            " b.job_role,b.org_id, c.name org_name from " +
+            " ins_employee a, ins_employee_job_role b, ins_org c \n" +
+            " ${ew.customSqlSegment}"
+    )
+    IPage<EmployeeQueryInfoDTO> selectEmployeePage(Page<EmployeeQueryInfoDTO> page, @Param(Constants.WRAPPER) Wrapper wrapper);
+
 }
