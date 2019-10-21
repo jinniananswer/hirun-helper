@@ -37,6 +37,12 @@ public class UserDO {
         return user.getUserId();
     }
 
+    /**
+     * 用户登陆
+     * @param user
+     * @param password
+     * @return
+     */
     public boolean login(User user, String password) {
         String encryptPassword = EncryptUtils.passwordEncode(password);
         if (StringUtils.equals(user.getPassword(), encryptPassword)) {
@@ -45,5 +51,23 @@ public class UserDO {
         else {
             throw new PasswordException("密码不正确!");
         }
+    }
+
+    /**
+     * 检验用户原密码
+     * @param originalPassword
+     * @return
+     */
+    public boolean verifyOriginalPassword(String originalPassword) {
+        //todo
+        return false;
+    }
+
+    /**
+     * 修改用户密码
+     * @param newPassword
+     */
+    public void changePassword(String newPassword) {
+        //todo
     }
 }
