@@ -5,6 +5,7 @@ import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -47,6 +48,16 @@ public class UserContext implements UserDetails {
      * 用户状态
      */
     private String status;
+
+    /**
+     * 组织 Id
+     */
+    private Long orgId;
+
+    /**
+     * 登录时间
+     */
+    private LocalDateTime loginTime = LocalDateTime.now();
 
     /**
      * 权限，角色

@@ -31,4 +31,12 @@ public interface IUserService extends IService<User> {
      * @return 密码修改成功与否
      */
     boolean changeStaffPassword(Long userId, String oldPassword, String newPassword);
+
+    /**
+     * 根据 userId 查 orgId
+     *
+     * @param userId 用户 ID
+     * @return orgId
+     */
+    Long queryOrgIdByUserId(Long userId);
 }

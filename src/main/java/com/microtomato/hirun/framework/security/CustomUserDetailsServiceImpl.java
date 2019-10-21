@@ -81,6 +81,10 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
             roleList.add(new Role(userRole.getRoleId(), ""));
         }
 
+        // 查登录用户的 orgId
+        Long orgId = userServiceImpl.queryOrgIdByUserId(user.getUserId());
+
+        userContext.setOrgId(orgId);
         userContext.setRoles(roleList);
         userContext.setGrantedAuthorities(grantedAuthorities);
         BeanUtils.copyProperties(user, userContext);

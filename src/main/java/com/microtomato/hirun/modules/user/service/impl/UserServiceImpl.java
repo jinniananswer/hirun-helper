@@ -74,6 +74,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         return reslut;
     }
 
+    /**
+     * 根据 userId 查 orgId
+     */
+    @Override
+    public Long queryOrgIdByUserId(Long userId) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.apply("a.user_id = b.user_id AND b.employee_id = c.employee_id AND c.end_date > NOW()");
+        queryWrapper.eq("a.user_id", userId);
+        return userMapper.queryOrgIdByUserId(queryWrapper);
+    }
 
     /**
      * 校验老密码
