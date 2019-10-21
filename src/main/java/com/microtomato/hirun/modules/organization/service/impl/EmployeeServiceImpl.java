@@ -5,7 +5,9 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeExampleDTO;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeQueryInfoDTO;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.mapper.EmployeeMapper;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
@@ -43,16 +45,16 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
     /**
      * 查询员工档案
      */
-    public IPage<Employee> queryEmployeeList(String name, String sex, String orgId, String mobileNo, String status, Page<Employee> employeePage) {
-        QueryWrapper<Employee> queryWrapper = new QueryWrapper<>();
+    public IPage<EmployeeQueryInfoDTO> queryEmployeeList(EmployeeQueryInfoDTO employeeQueryInfoDTO, Page<EmployeeQueryInfoDTO> employeePage) {
+        QueryWrapper<EmployeeDTO> queryWrapper = new QueryWrapper<>();
 
-        queryWrapper.like(StringUtils.isNotEmpty(name), "NAME", name);
-        queryWrapper.eq(StringUtils.isNotEmpty(sex), "SEX", sex);
-        queryWrapper.like(StringUtils.isNotEmpty(mobileNo), "MOBILE_NO", mobileNo);
-        queryWrapper.eq(StringUtils.isNotEmpty(status), "STATUS", status);
+        queryWrapper.apply("b.employee_id=a.employee_id AND now() < b.end_date AND c.org_id = b.org_id");
+        queryWrapper.like(StringUtils.isNotEmpty(employeeQueryInfoDTO.getName()), "a.name", employeeQueryInfoDTO.getName());
+        queryWrapper.eq(StringUtils.isNotEmpty(employeeQueryInfoDTO.getSex()), "a.sex", employeeQueryInfoDTO.getSex());
+        queryWrapper.likeRight(StringUtils.isNotEmpty(employeeQueryInfoDTO.getMobileNo()), "a.mobile_no", employeeQueryInfoDTO.getMobileNo());
+        queryWrapper.eq(StringUtils.isNotEmpty(employeeQueryInfoDTO.getEmployeeStatus()), "a.status", employeeQueryInfoDTO.getEmployeeStatus());
 
-        //IPage<Employee> iPage = employeeMapper.selectPage(pageEmployee, queryWrapper);
-        IPage<Employee> iPage = employeeMapper.selectEmployeePage(employeePage, queryWrapper);
+        IPage<EmployeeQueryInfoDTO> iPage = employeeMapper.selectEmployeePage(employeePage, queryWrapper);
 
         return iPage;
     }

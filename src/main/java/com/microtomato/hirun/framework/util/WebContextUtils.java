@@ -26,7 +26,7 @@ public class WebContextUtils {
 		if (principal instanceof UserContext) {
 			userContext = (UserContext) principal;
 		} else {
-			log.error("principal is not UserContext, " + principal);
+			log.error("principal is not UserContext, " + principal + ", " + principal.getClass());
 		}
 
 		return userContext;

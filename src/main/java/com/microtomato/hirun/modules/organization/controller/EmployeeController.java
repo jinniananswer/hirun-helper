@@ -6,7 +6,7 @@ import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeDestroyInfoDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeExampleDTO;
-import com.microtomato.hirun.modules.organization.entity.po.Employee;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeQueryInfoDTO;
 import com.microtomato.hirun.modules.organization.service.IEmployeeDomainService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import lombok.extern.slf4j.Slf4j;
@@ -52,11 +52,11 @@ public class EmployeeController {
         return employeeDomainServiceImpl.selectEmployee(searchText);
     }
 
-    @GetMapping("/employeeList")
+    @GetMapping("/selectEmployeeList")
     @RestResult
-    public IPage<Employee> employeeList(String name, String sex, String orgId, String mobile, String status, Integer page, Integer limit) {
-        Page<Employee> employeePage = new Page<>(page, limit);
-        IPage<Employee> employeeList = employeeServiceImpl.queryEmployeeList(name, sex, orgId, mobile,status,employeePage);
+    public IPage<EmployeeQueryInfoDTO> employeeList(EmployeeQueryInfoDTO employeeQueryInfoDTO, Integer page, Integer limit) {
+        Page<EmployeeQueryInfoDTO> employeeInfoDTOPage = new Page<>(page, limit);
+        IPage<EmployeeQueryInfoDTO> employeeList = employeeDomainServiceImpl.queryEmployeeList(employeeQueryInfoDTO,employeeInfoDTOPage);
         return employeeList;
     }
 
