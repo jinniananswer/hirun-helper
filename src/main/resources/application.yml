@@ -4,12 +4,28 @@ server:
   servlet:
     session:
       timeout: PT1H
+#      cookie:
+#        name: UISESSIONMEMBER
 
   # 开启 HTTPS 支持，首先应创建 keystore: keytool -keystore mykeys.jks -genkey -alias tomcat -keyalg RSA
 #  ssl:
 #    key-store: classpath:mykeys.jks
 #    key-store-password: spring
 #    key-password: spring
+
+# 跟单点登陆相关
+#security:
+#  oauth2:
+#    client:
+#      client-id: HirunSystem
+#      client-secret: 12345
+#      # 获取令牌的地址
+#      access-token-uri: http://192.168.37.131:8080/oauth/token
+#      # 授权用户被重定向的地址
+#      user-authorization-uri: http://192.168.37.131:8080/oauth/authorize
+#    resource:
+#      # 访问用户信息的地址
+#      user-info-uri: http://192.168.37.131:8080/user/me
 
 # 日志
 logging:
@@ -73,6 +89,8 @@ spring:
       enabled: true
       additional-paths: src/main/java
       exclude: static/**
+#  main:
+#    allow-bean-definition-overriding: true
 
 rest:
   api:
