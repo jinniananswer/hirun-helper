@@ -2,6 +2,7 @@ package com.microtomato.hirun.modules.user.service;
 
 import com.microtomato.hirun.modules.user.entity.po.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.microtomato.hirun.modules.user.entity.po.dto.UserDTO;
 
 /**
  * <p>
@@ -33,10 +34,10 @@ public interface IUserService extends IService<User> {
     boolean changeStaffPassword(Long userId, String oldPassword, String newPassword);
 
     /**
-     * 根据 userId 查 orgId
+     * 根据 userId 查 用户关联信息
      *
      * @param userId 用户 ID
      * @return orgId
      */
-    Long queryOrgIdByUserId(Long userId);
+    UserDTO queryRelatInfoByUserId(Long userId);
 }

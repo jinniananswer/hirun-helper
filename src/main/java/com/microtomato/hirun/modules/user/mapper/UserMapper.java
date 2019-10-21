@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.microtomato.hirun.modules.user.entity.po.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.microtomato.hirun.modules.user.entity.po.dto.UserDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -21,6 +22,6 @@ import org.apache.ibatis.annotations.Select;
 @DS("ins")
 public interface UserMapper extends BaseMapper<User> {
 
-    @Select("SELECT c.org_id FROM ins_user a, ins_employee b, ins_employee_job_role c ${ew.customSqlSegment}")
-    Long queryOrgIdByUserId(@Param(Constants.WRAPPER) Wrapper wrapper);
+    @Select("SELECT c.org_id, b.employee_id FROM ins_user a, ins_employee b, ins_employee_job_role c ${ew.customSqlSegment}")
+    UserDTO queryRelatInfoByUserId(@Param(Constants.WRAPPER) Wrapper wrapper);
 }

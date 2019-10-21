@@ -8,6 +8,7 @@ import com.microtomato.hirun.framework.exception.cases.NotFoundException;
 import com.microtomato.hirun.framework.util.EncryptUtils;
 import com.microtomato.hirun.modules.user.entity.domain.UserDO;
 import com.microtomato.hirun.modules.user.entity.po.User;
+import com.microtomato.hirun.modules.user.entity.po.dto.UserDTO;
 import com.microtomato.hirun.modules.user.exception.PasswordException;
 import com.microtomato.hirun.modules.user.mapper.UserMapper;
 import com.microtomato.hirun.modules.user.service.IUserService;
@@ -78,11 +79,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
      * 根据 userId 查 orgId
      */
     @Override
-    public Long queryOrgIdByUserId(Long userId) {
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+    public UserDTO queryRelatInfoByUserId(Long userId) {
+        QueryWrapper<UserDTO> queryWrapper = new QueryWrapper<>();
         queryWrapper.apply("a.user_id = b.user_id AND b.employee_id = c.employee_id AND c.end_date > NOW()");
         queryWrapper.eq("a.user_id", userId);
-        return userMapper.queryOrgIdByUserId(queryWrapper);
+        return userMapper.queryRelatInfoByUserId(queryWrapper);
     }
 
     /**
