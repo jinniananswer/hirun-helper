@@ -31,6 +31,7 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
             "where (a.name like concat('%',#{text},'%') or a.mobile_no like concat('%',#{text},'%'))\n" +
             " and a.status = '0' \n" +
             " and b.employee_id = a.employee_id\n" +
+            " and (now() between b.start_date and b.end_date) \n" +
             " and c.org_id = b.org_id")
     List<EmployeeInfoDTO> searchByNameMobileNo(String text);
 
