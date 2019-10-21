@@ -88,14 +88,10 @@ layui.extend({
                 var layEvent = obj.event;
                 if (layEvent === 'remove') {
                     employee.destroy(data);
-                } else if (layEvent === 'callout') {
-
+                } else if (layEvent === 'transOrg') {
+                    employee.transOrg(data);
                 } else if (layEvent === 'holiday') {
                     employee.holiday(data);
-                } else if (layEvent === 'callout') {
-
-                } else if (layEvent === 'second') {
-
                 }
             });
 
@@ -142,6 +138,31 @@ layui.extend({
                       '&identityNo='+data.identityNo+'&inDate='+data.inDate.substr(0,10);
             layui.redirect.open('openUrl?url=modules/organization/employee/manager_employeeholiday'+param, '员工休假管理');
             },
+
+        transOrg: function (data) {
+            layer.open({
+                type: 2,
+                title: '员工调动',
+                content: 'openUrl?url=/modules/organization/employee/destroy_employee',
+                maxmin: true,
+                btn: ['确定', '取消'],
+                area: ['550px', '700px'],
+                skin: 'layui-layer-molv',
+                success: function (layero, index) {
+                    var body = layer.getChildFrame('body', index);
+                    body.find('#employeeId').val(data.employeeId);
+                    body.find('#name').val(data.name);
+                    body.find('#identityNo').val(data.identityNo);
+                    body.find('#mobileNo').val(data.mobileNo);
+                    form.render();
+                },
+                yes: function (index, layero) {
+                    var body = layer.getChildFrame('body', index);
+                    var submit = body.find("#employee-remove-submit");
+                    submit.click();
+                }
+            });
+        },
 
         selectOrg : function() {
             layui.orgTree.init('orgTree', 'orgId', 'orgPath', false);
