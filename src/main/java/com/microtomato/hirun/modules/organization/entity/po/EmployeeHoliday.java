@@ -44,7 +44,7 @@ public class EmployeeHoliday extends BaseEntity {
     private Integer holidayType;
 
     @TableField("is_surrender_insurance")
-    private Integer isSurrenderInsurance;
+    private String isSurrenderInsurance;
 
     @TableField("start_time")
     private LocalDateTime startTime;
@@ -55,7 +55,7 @@ public class EmployeeHoliday extends BaseEntity {
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)
     private Long createUserId;
 
-    @TableField("create_time")
+    @TableField(value = "create_time",fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
     @TableField(value = "update_user_id", fill = FieldFill.INSERT_UPDATE)

@@ -1,14 +1,13 @@
 package com.microtomato.hirun.modules.organization.service.impl;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.organization.entity.domain.EmployeeBlackListDO;
 import com.microtomato.hirun.modules.organization.entity.domain.EmployeeDO;
-import com.microtomato.hirun.modules.organization.entity.dto.EmployeeDTO;
-import com.microtomato.hirun.modules.organization.entity.dto.EmployeeDestroyInfoDTO;
-import com.microtomato.hirun.modules.organization.entity.dto.EmployeeJobRoleDTO;
-import com.microtomato.hirun.modules.organization.entity.dto.EmployeeWorkExperienceDTO;
+import com.microtomato.hirun.modules.organization.entity.dto.*;
 import com.microtomato.hirun.modules.organization.entity.po.*;
 import com.microtomato.hirun.modules.organization.service.IEmployeeDomainService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
@@ -157,6 +156,26 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
 
         //根据调权限管理的返回结果决定返回boolean
         return true;
+    }
+
+    /**
+     * 员工档案信息查询
+     * @param employeeQueryInfoDTO
+     * @param page
+     * @return
+     */
+    @Override
+    public IPage<EmployeeQueryInfoDTO> queryEmployeeList(EmployeeQueryInfoDTO employeeQueryInfoDTO, Page<EmployeeQueryInfoDTO> page) {
+        IPage<EmployeeQueryInfoDTO> iPage=employeeService.queryEmployeeList(employeeQueryInfoDTO,page);
+        if(iPage==null){
+            return null;
+        }
+        List<EmployeeQueryInfoDTO> employeeDTOList=new ArrayList<EmployeeQueryInfoDTO>();
+        for(EmployeeQueryInfoDTO employeeQueryInfoDTOResult :iPage.getRecords()){
+            employeeQueryInfoDTOResult.setJobRoleName(staticDataService.getCodeName("JOB_ROLE", employeeQueryInfoDTOResult.getJobRole()));
+            employeeDTOList.add(employeeQueryInfoDTOResult);
+        }
+        return iPage.setRecords(employeeDTOList);
     }
 
 

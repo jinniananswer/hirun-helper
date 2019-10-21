@@ -1,6 +1,6 @@
 layui.extend({
     orgTree: 'org'
-}).define(['ajax', 'table', 'element', 'orgTree', 'layer', 'form','select'], function (exports) {
+}).define(['ajax', 'table', 'element', 'orgTree', 'layer', 'form','select','redirect'], function (exports) {
     var $ = layui.$;
     var table = layui.table;
     var layer = layui.layer;
@@ -12,8 +12,8 @@ layui.extend({
 
             table.render({
                 elem: "#employee_table",
-                height: 312,
-                url: '/api/organization/employee/employeeList',
+                height: 550,
+                url: '/api/organization/employee/selectEmployeeList',
                 loading: true,
                 toolbar: '#toolbar',
                 parseData: function (res) { //res 即为原始返回的数据
@@ -39,14 +39,21 @@ layui.extend({
                         },
                         {field: 'identityNo', title: '身份证号码', width: 200},
                         {field: 'mobileNo', title: '电话号码', width: 150},
-                        {field: 'inDate', title: '入职时间', width: 200},
+                        {field: 'inDate', title: '入职时间', width: 120,templet:function (d) {
+                                if(d.inDate!=''){
+                                    return d.inDate.substr(0,10)
+                                }
+                            }},
+                        {field: 'jobRoleName', title: '岗位', width: 120},
+                        {field: 'orgName', title: '部门', width: 150},
+
                         {
                             field: 'status', title: '状态', width: 100, templet: function (d) {
-                                if (d.status == 0) {
+                                if (d.employeeStatus == 0) {
                                     return '正常';
-                                } else if (d.status == 1) {
+                                } else if (d.employeeStatus == 1) {
                                     return '离职';
-                                } else if (d.status == 3) {
+                                } else if (d.employeeStatus == 3) {
                                     return '实习';
                                 }
                             }
@@ -70,9 +77,8 @@ layui.extend({
                         name: $("input[name='name']").val(),
                         sex: $("select[name='sex']").val(),
                         orgId: $("input[name='orgId']").val(),
-                        mobile: $("input[name='mobile']").val(),
-                        status: $("select[name='employeestatus']").val(),
-
+                        mobileNo: $("input[name='mobileNo']").val(),
+                        employeeStatus: $("select[name='employeeStatus']").val(),
                     }
                 })
             });
@@ -85,7 +91,7 @@ layui.extend({
                 } else if (layEvent === 'callout') {
 
                 } else if (layEvent === 'holiday') {
-
+                    employee.holiday(data);
                 } else if (layEvent === 'callout') {
 
                 } else if (layEvent === 'second') {
@@ -95,7 +101,7 @@ layui.extend({
 
             //监听工具栏新增按钮
             $('.layui-btn-container .layui-btn').on('click', function () {
-                window.location.href = 'openUrl?url=modules/organization/employee/create_employee'
+               layui.redirect.open('openUrl?url=modules/organization/employee/create_employee','新建员工档案');
             });
 
         },
@@ -124,6 +130,18 @@ layui.extend({
                 }
             });
         },
+
+        holiday: function (data) {
+            var sexName='';
+            if(data.sex==1){
+                sexName='男';
+            }else{
+                sexName='女';
+            }
+            var param='&employee_id='+data.employeeId+'&name='+data.name+'&mobileNo='+data.mobileNo+'&orgName='+data.orgName+'&sex='+sexName+'&jobRoleName='+data.jobRoleName+
+                      '&identityNo='+data.identityNo+'&inDate='+data.inDate.substr(0,10);
+            layui.redirect.open('openUrl?url=modules/organization/employee/manager_employeeholiday'+param, '员工休假管理');
+            },
 
         selectOrg : function() {
             layui.orgTree.init('orgTree', 'orgId', 'orgPath', false);

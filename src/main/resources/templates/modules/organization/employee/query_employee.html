@@ -50,7 +50,7 @@
                             <div class="layui-inline">
                                 <label class="layui-form-label">状态：</label>
                                 <div class="layui-input-block" style="">
-                                    <select name="employeestatus" lay-verify="">
+                                    <select name="employeeStatus" id="employeeStatus">
                                         <option value="">全部</option>
                                         <option value="0">在职</option>
                                         <option value="1">离职</option>
@@ -62,7 +62,7 @@
                             <div class="layui-inline">
                                 <label class="layui-form-label">电话号码：</label>
                                 <div class="layui-input-block" style="">
-                                    <input type="text" name="mobile" id="mobile" autocomplete="off" class="layui-input"
+                                    <input type="text" name="mobileNo" id="mobileNo" autocomplete="off" class="layui-input"
                                            placeholder=""/>
                                 </div>
                             </div>
@@ -70,7 +70,7 @@
                             <div class="layui-inline">
                                 <label class="layui-form-label">黑名单</label>
                                 <div class="layui-input-block">
-                                    <input type="checkbox" name="foverleaf" lay-skin="switch" lay-text="是|否">
+                                    <input type="checkbox" name="isBlackList" id="isBlackList" lay-skin="switch" lay-text="是|否">
                                 </div>
                             </div>
 
@@ -92,7 +92,7 @@
 </div>
 <script type="text/html" id="toolbar">
     <div class="layui-btn-container">
-        <button class="layui-btn" data-type="getCheckData">新增员工</button>
+        <button class="layui-btn" data-type="getCheckData"  lay-event="create">新增员工</button>
     </div>
 </script>
 
