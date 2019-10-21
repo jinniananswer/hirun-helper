@@ -68,7 +68,6 @@ public class EmployeeHolidayController {
         }
 
         boolean updateRestult = employeeHolidayDomainService.updateEmployeeHoliday(employeeHoliday);
-
         return updateRestult;
     }
 
