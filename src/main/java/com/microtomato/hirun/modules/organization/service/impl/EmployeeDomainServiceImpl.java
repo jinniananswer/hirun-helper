@@ -1,17 +1,18 @@
 package com.microtomato.hirun.modules.organization.service.impl;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.organization.entity.domain.EmployeeBlackListDO;
 import com.microtomato.hirun.modules.organization.entity.domain.EmployeeDO;
-import com.microtomato.hirun.modules.organization.entity.dto.EmployeeDTO;
-import com.microtomato.hirun.modules.organization.entity.dto.EmployeeDestroyInfoDTO;
-import com.microtomato.hirun.modules.organization.entity.dto.EmployeeJobRoleDTO;
-import com.microtomato.hirun.modules.organization.entity.po.Employee;
-import com.microtomato.hirun.modules.organization.entity.po.EmployeeBlacklist;
-import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
-import com.microtomato.hirun.modules.organization.entity.po.Org;
-import com.microtomato.hirun.modules.organization.service.*;
+import com.microtomato.hirun.modules.organization.entity.dto.*;
+import com.microtomato.hirun.modules.organization.entity.po.*;
+import com.microtomato.hirun.modules.organization.service.IEmployeeDomainService;
+import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
+import com.microtomato.hirun.modules.organization.service.IEmployeeService;
+import com.microtomato.hirun.modules.organization.service.IOrgService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import com.microtomato.hirun.modules.user.entity.domain.UserDO;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,6 +92,8 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
      * @param employeeDTO
      */
     @Override
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    @DS("ins")
     public void employeeEntry(EmployeeDTO employeeDTO) {
         Employee employee = new Employee();
         BeanUtils.copyProperties(employeeDTO, employee);
@@ -104,7 +109,20 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             BeanUtils.copyProperties(jobRoleDTO, jobRole);
         }
 
-        employeeDO.newEntry(employee, jobRole);
+        List<EmployeeWorkExperienceDTO> workExperienceDTOS = employeeDTO.getEmployeeWorkExperiences();
+        List<EmployeeWorkExperience> workExperiences = new ArrayList<EmployeeWorkExperience>();
+        if (ArrayUtils.isNotEmpty(workExperienceDTOS)) {
+            for (EmployeeWorkExperienceDTO workExperienceDTO : workExperienceDTOS) {
+                if (StringUtils.isNotBlank(workExperienceDTO.getContent())) {
+                    //如果content不为空，才是有意义的内容
+                    EmployeeWorkExperience workExperience = new EmployeeWorkExperience();
+                    BeanUtils.copyProperties(workExperienceDTO, workExperience);
+                    workExperiences.add(workExperience);
+                }
+            }
+        }
+
+        employeeDO.newEntry(employee, jobRole, workExperiences);
     }
 
     /**
@@ -138,6 +156,26 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
 
         //根据调权限管理的返回结果决定返回boolean
         return true;
+    }
+
+    /**
+     * 员工档案信息查询
+     * @param employeeQueryInfoDTO
+     * @param page
+     * @return
+     */
+    @Override
+    public IPage<EmployeeQueryInfoDTO> queryEmployeeList(EmployeeQueryInfoDTO employeeQueryInfoDTO, Page<EmployeeQueryInfoDTO> page) {
+        IPage<EmployeeQueryInfoDTO> iPage=employeeService.queryEmployeeList(employeeQueryInfoDTO,page);
+        if(iPage==null){
+            return null;
+        }
+        List<EmployeeQueryInfoDTO> employeeDTOList=new ArrayList<EmployeeQueryInfoDTO>();
+        for(EmployeeQueryInfoDTO employeeQueryInfoDTOResult :iPage.getRecords()){
+            employeeQueryInfoDTOResult.setJobRoleName(staticDataService.getCodeName("JOB_ROLE", employeeQueryInfoDTOResult.getJobRole()));
+            employeeDTOList.add(employeeQueryInfoDTOResult);
+        }
+        return iPage.setRecords(employeeDTOList);
     }
 
 

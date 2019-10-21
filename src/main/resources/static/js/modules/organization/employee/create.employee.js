@@ -2,7 +2,7 @@ layui.extend({
     orgTree: 'org',
     citypicker: 'city-picker/city-picker',
     selectEmployee: 'employee'
-}).define(['ajax', 'select', 'form', 'layer', 'laydate', 'laytpl', 'element', 'orgTree', 'citypicker', 'selectEmployee'],function(exports){
+}).define(['ajax', 'select', 'form', 'layer', 'laydate', 'laytpl', 'element', 'orgTree', 'citypicker', 'selectEmployee', 'redirect'],function(exports){
     var $ = layui.$;
     var form = layui.form;
     var layer = layui.layer;

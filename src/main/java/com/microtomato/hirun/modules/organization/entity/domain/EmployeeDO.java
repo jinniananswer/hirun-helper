@@ -1,13 +1,19 @@
 package com.microtomato.hirun.modules.organization.entity.domain;
 
+import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
+import com.microtomato.hirun.modules.organization.entity.po.EmployeeWorkExperience;
 import com.microtomato.hirun.modules.organization.mapper.EmployeeJobRoleMapper;
 import com.microtomato.hirun.modules.organization.mapper.EmployeeMapper;
+import com.microtomato.hirun.modules.organization.mapper.EmployeeWorkExperienceMapper;
+import com.microtomato.hirun.modules.organization.service.IEmployeeWorkExperienceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * @program: hirun-helper
@@ -26,8 +32,14 @@ public class EmployeeDO {
     @Autowired
     private EmployeeJobRoleMapper employeeJobRoleMapper;
 
+    @Autowired
+    private EmployeeWorkExperienceMapper employeeWorkExperienceMapper;
+
+    @Autowired
+    private IEmployeeWorkExperienceService employeeWorkExperienceService;
+
     /**
-     *
+     * 根据身份证号码判断该身份证的员工是否存在
      * @return
      */
     public boolean isExists() {
@@ -45,7 +57,7 @@ public class EmployeeDO {
     /**
      * 员工新入职
      */
-    public void newEntry(Employee employeeData, EmployeeJobRole jobRole) {
+    public void newEntry(Employee employeeData, EmployeeJobRole jobRole, List<EmployeeWorkExperience> workExperiences) {
         if (this.isExists()) {
             //如果证件号码已存在，则不允许做为新入职录入
         }
@@ -54,15 +66,41 @@ public class EmployeeDO {
             //如果是黑名单， 则不予录用
         }
         employeeData.setStatus("0");
-        int employeeId = employeeMapper.insert(employeeData);
-        this.allocateJob(jobRole);
+        employeeMapper.insert(employeeData);
+
+        if (jobRole != null) {
+            jobRole.setEmployeeId(employeeData.getEmployeeId());
+            this.allocateJob(jobRole);
+        }
+
+        if (ArrayUtils.isNotEmpty(workExperiences)) {
+            this.addWorkExperience(employeeData.getEmployeeId(), workExperiences);
+        }
     }
 
+    /**
+     * 员工分配工作岗位
+     * @param jobRole
+     */
     public void allocateJob(EmployeeJobRole jobRole) {
         if (jobRole == null) {
             return;
         }
         this.employeeJobRoleMapper.insert(jobRole);
+    }
+
+    /**
+     * 添加工作经历
+     * @param workExperiences
+     */
+    public void addWorkExperience(Long employeeId, List<EmployeeWorkExperience> workExperiences) {
+        if (ArrayUtils.isEmpty(workExperiences)) {
+            return;
+        }
+        for (EmployeeWorkExperience workExperience : workExperiences) {
+            workExperience.setEmployeeId(employeeId);
+            employeeWorkExperienceMapper.insert(workExperience);
+        }
     }
 
     /**
