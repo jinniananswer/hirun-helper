@@ -3,10 +3,7 @@ package com.microtomato.hirun.modules.organization.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
-import com.microtomato.hirun.modules.organization.entity.dto.EmployeeDTO;
-import com.microtomato.hirun.modules.organization.entity.dto.EmployeeDestroyInfoDTO;
-import com.microtomato.hirun.modules.organization.entity.dto.EmployeeExampleDTO;
-import com.microtomato.hirun.modules.organization.entity.dto.EmployeeQueryInfoDTO;
+import com.microtomato.hirun.modules.organization.entity.dto.*;
 import com.microtomato.hirun.modules.organization.service.IEmployeeDomainService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import lombok.extern.slf4j.Slf4j;
@@ -46,9 +43,9 @@ public class EmployeeController {
         return new HashMap();
     }
 
-    @GetMapping("/selectEmployee")
+    @GetMapping("/searchEmployee")
     @RestResult
-    public List<EmployeeDTO> selectEmployee(String searchText) {
+    public List<SearchEmployeeDTO> searchEmployee(String searchText) {
         return employeeDomainServiceImpl.selectEmployee(searchText);
     }
 

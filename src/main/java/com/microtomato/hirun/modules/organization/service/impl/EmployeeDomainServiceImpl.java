@@ -9,6 +9,7 @@ import com.microtomato.hirun.modules.organization.entity.domain.EmployeeBlackLis
 import com.microtomato.hirun.modules.organization.entity.domain.EmployeeDO;
 import com.microtomato.hirun.modules.organization.entity.dto.*;
 import com.microtomato.hirun.modules.organization.entity.po.*;
+import com.microtomato.hirun.modules.organization.mapper.EmployeeMapper;
 import com.microtomato.hirun.modules.organization.service.IEmployeeDomainService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
@@ -57,33 +58,22 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
     @Autowired
     private EmployeeBlackListDO employeeBlackListDO;
 
+    @Autowired
+    private EmployeeMapper employeeMapper;
+
 
     @Override
-    public List<EmployeeDTO> selectEmployee(String searchText) {
-        List<Employee> employees = employeeService.searchByNameMobileNo(searchText);
+    public List<SearchEmployeeDTO> selectEmployee(String searchText) {
+        List<SearchEmployeeDTO> employees = employeeMapper.searchByNameMobileNo(searchText);
 
         if (ArrayUtils.isEmpty(employees)) {
             return null;
         }
 
-        List<EmployeeDTO> employeeDTOs = new ArrayList<EmployeeDTO>();
-        for (Employee employee : employees) {
-            EmployeeDTO employeeDTO = new EmployeeDTO();
-            BeanUtils.copyProperties(employee, employeeDTO);
-
-            EmployeeJobRole employeeJobRole = employeeJobRoleService.getValidJobRole(employee.getEmployeeId());
-            if (employeeJobRole != null) {
-                EmployeeJobRoleDTO jobRoleDTO = new EmployeeJobRoleDTO();
-                BeanUtils.copyProperties(employeeJobRole, jobRoleDTO);
-                Org org = orgService.getById(employeeJobRole.getOrgId());
-                jobRoleDTO.setOrgName(org.getName());
-                jobRoleDTO.setJobRoleName(staticDataService.getCodeName("JOB_ROLE", employeeJobRole.getJobRole()));
-                employeeDTO.setEmployeeJobRole(jobRoleDTO);
-            }
-
-            employeeDTOs.add(employeeDTO);
+        for (SearchEmployeeDTO employee : employees) {
+            employee.setJobRoleName(staticDataService.getCodeName("JOB_ROLE", employee.getJobRole()));
         }
-        return employeeDTOs;
+        return employees;
     }
 
     /**
