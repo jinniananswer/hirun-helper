@@ -23,6 +23,12 @@ dependencies {
     //implementation 'org.springframework.boot:spring-boot-starter-jta-atomikos'
     implementation 'org.springframework.boot:spring-boot-devtools'
 
+    // 跟 SSO 相关
+    // 跟页面上通过 ${#authentication.name} 获取认证用户名有关
+//    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
+//    implementation 'org.springframework.security.oauth:spring-security-oauth2'
+//    implementation 'org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure:2.0.1.RELEASE'
+
     implementation 'com.baomidou:dynamic-datasource-spring-boot-starter:2.5.6'
     implementation 'com.baomidou:mybatis-plus-boot-starter:3.1.0'
     implementation 'com.baomidou:mybatis-plus:3.1.0'
