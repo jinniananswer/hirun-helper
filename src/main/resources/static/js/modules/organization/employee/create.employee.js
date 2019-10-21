@@ -73,6 +73,15 @@ layui.extend({
             });
         },
 
+        checkMobileNo : function() {
+            var mobileNo = $("#mobileNo").val();
+            if (mobileNo.length != 11) {
+                return;
+            }
+
+            layui.ajax.get("");
+        },
+
         selectOrg : function() {
             layui.orgTree.init('orgTree', 'orgId', 'orgPath', false);
         },
