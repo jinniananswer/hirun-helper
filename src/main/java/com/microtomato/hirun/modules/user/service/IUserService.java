@@ -10,6 +10,7 @@ import com.microtomato.hirun.modules.user.entity.po.dto.UserDTO;
  * </p>
  *
  * @author jinnian
+ * @author Steven
  * @since 2019-09-05
  */
 public interface IUserService extends IService<User> {
