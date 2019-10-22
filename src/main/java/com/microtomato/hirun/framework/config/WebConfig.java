@@ -21,8 +21,8 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         // 请求级时间一致性拦截器
         registry.addInterceptor(new RequestTimeInterceptor())
-            .addPathPatterns("/**");
-            // .excludePathPatterns("/login", "/css/**", "/img/**", "/js/**", "/layui/**", "/webfonts/**");
+            .addPathPatterns("/**")
+            .excludePathPatterns("/static/**", "/druid/**", "/favicon.ico");
     }
 
 }

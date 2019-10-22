@@ -1,5 +1,6 @@
 package com.microtomato.hirun.modules.organization.entity.domain;
 
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.sql.Wrapper;
 import java.util.List;
 
 /**
@@ -127,6 +129,10 @@ public class EmployeeDO {
     /**
      * 注销员工基本资料
      */
-    public void destroy() {
+    public void destroy(Employee employee, LambdaUpdateWrapper lambdaUpdateWrapper) {
+        //更新employee资料
+        employeeMapper.updateById(employee);
+        //更新employeeJobRole资料
+        employeeJobRoleMapper.update(null,lambdaUpdateWrapper);
     }
 }

@@ -34,7 +34,7 @@ public class EmployeeHolidayDomainServiceImpl implements IEmployeeHolidayDomainS
 
     @Override
     public boolean addEmployeeHoliday(EmployeeHoliday employeeHoliday) {
-        Integer newResult = employeeHolidayDO.newEntry(employeeHoliday);
+        Integer newResult = employeeHolidayDO.add(employeeHoliday);
         if (newResult != null || newResult!=0 ) {
             return true;
         }
@@ -48,7 +48,7 @@ public class EmployeeHolidayDomainServiceImpl implements IEmployeeHolidayDomainS
      */
     @Override
     public boolean updateEmployeeHoliday(EmployeeHoliday employeeHoliday) {
-        Integer updateResult =employeeHolidayDO.updateEntry(employeeHoliday);
+        Integer updateResult =employeeHolidayDO.modify(employeeHoliday);
         if (updateResult != null || updateResult!=0 ) {
             return true;
         }
@@ -59,7 +59,7 @@ public class EmployeeHolidayDomainServiceImpl implements IEmployeeHolidayDomainS
     @Override
     public boolean deleteEmployeeHoliday(EmployeeHoliday employeeHoliday) {
         employeeHoliday.setEndTime(employeeHoliday.getStartTime());
-        Integer deleteResult=employeeHolidayDO.deleteEntry(employeeHoliday);
+        Integer deleteResult=employeeHolidayDO.delete(employeeHoliday);
         if (deleteResult != null || deleteResult!=0 ) {
             return true;
         }

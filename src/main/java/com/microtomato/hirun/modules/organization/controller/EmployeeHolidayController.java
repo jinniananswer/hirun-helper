@@ -30,9 +30,9 @@ public class EmployeeHolidayController {
     /**
      * 查询休假记录
      */
-    @GetMapping("/selectEmployeeHoliday")
+    @GetMapping("/queryEmployeeHoliday")
     @RestResult
-    public IPage<EmployeeHoliday> selectEmployeeHoliday(Long employeeId, Integer page, Integer limit) {
+    public IPage<EmployeeHoliday> queryEmployeeHoliday(Long employeeId, Integer page, Integer limit) {
         Page<EmployeeHoliday> employeeHolidayPage = new Page<EmployeeHoliday>(page, limit);
         IPage<EmployeeHoliday> employeeHolidayIpage = employeeHolidayDomainService.selectEmployeeHolidayList(employeeId, employeeHolidayPage);
         return employeeHolidayIpage;
@@ -60,7 +60,7 @@ public class EmployeeHolidayController {
     @PostMapping("/updateEmployeeHoliday")
     @RestResult
     public boolean updateEmployeeHoliday(EmployeeHoliday employeeHoliday) {
-        //判断前台复选框是否选择休假期间购买保险，0不购买，1购买
+        //判断前台复选框是否选择休假期间购买保险，，0否，1是
         if (StringUtils.equals(employeeHoliday.getIsSurrenderInsurance(), "on")) {
             employeeHoliday.setIsSurrenderInsurance("1");
         } else {

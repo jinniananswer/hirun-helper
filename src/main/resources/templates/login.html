@@ -35,6 +35,7 @@
         <a href="#">忘记密码</a>
         <p><input type="checkbox" name="remember-me" value="true" checked="checked" lay-skin="primary"/>Remember Me</p>
     </div>
+    <input type="hidden" id="contextPath" name="contextPath" th:value="${#httpServletRequest.getContextPath()}" />
     <button id="lay-submit" type="submit" lay-submit lay-filter="LAY-user-login-submit">登陆</button>
 </div>
 <footer>
@@ -43,7 +44,7 @@
 <script>
     layui.extend(
         {
-            loginer : "{/}/static/js/login"
+            loginer : "{/}static/js/login"
         }
     ).use('loginer',function(args) {
         layui.loginer.init();

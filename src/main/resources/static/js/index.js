@@ -76,7 +76,7 @@ layui.define(['ajax', 'element', 'laytpl'],function(exports){
  	var laytpl = layui.laytpl;
  	var index = {
  		loadMenus : function() {
-			layui.ajax.get('/api/system/menu/list', '', function (data) {
+			layui.ajax.get('api/system/menu/list', '', function (data) {
                 var json = eval(data);
                 var menus = json.rows;
                 var rootTpl = document.getElementById("menuRoot").innerHTML;
