@@ -1,8 +1,6 @@
 package com.microtomato.hirun.modules.organization.entity.domain;
 
-import com.microtomato.hirun.modules.organization.entity.po.EmployeeBlacklist;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeHoliday;
-import com.microtomato.hirun.modules.organization.mapper.EmployeeBlacklistMapper;
 import com.microtomato.hirun.modules.organization.mapper.EmployeeHolidayMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +24,7 @@ public class EmployeeHolidayDO {
     /**
      * 新增员工休假
      */
-    public int newEntry(EmployeeHoliday employeeHoliday) {
+    public int add(EmployeeHoliday employeeHoliday) {
       //todo 判断假期是否重复
       return this.employeeHolidayMapper.insert(employeeHoliday);
     }
@@ -41,7 +39,7 @@ public class EmployeeHolidayDO {
     /**
      * 更新员工休假信息
      */
-    public int updateEntry(EmployeeHoliday employeeHoliday) {
+    public int modify(EmployeeHoliday employeeHoliday) {
         //todo 判断假期是否重复
         int updateResult=employeeHolidayMapper.updateById(employeeHoliday);
         return updateResult;
@@ -50,7 +48,7 @@ public class EmployeeHolidayDO {
     /**
      * 删除员工休假信息
      */
-    public int deleteEntry(EmployeeHoliday employeeHoliday) {
+    public int delete(EmployeeHoliday employeeHoliday) {
         int deleteResult=employeeHolidayMapper.updateById(employeeHoliday);
         return deleteResult;
     }

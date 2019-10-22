@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * @program: hirun-helper
- * @description: 员工领域对象
+ * @description: 员工黑名单领域对象
  * @author: liuhui
  * @create: 2019-10-14
  **/
@@ -25,7 +25,7 @@ public class EmployeeBlackListDO {
     /**
      * 新增黑名单记录
      */
-    public void newEntry(EmployeeBlacklist employeeBlacklist) {
+    public void addBlackList(EmployeeBlacklist employeeBlacklist) {
         this.employeeBlacklistMapper.insert(employeeBlacklist);
     }
 
