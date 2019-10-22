@@ -1,5 +1,5 @@
 layui.extend({
-    index: "{/}/js/index"
+    index: "{/}static/js/index"
 }).define(['ajax', 'tree', 'layer', 'index'], function(exports){
     var $ = layui.$;
     var obj = {

@@ -1,7 +1,11 @@
 package com.microtomato.hirun.modules.organization.service.impl;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
@@ -121,13 +125,19 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
      * @param employeeDestroyInfoDTO
      */
     @Override
+    @DS("ins")
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public boolean destroyEmployee(EmployeeDestroyInfoDTO employeeDestroyInfoDTO) {
-        boolean destroyResult = false;
-        //修改employee状态
+        //拼装employee信息
         Employee employee = new Employee();
         BeanUtils.copyProperties(employeeDestroyInfoDTO, employee);
         employee.setStatus("1");
-        employeeService.updateById(employee);
+        //拼装更新employeeJobRole信息
+        LambdaUpdateWrapper<EmployeeJobRole> updateWrapper= Wrappers.lambdaUpdate();
+        updateWrapper.eq(EmployeeJobRole::getEmployeeId,employee.getEmployeeId()).set(EmployeeJobRole::getEndDate,TimeUtils.getCurrentLocalDateTime());
+        updateWrapper.apply("end_date > start_date and end_date > NOW() ");
+
+        employeeDO.destroy(employee,updateWrapper);
 
         //todo 根据社保停买时间更新社保记录
 
@@ -139,7 +149,7 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             BeanUtils.copyProperties(employeeDestroyInfoDTO, employeeBlacklist);
             employeeBlacklist.setStartTime(employeeDestroyInfoDTO.getDestroyDate());
             employeeBlacklist.setEndTime(TimeUtils.stringToLocalDateTime("2999-12-31 00:00:00", "yyyy-MM-dd HH:mm:ss"));
-            employeeBlackListDO.newEntry(employeeBlacklist);
+            employeeBlackListDO.addBlackList(employeeBlacklist);
         }
 
         //todo 调系统管理接口暂停操作员账号
