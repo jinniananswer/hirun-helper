@@ -24,7 +24,7 @@ public class RequestTimeInterceptor extends HandlerInterceptorAdapter {
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
         RequestTimeHolder.remove();
-        log.debug("afterCompletion remove the object localDateTime inner threadLocal");
+        log.debug("remove localDateTime from localThread, " + request.getRequestURI());
     }
 
 }
