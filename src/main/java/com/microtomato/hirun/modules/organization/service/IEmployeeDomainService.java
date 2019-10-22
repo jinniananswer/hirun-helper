@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeDestroyInfoDTO;
-import com.microtomato.hirun.modules.organization.entity.dto.EmployeeQueryInfoDTO;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeInfoDTO;
 
 import java.util.List;
 
@@ -16,11 +16,11 @@ import java.util.List;
  **/
 public interface IEmployeeDomainService {
 
-    List<EmployeeDTO> selectEmployee(String searchText);
+    List<EmployeeInfoDTO> selectEmployee(String searchText);
 
     void employeeEntry(EmployeeDTO employeeDTO);
 
     boolean destroyEmployee(EmployeeDestroyInfoDTO employeeDestroyInfoDTO);
 
-    IPage<EmployeeQueryInfoDTO> queryEmployeeList(EmployeeQueryInfoDTO employeeQueryInfoDTO, Page<EmployeeQueryInfoDTO> page);
+    IPage<EmployeeInfoDTO> queryEmployeeList(EmployeeInfoDTO employeeInfoDTO, Page<EmployeeInfoDTO> page);
 }

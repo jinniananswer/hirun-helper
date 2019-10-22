@@ -59,7 +59,7 @@ layui.extend({
                 return;
             }
 
-            layui.ajax.get('/api/organization/employee/selectEmployee', 'searchText='+searchText, function (data) {
+            layui.ajax.get('/api/organization/employee/searchEmployee', 'searchText='+searchText, function (data) {
                 var employees = data.rows;
                 $("#"+searchTextId+"_items").empty();
                 if (employees == null || employees.length <= 0) {
@@ -81,17 +81,11 @@ layui.extend({
                     html.push("<div class=\"caller-main caller-fl\">");
                     html.push("<p><strong>"+employee.name+"</strong></p>");
                     html.push("<p class=\"caller-adds\"><i class=\"layui-icon layui-icon-cellphone\"></i>"+employee.mobileNo+"</p>");
-                    var orgName = '';
-                    var jobRoleName = '';
-                    if (employee.employeeJobRole != null) {
-                        orgName = employee.employeeJobRole.orgName;
-                        jobRoleName = employee.employeeJobRole.jobRoleName;
-                    }
-                    html.push("<p class=\"caller-adds\"><i class=\"layui-icon layui-icon-location\"></i>"+orgName+"</p>");
+                    html.push("<p class=\"caller-adds\"><i class=\"layui-icon layui-icon-location\"></i>"+employee.orgName+"</p>");
                     html.push("</div>");
                     html.push("<button class=\"layui-btn layui-btn-sm caller-fr\">");
 
-                    html.push(jobRoleName);
+                    html.push(employee.jobRoleName);
                     html.push("</button>");
 
                     html.push("</div>");

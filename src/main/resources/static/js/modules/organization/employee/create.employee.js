@@ -14,7 +14,7 @@ layui.extend({
         init : function() {
             layui.select.init('createType', 'CREATE_EMPLOYEE_TYPE', '1', false);
             layui.select.init('birthdayType', 'BIRTHDAY_TYPE', '1', false);
-            layui.select.init('workNature', 'JOB_NATURE', '1', false);
+            layui.select.init('jobNature', 'JOB_NATURE', '1', false);
             layui.select.init('jobRole', 'JOB_ROLE', null, true, '请选择或搜索岗位');
             layui.select.init('firstEducationLevel', 'EDUCATION_LEVEL', '3', false);
             layui.select.init('educationLevel', 'EDUCATION_LEVEL', '3', false);
@@ -71,6 +71,15 @@ layui.extend({
                 layui.employee.create(data.field);
                 return false;
             });
+        },
+
+        checkMobileNo : function() {
+            var mobileNo = $("#mobileNo").val();
+            if (mobileNo.length != 11) {
+                return;
+            }
+
+            layui.ajax.get("");
         },
 
         selectOrg : function() {

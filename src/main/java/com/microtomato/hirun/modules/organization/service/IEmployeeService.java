@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeExampleDTO;
-import com.microtomato.hirun.modules.organization.entity.dto.EmployeeQueryInfoDTO;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeInfoDTO;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 
 import java.util.List;
@@ -21,7 +21,7 @@ public interface IEmployeeService extends IService<Employee> {
 
     List<Employee> searchByNameMobileNo(String searchText);
 
-    IPage<EmployeeQueryInfoDTO> queryEmployeeList(EmployeeQueryInfoDTO employeeQueryInfoDTO, Page<EmployeeQueryInfoDTO> employeePage);
+    IPage<EmployeeInfoDTO> queryEmployeeList(EmployeeInfoDTO employeeInfoDTO, Page<EmployeeInfoDTO> employeePage);
 
     /**
      * 测试（后期删除）

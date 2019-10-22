@@ -21,6 +21,8 @@ public class EmployeeJobRoleDTO {
 
     private String jobRoleName;
 
+    private String jobNature;
+
     private String parentEmployeeId;
 
     private String parentEmployeeName;

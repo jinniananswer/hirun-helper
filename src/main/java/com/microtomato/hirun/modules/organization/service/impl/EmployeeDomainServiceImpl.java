@@ -9,6 +9,7 @@ import com.microtomato.hirun.modules.organization.entity.domain.EmployeeBlackLis
 import com.microtomato.hirun.modules.organization.entity.domain.EmployeeDO;
 import com.microtomato.hirun.modules.organization.entity.dto.*;
 import com.microtomato.hirun.modules.organization.entity.po.*;
+import com.microtomato.hirun.modules.organization.mapper.EmployeeMapper;
 import com.microtomato.hirun.modules.organization.service.IEmployeeDomainService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
@@ -57,33 +58,22 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
     @Autowired
     private EmployeeBlackListDO employeeBlackListDO;
 
+    @Autowired
+    private EmployeeMapper employeeMapper;
+
 
     @Override
-    public List<EmployeeDTO> selectEmployee(String searchText) {
-        List<Employee> employees = employeeService.searchByNameMobileNo(searchText);
+    public List<EmployeeInfoDTO> selectEmployee(String searchText) {
+        List<EmployeeInfoDTO> employees = employeeMapper.searchByNameMobileNo(searchText);
 
         if (ArrayUtils.isEmpty(employees)) {
             return null;
         }
 
-        List<EmployeeDTO> employeeDTOs = new ArrayList<EmployeeDTO>();
-        for (Employee employee : employees) {
-            EmployeeDTO employeeDTO = new EmployeeDTO();
-            BeanUtils.copyProperties(employee, employeeDTO);
-
-            EmployeeJobRole employeeJobRole = employeeJobRoleService.getValidJobRole(employee.getEmployeeId());
-            if (employeeJobRole != null) {
-                EmployeeJobRoleDTO jobRoleDTO = new EmployeeJobRoleDTO();
-                BeanUtils.copyProperties(employeeJobRole, jobRoleDTO);
-                Org org = orgService.getById(employeeJobRole.getOrgId());
-                jobRoleDTO.setOrgName(org.getName());
-                jobRoleDTO.setJobRoleName(staticDataService.getCodeName("JOB_ROLE", employeeJobRole.getJobRole()));
-                employeeDTO.setEmployeeJobRole(jobRoleDTO);
-            }
-
-            employeeDTOs.add(employeeDTO);
+        for (EmployeeInfoDTO employee : employees) {
+            employee.setJobRoleName(staticDataService.getCodeName("JOB_ROLE", employee.getJobRole()));
         }
-        return employeeDTOs;
+        return employees;
     }
 
     /**
@@ -160,20 +150,20 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
 
     /**
      * 员工档案信息查询
-     * @param employeeQueryInfoDTO
+     * @param employeeInfoDTO
      * @param page
      * @return
      */
     @Override
-    public IPage<EmployeeQueryInfoDTO> queryEmployeeList(EmployeeQueryInfoDTO employeeQueryInfoDTO, Page<EmployeeQueryInfoDTO> page) {
-        IPage<EmployeeQueryInfoDTO> iPage=employeeService.queryEmployeeList(employeeQueryInfoDTO,page);
+    public IPage<EmployeeInfoDTO> queryEmployeeList(EmployeeInfoDTO employeeInfoDTO, Page<EmployeeInfoDTO> page) {
+        IPage<EmployeeInfoDTO> iPage=employeeService.queryEmployeeList(employeeInfoDTO,page);
         if(iPage==null){
             return null;
         }
-        List<EmployeeQueryInfoDTO> employeeDTOList=new ArrayList<EmployeeQueryInfoDTO>();
-        for(EmployeeQueryInfoDTO employeeQueryInfoDTOResult :iPage.getRecords()){
-            employeeQueryInfoDTOResult.setJobRoleName(staticDataService.getCodeName("JOB_ROLE", employeeQueryInfoDTOResult.getJobRole()));
-            employeeDTOList.add(employeeQueryInfoDTOResult);
+        List<EmployeeInfoDTO> employeeDTOList=new ArrayList<EmployeeInfoDTO>();
+        for(EmployeeInfoDTO employeeInfoDTOResult :iPage.getRecords()){
+            employeeInfoDTOResult.setJobRoleName(staticDataService.getCodeName("JOB_ROLE", employeeInfoDTOResult.getJobRole()));
+            employeeDTOList.add(employeeInfoDTOResult);
         }
         return iPage.setRecords(employeeDTOList);
     }
