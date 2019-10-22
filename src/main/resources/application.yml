@@ -33,8 +33,12 @@ logging:
     root: info
     com.baomidou.mybatisplus: info
     com.microtomato: debug
+    com.microtomato.hirun.framework.filter: info
+    com.microtomato.hirun.framework.interceptor: info
 
 spring:
+#  mvc:
+#    static-path-pattern: /static/**
   datasource:
     dynamic:
       druid:
