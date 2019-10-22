@@ -50,9 +50,9 @@ public class UserController {
         return userList;
     }
 
-    @PostMapping("/changeStaffPassword")
+    @PostMapping("/changePassword")
     @RestResult
-    public boolean changeStaffPassword(String oldPassword, String password, String repassword) {
+    public boolean changePassword(String oldPassword, String password, String repassword) {
         if (!StringUtils.equals(password, repassword)) {
             throw new PasswordException("新密码与确认输入不一致，请重新输入。");
         }
@@ -60,8 +60,8 @@ public class UserController {
         UserContext userContext = WebContextUtils.getUserContext();
         Long userId = userContext.getUserId();
 
-        boolean changeResult = userServiceImpl.changeStaffPassword(userId, oldPassword, repassword);
+        boolean result = userServiceImpl.changePassword(userId, oldPassword, repassword);
 
-        return changeResult;
+        return result;
     }
 }

@@ -5,19 +5,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.exception.ErrorKind;
 import com.microtomato.hirun.framework.exception.cases.NotFoundException;
-import com.microtomato.hirun.framework.util.EncryptUtils;
 import com.microtomato.hirun.modules.user.entity.domain.UserDO;
 import com.microtomato.hirun.modules.user.entity.po.User;
 import com.microtomato.hirun.modules.user.entity.po.dto.UserDTO;
-import com.microtomato.hirun.modules.user.exception.PasswordException;
 import com.microtomato.hirun.modules.user.mapper.UserMapper;
 import com.microtomato.hirun.modules.user.service.IUserService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -57,23 +52,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
      * 变更用户密码
      */
     @Override
-    public boolean changeStaffPassword(Long userId, String oldPassword, String newPassword) {
-        boolean reslut = false;
-        // 校验老密码
-        boolean verifyResult = verifyOldPassword(userId, oldPassword);
-        if (verifyResult) {
-            User user = new User();
-            user.setUserId(userId);
-            user.setPassword(EncryptUtils.passwordEncode(newPassword));
-            user.setUpdateUserId(userId);
-            user.setUpdateTime(LocalDateTime.now());
-
-            int rows = userMapper.updateById(user);
-            if (rows > 0) {
-                reslut = true;
-            }
-        }
-        return reslut;
+    public boolean changePassword(Long userId, String oldPassword, String newPassword) {
+        User user = this.getById(userId);
+        boolean result = this.userDO.changePassword(user, oldPassword, newPassword);
+        return result;
     }
 
     /**
@@ -89,18 +71,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     /**
      * 校验老密码
-     *
      * @param userId
-     * @param oldpassword
+     * @param originalPassword
      * @return
      */
-    private boolean verifyOldPassword(Long userId, String oldpassword) {
+    private boolean verifyOldPassword(Long userId, String originalPassword) {
         User user = this.getById(userId);
-        String encryptPassword = EncryptUtils.passwordEncode(oldpassword);
-        if (StringUtils.equals(user.getPassword(), encryptPassword)) {
-            return true;
-        } else {
-            throw new PasswordException("原始密码不正确!");
-        }
+        return this.userDO.verifyOriginalPassword(user, originalPassword);
     }
 }

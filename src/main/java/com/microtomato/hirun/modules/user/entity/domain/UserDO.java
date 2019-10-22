@@ -58,16 +58,29 @@ public class UserDO {
      * @param originalPassword
      * @return
      */
-    public boolean verifyOriginalPassword(String originalPassword) {
-        //todo
-        return false;
+    public boolean verifyOriginalPassword(User user, String originalPassword) {
+        String encryptPassword = EncryptUtils.passwordEncode(originalPassword);
+        if (StringUtils.equals(user.getPassword(), encryptPassword)) {
+            return true;
+        } else {
+            throw new PasswordException("原始密码不正确!");
+        }
     }
 
     /**
      * 修改用户密码
      * @param newPassword
      */
-    public void changePassword(String newPassword) {
-        //todo
+    public boolean changePassword(User user, String originalPassword, String newPassword) {
+        // 校验老密码
+        boolean result = this.verifyOriginalPassword(user, originalPassword);
+        if (result) {
+            user.setPassword(EncryptUtils.passwordEncode(newPassword));
+            int rows = userMapper.updateById(user);
+            if (rows <= 0) {
+                result = false;
+            }
+        }
+        return result;
     }
 }
