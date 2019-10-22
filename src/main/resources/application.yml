@@ -37,8 +37,9 @@ logging:
     com.microtomato.hirun.framework.interceptor: info
 
 spring:
-#  mvc:
-#    static-path-pattern: /static/**
+  mvc:
+    # 所有静态资源访问，路径以 /static/ 为前缀。
+    static-path-pattern: /static/**
   datasource:
     dynamic:
       druid:
