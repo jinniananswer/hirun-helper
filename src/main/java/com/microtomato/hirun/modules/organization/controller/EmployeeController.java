@@ -27,7 +27,7 @@ import java.util.Map;
  */
 @RestController
 @Slf4j
-@RequestMapping("/api/organization/employee")
+@RequestMapping("api/organization/employee")
 public class EmployeeController {
 
     @Autowired
@@ -46,7 +46,7 @@ public class EmployeeController {
     @GetMapping("/searchEmployee")
     @RestResult
     public List<EmployeeInfoDTO> searchEmployee(String searchText) {
-        return employeeDomainServiceImpl.selectEmployee(searchText);
+        return employeeDomainServiceImpl.searchEmployee(searchText);
     }
 
     @GetMapping("/selectEmployeeList")
