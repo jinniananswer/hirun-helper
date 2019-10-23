@@ -3,7 +3,7 @@ layui.define(['ajax', 'form'], function(exports){
     var form = layui.form;
     var obj = {
         init : function(containerId, codeType, defaultVal, needTitle, title) {
-            layui.ajax.get('/api/system/static-data/getByCodeType', '&codeType='+codeType, function(data) {
+            layui.ajax.get('api/system/static-data/getByCodeType', '&codeType='+codeType, function(data) {
                 obj.drawOption(containerId, defaultVal, needTitle, title, data.rows);
             });
         },

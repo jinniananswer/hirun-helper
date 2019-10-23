@@ -59,7 +59,7 @@ layui.extend({
                 return;
             }
 
-            layui.ajax.get('/api/organization/employee/searchEmployee', 'searchText='+searchText, function (data) {
+            layui.ajax.get('api/organization/employee/searchEmployee', 'searchText='+searchText, function (data) {
                 var employees = data.rows;
                 $("#"+searchTextId+"_items").empty();
                 if (employees == null || employees.length <= 0) {
@@ -73,15 +73,15 @@ layui.extend({
                     html.push("<div class=\"caller-item\" style='cursor:pointer' onclick='layui.selectEmployee.back(\""+employee.employeeId+"\",\""+employee.name+"\",\""+valueControlId+"\",\""+displayControlId+"\")'>");
                     var sex = employee.sex;
                     if (sex == "1") {
-                        html.push("<img src=\"/img/male.jpg\" alt=\"\" class=\"caller-img caller-fl\">");
+                        html.push("<img src=\"static/img/male.jpg\" alt=\"\" class=\"caller-img caller-fl\">");
                     } else {
-                        html.push("<img src=\"/img/female.jpg\" alt=\"\" class=\"caller-img caller-fl\">");
+                        html.push("<img src=\"static/img/female.jpg\" alt=\"\" class=\"caller-img caller-fl\">");
                     }
 
                     html.push("<div class=\"caller-main caller-fl\">");
                     html.push("<p><strong>"+employee.name+"</strong></p>");
                     html.push("<p class=\"caller-adds\"><i class=\"layui-icon layui-icon-cellphone\"></i>"+employee.mobileNo+"</p>");
-                    html.push("<p class=\"caller-adds\"><i class=\"layui-icon layui-icon-location\"></i>"+employee.orgName+"</p>");
+                    html.push("<p class=\"caller-adds\"><i class=\"layui-icon layui-icon-location\"></i>"+employee.orgPath+"</p>");
                     html.push("</div>");
                     html.push("<button class=\"layui-btn layui-btn-sm caller-fr\">");
 

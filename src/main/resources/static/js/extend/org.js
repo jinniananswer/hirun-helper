@@ -4,7 +4,7 @@ layui.define(['ajax', 'tree', 'layer'], function(exports){
         init : function(treeDivId, valueControlId, displayControlId, showCheckbox) {
             var content = $("#"+treeDivId).html();
             if (content == null || content.trim() == '' || typeof(content) == "undefined" || content.trim().length == 0) {
-                layui.ajax.get('/api/organization/org/listWithTree', '', function (data) {
+                layui.ajax.get('api/organization/org/listWithTree', '', function (data) {
                     layui.tree.render({
                         elem: "#"+treeDivId,
                         data: data.rows,
