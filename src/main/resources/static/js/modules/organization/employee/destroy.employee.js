@@ -20,7 +20,7 @@ layui.extend({}).define(['ajax', 'form', 'layer', 'element', 'laydate', 'select'
                 var field = data.field; //获取提交的字段
                 var index = parent.layer.getFrameIndex(window.name);
                 $.ajax({
-                    url: '/api/organization/employee/destroyEmployee',
+                    url: 'api/organization/employee/destroyEmployee',
                     type: 'POST',
                     data: field,
                     success: function (data) {

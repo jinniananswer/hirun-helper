@@ -33,7 +33,7 @@ layui.extend({}).define(['ajax', 'form', 'layer', 'element', 'laydate', 'select'
                 var field = data.field; //获取提交的字段
                 var index = parent.layer.getFrameIndex(window.name);
                 $.ajax({
-                    url: '/api/organization/employee-holiday/addEmployeeHoliday',
+                    url: 'api/organization/employee-holiday/addEmployeeHoliday',
                     type: 'POST',
                     data: field,
                     success: function (data) {

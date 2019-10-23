@@ -53,8 +53,8 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label layui-required">调动类型</label>
                     <div class="layui-input-block">
-                        <div class="layui-form" lay-filter="transType">
-                            <select id="transType" name="transType" required layui-required="required">
+                        <div class="layui-form">
+                            <select id="transType" name="transType" required layui-required="required" lay-filter="transType">
 
                             </select>
                         </div>
@@ -78,7 +78,7 @@
                     <label class="layui-form-label">任务人</label>
                     <div class="layui-input-block">
                         <input type="text" id="taskName" name="taskName" onclick="layui.createEmployeeHoliday.selectTaskEmployee();" placeholder="请选择任务接收人" autocomplete="off" class="layui-input" required lay-verify="required"/>
-                        <input type="hidden" id="taskEmployeeId" name="taskEmployeeId"/>
+                        <input type="hidden" id="pendingExecuteId" name="pendingExecuteId"/>
                     </div>
                 </div>
                 <div class="layui-form-item">
@@ -96,16 +96,16 @@
             </div>
         </div>
     </div>
-    <div id="taskEmployeeList" style="display:none">
+</div>
+<div id="taskEmployeeList" style="display:none">
 
-    </div>
 </div>
         <script>
             layui.extend(
                 {
-                    createEmployeeHoliday: "{/}static/js/modules/organization/employee/transfer.employee"
-                }).use('createEmployeeHoliday', function () {
-                layui.createEmployeeHoliday.init();
+                    createEmployeeTrans: "{/}static/js/modules/organization/employee/create.employee.trans"
+                }).use('createEmployeeTrans', function () {
+                layui.createEmployeeTrans.init();
             })
         </script>
 </body>

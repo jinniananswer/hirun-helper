@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @Slf4j
-@RequestMapping("/api/organization/employee-job-role")
+@RequestMapping("api/organization/employee-job-role")
 public class EmployeeJobRoleController {
 
     @Autowired

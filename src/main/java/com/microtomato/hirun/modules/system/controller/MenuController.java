@@ -27,7 +27,7 @@ import java.util.*;
  */
 @RestController
 @Slf4j
-@RequestMapping("/api/system/menu/")
+@RequestMapping("api/system/menu/")
 public class MenuController {
 
 	@Autowired

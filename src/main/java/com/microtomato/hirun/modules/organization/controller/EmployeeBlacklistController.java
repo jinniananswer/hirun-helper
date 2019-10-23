@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @Slf4j
-@RequestMapping("/api/organization/employee-blacklist")
+@RequestMapping("api/organization/employee-blacklist")
 public class EmployeeBlacklistController {
 
     @Autowired

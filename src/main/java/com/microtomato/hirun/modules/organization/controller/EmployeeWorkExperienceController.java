@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @Slf4j
-@RequestMapping("/api/organization/employee-work-experience")
+@RequestMapping("api/organization/employee-work-experience")
 public class EmployeeWorkExperienceController {
 
     @Autowired

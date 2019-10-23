@@ -13,7 +13,7 @@ layui.extend({
             table.render({
                 elem: "#employee_table",
                 height: 550,
-                url: '/api/organization/employee/selectEmployeeList',
+                url: 'api/organization/employee/selectEmployeeList',
                 loading: true,
                 toolbar: '#toolbar',
                 parseData: function (res) { //res 即为原始返回的数据
@@ -128,40 +128,19 @@ layui.extend({
         },
 
         holiday: function (data) {
-            var sexName='';
-            if(data.sex==1){
-                sexName='男';
-            }else{
-                sexName='女';
-            }
+            var sexName=(data.sex==1)?'男':'女';
+
             var param='&employee_id='+data.employeeId+'&name='+data.name+'&mobileNo='+data.mobileNo+'&orgName='+data.orgName+'&sex='+sexName+'&jobRoleName='+data.jobRoleName+
                       '&identityNo='+data.identityNo+'&inDate='+data.inDate.substr(0,10);
             layui.redirect.open('openUrl?url=modules/organization/employee/manager_employeeholiday'+param, '员工休假管理');
             },
 
         transOrg: function (data) {
-            layer.open({
-                type: 2,
-                title: '员工调动',
-                content: 'openUrl?url=/modules/organization/employee/destroy_employee',
-                maxmin: true,
-                btn: ['确定', '取消'],
-                area: ['550px', '700px'],
-                skin: 'layui-layer-molv',
-                success: function (layero, index) {
-                    var body = layer.getChildFrame('body', index);
-                    body.find('#employeeId').val(data.employeeId);
-                    body.find('#name').val(data.name);
-                    body.find('#identityNo').val(data.identityNo);
-                    body.find('#mobileNo').val(data.mobileNo);
-                    form.render();
-                },
-                yes: function (index, layero) {
-                    var body = layer.getChildFrame('body', index);
-                    var submit = body.find("#employee-remove-submit");
-                    submit.click();
-                }
-            });
+            var sexName=(data.sex==1)?'男':'女';
+
+            var param='&employee_id='+data.employeeId+'&name='+data.name+'&mobileNo='+data.mobileNo+'&orgName='+data.orgName+'&sex='+sexName+'&jobRoleName='+data.jobRoleName+
+                '&identityNo='+data.identityNo+'&inDate='+data.inDate.substr(0,10);
+            layui.redirect.open('openUrl?url=modules/organization/employee/manager_employee_trans'+param, '员工调动管理');
         },
 
         selectOrg : function() {

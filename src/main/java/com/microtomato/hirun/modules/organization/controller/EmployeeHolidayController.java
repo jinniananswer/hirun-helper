@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @RestController
 @Slf4j
-@RequestMapping("/api/organization/employee-holiday")
+@RequestMapping("api/organization/employee-holiday")
 public class EmployeeHolidayController {
 
 

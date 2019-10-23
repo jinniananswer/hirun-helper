@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @Slf4j
-@RequestMapping("/api/system/func")
+@RequestMapping("api/system/func")
 public class FuncController {
 
     @Autowired

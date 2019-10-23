@@ -6,21 +6,34 @@ layui.extend({}).define(['ajax', 'form', 'layer', 'element', 'laydate', 'select'
     var updateEmployeeHoliday = {
         init: function () {
 
-            layui.select.init('holidayType', 'HOLIDAY_TYPE', '', true);
+            layui.select.init('holidayType', 'HOLIDAY_TYPE', $('#holidayTypeValue').val(), true);
 
             laydate.render({
                 elem: '#startTime',
+                type: 'datetime',
+                done: function(value,date){
+                    this.dateTime.hours=0;
+                    this.dateTime.minutes=0;
+                    this.dateTime.seconds=0;
+                },
             });
 
             laydate.render({
                 elem: '#endTime',
+                type: 'datetime',
+                format: 'yyyy-MM-dd HH:mm:ss',
+                done: function(value,date){
+                    this.dateTime.hours=23;
+                    this.dateTime.minutes=59;
+                    this.dateTime.seconds=59;
+                },
             });
 
             form.on('submit(update-employeeholiday-submit)', function (data) {
                 var field = data.field; //获取提交的字段
                 var index = parent.layer.getFrameIndex(window.name);
                 $.ajax({
-                    url: '/api/organization/employee-holiday/updateEmployeeHoliday',
+                    url: 'api/organization/employee-holiday/updateEmployeeHoliday',
                     type: 'POST',
                     data: field,
                     success: function (data) {

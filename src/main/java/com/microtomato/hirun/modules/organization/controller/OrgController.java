@@ -25,7 +25,7 @@ import java.util.List;
  */
 @RestController
 @Slf4j
-@RequestMapping("/api/organization/org")
+@RequestMapping("api/organization/org")
 public class OrgController {
 
     @Autowired

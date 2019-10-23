@@ -10,7 +10,7 @@ layui.extend({
             table.render({
                 elem: "#employeeholiday_table",
                 height: 500,
-                url: '/api/organization/employee-holiday/selectEmployeeHoliday?employeeId=' + $("#employee_id").val(),
+                url: 'api/organization/employee-holiday/queryEmployeeHoliday?employeeId=' + $("#employee_id").val(),
                 loading: true,
                 toolbar: '#toolbar',
                 parseData: function (res) { //res 即为原始返回的数据
@@ -42,10 +42,10 @@ layui.extend({
                             }
                         },
                         {
-                            field: 'startTime', title: '开始时间', width: 150, sort: true
+                            field: 'startTime', title: '开始时间', width: 200, sort: true
                         },
                         {
-                            field: 'endTime', title: '结束时间', width: 150, sort: true
+                            field: 'endTime', title: '结束时间', width: 200, sort: true
                         },
                         {
                             field: 'isSurrenderInsurance', title: '缴纳请假期间保险', width: 150, templet: function (d) {
@@ -87,32 +87,6 @@ layui.extend({
                     employeeholiday.delete(data);
                 }
             });
-/*
-            //监听工具栏新增按钮
-            $('.layui-btn-container .layui-btn').on('click', function () {
-                layer.open({
-                    type: 2,
-                    title: '员工休假新增',
-                    content: 'openUrl?url=/modules/organization/employee/create_employeeholiday',
-                    maxmin: true,
-                    btn: ['保存', '取消'],
-                    area: ['550px', '700px'],
-                    skin: 'layui-layer-molv',
-                    success: function (layero, index) {
-                        var employee_id = $("#employee_id").val();
-                        var name = $("#name").val();
-                        var body = layer.getChildFrame('body', index);
-                        body.find('#employeeId').val(employee_id);
-                        body.find('#name').val(name);
-                        form.render();
-                    },
-                    yes: function (index, layero) {
-                        var body = layer.getChildFrame('body', index);
-                        var submit = body.find("#add-employeeholiday-submit");
-                        submit.click();
-                    }
-                });
-            });*/
         },
 
         edit: function (data) {
@@ -134,7 +108,7 @@ layui.extend({
                     body.find('#endTime').val(data.endTime);
                     body.find('#remark').val(data.remark);
                     body.find('#isSurrenderInsurance').val(data.remark);
-                    body.find('#holidayType').val(data.holidayType);
+                    body.find('#holidayTypeValue').val(data.holidayType);
                     body.find('#id').val(data.id);
                     form.render();
                 },
@@ -151,7 +125,7 @@ layui.extend({
                 {btn: ['确定', '取消']},function (index,layero) {
                     var param = 'employeeId=' + data.employeeId + '&startTime=' + data.startTime + '&id=' + data.id;
                     $.ajax({
-                        url: '/api/organization/employee-holiday/deleteEmployeeHoliday',
+                        url: 'api/organization/employee-holiday/deleteEmployeeHoliday',
                         type: 'POST',
                         data: param,
                         success: function (data) {
