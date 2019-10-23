@@ -21,4 +21,11 @@ public interface IOrgService extends IService<Org> {
      * @return 组织列表
      */
     List<Org> listAllOrgs();
+
+    /**
+     * 根据某组织获取其所属公司
+     * @param orgId
+     * @return
+     */
+    Org getBelongCompany(Long orgId);
 }

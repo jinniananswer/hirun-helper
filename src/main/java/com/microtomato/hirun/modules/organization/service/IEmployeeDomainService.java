@@ -16,7 +16,7 @@ import java.util.List;
  **/
 public interface IEmployeeDomainService {
 
-    List<EmployeeInfoDTO> selectEmployee(String searchText);
+    List<EmployeeInfoDTO> searchEmployee(String searchText);
 
     void employeeEntry(EmployeeDTO employeeDTO);
 

@@ -1,9 +1,7 @@
 package com.microtomato.hirun.modules.organization.service.impl;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -11,8 +9,12 @@ import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.organization.entity.domain.EmployeeBlackListDO;
 import com.microtomato.hirun.modules.organization.entity.domain.EmployeeDO;
+import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
 import com.microtomato.hirun.modules.organization.entity.dto.*;
-import com.microtomato.hirun.modules.organization.entity.po.*;
+import com.microtomato.hirun.modules.organization.entity.po.Employee;
+import com.microtomato.hirun.modules.organization.entity.po.EmployeeBlacklist;
+import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
+import com.microtomato.hirun.modules.organization.entity.po.EmployeeWorkExperience;
 import com.microtomato.hirun.modules.organization.mapper.EmployeeMapper;
 import com.microtomato.hirun.modules.organization.service.IEmployeeDomainService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
@@ -60,6 +62,9 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
     private UserDO userDO;
 
     @Autowired
+    private OrgDO orgDO;
+
+    @Autowired
     private EmployeeBlackListDO employeeBlackListDO;
 
     @Autowired
@@ -67,7 +72,7 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
 
 
     @Override
-    public List<EmployeeInfoDTO> selectEmployee(String searchText) {
+    public List<EmployeeInfoDTO> searchEmployee(String searchText) {
         List<EmployeeInfoDTO> employees = employeeMapper.searchByNameMobileNo(searchText);
 
         if (ArrayUtils.isEmpty(employees)) {
@@ -76,6 +81,7 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
 
         for (EmployeeInfoDTO employee : employees) {
             employee.setJobRoleName(staticDataService.getCodeName("JOB_ROLE", employee.getJobRole()));
+            employee.setOrgPath(orgDO.getCompanyLinePath(employee.getOrgId()));
         }
         return employees;
     }
