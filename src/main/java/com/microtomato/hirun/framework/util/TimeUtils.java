@@ -452,8 +452,9 @@ public class TimeUtils {
     /**
      * 增加或减少年/月/周/天/小时/分/秒数
      *
-     * @param localDateTime 例：ChronoUnit.DAYS
-     * @param chronoUnit
+     * @param date
+     * @param format
+     * @param chronoUnit 例：ChronoUnit.DAYS
      * @param num
      * @return LocalDateTime
      */
@@ -564,8 +565,8 @@ public class TimeUtils {
     /**
      * 比较两个时间LocalDateTime大小
      *
-     * @param time1
-     * @param time2
+     * @param date1
+     * @param date2
      * @return 1:第一个比第二个大；0：第一个与第二个相同；-1：第一个比第二个小
      */
     public static int compareTwoTime(String date1, String date2) {
