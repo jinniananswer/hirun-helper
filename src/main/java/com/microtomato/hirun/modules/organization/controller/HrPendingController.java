@@ -38,7 +38,7 @@ public class HrPendingController {
     }
 
     /**
-     * 新增待办记录
+     * 新增待办记录·
      */
     @PostMapping("/addHrPending")
     @RestResult
