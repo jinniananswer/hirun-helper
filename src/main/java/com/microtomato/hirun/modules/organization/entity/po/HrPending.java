@@ -3,7 +3,9 @@ package com.microtomato.hirun.modules.organization.entity.po;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+
 import java.time.LocalDateTime;
+
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.microtomato.hirun.framework.data.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -15,7 +17,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author liuhui
@@ -76,7 +78,7 @@ public class HrPending extends BaseEntity {
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)
     private Long createUserId;
 
-    @TableField("create_time")
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
     @TableField(value = "update_user_id", fill = FieldFill.INSERT_UPDATE)
