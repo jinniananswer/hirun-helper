@@ -35,6 +35,7 @@ logging:
     com.microtomato.hirun.framework.filter: info
     com.microtomato.hirun.framework.interceptor: info
     com.microtomato.hirun.framework.transaction: debug
+    org.mybatis.spring.transaction: debug
 
 spring:
   mvc:

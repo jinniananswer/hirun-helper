@@ -1,5 +1,6 @@
 package com.microtomato.hirun.framework.config;
 
+import com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceProperties;
 import com.baomidou.mybatisplus.core.parser.ISqlParser;
 import com.baomidou.mybatisplus.extension.parsers.BlockAttackSqlParser;
 import com.baomidou.mybatisplus.extension.plugins.OptimisticLockerInterceptor;
@@ -16,6 +17,7 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
@@ -61,10 +63,13 @@ public class MybatisPlusConfig {
     @Autowired(required = false)
     private PerformanceInterceptor performanceInterceptor;
 
+    @Autowired
+    private DynamicDataSourceProperties properties;
+
     /**
      * 使用自定义事务管理器, 不用可以注掉 @Bean
      */
-    @Bean(name = "sqlSessionFactory")
+    //@Bean(name = "sqlSessionFactory")
     public SqlSessionFactory sqlSessionFactory() {
         log.info("创建自定义事务管理器：MultiDataSourceTransactionFactory");
         log.info("mapperPath: {}", mapperLocations);
@@ -73,7 +78,7 @@ public class MybatisPlusConfig {
         try {
             MybatisSqlSessionFactoryBean mybatisSqlSessionFactoryBean = new MybatisSqlSessionFactoryBean();
             mybatisSqlSessionFactoryBean.setDataSource(dataSource);
-            mybatisSqlSessionFactoryBean.setTransactionFactory(new SpringManagedMultiTransactionFactory());
+            mybatisSqlSessionFactoryBean.setTransactionFactory(new SpringManagedMultiTransactionFactory(properties.getPrimary()));
             mybatisSqlSessionFactoryBean.setTypeAliasesPackage("com.microtomato.hirun.modules");
 
             // 各类拦截器

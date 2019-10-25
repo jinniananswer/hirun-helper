@@ -12,7 +12,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * TODO: SpringManagedMultiTransaction 是否在一个线程上下文里？
+ * TODO:
+ * 1. 上下文里的线程要判断是否做了事务性操作？如果没有事务性操作，可以考虑及早释放。
  *
  * @author Steven
  * @date 2019-10-24
@@ -30,13 +31,20 @@ public class SpringManagedMultiTransaction implements Transaction {
      */
     private ConcurrentMap<String, Connection> connectionMap;
 
-    public SpringManagedMultiTransaction(DataSource dataSource) {
+    /**
+     * 默认数据源
+     */
+    private String primary;
+
+    public SpringManagedMultiTransaction(DataSource dataSource, String primary) {
         Assert.notNull(dataSource, "No DataSource specified");
         this.connectionMap = new ConcurrentHashMap<>();
         this.dataSource = dataSource;
+        this.primary = primary;
         if (log.isDebugEnabled()) {
             log.debug("DataSource of Type :: class {}", this.dataSource.getClass());
         }
+
     }
 
     @Override
@@ -45,8 +53,11 @@ public class SpringManagedMultiTransaction implements Transaction {
 
         String currDsName = DynamicDataSourceContextHolder.peek();
         log.debug("DynamicDataSourceContextHolder.peek, currDsName: {}", currDsName);
+        if (null == currDsName) {
+            currDsName = this.primary;
+        }
 
-        if (null != currDsName && connectionMap.containsKey(currDsName)) {
+        if (connectionMap.containsKey(currDsName)) {
             conn = connectionMap.get(currDsName);
             if (log.isDebugEnabled()) {
                 log.debug("返回当前事务上下文中的连接: {} -> {}", currDsName, conn);
@@ -58,10 +69,7 @@ public class SpringManagedMultiTransaction implements Transaction {
             // DynamicRoutingDataSource 内部的 determineDataSource 函数会返回当前线程上下文中正确的数据源连接对象！
             conn = dataSource.getConnection();
             conn.setAutoCommit(false);
-            if (null != currDsName) {
-                this.connectionMap.put(currDsName, conn);
-            }
-
+            this.connectionMap.put(currDsName, conn);
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -16,9 +16,18 @@ import javax.sql.DataSource;
 @Slf4j
 public class SpringManagedMultiTransactionFactory extends SpringManagedTransactionFactory {
 
+    /**
+     * 默认数据源
+     */
+    private String primary;
+
+    public SpringManagedMultiTransactionFactory(String primary) {
+        this.primary = primary;
+    }
+
     @Override
     public Transaction newTransaction(DataSource dataSource, TransactionIsolationLevel level, boolean autoCommit) {
-        return new SpringManagedMultiTransaction(dataSource);
+        return new SpringManagedMultiTransaction(dataSource, this.primary);
     }
 
 }
