@@ -59,5 +59,10 @@ public class HrPendingDomainServiceImpl implements IHrPendingDomainService {
         return hrPendingDO.delete(hrPending);
     }
 
+    @Override
+    public boolean updateHrPending(HrPending hrPending) {
+        return hrPendingDO.update(hrPending);
+    }
+
 
 }

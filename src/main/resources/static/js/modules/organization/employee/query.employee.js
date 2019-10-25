@@ -58,7 +58,7 @@ layui.extend({
                                 }
                             }
                         },
-                        {align: 'center', title: '操作', fixed: 'right', toolbar: '#bar'}
+                        {align: 'center', title: '操作', fixed: 'right',templet:'#operateTmp'}
                     ]
                 ],
                 page: true,
@@ -132,7 +132,7 @@ layui.extend({
 
             var param='&employee_id='+data.employeeId+'&name='+data.name+'&mobileNo='+data.mobileNo+'&orgName='+data.orgName+'&sex='+sexName+'&jobRoleName='+data.jobRoleName+
                       '&identityNo='+data.identityNo+'&inDate='+data.inDate.substr(0,10);
-            layui.redirect.open('openUrl?url=modules/organization/employee/manager_employeeholiday'+param, '员工休假管理');
+            layui.redirect.open('openUrl?url=modules/organization/employee/employeeholiday_manager'+param, '员工休假管理');
             },
 
         transOrg: function (data) {
@@ -140,7 +140,8 @@ layui.extend({
 
             var param='&employee_id='+data.employeeId+'&name='+data.name+'&mobileNo='+data.mobileNo+'&orgName='+data.orgName+'&sex='+sexName+'&jobRoleName='+data.jobRoleName+
                 '&identityNo='+data.identityNo+'&inDate='+data.inDate.substr(0,10);
-            layui.redirect.open('openUrl?url=modules/organization/employee/manager_employee_trans'+param, '员工调动管理');
+            var url=encodeURI('openUrl?url=modules/organization/employee/employee_trans_manager'+param);
+            layui.redirect.open(url, '员工调动管理');
         },
 
         selectOrg : function() {

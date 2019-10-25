@@ -39,22 +39,17 @@
                 <div class="layui-form-item" style="display: none">
                     <label class="layui-form-label">员工编号</label>
                     <div class="layui-input-block">
-                        <input type="hidden" name="employeeId" id="employeeId" autocomplete="off" class="layui-input"
-                               readonly>
+                        <input type="hidden" name="employeeId" id="employeeId" autocomplete="off" class="layui-input">
+                        <input type="hidden" name="id" id="id" autocomplete="off" class="layui-input">
+                        <input type="hidden" name="pendingTypeValue" id="pendingTypeValue" autocomplete="off" class="layui-input">
                     </div>
                 </div>
 
                 <div class="layui-form-item">
-                    <label class="layui-form-label">姓名</label>
-                    <div class="layui-input-block">
-                        <input type="text" name="name" id="name" autocomplete="off" class="layui-input" readonly>
-                    </div>
-                </div>
-                <div class="layui-form-item">
                     <label class="layui-form-label layui-required">调动类型</label>
                     <div class="layui-input-block">
                         <select name="pendingType" id="pendingType" lay-verify="pendingType" required>
-                            <option value="1" selected>借调</option>
+                            <option value="1">借调</option>
                             <option value="2">调动</option>
                         </select>
                     </div>
@@ -74,9 +69,9 @@
                     </div>
                 </div>
                 <div class="layui-form-item">
-                    <label class="layui-form-label">任务人</label>
+                    <label class="layui-form-label layui-required">任务人</label>
                     <div class="layui-input-block">
-                        <input type="text" id="pendExecuteName" name="pendExecuteName" onclick="layui.createEmployeeTrans.selectTaskEmployee();" placeholder="请选择任务接收人" autocomplete="off" class="layui-input" required lay-verify="required"/>
+                        <input type="text" id="pendExecuteName" name="pendExecuteName" onclick="layui.updateEmployeeTrans.selectTaskEmployee();" placeholder="请选择任务接收人" autocomplete="off" class="layui-input" required lay-verify="required"/>
                         <input type="hidden" id="pendingExecuteId" name="pendingExecuteId"/>
                     </div>
                 </div>
@@ -87,7 +82,7 @@
                     </div>
                 </div>
                 <div class="layui-form-item layui-hide">
-                    <input type="button" lay-submit lay-filter="add-employeetrans-submit" id="add-employeetrans-submit"
+                    <input type="button" lay-submit lay-filter="update-employeetrans-submit" id="update-employeetrans-submit"
                            value="确定">
                     <input type="button" lay-submit lay-filter="employee-cancle-submit" id="employee-cancle-submit"
                            value="取消">
@@ -102,9 +97,9 @@
         <script>
             layui.extend(
                 {
-                    createEmployeeTrans: "{/}static/js/modules/organization/employee/create.employee.trans"
-                }).use('createEmployeeTrans', function () {
-                layui.createEmployeeTrans.init();
+                    updateEmployeeTrans: "{/}static/js/modules/organization/employee/update.employee.trans"
+                }).use('updateEmployeeTrans', function () {
+                layui.updateEmployeeTrans.init();
             })
         </script>
 </body>

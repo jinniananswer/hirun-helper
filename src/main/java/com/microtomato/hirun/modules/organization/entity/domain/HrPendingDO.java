@@ -38,4 +38,15 @@ public class HrPendingDO {
         }
         return true;
     }
+
+    /**
+     * 修改待办
+     */
+    public boolean update(HrPending hrPending){
+        int result=hrPendingMapper.updateById(hrPending);
+        if(result<=0){
+            return false;
+        }
+        return true;
+    }
 }

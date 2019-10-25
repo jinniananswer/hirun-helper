@@ -75,6 +75,12 @@ public class HrPending extends BaseEntity {
     @TableField("remark")
     private String remark;
 
+    /**
+     * 待办内容
+     */
+    @TableField("content")
+    private String content;
+
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)
     private Long createUserId;
 

@@ -10,10 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import lombok.extern.slf4j.Slf4j;
 
 
-
 /**
  * <p>
- *  前端控制器
+ * 前端控制器
  * </p>
  *
  * @author liuhui
@@ -25,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 public class HrPendingController {
 
 
-
     @Autowired
     private IHrPendingDomainService hrPendingDomainService;
 
@@ -33,7 +31,7 @@ public class HrPendingController {
     @RestResult
     public IPage<HrPending> queryPendingByEmployeeId(Long employeeId, Integer page, Integer limit) {
         Page<HrPending> hrPendingPage = new Page<HrPending>(page, limit);
-        IPage<HrPending> iPage = hrPendingDomainService.queryPendingByEmployeeId(employeeId,hrPendingPage);
+        IPage<HrPending> iPage = hrPendingDomainService.queryPendingByEmployeeId(employeeId, hrPendingPage);
         return iPage;
     }
 
@@ -43,7 +41,7 @@ public class HrPendingController {
     @PostMapping("/addHrPending")
     @RestResult
     public boolean addHrPending(HrPending hrPending) {
-        Boolean result=hrPendingDomainService.addHrPending(hrPending);
+        Boolean result = hrPendingDomainService.addHrPending(hrPending);
         return result;
     }
 
@@ -53,7 +51,7 @@ public class HrPendingController {
     @PostMapping("/updateHrPending")
     @RestResult
     public boolean updateHrPending(HrPending hrPending) {
-        return true;
+        return hrPendingDomainService.updateHrPending(hrPending);
     }
 
     /**
@@ -65,4 +63,4 @@ public class HrPendingController {
         return hrPendingDomainService.deleteHrPending(hrPending);
     }
 
-    }
+}

@@ -61,9 +61,9 @@
                         </div>
                     </div>
                 <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
-                    <legend>休假记录</legend>
+                    <legend>调动申请记录</legend>
                 </fieldset>
-                <table lay-even class="layui-hide" id="employeeholiday_table" lay-filter="employeeholiday_table" lay-size="lg"></table>
+                <table lay-even class="layui-hide" id="employeeTransTable" lay-filter="employeeTransTable" lay-size="lg"></table>
             </div>
             </div>
         </div>
@@ -71,19 +71,24 @@
 </div>
 <script type="text/html" id="toolbar">
     <div class="layui-btn-container">
-        <button class="layui-btn" data-type="getCheckData" onclick="layui.employeeholiday.add();">新增休假</button>
+        <button class="layui-btn" data-type="getCheckData" onclick="layui.employeeTransManager.add();">申请调动</button>
     </div>
 </script>
-<script type="text/html" id="bar">
-    <a class="layui-btn layui-btn-xs" lay-event="edit">修改</a>
-    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delete">删除</a>
+
+<script type="text/html" id="operateTmp">
+    {{#  if(d.pendingStatus == '0'){ }}
+    <a href="#" class="layui-btn layui-btn-xs" lay-event="edit">修改</a>
+    <a href="#" class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delete">删除</a>
+    {{#  } else if(d.pendingStatus == "1" || d.pendingStatus == "3"){ }}
+        无
+    {{#  } }}
 </script>
 <script>
     layui.extend(
         {
-            employeeholiday: "{/}static/js/modules/organization/employee/manager.employeeholiday"
-        }).use('employeeholiday', function () {
-        layui.employeeholiday.init();
+            employeeTransManager: "{/}static/js/modules/organization/employee/employee.trans.manager"
+        }).use('employeeTransManager', function () {
+        layui.employeeTransManager.init();
     })
 </script>
 </body>

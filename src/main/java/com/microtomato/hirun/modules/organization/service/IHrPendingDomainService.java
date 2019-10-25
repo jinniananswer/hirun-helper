@@ -30,4 +30,9 @@ public interface IHrPendingDomainService {
      * 删除待办
      */
     boolean deleteHrPending(HrPending hrPending);
+
+    /**
+     * 修改待办
+     */
+    boolean updateHrPending(HrPending hrPending);
 }
