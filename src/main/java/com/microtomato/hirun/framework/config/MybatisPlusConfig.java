@@ -69,7 +69,7 @@ public class MybatisPlusConfig {
     /**
      * 使用自定义事务管理器, 不用可以注掉 @Bean
      */
-    //@Bean(name = "sqlSessionFactory")
+    @Bean(name = "sqlSessionFactory")
     public SqlSessionFactory sqlSessionFactory() {
         log.info("创建自定义事务管理器：MultiDataSourceTransactionFactory");
         log.info("mapperPath: {}", mapperLocations);
