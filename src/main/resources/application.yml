@@ -32,8 +32,9 @@ logging:
   level:
     root: info
     com.baomidou.mybatisplus: info
-    com.microtomato.hirun.framework.filter: debug
-    com.microtomato.hirun.framework.interceptor: debug
+    com.microtomato.hirun.framework.filter: info
+    com.microtomato.hirun.framework.interceptor: info
+    com.microtomato.hirun.framework.transaction: debug
 
 spring:
   mvc:
@@ -42,7 +43,7 @@ spring:
   datasource:
     dynamic:
       druid:
-        initial-size: 0
+        initial-size: 2
         max-active: 8
         min-idle: 2
         max-wait: -1
