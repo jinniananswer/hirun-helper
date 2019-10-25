@@ -1,6 +1,7 @@
 package com.microtomato.hirun.framework.config;
 
 import com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceProperties;
+import com.baomidou.mybatisplus.core.config.GlobalConfig;
 import com.baomidou.mybatisplus.core.parser.ISqlParser;
 import com.baomidou.mybatisplus.extension.parsers.BlockAttackSqlParser;
 import com.baomidou.mybatisplus.extension.plugins.OptimisticLockerInterceptor;
@@ -8,16 +9,15 @@ import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.PerformanceInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.SqlExplainInterceptor;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
+import com.microtomato.hirun.framework.aop.AutoSetMetaObjectAdvice;
 import com.microtomato.hirun.framework.transaction.SpringManagedMultiTransactionFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.session.SqlSessionFactory;
-import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
@@ -25,7 +25,6 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,6 +65,9 @@ public class MybatisPlusConfig {
     @Autowired
     private DynamicDataSourceProperties properties;
 
+    @Autowired
+    private AutoSetMetaObjectAdvice autoSetMetaObjectAdvice;
+
     /**
      * 使用自定义事务管理器, 不用可以注掉 @Bean
      */
@@ -80,29 +82,8 @@ public class MybatisPlusConfig {
             mybatisSqlSessionFactoryBean.setDataSource(dataSource);
             mybatisSqlSessionFactoryBean.setTransactionFactory(new SpringManagedMultiTransactionFactory(properties.getPrimary()));
             mybatisSqlSessionFactoryBean.setTypeAliasesPackage("com.microtomato.hirun.modules");
-
-            // 各类拦截器
-            List<Interceptor> interceptors = new ArrayList<>();
-            if (null != optimisticLockerInterceptor) {
-                interceptors.add(optimisticLockerInterceptor);
-            }
-
-            if (null != paginationInterceptor) {
-                interceptors.add(paginationInterceptor);
-            }
-
-            if (null != sqlExplainInterceptor) {
-                interceptors.add(sqlExplainInterceptor);
-            }
-
-            if (null != performanceInterceptor) {
-                interceptors.add(performanceInterceptor);
-            }
-            for (Interceptor interceptor : interceptors) {
-                log.info("添加拦截器: {}", interceptor.getClass().getName());
-            }
-            mybatisSqlSessionFactoryBean.setPlugins(interceptors.toArray(new Interceptor[0]));
-
+            mybatisSqlSessionFactoryBean.setPlugins(fetchInterceptors());
+            mybatisSqlSessionFactoryBean.setGlobalConfig(fetchGlobalConfig());
             Resource[] resources = new PathMatchingResourcePatternResolver().getResources(mapperLocations);
             mybatisSqlSessionFactoryBean.setMapperLocations(resources);
             return mybatisSqlSessionFactoryBean.getObject();
@@ -110,6 +91,43 @@ public class MybatisPlusConfig {
             log.error("mybatis sqlSessionFactoryBean create error", e);
             return null;
         }
+    }
+
+    /**
+     * GlobalConfig 配置
+     */
+    private GlobalConfig fetchGlobalConfig() {
+        GlobalConfig globalConfig = new GlobalConfig();
+        if (null != autoSetMetaObjectAdvice) {
+            globalConfig.setMetaObjectHandler(autoSetMetaObjectAdvice);
+            log.info("字段自动填充处理器: {}", autoSetMetaObjectAdvice.getClass().getName());
+        }
+        return globalConfig;
+    }
+    /**
+     * 各类拦截器
+     */
+    private Interceptor[] fetchInterceptors() {
+        List<Interceptor> interceptors = new ArrayList<>();
+        if (null != optimisticLockerInterceptor) {
+            interceptors.add(optimisticLockerInterceptor);
+        }
+
+        if (null != paginationInterceptor) {
+            interceptors.add(paginationInterceptor);
+        }
+
+        if (null != sqlExplainInterceptor) {
+            interceptors.add(sqlExplainInterceptor);
+        }
+
+        if (null != performanceInterceptor) {
+            interceptors.add(performanceInterceptor);
+        }
+        for (Interceptor interceptor : interceptors) {
+            log.info("添加拦截器: {}", interceptor.getClass().getName());
+        }
+        return interceptors.toArray(new Interceptor[0]);
     }
 
     /**
