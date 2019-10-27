@@ -73,6 +73,8 @@ public class EmployeeDTO {
 
     private LocalDate jobDate;
 
+    private String status;
+
     private EmployeeJobRoleDTO employeeJobRole;
 
     private List<EmployeeWorkExperienceDTO> employeeWorkExperiences;

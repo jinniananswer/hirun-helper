@@ -1,7 +1,7 @@
 package com.microtomato.hirun.modules.organization.service;
 
-import com.microtomato.hirun.modules.organization.entity.po.EmployeeBlacklist;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.microtomato.hirun.modules.organization.entity.po.EmployeeBlacklist;
 
 /**
  * <p>
@@ -13,4 +13,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IEmployeeBlacklistService extends IService<EmployeeBlacklist> {
 
+    boolean exists(String identityNo);
 }

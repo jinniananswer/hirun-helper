@@ -1,6 +1,8 @@
 package com.microtomato.hirun.modules.organization.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
@@ -24,13 +26,38 @@ import java.util.List;
 @Service
 public class EmployeeJobRoleServiceImpl extends ServiceImpl<EmployeeJobRoleMapper, EmployeeJobRole> implements IEmployeeJobRoleService {
 
+    /**
+     * 根据员工ID获取员工基本信息
+     * @param employeeId
+     * @return
+     */
     @Override
-    public EmployeeJobRole getValidJobRole(Long employeeId) {
+    public EmployeeJobRole queryValid(Long employeeId) {
         String now = TimeUtils.now();
         List<EmployeeJobRole> jobRoles = this.list(new QueryWrapper<EmployeeJobRole>().lambda().eq(EmployeeJobRole::getEmployeeId, employeeId).le(EmployeeJobRole::getStartDate, now).ge(EmployeeJobRole::getEndDate, now));
         if (ArrayUtils.isEmpty(jobRoles)) {
             return null;
         }
+        return jobRoles.get(0);
+    }
+
+    /**
+     * 根据员工ID获取最近的一条岗位信息纪录
+     * @param employeeId
+     * @return
+     */
+    @Override
+    public EmployeeJobRole queryLast(Long employeeId) {
+        LambdaQueryWrapper<EmployeeJobRole> wrapper = Wrappers.lambdaQuery();
+        wrapper.eq(EmployeeJobRole::getEmployeeId, employeeId);
+        wrapper.orderByDesc(EmployeeJobRole::getStartDate);
+
+        List<EmployeeJobRole> jobRoles = this.list(wrapper);
+
+        if (ArrayUtils.isEmpty(jobRoles)) {
+            return null;
+        }
+
         return jobRoles.get(0);
     }
 }
