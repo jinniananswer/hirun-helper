@@ -98,8 +98,8 @@ layui.extend({
         },
 
         back : function(employeeId, name, valueControlId, displayControlId) {
-            $("#"+valueControlId).val(employeeId);
-            $("#"+displayControlId).val(name);
+            $(document.getElementById(valueControlId)).val(employeeId);
+            $(document.getElementById(displayControlId)).val(name);
             layui.layer.closeAll('page');
         },
 
