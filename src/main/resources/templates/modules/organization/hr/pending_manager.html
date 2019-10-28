@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>dolphin-admin</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/static/layui/css/layui.css" th:href="@{static/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" href="/static/css/admin.css" th:href="@{static/css/admin.css}" media="all">
+    <script src="../static/layui/layui.js" th:src="@{static/layui/layui.js}"></script>
+    <script src="../static/js/base.js" th:src="@{static/js/base.js}"></script>
+
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">待办列表</div>
+                <div class="layui-card-body">
+
+                    <form class="layui-form" id="query_form">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">待办类型：</label>
+                                <div class="layui-input-block">
+                                    <div class="layui-form" lay-filter="pendingType">
+                                        <select id="pendingType" name="pendingType" >
+
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="layui-inline">
+                                <label class="layui-form-label">状态：</label>
+                                <div class="layui-input-block" style="">
+                                    <select name="pendingStatus" id="pendingStatus">
+                                        <option value="">全部</option>
+                                        <option value="1">未处理</option>
+                                        <option value="2">已处理</option>
+                                        <option value="3">删除</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="layui-inline">
+                                <div class="layui-input-block" >
+                                    <button class="layui-btn" type="button" id="queryPending"><i class="layui-icon">&#xe615;</i>查询</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <table lay-even class="layui-hide" id="pending_table" lay-filter="pending_table" lay-size="lg"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/html" id="operateTmp">
+    {{#  if(d.pendingStatus == '1'){ }}
+    <a href="#" class="layui-btn layui-btn-xs" lay-event="operate">接收</a>
+    <a href="#" class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delete">删除</a>
+    {{#  } else if(d.pendingStatus == "2"){ }}
+    <a href="#" class="layui-btn layui-btn-xs" lay-event="detail">详情</a>
+    {{#  } }}
+</script>
+
+<script>
+    layui.extend(
+        {
+            pendingManager: "{/}static/js/modules/organization/hr/pending.manager"
+        }).use('pendingManager', function () {
+            layui.pendingManager.init();
+    })
+</script>
+</body>
+</html>
