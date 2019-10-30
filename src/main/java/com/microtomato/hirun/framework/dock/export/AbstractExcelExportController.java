@@ -1,10 +1,11 @@
-package com.microtomato.hirun.framework.export;
+package com.microtomato.hirun.framework.dock.export;
 
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.support.ExcelTypeEnum;
 import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.metadata.style.WriteFont;
 import com.alibaba.excel.write.style.HorizontalCellStyleStrategy;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
@@ -21,21 +22,22 @@ import java.util.List;
  * @author Steven
  * @date 2019-10-30
  */
+@Slf4j
 public class AbstractExcelExportController {
 
     /**
      * 头策略
      */
     private WriteCellStyle defaultHeadWriteCellStyle() {
-        WriteCellStyle headWriteCellStyle = new WriteCellStyle();
-
         WriteFont headWriteFont = new WriteFont();
         headWriteFont.setFontName("Cambria");
         headWriteFont.setColor(IndexedColors.WHITE.getIndex());
         headWriteFont.setFontHeightInPoints((short) 10);
 
+        WriteCellStyle headWriteCellStyle = new WriteCellStyle();
         headWriteCellStyle.setWriteFont(headWriteFont);
         headWriteCellStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
+
         return headWriteCellStyle;
     }
 
@@ -43,11 +45,11 @@ public class AbstractExcelExportController {
      * 内容策略
      */
     private WriteCellStyle defaultContentWriteCellStyle() {
-        WriteCellStyle contentWriteCellStyle = new WriteCellStyle();
-
         WriteFont contentWriteFont = new WriteFont();
         contentWriteFont.setFontName("Cambria");
         contentWriteFont.setFontHeightInPoints((short) 9);
+
+        WriteCellStyle contentWriteCellStyle = new WriteCellStyle();
         contentWriteCellStyle.setWriteFont(contentWriteFont);
         contentWriteCellStyle.setHorizontalAlignment(HorizontalAlignment.CENTER);
         contentWriteCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
