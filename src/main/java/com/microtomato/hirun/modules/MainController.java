@@ -44,7 +44,8 @@ public class MainController {
         if (menuUrls.contains(OPEN_URL + url)) {
             return url;
         } else {
-            return NO_RIGHT_PAGE;
+            return url;
+//            return NO_RIGHT_PAGE;
         }
     }
 

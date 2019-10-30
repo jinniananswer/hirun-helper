@@ -1,7 +1,7 @@
-package com.microtomato.hirun.framework.dock.export.demo;
+package com.microtomato.hirun.framework.dock.excel.demo;
 
 import com.alibaba.excel.support.ExcelTypeEnum;
-import com.microtomato.hirun.framework.dock.export.AbstractExcelExportController;
+import com.microtomato.hirun.framework.dock.excel.AbstractExcelExportController;
 import com.microtomato.hirun.modules.user.entity.po.User;
 import com.microtomato.hirun.modules.user.service.IUserService;
 import lombok.extern.slf4j.Slf4j;
@@ -22,13 +22,13 @@ import java.util.List;
  */
 @RestController
 @Slf4j
-@RequestMapping("api/demo/excel_export")
+@RequestMapping("api/demo/dock/excel")
 public class ExcelExportController extends AbstractExcelExportController {
 
     @Autowired
     private IUserService userServiceImpl;
 
-    @GetMapping
+    @GetMapping("export")
     public void export(HttpServletResponse response) throws IOException {
         List<User> list = userServiceImpl.list();
         List<UserExportData> xx = new ArrayList<>(list.size());
@@ -37,7 +37,7 @@ public class ExcelExportController extends AbstractExcelExportController {
             BeanUtils.copyProperties(user, data);
             xx.add(data);
         }
-        export(response, "users", UserExportData.class, xx, ExcelTypeEnum.XLS);
+        exportExcel(response, "users", UserExportData.class, xx, ExcelTypeEnum.XLS);
     }
 
 }

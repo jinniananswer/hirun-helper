@@ -56,7 +56,7 @@ public class SpringManagedMultiTransaction implements Transaction {
         if (null == currDsName) {
             currDsName = this.primary;
         }
-
+        log.debug("currDsName: {}", currDsName);
         if (connectionMap.containsKey(currDsName)) {
             conn = connectionMap.get(currDsName);
             if (log.isDebugEnabled()) {

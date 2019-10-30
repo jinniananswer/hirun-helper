@@ -1,4 +1,4 @@
-package com.microtomato.hirun.framework.dock.export;
+package com.microtomato.hirun.framework.dock.excel;
 
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.support.ExcelTypeEnum;
@@ -23,7 +23,7 @@ import java.util.List;
  * @date 2019-10-30
  */
 @Slf4j
-public class AbstractExcelExportController {
+public abstract class AbstractExcelExportController {
 
     /**
      * 头策略
@@ -56,8 +56,8 @@ public class AbstractExcelExportController {
         return contentWriteCellStyle;
     }
 
-    protected void export(HttpServletResponse response, String fileName, Class dataType, List<?> list) throws IOException {
-        export(response,
+    protected void exportExcel(HttpServletResponse response, String fileName, Class dataType, List<?> list) throws IOException {
+        exportExcel(response,
             fileName,
             dataType,
             list,
@@ -70,8 +70,8 @@ public class AbstractExcelExportController {
     /**
      * 使用默认样式
      */
-    protected void export(HttpServletResponse response, String fileName, Class dataType, List<?> list, ExcelTypeEnum excelTypeEnum) throws IOException {
-        export(response,
+    protected void exportExcel(HttpServletResponse response, String fileName, Class dataType, List<?> list, ExcelTypeEnum excelTypeEnum) throws IOException {
+        exportExcel(response,
             fileName,
             dataType,
             list,
@@ -92,7 +92,7 @@ public class AbstractExcelExportController {
      * @param contentWriteCellStyle 内容样式
      * @throws IOException 异常
      */
-    protected void export(HttpServletResponse response,
+    protected void exportExcel(HttpServletResponse response,
                         String fileName,
                         Class dataType,
                         List<?> list,
