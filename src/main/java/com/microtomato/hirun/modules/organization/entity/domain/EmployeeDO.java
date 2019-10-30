@@ -5,16 +5,16 @@ import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeWorkExperience;
-import com.microtomato.hirun.modules.organization.mapper.EmployeeJobRoleMapper;
-import com.microtomato.hirun.modules.organization.mapper.EmployeeMapper;
-import com.microtomato.hirun.modules.organization.mapper.EmployeeWorkExperienceMapper;
+import com.microtomato.hirun.modules.organization.exception.EmployeeException;
+import com.microtomato.hirun.modules.organization.service.IEmployeeBlacklistService;
+import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
+import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeWorkExperienceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.sql.Wrapper;
 import java.util.List;
 
 /**
@@ -28,23 +28,33 @@ import java.util.List;
 @Scope("prototype")
 public class EmployeeDO {
 
-    @Autowired
-    private EmployeeMapper employeeMapper;
+    private Employee employee;
 
     @Autowired
-    private EmployeeJobRoleMapper employeeJobRoleMapper;
+    private IEmployeeService employeeService;
 
     @Autowired
-    private EmployeeWorkExperienceMapper employeeWorkExperienceMapper;
+    private IEmployeeJobRoleService employeeJobRoleService;
 
     @Autowired
     private IEmployeeWorkExperienceService employeeWorkExperienceService;
+
+    @Autowired
+    private IEmployeeBlacklistService employeeBlacklistService;;
+
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
+    }
 
     /**
      * 根据身份证号码判断该身份证的员工是否存在
      * @return
      */
     public boolean isExists() {
+        Employee employee = this.employeeService.queryByIdentityNo(this.employee.getIdentityNo());
+        if (employee != null) {
+            return true;
+        }
         return false;
     }
 
@@ -53,30 +63,32 @@ public class EmployeeDO {
      * @return
      */
     public boolean isBlack() {
-        return false;
+        return this.employeeBlacklistService.exists(this.employee.getIdentityNo());
     }
 
     /**
      * 员工新入职
      */
-    public void newEntry(Employee employeeData, EmployeeJobRole jobRole, List<EmployeeWorkExperience> workExperiences) {
+    public void newEntry(EmployeeJobRole jobRole, List<EmployeeWorkExperience> workExperiences) {
         if (this.isExists()) {
             //如果证件号码已存在，则不允许做为新入职录入
+            throw new EmployeeException(EmployeeException.EmployeeExceptionEnum.IS_EXISTS);
         }
 
         if (this.isBlack()) {
             //如果是黑名单， 则不予录用
+            throw new EmployeeException(EmployeeException.EmployeeExceptionEnum.IS_BLACK);
         }
-        employeeData.setStatus("0");
-        employeeMapper.insert(employeeData);
+        this.employee.setStatus("0");
+        this.employeeService.save(employee);
 
         if (jobRole != null) {
-            jobRole.setEmployeeId(employeeData.getEmployeeId());
+            jobRole.setEmployeeId(employee.getEmployeeId());
             this.allocateJob(jobRole);
         }
 
         if (ArrayUtils.isNotEmpty(workExperiences)) {
-            this.addWorkExperience(employeeData.getEmployeeId(), workExperiences);
+            this.addWorkExperience(employee.getEmployeeId(), workExperiences);
         }
     }
 
@@ -88,7 +100,7 @@ public class EmployeeDO {
         if (jobRole == null) {
             return;
         }
-        this.employeeJobRoleMapper.insert(jobRole);
+        this.employeeJobRoleService.save(jobRole);
     }
 
     /**
@@ -101,7 +113,7 @@ public class EmployeeDO {
         }
         for (EmployeeWorkExperience workExperience : workExperiences) {
             workExperience.setEmployeeId(employeeId);
-            employeeWorkExperienceMapper.insert(workExperience);
+            this.employeeWorkExperienceService.save(workExperience);
         }
     }
 
@@ -131,8 +143,8 @@ public class EmployeeDO {
      */
     public void destroy(Employee employee, LambdaUpdateWrapper lambdaUpdateWrapper) {
         //更新employee资料
-        employeeMapper.updateById(employee);
+        this.employeeService.updateById(employee);
         //更新employeeJobRole资料
-        employeeJobRoleMapper.update(null,lambdaUpdateWrapper);
+        employeeJobRoleService.update(null,lambdaUpdateWrapper);
     }
 }

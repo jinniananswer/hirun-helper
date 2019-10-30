@@ -7,8 +7,6 @@ import com.microtomato.hirun.modules.organization.entity.dto.EmployeeExampleDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeInfoDTO;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 
-import java.util.List;
-
 /**
  * <p>
  * 服务类
@@ -19,7 +17,7 @@ import java.util.List;
  */
 public interface IEmployeeService extends IService<Employee> {
 
-    List<Employee> searchByNameMobileNo(String searchText);
+    Employee queryByIdentityNo(String identityNo);
 
     IPage<EmployeeInfoDTO> queryEmployeeList(EmployeeInfoDTO employeeInfoDTO, Page<EmployeeInfoDTO> employeePage);
 

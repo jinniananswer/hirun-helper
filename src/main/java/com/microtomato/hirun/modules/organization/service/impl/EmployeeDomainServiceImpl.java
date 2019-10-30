@@ -15,6 +15,7 @@ import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeBlacklist;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeWorkExperience;
+import com.microtomato.hirun.modules.organization.exception.EmployeeException;
 import com.microtomato.hirun.modules.organization.mapper.EmployeeMapper;
 import com.microtomato.hirun.modules.organization.service.IEmployeeDomainService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
@@ -70,6 +71,14 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
     @Autowired
     private EmployeeMapper employeeMapper;
 
+    public static final String CREATE_TYPE_NEW_ENTRY = "1";
+
+    public static final String CREATE_TYPE_PRACTICE = "4";
+
+    public static final String EMPLOYEE_STATUS_NORMAL = "0";
+
+    public static final String EMPLOYEE_STATUS_DESTROY = "3";
+
 
     @Override
     public List<EmployeeInfoDTO> searchEmployee(String searchText) {
@@ -84,6 +93,62 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             employee.setOrgPath(orgDO.getCompanyLinePath(employee.getOrgId()));
         }
         return employees;
+    }
+
+    /**
+     * 验证证件号码是否存在
+     * @param identityNo
+     */
+    @Override
+    public EmployeeDTO verifyIdentityNo(String createType, String identityNo) {
+        Employee employee = this.employeeService.queryByIdentityNo(identityNo);
+        if (employee == null && (StringUtils.equals(CREATE_TYPE_NEW_ENTRY, createType) || StringUtils.equals(CREATE_TYPE_PRACTICE, createType))) {
+            return null;
+        }
+        if (employee == null && !StringUtils.equals(CREATE_TYPE_NEW_ENTRY, createType) && !StringUtils.equals(CREATE_TYPE_PRACTICE, createType)) {
+            throw new EmployeeException(EmployeeException.EmployeeExceptionEnum.CREATE_TYPE_ERROR);
+        }
+        String status = employee.getStatus();
+        if (StringUtils.equals(EMPLOYEE_STATUS_NORMAL, status)) {
+            throw new EmployeeException(EmployeeException.EmployeeExceptionEnum.IS_EXISTS, employee.getName(), employee.getMobileNo());
+        } else {
+            EmployeeDTO employeeDTO = new EmployeeDTO();
+            BeanUtils.copyProperties(employee, employeeDTO);
+            return employeeDTO;
+        }
+    }
+
+    /**
+     * 装载员工档案信息
+     * @param employeeId 员工ID
+     * @param normal 是否在职员工
+     * @return
+     */
+    @Override
+    public EmployeeDTO load(Long employeeId, boolean normal) {
+        Employee employee = this.employeeService.getById(employeeId);
+        if (employee == null) {
+            throw new EmployeeException(EmployeeException.EmployeeExceptionEnum.NOT_FOUND);
+        }
+
+        EmployeeDTO employeeDTO = new EmployeeDTO();
+        BeanUtils.copyProperties(employee, employeeDTO);
+
+        //获取员工岗位信息
+        EmployeeJobRole jobRole = null;
+        if (normal) {
+            jobRole = this.employeeJobRoleService.queryValid(employeeId);
+        } else {
+            jobRole = this.employeeJobRoleService.queryLast(employeeId);
+        }
+
+        if (jobRole != null) {
+            EmployeeJobRoleDTO jobRoleDTO = new EmployeeJobRoleDTO();
+            BeanUtils.copyProperties(jobRole, jobRoleDTO);
+            employeeDTO.setEmployeeJobRole(jobRoleDTO);
+        }
+
+        return employeeDTO;
     }
 
     /**
@@ -121,8 +186,8 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
                 }
             }
         }
-
-        employeeDO.newEntry(employee, jobRole, workExperiences);
+        employeeDO.setEmployee(employee);
+        employeeDO.newEntry(jobRole, workExperiences);
     }
 
     /**

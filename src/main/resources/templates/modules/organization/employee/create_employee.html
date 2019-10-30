@@ -54,6 +54,12 @@
                                 </div>
                             </div>
                             <div class="layui-form-item">
+                                <label class="layui-form-label layui-required">身份证</label>
+                                <div class="layui-input-block">
+                                    <input type="text" id="identityNo" name="identityNo" required lay-verify="required" placeholder="请输入身份证号码" onblur="layui.employee.analyzeIdentityNo();" autocomplete="off" class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
                                 <label class="layui-form-label layui-required">姓名</label>
                                 <div class="layui-input-block">
                                     <input type="text" name="name" required  lay-verify="required" placeholder="请输入员工姓名" autocomplete="off" class="layui-input"/>
@@ -63,12 +69,6 @@
                                 <label class="layui-form-label layui-required">手机号码</label>
                                 <div class="layui-input-block">
                                     <input type="text" id="mobileNo" name="mobileNo" required lay-verify="required" placeholder="请输入手机号码" autocomplete="off" class="layui-input"/>
-                                </div>
-                            </div>
-                            <div class="layui-form-item">
-                                <label class="layui-form-label layui-required">身份证</label>
-                                <div class="layui-input-block">
-                                    <input type="text" id="identityNo" name="identityNo" required lay-verify="required" placeholder="请输入身份证号码" onblur="layui.employee.analyzeIdentityNo();" autocomplete="off" class="layui-input"/>
                                 </div>
                             </div>
                             <div class="layui-form-item">

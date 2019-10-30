@@ -49,6 +49,18 @@ public class EmployeeController {
         return employeeDomainServiceImpl.searchEmployee(searchText);
     }
 
+    @RequestMapping("/verifyIdentityNo")
+    @RestResult
+    public EmployeeDTO verifyIdentityNo(String createType, String identityNo) {
+        return this.employeeDomainServiceImpl.verifyIdentityNo(createType, identityNo);
+    }
+
+    @RequestMapping("/load")
+    @RestResult
+    public EmployeeDTO load(Long employeeId) {
+        return this.employeeDomainServiceImpl.load(employeeId, false);
+    }
+
     @GetMapping("/selectEmployeeList")
     @RestResult
     public IPage<EmployeeInfoDTO> employeeList(EmployeeInfoDTO employeeInfoDTO, Integer page, Integer limit) {

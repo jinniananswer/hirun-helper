@@ -73,13 +73,13 @@ layui.extend({
             });
         },
 
-        checkMobileNo : function() {
+        verifyMobileNo : function() {
             var mobileNo = $("#mobileNo").val();
             if (mobileNo.length != 11) {
                 return;
             }
 
-            layui.ajax.get("");
+            layui.ajax.post('api/organization/employee/verifyMobileNo','&mobileNo='+mobileNo, function(data){});
         },
 
         selectOrg : function() {
@@ -129,6 +129,72 @@ layui.extend({
                 form.render("radio");
             }
 
+            this.verifyIdentityNo();
+        },
+
+        verifyIdentityNo : function() {
+            var identityNo = $("#identityNo").val();
+            if (identityNo.length != 18) {
+                return;
+            }
+
+            var createType = $("#createType").val();
+
+            layui.ajax.post('api/organization/employee/verifyIdentityNo', '&createType='+createType+'&identityNo='+identityNo, function(data){
+                var employee = data.rows;
+                var status = employee.status;
+
+                if (status == "3") {
+                    this.renderCreateType("该证件号码的员工已离职，是否做返聘处理？", "2", employee.employeeId);
+                } else if (status == "1") {
+                    this.renderCreateType("该证件号码的员工已离职，是否做返聘处理？", "3", employee.employeeId);
+                }
+            });
+        },
+
+        renderCreateType : function(tips, createType, employeeId) {
+            layer.confirm(tips, {
+                btn : ['确定','关闭'],
+                closeBtn : 0,
+                icon : 6,
+                title : '提示信息',
+                shade : [0.5, '#fff'],
+                skin : 'layui-layer-admin layui-anim'
+            },function(index) {
+                $("#createType").val(createType);
+                form.render('select', 'createType');
+
+                layui.ajax.post('api/organization/employee/load', '&employeeId='+employeeId, function(data){
+                    var employee = data.rows;
+                    $("#identityNo").val(employee.identityNo);
+                    $("#name").val(employee.name);
+                    $("#mobileNo").val(employee.mobileNo);
+
+                    var sex = employee.sex;
+                    if (sex == 1) {
+                        $("#male").prop("checked", "true");
+                        form.render("radio");
+                    } else {
+                        $("#female").prop("checked", "true");
+                        form.render("radio");
+                    }
+
+                    var birthdayType = employee.birthdayType;
+                    if (birthdayType != null) {
+                        $("#birthdayType").val(birthdayType);
+                        form.render('select', 'birthdayType');
+                    }
+
+                    var birthday = employee.birthday;
+                    if (birthday != null) {
+                        $("#birthday").val(birthday);
+                    }
+
+
+
+                });
+                layer.close(index);
+            });
         },
 
         addWorkExp : function() {
@@ -156,7 +222,7 @@ layui.extend({
         },
 
         create : function(formData) {
-            layui.ajax.post('/api/organization/employee/create', formData);
+            layui.ajax.post('api/organization/employee/create', formData);
         }
     };
     exports('employee', employee);

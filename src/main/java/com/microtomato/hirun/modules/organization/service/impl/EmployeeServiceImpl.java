@@ -1,10 +1,10 @@
 package com.microtomato.hirun.modules.organization.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeExampleDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeInfoDTO;
@@ -34,11 +34,12 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
     private EmployeeMapper employeeMapper;
 
     @Override
-    public List<Employee> searchByNameMobileNo(String searchText) {
-        LambdaQueryWrapper<Employee> wrapper = new LambdaQueryWrapper<Employee>();
-        wrapper.eq(Employee::getStatus, "0");
-        wrapper.and(search -> search.like(Employee::getName, searchText).or().like(Employee::getMobileNo, searchText));
-        return this.list(wrapper);
+    public Employee queryByIdentityNo(String identityNo) {
+        List<Employee> employees = employeeMapper.selectList(new QueryWrapper<Employee>().lambda().eq(Employee::getIdentityNo, identityNo));
+        if (ArrayUtils.isEmpty(employees)) {
+            return null;
+        }
+        return employees.get(0);
     }
 
     @Override

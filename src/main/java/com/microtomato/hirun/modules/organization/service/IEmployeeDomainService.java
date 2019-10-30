@@ -18,6 +18,10 @@ public interface IEmployeeDomainService {
 
     List<EmployeeInfoDTO> searchEmployee(String searchText);
 
+    EmployeeDTO verifyIdentityNo(String createType, String identityNo);
+
+    EmployeeDTO load(Long employeeId, boolean normal);
+
     void employeeEntry(EmployeeDTO employeeDTO);
 
     boolean destroyEmployee(EmployeeDestroyInfoDTO employeeDestroyInfoDTO);

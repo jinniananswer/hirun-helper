@@ -29,7 +29,12 @@ public enum ErrorKind {
     /**
      * 不匹配
      */
-    MISMATCHING(100001);
+    MISMATCHING(100001),
+
+    /**
+     * 违反业务规则
+     */
+    BREACH_BUSINESS_RULE(200001);
 
     private int code;
 

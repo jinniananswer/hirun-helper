@@ -14,8 +14,8 @@ layui.define(['ajax', 'tree', 'layer'], function(exports){
                             if (showCheckbox) {
                                 return;
                             }
-                            $("#"+valueControlId).val(obj.data.id);
-                            $("#"+displayControlId).val(obj.data.path);
+                            $(document.getElementById(valueControlId)).val(obj.data.id);
+                            $(document.getElementById(displayControlId)).val(obj.data.path);
                             var children = obj.data.children;
                             if (children == null || typeof(children) == "undefined" || children.length <= 0) {
                                 layer.closeAll('page');
@@ -79,8 +79,8 @@ layui.define(['ajax', 'tree', 'layer'], function(exports){
                 text += idText[1] + ",";
             }
 
-            $("#"+valueControlId).val(value.substring(0, value.length - 1));
-            $("#"+displayControlId).val(text.substring(0, text.length - 1));
+            $(document.getElementById(valueControlId)).val(value.substring(0, value.length - 1));
+            $(document.getElementById(displayControlId)).val(text.substring(0, text.length - 1));
             layer.closeAll('page');
         },
 
