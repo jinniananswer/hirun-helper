@@ -22,6 +22,8 @@ public interface IEmployeeDomainService {
 
     EmployeeDTO load(Long employeeId, boolean normal);
 
+    Double calculateDiscountRate(Long orgId, String jobNature);
+
     void employeeEntry(EmployeeDTO employeeDTO);
 
     boolean destroyEmployee(EmployeeDestroyInfoDTO employeeDestroyInfoDTO);

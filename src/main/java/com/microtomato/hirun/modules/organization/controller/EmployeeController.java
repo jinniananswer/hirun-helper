@@ -61,6 +61,11 @@ public class EmployeeController {
         return this.employeeDomainServiceImpl.load(employeeId, false);
     }
 
+    @RequestMapping("/calculateDiscountRate")
+    public Double calculateDiscountRate(Long orgId, String jobNature) {
+        return this.employeeDomainServiceImpl.calculateDiscountRate(orgId, jobNature);
+    }
+
     @GetMapping("/selectEmployeeList")
     @RestResult
     public IPage<EmployeeInfoDTO> employeeList(EmployeeInfoDTO employeeInfoDTO, Integer page, Integer limit) {

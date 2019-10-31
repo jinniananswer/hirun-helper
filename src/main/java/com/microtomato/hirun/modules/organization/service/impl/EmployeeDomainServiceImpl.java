@@ -139,7 +139,6 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         int age = employeeDO.getAge();
         int jobYear = employeeDO.getJobYear();
 
-        employeeDTO.setAge(new Integer(age));
         employeeDTO.setJobYear(new Integer(jobYear));
 
         //获取员工岗位信息
@@ -156,8 +155,7 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             String jobRoleName = this.staticDataService.getCodeName("JOB_ROLE", jobRole.getJobRole());
             jobRoleDTO.setJobRoleName(jobRoleName);
 
-            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class);
-            orgDO.setOrg(jobRole.getOrgId());
+            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, jobRole.getOrgId());
             jobRoleDTO.setOrgPath(orgDO.getCompanyLinePath());
 
             employeeDTO.setEmployeeJobRole(jobRoleDTO);
@@ -175,6 +173,23 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         }
 
         return employeeDTO;
+    }
+
+    @Override
+    public Double calculateDiscountRate(Long orgId, String jobNature) {
+        OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+        boolean isHomeDecoration = orgDO.isHomeDecoration();
+        if (!isHomeDecoration) {
+            return 0.0;
+        } else {
+            if (StringUtils.equals("2", jobNature)) {
+                return 1.0;
+            } else if (StringUtils.equals("3", jobNature)) {
+                return 0.5;
+            } else {
+                return 0.0;
+            }
+        }
     }
 
     /**

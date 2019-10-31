@@ -176,6 +176,9 @@ public class EmployeeDO {
      */
     public int getAge() {
         LocalDate birthday = this.employee.getBirthday();
+        if (birthday == null) {
+            return 0;
+        }
         LocalDate today = LocalDate.now();
         return TimeUtils.getAbsDateDiffYear(birthday, today);
     }
@@ -186,6 +189,9 @@ public class EmployeeDO {
      */
     public int getJobYear() {
         LocalDate jobDate = this.employee.getJobDate();
+        if (jobDate == null) {
+            return 0;
+        }
         LocalDate today = LocalDate.now();
         return TimeUtils.getAbsDateDiffYear(jobDate, today);
     }
