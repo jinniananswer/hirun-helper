@@ -46,9 +46,6 @@ public class SpringContextUtils implements ApplicationContextAware {
      * @return
      */
     public static <T> T getBean(Class<T> clazz, Object... args) {
-        String className = clazz.getSimpleName();
-        String firstCharacter = className.charAt(0) + "";
-        String beanName = firstCharacter.toLowerCase() + className.substring(1);
-        return (T)getContext().getBean(beanName, args);
+        return (T)getContext().getBean(clazz, args);
     }
 }
