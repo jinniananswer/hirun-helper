@@ -2,8 +2,10 @@ package com.microtomato.hirun.modules.organization.entity.domain;
 
 import com.alibaba.druid.util.StringUtils;
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.modules.organization.entity.po.Org;
 import com.microtomato.hirun.modules.organization.service.IOrgService;
+import com.microtomato.hirun.modules.organization.service.impl.OrgServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -174,7 +176,8 @@ public class OrgDO {
      * @return
      */
     private Org findSelf(Long orgId) {
-        List<Org> orgs = this.orgService.listAllOrgs();
+        IOrgService service = SpringContextUtils.getBean(OrgServiceImpl.class);
+        List<Org> orgs = service.listAllOrgs();
         if (ArrayUtils.isEmpty(orgs)) {
             return null;
         }
