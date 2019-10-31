@@ -26,6 +26,18 @@ public class OrgDO {
 
     private Org org;
 
+    public OrgDO() {
+
+    }
+
+    /**
+     * 构造函数
+     * @param orgId
+     */
+    public OrgDO(Long orgId) {
+        this.setOrg(orgId);
+    }
+
     /**
      * 设置部门数据
      * @param org
