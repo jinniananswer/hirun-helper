@@ -1,8 +1,10 @@
 package com.microtomato.hirun.modules.system.service.impl;
 
+import com.alibaba.druid.util.StringUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.modules.system.entity.po.StaticData;
 import com.microtomato.hirun.modules.system.mapper.StaticDataMapper;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
@@ -37,11 +39,18 @@ public class StaticDataServiceImpl extends ServiceImpl<StaticDataMapper, StaticD
     @Override
     @Cacheable(value="codename-with-codetype-value")
     public String getCodeName(String codeType, String codeValue) {
-        List<StaticData> datas = this.list(new QueryWrapper<StaticData>().lambda().eq(StaticData::getCodeType, codeType).eq(StaticData::getCodeValue, codeValue));
+        IStaticDataService staticDataService = SpringContextUtils.getBean(StaticDataServiceImpl.class);
+        List<StaticData> datas = staticDataService.getStaticDatas(codeType);
         if (ArrayUtils.isEmpty(datas)) {
             return null;
         }
 
-        return datas.get(0).getCodeName();
+        for (StaticData data : datas) {
+            if (StringUtils.equals(codeValue, data.getCodeValue())) {
+                return data.getCodeName();
+            }
+        }
+
+        return null;
     }
 }

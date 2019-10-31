@@ -55,9 +55,9 @@ public class EmployeeController {
         return this.employeeDomainServiceImpl.verifyIdentityNo(createType, identityNo);
     }
 
-    @RequestMapping("/load")
+    @RequestMapping("/loadAbnormal")
     @RestResult
-    public EmployeeDTO load(Long employeeId) {
+    public EmployeeDTO loadAbnormal(Long employeeId) {
         return this.employeeDomainServiceImpl.load(employeeId, false);
     }
 

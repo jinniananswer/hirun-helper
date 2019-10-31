@@ -29,6 +29,8 @@ public class EmployeeDTO {
 
     private String birthday;
 
+    private Integer age;
+
     private String natives;
 
     private Integer nativeProv;
@@ -72,6 +74,8 @@ public class EmployeeDTO {
     private String techTitle;
 
     private LocalDate jobDate;
+
+    private Integer jobYear;
 
     private String status;
 

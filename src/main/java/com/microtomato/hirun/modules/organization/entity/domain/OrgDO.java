@@ -5,6 +5,7 @@ import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.modules.organization.entity.po.Org;
 import com.microtomato.hirun.modules.organization.service.IOrgService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -17,57 +18,72 @@ import java.util.List;
  * @create: 2019-10-22 11:13
  **/
 @Component
+@Scope("prototype")
 public class OrgDO {
 
     @Autowired
     private IOrgService orgService;
 
+    private Org org;
+
+    /**
+     * 设置部门数据
+     * @param org
+     */
+    public void setOrg(Org org) {
+        this.org = org;
+    }
+
+    /**
+     * 根据部门ID设置部门数据
+     * @param orgId
+     */
+    public void setOrg(Long orgId) {
+        this.org = this.findSelf(orgId);
+    }
+
     /**
      * 根据当前组织机构ID获取归属的公司
-     * @param orgId
      * @return
      */
-    public Org getBelongCompany(Long orgId) {
+    public Org getBelongCompany() {
         List<Org> orgs = orgService.listAllOrgs();
         if (ArrayUtils.isEmpty(orgs)) {
             return null;
         }
-        return this.findParent("2", orgs, orgId);
+        return this.findParent("2", orgs, this.org.getOrgId());
     }
 
     /**
      * 根据当前组织机构ID获取归属的门店
-     * @param orgId
      * @return
      */
-    public Org getBelongShop(Long orgId) {
+    public Org getBelongShop() {
         List<Org> orgs = orgService.listAllOrgs();
         if (ArrayUtils.isEmpty(orgs)) {
             return null;
         }
-        return this.findParent("4", orgs, orgId);
+        return this.findParent("4", orgs, this.org.getOrgId());
     }
 
     /**
      * 获取所在部门位于公司的父子线上的所有组织
-     * @param orgId
      * @return
      */
-    public List<Org> getCompanyLine(Long orgId) {
+    public List<Org> getCompanyLine() {
         List<Org> orgs = orgService.listAllOrgs();
         if (ArrayUtils.isEmpty(orgs)) {
             return null;
         }
-        return this.findCompanyLine(orgs, orgId);
+        return this.findCompanyLine(orgs, this.org.getOrgId());
     }
 
     /**
      * 获取所在部门位于公司的父子线上的所有组织的路径
-     * @param orgId
      * @return
      */
-    public String getCompanyLinePath(Long orgId) {
-        List<Org> lineOrgs = this.getCompanyLine(orgId);
+    public String getCompanyLinePath() {
+        List<Org> lineOrgs = this.getCompanyLine();
         if (ArrayUtils.isEmpty(lineOrgs)) {
             return null;
         }
@@ -138,5 +154,24 @@ public class OrgDO {
             }
         }
         return parents;
+    }
+
+    /**
+     * 找到部门自身的数据
+     * @param orgId
+     * @return
+     */
+    private Org findSelf(Long orgId) {
+        List<Org> orgs = this.orgService.listAllOrgs();
+        if (ArrayUtils.isEmpty(orgs)) {
+            return null;
+        }
+
+        for (Org org : orgs) {
+            if (orgId.equals(org.getOrgId())) {
+                return org;
+            }
+        }
+        return null;
     }
 }

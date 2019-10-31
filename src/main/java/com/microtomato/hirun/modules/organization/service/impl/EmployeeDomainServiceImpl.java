@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.organization.entity.domain.EmployeeBlackListDO;
 import com.microtomato.hirun.modules.organization.entity.domain.EmployeeDO;
@@ -17,10 +18,7 @@ import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeWorkExperience;
 import com.microtomato.hirun.modules.organization.exception.EmployeeException;
 import com.microtomato.hirun.modules.organization.mapper.EmployeeMapper;
-import com.microtomato.hirun.modules.organization.service.IEmployeeDomainService;
-import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
-import com.microtomato.hirun.modules.organization.service.IEmployeeService;
-import com.microtomato.hirun.modules.organization.service.IOrgService;
+import com.microtomato.hirun.modules.organization.service.*;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import com.microtomato.hirun.modules.user.entity.domain.UserDO;
 import lombok.extern.slf4j.Slf4j;
@@ -51,6 +49,9 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
     private IEmployeeJobRoleService employeeJobRoleService;
 
     @Autowired
+    private IEmployeeWorkExperienceService employeeWorkExperienceService;
+
+    @Autowired
     private IOrgService orgService;
 
     @Autowired
@@ -61,9 +62,6 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
 
     @Autowired
     private UserDO userDO;
-
-    @Autowired
-    private OrgDO orgDO;
 
     @Autowired
     private EmployeeBlackListDO employeeBlackListDO;
@@ -90,7 +88,9 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
 
         for (EmployeeInfoDTO employee : employees) {
             employee.setJobRoleName(staticDataService.getCodeName("JOB_ROLE", employee.getJobRole()));
-            employee.setOrgPath(orgDO.getCompanyLinePath(employee.getOrgId()));
+            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class);
+            orgDO.setOrg(employee.getOrgId());
+            employee.setOrgPath(orgDO.getCompanyLinePath());
         }
         return employees;
     }
@@ -110,6 +110,7 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         }
         String status = employee.getStatus();
         if (StringUtils.equals(EMPLOYEE_STATUS_NORMAL, status)) {
+            //创建员工时如果存在证件号码相同的正常员工，则报错
             throw new EmployeeException(EmployeeException.EmployeeExceptionEnum.IS_EXISTS, employee.getName(), employee.getMobileNo());
         } else {
             EmployeeDTO employeeDTO = new EmployeeDTO();
@@ -134,6 +135,14 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         EmployeeDTO employeeDTO = new EmployeeDTO();
         BeanUtils.copyProperties(employee, employeeDTO);
 
+        EmployeeDO employeeDO = SpringContextUtils.getBean(EmployeeDO.class);
+        employeeDO.setEmployee(employee);
+        int age = employeeDO.getAge();
+        int jobYear = employeeDO.getJobYear();
+
+        employeeDTO.setAge(new Integer(age));
+        employeeDTO.setJobYear(new Integer(jobYear));
+
         //获取员工岗位信息
         EmployeeJobRole jobRole = null;
         if (normal) {
@@ -145,7 +154,25 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         if (jobRole != null) {
             EmployeeJobRoleDTO jobRoleDTO = new EmployeeJobRoleDTO();
             BeanUtils.copyProperties(jobRole, jobRoleDTO);
+            String jobRoleName = this.staticDataService.getCodeName("JOB_ROLE", jobRole.getJobRole());
+            jobRoleDTO.setJobRoleName(jobRoleName);
+
+            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class);
+            orgDO.setOrg(jobRole.getOrgId());
+            jobRoleDTO.setOrgPath(orgDO.getCompanyLinePath());
+
             employeeDTO.setEmployeeJobRole(jobRoleDTO);
+        }
+
+        List<EmployeeWorkExperience> workExperiences = this.employeeWorkExperienceService.queryByEmployeeId(employeeId);
+        if (ArrayUtils.isNotEmpty(workExperiences)) {
+            List<EmployeeWorkExperienceDTO> workExperienceDTOS = new ArrayList<>();
+            for (EmployeeWorkExperience workExperience : workExperiences) {
+                EmployeeWorkExperienceDTO workExperienceDTO = new EmployeeWorkExperienceDTO();
+                BeanUtils.copyProperties(workExperience, workExperienceDTO);
+                workExperienceDTOS.add(workExperienceDTO);
+            }
+            employeeDTO.setEmployeeWorkExperiences(workExperienceDTOS);
         }
 
         return employeeDTO;
