@@ -21,7 +21,24 @@ public class SpringContextUtils implements ApplicationContextAware {
         context = applicationContext;
     }
 
+    /**
+     * 获取spring上下文对象
+     * @return
+     */
     public static ApplicationContext getContext() {
         return context;
+    }
+
+    /**
+     * 获取bean对象
+     * @param clazz
+     * @param <T>
+     * @return
+     */
+    public static <T> T getBean(Class<T> clazz) {
+        String className = clazz.getSimpleName();
+        String firstCharacter = className.charAt(0) + "";
+        String beanName = firstCharacter.toLowerCase() + className.substring(1);
+        return (T)getContext().getBean(beanName);
     }
 }
