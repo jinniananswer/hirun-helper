@@ -88,7 +88,7 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
 
         for (EmployeeInfoDTO employee : employees) {
             employee.setJobRoleName(staticDataService.getCodeName("JOB_ROLE", employee.getJobRole()));
-            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, employee.getEmployeeId());
+            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, employee.getOrgId());
             employee.setOrgPath(orgDO.getCompanyLinePath());
         }
         return employees;
