@@ -2,8 +2,10 @@ package com.microtomato.hirun.modules.user.entity.domain;
 
 import com.microtomato.hirun.framework.util.EncryptUtils;
 import com.microtomato.hirun.modules.user.entity.po.User;
+import com.microtomato.hirun.modules.user.entity.po.UserContact;
 import com.microtomato.hirun.modules.user.exception.PasswordException;
-import com.microtomato.hirun.modules.user.mapper.UserMapper;
+import com.microtomato.hirun.modules.user.service.IUserContactService;
+import com.microtomato.hirun.modules.user.service.IUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +22,17 @@ import org.springframework.stereotype.Component;
 public class UserDO {
 
     @Autowired
-    private UserMapper userMapper;
+    private IUserService userService;
 
+    @Autowired
+    private IUserContactService userContactService;
+
+    /**
+     * 创建用户信息
+     * @param mobileNo
+     * @param password
+     * @return
+     */
     public Long create(String mobileNo, String password) {
         if (StringUtils.isBlank(password)) {
             password = EncryptUtils.passwordEncode("123456");
@@ -32,8 +43,14 @@ public class UserDO {
         user.setMobileNo(mobileNo);
         user.setPassword(password);
         user.setStatus("0");
+        this.userService.save(user);
 
-        this.userMapper.insert(user);
+        UserContact userContact = new UserContact();
+        userContact.setUserId(user.getUserId());
+        userContact.setContactType("1");
+        userContact.setContactNo(mobileNo);
+        this.userContactService.save(userContact);
+
         return user.getUserId();
     }
 
@@ -76,10 +93,7 @@ public class UserDO {
         boolean result = this.verifyOriginalPassword(user, originalPassword);
         if (result) {
             user.setPassword(EncryptUtils.passwordEncode(newPassword));
-            int rows = userMapper.updateById(user);
-            if (rows <= 0) {
-                result = false;
-            }
+            result = userService.updateById(user);
         }
         return result;
     }
