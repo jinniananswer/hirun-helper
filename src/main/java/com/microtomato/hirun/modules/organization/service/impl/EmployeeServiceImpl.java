@@ -14,6 +14,7 @@ import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -72,6 +73,16 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         queryWrapper.eq(null != jobRole, "b.job_role", jobRole);
         IPage<EmployeeExampleDTO> employeeExampleDTOIPage = employeeMapper.selectEmployeePageExample(page, queryWrapper);
         return employeeExampleDTOIPage;
+    }
+
+    @Override
+    @Cacheable(value = "employee_name_cache")
+    public String getEmployeeNameEmployeeId(Long employeeId) {
+        Employee employee=this.employeeMapper.selectById(employeeId);
+        if(employee ==null){
+            return null;
+        }
+        return employee.getName();
     }
 
 }
