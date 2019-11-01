@@ -26,7 +26,6 @@ public class ExcelImportController extends AbstractExcelImportController {
     private IStevenService stevenServiceImpl;
 
     @PostMapping("import")
-    @Transactional(rollbackFor = Exception.class)
     public String upload(@RequestParam("fileUpload") MultipartFile multipartFile) throws IOException {
         importExcel(multipartFile, UserImportData.class, new DataListener(stevenServiceImpl));
         return "success";

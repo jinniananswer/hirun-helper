@@ -17,7 +17,7 @@ import java.util.List;
 @Slf4j
 public class DataListener extends AnalysisEventListener<UserImportData> {
 
-    private static final int BATCH_COUNT = 50;
+    private static final int BATCH_COUNT = 5;
 
     private List<Steven> list = new ArrayList<>(BATCH_COUNT);
     private IStevenService stevenServiceImpl;
@@ -49,7 +49,10 @@ public class DataListener extends AnalysisEventListener<UserImportData> {
      */
     private void saveData() {
         log.info("{}条数据，开始存储数据库！", list.size());
-        stevenServiceImpl.saveBatch(list, list.size());
+//        for (Steven steven : list) {
+//            stevenServiceImpl.save(steven);
+//        }
+        stevenServiceImpl.batchInsert(list);
         log.info("存储数据库成功！");
     }
 

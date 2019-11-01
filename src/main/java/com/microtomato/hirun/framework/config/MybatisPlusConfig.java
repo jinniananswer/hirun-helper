@@ -72,7 +72,7 @@ public class MybatisPlusConfig {
      * 使用自定义事务管理器, 不用可以注掉 @Bean
      */
     @Bean(name = "sqlSessionFactory")
-    public SqlSessionFactory sqlSessionFactory() {
+    public SqlSessionFactory sqlSessionFactory() throws Exception {
         log.info("创建自定义事务管理器：MultiDataSourceTransactionFactory");
         log.info("mapperPath: {}", mapperLocations);
         log.info("dataSource: {}", dataSource.getClass());
@@ -89,7 +89,7 @@ public class MybatisPlusConfig {
             return mybatisSqlSessionFactoryBean.getObject();
         } catch (Exception e) {
             log.error("mybatis sqlSessionFactoryBean create error", e);
-            return null;
+            throw e;
         }
     }
 
