@@ -32,7 +32,7 @@
 </head>
 <body>
     <div class="layui-fluid">
-        <div class="layui-form" id="staff_form">
+        <div class="layui-form" id="staff_form" lay-filter="staff_form">
             <div class="layui-card">
                 <div class="layui-tab layui-tab-brief" lay-filter="employeeTab">
                     <ul class="layui-tab-title">
@@ -62,21 +62,21 @@
                             <div class="layui-form-item">
                                 <label class="layui-form-label layui-required">姓名</label>
                                 <div class="layui-input-block">
-                                    <input type="text" name="name" required  lay-verify="required" placeholder="请输入员工姓名" autocomplete="off" class="layui-input"/>
+                                    <input type="text" name="name" id="name" required  lay-verify="required" placeholder="请输入员工姓名" autocomplete="off" class="layui-input"/>
                                 </div>
                             </div>
                             <div class="layui-form-item">
                                 <label class="layui-form-label layui-required">手机号码</label>
                                 <div class="layui-input-block">
-                                    <input type="text" id="mobileNo" name="mobileNo" required lay-verify="required" placeholder="请输入手机号码" autocomplete="off" class="layui-input"/>
+                                    <input type="text" id="mobileNo" name="mobileNo" required lay-verify="required" placeholder="请输入手机号码" onblur="layui.employee.verifyMobileNo();" autocomplete="off" class="layui-input"/>
                                 </div>
                             </div>
                             <div class="layui-form-item">
                                 <label class="layui-form-label layui-required">性别</label>
                                 <div class="layui-input-block">
                                     <div class="layui-form" lay-filter="sex">
-                                        <input type="radio" id="male" name="sex" value="1" title="男" checked disabled/>
-                                        <input type="radio" id="female" name="sex" value="2" title="女" disabled/>
+                                        <input type="radio" id="male" name="sex" value="1" title="男" checked/>
+                                        <input type="radio" id="female" name="sex" value="2" title="女"/>
                                     </div>
                                 </div>
                             </div>
@@ -137,7 +137,7 @@
                             <div class="layui-form-item">
                                 <label class="layui-form-label">归属部门</label>
                                 <div class="layui-input-block">
-                                    <input type="text" id="orgPath" name="orgPath" onclick="layui.employee.selectOrg();" placeholder="请点击选择部门" autocomplete="off" class="layui-input"/>
+                                    <input type="text" id="orgPath" name="orgPath" onclick="layui.employee.selectOrg();" onPropertyChange="layui.employee.calculateDiscountRate();" placeholder="请点击选择部门" autocomplete="off" class="layui-input"/>
                                     <input type="hidden" id="employeeJobRole.orgId" name="employeeJobRole.orgId"/>
                                 </div>
                             </div>
@@ -154,8 +154,8 @@
                             <div class="layui-form-item">
                                 <label class="layui-form-label layui-required">岗位性质</label>
                                 <div class="layui-input-block">
-                                    <div class="layui-form" lay-filter="jobNature">
-                                        <select id="jobNature" name="employeeJobRole.jobNature" lay-verify="required">
+                                    <div class="layui-form" lay-filter="jobRoleNature">
+                                        <select id="jobRoleNature" name="employeeJobRole.jobRoleNature" lay-verify="required" lay-filter="employeeJobRole.jobRoleNature" onchange="layui.employee.calculateDiscountRate();">
 
                                         </select>
                                     </div>
@@ -241,13 +241,13 @@
                             <div class="layui-form-item">
                                 <label class="layui-form-label">就业日期</label>
                                 <div class="layui-input-block">
-                                    <input type="text" id="jobDate" name="jobDate" placeholder="yyyy-MM-dd" autocomplete="off" onblur="layui.employee" class="layui-input"/>
+                                    <input type="text" id="jobDate" readonly="true" name="jobDate" placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input"/>
                                 </div>
                             </div>
                             <div class="layui-form-item">
                                 <label class="layui-form-label">工作年限</label>
                                 <div class="layui-input-block">
-                                    <input type="text" name="jobYear" readonly="true" placeholder="" autocomplete="off" class="layui-input"/>
+                                    <input type="text" id="jobYear" name="jobYear" readonly="true" placeholder="" autocomplete="off" class="layui-input"/>
                                 </div>
                             </div>
                             <div id="workExp_0">

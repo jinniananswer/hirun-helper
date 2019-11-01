@@ -1,7 +1,8 @@
 layui.extend({
     orgTree: 'org',
     citypicker: 'city-picker/city-picker',
-    selectEmployee: 'employee'
+    selectEmployee: 'employee',
+    time : 'time'
 }).define(['ajax', 'select', 'form', 'layer', 'laydate', 'laytpl', 'element', 'orgTree', 'citypicker', 'selectEmployee', 'redirect','time'],function(exports){
     var $ = layui.$;
     var form = layui.form;
@@ -14,11 +15,16 @@ layui.extend({
         init : function() {
             layui.select.init('createType', 'CREATE_EMPLOYEE_TYPE', '1', false);
             layui.select.init('birthdayType', 'BIRTHDAY_TYPE', '1', false);
-            layui.select.init('jobNature', 'JOB_NATURE', '1', false);
+            layui.select.init('jobRoleNature', 'JOB_NATURE', '1', false);
             layui.select.init('jobRole', 'JOB_ROLE', null, true, '请选择或搜索岗位');
             layui.select.init('firstEducationLevel', 'EDUCATION_LEVEL', '3', false);
             layui.select.init('educationLevel', 'EDUCATION_LEVEL', '3', false);
             layui.select.init('schoolType', 'SCHOOL_TYPE', '1', false);
+
+            form.on('select(employeeJobRole.jobRoleNature)', function(data){
+                layui.employee.calculateDiscountRate();
+            });
+            form.render('select', 'jobRoleNature');
 
             layui.element.on('tab(employeeTab)', function(data){
 
@@ -29,16 +35,26 @@ layui.extend({
             });
 
             laydate.render({
-                elem: '#inDate',
-                value: new Date()
+                elem : '#inDate',
+                value: new Date(),
+                done : function(value, date, endDate) {
+                    var regularDate = layui.time.addMonth(value, 3);
+                    $("#regularDate").val(regularDate);
+                }
+            });
+
+            var regularDate = layui.time.addMonth(layui.time.format(new Date()), 3);
+
+            laydate.render({
+                elem : '#regularDate',
+                value : regularDate
             });
 
             laydate.render({
-                elem: '#regularDate'
-            });
-
-            laydate.render({
-                elem: '#jobDate'
+                elem : '#jobDate',
+                done : function(value, date, endDate) {
+                    layui.employee.calculateJobYear(value);
+                }
             });
 
             laydate.render({
@@ -50,6 +66,7 @@ layui.extend({
                 elem: '#workEndDate_0',
                 type: 'month'
             });
+
 
             var registerPicker = new layui.citypicker("#city-picker", {
                 provincename:"nativeProv",
@@ -145,13 +162,26 @@ layui.extend({
 
             layui.ajax.post('api/organization/employee/verifyIdentityNo', '&createType='+createType+'&identityNo='+identityNo, function(data){
                 var employee = data.rows;
-                var status = employee.status;
-
-                if (status == "3") {
-                    this.renderCreateType("该证件号码的员工已离职，是否做返聘处理？", "2", employee.employeeId);
-                } else if (status == "1") {
-                    this.renderCreateType("该证件号码的员工已离职，是否做返聘处理？", "3", employee.employeeId);
+                if (employee == null) {
+                    return;
                 }
+                var status = employee.status;
+                if (status == "3") {
+                    layui.employee.renderCreateType("该证件号码的员工"+employee.name+"已离职，是否做返聘处理？", "2", employee.employeeId);
+                } else if (status == "1") {
+                    layui.employee.renderCreateType("该证件号码的员工"+employee.name+"已离职，是否做返聘处理？", "3", employee.employeeId);
+                }
+            });
+        },
+
+        verifyMobileNo : function() {
+            var mobileNo = $("#mobileNo").val();
+            if (mobileNo == null || mobileNo.trim().length <= 0) {
+                return;
+            }
+
+            layui.ajax.post('api/organization/employee/verifyMobileNo', '&mobileNo='+mobileNo, function(data){
+
             });
         },
 
@@ -166,59 +196,17 @@ layui.extend({
             },function(index) {
                 $("#createType").val(createType);
                 form.render('select', 'createType');
-
                 layui.ajax.post('api/organization/employee/loadAbnormal', '&employeeId='+employeeId, function(data){
                     var employee = data.rows;
-
+                    layui.employee.refreshEmployee(employee);
                 });
                 layer.close(index);
             });
         },
 
         refreshEmployee : function(employee) {
-            $("#identityNo").val(employee.identityNo);
-            $("#name").val(employee.name);
-            $("#mobileNo").val(employee.mobileNo);
 
-            var sex = employee.sex;
-            if (sex == 1) {
-                $("#male").prop("checked", "true");
-                form.render("radio");
-            } else {
-                $("#female").prop("checked", "true");
-                form.render("radio");
-            }
-
-            var birthdayType = employee.birthdayType;
-            if (birthdayType != null) {
-                $("#birthdayType").val(birthdayType);
-                form.render('select', 'birthdayType');
-            }
-
-            var birthday = employee.birthday;
-            if (birthday != null) {
-                $("#birthday").val(birthday);
-            }
-
-            var nativeAddress = employee.nativeAddress;
-            if (nativeAddress != null) {
-                $("#nativeAddress").val(nativeAddress);
-            }
-
-            var homeAddress = employee.homeAddress;
-            if (homeAddress != null) {
-                $("#homeAddress").val(homeAddress);
-            }
-
-            var inDate = employee.inDate;
-            if (inDate != null) {
-                $("#inDate").val(inDate);
-            }
-
-            var regularDate = employee.regularDate;
-            if (regularDate != null) {
-                $("#regularDate").val(regularDate);
-            }
+            form.val('staff_form', employee);
 
             var employeeJobRole = employee.employeeJobRole;
 
@@ -238,10 +226,10 @@ layui.extend({
                 form.render('select', 'jobRole');
             }
 
-            var jobNature = employeeJobRole.jobNature;
-            if (jobNature != null) {
-                $("#jobNature").val(jobNature);
-                form.render('select', 'jobNature');
+            var jobRoleNature = employeeJobRole.jobRoleNature;
+            if (jobRoleNature != null) {
+                $("#jobRoleNature").val(jobRoleNature);
+                form.render('select', 'jobRoleNature');
             }
 
             var discountRate = employeeJobRole.discountRate;
@@ -259,53 +247,6 @@ layui.extend({
                 $(document.getElementById("employeeJobRole.jobGrade")).val(jobGrade);
             }
 
-            var firstEducationLevel = employee.firstEducationLevel;
-            if (firstEducationLevel != null) {
-                $("#firstEducationLevel").val(firstEducationLevel);
-                form.render('select', "firstEducationLevel");
-            }
-
-            var educationLevel = employee.educationLevel;
-            if (educationLevel != null) {
-                $("#educationLevel").val(educationLevel);
-                form.render('select', "educationLevel");
-            }
-
-            var schoolType = employee.schoolType;
-            if (schoolType != null) {
-                $("#schoolType").val(schoolType);
-                form.render('select', "schoolType");
-            }
-
-            var school = employee.school;
-            if (school != null) {
-                $("#school").val(school);
-            }
-
-            var major = employee.major;
-            if (major != null) {
-                $("#major").val(major);
-            }
-
-            var certificateNo = employee.certificateNo;
-            if (certificateNo != null) {
-                $("#certificateNo").val(certificateNo);
-            }
-
-            var techTitle = employee.techTitle;
-            if (techTitle != null) {
-                $("#jobDate").val(techTitle);
-            }
-
-            var jobDate = employee.jobDate;
-            if (jobDate != null) {
-                $("#jobDate").val(jobDate);
-            }
-
-            var jobYear = employee.jobYear;
-            if (jobYear != null) {
-                $("#jobYear").val(jobYear);
-            }
 
             if (this.workExpIndex > 0) {
                 for (var i=this.workExpIndex; i > 0;i--) {
@@ -329,10 +270,25 @@ layui.extend({
             }
         },
 
-        caculatorJobYear : function() {
-            var jobDate = $("#jobDate").val();
+        calculateJobYear : function(jobDate) {
+            if (jobDate.length < 10) {
+                return;
+            }
             var year = layui.time.getYearDiff(jobDate);
             $("#jobYear").val(year);
+        },
+
+        calculateDiscountRate : function(data) {
+            var jobRoleNature = $(document.getElementById("jobRoleNature")).val();
+            var orgId = $(document.getElementById("employeeJobRole.orgId")).val();
+            if (orgId == null || orgId == "") {
+                this.selectOrg();
+                return;
+            } else {
+                layui.ajax.post('api/organization/employee/calculateDiscountRate', '&orgId='+orgId+"&jobRoleNature="+jobRoleNature, function(data){
+                    $(document.getElementById("employeeJobRole.discountRate")).val(data.rows.discountRate);
+                });
+            }
         },
 
         addWorkExp : function() {
