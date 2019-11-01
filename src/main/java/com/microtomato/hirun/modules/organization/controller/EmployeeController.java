@@ -55,10 +55,15 @@ public class EmployeeController {
         return this.employeeDomainServiceImpl.verifyIdentityNo(createType, identityNo);
     }
 
-    @RequestMapping("/load")
+    @RequestMapping("/loadAbnormal")
     @RestResult
-    public EmployeeDTO load(Long employeeId) {
+    public EmployeeDTO loadAbnormal(Long employeeId) {
         return this.employeeDomainServiceImpl.load(employeeId, false);
+    }
+
+    @RequestMapping("/calculateDiscountRate")
+    public Double calculateDiscountRate(Long orgId, String jobNature) {
+        return this.employeeDomainServiceImpl.calculateDiscountRate(orgId, jobNature);
     }
 
     @GetMapping("/selectEmployeeList")

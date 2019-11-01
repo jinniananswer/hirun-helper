@@ -21,7 +21,31 @@ public class SpringContextUtils implements ApplicationContextAware {
         context = applicationContext;
     }
 
+    /**
+     * 获取spring上下文对象
+     * @return
+     */
     public static ApplicationContext getContext() {
         return context;
+    }
+
+    /**
+     * 获取bean对象
+     * @param clazz
+     * @param <T>
+     * @return
+     */
+    public static <T> T getBean(Class<T> clazz) {
+        return (T)getContext().getBean(clazz);
+    }
+
+    /**
+     * 获取bean对象，调用其带参数的构造函数
+     * @param clazz
+     * @param <T>
+     * @return
+     */
+    public static <T> T getBean(Class<T> clazz, Object... args) {
+        return (T)getContext().getBean(clazz, args);
     }
 }

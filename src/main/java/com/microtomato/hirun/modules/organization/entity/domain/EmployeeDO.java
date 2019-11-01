@@ -2,6 +2,7 @@ package com.microtomato.hirun.modules.organization.entity.domain;
 
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeWorkExperience;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -42,8 +44,20 @@ public class EmployeeDO {
     @Autowired
     private IEmployeeBlacklistService employeeBlacklistService;;
 
+    /**
+     * 设置员工数据
+     * @param employee
+     */
     public void setEmployee(Employee employee) {
         this.employee = employee;
+    }
+
+    /**
+     * 根据员工ID设置员工数据
+     * @param employeeId
+     */
+    public void setEmployee(Long employeeId) {
+        this.employee = this.employeeService.getById(employeeId);
     }
 
     /**
@@ -146,5 +160,39 @@ public class EmployeeDO {
         this.employeeService.updateById(employee);
         //更新employeeJobRole资料
         employeeJobRoleService.update(null,lambdaUpdateWrapper);
+    }
+
+    /**
+     * 获取该员工的所有下级员工
+     * @return
+     */
+    public List<Employee> findSubordinate() {
+        return null;
+    }
+
+    /**
+     * 获得员工的年纪
+     * @return
+     */
+    public int getAge() {
+        LocalDate birthday = this.employee.getBirthday();
+        if (birthday == null) {
+            return 0;
+        }
+        LocalDate today = LocalDate.now();
+        return TimeUtils.getAbsDateDiffYear(birthday, today);
+    }
+
+    /**
+     * 获得员工的工作年限
+     * @return
+     */
+    public int getJobYear() {
+        LocalDate jobDate = this.employee.getJobDate();
+        if (jobDate == null) {
+            return 0;
+        }
+        LocalDate today = LocalDate.now();
+        return TimeUtils.getAbsDateDiffYear(jobDate, today);
     }
 }

@@ -15,7 +15,7 @@ import java.util.List;
 @Data
 public class EmployeeDTO {
 
-    private String employeeId;
+    private Long employeeId;
 
     private String name;
 
@@ -27,7 +27,9 @@ public class EmployeeDTO {
 
     private String birthdayType;
 
-    private String birthday;
+    private LocalDate birthday;
+
+    private Integer age;
 
     private String natives;
 
@@ -72,6 +74,8 @@ public class EmployeeDTO {
     private String techTitle;
 
     private LocalDate jobDate;
+
+    private Integer jobYear;
 
     private String status;
 

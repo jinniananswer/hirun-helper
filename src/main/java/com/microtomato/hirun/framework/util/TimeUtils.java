@@ -287,6 +287,17 @@ public class TimeUtils {
     }
 
     /**
+     * 计算两个时间LocalDate相差的年数，不考虑日期前后，返回结果>=0
+     *
+     * @param before
+     * @param after
+     * @return
+     */
+    public static int getAbsDateDiffYear(LocalDate before, LocalDate after) {
+        return Math.abs(Period.between(before, after).getYears());
+    }
+
+    /**
      * 根据传入日期返回星期几
      *
      * @param date 日期
@@ -655,6 +666,6 @@ public class TimeUtils {
     }
 
     public static void main(String[] args) {
-        System.out.println(now());
+        System.out.println(TimeUtils.getAbsTimeDiffYear(TimeUtils.stringToLocalDateTime("1982-03-11 00:00:00", TimeUtils.TIME_PATTERN), TimeUtils.getCurrentLocalDateTime()));
     }
 }

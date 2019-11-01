@@ -57,5 +57,4 @@ public class OrgController {
         List<TreeNode> tree = TreeUtils.build(nodes);
         return tree;
     }
-
 }

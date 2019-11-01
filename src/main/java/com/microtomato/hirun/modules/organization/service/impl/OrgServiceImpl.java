@@ -29,10 +29,4 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
         List<Org> orgs = this.list(new QueryWrapper<Org>().lambda().eq(Org::getStatus, "0"));
         return orgs;
     }
-
-    @Override
-    public Org getBelongCompany(Long orgId) {
-        return null;
-    }
-
 }
