@@ -35,7 +35,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     @Override
     public User login(String username, String password) {
-        User user = this.getOne(new QueryWrapper<User>().lambda().eq(User::getUsername, username));
+        User user = this.queryByUsername(username);
         if (user == null) {
             throw new NotFoundException("根据输入的用户名找不到用户信息，请确认用户名是否正确", ErrorKind.NOT_FOUND.getCode());
         }
@@ -67,6 +67,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         queryWrapper.apply("a.user_id = b.user_id AND b.employee_id = c.employee_id AND c.end_date > NOW()");
         queryWrapper.eq("a.user_id", userId);
         return userMapper.queryRelatInfoByUserId(queryWrapper);
+    }
+
+    @Override
+    public User queryByUsername(String username) {
+        User user = this.getOne(new QueryWrapper<User>().lambda().eq(User::getUsername, username).eq(User::getStatus, "0"));
+        return user;
     }
 
     /**

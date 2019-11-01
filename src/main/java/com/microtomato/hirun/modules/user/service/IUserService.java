@@ -41,4 +41,6 @@ public interface IUserService extends IService<User> {
      * @return orgId
      */
     UserDTO queryRelatInfoByUserId(Long userId);
+
+    User queryByUsername(String username);
 }
