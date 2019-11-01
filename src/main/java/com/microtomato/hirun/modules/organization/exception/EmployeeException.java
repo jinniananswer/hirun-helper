@@ -17,7 +17,7 @@ public class EmployeeException extends BaseException {
         @Error(code = ErrorKind.NOT_FOUND, message = "未找到员工档案信息")
         NOT_FOUND,
 
-        @Error(code = ErrorKind.ALREADY_EXIST, message = "该证件号码的在职员工已存在，员工姓名为【%s】,电话为【%s】")
+        @Error(code = ErrorKind.ALREADY_EXIST, message = "该%s的在职员工已存在，员工姓名为【%s】,电话为【%s】")
         IS_EXISTS,
 
         @Error(code = ErrorKind.BREACH_BUSINESS_RULE, message = "该证件号码的人员已被纳入我公司黑名单")

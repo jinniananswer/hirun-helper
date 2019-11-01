@@ -85,4 +85,10 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         return employee.getName();
     }
 
+    @Override
+    public Employee queryByUserId(Long userId) {
+        Employee employee = this.getOne(new QueryWrapper<Employee>().lambda().eq(Employee::getUserId, userId));
+        return employee;
+    }
+
 }

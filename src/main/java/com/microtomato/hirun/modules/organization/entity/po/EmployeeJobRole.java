@@ -40,6 +40,12 @@ public class EmployeeJobRole extends BaseEntity {
     @TableField("job_role_nature")
     private String jobRoleNature;
 
+    @TableField("discount_rate")
+    private String discountRate;
+
+    @TableField("is_main")
+    private String isMain;
+
     @TableField("org_id")
     private Long orgId;
 

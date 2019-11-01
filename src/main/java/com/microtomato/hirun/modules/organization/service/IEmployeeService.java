@@ -30,4 +30,6 @@ public interface IEmployeeService extends IService<Employee> {
      * 根据employeeId获取name
      */
     String getEmployeeNameEmployeeId(Long employeeId);
+
+    Employee queryByUserId(Long userId);
 }

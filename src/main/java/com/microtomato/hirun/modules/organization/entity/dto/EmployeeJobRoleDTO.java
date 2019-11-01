@@ -11,7 +11,7 @@ import lombok.Data;
 @Data
 public class EmployeeJobRoleDTO {
 
-    private String orgId;
+    private Long orgId;
 
     private String orgName;
 
@@ -21,9 +21,11 @@ public class EmployeeJobRoleDTO {
 
     private String jobRoleName;
 
-    private String jobNature;
+    private String discountRate;
 
-    private String parentEmployeeId;
+    private String jobRoleNature;
+
+    private Long parentEmployeeId;
 
     private String parentEmployeeName;
 

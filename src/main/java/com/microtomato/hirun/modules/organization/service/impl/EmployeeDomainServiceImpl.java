@@ -21,6 +21,8 @@ import com.microtomato.hirun.modules.organization.mapper.EmployeeMapper;
 import com.microtomato.hirun.modules.organization.service.*;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import com.microtomato.hirun.modules.user.entity.domain.UserDO;
+import com.microtomato.hirun.modules.user.entity.po.User;
+import com.microtomato.hirun.modules.user.service.IUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -61,7 +63,13 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
     private EmployeeDO employeeDO;
 
     @Autowired
+    private IUserService userService;
+
+    @Autowired
     private UserDO userDO;
+
+    @Autowired
+    private IEmployeeBlacklistService employeeBlacklistService;
 
     @Autowired
     private EmployeeBlackListDO employeeBlackListDO;
@@ -100,6 +108,11 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
      */
     @Override
     public EmployeeDTO verifyIdentityNo(String createType, String identityNo) {
+        boolean isBlack = this.employeeBlacklistService.exists(identityNo);
+        if (isBlack) {
+            throw new EmployeeException(EmployeeException.EmployeeExceptionEnum.IS_BLACK);
+        }
+
         Employee employee = this.employeeService.queryByIdentityNo(identityNo);
         if (employee == null && (StringUtils.equals(CREATE_TYPE_NEW_ENTRY, createType) || StringUtils.equals(CREATE_TYPE_PRACTICE, createType))) {
             return null;
@@ -110,11 +123,25 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         String status = employee.getStatus();
         if (StringUtils.equals(EMPLOYEE_STATUS_NORMAL, status)) {
             //创建员工时如果存在证件号码相同的正常员工，则报错
-            throw new EmployeeException(EmployeeException.EmployeeExceptionEnum.IS_EXISTS, employee.getName(), employee.getMobileNo());
+            throw new EmployeeException(EmployeeException.EmployeeExceptionEnum.IS_EXISTS, "证件号码", employee.getName(), employee.getMobileNo());
         } else {
             EmployeeDTO employeeDTO = new EmployeeDTO();
             BeanUtils.copyProperties(employee, employeeDTO);
             return employeeDTO;
+        }
+    }
+
+    @Override
+    public void verifyMobileNo(String mobileNo) {
+        User user = this.userService.queryByUsername(mobileNo);
+        if (user != null) {
+            if (!StringUtils.equals("0", user.getStatus())) {
+                return;
+            }
+            Employee employee = this.employeeService.queryByUserId(user.getUserId());
+            if (employee != null) {
+                throw new EmployeeException(EmployeeException.EmployeeExceptionEnum.IS_EXISTS, "手机号码",employee.getName(), employee.getMobileNo());
+            }
         }
     }
 
@@ -176,15 +203,15 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
     }
 
     @Override
-    public Double calculateDiscountRate(Long orgId, String jobNature) {
+    public Double calculateDiscountRate(Long orgId, String jobRoleNature) {
         OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
         boolean isHomeDecoration = orgDO.isHomeDecoration();
         if (!isHomeDecoration) {
             return 0.0;
         } else {
-            if (StringUtils.equals("2", jobNature)) {
+            if (StringUtils.equals("2", jobRoleNature)) {
                 return 1.0;
-            } else if (StringUtils.equals("3", jobNature)) {
+            } else if (StringUtils.equals("3", jobRoleNature)) {
                 return 0.5;
             } else {
                 return 0.0;

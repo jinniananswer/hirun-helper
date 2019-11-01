@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.organization.entity.domain;
 
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
@@ -114,6 +115,9 @@ public class EmployeeDO {
         if (jobRole == null) {
             return;
         }
+        jobRole.setIsMain("1");
+        jobRole.setStartDate(RequestTimeHolder.getRequestTime());
+        jobRole.setEndDate(TimeUtils.getForeverTime());
         this.employeeJobRoleService.save(jobRole);
     }
 
