@@ -13,11 +13,11 @@ import lombok.NoArgsConstructor;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
- * @author jinnian
- * @since 2019-09-05
+ * @author Steven
+ * @since 2019-09-29
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -30,36 +30,61 @@ public class Menu extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 员工ID，唯一主键
+     * 菜单ID，唯一主键
      */
-    @TableId(value = "MENU_ID", type = IdType.AUTO)
-    private Integer menuId;
+    @TableId(value = "menu_id", type = IdType.AUTO)
+    private Long menuId;
 
     /**
-     * 员工工号
+     * 菜单标题
      */
-    @TableField("TITLE")
+    @TableField("title")
     private String title;
 
-    @TableField("MENU_DESC")
+    /**
+     * 菜单描述
+     */
+    @TableField("menu_desc")
     private String menuDesc;
 
-    @TableField("MENU_URL")
+    /**
+     * 菜单地址
+     */
+    @TableField("menu_url")
     private String menuUrl;
 
-    @TableField("DOMAIN_ID")
+    /**
+     * 菜单域
+     */
+    @TableField("domain_id")
     private Integer domainId;
 
-    @TableField("MENU_LEVEL")
+    /**
+     * 菜单层级
+     */
+    @TableField("menu_level")
     private Integer menuLevel;
 
-    @TableField("PARENT_MENU_ID")
-    private Integer parentMenuId;
+    /**
+     * 父菜单ID
+     */
+    @TableField("parent_menu_id")
+    private Long parentMenuId;
 
-    @TableField("ICO_URL")
+    /**
+     * 菜单图标
+     */
+    @TableField("ico_url")
     private String icoUrl;
 
-    @TableField("IS_COMMON_USE")
+    @TableField("is_common_use")
     private String isCommonUse;
+
+    /**
+     * 是否为嵌入页面
+     */
+    @TableField("is_embed_page")
+    private Boolean embedPage;
+
 
 }

@@ -1,16 +1,14 @@
 package com.microtomato.hirun.modules.user.entity.po;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import java.time.LocalDateTime;
+import com.baomidou.mybatisplus.annotation.*;
 import com.microtomato.hirun.framework.data.BaseEntity;
-import com.baomidou.mybatisplus.annotation.TableField;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
+
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -30,20 +28,24 @@ public class UserRole extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "USER_ROLE_ID", type = IdType.AUTO)
-    private Integer userRoleId;
+    @TableId(value = "user_role_id", type = IdType.AUTO)
+    private Long userRoleId;
 
-    @TableField("USER_ID")
-    private Integer userId;
+    @TableField("user_id")
+    private Long userId;
 
-    @TableField("ROLE_ID")
-    private Integer roleId;
+    @TableField("role_id")
+    private Long roleId;
 
-    @TableField("UPDATE_USER_ID")
-    private Integer updateUserId;
+    @TableField(value = "create_user_id", fill = FieldFill.INSERT)
+    private Long createUserId;
 
-    @TableField("UPDATE_TIME")
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
+    private LocalDateTime createTime;
+
+    @TableField(value = "update_user_id", fill = FieldFill.INSERT_UPDATE)
+    private Long updateUserId;
+
+    @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
-
-
 }

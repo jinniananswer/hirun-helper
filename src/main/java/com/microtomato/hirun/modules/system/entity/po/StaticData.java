@@ -32,28 +32,28 @@ public class StaticData extends BaseEntity {
     /**
      * 员工ID，唯一主键
      */
-    @TableId(value = "DATA_ID", type = IdType.AUTO)
-    private Integer dataId;
+    @TableId(value = "data_id", type = IdType.AUTO)
+    private Long dataId;
 
     /**
      * 员工工号
      */
-    @TableField("CODE_TYPE")
+    @TableField("code_type")
     private String codeType;
 
-    @TableField("CODE_VALUE")
+    @TableField("code_value")
     private String codeValue;
 
-    @TableField("CODE_NAME")
+    @TableField("code_name")
     private String codeName;
 
-    @TableField("SORT_NO")
+    @TableField("sort_no")
     private Integer sortNo;
 
-    @TableField("CODE_DESC")
+    @TableField("code_desc")
     private String codeDesc;
 
-    @TableField("STATUS")
+    @TableField("status")
     private String status;
 
 

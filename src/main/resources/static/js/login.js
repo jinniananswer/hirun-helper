@@ -26,8 +26,12 @@ layui.define(['ajax', 'form', 'layer'],function(exports){
         },
 
         login : function(formData) {
-            layui.ajax.post('/login', formData, function(data) {
-                window.location.href = "/";
+            layui.ajax.post('login', formData, function(data) {
+                let contextPath = $("#contextPath").val();
+                if ($.trim(contextPath) == "") {
+                    contextPath = "/"
+                }
+                window.location.href = contextPath;
             });
         }
     };

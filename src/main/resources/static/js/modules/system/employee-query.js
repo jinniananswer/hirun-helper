@@ -2,7 +2,7 @@ layui.use('table', function () {
     var table = layui.table;
     table.render({
         elem: '#employee-table',
-        url: '/api/user/user/list',
+        url: 'api/user/user/list',
         response: {
             msgName: 'message',
             countName: 'total',

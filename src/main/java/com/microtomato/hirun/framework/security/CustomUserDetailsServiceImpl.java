@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.microtomato.hirun.modules.user.entity.po.FuncRole;
 import com.microtomato.hirun.modules.user.entity.po.User;
 import com.microtomato.hirun.modules.user.entity.po.UserRole;
+import com.microtomato.hirun.modules.user.entity.po.dto.UserDTO;
 import com.microtomato.hirun.modules.user.service.impl.FuncRoleServiceImpl;
 import com.microtomato.hirun.modules.user.service.impl.UserRoleServiceImpl;
 import com.microtomato.hirun.modules.user.service.impl.UserServiceImpl;
@@ -62,7 +63,7 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
 
         // 查用户角色对应的所有权限
         for (UserRole userRole : userRoles) {
-            Integer roleId = userRole.getRoleId();
+            Long roleId = userRole.getRoleId();
             List<FuncRole> funcRoleList = funcRoleServiceImpl.list(new QueryWrapper<FuncRole>().lambda().eq(FuncRole::getRoleId, roleId));
             funcRoleList.forEach(funcRole -> funcSet.add(funcRole.getFuncId().toString()));
         }
@@ -81,6 +82,11 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
             roleList.add(new Role(userRole.getRoleId(), ""));
         }
 
+        // 查登录用户的 orgId, employeeId
+        UserDTO userDTO = userServiceImpl.queryRelatInfoByUserId(user.getUserId());
+
+        userContext.setOrgId(userDTO.getOrgId());
+        userContext.setEmployeeId(userDTO.getEmployeeId());
         userContext.setRoles(roleList);
         userContext.setGrantedAuthorities(grantedAuthorities);
         BeanUtils.copyProperties(user, userContext);

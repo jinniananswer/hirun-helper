@@ -6,10 +6,13 @@
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <link rel="stylesheet" href="/static/layui/css/layui.css" th:href="@{/layui/css/layui.css}" media="all">
-    <link rel="stylesheet" href="/static/css/admin.css" th:href="@{/css/admin.css}" media="all">
-    <script src="../static/layui/layui.js" th:src="@{/layui/layui.js}"></script>
-    <script src="../static/js/base.js" th:src="@{js/base.js}"></script>
+    <link rel="stylesheet" href="/static/layui/css/layui.css" th:href="@{static/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" href="/static/css/admin.css" th:href="@{static/css/admin.css}" media="all">
+    <link rel="stylesheet" href="/static/css/template.css" th:href="@{static/css/template.css}" media="all">
+    <link rel="stylesheet" href="/static/js/extend/city-picker/city-picker.css" th:href="@{static/js/extend/city-picker/city-picker.css}" media="all" />
+    <script src="../static/js/extend/city-picker/city-picker.data.js" th:src="@{static/js/extend/city-picker/city-picker.data.js}"></script>
+    <script src="../static/layui/layui.js" th:src="@{static/layui/layui.js}"></script>
+    <script src="../static/js/base.js" th:src="@{static/js/base.js}"></script>
     <style>
         .layui-form-label{
             width: 65px;
@@ -29,42 +32,52 @@
 </head>
 <body>
     <div class="layui-fluid">
-        <form class="layui-form" id="staff_form">
+        <div class="layui-form" id="staff_form">
             <div class="layui-card">
                 <div class="layui-tab layui-tab-brief" lay-filter="employeeTab">
                     <ul class="layui-tab-title">
-                        <li class="layui-this">基本信息</li>
-                        <li>岗位信息</li>
-                        <li>教育信息</li>
+                        <li class="layui-this" lay-id="1">基本信息</li>
+                        <li lay-id="2">岗位信息</li>
+                        <li lay-id="3">教育信息</li>
+                        <li lay-id="4">工作经历</li>
                     </ul>
                     <div class="layui-tab-content">
                         <div class="layui-tab-item layui-show">
                             <div class="layui-form-item">
-                            </div>
+                                <label class="layui-form-label layui-required">入职类型</label>
+                                <div class="layui-input-block">
+                                    <div class="layui-form" lay-filter="createType">
+                                        <select id="createType" name="createType" lay-verify="required">
 
-                            <div class="layui-form-item">
-                                <label class="layui-form-label layui-required">姓名</label>
-                                <div class="layui-input-block">
-                                    <input type="text" name="name" required  lay-verify="required" placeholder="请输入员工" autocomplete="off" class="layui-input">
-                                </div>
-                            </div>
-                            <div class="layui-form-item">
-                                <label class="layui-form-label layui-required">手机号码</label>
-                                <div class="layui-input-block">
-                                    <input type="text" name="mobile_no" required lay-verify="required" placeholder="请输入手机号码" autocomplete="off" class="layui-input">
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                             <div class="layui-form-item">
                                 <label class="layui-form-label layui-required">身份证</label>
                                 <div class="layui-input-block">
-                                    <input type="text" name="identity_no" required lay-verify="required" placeholder="请输入身份证号码" autocomplete="off" class="layui-input">
+                                    <input type="text" id="identityNo" name="identityNo" required lay-verify="required" placeholder="请输入身份证号码" onblur="layui.employee.analyzeIdentityNo();" autocomplete="off" class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label layui-required">姓名</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="name" required  lay-verify="required" placeholder="请输入员工姓名" autocomplete="off" class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label layui-required">手机号码</label>
+                                <div class="layui-input-block">
+                                    <input type="text" id="mobileNo" name="mobileNo" required lay-verify="required" placeholder="请输入手机号码" autocomplete="off" class="layui-input"/>
                                 </div>
                             </div>
                             <div class="layui-form-item">
                                 <label class="layui-form-label layui-required">性别</label>
                                 <div class="layui-input-block">
-                                    <input type="radio" name="sex" value="男" title="男" checked disabled>
-                                    <input type="radio" name="sex" value="女" title="女" disabled>
+                                    <div class="layui-form" lay-filter="sex">
+                                        <input type="radio" id="male" name="sex" value="1" title="男" checked disabled/>
+                                        <input type="radio" id="female" name="sex" value="2" title="女" disabled/>
+                                    </div>
                                 </div>
                             </div>
                             <div class="layui-form-item">
@@ -80,74 +93,120 @@
                             <div class="layui-form-item">
                                 <label class="layui-form-label layui-required">生日</label>
                                 <div class="layui-input-block">
-                                    <input type="text" id="birthday" name="birthday" required  lay-verify="required" placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input">
+                                    <input type="text" id="birthday" name="birthday" required  lay-verify="required" placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input"/>
                                 </div>
                             </div>
                             <div class="layui-form-item">
                                 <label class="layui-form-label">户籍地址</label>
                                 <div class="layui-input-block">
-                                    <div class="layui-inline">
-                                        <div class="layui-form">
-                                            <select id="province" name="province" lay-verify="required">
-
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="layui-inline">
-                                        <div class="layui-form">
-                                            <select id="city" name="city" lay-verify="required">
-
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="layui-inline">
-                                        <div class="layui-form">
-                                            <select id="area" name="area" lay-verify="required">
-
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="layui-show-xs-block">
-                                        <input type="text" name="register_address" required lay-verify="required" placeholder="请输入户籍详细住址" autocomplete="off" class="layui-input">
-                                    </div>
+                                    <input type="text" name="natives" autocomplete="on" class="layui-input" id="city-picker" readonly="readonly" data-toggle="city-picker" placeholder="请选择">
                                 </div>
                             </div>
-
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">详细户籍</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="nativeAddress" required  lay-verify="required" placeholder="请输入详细户籍地址" autocomplete="off" class="layui-input"/>
+                                </div>
+                            </div>
                             <div class="layui-form-item">
                                 <label class="layui-form-label">现住址</label>
                                 <div class="layui-input-block">
-                                    <input type="text" name="home_address" required lay-verify="required" placeholder="请输入家庭住址" autocomplete="off" class="layui-input">
+                                    <input type="text" autocomplete="on" name="home" class="layui-input" id="home-city-picker" readonly="readonly" data-toggle="city-picker" placeholder="请选择">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">详细住址</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="homeAddress" required lay-verify="required" placeholder="请输入家庭住址" autocomplete="off" class="layui-input"/>
                                 </div>
                             </div>
                         </div>
                         <div class="layui-tab-item">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label layui-required">入职日期</label>
+                                <div class="layui-input-block">
+                                    <input type="text" id="inDate" name="inDate" required  lay-verify="required" placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label layui-required">转正日期</label>
+                                <div class="layui-input-block">
+                                    <input type="text" id="regularDate" name="regularDate" required  lay-verify="required" placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input"/>
+                                </div>
+                            </div>
                             <div class="layui-form-item">
                                 <label class="layui-form-label">归属部门</label>
                                 <div class="layui-input-block">
-                                    <input type="text" id="orgId" name="orgId" onclick="layui.employee.selectOrg();" placeholder="请点击选择部门" autocomplete="off" class="layui-input">
+                                    <input type="text" id="orgPath" name="orgPath" onclick="layui.employee.selectOrg();" placeholder="请点击选择部门" autocomplete="off" class="layui-input"/>
+                                    <input type="hidden" id="employeeJobRole.orgId" name="employeeJobRole.orgId"/>
                                 </div>
                             </div>
                             <div class="layui-form-item">
-                                <label class="layui-form-label">职位</label>
+                                <label class="layui-form-label layui-required">岗位</label>
                                 <div class="layui-input-block">
-                                    <input type="text" name="position" placeholder="请输入身份证号码" autocomplete="off" class="layui-input">
-                                </div>
-                            </div>
-                            <div class="layui-form-item">
-                                <label class="layui-form-label">职级</label>
-                                <div class="layui-input-block">
-                                    <select name="job_grade" >
+                                    <div class="layui-form" lay-filter="jobRole">
+                                        <select id="jobRole" name="employeeJobRole.jobRole" lay-verify="required" lay-search>
 
-                                    </select>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label layui-required">岗位性质</label>
+                                <div class="layui-input-block">
+                                    <div class="layui-form" lay-filter="jobNature">
+                                        <select id="jobNature" name="employeeJobRole.jobNature" lay-verify="required">
+
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">折算比例</label>
+                                <div class="layui-input-block">
+                                    <input type="text" id="employeeJobRole.discountRate" name="employeeJobRole.discountRate" readonly placeholder="" autocomplete="off" class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">直属上级</label>
+                                <div class="layui-input-block">
+                                    <input type="text" id="parentEmployeeName" name="parentEmployeeName" onclick="layui.employee.selectParentEmployee();" placeholder="请点击选择直属上级" autocomplete="off" class="layui-input"/>
+                                    <input type="hidden" id="employeeJobRole.parentEmployeeId" name="employeeJobRole.parentEmployeeId"/>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">职称</label>
+                                <div class="layui-input-block">
+                                    <input type="text" id="jobGrade" name="employeeJobRole.jobGrade" placeholder="请输入职称" autocomplete="off" class="layui-input"/>
                                 </div>
                             </div>
                         </div>
                         <div class="layui-tab-item">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">第一学历</label>
+                                <div class="layui-input-block">
+                                    <div class="layui-form" lay-filter="firstEducationLevel">
+                                        <select id="firstEducationLevel" name="firstEducationLevel">
+
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="layui-form-item">
                                 <label class="layui-form-label">最高学历</label>
                                 <div class="layui-input-block">
                                     <div class="layui-form" lay-filter="educationLevel">
-                                        <select id="educationLevel" name="educationLevel" lay-verify="required">
+                                        <select id="educationLevel" name="educationLevel">
+
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">学校类型</label>
+                                <div class="layui-input-block">
+                                    <div class="layui-form" lay-filter="schoolType">
+                                        <select id="schoolType" name="schoolType">
 
                                         </select>
                                     </div>
@@ -156,21 +215,76 @@
                             <div class="layui-form-item">
                                 <label class="layui-form-label">毕业院校</label>
                                 <div class="layui-input-block">
-                                    <input type="text" name="school" required lay-verify="required" placeholder="请输入毕业院校" autocomplete="off" class="layui-input">
+                                    <input type="text" name="school" placeholder="请输入毕业院校" autocomplete="off" class="layui-input"/>
                                 </div>
                             </div>
                             <div class="layui-form-item">
                                 <label class="layui-form-label">专业</label>
                                 <div class="layui-input-block">
-                                    <input type="text" name="major" required lay-verify="required" placeholder="请输入专业名称" autocomplete="off" class="layui-input">
+                                    <input type="text" name="major" placeholder="请输入专业名称" autocomplete="off" class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">证书编号</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="certificateNo" placeholder="请输入毕业证书编号" autocomplete="off" class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">技术职称</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="techTitle" placeholder="请输入国家认定技术职称" autocomplete="off" class="layui-input"/>
                                 </div>
                             </div>
                         </div>
-                        <div class="layui-tab-item">4</div>
-                        <div class="layui-tab-item">5</div>
+                        <div class="layui-tab-item" id="workTab">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">就业日期</label>
+                                <div class="layui-input-block">
+                                    <input type="text" id="jobDate" name="jobDate" placeholder="yyyy-MM-dd" autocomplete="off" onblur="layui.employee" class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">工作年限</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="jobYear" readonly="true" placeholder="" autocomplete="off" class="layui-input"/>
+                                </div>
+                            </div>
+                            <div id="workExp_0">
+                                <fieldset class="layui-elem-field layui-field-title">
+                                    <legend>
+                                        <div class="layui-btn-group">
+                                            <button type="button" class="layui-btn layui-btn-primary layui-btn-sm" onclick="layui.employee.addWorkExp();"><i class="layui-icon layui-icon-add-1"></i></button>
+                                        </div>
+                                    </legend>
+                                </fieldset>
+                                <div class="layui-form-item">
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">开始时间</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" id="workStartDate_0" name="employeeWorkExperiences[0].startDate" placeholder="入职前工作经历时间" autocomplete="off" class="layui-input"/>
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">结束时间</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" id="workEndDate_0" name="employeeWorkExperiences[0].endDate" placeholder="入职前工作经历时间" autocomplete="off" class="layui-input"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">工作内容</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" id="workContent_0" name="employeeWorkExperiences[0].content" placeholder="请输入入职前工作具体内容" autocomplete="off" class="layui-input"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-tab-item"></div>
                         <div class="layui-tab-item">6</div>
                         <div>
-                            <button id="next" class="layui-btn layui-btn-lg" lay-submit lay-filter="btnSubmit">下一步</button>
+                            <button id="previous" class="layui-btn layui-btn-lg" onclick="layui.employee.previous();" style="display: none">上一步</button>
+                            <button id="next" class="layui-btn layui-btn-lg" onclick="layui.employee.next();">下一步</button>
                             <button id="btnSubmit" class="layui-btn layui-btn-danger layui-btn-lg" lay-submit lay-filter="btnSubmit">立即提交</button>
                         </div>
                     </div>
@@ -178,15 +292,51 @@
                 </div>
 
             </div>
-        </form>
+        </div>
     </div>
     <div id="orgTree" style="display:none">
 
     </div>
+
+    <div id="parentEmployeeList" style="display:none">
+
+    </div>
+    <script id="workExp" type="text/html">
+        <div id="workExp_{{d}}">
+            <fieldset class="layui-elem-field layui-field-title">
+                <legend>
+                    <div class="layui-btn-group">
+                        <button type="button" class="layui-btn layui-btn-primary layui-btn-sm" onclick="layui.employee.addWorkExp();"><i class="layui-icon layui-icon-add-1"></i></button>
+                        <button type="button" class="layui-btn layui-btn-primary layui-btn-sm" onclick="layui.employee.delWorkExp({{d}});"><i class="layui-icon layui-icon-delete"></i></button>
+                    </div>
+                </legend>
+            </fieldset>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">开始时间</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="workStartDate_{{d}}" name="employeeWorkExperiences[{{d}}].startDate" placeholder="入职前工作经历时间" autocomplete="off" class="layui-input"/>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">结束时间</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="workEndDate_{{d}}" name="employeeWorkExperiences[{{d}}].endDate" placeholder="入职前工作经历时间" autocomplete="off" class="layui-input"/>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">工作内容</label>
+                <div class="layui-input-block">
+                    <input type="text" id="workContent_{{d}}" name="employeeWorkExperiences[{{d}}].content" placeholder="请输入入职前工作具体内容" autocomplete="off" class="layui-input"/>
+                </div>
+            </div>
+        </div>
+    </script>
     <script>
         layui.extend(
             {
-                employee : "{/}js/modules/organization/employee/create.employee"
+                employee : "{/}static/js/modules/organization/employee/create.employee"
             }
         ).use('employee',function(args){
             layui.employee.init();

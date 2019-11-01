@@ -287,6 +287,17 @@ public class TimeUtils {
     }
 
     /**
+     * 计算两个时间LocalDate相差的年数，不考虑日期前后，返回结果>=0
+     *
+     * @param before
+     * @param after
+     * @return
+     */
+    public static int getAbsDateDiffYear(LocalDate before, LocalDate after) {
+        return Math.abs(Period.between(before, after).getYears());
+    }
+
+    /**
      * 根据传入日期返回星期几
      *
      * @param date 日期
@@ -452,8 +463,9 @@ public class TimeUtils {
     /**
      * 增加或减少年/月/周/天/小时/分/秒数
      *
-     * @param localDateTime 例：ChronoUnit.DAYS
-     * @param chronoUnit
+     * @param date
+     * @param format
+     * @param chronoUnit 例：ChronoUnit.DAYS
      * @param num
      * @return LocalDateTime
      */
@@ -564,8 +576,8 @@ public class TimeUtils {
     /**
      * 比较两个时间LocalDateTime大小
      *
-     * @param time1
-     * @param time2
+     * @param date1
+     * @param date2
      * @return 1:第一个比第二个大；0：第一个与第二个相同；-1：第一个比第二个小
      */
     public static int compareTwoTime(String date1, String date2) {
@@ -654,6 +666,6 @@ public class TimeUtils {
     }
 
     public static void main(String[] args) {
-        System.out.println(now());
+        System.out.println(TimeUtils.getAbsTimeDiffYear(TimeUtils.stringToLocalDateTime("1982-03-11 00:00:00", TimeUtils.TIME_PATTERN), TimeUtils.getCurrentLocalDateTime()));
     }
 }

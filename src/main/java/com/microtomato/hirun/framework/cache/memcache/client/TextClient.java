@@ -1,0 +1,877 @@
+package com.microtomato.hirun.framework.cache.memcache.client;
+
+import com.microtomato.hirun.framework.cache.entity.MemCacheAddress;
+import com.microtomato.hirun.framework.cache.memcache.driver.io.ISockio;
+import com.microtomato.hirun.framework.cache.memcache.driver.io.SockIOPool;
+import com.microtomato.hirun.framework.cache.memcache.driver.util.FastConvertor;
+import com.microtomato.hirun.framework.cache.memcache.interfaces.IMemCache;
+import com.microtomato.hirun.framework.cache.util.IOUtil;
+import com.microtomato.hirun.framework.cache.util.MD5Util;
+import com.microtomato.hirun.framework.cache.util.serial.DefaultSerializable;
+import com.microtomato.hirun.framework.cache.util.serial.ISerializable;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.Arrays;
+import java.util.Date;
+
+/**
+ * TextClient 基于文本协议的客户端
+ *
+ * @author Steven
+ * @date 2019-10-15
+ */
+@Slf4j
+public final class TextClient implements IMemCache {
+
+	private static final byte[] CMD_ADD = "add".getBytes();
+	private static final byte[] CMD_APPEND = "append".getBytes();
+	private static final byte[] CMD_SET = "set".getBytes();
+	private static final byte[] CMD_GET = "get".getBytes();
+	private static final byte[] CMD_DELETE = "delete".getBytes();
+	private static final byte[] CMD_INCR = "incr".getBytes();
+	private static final byte[] CMD_DECR = "decr".getBytes();
+	private static final byte[] CMD_TOUCH = "touch".getBytes();
+
+	private static final byte[] SPACE = " ".getBytes();
+	private static final byte[] CRLF = "\r\n".getBytes();
+	private static final byte[] ZERO = "0".getBytes();
+
+	private static final byte[] SERVER_STATUS_STORED = "STORED".getBytes();
+	private static final byte[] SERVER_STATUS_DELETED = "DELETED".getBytes();
+	private static final byte[] SERVER_STATUS_BYTES_NOT_FOUND = "NOT_FOUND".getBytes();
+	private static final byte[] SERVER_STATUS_BYTES_TOUCHED = "TOUCHED".getBytes();
+	private static final byte[] SERVER_STATUS_BYTES_ERROR = "ERROR".getBytes();
+	private static final byte[] SERVER_STATUS_BYTES_CLIENT_ERROR = "CLIENT_ERROR".getBytes();
+	private static final byte[] SERVER_STATUS_BYTES_SERVER_ERROR = "SERVER_ERROR".getBytes();
+	private static final byte[] SERVER_STATUS_BYTES_END = "END".getBytes();
+	private static final byte[] SERVER_STATUS_BYTES_VALUE = "VALUE".getBytes();
+	
+	private SockIOPool pool;
+
+	/**
+	 * memcached 限制 key 的最大长度为 250byte。
+	 */
+	private static final int MAX_KEYSIZE = 250;
+	
+	/**
+	 * memcached 限制单个 value 最大体积为 1MB。
+	 */
+	private static final int MAX_VALUESIZE = 1024 * 1024;
+	
+	/**
+	 * 对象序列化与反序列化接口。
+	 */
+	private static final ISerializable SERIALIZER = new DefaultSerializable();
+
+	/**
+	 * 构造函数
+	 *
+	 * @param address 缓存服务器地址集
+	 * @param poolSize 连接池大小
+	 * @param heartbeatSecond 心跳周期
+	 * @param useNio 是否启用 NIO 模式
+	 */
+	public TextClient(MemCacheAddress[] address, int poolSize, int heartbeatSecond, boolean useNio) {
+		try {
+			this.pool = new SockIOPool(address, poolSize, heartbeatSecond, useNio);
+		} catch (Exception e) {
+			log.error("初始化 memcached 连接池出错！" + StringUtils.join(address, ','), e);
+		}
+	}
+		
+	@Override
+	public boolean set(String cacheKey, Object value) {
+		return set(cacheKey, value, 0, FastConvertor.MARKER_OTHERS);
+	}
+
+	@Override
+	public boolean set(String cacheKey, Byte value) {
+		return set(cacheKey, value, 0, FastConvertor.MARKER_BYTE);
+	}
+
+	@Override
+	public boolean set(String cacheKey, Integer value) {
+		return set(cacheKey, value, 0, FastConvertor.MARKER_INTEGER);
+	}
+
+	@Override
+	public boolean set(String cacheKey, Character value) {
+		return set(cacheKey, value, 0, FastConvertor.MARKER_CHARACTER);
+	}
+
+	@Override
+	public boolean set(String cacheKey, String value) {
+		return set(cacheKey, value, 0, FastConvertor.MARKER_STRING);
+	}
+
+	@Override
+	public boolean set(String cacheKey, StringBuffer value) {
+		return set(cacheKey, value, 0, FastConvertor.MARKER_STRINGBUFFER);
+	}
+
+	@Override
+	public boolean set(String cacheKey, StringBuilder value) {
+		return set(cacheKey, value, 0, FastConvertor.MARKER_STRINGBUILDER);
+	}
+
+	@Override
+	public boolean set(String cacheKey, Float value) {
+		return set(cacheKey, value, 0, FastConvertor.MARKER_FLOAT);
+	}
+
+	@Override
+	public boolean set(String cacheKey, Short value) {
+		return set(cacheKey, value, 0, FastConvertor.MARKER_SHORT);
+	}
+
+	@Override
+	public boolean set(String cacheKey, Double value) {
+		return set(cacheKey, value, 0, FastConvertor.MARKER_DOUBLE);
+	}
+
+	@Override
+	public boolean set(String cacheKey, Date value) {
+		return set(cacheKey, value, 0, FastConvertor.MARKER_DATE);
+	}
+
+	@Override
+	public boolean set(String cacheKey, byte[] value) {
+		return set(cacheKey, value, 0, FastConvertor.MARKER_BYTEARR);
+	}
+
+	@Override
+	public boolean set(String cacheKey, Boolean value) {
+		return set(cacheKey, value, 0, FastConvertor.MARKER_BOOLEAN);
+	}
+
+	@Override
+	public boolean set(String cacheKey, Long value) {
+		return set(cacheKey, value, 0, FastConvertor.MARKER_LONG);
+	}
+
+	@Override
+	public boolean set(String cacheKey, Object value, int ttl) {
+		return set(cacheKey, value, ttl, FastConvertor.MARKER_OTHERS);
+	}
+
+	@Override
+	public boolean set(String cacheKey, Byte value, int ttl) {
+		return set(cacheKey, value, ttl, FastConvertor.MARKER_BYTE);
+	}
+
+	@Override
+	public boolean set(String cacheKey, Integer value, int ttl) {
+		return set(cacheKey, value, ttl, FastConvertor.MARKER_INTEGER);
+	}
+
+	@Override
+	public boolean set(String cacheKey, Character value, int ttl) {
+		return set(cacheKey, value, ttl, FastConvertor.MARKER_CHARACTER);
+	}
+
+	@Override
+	public boolean set(String cacheKey, String value, int ttl) {
+		return set(cacheKey, value, ttl, FastConvertor.MARKER_STRING);
+	}
+
+	@Override
+	public boolean set(String cacheKey, StringBuffer value, int ttl) {
+		return set(cacheKey, value, ttl, FastConvertor.MARKER_STRINGBUFFER);
+	}
+
+	@Override
+	public boolean set(String cacheKey, StringBuilder value, int ttl) {
+		return set(cacheKey, value, ttl, FastConvertor.MARKER_STRINGBUILDER);
+	}
+
+	@Override
+	public boolean set(String cacheKey, Float value, int ttl) {
+		return set(cacheKey, value, ttl, FastConvertor.MARKER_FLOAT);
+	}
+
+	@Override
+	public boolean set(String cacheKey, Short value, int ttl) {
+		return set(cacheKey, value, ttl, FastConvertor.MARKER_SHORT);
+	}
+
+	@Override
+	public boolean set(String cacheKey, Double value, int ttl) {
+		return set(cacheKey, value, ttl, FastConvertor.MARKER_DOUBLE);
+	}
+
+	@Override
+	public boolean set(String cacheKey, Date value, int ttl) {
+		return set(cacheKey, value, ttl, FastConvertor.MARKER_DATE);
+	}
+
+	@Override
+	public boolean set(String cacheKey, byte[] value, int ttl) {
+		return set(cacheKey, value, ttl, FastConvertor.MARKER_BYTEARR);
+	}
+
+	@Override
+	public boolean set(String cacheKey, Boolean value, int ttl) {
+		return set(cacheKey, value, ttl, FastConvertor.MARKER_BOOLEAN);
+	}
+
+	@Override
+	public boolean set(String cacheKey, Long value, int ttl) {
+		return set(cacheKey, value, ttl, FastConvertor.MARKER_LONG);
+	}
+
+	private boolean set(String bizCacheKey, Object value, int ttl, int flag) {
+		String cacheKey = bizCacheKey;
+		
+		if (null == cacheKey || null == value) {
+			return false;
+		}
+		cacheKey = sanitizeKey(cacheKey);
+		if (null == cacheKey) {
+			return false;
+		}
+
+		byte[] datas = null;
+
+		if (flag > 1) {
+			// 原生类型，不走默认的序列化，提升性能
+			datas = FastConvertor.encode(value, flag);
+		} else {
+			datas = SERIALIZER.encode(value);
+		}
+		
+		// 如果对象体积过大，压缩处理
+		if (datas.length > MAX_VALUESIZE) {
+			int gzipBefore = datas.length;
+			
+			if (flag > 1) {
+				// 压缩时，统一按普通对象处理
+				datas = SERIALIZER.encode(value);
+			}
+			
+			datas = SERIALIZER.encodeGzip(datas);
+			// 置成压缩标识
+			flag = 1;
+			
+			log.warn("cacheKey=" + bizCacheKey);
+			log.warn("对象过大，开启压缩，压缩前" + gzipBefore + "byte，压缩后:" + datas.length + "byte，" + (datas.length > MAX_VALUESIZE ? ("仍不满足缓存条件！") : ("满足缓存条件。")));
+		}
+
+		ISockio io = pool.getSock(cacheKey);
+
+		if (null == io) {
+			log.error("从 MemCache 连接池获取 SockIO 对象为空!");
+			return false;
+		}
+		
+		try {
+			
+			io.write(CMD_SET);
+			io.write(SPACE);
+			io.write(cacheKey.getBytes());
+			io.write(SPACE);
+			io.write(IOUtil.encode(flag));
+			io.write(SPACE);
+			io.write(IOUtil.encode(ttl));
+			io.write(SPACE);
+			io.write(IOUtil.encode(datas.length));
+			io.write(CRLF);
+			io.write(datas);
+			io.write(CRLF);
+			io.flush();
+
+			byte[] bytes = io.readLineBytes();
+
+			if (null == bytes) {
+				log.error("服务器返回空！");
+				return false;
+			}
+			
+			if (Arrays.equals(bytes, SERVER_STATUS_STORED)) {
+				return true;
+			} else if (equals(bytes, SERVER_STATUS_BYTES_CLIENT_ERROR, SERVER_STATUS_BYTES_CLIENT_ERROR.length)) {
+				log.error("指令格式错误!" + new String(bytes));
+				return false;
+			} else if (equals(bytes, SERVER_STATUS_BYTES_SERVER_ERROR, SERVER_STATUS_BYTES_SERVER_ERROR.length)) {
+				log.error("缓存服务器内部错误！" + new String(bytes));
+				return false;
+			}
+		} catch (Exception e) {
+			log.error("set时发生错误！", e);
+		} finally {
+			if (null != io) {
+				io.release();
+			}
+
+		}
+
+		return false;
+	}
+
+	@Override
+	public boolean keyExists(String cacheKey) {
+		Object value = get(cacheKey);
+		return null == value ? false : true;
+	}
+
+	@Override
+	public Object get(String cacheKey) {
+
+		if (null == cacheKey) {
+			return null;
+		}
+		cacheKey = sanitizeKey(cacheKey);
+		if (null == cacheKey) {
+			return null;
+		}
+
+		Object rtn = null;
+		long cStart = System.currentTimeMillis();
+		ISockio io = pool.getSock(cacheKey);
+		long eStart = System.currentTimeMillis();
+		long cCost = eStart - cStart;
+		
+		if (null == io) {
+			log.error("从MemCache连接池获取SockIO对象为空!");
+			return null;
+		}
+		
+		try {
+
+			io.write(CMD_GET);
+			io.write(SPACE);
+			io.write(cacheKey.getBytes());
+			io.write(CRLF);
+			io.flush();
+
+			byte[] bytes = io.readLineBytes();
+			if (null == bytes) {
+				log.error("服务端返回空!");
+				return null;
+			}
+			if (Arrays.equals(bytes, SERVER_STATUS_BYTES_ERROR)) {
+				log.error("未知的指令！服务器返回信息:" + new String(bytes) + " KEY:" + cacheKey);
+				return null;
+			} else if (equals(bytes, SERVER_STATUS_BYTES_CLIENT_ERROR, SERVER_STATUS_BYTES_CLIENT_ERROR.length)) {
+				log.error("指令格式错误!" + new String(bytes));
+				return null;
+			} else if (equals(bytes, SERVER_STATUS_BYTES_SERVER_ERROR, SERVER_STATUS_BYTES_SERVER_ERROR.length)) {
+				log.error("缓存服务器内部错误！" + new String(bytes));
+				return null;
+			} else if (Arrays.equals(bytes, SERVER_STATUS_BYTES_END)) {
+				return null; // 未命中缓存
+			}
+			
+			if (equals(bytes, SERVER_STATUS_BYTES_VALUE, SERVER_STATUS_BYTES_VALUE.length)) {
+				
+				int[] part = cmdParse2(bytes);
+				int flag = part[0];
+				int size = part[1];
+				
+				byte[] datas = new byte[size];
+				int cnt = 0;
+				while (cnt < size) {
+					cnt += io.read(datas, cnt, (size - cnt));
+				}
+
+				io.readLineBytes();
+				bytes = io.readLineBytes();
+				if (null == bytes) {
+					return rtn;
+				}
+				if (Arrays.equals(bytes, SERVER_STATUS_BYTES_END)) {
+					if (flag > 1) { // 原生类型，不走默认的序列化，提升性能。
+						rtn = FastConvertor.decode(datas, flag);
+					} else if (flag == 1) {
+						// 压缩标识
+						datas = SERIALIZER.decodeGzip(datas);
+						rtn = SERIALIZER.decode(datas);
+					} else {
+						rtn = SERIALIZER.decode(datas);
+					}
+				}
+			}
+		} catch (Exception e) {
+			log.error("get指令发生错误!", e);
+		} finally {
+			if (null != io) {
+				io.release();
+			}
+		}
+
+		return rtn;
+	}
+	
+	@Override
+	public boolean add(String cacheKey, long value) {
+		return add(cacheKey, value, 0);
+	}
+	
+	@Override
+	public boolean add(String cacheKey, long value, int ttl) {
+
+		if (null == cacheKey) {
+			return false;
+		}
+		cacheKey = sanitizeKey(cacheKey);
+		if (null == cacheKey) {
+			return false;
+		}
+		
+		int flag = FastConvertor.MARKER_LONG;
+		
+		long cStart = System.currentTimeMillis();
+		ISockio io = pool.getSock(cacheKey);
+		long eStart = System.currentTimeMillis();
+		long cCost = eStart - cStart;
+		
+		if (null == io) {
+			log.error("从MemCache连接池获取SockIO对象为空!");
+			return false;
+		}
+		
+		try {
+
+			byte[] datas = FastConvertor.encode(value, flag);
+			
+			io.write(CMD_ADD);
+			io.write(SPACE);
+			io.write(cacheKey.getBytes());
+			io.write(SPACE);
+			io.write(IOUtil.encode(flag));
+			io.write(SPACE);
+			// 超时标志
+			io.write(IOUtil.encode(ttl));
+			io.write(SPACE);
+			// 对象大小
+			io.write(IOUtil.encode(datas.length));
+			io.write(CRLF);
+			io.write(datas);
+			io.write(CRLF);
+			io.flush();
+
+			byte[] bytes = io.readLineBytes();
+			if (null == bytes) {
+				log.error("服务端返回空!");
+				return false;
+			}
+			
+			if (Arrays.equals(bytes, SERVER_STATUS_STORED)) {
+				return true;
+			} else if (equals(bytes, SERVER_STATUS_BYTES_CLIENT_ERROR, SERVER_STATUS_BYTES_CLIENT_ERROR.length)) {
+				log.error("指令格式错误!" + new String(bytes));
+				return false;
+			} else if (equals(bytes, SERVER_STATUS_BYTES_SERVER_ERROR, SERVER_STATUS_BYTES_SERVER_ERROR.length)) {
+				log.error("缓存服务器内部错误！" + new String(bytes));
+				return false;
+			}
+
+		} catch (Exception e) {
+			log.error("add发生错误！", e);
+		} finally {
+			if (null != io) {
+				io.release();
+			}
+		}
+
+		return false;
+	}
+
+	@Override
+	public boolean append(String cacheKey, byte[] bytes) {
+		
+		if (null == cacheKey) {
+			return false;
+		}
+		cacheKey = sanitizeKey(cacheKey);
+		if (null == cacheKey) {
+			return false;
+		}
+		
+		long cStart = System.currentTimeMillis();
+		ISockio io = pool.getSock(cacheKey);
+		long eStart = System.currentTimeMillis();
+		long cCost = eStart - cStart;
+		
+		if (null == io) {
+			log.error("从MemCache连接池获取SockIO对象为空!");
+			return false;
+		}
+		
+		try {
+
+			io.write(CMD_APPEND);
+			io.write(SPACE);
+			io.write(cacheKey.getBytes());
+			io.write(SPACE);
+			io.write(IOUtil.encode(FastConvertor.MARKER_BYTEARR));
+			io.write(SPACE);
+			io.write(ZERO); // 超时标志
+			io.write(SPACE);
+			io.write(IOUtil.encode(bytes.length)); // 对象大小
+			io.write(CRLF);
+			io.write(bytes);
+			io.write(CRLF);
+			io.flush();
+
+			byte[] cmd = io.readLineBytes();
+			if (Arrays.equals(cmd, SERVER_STATUS_STORED)) {
+				return true;
+			} else if (equals(bytes, SERVER_STATUS_BYTES_CLIENT_ERROR, SERVER_STATUS_BYTES_CLIENT_ERROR.length)) {
+				log.error("指令格式错误!" + new String(bytes));
+				return false;
+			} else if (equals(bytes, SERVER_STATUS_BYTES_SERVER_ERROR, SERVER_STATUS_BYTES_SERVER_ERROR.length)) {
+				log.error("缓存服务器内部错误！" + new String(bytes));
+				return false;
+			}
+
+		} catch (Exception e) {
+			log.error("append发生错误！", e);
+		} finally {
+			if (null != io) {
+				io.release();
+			}
+		}
+		
+		return false;
+	}
+	
+	@Override
+	public boolean delete(String cacheKey) {
+
+		if (null == cacheKey)  {
+			return false;
+		}
+		cacheKey = sanitizeKey(cacheKey);
+		if (null == cacheKey) {
+			return false;
+		}
+
+		long cStart = System.currentTimeMillis();
+		ISockio io = pool.getSock(cacheKey);
+		long eStart = System.currentTimeMillis();
+		long cCost = eStart - cStart;
+		
+		if (null == io) {
+			log.error("从MemCache连接池获取SockIO对象为空!");
+			return false;
+		}
+		
+		try {
+
+			io.write(CMD_DELETE);
+			io.write(SPACE);
+			io.write(cacheKey.getBytes());
+			io.write(CRLF);
+			io.flush();
+
+			byte[] bytes = io.readLineBytes();
+			if (Arrays.equals(bytes, SERVER_STATUS_DELETED)) {
+				return true;
+			} else if (equals(bytes, SERVER_STATUS_BYTES_CLIENT_ERROR, SERVER_STATUS_BYTES_CLIENT_ERROR.length)) {
+				log.error("指令格式错误!" + new String(bytes));
+				return false;
+			} else if (equals(bytes, SERVER_STATUS_BYTES_SERVER_ERROR, SERVER_STATUS_BYTES_SERVER_ERROR.length)) {
+				log.error("缓存服务器内部错误！" + new String(bytes));
+				return false;
+			}
+
+		} catch (Exception e) {
+			log.error("delete发生错误！", e);
+		} finally {
+			if (null != io) {
+				io.release();
+			}
+		}
+
+		return false;
+
+	}
+
+	@Override
+	public long incr(String cacheKey) {
+		return incrWithTtl(cacheKey, 1, 0);
+	}
+
+	@Override
+	public long incr(String cacheKey, int inc) {
+		return incrWithTtl(cacheKey, inc, 0); // 默认不超时
+	}
+	
+	@Override
+	public long incrWithTtl(String cacheKey, int ttl) {
+		return incrWithTtl(cacheKey, 1, ttl);
+	}
+	
+	@Override
+	public long incrWithTtl(String cacheKey, int inc, int ttl) {
+		
+		if (null == cacheKey) {
+			return -1;
+		}
+		cacheKey = sanitizeKey(cacheKey);
+		if (null == cacheKey) {
+			return -1;
+		}
+
+		long cStart = System.currentTimeMillis();
+		ISockio io = pool.getSock(cacheKey);
+		long eStart = System.currentTimeMillis();
+		
+		if (null == io) {
+			log.error("从MemCache连接池获取SockIO对象为空!");
+			return 0;
+		}
+		
+		try {
+			
+			byte[] data = String.valueOf(inc).getBytes();
+			
+			io.write(CMD_INCR);
+			io.write(SPACE);
+			io.write(cacheKey.getBytes());
+			io.write(SPACE);
+			io.write(data);
+			io.write(CRLF);
+			io.flush();
+
+			byte[] bytes = io.readLineBytes();
+			if (Arrays.equals(bytes, SERVER_STATUS_BYTES_NOT_FOUND)) {
+
+				io.write(CMD_ADD);
+				io.write(SPACE);
+				io.write(cacheKey.getBytes());
+				io.write(SPACE);
+				io.write(IOUtil.encode(FastConvertor.MARKER_STRING));
+				io.write(SPACE);
+				io.write(IOUtil.encode(ttl)); // 超时标志
+				io.write(SPACE);
+				io.write(IOUtil.encode(data.length)); // 对象大小
+				io.write(CRLF);
+				io.write(data);
+				io.write(CRLF);
+				io.flush();
+
+				byte[] cmd = io.readLineBytes();
+				if (null == cmd) {
+					log.error("服务端返回空!");
+					return -1;
+				} else if (Arrays.equals(cmd, SERVER_STATUS_STORED)) {
+					return inc;
+				} else if (equals(cmd, SERVER_STATUS_BYTES_CLIENT_ERROR, SERVER_STATUS_BYTES_CLIENT_ERROR.length)) {
+					log.error("指令格式错误!" + new String(cmd));
+					return -1;
+				} else if (equals(cmd, SERVER_STATUS_BYTES_SERVER_ERROR, SERVER_STATUS_BYTES_SERVER_ERROR.length)) {
+					log.error("缓存服务器内部错误！" + new String(cmd));
+					return -1;
+				}
+				
+			} else {
+				return FastConvertor.strBytes2Long(bytes);
+			}
+
+		} catch (Exception e) {
+			log.error("incrWithTTL发生错误！", e);
+		} finally {
+			if (null != io) {
+				io.release();
+			}
+		}
+
+		return -1L;
+	}
+	
+	@Override
+	public long decr(String cacheKey) {
+		return decr(cacheKey, 1);
+	}
+
+	@Override
+	public long decr(String cacheKey, int inc) {
+
+		if (null == cacheKey) {
+			return -1;
+		}
+		cacheKey = sanitizeKey(cacheKey);
+		if (null == cacheKey) {
+			return -1;
+		}
+
+		long cStart = System.currentTimeMillis();
+		ISockio io = pool.getSock(cacheKey);
+		long eStart = System.currentTimeMillis();
+		long cCost = eStart - cStart;
+		
+		if (null == io) {
+			log.error("从MemCache连接池获取SockIO对象为空!");
+			return 0;
+		}
+		
+		try {
+
+			io.write(CMD_DECR);
+			io.write(SPACE);
+			io.write(cacheKey.getBytes());
+			io.write(SPACE);
+			io.write(IOUtil.encode(inc));
+			io.write(CRLF);
+			io.flush();
+
+			byte[] bytes = io.readLineBytes();
+			if (Arrays.equals(bytes, SERVER_STATUS_BYTES_NOT_FOUND)) {
+				return -1;
+			} else if (equals(bytes, SERVER_STATUS_BYTES_CLIENT_ERROR, SERVER_STATUS_BYTES_CLIENT_ERROR.length)) {
+				log.error("指令格式错误!" + new String(bytes));
+				return -1;
+			} else if (equals(bytes, SERVER_STATUS_BYTES_SERVER_ERROR, SERVER_STATUS_BYTES_SERVER_ERROR.length)) {
+				log.error("缓存服务器内部错误！" + new String(bytes));
+				return -1;
+			}
+
+			return FastConvertor.strBytes2Long(bytes);
+
+		} catch (Exception e) {
+			log.error("decr发生错误！", e);
+		} finally {
+			if (null != io) {
+				io.release();
+			}
+		}
+
+		return -1;
+
+	}
+
+	@Override
+	public boolean touch(String cacheKey, int ttl) {
+
+		if (null == cacheKey) {
+			return false;
+		}
+		cacheKey = sanitizeKey(cacheKey);
+		if (null == cacheKey) {
+			return false;
+		}
+
+		long cStart = System.currentTimeMillis();
+		ISockio io = pool.getSock(cacheKey);
+		long eStart = System.currentTimeMillis();
+		long cCost = eStart - cStart;
+		
+		if (null == io) {
+			log.error("从MemCache连接池获取SockIO对象为空!");
+			return false;
+		}
+		
+		try {
+			
+			io.write(CMD_TOUCH);
+			io.write(SPACE);
+			io.write(cacheKey.getBytes());
+			io.write(SPACE);
+			io.write(IOUtil.encode(ttl));
+			io.write(CRLF);
+			io.flush();
+
+			byte[] bytes = io.readLineBytes();
+			if (Arrays.equals(bytes, SERVER_STATUS_BYTES_ERROR)) {
+				log.error("缓存服务器接收到不可识别的指令TOUCH，请确认服务器版本>=1.4.15，服务端返回：" + new String(bytes));
+				return false;
+			} else if (equals(bytes, SERVER_STATUS_BYTES_CLIENT_ERROR, SERVER_STATUS_BYTES_CLIENT_ERROR.length)) {
+				log.error("指令格式错误!" + new String(bytes));
+				return false;
+			} else if (equals(bytes, SERVER_STATUS_BYTES_SERVER_ERROR, SERVER_STATUS_BYTES_SERVER_ERROR.length)) {
+				log.error("缓存服务器内部错误！" + new String(bytes));
+				return false;
+			}
+			
+			if (Arrays.equals(bytes, SERVER_STATUS_BYTES_TOUCHED)) {
+				return true;
+			}
+			
+		} catch (Exception e) {
+			log.error("touch发生错误！", e);
+		} finally {
+			if (null != io) {
+				io.release();
+			}
+		}
+
+		return false;
+
+	}
+
+	/**
+	 * 对两字节数组，前len个字节进行比较
+	 * 
+	 * @param b1
+	 * @param b2
+	 * @param len
+	 * @return
+	 */
+	private static final boolean equals(byte[] b1, byte[] b2, int len) {
+		if (b1.length < len || b2.length < len) {
+			return false;
+		}
+		for (int i = 0; i < len; i++) {
+			if (b1[i] != b2[i]) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * 命令行的快速解析，返回flag，size。
+	 * 
+	 * @param bytes
+	 * @return
+	 */
+	private static final int[] cmdParse2(byte[] bytes) {
+		int flagStart = 0, flagEnd = 0, sizeStart = 0, sizeEnd = 0;
+		int count = 0;
+		for (int i = 5; i < bytes.length; i++) {
+			if (' ' == bytes[i]) {
+				count++;
+				if (2 == count) {
+					flagStart = i + 1;
+				}
+				if (3 == count) {
+					flagEnd = i;
+					sizeStart = i + 1;
+					sizeEnd = bytes.length;
+				}
+			}
+		}
+		int flag = FastConvertor.strBytes2Int(bytes, flagStart, flagEnd);
+		int size = FastConvertor.strBytes2Int(bytes, sizeStart, sizeEnd);
+		return new int[] {flag, size};
+	}
+	
+	/**
+	 * 对Key进行编码，避免memcached交互协议冲突
+	 * 
+	 * @param rawKey
+	 * @return
+	 */
+	private static final String sanitizeKey(String rawKey) {
+		
+		String rtn = null;
+		
+		try {
+			rtn = URLEncoder.encode(rawKey, "UTF-8");
+			
+			if (MAX_KEYSIZE < rtn.length()) {
+				rtn = MD5Util.hexdigest(rtn);
+			}
+			
+		} catch (UnsupportedEncodingException e) {
+			log.error("编码时发生错误!", e);
+		}
+		
+		return rtn;
+		
+	}
+}

@@ -21,4 +21,5 @@ public interface IOrgService extends IService<Org> {
      * @return 组织列表
      */
     List<Org> listAllOrgs();
+
 }

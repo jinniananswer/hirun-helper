@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @Slf4j
-@RequestMapping("/api/user/menu-role")
+@RequestMapping("api/user/menu-role")
 public class MenuRoleController {
 
     @Autowired

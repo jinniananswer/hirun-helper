@@ -1,15 +1,14 @@
 package com.microtomato.hirun.modules.system.entity.po;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.*;
 import com.microtomato.hirun.framework.data.BaseEntity;
-import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -29,20 +28,30 @@ public class Func extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "FUNC_ID", type = IdType.AUTO)
-    private Integer funcId;
+    @TableId(value = "func_id", type = IdType.AUTO)
+    private Long funcId;
 
-    @TableField("FUNC_CODE")
+    @TableField("func_code")
     private String funcCode;
 
-    @TableField("TYPE")
+    @TableField("type")
     private String type;
 
-    @TableField("FUNC_DESC")
+    @TableField("func_desc")
     private String funcDesc;
 
-    @TableField("STATUS")
+    @TableField("status")
     private String status;
 
+    @TableField(value = "create_user_id", fill = FieldFill.INSERT)
+    private Long createUserId;
 
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
+    private LocalDateTime createTime;
+
+    @TableField(value = "update_user_id", fill = FieldFill.INSERT_UPDATE)
+    private Long updateUserId;
+
+    @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
+    private LocalDateTime updateTime;
 }

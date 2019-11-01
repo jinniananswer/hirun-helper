@@ -1,11 +1,15 @@
 package com.microtomato.hirun.modules.organization.service;
 
-import com.microtomato.hirun.modules.organization.entity.po.Employee;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeExampleDTO;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeInfoDTO;
+import com.microtomato.hirun.modules.organization.entity.po.Employee;
 
 /**
  * <p>
- *  服务类
+ * 服务类
  * </p>
  *
  * @author liuhui
@@ -13,4 +17,17 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IEmployeeService extends IService<Employee> {
 
+    Employee queryByIdentityNo(String identityNo);
+
+    IPage<EmployeeInfoDTO> queryEmployeeList(EmployeeInfoDTO employeeInfoDTO, Page<EmployeeInfoDTO> employeePage);
+
+    /**
+     * 测试（后期删除）
+     */
+    IPage<EmployeeExampleDTO> selectEmployeePageExample(String name, Long orgId, Long jobRole);
+
+    /**
+     * 根据employeeId获取name
+     */
+    String getEmployeeNameEmployeeId(Long employeeId);
 }

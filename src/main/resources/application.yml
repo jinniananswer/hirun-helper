@@ -1,9 +1,11 @@
 server:
   port: 8080
-  servlet.context-path: /
+  servlet.context-path: /hirun
   servlet:
     session:
       timeout: PT1H
+      cookie:
+        name: HIRUN_SID
 
   # 开启 HTTPS 支持，首先应创建 keystore: keytool -keystore mykeys.jks -genkey -alias tomcat -keyalg RSA
 #  ssl:
@@ -11,18 +13,39 @@ server:
 #    key-store-password: spring
 #    key-password: spring
 
+# 跟单点登陆相关
+#security:
+#  oauth2:
+#    client:
+#      client-id: HirunSystem
+#      client-secret: 12345
+#      # 获取令牌的地址
+#      access-token-uri: http://192.168.37.131:8080/oauth/token
+#      # 授权用户被重定向的地址
+#      user-authorization-uri: http://192.168.37.131:8080/oauth/authorize
+#    resource:
+#      # 访问用户信息的地址
+#      user-info-uri: http://192.168.37.131:8080/user/me
+
 # 日志
 logging:
   level:
     root: info
     com.baomidou.mybatisplus: info
-    com.microtomato: debug
+    com.microtomato.hirun.framework.filter: info
+    com.microtomato.hirun.framework.interceptor: info
+    com.microtomato.hirun.framework.transaction: debug
+    org.mybatis.spring.transaction: debug
+    com.baomidou.dynamic.datasource: debug
 
 spring:
+  mvc:
+    # 所有静态资源访问，路径以 /static/ 为前缀。
+    static-path-pattern: /static/**
   datasource:
     dynamic:
       druid:
-        initial-size: 0
+        initial-size: 2
         max-active: 8
         min-idle: 2
         max-wait: -1
@@ -73,6 +96,8 @@ spring:
       enabled: true
       additional-paths: src/main/java
       exclude: static/**
+#  main:
+#    allow-bean-definition-overriding: true
 
 rest:
   api:

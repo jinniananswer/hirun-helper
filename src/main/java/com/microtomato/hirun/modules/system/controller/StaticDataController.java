@@ -20,7 +20,7 @@ import java.util.List;
  */
 @RestController
 @Slf4j
-@RequestMapping("/api/system/static-data")
+@RequestMapping("api/system/static-data")
 public class StaticDataController {
 
     @Autowired

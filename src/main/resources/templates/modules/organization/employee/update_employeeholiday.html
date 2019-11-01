@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>dolphin-admin</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/static/layui/css/layui.css" th:href="@{static/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" href="/static/css/admin.css" th:href="@{static/css/admin.css}" media="all">
+    <script src="../static/layui/layui.js" th:src="@{static/layui/layui.js}"></script>
+    <script src="../static/js/base.js" th:src="@{static/js/base.js}"></script>
+    <style>
+        .layui-form-label {
+            width: 65px;
+        }
+
+        .layui-form-label.layui-required:before {
+            content: "*";
+            color: #FF5722;
+        }
+
+        .layui-input-block {
+            margin-left: 95px;
+        }
+
+        .layui-card-body {
+            margin: 0px
+        }
+    </style>
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="layui-form" lay-filter="update-employeeholiday-form" id="update-employeeholiday-form"
+                 style="padding: 20px 30px 0 0;">
+                <div class="layui-form-item" style="display: none">
+                    <label class="layui-form-label">员工编号</label>
+                    <div class="layui-input-block">
+                        <input type="hidden" name="employeeId" id="employeeId" autocomplete="off" class="layui-input"
+                               readonly>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="display: none">
+                    <label class="layui-form-label">休假信息id</label>
+                    <div class="layui-input-block">
+                        <input type="hidden" name="id" id="id" autocomplete="off" class="layui-input"
+                               readonly>
+                    </div>
+                </div>
+                <input type="hidden" name="holidayTypeValue" id="holidayTypeValue" autocomplete="off" class="layui-input" readonly>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">姓名</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="name" id="name" autocomplete="off" class="layui-input" readonly>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label layui-required">休假类型</label>
+                    <div class="layui-input-block">
+                        <div class="layui-form" lay-filter="holidayType">
+                            <select id="holidayType" name="holidayType" required layui-required="required">
+
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label layui-required">开始时间</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="startTime" name="startTime"  lay-verify="required"
+                               placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input" readonly/>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label layui-required">结束时间</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="endTime" name="endTime"  lay-verify="required"
+                               placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input" readonly/>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">备注</label>
+                    <div class="layui-input-block">
+                    <textarea name="remark" id="remark" style="width: 400px; height: 150px;" autocomplete="off"
+                              class="layui-textarea"></textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">缴纳请假期间保险</label>
+                    <div class="layui-input-block">
+                        <input type="checkbox" name="isSurrenderInsurance" id="isSurrenderInsurance"
+                               lay-skin="switch" lay-text="是|否">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <input type="button" lay-submit lay-filter="update-employeeholiday-submit" id="update-employeeholiday-submit"
+                           value="确定">
+                    <input type="button" lay-submit lay-filter="employee-cancle-submit" id="employee-cancle-submit"
+                           value="取消">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+        <script>
+            layui.extend(
+                {
+                    updateEmployeeHoliday: "{/}static/js/modules/organization/employee/update.employeeholiday"
+                }).use('updateEmployeeHoliday', function () {
+                layui.updateEmployeeHoliday.init();
+            })
+        </script>
+</body>
+</html>

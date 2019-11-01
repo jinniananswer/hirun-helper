@@ -3,11 +3,13 @@ package com.microtomato.hirun.automatic;
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.core.exceptions.MybatisPlusException;
+import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.generator.AutoGenerator;
 import com.baomidou.mybatisplus.generator.InjectionConfig;
 import com.baomidou.mybatisplus.generator.config.*;
 import com.baomidou.mybatisplus.generator.config.po.TableFill;
+import com.baomidou.mybatisplus.generator.config.po.TableInfo;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
 import lombok.extern.slf4j.Slf4j;
@@ -17,9 +19,7 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
- * <p>
- * mysql 代码生成器演示例子
- * </p>
+ * 模板代码生成器
  *
  * @author Steven
  * @since 2019-04-24
@@ -46,6 +46,7 @@ public class MySQLGenerator {
             username = "ins";
         }
     }
+
     /**
      * <p>
      * 读取控制台内容
@@ -85,10 +86,10 @@ public class MySQLGenerator {
 
         // 自定义需要填充的字段
         List<TableFill> tableFillList = new ArrayList<>();
-        TableFill createField = new TableFill("gmt_create", FieldFill.INSERT);
-        TableFill modifiedField = new TableFill("gmt_modified", FieldFill.INSERT_UPDATE);
-        tableFillList.add(createField);
-        tableFillList.add(modifiedField);
+        tableFillList.add(new TableFill("create_date", FieldFill.INSERT));
+        tableFillList.add(new TableFill("create_user_id", FieldFill.INSERT));
+        tableFillList.add(new TableFill("update_time", FieldFill.INSERT_UPDATE));
+        tableFillList.add(new TableFill("update_user_id", FieldFill.INSERT_UPDATE));
 
         // 代码生成器
         AutoGenerator autoGenerator = new AutoGenerator();
@@ -130,14 +131,15 @@ public class MySQLGenerator {
         };
         List<FileOutConfig> focList = new ArrayList<>();
         // 自定义配置会被优先输出
-//        focList.add(new FileOutConfig("/automatically/mapper.xml.ftl") {
-//            @Override
-//            public String outputFile(TableInfo tableInfo) {
-//                // 自定义输出文件名 ， 如果你 Entity 设置了前后缀、此处注意 xml 的名称会跟着发生变化！！
-//                return projectPath + "/src/main/resources/mapper/" + packageConfig.getModuleName()
-//                    + "/" + tableInfo.getEntityName() + "Mapper" + StringPool.DOT_XML;
-//            }
-//        });
+        focList.add(new FileOutConfig("/automatically/mapper.xml.ftl") {
+            @Override
+            public String outputFile(TableInfo tableInfo) {
+                // 自定义输出文件名 ， 如果你 Entity 设置了前后缀、此处注意 xml 的名称会跟着发生变化！！
+                return projectPath + "/src/main/resources/mapper/" + packageConfig.getModuleName()
+                    + "/" + tableInfo.getEntityName() + "Mapper" + StringPool.DOT_XML;
+
+            }
+        });
 
 
         cfg.setFileOutConfigList(focList);
@@ -146,23 +148,22 @@ public class MySQLGenerator {
 
         // 策略配置
         StrategyConfig strategy = new StrategyConfig();
-        // strategy.setTableFillList(tableFillList);
+        strategy.setTableFillList(tableFillList);
         if ("ins".equals(databaseName)) {
             strategy.setTablePrefix("ins");
         } else {
             strategy.setTablePrefix("sys");
         }
+
         strategy.setNaming(NamingStrategy.underline_to_camel);
         strategy.setColumnNaming(NamingStrategy.underline_to_camel);
         strategy.setEntityLombokModel(true);
         strategy.setInclude(tables);
         strategy.setRestControllerStyle(true);
-        //strategy.setSuperEntityClass(BaseEntity.class);
         strategy.setSuperEntityClass("com.microtomato.hirun.framework.data.BaseEntity");
-        strategy.setSuperEntityColumns("");
         strategy.setControllerMappingHyphenStyle(true);
-        //strategy.setTablePrefix(packageConfig.getModuleName() + "_");
         strategy.setEntityTableFieldAnnotationEnable(true);
+        strategy.setEntityBooleanColumnRemoveIsPrefix(true);
 
         TemplateConfig templateConfig = new TemplateConfig();
         templateConfig.setController("/automatically/controller.java");
@@ -170,7 +171,7 @@ public class MySQLGenerator {
         templateConfig.setServiceImpl("/automatically/serviceImpl.java");
         templateConfig.setEntity("/automatically/entity.java");
         templateConfig.setMapper("/automatically/mapper.java");
-        templateConfig.setXml("/automatically/mapper.xml");
+        templateConfig.setXml(null);
         autoGenerator.setTemplate(templateConfig);
 
         autoGenerator.setStrategy(strategy);

@@ -1,21 +1,19 @@
 package com.microtomato.hirun.modules.organization.entity.po;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
-import java.time.LocalDate;
-import com.baomidou.mybatisplus.annotation.TableId;
-import java.time.LocalDateTime;
+import com.baomidou.mybatisplus.annotation.*;
 import com.microtomato.hirun.framework.data.BaseEntity;
-import com.baomidou.mybatisplus.annotation.TableField;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author liuhui
@@ -31,86 +29,124 @@ public class Employee extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "EMPLOYEE_ID", type = IdType.AUTO)
-    private Integer employeeId;
+    @TableId(value = "employee_id", type = IdType.AUTO)
+    private Long employeeId;
 
-    @TableField("USER_ID")
-    private Integer userId;
+    @TableField("user_id")
+    private Long userId;
 
-    @TableField("NAME")
+    @TableField("name")
     private String name;
 
-    @TableField("SEX")
+    @TableField("sex")
     private String sex;
 
-    @TableField("IDENTITY_NO")
+    @TableField("identity_no")
     private String identityNo;
 
-    @TableField("HOME_ADDRESS")
+    @TableField("birthday_type")
+    private String birthdayType;
+
+    @TableField("birthday")
+    private LocalDate birthday;
+
+    @TableField("mobile_no")
+    private String mobileNo;
+
+    @TableField("home_prov")
+    private Integer homeProv;
+
+    @TableField("home_city")
+    private Integer homeCity;
+
+    @TableField("home_region")
+    private Integer homeRegion;
+
+    @TableField("home_address")
     private String homeAddress;
 
-    @TableField("NATIVE_PROV")
+    @TableField("native_prov")
     private Integer nativeProv;
 
-    @TableField("NATIVE_CITY")
+    @TableField("native_city")
     private Integer nativeCity;
 
-    @TableField("NATIVE_REGION")
+    @TableField("native_region")
     private Integer nativeRegion;
 
-    @TableField("IN_DATE")
+    @TableField("native_address")
+    private String nativeAddress;
+
+    @TableField("in_date")
     private LocalDateTime inDate;
 
-    @TableField("REGULAR_DATE")
+    @TableField("regular_date")
     private LocalDateTime regularDate;
 
-    @TableField("DESTROY_DATE")
+    @TableField("destroy_date")
     private LocalDateTime destroyDate;
 
-    @TableField("JOB_DATE")
+    @TableField("destroy_way")
+    private String destroyWay;
+
+    @TableField("destroy_reason")
+    private String destroyReason;
+
+    @TableField("destroy_times")
+    private Integer destroyTimes;
+
+    @TableField("job_date")
     private LocalDate jobDate;
 
     /**
      * 1-全职　2-兼职  3-外聘
      */
-    @TableField("WORK_NATURE")
+    @TableField("work_nature")
     private String workNature;
 
-    @TableField("WORKPLACE")
+    @TableField("workplace")
     private String workplace;
 
-    @TableField("EDUCATION_LEVEL")
+    @TableField("education_level")
     private String educationLevel;
 
-    @TableField("MAJOR")
+    @TableField("first_education_level")
+    private String firstEducationLevel;
+
+    @TableField("major")
     private String major;
 
-    @TableField("SCHOOL")
+    @TableField("school")
     private String school;
 
-    @TableField("CERTIFICATE_NO")
+    @TableField("school_type")
+    private String schoolType;
+
+    @TableField("tech_title")
+    private String techTitle;
+
+    @TableField("certificate_no")
     private String certificateNo;
 
-    @TableField("BEFORE_HIRUN_YEAR")
+    @TableField("before_hirun_year")
     private String beforeHirunYear;
 
-    @TableField("STATUS")
+    @TableField("status")
     private String status;
 
-    @TableField("REMARK")
+    @TableField("remark")
     private String remark;
 
-    @TableField("CREATE_USER_ID")
-    private Integer createUserId;
+    @TableField(value="create_time", fill = FieldFill.INSERT)
+    private LocalDateTime createTime;
 
-    @TableField("CREATE_DATE")
-    private LocalDateTime createDate;
+    @TableField(value="create_user_id", fill = FieldFill.INSERT)
+    private Long createUserId;
 
-    @TableField("UPDATE_USER_ID")
-    private Integer updateUserId;
-
-    @TableField("UPDATE_TIME")
+    @TableField(value="update_time", fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
 
+    @TableField(value="update_user_id", fill = FieldFill.INSERT_UPDATE)
+    private Long updateUserId;
 
 }

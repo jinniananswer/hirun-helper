@@ -22,4 +22,6 @@ public interface IStaticDataService extends IService<StaticData> {
      * @return 静态数据列表
      */
     List<StaticData> getStaticDatas(String codeType);
+
+    String getCodeName(String codeType, String codeValue);
 }

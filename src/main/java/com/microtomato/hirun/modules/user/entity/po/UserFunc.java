@@ -1,16 +1,14 @@
 package com.microtomato.hirun.modules.user.entity.po;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import java.time.LocalDateTime;
+import com.baomidou.mybatisplus.annotation.*;
 import com.microtomato.hirun.framework.data.BaseEntity;
-import com.baomidou.mybatisplus.annotation.TableField;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
+
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -30,38 +28,37 @@ public class UserFunc extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "USER_FUNC_ID", type = IdType.AUTO)
-    private Integer userFuncId;
+    @TableId(value = "user_func_id", type = IdType.AUTO)
+    private Long userFuncId;
 
-    @TableField("USER_ID")
-    private Integer userId;
+    @TableField("user_id")
+    private Long userId;
 
-    @TableField("FUNC_ID")
-    private Integer funcId;
+    @TableField("func_id")
+    private Long funcId;
 
-    @TableField("START_DATE")
+    @TableField("start_date")
     private LocalDateTime startDate;
 
-    @TableField("END_DATE")
+    @TableField("end_date")
     private LocalDateTime endDate;
 
-    @TableField("STATUS")
+    @TableField("status")
     private String status;
 
-    @TableField("REMARK")
+    @TableField("remark")
     private String remark;
 
-    @TableField("CREATE_USER_ID")
-    private Integer createUserId;
+    @TableField(value = "create_user_id", fill = FieldFill.INSERT)
+    private Long createUserId;
 
-    @TableField("CREATE_DATE")
-    private LocalDateTime createDate;
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
+    private LocalDateTime createTime;
 
-    @TableField("UPDATE_USER_ID")
-    private Integer updateUserId;
+    @TableField(value = "update_user_id", fill = FieldFill.INSERT_UPDATE)
+    private Long updateUserId;
 
-    @TableField("UPDATE_TIME")
+    @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
-
 
 }

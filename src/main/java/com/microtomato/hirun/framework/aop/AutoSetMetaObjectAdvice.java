@@ -1,6 +1,8 @@
 package com.microtomato.hirun.framework.aop;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
+import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
+import com.microtomato.hirun.framework.util.WebContextUtils;
 import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.stereotype.Component;
 
@@ -15,29 +17,52 @@ import java.time.LocalDateTime;
 @Component
 public class AutoSetMetaObjectAdvice implements MetaObjectHandler {
 
-    private static final String GMT_CREATE = "gmtCreate";
-    private static final String GMT_MODIFIED = "gmtModified";
+    /**
+     * 记录创建时间
+     */
+    private static final String CREATE_TIME = "createTime";
+
+    /**
+     * 记录更新时间
+     */
+    private static final String UPDATE_TIME = "updateTime";
+
+    /**
+     * 记录创建工号
+     */
+    private static final String CREATE_USER_ID = "createUserId";
+
+    /**
+     * 记录更新工号
+     */
+    private static final String UPDATE_USER_ID = "updateUserId";
 
     /**
      * 在新增记录时自动设置。
      *
-     * @param metaObject
+     * @param metaObject 源对象
      */
     @Override
     public void insertFill(MetaObject metaObject) {
-        LocalDateTime localDateTime = LocalDateTime.now();
-        this.setInsertFieldValByName(GMT_CREATE, localDateTime, metaObject);
-        this.setInsertFieldValByName(GMT_MODIFIED, localDateTime, metaObject);
+        Long userId = WebContextUtils.getUserContext().getUserId();
+        LocalDateTime requestTime = RequestTimeHolder.getRequestTime();
 
+        this.setInsertFieldValByName(CREATE_TIME, requestTime, metaObject);
+        this.setInsertFieldValByName(UPDATE_TIME, requestTime, metaObject);
+        this.setInsertFieldValByName(CREATE_USER_ID, userId, metaObject);
+        this.setInsertFieldValByName(UPDATE_USER_ID, userId, metaObject);
     }
 
     /**
      * 在修改记录时自动设置
      *
-     * @param metaObject
+     * @param metaObject 源对象
      */
     @Override
     public void updateFill(MetaObject metaObject) {
-        this.setUpdateFieldValByName(GMT_MODIFIED, LocalDateTime.now(), metaObject);
+        Long userId = WebContextUtils.getUserContext().getUserId();
+        LocalDateTime requestTime = RequestTimeHolder.getRequestTime();
+        this.setUpdateFieldValByName(UPDATE_TIME, requestTime, metaObject);
+        this.setInsertFieldValByName(UPDATE_USER_ID, userId, metaObject);
     }
 }

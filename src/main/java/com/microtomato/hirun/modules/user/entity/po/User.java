@@ -1,18 +1,12 @@
 package com.microtomato.hirun.modules.user.entity.po;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.microtomato.hirun.framework.data.BaseEntity;
-import com.microtomato.hirun.framework.util.EncryptUtils;
-import com.microtomato.hirun.modules.user.exception.PasswordException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDateTime;
 
@@ -37,53 +31,43 @@ public class User extends BaseEntity {
     /**
      * 用户ID
      */
-    @TableId(value = "USER_ID", type = IdType.AUTO)
-    private Integer userId;
+    @TableId(value = "user_id", type = IdType.AUTO)
+    private Long userId;
 
     /**
      * 用户名
      */
-    @TableField("USERNAME")
+    @TableField("username")
     private String username;
 
     /**
      * 用户密码
      */
-    @TableField("PASSWORD")
+    @TableField("password")
     private String password;
 
     /**
      * 手机号码
      */
-    @TableField("MOBILE_NO")
+    @TableField("mobile_no")
     private String mobileNo;
 
-    @TableField("STATUS")
+    @TableField("status")
     private String status;
 
-    @TableField("CREATE_DATE")
-    private LocalDateTime createDate;
-
-    @TableField("REMOVE_DATE")
+    @TableField("remove_date")
     private LocalDateTime removeDate;
 
-    @TableField("CREATE_USER_ID")
-    private Integer createUserId;
+    @TableField(value = "create_user_id", fill = FieldFill.INSERT)
+    private Long createUserId;
 
-    @TableField("UPDATE_USER_ID")
-    private Integer updateUserId;
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
+    private LocalDateTime createTime;
 
-    @TableField("UPDATE_TIME")
+    @TableField(value = "update_user_id", fill = FieldFill.INSERT_UPDATE)
+    private Long updateUserId;
+
+    @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
-
-    public boolean login(String password) {
-        String encryptPassword = EncryptUtils.passwordEncode(password);
-        if (StringUtils.equals(this.password, encryptPassword)) {
-            return true;
-        }
-        else {
-            throw new PasswordException("密码不正确!");
-        }
-    }
 
 }

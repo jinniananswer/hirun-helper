@@ -1,16 +1,14 @@
 package com.microtomato.hirun.modules.organization.entity.po;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import java.time.LocalDateTime;
+import com.baomidou.mybatisplus.annotation.*;
 import com.microtomato.hirun.framework.data.BaseEntity;
-import com.baomidou.mybatisplus.annotation.TableField;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
+
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -30,47 +28,45 @@ public class Org extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "ORG_ID", type = IdType.AUTO)
-    private Integer orgId;
+    @TableId(value = "org_id", type = IdType.AUTO)
+    private Long orgId;
 
-    @TableField("NAME")
+    @TableField("name")
     private String name;
 
     /**
      * 1-事业部 2-子公司 3-部门 4--店面 5-小组
      */
-    @TableField("TYPE")
+    @TableField("type")
     private String type;
 
-    @TableField("CONTACT_NO")
-    private Integer contactNo;
+    @TableField("contact_no")
+    private Long contactNo;
 
-    @TableField("ENTERPRISE_ID")
-    private Integer enterpriseId;
+    @TableField("enterprise_id")
+    private Long enterpriseId;
 
-    @TableField("PARENT_ORG_ID")
-    private Integer parentOrgId;
+    @TableField("parent_org_id")
+    private Long parentOrgId;
 
-    @TableField("CITY")
+    @TableField("city")
     private String city;
 
-    @TableField("AREA")
+    @TableField("area")
     private String area;
 
-    @TableField("STATUS")
+    @TableField("status")
     private String status;
 
-    @TableField("CREATE_USER_ID")
-    private Integer createUserId;
+    @TableField(value="create_time", fill = FieldFill.INSERT)
+    private LocalDateTime createTime;
 
-    @TableField("CREATE_DATE")
-    private LocalDateTime createDate;
+    @TableField(value="create_user_id", fill = FieldFill.INSERT)
+    private Long createUserId;
 
-    @TableField("UPDATE_USER_ID")
-    private Integer updateUserId;
-
-    @TableField("UPDATE_TIME")
+    @TableField(value="update_time", fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
 
-
+    @TableField(value="update_user_id", fill = FieldFill.INSERT_UPDATE)
+    private Long updateUserId;
 }

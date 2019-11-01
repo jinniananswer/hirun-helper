@@ -1,6 +1,6 @@
 layui.config(
     {
-        base : "js/extend/"
+        base : "static/js/extend/"
     }
 ).extend(
     {

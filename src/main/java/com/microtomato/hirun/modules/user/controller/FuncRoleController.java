@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @Slf4j
-@RequestMapping("/api/user/func-role")
+@RequestMapping("api/user/func-role")
 public class FuncRoleController {
 
     @Autowired
