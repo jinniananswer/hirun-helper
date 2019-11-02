@@ -1,7 +1,9 @@
 package com.microtomato.hirun.modules.user.service;
 
-import com.microtomato.hirun.modules.user.entity.po.UserContact;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.microtomato.hirun.modules.user.entity.po.UserContact;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +15,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IUserContactService extends IService<UserContact> {
 
+    public List<UserContact> queryByUserIdType(Long userId);
 }
