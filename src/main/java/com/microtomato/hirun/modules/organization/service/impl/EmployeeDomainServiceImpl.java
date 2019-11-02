@@ -312,7 +312,11 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         List<EmployeeInfoDTO> employeeDTOList=new ArrayList<EmployeeInfoDTO>();
         for(EmployeeInfoDTO employeeInfoDTOResult :iPage.getRecords()){
             employeeInfoDTOResult.setJobRoleName(staticDataService.getCodeName("JOB_ROLE", employeeInfoDTOResult.getJobRole()));
+            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, employeeInfoDTOResult.getOrgId());
+            employeeInfoDTOResult.setOrgPath(orgDO.getCompanyLinePath());
             employeeDTOList.add(employeeInfoDTOResult);
+
+
         }
         return iPage.setRecords(employeeDTOList);
     }
