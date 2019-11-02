@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
+import com.microtomato.hirun.modules.organization.entity.consts.EmployeeConst;
 import com.microtomato.hirun.modules.organization.entity.domain.EmployeeBlackListDO;
 import com.microtomato.hirun.modules.organization.entity.domain.EmployeeDO;
 import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
@@ -60,31 +61,13 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
     private IStaticDataService staticDataService;
 
     @Autowired
-    private EmployeeDO employeeDO;
-
-    @Autowired
     private IUserService userService;
-
-    @Autowired
-    private UserDO userDO;
 
     @Autowired
     private IEmployeeBlacklistService employeeBlacklistService;
 
     @Autowired
-    private EmployeeBlackListDO employeeBlackListDO;
-
-    @Autowired
     private EmployeeMapper employeeMapper;
-
-    public static final String CREATE_TYPE_NEW_ENTRY = "1";
-
-    public static final String CREATE_TYPE_PRACTICE = "4";
-
-    public static final String EMPLOYEE_STATUS_NORMAL = "0";
-
-    public static final String EMPLOYEE_STATUS_DESTROY = "3";
-
 
     @Override
     public List<EmployeeInfoDTO> searchEmployee(String searchText) {
@@ -114,14 +97,14 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         }
 
         Employee employee = this.employeeService.queryByIdentityNo(identityNo);
-        if (employee == null && (StringUtils.equals(CREATE_TYPE_NEW_ENTRY, createType) || StringUtils.equals(CREATE_TYPE_PRACTICE, createType))) {
+        if (employee == null && (StringUtils.equals(EmployeeConst.CREATE_TYPE_NEW_ENTRY, createType) || StringUtils.equals(EmployeeConst.CREATE_TYPE_PRACTICE, createType))) {
             return null;
         }
-        if (employee == null && !StringUtils.equals(CREATE_TYPE_NEW_ENTRY, createType) && !StringUtils.equals(CREATE_TYPE_PRACTICE, createType)) {
+        if (employee == null && !StringUtils.equals(EmployeeConst.CREATE_TYPE_NEW_ENTRY, createType) && !StringUtils.equals(EmployeeConst.CREATE_TYPE_PRACTICE, createType)) {
             throw new EmployeeException(EmployeeException.EmployeeExceptionEnum.CREATE_TYPE_ERROR);
         }
         String status = employee.getStatus();
-        if (StringUtils.equals(EMPLOYEE_STATUS_NORMAL, status)) {
+        if (StringUtils.equals(EmployeeConst.STATUS_NORMAL, status)) {
             //创建员工时如果存在证件号码相同的正常员工，则报错
             throw new EmployeeException(EmployeeException.EmployeeExceptionEnum.IS_EXISTS, "证件号码", employee.getName(), employee.getMobileNo());
         } else {
@@ -153,16 +136,11 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
      */
     @Override
     public EmployeeDTO load(Long employeeId, boolean normal) {
-        Employee employee = this.employeeService.getById(employeeId);
-        if (employee == null) {
-            throw new EmployeeException(EmployeeException.EmployeeExceptionEnum.NOT_FOUND);
-        }
+        EmployeeDO employeeDO = SpringContextUtils.getBean(EmployeeDO.class, employeeId);
+        Employee employee = employeeDO.getEmployee();
 
         EmployeeDTO employeeDTO = new EmployeeDTO();
         BeanUtils.copyProperties(employee, employeeDTO);
-
-        EmployeeDO employeeDO = SpringContextUtils.getBean(EmployeeDO.class);
-        employeeDO.setEmployee(employee);
         int age = employeeDO.getAge();
         int jobYear = employeeDO.getJobYear();
 
@@ -171,7 +149,8 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         //获取员工岗位信息
         EmployeeJobRole jobRole = null;
         if (normal) {
-            jobRole = this.employeeJobRoleService.queryValid(employeeId);
+            List<EmployeeJobRole> oldJobRoles = this.employeeJobRoleService.queryValidMain(employeeId);
+            jobRole = oldJobRoles.get(0);
         } else {
             jobRole = this.employeeJobRoleService.queryLast(employeeId);
         }
@@ -221,41 +200,54 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
 
     /**
      * 新员工入职
-     *
      * @param employeeDTO
      */
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @DS("ins")
     public void employeeEntry(EmployeeDTO employeeDTO) {
-        Employee employee = new Employee();
-        BeanUtils.copyProperties(employeeDTO, employee);
+        if (employeeDTO.getEmployeeId() == null) {
+            //没有employeeId，表示是新入职操作
+            Employee employee = new Employee();
+            BeanUtils.copyProperties(employeeDTO, employee);
 
-        //默认创建用户
-        Long userId = this.userDO.create(employee.getMobileNo(), null);
-        employee.setUserId(userId);
+            UserDO userDO = SpringContextUtils.getBean(UserDO.class);
+            //默认创建用户
+            Long userId = userDO.create(employee.getMobileNo(), null);
+            employee.setUserId(userId);
 
-        EmployeeJobRole jobRole = null;
-        EmployeeJobRoleDTO jobRoleDTO = employeeDTO.getEmployeeJobRole();
-        if (jobRoleDTO != null) {
-            jobRole = new EmployeeJobRole();
-            BeanUtils.copyProperties(jobRoleDTO, jobRole);
-        }
+            EmployeeJobRole jobRole = null;
+            EmployeeJobRoleDTO jobRoleDTO = employeeDTO.getEmployeeJobRole();
+            if (jobRoleDTO != null) {
+                jobRole = new EmployeeJobRole();
+                BeanUtils.copyProperties(jobRoleDTO, jobRole);
+            }
 
-        List<EmployeeWorkExperienceDTO> workExperienceDTOS = employeeDTO.getEmployeeWorkExperiences();
-        List<EmployeeWorkExperience> workExperiences = new ArrayList<EmployeeWorkExperience>();
-        if (ArrayUtils.isNotEmpty(workExperienceDTOS)) {
-            for (EmployeeWorkExperienceDTO workExperienceDTO : workExperienceDTOS) {
-                if (StringUtils.isNotBlank(workExperienceDTO.getContent())) {
-                    //如果content不为空，才是有意义的内容
-                    EmployeeWorkExperience workExperience = new EmployeeWorkExperience();
-                    BeanUtils.copyProperties(workExperienceDTO, workExperience);
-                    workExperiences.add(workExperience);
+            List<EmployeeWorkExperienceDTO> workExperienceDTOS = employeeDTO.getEmployeeWorkExperiences();
+            List<EmployeeWorkExperience> workExperiences = new ArrayList<EmployeeWorkExperience>();
+            if (ArrayUtils.isNotEmpty(workExperienceDTOS)) {
+                for (EmployeeWorkExperienceDTO workExperienceDTO : workExperienceDTOS) {
+                    if (StringUtils.isNotBlank(workExperienceDTO.getContent())) {
+                        //如果content不为空，才是有意义的内容
+                        EmployeeWorkExperience workExperience = new EmployeeWorkExperience();
+                        BeanUtils.copyProperties(workExperienceDTO, workExperience);
+                        workExperiences.add(workExperience);
+                    }
                 }
             }
+            EmployeeDO employeeDO = SpringContextUtils.getBean(EmployeeDO.class, employee);
+            employeeDO.newEntry(jobRole, workExperiences);
+        } else {
+            //有employeeId，表示是复职操作
+            EmployeeDO employeeDO = SpringContextUtils.getBean(EmployeeDO.class, employeeDTO.getEmployeeId());
+            Employee employee = employeeDO.getEmployee();
+
+            Long userId = employee.getUserId();
+            UserDO userDO = SpringContextUtils.getBean(UserDO.class, userId);
+
+
         }
-        employeeDO.setEmployee(employee);
-        employeeDO.newEntry(jobRole, workExperiences);
+
     }
 
     /**
@@ -276,7 +268,8 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         updateWrapper.eq(EmployeeJobRole::getEmployeeId,employee.getEmployeeId()).set(EmployeeJobRole::getEndDate,TimeUtils.getCurrentLocalDateTime());
         updateWrapper.apply("end_date > start_date and end_date > NOW() ");
 
-        employeeDO.destroy(employee,updateWrapper);
+        EmployeeDO employeeDO = SpringContextUtils.getBean(EmployeeDO.class, employee);
+        employeeDO.destroy(updateWrapper);
 
         //todo 根据社保停买时间更新社保记录
 
@@ -288,6 +281,8 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             BeanUtils.copyProperties(employeeDestroyInfoDTO, employeeBlacklist);
             employeeBlacklist.setStartTime(employeeDestroyInfoDTO.getDestroyDate());
             employeeBlacklist.setEndTime(TimeUtils.stringToLocalDateTime("2999-12-31 00:00:00", "yyyy-MM-dd HH:mm:ss"));
+
+            EmployeeBlackListDO employeeBlackListDO = SpringContextUtils.getBean(EmployeeBlackListDO.class);
             employeeBlackListDO.addBlackList(employeeBlacklist);
         }
 

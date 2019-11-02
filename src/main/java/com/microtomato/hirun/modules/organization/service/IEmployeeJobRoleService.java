@@ -1,7 +1,9 @@
 package com.microtomato.hirun.modules.organization.service;
 
-import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,7 +15,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IEmployeeJobRoleService extends IService<EmployeeJobRole> {
 
-    EmployeeJobRole queryValid(Long employeeId);
+    List<EmployeeJobRole> queryValidMain(Long employeeId);
 
     EmployeeJobRole queryLast(Long employeeId);
 }
