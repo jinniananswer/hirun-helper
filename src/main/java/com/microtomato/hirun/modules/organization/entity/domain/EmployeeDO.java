@@ -138,8 +138,8 @@ public class EmployeeDO {
     /**
      * 修改员工基本资料
      */
-    public void modify() {
-
+    public void modify(Employee employee) {
+        employeeService.updateById(employee);
     }
 
     /**
