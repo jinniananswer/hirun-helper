@@ -26,10 +26,9 @@ layui.extend({
                 },
                 cols: [
                     [
-                        {field: 'employeeId', title: 'ID', width: 80, sort: true, fixed: 'left'},
-                        {field: 'name', title: '姓名', width: 120},
+                        {field: 'name', title: '姓名', width: 120,fixed :'left',align: 'center'},
                         {
-                            field: 'sex', title: '性别', width: 80, sort: true, templet: function (d) {
+                            field: 'sex', title: '性别', width: 80, sort: true,align: 'center', templet: function (d) {
                                 if (d.sex == 1) {
                                     return '男'
                                 } else {
@@ -37,18 +36,18 @@ layui.extend({
                                 }
                             }
                         },
-                        {field: 'identityNo', title: '身份证号码', width: 200},
-                        {field: 'mobileNo', title: '电话号码', width: 150},
-                        {field: 'inDate', title: '入职时间', width: 120,templet:function (d) {
+                        {field: 'identityNo', title: '身份证号码', width: 200,align: 'center'},
+                        {field: 'mobileNo', title: '电话号码', width: 150,align: 'center'},
+                        {field: 'inDate', title: '入职时间',align: 'center',width: 120,templet:function (d) {
                                 if(d.inDate!=''){
                                     return d.inDate.substr(0,10)
                                 }
                             }},
-                        {field: 'jobRoleName', title: '岗位', width: 120},
-                        {field: 'orgName', title: '部门', width: 150},
+                        {field: 'jobRoleName', title: '岗位', width: 120,align: 'center'},
+                        {field: 'orgPath', title: '部门',align: 'center'},
 
                         {
-                            field: 'status', title: '状态', width: 100, templet: function (d) {
+                            field: 'status', title: '状态', width: 100,align: 'center', templet: function (d) {
                                 if (d.employeeStatus == 0) {
                                     return '正常';
                                 } else if (d.employeeStatus == 1) {
@@ -58,7 +57,7 @@ layui.extend({
                                 }
                             }
                         },
-                        {align: 'center', title: '操作', fixed: 'right',templet:'#operateTmp'}
+                        {align: 'center', title: '操作', fixed: 'right',width:220,templet:'#operateTmp'}
                     ]
                 ],
                 page: true,
@@ -97,7 +96,7 @@ layui.extend({
 
             //监听工具栏新增按钮
             $('.layui-btn-container .layui-btn').on('click', function () {
-               layui.redirect.open('openUrl?url=modules/organization/employee/create_employee','新建员工档案');
+                layui.redirect.open('openUrl?url=modules/organization/employee/create_employee','新建员工档案');
             });
 
         },
@@ -130,15 +129,15 @@ layui.extend({
         holiday: function (data) {
             var sexName=(data.sex==1)?'男':'女';
 
-            var param='&employee_id='+data.employeeId+'&name='+data.name+'&mobileNo='+data.mobileNo+'&orgName='+data.orgName+'&sex='+sexName+'&jobRoleName='+data.jobRoleName+
-                      '&identityNo='+data.identityNo+'&inDate='+data.inDate.substr(0,10);
+            var param='&employee_id='+data.employeeId+'&name='+data.name+'&mobileNo='+data.mobileNo+'&orgName='+data.orgPath+'&sex='+sexName+'&jobRoleName='+data.jobRoleName+
+                '&identityNo='+data.identityNo+'&inDate='+data.inDate.substr(0,10);
             layui.redirect.open('openUrl?url=modules/organization/employee/employeeholiday_manager'+param, '员工休假管理');
-            },
+        },
 
         transOrg: function (data) {
             var sexName=(data.sex==1)?'男':'女';
 
-            var param='&employee_id='+data.employeeId+'&name='+data.name+'&mobileNo='+data.mobileNo+'&orgName='+data.orgName+'&sex='+sexName+'&jobRoleName='+data.jobRoleName+
+            var param='&employee_id='+data.employeeId+'&name='+data.name+'&mobileNo='+data.mobileNo+'&orgName='+data.orgPath+'&sex='+sexName+'&jobRoleName='+data.jobRoleName+
                 '&identityNo='+data.identityNo+'&inDate='+data.inDate.substr(0,10);
             var url=encodeURI('openUrl?url=modules/organization/employee/employee_trans_manager'+param);
             layui.redirect.open(url, '员工调动管理');

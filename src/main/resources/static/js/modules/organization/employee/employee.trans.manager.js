@@ -8,7 +8,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'select', 'layer', 'form'],
             table.render({
                 elem: "#employeeTransTable",
                 height: 500,
-                url: 'api/organization/hr-pending/queryPendingByEmployeeId?employeeId=' + $("#employee_id").val(),
+                url: 'api/organization/hr-pending/queryTransPendingByEmployeeId?employeeId=' + $("#employee_id").val(),
                 loading: true,
                 toolbar: '#toolbar',
                 parseData: function (res) { //res 即为原始返回的数据
@@ -25,22 +25,22 @@ layui.extend({}).define(['ajax', 'table', 'element', 'select', 'layer', 'form'],
                                 if (d.pendingType == 1) {
                                     return '借调';
                                 } else if (d.pendingType == 2) {
-                                    return '调动';
+                                    return '调出';
                                 };
-                        }},
-                        {field: 'startTime', title: '开始时间', width: 200, sort: true},
-                        {field: 'endTime', title: '结束时间', width: 200, sort: true},
-                        {field: 'pendingStatus', title: '状态', width: 100,style:'color :red',templet:function (d) {
-                                if (d.pendingStatus == 0) {
+                            }},
+                        {field: 'startTime', title: '开始时间', width: 200},
+                        {field: 'endTime', title: '结束时间', width: 200},
+                        {field: 'pendingStatus', title: '状态',sort: true, width: 100,style:'color :red',templet:function (d) {
+                                if (d.pendingStatus == 1) {
                                     return '未处理';
-                                } else if (d.pendingStatus == 1) {
+                                } else if (d.pendingStatus == 2) {
                                     return '已处理';
                                 }else if (d.pendingStatus == 3) {
                                     return '删除';
                                 };
                             }},
-                        {field: 'pendingCreateId', title: '创建员工', width: 100, sort: true},
-                        {field: 'pendingExecuteId', title: '处理员工', width: 100},
+                        {field: 'pendingCreateName', title: '创建员工', width: 100},
+                        {field: 'pendingExecuteName', title: '处理员工', width: 100},
                         {field: 'remark', title: '备注', width: 300},
                         {align: 'center', title: '操作', fixed: 'right',templet:'#operateTmp'}
                     ]
@@ -91,6 +91,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'select', 'layer', 'form'],
                     body.find('#pendingExecuteId').val(data.pendingExecuteId);
                     body.find('#id').val(data.id);
                     body.find('#pendingTypeValue').val(data.pendingType);
+                    body.find('#pendExecuteName').val(data.pendingExecuteName);
                     form.render();
                 },
                 yes: function (index, layero) {

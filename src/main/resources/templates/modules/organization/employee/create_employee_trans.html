@@ -9,6 +9,7 @@
           content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <link rel="stylesheet" href="/static/layui/css/layui.css" th:href="@{static/layui/css/layui.css}" media="all">
     <link rel="stylesheet" href="/static/css/admin.css" th:href="@{static/css/admin.css}" media="all">
+    <link rel="stylesheet" href="/static/css/template.css" th:href="@{static/css/template.css}" media="all">
     <script src="../static/layui/layui.js" th:src="@{static/layui/layui.js}"></script>
     <script src="../static/js/base.js" th:src="@{static/js/base.js}"></script>
     <style>
@@ -53,28 +54,28 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label layui-required">调动类型</label>
                     <div class="layui-input-block">
-                        <select name="pendingType" id="pendingType" lay-verify="pendingType" required>
+                        <select name="pendingType" id="pendingType" lay-verify="required" lay-filter="pendingType">
                             <option value="1" selected>借调</option>
-                            <option value="2">调动</option>
+                            <option value="2" >调出</option>
                         </select>
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label layui-required">开始时间</label>
                     <div class="layui-input-block">
-                        <input type="text" id="startTime" name="startTime" required lay-verify="required" readonly
+                        <input type="text" id="startTime" name="startTime"  lay-verify="required" readonly
                                autocomplete="off" class="layui-input"/>
                     </div>
                 </div>
-                <div class="layui-form-item">
+                <div class="layui-form-item" id="end">
                     <label class="layui-form-label layui-required">结束时间</label>
                     <div class="layui-input-block">
-                        <input type="text" id="endTime" name="endTime" required lay-verify="required" readonly
+                        <input type="text" id="endTime" name="endTime"  lay-verify="required" readonly
                                autocomplete="off" class="layui-input"/>
                     </div>
                 </div>
                 <div class="layui-form-item">
-                    <label class="layui-form-label">任务人</label>
+                    <label class="layui-form-label layui-required">任务人</label>
                     <div class="layui-input-block">
                         <input type="text" id="pendExecuteName" name="pendExecuteName" onclick="layui.createEmployeeTrans.selectTaskEmployee();" placeholder="请选择任务接收人" autocomplete="off" class="layui-input" required lay-verify="required"/>
                         <input type="hidden" id="pendingExecuteId" name="pendingExecuteId"/>
@@ -99,13 +100,13 @@
 <div id="executeEmployeeList" style="display:none">
 
 </div>
-        <script>
-            layui.extend(
-                {
-                    createEmployeeTrans: "{/}static/js/modules/organization/employee/create.employee.trans"
-                }).use('createEmployeeTrans', function () {
-                layui.createEmployeeTrans.init();
-            })
-        </script>
+<script>
+    layui.extend(
+        {
+            createEmployeeTrans: "{/}static/js/modules/organization/employee/create.employee.trans"
+        }).use('createEmployeeTrans', function () {
+        layui.createEmployeeTrans.init();
+    })
+</script>
 </body>
 </html>

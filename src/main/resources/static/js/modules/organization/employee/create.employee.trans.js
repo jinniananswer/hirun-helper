@@ -10,7 +10,7 @@ layui.extend({
 
             //layui.select.init('transType', 'TRANS_EMPLOYEE_TYPE', '1', true);
 
-            laydate.render({
+            var startTime=laydate.render({
                 elem: '#startTime',
                 type: 'datetime',
                 done: function(value,date){
@@ -20,7 +20,7 @@ layui.extend({
                 },
             });
 
-            laydate.render({
+            var endTime=laydate.render({
                 elem: '#endTime',
                 type: 'datetime',
                 format: 'yyyy-MM-dd HH:mm:ss',
@@ -29,6 +29,18 @@ layui.extend({
                     this.dateTime.minutes=59;
                     this.dateTime.seconds=59;
                 },
+            });
+
+            form.on('select(pendingType)',function (data) {
+                if(data.value==1){
+                    $("#end").show();
+                    $("#endTime").attr("lay-verify","required");
+                    $("#endTime").removeAttr("disabled");
+                }else{
+                    $("#end").hide();
+                    $("#endTime").attr("disabled","true");
+                    $("#endTime").removeAttr("lay-verify");
+                }
             });
 
             form.on('submit(add-employeetrans-submit)', function (data) {
@@ -65,6 +77,9 @@ layui.extend({
             layui.selectEmployee.init('executeEmployeeList', 'employeeSearch', 'pendingExecuteId', 'pendExecuteName', false);
         },
 
+        changeType :function (data) {
+            alert(data);
+        },
     };
     exports('createEmployeeTrans', createEmployeeTrans);
 });
