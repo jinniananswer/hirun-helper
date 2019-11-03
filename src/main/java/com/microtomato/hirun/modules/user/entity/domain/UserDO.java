@@ -4,12 +4,14 @@ import com.microtomato.hirun.framework.exception.ErrorKind;
 import com.microtomato.hirun.framework.exception.cases.NotFoundException;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.EncryptUtils;
+import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.modules.user.entity.consts.UserConst;
 import com.microtomato.hirun.modules.user.entity.po.User;
 import com.microtomato.hirun.modules.user.entity.po.UserContact;
 import com.microtomato.hirun.modules.user.exception.PasswordException;
 import com.microtomato.hirun.modules.user.service.IUserContactService;
 import com.microtomato.hirun.modules.user.service.IUserService;
+import com.microtomato.hirun.modules.user.service.impl.UserServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +59,8 @@ public class UserDO {
      * @param userId
      */
     public UserDO(Long userId) {
-        this.user = this.userService.getById(userId);
+        IUserService service = SpringContextUtils.getBean(UserServiceImpl.class);
+        this.user = service.getById(userId);
         if (this.user == null) {
             throw new NotFoundException("根据用户ID找不到用户信息，请确认用户ID是否正确", ErrorKind.NOT_FOUND.getCode());
         }
@@ -68,7 +71,8 @@ public class UserDO {
      * @param username
      */
     public UserDO(String username) {
-        this.user = this.userService.queryByUsername(username);
+        IUserService service = SpringContextUtils.getBean(UserServiceImpl.class);
+        this.user = service.queryByUsername(username);
         if (this.user == null) {
             throw new NotFoundException("根据输入的用户名找不到用户信息，请确认用户名是否正确", ErrorKind.NOT_FOUND.getCode());
         }
