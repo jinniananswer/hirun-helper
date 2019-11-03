@@ -50,10 +50,8 @@ layui.extend({
                             field: 'status', title: '状态', width: 100,align: 'center', templet: function (d) {
                                 if (d.employeeStatus == 0) {
                                     return '正常';
-                                } else if (d.employeeStatus == 1) {
-                                    return '离职';
                                 } else if (d.employeeStatus == 3) {
-                                    return '实习';
+                                    return '离职';
                                 }
                             }
                         },
@@ -102,7 +100,7 @@ layui.extend({
         },
 
         destroy: function (data) {
-            layer.open({
+            var index=layer.open({
                 type: 2,
                 title: '员工离职',
                 content: 'openUrl?url=/modules/organization/employee/destroy_employee',
@@ -124,6 +122,7 @@ layui.extend({
                     submit.click();
                 }
             });
+            layer.full(index);
         },
 
         holiday: function (data) {

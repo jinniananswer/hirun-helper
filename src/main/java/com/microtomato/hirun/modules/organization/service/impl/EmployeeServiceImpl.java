@@ -91,4 +91,10 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         return employee;
     }
 
+    @Override
+    public List<Employee> findSubordinate(Long parentEmployeeId) {
+        List<Employee> childEmployees = employeeMapper.queryEmployeeByParentEmployeeId(parentEmployeeId);
+        return childEmployees;
+    }
+
 }

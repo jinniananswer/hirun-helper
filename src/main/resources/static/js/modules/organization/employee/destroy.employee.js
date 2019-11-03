@@ -39,7 +39,7 @@ layui.extend({}).define(['ajax', 'form', 'layer', 'element', 'laydate', 'select'
                                 top.layui.admin.closeThisTabs();
                             });
                         } else {
-                            parent.layer.msg("提交失败", {icon: 5});
+                            parent.layer.msg("提交失败"+data.message, {icon: 5});
                         }
                     }
                 });

@@ -231,11 +231,12 @@ public class EmployeeDO {
     /**
      * 注销员工基本资料
      */
-    public void destroy(LambdaUpdateWrapper lambdaUpdateWrapper) {
-        //更新employee资料
+    public void destroy(LocalDateTime destoryTime) {
+        //终止employee
+        this.employee.setStatus(EmployeeConst.STATUS_DESTROY);
         this.employeeService.updateById(employee);
-        //更新employeeJobRole资料
-        employeeJobRoleService.update(null,lambdaUpdateWrapper);
+        //终止jobrole
+        this.destroyJob(destoryTime);
     }
 
     /**
@@ -243,7 +244,8 @@ public class EmployeeDO {
      * @return
      */
     public List<Employee> findSubordinate() {
-        return null;
+        List<Employee> childEmployees=employeeService.findSubordinate(this.employee.getEmployeeId());
+        return childEmployees;
     }
 
     /**

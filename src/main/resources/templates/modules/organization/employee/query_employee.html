@@ -53,8 +53,7 @@
                                     <select name="employeeStatus" id="employeeStatus">
                                         <option value="">全部</option>
                                         <option value="0">在职</option>
-                                        <option value="1">离职</option>
-                                        <option value="3">实习</option>
+                                        <option value="3">离职</option>
                                     </select>
                                 </div>
                             </div>
@@ -98,12 +97,12 @@
 
 
 <script type="text/html" id="operateTmp">
-    {{#  if(d.employeeStatus == '0' || d.employeeStatus == '3'){ }}
+    {{#  if(d.employeeStatus == '0'){ }}
     <a href="#" class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
     <a href="#" class="layui-btn layui-btn-danger layui-btn-xs" lay-event="remove">离职</a>
     <a href="#" class="layui-btn layui-btn-normal layui-btn-xs" lay-event="holiday">休假</a>
     <a href="#" class="layui-btn layui-btn-warm layui-btn-xs" lay-event="transOrg">调动</a>
-    {{#  } else if(d.employeeStatus == "1" || d.employeeStatus == "3"){ }}
+    {{#  } else if(d.employeeStatus == "3"){ }}
     <a href="#" class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
     {{#  } }}
 </script>

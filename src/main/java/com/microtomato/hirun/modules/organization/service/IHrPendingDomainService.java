@@ -3,6 +3,8 @@ package com.microtomato.hirun.modules.organization.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeTransDetailDTO;
+import com.microtomato.hirun.modules.organization.entity.dto.HrPendingInfoDTO;
 import com.microtomato.hirun.modules.organization.entity.po.HrPending;
 
 
@@ -24,7 +26,7 @@ public interface IHrPendingDomainService {
      * @param
      * @return
      */
-    IPage<HrPending> queryPendingByEmployeeId(Long employeeId, Page<HrPending> pendingPage);
+    IPage<HrPendingInfoDTO> queryTransPendingByEmployeeId(Long employeeId, Page<HrPending> pendingPage);
 
     /**
      * 删除待办
@@ -35,4 +37,19 @@ public interface IHrPendingDomainService {
      * 修改待办
      */
     boolean updateHrPending(HrPending hrPending);
+
+    /**
+     * 根据执行ID查询待办
+     */
+    IPage<HrPendingInfoDTO> queryPendingByExecuteId(HrPending hrPending, Page<HrPending> pendingPage);
+
+    /**
+     * 确定员工调动待办
+     */
+    boolean confirmTransPending(EmployeeTransDetailDTO employeeTransDetailDTO);
+
+    /**
+     * 查询待办详情
+     */
+    EmployeeTransDetailDTO queryPendingDetailById(Long id);
 }
