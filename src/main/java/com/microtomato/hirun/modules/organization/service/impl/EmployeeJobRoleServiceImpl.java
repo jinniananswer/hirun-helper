@@ -35,7 +35,7 @@ public class EmployeeJobRoleServiceImpl extends ServiceImpl<EmployeeJobRoleMappe
     @Override
     public List<EmployeeJobRole> queryValidMain(Long employeeId) {
         String now = TimeUtils.now();
-        List<EmployeeJobRole> jobRoles = this.list(new QueryWrapper<EmployeeJobRole>().lambda().eq(EmployeeJobRole::getEmployeeId, employeeId).eq(EmployeeJobRole::getIsMain, EmployeeConst.JOB_ROLE_MAIN).le(EmployeeJobRole::getStartDate, now).ge(EmployeeJobRole::getEndDate, now));
+        List<EmployeeJobRole> jobRoles = this.list(new QueryWrapper<EmployeeJobRole>().lambda().eq(EmployeeJobRole::getEmployeeId, employeeId).eq(EmployeeJobRole::getIsMain, EmployeeConst.JOB_ROLE_MAIN).ge(EmployeeJobRole::getEndDate, now));
         if (ArrayUtils.isEmpty(jobRoles)) {
             return null;
         }

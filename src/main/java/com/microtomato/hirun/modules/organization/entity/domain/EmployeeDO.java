@@ -19,6 +19,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -142,7 +143,7 @@ public class EmployeeDO {
 
         if (jobRole != null) {
             //终止原有有效的jobRole数据
-            this.destroyJob();
+            this.destroyJob(null);
             //新分配岗位
             this.allocateJob(jobRole);
         }
@@ -170,11 +171,15 @@ public class EmployeeDO {
     /**
      * 终止员工的工作岗位数据
      */
-    public void destroyJob() {
+    public void destroyJob(LocalDateTime endDate) {
         List<EmployeeJobRole> oldJobRoles = this.employeeJobRoleService.queryValidMain(this.employee.getEmployeeId());
         if (ArrayUtils.isNotEmpty(oldJobRoles)) {
             for (EmployeeJobRole oldJobRole : oldJobRoles) {
-                oldJobRole.setEndDate(RequestTimeHolder.getRequestTime());
+                if (endDate != null) {
+                    oldJobRole.setEndDate(endDate);
+                } else {
+                    oldJobRole.setEndDate(RequestTimeHolder.getRequestTime());
+                }
                 this.employeeJobRoleService.updateById(oldJobRole);
             }
         }
@@ -204,13 +209,6 @@ public class EmployeeDO {
             workExperience.setEmployeeId(this.employee.getEmployeeId());
             this.employeeWorkExperienceService.save(workExperience);
         }
-    }
-
-    /**
-     * 修改员工基本资料
-     */
-    public void modify(Employee employee) {
-        employeeService.updateById(employee);
     }
 
     /**
