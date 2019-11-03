@@ -172,7 +172,7 @@ public class EmployeeDO {
      * 终止员工的工作岗位数据
      */
     public void destroyJob(LocalDateTime endDate) {
-        List<EmployeeJobRole> oldJobRoles = this.employeeJobRoleService.queryValidMain(this.employee.getEmployeeId());
+        List<EmployeeJobRole> oldJobRoles = this.employeeJobRoleService.queryAll(this.employee.getEmployeeId());
         if (ArrayUtils.isNotEmpty(oldJobRoles)) {
             for (EmployeeJobRole oldJobRole : oldJobRoles) {
                 if (endDate != null) {
