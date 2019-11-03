@@ -1,6 +1,5 @@
 package com.microtomato.hirun.modules.organization.entity.domain;
 
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
@@ -110,7 +109,7 @@ public class EmployeeDO {
     public void newEntry(EmployeeJobRole jobRole, List<EmployeeWorkExperience> workExperiences) {
         if (this.isExists()) {
             //如果证件号码已存在，则不允许做为新入职录入
-            throw new EmployeeException(EmployeeException.EmployeeExceptionEnum.IS_EXISTS);
+            throw new EmployeeException(EmployeeException.EmployeeExceptionEnum.IS_EXISTS, "证件号码", this.employee.getName(), this.employee.getMobileNo());
         }
 
         if (this.isBlack()) {
@@ -137,7 +136,7 @@ public class EmployeeDO {
      * @param workExperiences
      */
     public void modify(Employee employee, EmployeeJobRole jobRole, List<EmployeeWorkExperience> workExperiences) {
-        if (employee.getEmployeeId().equals(this.employee.getEmployeeId())) {
+        if (!employee.getEmployeeId().equals(this.employee.getEmployeeId())) {
             //员工ID不相等，表示不是修改的同一员工数据
             return;
         }
@@ -148,6 +147,7 @@ public class EmployeeDO {
             //终止原有有效的jobRole数据
             this.destroyJob(null);
             //新分配岗位
+            jobRole.setEmployeeId(employee.getEmployeeId());
             this.allocateJob(jobRole);
         }
 
@@ -217,15 +217,17 @@ public class EmployeeDO {
     /**
      * 员工复职
      */
-    public void rehire() {
-
+    public void rehire(Employee employee, EmployeeJobRole jobRole, List<EmployeeWorkExperience> workExperiences) {
+        this.modify(employee, jobRole, workExperiences);
+        //todo 记录员工复职历史
     }
 
     /**
      * 返聘
      */
-    public void rehelloring() {
-
+    public void rehelloring(Employee employee, EmployeeJobRole jobRole, List<EmployeeWorkExperience> workExperiences) {
+        this.modify(employee, jobRole, workExperiences);
+        //todo 记录员工返聘历史
     }
 
     /**

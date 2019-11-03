@@ -19,6 +19,7 @@ import com.microtomato.hirun.modules.organization.exception.EmployeeException;
 import com.microtomato.hirun.modules.organization.mapper.EmployeeMapper;
 import com.microtomato.hirun.modules.organization.service.*;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
+import com.microtomato.hirun.modules.user.entity.consts.UserConst;
 import com.microtomato.hirun.modules.user.entity.domain.UserDO;
 import com.microtomato.hirun.modules.user.entity.po.User;
 import com.microtomato.hirun.modules.user.service.IUserService;
@@ -96,10 +97,10 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         }
 
         Employee employee = this.employeeService.queryByIdentityNo(identityNo);
-        if (employee == null && (StringUtils.equals(EmployeeConst.CREATE_TYPE_NEW_ENTRY, createType) || StringUtils.equals(EmployeeConst.CREATE_TYPE_PRACTICE, createType))) {
+        if (employee == null && StringUtils.equals(EmployeeConst.CREATE_TYPE_NEW_ENTRY, createType)) {
             return null;
         }
-        if (employee == null && !StringUtils.equals(EmployeeConst.CREATE_TYPE_NEW_ENTRY, createType) && !StringUtils.equals(EmployeeConst.CREATE_TYPE_PRACTICE, createType)) {
+        if (employee == null && !StringUtils.equals(EmployeeConst.CREATE_TYPE_NEW_ENTRY, createType)) {
             throw new EmployeeException(EmployeeException.EmployeeExceptionEnum.CREATE_TYPE_ERROR);
         }
         String status = employee.getStatus();
@@ -206,45 +207,56 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @DS("ins")
     public void employeeEntry(EmployeeDTO employeeDTO) {
+
+        Employee employee = new Employee();
+        BeanUtils.copyProperties(employeeDTO, employee);
+
+        EmployeeJobRole jobRole = null;
+        EmployeeJobRoleDTO jobRoleDTO = employeeDTO.getEmployeeJobRole();
+        if (jobRoleDTO != null) {
+            jobRole = new EmployeeJobRole();
+            BeanUtils.copyProperties(jobRoleDTO, jobRole);
+        }
+
+        List<EmployeeWorkExperienceDTO> workExperienceDTOS = employeeDTO.getEmployeeWorkExperiences();
+        List<EmployeeWorkExperience> workExperiences = new ArrayList<EmployeeWorkExperience>();
+        if (ArrayUtils.isNotEmpty(workExperienceDTOS)) {
+            for (EmployeeWorkExperienceDTO workExperienceDTO : workExperienceDTOS) {
+                if (StringUtils.isNotBlank(workExperienceDTO.getContent())) {
+                    //如果content不为空，才是有意义的内容
+                    EmployeeWorkExperience workExperience = new EmployeeWorkExperience();
+                    BeanUtils.copyProperties(workExperienceDTO, workExperience);
+                    workExperiences.add(workExperience);
+                }
+            }
+        }
+
         if (employeeDTO.getEmployeeId() == null) {
             //没有employeeId，表示是新入职操作
-            Employee employee = new Employee();
-            BeanUtils.copyProperties(employeeDTO, employee);
 
             UserDO userDO = SpringContextUtils.getBean(UserDO.class);
             //默认创建用户
             Long userId = userDO.create(employee.getMobileNo(), null);
             employee.setUserId(userId);
 
-            EmployeeJobRole jobRole = null;
-            EmployeeJobRoleDTO jobRoleDTO = employeeDTO.getEmployeeJobRole();
-            if (jobRoleDTO != null) {
-                jobRole = new EmployeeJobRole();
-                BeanUtils.copyProperties(jobRoleDTO, jobRole);
-            }
-
-            List<EmployeeWorkExperienceDTO> workExperienceDTOS = employeeDTO.getEmployeeWorkExperiences();
-            List<EmployeeWorkExperience> workExperiences = new ArrayList<EmployeeWorkExperience>();
-            if (ArrayUtils.isNotEmpty(workExperienceDTOS)) {
-                for (EmployeeWorkExperienceDTO workExperienceDTO : workExperienceDTOS) {
-                    if (StringUtils.isNotBlank(workExperienceDTO.getContent())) {
-                        //如果content不为空，才是有意义的内容
-                        EmployeeWorkExperience workExperience = new EmployeeWorkExperience();
-                        BeanUtils.copyProperties(workExperienceDTO, workExperience);
-                        workExperiences.add(workExperience);
-                    }
-                }
-            }
             EmployeeDO employeeDO = SpringContextUtils.getBean(EmployeeDO.class, employee);
             employeeDO.newEntry(jobRole, workExperiences);
         } else {
-            //有employeeId，表示是复职操作
             EmployeeDO employeeDO = SpringContextUtils.getBean(EmployeeDO.class, employeeDTO.getEmployeeId());
-            Employee employee = employeeDO.getEmployee();
+            Employee oldEmployee = employeeDO.getEmployee();
 
-            Long userId = employee.getUserId();
+            Long userId = oldEmployee.getUserId();
             UserDO userDO = SpringContextUtils.getBean(UserDO.class, userId);
+            userDO.modify(employeeDTO.getMobileNo(), UserConst.INIT_PASSWORD);
 
+            employee.setUserId(oldEmployee.getUserId());
+
+            String createType = employeeDTO.getCreateType();
+            if (StringUtils.equals(EmployeeConst.CREATE_TYPE_REHIRE, createType)) {
+                employeeDO.rehire(employee, jobRole, workExperiences);
+            } else {
+                employeeDO.rehelloring(employee, jobRole, workExperiences);
+            }
 
         }
 

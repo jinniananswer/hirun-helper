@@ -15,6 +15,8 @@ import java.util.List;
 @Data
 public class EmployeeDTO {
 
+    private String createType;
+
     private Long employeeId;
 
     private String name;
@@ -24,6 +26,8 @@ public class EmployeeDTO {
     private String identityNo;
 
     private String sex;
+
+    private String type;
 
     private String birthdayType;
 
