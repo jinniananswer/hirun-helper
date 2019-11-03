@@ -149,8 +149,7 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         //获取员工岗位信息
         EmployeeJobRole jobRole = null;
         if (normal) {
-            List<EmployeeJobRole> oldJobRoles = this.employeeJobRoleService.queryValidMain(employeeId);
-            jobRole = oldJobRoles.get(0);
+            jobRole = this.employeeJobRoleService.queryValidMain(employeeId);
         } else {
             jobRole = this.employeeJobRoleService.queryLast(employeeId);
         }

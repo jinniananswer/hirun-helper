@@ -15,7 +15,9 @@ import java.util.List;
  */
 public interface IEmployeeJobRoleService extends IService<EmployeeJobRole> {
 
-    List<EmployeeJobRole> queryValidMain(Long employeeId);
+    EmployeeJobRole queryValidMain(Long employeeId);
+
+    List<EmployeeJobRole> queryAll(Long employeeId);
 
     EmployeeJobRole queryLast(Long employeeId);
 }
