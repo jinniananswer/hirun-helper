@@ -3,6 +3,7 @@ package com.microtomato.hirun.modules.organization.entity.domain;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.organization.entity.consts.EmployeeConst;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
@@ -13,6 +14,7 @@ import com.microtomato.hirun.modules.organization.service.IEmployeeBlacklistServ
 import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeWorkExperienceService;
+import com.microtomato.hirun.modules.organization.service.impl.EmployeeServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -59,7 +61,8 @@ public class EmployeeDO {
      * @param employeeId
      */
     public EmployeeDO(Long employeeId) {
-        this.employee = this.employeeService.getById(employeeId);
+        IEmployeeService service = SpringContextUtils.getBean(EmployeeServiceImpl.class);
+        this.employee = service.getById(employeeId);
         if (this.employee == null) {
             throw new EmployeeException(EmployeeException.EmployeeExceptionEnum.NOT_FOUND);
         }
