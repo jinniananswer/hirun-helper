@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -177,5 +178,14 @@ public class UserDO {
             result = userService.updateById(user);
         }
         return result;
+    }
+
+    /**
+     *
+     */
+    public void destory(LocalDateTime removeTime){
+        this.user.setStatus("3");
+        this.user.setRemoveDate(removeTime);
+        this.userService.updateById(user);
     }
 }

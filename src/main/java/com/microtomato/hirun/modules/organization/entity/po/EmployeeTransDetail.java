@@ -3,7 +3,9 @@ package com.microtomato.hirun.modules.organization.entity.po;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+
 import java.time.LocalDateTime;
+
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.microtomato.hirun.framework.data.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -15,7 +17,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author liuhui
@@ -40,64 +42,64 @@ public class EmployeeTransDetail extends BaseEntity {
     @TableField("employee_id")
     private Long employeeId;
 
-    @TableField("b_org_id")
-    private Long bOrgId;
+    @TableField("source_org_id")
+    private Long sourceOrgId;
 
-    @TableField("b_job_role")
-    private String bJobRole;
+    @TableField("source_job_role")
+    private String sourceJobRole;
 
-    @TableField("b_job_nature")
-    private String bJobNature;
+    @TableField("source_job_role_nature")
+    private String sourceJobRoleNature;
 
-    @TableField("b_discount_rate")
-    private String bDiscountRate;
+    @TableField("source_discount_rate")
+    private String sourceDiscountRate;
 
-    @TableField("b_parent_employee_id")
-    private Long bParentEmployeeId;
+    @TableField("source_parent_employee_id")
+    private Long sourceParentEmployeeId;
 
-    @TableField("b_home_prov")
-    private Integer bHomeProv;
+    @TableField("source_home_prov")
+    private Integer sourceHomeProv;
 
-    @TableField("b_home_city")
-    private Integer bHomeCity;
+    @TableField("source_home_city")
+    private Integer sourceHomeCity;
 
-    @TableField("b_home_region")
-    private Integer bHomeRegion;
+    @TableField("source_home_region")
+    private Integer sourceHomeRegion;
 
-    @TableField("b_home_address")
-    private String bHomeAddress;
+    @TableField("source_home_address")
+    private String sourceHomeAddress;
 
-    @TableField("a_org_id")
-    private Long aOrgId;
+    @TableField("org_id")
+    private Long orgId;
 
-    @TableField("a_job_role")
-    private String aJobRole;
+    @TableField("job_role")
+    private String jobRole;
 
-    @TableField("a_job_nature")
-    private String aJobNature;
+    @TableField("job_role_nature")
+    private String jobRoleNature;
 
-    @TableField("a_discount_rate")
-    private String aDiscountRate;
+    @TableField("discount_rate")
+    private String discountRate;
 
-    @TableField("a_parent_employee_id")
-    private Long aParentEmployeeId;
+    @TableField("parent_employee_id")
+    private Long parentEmployeeId;
 
-    @TableField("a_home_prov")
-    private Integer aHomeProv;
+    @TableField("home_prov")
+    private Integer homeProv;
 
-    @TableField("a_home_city")
-    private Integer aHomeCity;
+    @TableField("home_city")
+    private Integer homeCity;
 
-    @TableField("a_home_region")
-    private Integer aHomeRegion;
+    @TableField("home_region")
+    private Integer homeRegion;
 
-    @TableField("a_home_address")
-    private String aHomeAddress;
+    @TableField("home_address")
+    private String homeAddress;
 
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)
     private Long createUserId;
 
-    @TableField("create_time")
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
     @TableField(value = "update_user_id", fill = FieldFill.INSERT_UPDATE)

@@ -25,18 +25,18 @@
                 <div class="layui-card-body">
                     <div class="layui-form" lay-filter="">
                         <div class="layui-form-item">
-                            <label class="layui-form-label layui-required">客户姓名</label>
+                            <label class="layui-form-label">姓名</label>
                             <div class="layui-input-inline">
                                 <input type="hidden" name="employee_id" id="employee_id" th:value="${param.employee_id}" class="layui-input" readonly/>
                             </div>
                             <div class="layui-input-inline">
                                 <input type="text" name="name" id="name" th:value="${param.name}" class="layui-input" readonly/>
                             </div>
-                            <label class="layui-form-label layui-required">性别</label>
+                            <label class="layui-form-label">性别</label>
                             <div class="layui-input-inline">
                                 <input type="text" name="sex" id="sex" th:value="${param.sex}" readonly class="layui-input"/>
                             </div>
-                            <label class="layui-form-label layui-required">电话</label>
+                            <label class="layui-form-label">电话</label>
                             <div class="layui-input-inline">
                                 <input type="text" name="mobileNo" id="mobileNo" readonly th:value="${param.mobileNo}" class="layui-input">
                             </div>
@@ -80,7 +80,7 @@
     <a href="#" class="layui-btn layui-btn-xs" lay-event="edit">修改</a>
     <a href="#" class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delete">删除</a>
     {{#  } else if(d.pendingStatus == "2"){ }}
-    <a href="#" class="layui-btn layui-btn-danger layui-btn-xs" lay-event="detail">详情</a>
+    <a href="#" class="layui-btn layui-btn-normal layui-btn-xs" lay-event="detail">详情</a>
     {{#  } else if(d.pendingStatus == "3"){ }}
 
     {{#  } }}

@@ -8,9 +8,8 @@ layui.extend({
     var createEmployeeTrans = {
         init: function () {
 
-            //layui.select.init('transType', 'TRANS_EMPLOYEE_TYPE', '1', true);
 
-            var startTime=laydate.render({
+            laydate.render({
                 elem: '#startTime',
                 type: 'datetime',
                 done: function(value,date){
@@ -20,7 +19,7 @@ layui.extend({
                 },
             });
 
-            var endTime=laydate.render({
+            laydate.render({
                 elem: '#endTime',
                 type: 'datetime',
                 format: 'yyyy-MM-dd HH:mm:ss',
@@ -66,7 +65,7 @@ layui.extend({
                                 top.layui.admin.closeThisTabs();
                             });
                         } else {
-                            parent.layer.msg("提交失败", {icon: 5});
+                            parent.layer.msg("提交失败"+data.message, {icon: 5});
                         }
                     }
                 });
