@@ -9,10 +9,7 @@ import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeWorkExperience;
 import com.microtomato.hirun.modules.organization.exception.EmployeeException;
-import com.microtomato.hirun.modules.organization.service.IEmployeeBlacklistService;
-import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
-import com.microtomato.hirun.modules.organization.service.IEmployeeService;
-import com.microtomato.hirun.modules.organization.service.IEmployeeWorkExperienceService;
+import com.microtomato.hirun.modules.organization.service.*;
 import com.microtomato.hirun.modules.organization.service.impl.EmployeeServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +43,10 @@ public class EmployeeDO {
     private IEmployeeWorkExperienceService employeeWorkExperienceService;
 
     @Autowired
-    private IEmployeeBlacklistService employeeBlacklistService;;
+    private IEmployeeBlacklistService employeeBlacklistService;
+
+    @Autowired
+    private IEmployeeHistoryService employeeHistoryService;
 
     /**
      * 默认构造函数
@@ -127,6 +127,8 @@ public class EmployeeDO {
         if (ArrayUtils.isNotEmpty(workExperiences)) {
             this.addWorkExperience(workExperiences);
         }
+
+        this.employeeHistoryService.createEntry(this.employee.getEmployeeId(), this.employee.getInDate().toLocalDate());
     }
 
     /**
@@ -219,7 +221,7 @@ public class EmployeeDO {
      */
     public void rehire(Employee employee, EmployeeJobRole jobRole, List<EmployeeWorkExperience> workExperiences) {
         this.modify(employee, jobRole, workExperiences);
-        //todo 记录员工复职历史
+        this.employeeHistoryService.createRehire(employee.getEmployeeId(), employee.getInDate().toLocalDate());
     }
 
     /**
@@ -227,7 +229,7 @@ public class EmployeeDO {
      */
     public void rehelloring(Employee employee, EmployeeJobRole jobRole, List<EmployeeWorkExperience> workExperiences) {
         this.modify(employee, jobRole, workExperiences);
-        //todo 记录员工返聘历史
+        this.employeeHistoryService.createRehelloring(employee.getEmployeeId(), employee.getInDate().toLocalDate());
     }
 
     /**

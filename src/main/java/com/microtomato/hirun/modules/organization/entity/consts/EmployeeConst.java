@@ -33,4 +33,18 @@ public class EmployeeConst {
 
     //实习员工
     public static final String TYPE_PRACTICE = "4";
+
+    public static final String HISTORY_EVENT_ENTRY = "1";
+
+    public static final String HISTORY_EVENT_REHIRE = "2";
+
+    public static final String HISTORY_EVENT_REHELLORING = "3";
+
+    public static final String HISTORY_EVENT_DESTROY = "4";
+
+    //调岗
+    public static final String HISTORY_EVENT_TRANS = "5";
+
+    //借调
+    public static final String HISTORY_EVENT_BORROW = "6";
 }
