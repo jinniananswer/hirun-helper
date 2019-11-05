@@ -12,6 +12,7 @@ import com.microtomato.hirun.modules.organization.exception.EmployeeException;
 import com.microtomato.hirun.modules.organization.service.*;
 import com.microtomato.hirun.modules.organization.service.impl.EmployeeServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -237,7 +238,11 @@ public class EmployeeDO {
      */
     public void destroy(LocalDateTime destoryTime) {
         //终止employee
-        this.employee.setStatus(EmployeeConst.STATUS_DESTROY);
+        if(StringUtils.equals(this.employee.getDestroyWay(),EmployeeConst.DESTORY_WAY_RETIRE)){
+            this.employee.setStatus(EmployeeConst.STATUS_RETIRE);
+        }else{
+            this.employee.setStatus(EmployeeConst.STATUS_DESTROY);
+        }
         this.employeeService.updateById(employee);
         //终止jobrole
         this.destroyJob(destoryTime);
