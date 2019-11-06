@@ -254,8 +254,10 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             String createType = employeeDTO.getCreateType();
             if (StringUtils.equals(EmployeeConst.CREATE_TYPE_REHIRE, createType)) {
                 employeeDO.rehire(employee, jobRole, workExperiences);
-            } else {
+            } else if(StringUtils.equals(createType, EmployeeConst.CREATE_TYPE_REHELLORING)) {
                 employeeDO.rehelloring(employee, jobRole, workExperiences);
+            } else {
+                employeeDO.modify(employee, jobRole, workExperiences);
             }
 
         }
