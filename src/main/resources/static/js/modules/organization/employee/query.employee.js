@@ -89,6 +89,8 @@ layui.extend({
                     employee.transOrg(data);
                 } else if (layEvent === 'holiday') {
                     employee.holiday(data);
+                } else if (layEvent == 'edit') {
+                    employee.edit(data);
                 }
             });
 
@@ -145,6 +147,10 @@ layui.extend({
         selectOrg : function() {
             layui.orgTree.init('orgTree', 'orgId', 'orgPath', false);
         },
+
+        edit : function(data) {
+            layui.redirect.open('openUrl?url=/modules/organization/employee/employee_archive&operType=edit&employeeId='+data.employeeId,'编辑员工资料');
+        }
 
 
     };

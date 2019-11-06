@@ -13,7 +13,13 @@ layui.extend({
         workExpIndex : 0,
 
         init : function() {
+            if ($("#operType").val() == "create") {
+                $("#operTypeArea").css("display", "");
+            } else {
+                $("#operTypeArea").css("display", "none");
+            }
             layui.select.init('createType', 'CREATE_EMPLOYEE_TYPE', '1', false);
+            layui.select.init('type', 'EMPLOYEE_TYPE', '1', false);
             layui.select.init('birthdayType', 'BIRTHDAY_TYPE', '1', false);
             layui.select.init('jobRoleNature', 'JOB_NATURE', '1', false);
             layui.select.init('jobRole', 'JOB_ROLE', null, true, '请选择或搜索岗位');
@@ -21,13 +27,25 @@ layui.extend({
             layui.select.init('educationLevel', 'EDUCATION_LEVEL', '3', false);
             layui.select.init('schoolType', 'SCHOOL_TYPE', '1', false);
 
-            form.on('select(employeeJobRole.jobRoleNature)', function(data){
+            form.on('select(employeeJobRole.jobRoleNature)', function(data) {
                 layui.employee.calculateDiscountRate();
             });
-            form.render('select', 'jobRoleNature');
+
+            form.on('select(createTypeFilter)', function(data) {
+                var createType = $("#createType").val();
+                if (createType == "3") {
+                    $("#type").val("3");
+                    form.render('select', 'type');
+                }
+            });
 
             layui.element.on('tab(employeeTab)', function(data){
-
+                layui.employee.currentTab = data.index + 1;
+                if (layui.employee.currentTab <= 1) {
+                    $("#previous").css("display", "none");
+                } else {
+                    $("#previous").css("display", "");
+                }
             });
 
             laydate.render({
@@ -88,6 +106,11 @@ layui.extend({
                 layui.employee.create(data.field);
                 return false;
             });
+
+            var employeeId = $("#employeeId").val();
+            if (employeeId != '') {
+                this.loadEmployee(employeeId);
+            }
         },
 
         verifyMobileNo : function() {
@@ -167,9 +190,9 @@ layui.extend({
                 }
                 var status = employee.status;
                 if (status == "3") {
-                    layui.employee.renderCreateType("该证件号码的员工"+employee.name+"已离职，是否做返聘处理？", "2", employee.employeeId);
+                    layui.employee.renderCreateType("该证件号码的员工"+employee.name+"已离职，是否做复职处理？", "2", employee.employeeId);
                 } else if (status == "1") {
-                    layui.employee.renderCreateType("该证件号码的员工"+employee.name+"已离职，是否做返聘处理？", "3", employee.employeeId);
+                    layui.employee.renderCreateType("该证件号码的员工"+employee.name+"已退休，是否做返聘处理？", "3", employee.employeeId);
                 }
             });
         },
@@ -196,17 +219,34 @@ layui.extend({
             },function(index) {
                 $("#createType").val(createType);
                 form.render('select', 'createType');
-                layui.ajax.post('api/organization/employee/loadAbnormal', '&employeeId='+employeeId, function(data){
-                    var employee = data.rows;
-                    layui.employee.refreshEmployee(employee);
-                });
+                layui.employee.loadEmployee(employeeId);
                 layer.close(index);
+            });
+        },
+
+        loadEmployee : function(employeeId) {
+            layui.ajax.post('api/organization/employee/loadAbnormal', '&employeeId='+employeeId, function(data){
+                var employee = data.rows;
+                layui.employee.refreshEmployee(employee);
+                if (createType == "3") {
+                    $("#type").val("3");
+                    form.render('select', 'type');
+                }
             });
         },
 
         refreshEmployee : function(employee) {
 
-            form.val('staff_form', employee);
+            form.val('employee_form', employee)
+            var inDate = employee.inDate;
+            var regularDate = employee.regularDate;
+            if (inDate != null) {
+                $("#inDate").val(inDate.substring(0,10));
+            }
+            if (regularDate != null) {
+                $("#regularDate").val(regularDate);
+            }
+
 
             var employeeJobRole = employee.employeeJobRole;
 
@@ -217,7 +257,7 @@ layui.extend({
 
             var orgId = employeeJobRole.orgId;
             if (orgId != null) {
-                $(document.getElementById(employeeJobRole.orgId)).val(orgId);
+                $(document.getElementById("employeeJobRole.orgId")).val(orgId);
             }
 
             var jobRole = employeeJobRole.jobRole;
