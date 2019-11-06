@@ -32,7 +32,7 @@
 </head>
 <body>
     <div class="layui-fluid">
-        <div class="layui-form" id="staff_form" lay-filter="staff_form">
+        <div class="layui-form" id="employee_form" lay-filter="employee_form">
             <div class="layui-card">
                 <div class="layui-tab layui-tab-brief" lay-filter="employeeTab">
                     <ul class="layui-tab-title">
@@ -43,11 +43,22 @@
                     </ul>
                     <div class="layui-tab-content">
                         <div class="layui-tab-item layui-show">
-                            <div class="layui-form-item">
-                                <label class="layui-form-label layui-required">入职类型</label>
+                            <div class="layui-form-item" id="operTypeArea">
+                                <label class="layui-form-label layui-required">操作类型</label>
                                 <div class="layui-input-block">
                                     <div class="layui-form" lay-filter="createType">
-                                        <select id="createType" name="createType" lay-verify="required">
+                                        <input type="hidden" id="operType" name="operType" th:value="${param.operType}"/>
+                                        <select id="createType" name="createType" lay-verify="required" lay-filter="createTypeFilter">
+
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label layui-required">员工类型</label>
+                                <div class="layui-input-block">
+                                    <div class="layui-form" lay-filter="type">
+                                        <select id="type" name="type" lay-verify="required">
 
                                         </select>
                                     </div>
@@ -57,6 +68,7 @@
                                 <label class="layui-form-label layui-required">身份证</label>
                                 <div class="layui-input-block">
                                     <input type="text" id="identityNo" name="identityNo" required lay-verify="required" placeholder="请输入身份证号码" onblur="layui.employee.analyzeIdentityNo();" autocomplete="off" class="layui-input"/>
+                                    <input type="hidden" id="employeeId" name="employeeId" th:value="${param.employeeId}"/>
                                 </div>
                             </div>
                             <div class="layui-form-item">
@@ -336,7 +348,7 @@
     <script>
         layui.extend(
             {
-                employee : "{/}static/js/modules/organization/employee/create.employee"
+                employee : "{/}static/js/modules/organization/employee/employee.archive"
             }
         ).use('employee',function(args){
             layui.employee.init();
