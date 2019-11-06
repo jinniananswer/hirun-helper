@@ -47,4 +47,7 @@ public class EmployeeConst {
 
     //借调
     public static final String HISTORY_EVENT_BORROW = "6";
+
+    //离职方式-退休
+    public static final String DESTORY_WAY_RETIRE="5";
 }
