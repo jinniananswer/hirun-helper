@@ -43,23 +43,47 @@
                     <div class="layui-input-block">
                         <input type="text" name="name" id="name" autocomplete="off" class="layui-input" readonly>
                     </div>
-                    <input type="hidden" name="employeeId" id="employeeId" autocomplete="off" class="layui-input"
-                           readonly>
+                    <input type="hidden" name="employeeId" id="employeeId" autocomplete="off" class="layui-input" readonly>
                     <input type="hidden" name="id" id="id" autocomplete="off" class="layui-input" readonly>
+                    <input type="hidden" name="pendingTypeValue" id="pendingTypeValue" autocomplete="off"
+                           class="layui-input">
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label layui-required">调动类型</label>
+                    <div class="layui-input-block">
+                        <select name="pendingType" id="pendingType" lay-verify="required" lay-filter="pendingType">
+                            <option value="1">借调</option>
+                            <option value="2">调出</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label layui-required">开始时间</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="startTime" name="startTime" required lay-verify="required" readonly
+                               autocomplete="off" class="layui-input"/>
+                    </div>
+                </div>
+                <div class="layui-form-item" id="end">
+                    <label class="layui-form-label layui-required">结束时间</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="endTime" name="endTime"  lay-verify="required" readonly
+                               autocomplete="off" class="layui-input"/>
+                    </div>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label layui-required">归属部门</label>
                     <div class="layui-input-block">
                         <input type="text" id="orgPath" name="orgPath" onclick="layui.transPendingConfirm.selectOrg();"
                                placeholder="请点击选择部门" autocomplete="off" class="layui-input"/>
-                        <input type="hidden" id="employeeJobRole.orgId" name="employeeJobRole.orgId"/>
+                        <input type="hidden" id="orgId" name="orgId" lay-verify="required"/>
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label layui-required">岗位</label>
                     <div class="layui-input-block">
                         <div class="layui-form" lay-filter="jobRole">
-                            <select id="jobRole" name="employeeJobRole.jobRole" lay-verify="required" lay-search>
+                            <select id="jobRole" name="jobRole" lay-verify="required" lay-search>
 
                             </select>
                         </div>
@@ -68,8 +92,8 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label layui-required">岗位性质</label>
                     <div class="layui-input-block">
-                        <div class="layui-form" lay-filter="jobNature">
-                            <select id="jobNature" name="employeeJobRole.jobNature" lay-verify="required">
+                        <div class="layui-form" lay-filter="jobRoleNature">
+                            <select id="jobRoleNature" name="jobRoleNature" lay-verify="required">
 
                             </select>
                         </div>
@@ -78,19 +102,15 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label layui-required">折算比例</label>
                     <div class="layui-input-block">
-                        <input type="text" id="employeeJobRole.discountRate" name="employeeJobRole.discountRate"
-                               readonly
-                               placeholder="" autocomplete="off" class="layui-input"/>
+                        <input type="text" id="discountRate" name="discountRate" readonly placeholder="" autocomplete="off" class="layui-input"/>
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label layui-required">直属上级</label>
                     <div class="layui-input-block">
                         <input type="text" id="parentEmployeeName" name="parentEmployeeName"
-                               onclick="layui.transPendingConfirm.selectParentEmployee();" placeholder="请点击选择直属上级"
-                               autocomplete="off"
-                               class="layui-input"/>
-                        <input type="hidden" id="employeeJobRole.parentEmployeeId" name="employeeJobRole.parentEmployeeId"/>
+                               onclick="layui.transPendingConfirm.selectParentEmployee();" placeholder="请点击选择直属上级" autocomplete="off" class="layui-input"/>
+                        <input type="hidden" id="parentEmployeeId" name="parentEmployeeId"  lay-verify="required"/>
                     </div>
                 </div>
                 <div class="layui-form-item">
@@ -101,9 +121,9 @@
                     </div>
                 </div>
                 <div class="layui-form-item">
-                    <label class="layui-form-label">详细住址</label>
+                    <label class="layui-form-label layui-required">详细住址</label>
                     <div class="layui-input-block">
-                        <input type="text" name="homeAddress" required lay-verify="required" placeholder="请输入家庭住址"
+                        <input type="text" name="homeAddress" lay-verify="required" placeholder="请输入家庭住址"
                                autocomplete="off" class="layui-input"/>
                     </div>
                 </div>

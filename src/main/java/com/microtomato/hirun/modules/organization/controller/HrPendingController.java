@@ -3,6 +3,8 @@ package com.microtomato.hirun.modules.organization.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeTransDetailDTO;
+import com.microtomato.hirun.modules.organization.entity.dto.HrPendingInfoDTO;
 import com.microtomato.hirun.modules.organization.entity.po.HrPending;
 import com.microtomato.hirun.modules.organization.service.IHrPendingDomainService;
 import org.springframework.web.bind.annotation.*;
@@ -27,11 +29,11 @@ public class HrPendingController {
     @Autowired
     private IHrPendingDomainService hrPendingDomainService;
 
-    @GetMapping("/queryPendingByEmployeeId")
+    @GetMapping("/queryTransPendingByEmployeeId")
     @RestResult
-    public IPage<HrPending> queryPendingByEmployeeId(Long employeeId, Integer page, Integer limit) {
+    public IPage<HrPendingInfoDTO> queryTransPendingByEmployeeId(Long employeeId, Integer page, Integer limit) {
         Page<HrPending> hrPendingPage = new Page<HrPending>(page, limit);
-        IPage<HrPending> iPage = hrPendingDomainService.queryPendingByEmployeeId(employeeId, hrPendingPage);
+        IPage<HrPendingInfoDTO> iPage = hrPendingDomainService.queryTransPendingByEmployeeId(employeeId, hrPendingPage);
         return iPage;
     }
 
@@ -63,4 +65,33 @@ public class HrPendingController {
         return hrPendingDomainService.deleteHrPending(hrPending);
     }
 
+    /**
+     * 根据执行人ID查询待办
+     */
+    @GetMapping("/queryPendingByExecuteId")
+    @RestResult
+    public IPage<HrPendingInfoDTO> queryPendingByExecuteId(HrPending hrPending, Integer page, Integer limit) {
+        Page<HrPending> hrPendingPage = new Page<HrPending>(page, limit);
+        return hrPendingDomainService.queryPendingByExecuteId(hrPending, hrPendingPage);
+    }
+
+    /**
+     * 确认员工调动待办
+     */
+    @PostMapping("/confirmTransPending")
+    @RestResult
+    public boolean confirmTransPending(EmployeeTransDetailDTO employeeTransInfo) {
+        hrPendingDomainService.confirmTransPending(employeeTransInfo);
+        return true;
+    }
+
+    /**
+     * 查询待办处理详情
+     */
+    @GetMapping("/getDetail")
+    @RestResult
+    public EmployeeTransDetailDTO getDetail(Long id) {
+        EmployeeTransDetailDTO hrPendingDetailDTO = hrPendingDomainService.queryPendingDetailById(id);
+        return hrPendingDetailDTO;
+    }
 }

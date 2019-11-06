@@ -7,6 +7,8 @@ import com.microtomato.hirun.modules.organization.entity.dto.EmployeeExampleDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeInfoDTO;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 
+import java.util.List;
+
 /**
  * <p>
  * 服务类
@@ -25,4 +27,18 @@ public interface IEmployeeService extends IService<Employee> {
      * 测试（后期删除）
      */
     IPage<EmployeeExampleDTO> selectEmployeePageExample(String name, Long orgId, Long jobRole);
+
+    /**
+     * 根据employeeId获取name
+     */
+    String getEmployeeNameEmployeeId(Long employeeId);
+
+    Employee queryByUserId(Long userId);
+
+    /**
+     * 查找下级员工
+     * @param parentEmployeeId
+     * @return
+     */
+    List<Employee> findSubordinate(Long parentEmployeeId);
 }

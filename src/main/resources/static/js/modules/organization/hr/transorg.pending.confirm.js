@@ -10,8 +10,44 @@ layui.extend({
     var transPendingConfirm = {
         init: function () {
 
-            layui.select.init('jobNature', 'JOB_NATURE', '1', false);
+            layui.select.init('jobRoleNature', 'JOB_NATURE', '', false);
             layui.select.init('jobRole', 'JOB_ROLE', null, true, '请选择或搜索岗位');
+
+            $("#pendingType option[value='"+$('#pendingTypeValue').val()+"']").prop("selected",true);
+            form.render("select");
+
+            laydate.render({
+                elem: '#startTime',
+                type: 'datetime',
+                done: function(value,date){
+                    this.dateTime.hours=0;
+                    this.dateTime.minutes=0;
+                    this.dateTime.seconds=0;
+                },
+            });
+
+            laydate.render({
+                elem: '#endTime',
+                type: 'datetime',
+                format: 'yyyy-MM-dd HH:mm:ss',
+                done: function(value,date){
+                    this.dateTime.hours=23;
+                    this.dateTime.minutes=59;
+                    this.dateTime.seconds=59;
+                },
+            });
+
+            form.on('select(pendingType)',function (data) {
+                if(data.value==1){
+                    $("#end").show();
+                    $("#endTime").attr("lay-verify","required");
+                    $("#endTime").removeAttr("disabled");
+                }else{
+                    $("#end").hide();
+                    $("#endTime").attr("disabled","true");
+                    $("#endTime").removeAttr("lay-verify");
+                }
+            });
 
             var homePicker = new layui.citypicker("#home-city-picker", {
                 provincename:"homeProv",
@@ -52,11 +88,11 @@ layui.extend({
         },
 
         selectOrg : function() {
-            layui.orgTree.init('orgTree', 'employeeJobRole.orgId', 'orgPath', false);
+            layui.orgTree.init('orgTree', 'orgId', 'orgPath', false);
         },
 
         selectParentEmployee : function() {
-            layui.selectEmployee.init('parentEmployeeList', 'employeeSearch', 'employeeJobRole.parentEmployeeId', 'parentEmployeeName', false);
+            layui.selectEmployee.init('parentEmployeeList', 'employeeSearch', 'parentEmployeeId', 'parentEmployeeName', false);
         },
 
     };

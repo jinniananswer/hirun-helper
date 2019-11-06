@@ -8,7 +8,6 @@ layui.extend({
     var createEmployeeTrans = {
         init: function () {
 
-            //layui.select.init('transType', 'TRANS_EMPLOYEE_TYPE', '1', true);
 
             laydate.render({
                 elem: '#startTime',
@@ -29,6 +28,18 @@ layui.extend({
                     this.dateTime.minutes=59;
                     this.dateTime.seconds=59;
                 },
+            });
+
+            form.on('select(pendingType)',function (data) {
+                if(data.value==1){
+                    $("#end").show();
+                    $("#endTime").attr("lay-verify","required");
+                    $("#endTime").removeAttr("disabled");
+                }else{
+                    $("#end").hide();
+                    $("#endTime").attr("disabled","true");
+                    $("#endTime").removeAttr("lay-verify");
+                }
             });
 
             form.on('submit(add-employeetrans-submit)', function (data) {
@@ -54,7 +65,7 @@ layui.extend({
                                 top.layui.admin.closeThisTabs();
                             });
                         } else {
-                            parent.layer.msg("提交失败", {icon: 5});
+                            parent.layer.msg("提交失败"+data.message, {icon: 5});
                         }
                     }
                 });
@@ -65,6 +76,9 @@ layui.extend({
             layui.selectEmployee.init('executeEmployeeList', 'employeeSearch', 'pendingExecuteId', 'pendExecuteName', false);
         },
 
+        changeType :function (data) {
+            alert(data);
+        },
     };
     exports('createEmployeeTrans', createEmployeeTrans);
 });

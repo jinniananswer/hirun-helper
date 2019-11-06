@@ -14,6 +14,7 @@ import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -48,7 +49,7 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
      */
     public IPage<EmployeeInfoDTO> queryEmployeeList(EmployeeInfoDTO employeeInfoDTO, Page<EmployeeInfoDTO> employeePage) {
         QueryWrapper<EmployeeDTO> queryWrapper = new QueryWrapper<>();
-        queryWrapper.apply("b.employee_id=a.employee_id AND now() < b.end_date AND c.org_id = b.org_id");
+        queryWrapper.apply("b.employee_id=a.employee_id AND (now() between b.start_date and b.end_date) AND c.org_id = b.org_id");
         queryWrapper.like(StringUtils.isNotEmpty(employeeInfoDTO.getName()), "a.name", employeeInfoDTO.getName());
         queryWrapper.eq(StringUtils.isNotEmpty(employeeInfoDTO.getSex()), "a.sex", employeeInfoDTO.getSex());
         queryWrapper.likeRight(StringUtils.isNotEmpty(employeeInfoDTO.getMobileNo()), "a.mobile_no", employeeInfoDTO.getMobileNo());
@@ -72,6 +73,28 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         queryWrapper.eq(null != jobRole, "b.job_role", jobRole);
         IPage<EmployeeExampleDTO> employeeExampleDTOIPage = employeeMapper.selectEmployeePageExample(page, queryWrapper);
         return employeeExampleDTOIPage;
+    }
+
+    @Override
+    @Cacheable(value = "employee_name_cache")
+    public String getEmployeeNameEmployeeId(Long employeeId) {
+        Employee employee=this.employeeMapper.selectById(employeeId);
+        if(employee ==null){
+            return null;
+        }
+        return employee.getName();
+    }
+
+    @Override
+    public Employee queryByUserId(Long userId) {
+        Employee employee = this.getOne(new QueryWrapper<Employee>().lambda().eq(Employee::getUserId, userId));
+        return employee;
+    }
+
+    @Override
+    public List<Employee> findSubordinate(Long parentEmployeeId) {
+        List<Employee> childEmployees = employeeMapper.queryEmployeeByParentEmployeeId(parentEmployeeId);
+        return childEmployees;
     }
 
 }

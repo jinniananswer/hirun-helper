@@ -20,9 +20,11 @@ public interface IEmployeeDomainService {
 
     EmployeeDTO verifyIdentityNo(String createType, String identityNo);
 
+    void verifyMobileNo(String mobileNo);
+
     EmployeeDTO load(Long employeeId, boolean normal);
 
-    Double calculateDiscountRate(Long orgId, String jobNature);
+    Double calculateDiscountRate(Long orgId, String jobRoleNature);
 
     void employeeEntry(EmployeeDTO employeeDTO);
 

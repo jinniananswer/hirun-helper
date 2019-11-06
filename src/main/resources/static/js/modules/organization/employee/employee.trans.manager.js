@@ -8,7 +8,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'select', 'layer', 'form'],
             table.render({
                 elem: "#employeeTransTable",
                 height: 500,
-                url: 'api/organization/hr-pending/queryPendingByEmployeeId?employeeId=' + $("#employee_id").val(),
+                url: 'api/organization/hr-pending/queryTransPendingByEmployeeId?employeeId=' + $("#employee_id").val(),
                 loading: true,
                 toolbar: '#toolbar',
                 parseData: function (res) { //res 即为原始返回的数据
@@ -21,28 +21,31 @@ layui.extend({}).define(['ajax', 'table', 'element', 'select', 'layer', 'form'],
                 },
                 cols: [
                     [
-                        {field: 'pendingType', title: '调动类型', width: 120, sort: true,templet: function (d) {
+                        {field: 'pendingType', title: '调动类型', align: 'center', width: 120, sort: true, templet: function (d) {
                                 if (d.pendingType == 1) {
                                     return '借调';
                                 } else if (d.pendingType == 2) {
-                                    return '调动';
-                                };
-                        }},
-                        {field: 'startTime', title: '开始时间', width: 200, sort: true},
-                        {field: 'endTime', title: '结束时间', width: 200, sort: true},
-                        {field: 'pendingStatus', title: '状态', width: 100,style:'color :red',templet:function (d) {
-                                if (d.pendingStatus == 0) {
-                                    return '未处理';
-                                } else if (d.pendingStatus == 1) {
-                                    return '已处理';
-                                }else if (d.pendingStatus == 3) {
-                                    return '删除';
-                                };
-                            }},
-                        {field: 'pendingCreateId', title: '创建员工', width: 100, sort: true},
-                        {field: 'pendingExecuteId', title: '处理员工', width: 100},
-                        {field: 'remark', title: '备注', width: 300},
-                        {align: 'center', title: '操作', fixed: 'right',templet:'#operateTmp'}
+                                    return '调出';
+                                }
+                                ;
+                            }
+                        },
+                        {field: 'startTime', title: '开始时间', width: 200, align: 'center'},
+                        {field: 'endTime', title: '结束时间', width: 200, align: 'center'},
+                        {field: 'pendingStatus', title: '状态', sort: true, width: 100, align: 'center', templet: function (d) {
+                                if (d.pendingStatus == 1) {
+                                    return '<span style="color:#FF4500;">' + '未处理' + '</span>';
+                                } else if (d.pendingStatus == 2) {
+                                    return '<span style="color:#008000;">' + '已处理' + '</span>';
+                                } else if (d.pendingStatus == 3) {
+                                    return '<span style="color:#c00;">' + '删除' + '</span>';
+                                }
+                            }
+                        },
+                        {field: 'pendingCreateName', title: '创建员工', width: 100, align: 'center'},
+                        {field: 'pendingExecuteName', title: '处理员工', width: 100, align: 'center'},
+                        {field: 'remark', title: '备注', width: 300, align: 'center'},
+                        {align: 'center', title: '操作', fixed: 'right', templet: '#operateTmp'}
                     ]
                 ],
                 page: true,
@@ -68,12 +71,14 @@ layui.extend({}).define(['ajax', 'table', 'element', 'select', 'layer', 'form'],
                     employeeTransManager.edit(data);
                 } else if (layEvent === 'delete') {
                     employeeTransManager.delete(data);
+                } else if (layEvent === 'detail') {
+                    employeeTransManager.detail(data);
                 }
             });
         },
 
         edit: function (data) {
-            var index=layer.open({
+            var index = layer.open({
                 type: 2,
                 title: '修改调动申请',
                 content: 'openUrl?url=/modules/organization/employee/update_employee_trans',
@@ -91,6 +96,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'select', 'layer', 'form'],
                     body.find('#pendingExecuteId').val(data.pendingExecuteId);
                     body.find('#id').val(data.id);
                     body.find('#pendingTypeValue').val(data.pendingType);
+                    body.find('#pendExecuteName').val(data.pendingExecuteName);
                     form.render();
                 },
                 yes: function (index, layero) {
@@ -102,13 +108,31 @@ layui.extend({}).define(['ajax', 'table', 'element', 'select', 'layer', 'form'],
             layer.full(index);
         },
 
+        detail: function (data) {
+            var index = layer.open({
+                type: 2,
+                title: '员工调动详情',
+                content: 'openUrl?url=/modules/organization/hr/transorg_pending_detail',
+                maxmin: true,
+                area: ['550px', '700px'],
+                skin: 'layui-layer-molv',
+                success: function (layero, index) {
+                    var body = layer.getChildFrame('body', index);
+                    body.find('#employeeName').val(data.employeeName);
+                    body.find('#id').val(data.id);
+                    form.render();
+                },
+            });
+            layer.full(index);
+        },
+
         delete: function (data) {
             layer.confirm('是否确定删除',
                 {btn: ['确定', '取消']}, function (index, layero) {
                     $.ajax({
                         url: 'api/organization/hr-pending/deleteHrPending',
                         type: 'POST',
-                        data: 'id='+data.id,
+                        data: 'id=' + data.id,
                         success: function (data) {
                             if (data.code == 0) {
                                 layer.confirm('操作成功，点击确定按钮刷新本页面，点击关闭按钮关闭本界面？', {
@@ -133,7 +157,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'select', 'layer', 'form'],
         },
 
         add: function () {
-            var index=layer.open({
+            var index = layer.open({
                 type: 2,
                 title: '调动申请新增',
                 content: 'openUrl?url=/modules/organization/employee/create_employee_trans',

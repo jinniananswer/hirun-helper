@@ -32,8 +32,19 @@ layui.extend({
                 },
             });
 
+            form.on('select(pendingType)',function (data) {
+                if(data.value==1){
+                    $("#end").show();
+                    $("#endTime").attr("lay-verify","required");
+                    $("#endTime").removeAttr("disabled");
+                }else{
+                    $("#end").hide();
+                    $("#endTime").attr("disabled","true");
+                    $("#endTime").removeAttr("lay-verify");
+                }
+            });
+
             form.on('submit(update-employeetrans-submit)', function (data) {
-                alert("111");
                 var field = data.field; //获取提交的字段
                 var index = parent.layer.getFrameIndex(window.name);
                 $.ajax({

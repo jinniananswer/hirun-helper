@@ -27,7 +27,7 @@
                                 <label class="layui-form-label">待办类型：</label>
                                 <div class="layui-input-block">
                                     <div class="layui-form" lay-filter="pendingType">
-                                        <select id="pendingType" name="pendingType" >
+                                        <select id="pendingType" name="pendingType">
 
                                         </select>
                                     </div>
@@ -47,13 +47,15 @@
                             </div>
 
                             <div class="layui-inline">
-                                <div class="layui-input-block" >
-                                    <button class="layui-btn" type="button" id="queryPending"><i class="layui-icon">&#xe615;</i>查询</button>
+                                <div class="layui-input-block">
+                                    <button class="layui-btn" type="button" id="queryPending"><i class="layui-icon">&#xe615;</i>查询
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </form>
-                    <table lay-even class="layui-hide" id="pending_table" lay-filter="pending_table" lay-size="lg"></table>
+                    <table lay-even class="layui-hide" id="pending_table" lay-filter="pending_table"
+                           lay-size="lg"></table>
                 </div>
             </div>
         </div>
@@ -65,7 +67,7 @@
     <a href="#" class="layui-btn layui-btn-xs" lay-event="operate">接收</a>
     <a href="#" class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delete">删除</a>
     {{#  } else if(d.pendingStatus == "2"){ }}
-    <a href="#" class="layui-btn layui-btn-xs" lay-event="detail">详情</a>
+    <a href="#" class="layui-btn layui-btn-normal layui-btn-xs" lay-event="detail">详情</a>
     {{#  } }}
 </script>
 
@@ -74,7 +76,7 @@
         {
             pendingManager: "{/}static/js/modules/organization/hr/pending.manager"
         }).use('pendingManager', function () {
-            layui.pendingManager.init();
+        layui.pendingManager.init();
     })
 </script>
 </body>

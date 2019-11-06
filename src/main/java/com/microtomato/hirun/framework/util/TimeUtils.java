@@ -42,6 +42,11 @@ public class TimeUtils {
     public static final String TIMETO = " 23:59:59";
 
     /**
+     * forever time
+     */
+    public static final String FOREVER_TIME = "3000-12-31 23:59:59";
+
+    /**
      * flag before
      */
     public static final transient int BEFORE = 1;
@@ -663,6 +668,10 @@ public class TimeUtils {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(pattern);
         LocalDateTime ldtStart = LocalDateTime.parse(date, dateTimeFormatter);
         return ldtStart.toEpochSecond(ZoneOffset.of("+8"));
+    }
+
+    public static LocalDateTime getForeverTime() {
+        return stringToLocalDateTime(FOREVER_TIME, TIME_PATTERN);
     }
 
     public static void main(String[] args) {

@@ -6,12 +6,14 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
+import com.microtomato.hirun.modules.organization.entity.consts.EmployeeConst;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
 import com.microtomato.hirun.modules.organization.mapper.EmployeeJobRoleMapper;
 import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -32,13 +34,23 @@ public class EmployeeJobRoleServiceImpl extends ServiceImpl<EmployeeJobRoleMappe
      * @return
      */
     @Override
-    public EmployeeJobRole queryValid(Long employeeId) {
-        String now = TimeUtils.now();
-        List<EmployeeJobRole> jobRoles = this.list(new QueryWrapper<EmployeeJobRole>().lambda().eq(EmployeeJobRole::getEmployeeId, employeeId).le(EmployeeJobRole::getStartDate, now).ge(EmployeeJobRole::getEndDate, now));
+    public EmployeeJobRole queryValidMain(Long employeeId) {
+        LocalDateTime now = TimeUtils.getCurrentLocalDateTime();
+        List<EmployeeJobRole> jobRoles = this.list(new QueryWrapper<EmployeeJobRole>().lambda().eq(EmployeeJobRole::getEmployeeId, employeeId).eq(EmployeeJobRole::getIsMain, EmployeeConst.JOB_ROLE_MAIN).le(EmployeeJobRole::getStartDate, now).ge(EmployeeJobRole::getEndDate, now));
         if (ArrayUtils.isEmpty(jobRoles)) {
             return null;
         }
         return jobRoles.get(0);
+    }
+
+    @Override
+    public List<EmployeeJobRole> queryAll(Long employeeId) {
+        LocalDateTime now = TimeUtils.getCurrentLocalDateTime();
+        List<EmployeeJobRole> jobRoles = this.list(new QueryWrapper<EmployeeJobRole>().lambda().eq(EmployeeJobRole::getEmployeeId, employeeId).ge(EmployeeJobRole::getEndDate, now));
+        if (ArrayUtils.isEmpty(jobRoles)) {
+            return null;
+        }
+        return jobRoles;
     }
 
     /**

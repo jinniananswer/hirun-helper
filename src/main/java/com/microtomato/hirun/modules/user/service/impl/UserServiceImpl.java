@@ -3,8 +3,8 @@ package com.microtomato.hirun.modules.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.microtomato.hirun.framework.exception.ErrorKind;
-import com.microtomato.hirun.framework.exception.cases.NotFoundException;
+import com.microtomato.hirun.framework.util.SpringContextUtils;
+import com.microtomato.hirun.modules.user.entity.consts.UserConst;
 import com.microtomato.hirun.modules.user.entity.domain.UserDO;
 import com.microtomato.hirun.modules.user.entity.po.User;
 import com.microtomato.hirun.modules.user.entity.po.dto.UserDTO;
@@ -30,17 +30,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Autowired
     private UserMapper userMapper;
 
-    @Autowired
-    private UserDO userDO;
-
     @Override
     public User login(String username, String password) {
-        User user = this.getOne(new QueryWrapper<User>().lambda().eq(User::getUsername, username));
-        if (user == null) {
-            throw new NotFoundException("根据输入的用户名找不到用户信息，请确认用户名是否正确", ErrorKind.NOT_FOUND.getCode());
-        }
+        UserDO userDO = SpringContextUtils.getBean(UserDO.class, username);
+        User user = userDO.getUser();
 
-        boolean result = this.userDO.login(user, password);
+        boolean result = userDO.login(password);
         if (result) {
             return user;
         }
@@ -53,8 +48,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
      */
     @Override
     public boolean changePassword(Long userId, String oldPassword, String newPassword) {
-        User user = this.getById(userId);
-        boolean result = this.userDO.changePassword(user, oldPassword, newPassword);
+        UserDO userDO = SpringContextUtils.getBean(UserDO.class, userId);
+        boolean result = userDO.changePassword(oldPassword, newPassword);
         return result;
     }
 
@@ -69,6 +64,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         return userMapper.queryRelatInfoByUserId(queryWrapper);
     }
 
+    @Override
+    public User queryByUsername(String username) {
+        User user = this.getOne(new QueryWrapper<User>().lambda().eq(User::getUsername, username).eq(User::getStatus, UserConst.STATUS_NORMAL));
+        return user;
+    }
+
     /**
      * 校验老密码
      * @param userId
@@ -76,7 +77,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
      * @return
      */
     private boolean verifyOldPassword(Long userId, String originalPassword) {
-        User user = this.getById(userId);
-        return this.userDO.verifyOriginalPassword(user, originalPassword);
+        UserDO userDO = SpringContextUtils.getBean(UserDO.class, userId);
+        return userDO.verifyOriginalPassword(originalPassword);
     }
 }

@@ -55,6 +55,12 @@ public class EmployeeController {
         return this.employeeDomainServiceImpl.verifyIdentityNo(createType, identityNo);
     }
 
+    @RequestMapping("/verifyMobileNo")
+    @RestResult
+    public void verifyMobileNo(String mobileNo) {
+        this.employeeDomainServiceImpl.verifyMobileNo(mobileNo);
+    }
+
     @RequestMapping("/loadAbnormal")
     @RestResult
     public EmployeeDTO loadAbnormal(Long employeeId) {
@@ -62,8 +68,12 @@ public class EmployeeController {
     }
 
     @RequestMapping("/calculateDiscountRate")
-    public Double calculateDiscountRate(Long orgId, String jobNature) {
-        return this.employeeDomainServiceImpl.calculateDiscountRate(orgId, jobNature);
+    @RestResult
+    public Map calculateDiscountRate(Long orgId, String jobRoleNature) {
+        Double discountRate = this.employeeDomainServiceImpl.calculateDiscountRate(orgId, jobRoleNature);
+        Map result = new HashMap<>();
+        result.put("discountRate", discountRate);
+        return result;
     }
 
     @GetMapping("/selectEmployeeList")

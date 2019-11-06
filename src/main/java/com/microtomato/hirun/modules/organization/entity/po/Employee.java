@@ -53,6 +53,9 @@ public class Employee extends BaseEntity {
     @TableField("mobile_no")
     private String mobileNo;
 
+    @TableField("type")
+    private String type;
+
     @TableField("home_prov")
     private Integer homeProv;
 
