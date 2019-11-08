@@ -32,7 +32,7 @@
                                 <label class="layui-form-label">性别：</label>
                                 <div class="layui-input-block">
                                     <div class="layui-form" lay-filter="sex">
-                                        <select id="sex" name="sex" lay-destroyWay="required">
+                                        <select id="sex" name="sex">
 
                                         </select>
                                     </div>
@@ -48,23 +48,16 @@
 
                             <div class="layui-inline">
                                 <label class="layui-form-label">状态：</label>
-                                <div class="layui-input-block" style="">
-                                    <select name="employeeStatus" id="employeeStatus">
-                                        <option value="">全部</option>
-                                        <option value="0">在职</option>
-                                        <option value="3">离职</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="layui-inline">
-                                <label class="layui-form-label">黑名单</label>
                                 <div class="layui-input-block">
-                                    <input type="checkbox" name="isBlackList" id="isBlackList" lay-skin="switch" lay-text="是|否">
+                                    <div class="layui-form" lay-filter="employeeStatus">
+                                        <select id="employeeStatus" name="employeeStatus">
+
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         <div class="layui-form-item">
-
                             <div class="layui-inline">
                                 <label class="layui-form-label">电话号码：</label>
                                 <div class="layui-input-block" style="">
@@ -73,10 +66,15 @@
                                 </div>
                             </div>
                             <div class="layui-inline">
+                                <label class="layui-form-label">黑名单</label>
+                                <div class="layui-input-block">
+                                    <input type="checkbox" name="isBlackList" id="isBlackList" lay-skin="switch" lay-text="是|否">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
                                 <label class="layui-form-label"><button class="layui-btn" type="button" id="queryEmployee"><i class="layui-icon">&#xe615;</i>查询</button></label>
 
                             </div>
-
                         </div>
                     </form>
                     <div id="orgTree" style="display:none">
@@ -90,20 +88,17 @@
 </div>
 <script type="text/html" id="toolbar">
     <div class="layui-btn-container">
-        <button class="layui-btn" data-type="getCheckData"  lay-event="create">新增员工</button>
+        <button class="layui-btn"  lay-event="create">新增员工</button>
+        <button class="layui-btn"  lay-event="edit">信息变更</button>
+        <button class="layui-btn"  lay-event="remove">员工离职</button>
     </div>
 </script>
 
 
 <script type="text/html" id="operateTmp">
-    {{#  if(d.employeeStatus == '0'){ }}
-    <a href="#" class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
-    <a href="#" class="layui-btn layui-btn-danger layui-btn-xs" lay-event="remove">离职</a>
     <a href="#" class="layui-btn layui-btn-normal layui-btn-xs" lay-event="holiday">休假</a>
-    <a href="#" class="layui-btn layui-btn-warm layui-btn-xs" lay-event="transOrg">调动</a>
-    {{#  } else if(d.employeeStatus == "3"){ }}
-    <a href="#" class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
-    {{#  } }}
+    <a href="#" class="layui-btn layui-btn-danger layui-btn-xs" lay-event="transOrg">调动</a>
+    <a href="#" class="layui-btn layui-btn-xs" lay-event="contract">合同</a>
 </script>
 
 <script>

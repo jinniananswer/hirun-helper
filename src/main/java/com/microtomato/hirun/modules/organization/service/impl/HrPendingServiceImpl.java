@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.modules.organization.entity.consts.HrPendingConst;
 import com.microtomato.hirun.modules.organization.entity.dto.HrPendingInfoDTO;
-import com.microtomato.hirun.modules.organization.entity.po.EmployeeTransDetail;
 import com.microtomato.hirun.modules.organization.entity.po.HrPending;
 import com.microtomato.hirun.modules.organization.mapper.HrPendingMapper;
 import com.microtomato.hirun.modules.organization.service.IHrPendingService;
