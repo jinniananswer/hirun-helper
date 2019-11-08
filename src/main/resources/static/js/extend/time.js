@@ -39,10 +39,10 @@ layui.define([], function(exports){
         format : function(date) {
             var year = date.getFullYear();
             var month = date.getMonth() + 1;
-            month = month.length > 1 ? month : "0"+month;
+            month = month > 9 ? month : "0"+month;
 
             var day = date.getDate();
-            day = day.length > 1 ? day : "0"+day;
+            day = day > 9 ? day : "0"+day;
 
             return year + "-" + month + "-" + day;
         },

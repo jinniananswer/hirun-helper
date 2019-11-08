@@ -9,6 +9,8 @@ layui.extend({
         init: function () {
 
             layui.select.init('sex', 'SEX', '', true);
+            layui.select.init('employeeStatus', 'EMPLOYEE_STATUS', '', true);
+
 
             table.render({
                 elem: "#employee_table",
@@ -26,6 +28,7 @@ layui.extend({
                 },
                 cols: [
                     [
+                        {type: 'radio', fixed: 'left'},
                         {field: 'name', title: '姓名', width: 120,fixed :'left',align: 'center'},
                         {
                             field: 'sex', title: '性别', width: 80, sort: true,align: 'center', templet: function (d) {
@@ -49,9 +52,11 @@ layui.extend({
                         {
                             field: 'status', title: '状态', width: 100,align: 'center', templet: function (d) {
                                 if (d.employeeStatus == 0) {
-                                    return '正常';
+                                    return '在职';
                                 } else if (d.employeeStatus == 3) {
                                     return '离职';
+                                } else if(d.employeeStatus==1){
+                                    return '退休';
                                 }
                             }
                         },
@@ -83,8 +88,8 @@ layui.extend({
             table.on('tool(employee_table)', function (obj) {
                 var data = obj.data;//获取当前行数据
                 var layEvent = obj.event;
-                if (layEvent === 'remove') {
-                    employee.destroy(data);
+                if (layEvent === 'contract') {
+                    employee.contractManager(data);
                 } else if (layEvent === 'transOrg') {
                     employee.transOrg(data);
                 } else if (layEvent === 'holiday') {
@@ -93,9 +98,30 @@ layui.extend({
             });
 
             //监听工具栏新增按钮
-            $('.layui-btn-container .layui-btn').on('click', function () {
-                layui.redirect.open('openUrl?url=modules/organization/employee/create_employee','新建员工档案');
+            table.on('toolbar(employee_table)',function (obj) {
+                var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+                var data = checkStatus.data;
+                var event = obj.event;
+
+                if(event==='create'){
+                    layui.redirect.open('openUrl?url=/modules/organization/employee/employee_archive&operType=create','编辑员工资料');
+                }else if(event==='remove'){
+                    if(data.length <=0){
+                        layer.msg('请选中一条数据,再进行操作。');
+                        return;
+                    }else{
+                        employee.destroy(data[0]);
+                    }
+                }else if(event==='edit'){
+                    if(data.length <=0){
+                        layer.msg('请选中一条数据,再进行操作。');
+                        return;
+                    }else{
+                        employee.edit(data[0]);
+                    }
+                }
             });
+
 
         },
 
@@ -142,9 +168,22 @@ layui.extend({
             layui.redirect.open(url, '员工调动管理');
         },
 
+        contractManager: function (data) {
+            var sexName=(data.sex==1)?'男':'女';
+
+            var param='&employee_id='+data.employeeId+'&name='+data.name+'&mobileNo='+data.mobileNo+'&orgName='+data.orgPath+'&sex='+sexName+'&jobRoleName='+data.jobRoleName+
+                '&identityNo='+data.identityNo+'&inDate='+data.inDate.substr(0,10)+'&jobRole='+data.jobRole;
+            var url=encodeURI('openUrl?url=modules/organization/contract/employee_contract_manager'+param);
+            layui.redirect.open(url, '员工合同·协议管理');
+        },
+
         selectOrg : function() {
             layui.orgTree.init('orgTree', 'orgId', 'orgPath', false);
         },
+
+        edit : function(data) {
+            layui.redirect.open('openUrl?url=/modules/organization/employee/employee_archive&operType=edit&employeeId='+data.employeeId,'编辑员工资料');
+        }
 
 
     };
