@@ -3,9 +3,14 @@ layui.extend({
 }).define(['ajax', 'tree', 'layer', 'index'], function(exports){
     var $ = layui.$;
     var obj = {
-        init : function(employeeDivId, searchTextId, valueControlId, displayControlId, showCheckbox) {
+        afterFunc : null,
+        init : function(employeeDivId, searchTextId, valueControlId, displayControlId, showCheckbox, func) {
             var employeeDiv = $("#"+employeeDivId);
             var content = employeeDiv.html();
+
+            if (func != null) {
+                this.afterFunc = func;
+            }
 
             if (content == null || content.trim() == '' || typeof(content) == "undefined" || content.trim().length == 0) {
                 var html = [];
@@ -30,7 +35,7 @@ layui.extend({
             this.open(employeeDivId, showCheckbox, valueControlId, displayControlId);
         },
 
-        open : function(employeeDivId, needConfirmBtn, valueControlId, displayControlId) {
+        open : function(employeeDivId, needConfirmBtn, valueControlId, displayControlId, afterFunc) {
             if (needConfirmBtn) {
                 layui.admin.popup({
                     title: '请选择员工',
@@ -39,7 +44,7 @@ layui.extend({
                     skin: 'layui-layer-admin',
                     btn: ['确定'],
                     yes: function(index, layero) {
-                        alert('aa');
+
                     }
                 });
             } else {
@@ -101,6 +106,10 @@ layui.extend({
             $(document.getElementById(valueControlId)).val(employeeId);
             $(document.getElementById(displayControlId)).val(name);
             layui.layer.closeAll('page');
+
+            if (this.afterFunc != null && typeof(this.afterFunc) == "function") {
+                this.afterFunc(employeeId, name, valueControlId);
+            }
         },
 
         confirm : function(treeDivId, valueControlId, displayControlId) {
