@@ -1,4 +1,4 @@
-package com.microtomato.hirun.framework.dock.excel.convert;
+package com.microtomato.hirun.framework.harbour.excel.convert;
 
 import com.alibaba.excel.converters.Converter;
 import com.alibaba.excel.enums.CellDataTypeEnum;
@@ -6,22 +6,22 @@ import com.alibaba.excel.metadata.CellData;
 import com.alibaba.excel.metadata.GlobalConfiguration;
 import com.alibaba.excel.metadata.property.ExcelContentProperty;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 /**
- * LocalDateTime 转换器
+ * LocalDate 转换器
  *
  * @author Steven
  * @date 2019-10-30
  */
-public class LocalDateTimeConvert implements Converter<LocalDateTime> {
+public class LocalDateConvert implements Converter<LocalDate> {
 
-    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @Override
     public Class supportJavaTypeKey() {
-        return LocalDateTime.class;
+        return LocalDate.class;
     }
 
     @Override
@@ -30,13 +30,13 @@ public class LocalDateTimeConvert implements Converter<LocalDateTime> {
     }
 
     @Override
-    public LocalDateTime convertToJavaData(CellData cellData, ExcelContentProperty contentProperty, GlobalConfiguration globalConfiguration) {
+    public LocalDate convertToJavaData(CellData cellData, ExcelContentProperty contentProperty, GlobalConfiguration globalConfiguration) throws Exception {
         String stringValue = cellData.getStringValue();
-        return LocalDateTime.parse(stringValue, dateTimeFormatter);
+        return LocalDate.parse(stringValue, dateTimeFormatter);
     }
 
     @Override
-    public CellData convertToExcelData(LocalDateTime value, ExcelContentProperty contentProperty, GlobalConfiguration globalConfiguration) {
+    public CellData convertToExcelData(LocalDate value, ExcelContentProperty contentProperty, GlobalConfiguration globalConfiguration) throws Exception {
         String stringValue = dateTimeFormatter.format(value);
         return new CellData(stringValue);
     }

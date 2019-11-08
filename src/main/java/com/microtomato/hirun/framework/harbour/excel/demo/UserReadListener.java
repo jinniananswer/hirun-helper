@@ -1,4 +1,4 @@
-package com.microtomato.hirun.framework.dock.excel.demo;
+package com.microtomato.hirun.framework.harbour.excel.demo;
 
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
@@ -15,17 +15,23 @@ import java.util.List;
  * @date 2019-10-30
  */
 @Slf4j
-public class DataListener extends AnalysisEventListener<UserImportData> {
+public class UserReadListener extends AnalysisEventListener<UserImportData> {
 
     private static final int BATCH_COUNT = 5;
 
     private List<Steven> list = new ArrayList<>(BATCH_COUNT);
     private IStevenService stevenServiceImpl;
 
-    public DataListener(IStevenService stevenServiceImpl) {
+    public UserReadListener(IStevenService stevenServiceImpl) {
         this.stevenServiceImpl = stevenServiceImpl;
     }
 
+    /**
+     * 每读取一行触发一次该函数
+     *
+     * @param data excel 读过来的一行数据
+     * @param context 上下文信息
+     */
     @Override
     public void invoke(UserImportData data, AnalysisContext context) {
         Steven steven = new Steven();
@@ -38,6 +44,9 @@ public class DataListener extends AnalysisEventListener<UserImportData> {
         }
     }
 
+    /**
+     * 最后触发
+     */
     @Override
     public void doAfterAllAnalysed(AnalysisContext context) {
         saveData();
@@ -49,10 +58,9 @@ public class DataListener extends AnalysisEventListener<UserImportData> {
      */
     private void saveData() {
         log.info("{}条数据，开始存储数据库！", list.size());
-//        for (Steven steven : list) {
-//            stevenServiceImpl.save(steven);
-//        }
-        stevenServiceImpl.batchInsert(list);
+        for (Steven steven : list) {
+            stevenServiceImpl.save(steven);
+        }
         log.info("存储数据库成功！");
     }
 

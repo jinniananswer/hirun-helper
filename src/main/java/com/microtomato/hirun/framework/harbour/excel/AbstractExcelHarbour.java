@@ -1,6 +1,7 @@
-package com.microtomato.hirun.framework.dock.excel;
+package com.microtomato.hirun.framework.harbour.excel;
 
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.read.listener.ReadListener;
 import com.alibaba.excel.support.ExcelTypeEnum;
 import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.metadata.style.WriteFont;
@@ -10,20 +11,22 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLEncoder;
 import java.util.List;
 
 /**
- * Excel 导出抽象类
+ * Excel 导入导出抽象类
  *
  * @author Steven
  * @date 2019-10-30
  */
 @Slf4j
-public abstract class AbstractExcelExportController {
+public abstract class AbstractExcelHarbour {
 
     /**
      * 头策略
@@ -120,5 +123,15 @@ public abstract class AbstractExcelExportController {
             .registerWriteHandler(horizontalCellStyleStrategy)
             .sheet(sheetName)
             .doWrite(list);
+    }
+
+    /**
+     * 从 MultipartFile 中以流的方式获取数据
+     *
+     * Excel 导入
+     */
+    protected void importExcel(MultipartFile multipartFile, Class dataType, ReadListener readListener) throws IOException {
+        InputStream ins = multipartFile.getInputStream();
+        EasyExcel.read(ins, dataType, readListener).sheet().doRead();
     }
 }
