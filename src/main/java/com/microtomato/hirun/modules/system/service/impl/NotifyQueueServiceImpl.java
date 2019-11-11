@@ -5,14 +5,20 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.WebContextUtils;
+import com.microtomato.hirun.modules.system.entity.po.Notify;
 import com.microtomato.hirun.modules.system.entity.po.NotifyQueue;
+import com.microtomato.hirun.modules.system.entity.po.NotifySubscribe;
 import com.microtomato.hirun.modules.system.mapper.NotifyQueueMapper;
 import com.microtomato.hirun.modules.system.service.INotifyQueueService;
+import com.microtomato.hirun.modules.system.service.INotifyService;
+import com.microtomato.hirun.modules.system.service.INotifySubscribeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>
@@ -28,6 +34,15 @@ public class NotifyQueueServiceImpl extends ServiceImpl<NotifyQueueMapper, Notif
 
     @Autowired
     private NotifyQueueMapper notifyQueueMapper;
+
+    @Autowired
+    private INotifyService notifyServiceImpl;
+
+    @Autowired
+    private INotifyQueueService notifyQueueServiceImpl;
+
+    @Autowired
+    private INotifySubscribeService notifySubscribeServiceImpl;
 
     /**
      * 从队列里获取当前用户最新数据的时间
@@ -45,5 +60,33 @@ public class NotifyQueueServiceImpl extends ServiceImpl<NotifyQueueMapper, Notif
         NotifyQueue notifyQueue = notifyQueueMapper.selectOne(lambdaQueryWrapper);
 
         return notifyQueue.getCreateTime();
+    }
+
+    @Override
+    public void enqueue() {
+
+        List<Notify> rtn = new ArrayList<>(32);
+
+        Long userId = WebContextUtils.getUserContext().getUserId();
+        LocalDateTime localDateTime = getNewestTimeByUserId();
+
+        // 查询用户的订阅信息
+        List<NotifySubscribe> notifySubscribes = notifySubscribeServiceImpl.queryNotifySubscribeByUserId();
+        for (NotifySubscribe notifySubscribe : notifySubscribes) {
+            // 根据订阅信息和时间戳，查对应的消息数据
+            List<Notify> notifies = notifyServiceImpl.queryNotifyByNotifySubscribe(notifySubscribe, localDateTime);
+            rtn.addAll(notifies);
+        }
+
+        // 消息数据的入队操作
+        for (Notify notify : rtn) {
+            NotifyQueue notifyQueue = new NotifyQueue();
+            notifyQueue.setRead(false);
+            notifyQueue.setUserId(userId);
+            notifyQueue.setNotifyId(notify.getId());
+            notifyQueue.setCreateTime(notify.getCreateTime());
+            notifyQueueServiceImpl.save(notifyQueue);
+        }
+
     }
 }

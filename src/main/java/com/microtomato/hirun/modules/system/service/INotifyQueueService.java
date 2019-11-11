@@ -22,4 +22,8 @@ public interface INotifyQueueService extends IService<NotifyQueue> {
      */
     LocalDateTime getNewestTimeByUserId();
 
+    /**
+     * 消息入队操作
+     */
+    void enqueue();
 }
