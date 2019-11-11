@@ -4,6 +4,7 @@ import com.microtomato.hirun.modules.system.entity.po.NotifyQueue;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -26,4 +27,10 @@ public interface INotifyQueueService extends IService<NotifyQueue> {
      * 消息入队操作
      */
     void enqueue();
+
+    /**
+     * 查用户的未读消息
+     * @return 未读消息列表
+     */
+    List<NotifyQueue> queryUnReadNotifyFromQueue();
 }

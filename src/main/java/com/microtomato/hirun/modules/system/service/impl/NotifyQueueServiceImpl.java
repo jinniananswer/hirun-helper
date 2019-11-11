@@ -87,6 +87,23 @@ public class NotifyQueueServiceImpl extends ServiceImpl<NotifyQueueMapper, Notif
             notifyQueue.setCreateTime(notify.getCreateTime());
             notifyQueueServiceImpl.save(notifyQueue);
         }
-
     }
+
+    /**
+     * 查用户的未读消息
+     *
+     * @return 未读消息列表
+     */
+    @Override
+    public List<NotifyQueue> queryUnReadNotifyFromQueue() {
+
+        Long userId = WebContextUtils.getUserContext().getUserId();
+
+        LambdaQueryWrapper<NotifyQueue> lambdaQueryWrapper = Wrappers.lambdaQuery();
+        lambdaQueryWrapper.eq(NotifyQueue::getRead, false);
+        lambdaQueryWrapper.eq(NotifyQueue::getUserId, userId);
+
+        return notifyQueueMapper.selectList(lambdaQueryWrapper);
+    }
+
 }
