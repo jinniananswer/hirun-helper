@@ -59,6 +59,7 @@ public class EmployeeConst {
     //合同结束状态
     public static final String CONTRACT_STATUS_END = "2";
     //合同删除状态
+
     public static final String CONTRACT_STATUS_DELETE = "3";
 
 }
