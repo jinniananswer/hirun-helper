@@ -4,7 +4,7 @@
     === notify:
     id          : {type: 'integer', primaryKey: true},                 // 主键
     content     : {type: 'text'},                                      // 消息的内容
-    type        : {type: 'integer', required: true, enum: [1, 2, 3]},  // 消息的类型，1: 公告 Announce，2: 提醒 Remind，3：信息 Message
+    type        : {type: 'integer', required: true, enum: [1, 2, 3]},  // 消息的类型，1: 公告 announce，2: 提醒 remind，3：信息 message
     target      : {type: 'integer'},                                   // 目标的ID
     targetType  : {type: 'string'},                                    // 目标的类型
     action      : {type: 'string'},                                    // 提醒信息的动作类型
