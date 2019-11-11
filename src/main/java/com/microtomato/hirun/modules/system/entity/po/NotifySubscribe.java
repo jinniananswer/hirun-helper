@@ -49,6 +49,12 @@ public class NotifySubscribe extends BaseEntity {
     private String targetType;
 
     /**
+     * 提醒信息的动作类型
+     */
+    @TableField("action")
+    private String action;
+
+    /**
      * 用户消息所属者
      */
     @TableField("user_id")
@@ -60,5 +66,10 @@ public class NotifySubscribe extends BaseEntity {
     @TableField("create_time")
     private LocalDateTime createTime;
 
+    /**
+     * 是否激活
+     */
+    @TableField("is_enabled")
+    private boolean enable;
 
 }

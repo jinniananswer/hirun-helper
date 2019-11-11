@@ -1,56 +1,5 @@
 1. Excel 导入导出。
-2. 消息推送。(提醒 remind、公告 announce)
-    设计消息表
-    === notify:
-    id          : {type: 'integer', primaryKey: true},                 // 主键
-    content     : {type: 'text'},                                      // 消息的内容
-    type        : {type: 'integer', required: true, enum: [1, 2, 3]},  // 消息的类型，1: 公告 announce，2: 提醒 remind，3：信息 message
-    target      : {type: 'integer'},                                   // 目标的ID
-    targetType  : {type: 'string'},                                    // 目标的类型
-    action      : {type: 'string'},                                    // 提醒信息的动作类型
-    sender      : {type: 'integer'},                                   // 发送者的ID
-    createdAt   : {type: 'datetime', required: true}
-
-    示例：高总    调整了   xxx     预算方案。
-          sender          target  targetType
-    注意：notify 还支持存储公告和信息。它们会用到 content 字段，而不会用到 target、targetType、action 字段。
-
-    === user_notify: 模拟用户消息队列
-    id          : {type: 'integer', primaryKey: true},                 // 主键
-    isRead      : {type: 'boolean', required: true},
-    user        : {type: 'integer', required: true},                   // 用户消息所属者
-    notify      : {type: 'integer', required: true},                   // 关联的 Notify
-    createdAt   : {type: 'datetime', required: true}
-
-    user_notify 的创建主要有两个途径:
-    1. 遍历订阅表 (subscription) 拉取公告和提醒时创建。
-    2. 新建消息 (message) 之后，立刻创建。
-
-    === subscription:
-    target      : {type: 'integer', required: true},   // 目标的ID
-    targetType  : {type: 'string', required: true},    // 目标的类型
-    action      : {type: 'string'},                    // 订阅动作,如: comment/like/post/update etc.
-    user        : {type: 'integer'}，
-    createdAt   : {type: 'datetime', required: true}
-
-    订阅是从 notify 表拉取消息到 user_notify 的前提，用户首先订阅了某一个目标的某一个动作，
-    在此之后产生这个目标的的动作消息，才会通知到该用户。
-
-    示例：王总监  关注了   xxx    预算方案
-          user   action   target targetType
-
-    === subscription_config:
-    action: {type: 'json', required: true},   // 用户的设置
-    user: {type: 'integer'}
-
-
-    员工登录后，发送未读消息，消息只推送消息标题。
-    员工点击消息标题，打开消息详情，把消息置为已读。
-    后台程序广播消息，直接插消息表，遍历在线工号，实时推送消息给前端。
-    后台程序发送点对点消息，直接插消息表，在线工号中实时推送。
-
-
-
+2. 消息系统。
 3. 分布式 XA 事务。
 
 模板:

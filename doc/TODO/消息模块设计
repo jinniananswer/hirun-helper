@@ -1,0 +1,63 @@
+=== sys_notify:
+    CREATE TABLE `sys_notify` (
+      `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
+      `content` varchar(512) DEFAULT NULL COMMENT '消息内容',
+      `notify_type` tinyint(1) NOT NULL COMMENT '消息类型（1: 公告 announce，2: 提醒 remind，3：信息 message）',
+      `target_id` bigint(20) DEFAULT NULL COMMENT '目标ID',
+      `target_type` varchar(32) DEFAULT NULL COMMENT '目标类型',
+      `action` varchar(32) DEFAULT NULL COMMENT '提醒信息的动作类型',
+      `sender_id` bigint(20) NOT NULL COMMENT '发送者ID',
+      `create_time` datetime NOT NULL COMMENT '创建时间',
+      PRIMARY KEY (`id`),
+      KEY `idx_id_type_time` (`target_id`,`target_type`,`create_time`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='消息表';
+
+    示例：高总    调整了   xxx     预算方案。
+          sender          target  targetType
+    注意：notify 还支持存储公告和信息。它们会用到 content 字段，而不会用到 target、targetType、action 字段。
+
+=== sys_notify_queue: 模拟用户消息队列
+    CREATE TABLE `sys_notify_queue` (
+      `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
+      `is_read` tinyint(1) NOT NULL COMMENT '是否已读',
+      `user_id` bigint(20) NOT NULL COMMENT '用户消息所属者',
+      `notify_id` bigint(20) DEFAULT NULL COMMENT '关联的 notify',
+      `create_time` datetime NOT NULL COMMENT '创建时间',
+      PRIMARY KEY (`id`),
+      KEY `idx_id_read_time` (`is_read`,`user_id`,`create_time`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户消息队列';
+
+    user_notify 的创建主要有两个途径:
+    1. 遍历订阅表 (subscription) 拉取公告和提醒时创建。
+    2. 新建消息 (message) 之后，立刻创建。
+
+=== subscribe:
+    CREATE TABLE `sys_notify_subscribe` (
+      `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
+      `target_id` bigint(20) NOT NULL COMMENT '目标的ID',
+      `target_type` varchar(32) NOT NULL COMMENT '目标类型',
+      `action` varchar(32) NOT NULL COMMENT '订阅动作,如: comment/like/post/update etc.',
+      `user_id` bigint(20) NOT NULL COMMENT '用户消息所属者',
+      `create_time` datetime NOT NULL COMMENT '创建时间',
+      PRIMARY KEY (`id`),
+      KEY `idx_user_id` (`user_id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='消息订阅表'
+
+    订阅是从 notify 表拉取消息到 user_notify 的前提，用户首先订阅了某一个目标的某一个动作，
+    在此之后产生这个目标的的动作消息，才会通知到该用户。
+
+    示例：王总监  关注了   xxx    预算方案
+          user   action   target targetType
+
+=== subscription_config:
+    action: {type: 'json', required: true},   // 用户的设置
+    user: {type: 'integer'}
+
+员工登录后:
+    查询员工的订阅信息: sys_notify_subscribe
+
+
+员工登录后，发送未读消息，消息只推送消息标题。
+员工点击消息标题，打开消息详情，把消息置为已读。
+后台程序广播消息，直接插消息表，遍历在线工号，实时推送消息给前端。
+后台程序发送点对点消息，直接插消息表，在线工号中实时推送。
