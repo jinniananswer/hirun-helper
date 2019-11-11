@@ -33,4 +33,11 @@ public interface INotifyQueueService extends IService<NotifyQueue> {
      * @return 未读消息列表
      */
     List<NotifyQueue> queryUnReadNotifyFromQueue();
+
+    /**
+     * 标记消息已读
+     *
+     * @param notifyId 消息ID
+     */
+    void markReadByNotifyId(Long notifyId);
 }

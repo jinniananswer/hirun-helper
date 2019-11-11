@@ -106,4 +106,22 @@ public class NotifyQueueServiceImpl extends ServiceImpl<NotifyQueueMapper, Notif
         return notifyQueueMapper.selectList(lambdaQueryWrapper);
     }
 
+    /**
+     * 标记消息已读
+     *
+     * @param notifyId 消息ID
+     */
+    @Override
+    public void markReadByNotifyId(Long notifyId) {
+        Long userId = WebContextUtils.getUserContext().getUserId();
+
+        LambdaQueryWrapper<NotifyQueue> lambdaQueryWrapper = Wrappers.lambdaQuery();
+        lambdaQueryWrapper.eq(NotifyQueue::getNotifyId, notifyId);
+        lambdaQueryWrapper.eq(NotifyQueue::getUserId, userId);
+
+        NotifyQueue entity = new NotifyQueue();
+        entity.setRead(true);
+        notifyQueueMapper.update(entity, lambdaQueryWrapper);
+    }
+
 }
