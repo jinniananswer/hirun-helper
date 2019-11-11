@@ -49,5 +49,17 @@ public class EmployeeConst {
     public static final String HISTORY_EVENT_BORROW = "6";
 
     //离职方式-退休
-    public static final String DESTORY_WAY_RETIRE="5";
+    public static final String DESTORY_WAY_RETIRE = "5";
+    //培训协议
+    public static final String CONTRACT_TYPE_TRAIN = "4";
+    //保密协议
+    public static final String CONTRACT_TYPE_SECRET = "5";
+    //合同正常状态
+    public static final String CONTRACT_STATUS_NORMAL = "1";
+    //合同结束状态
+    public static final String CONTRACT_STATUS_END = "2";
+    //合同删除状态
+
+    public static final String CONTRACT_STATUS_DELETE = "3";
+
 }
