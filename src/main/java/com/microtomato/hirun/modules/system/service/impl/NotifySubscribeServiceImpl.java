@@ -1,10 +1,8 @@
 package com.microtomato.hirun.modules.system.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.system.entity.po.NotifySubscribe;
 import com.microtomato.hirun.modules.system.mapper.NotifySubscribeMapper;
@@ -14,6 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import static com.microtomato.hirun.modules.system.service.INotifyService.Action;
+import static com.microtomato.hirun.modules.system.service.INotifyService.TargetType;
 
 /**
  * <p>
@@ -45,6 +46,27 @@ public class NotifySubscribeServiceImpl extends ServiceImpl<NotifySubscribeMappe
 
         List<NotifySubscribe> notifySubscribes = notifySubscribeMapper.selectList(lambdaQueryWrapper);
         return notifySubscribes;
+    }
+
+    /**
+     * 新增订阅信息
+     *
+     * @param targetId   目标 Id
+     * @param targetType 目标类型
+     * @param action     动作类型
+     */
+    @Override
+    public void addSubscribe(long targetId, TargetType targetType, Action action) {
+        Long userId = WebContextUtils.getUserContext().getUserId();
+
+        NotifySubscribe notifySubscribe = new NotifySubscribe();
+        notifySubscribe.setTargetId(targetId);
+        notifySubscribe.setTargetType(targetType.value());
+        notifySubscribe.setAction(action.value());
+        notifySubscribe.setUserId(userId);
+        notifySubscribe.setEnable(true);
+
+        notifySubscribeMapper.insert(notifySubscribe);
     }
 
 }

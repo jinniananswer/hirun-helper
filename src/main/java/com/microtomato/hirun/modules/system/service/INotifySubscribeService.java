@@ -21,4 +21,12 @@ public interface INotifySubscribeService extends IService<NotifySubscribe> {
      */
     List<NotifySubscribe> queryNotifySubscribeByUserId();
 
+    /**
+     * 新增订阅信息
+     *
+     * @param targetId 目标 Id
+     * @param targetType 目标类型
+     * @param action 动作类型
+     */
+    void addSubscribe(long targetId, INotifyService.TargetType targetType, INotifyService.Action action);
 }

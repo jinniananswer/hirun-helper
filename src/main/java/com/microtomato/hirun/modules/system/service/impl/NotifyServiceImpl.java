@@ -55,6 +55,7 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyMapper, Notify> impleme
      * @param targetType 目标类型
      * @param action 提醒的动作类型
      *
+     * @see INotifyService.NotifyType 消息类型
      * @see INotifyService.Action 提醒的动作类型枚举类
      */
     @Override
