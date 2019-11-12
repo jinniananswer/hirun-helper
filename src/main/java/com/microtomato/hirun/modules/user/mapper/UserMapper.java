@@ -2,11 +2,11 @@ package com.microtomato.hirun.modules.user.mapper;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
-import com.baomidou.mybatisplus.core.toolkit.Constants;
-import com.microtomato.hirun.modules.user.entity.po.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.toolkit.Constants;
+import com.microtomato.hirun.framework.annotation.Storage;
+import com.microtomato.hirun.modules.user.entity.po.User;
 import com.microtomato.hirun.modules.user.entity.po.dto.UserDTO;
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
@@ -19,7 +19,7 @@ import org.apache.ibatis.annotations.Select;
  * @author Steven
  * @since 2019-07-29
  */
-@Mapper
+@Storage
 @DS("ins")
 public interface UserMapper extends BaseMapper<User> {
 

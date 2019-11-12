@@ -1,8 +1,8 @@
 package com.microtomato.hirun.modules.user.mapper;
 
-import com.microtomato.hirun.modules.user.entity.po.UserContact;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Mapper;
+import com.microtomato.hirun.framework.annotation.Storage;
+import com.microtomato.hirun.modules.user.entity.po.UserContact;
 
 /**
  * <p>
@@ -12,7 +12,7 @@ import org.apache.ibatis.annotations.Mapper;
  * @author jinnian
  * @since 2019-11-02
  */
-@Mapper
+@Storage
 public interface UserContactMapper extends BaseMapper<UserContact> {
 
 }

@@ -1,9 +1,9 @@
 package com.microtomato.hirun.modules.organization.mapper;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
-import com.microtomato.hirun.modules.organization.entity.po.EmployeeHoliday;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Mapper;
+import com.microtomato.hirun.framework.annotation.Storage;
+import com.microtomato.hirun.modules.organization.entity.po.EmployeeHoliday;
 
 /**
  * <p>
@@ -13,7 +13,7 @@ import org.apache.ibatis.annotations.Mapper;
  * @author liuhui
  * @since 2019-10-20
  */
-@Mapper
+@Storage
 @DS("ins")
 public interface EmployeeHolidayMapper extends BaseMapper<EmployeeHoliday> {
 

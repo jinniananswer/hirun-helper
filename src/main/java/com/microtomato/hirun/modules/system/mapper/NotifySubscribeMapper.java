@@ -1,8 +1,8 @@
 package com.microtomato.hirun.modules.system.mapper;
 
-import com.microtomato.hirun.modules.system.entity.po.NotifySubscribe;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Mapper;
+import com.microtomato.hirun.framework.annotation.Storage;
+import com.microtomato.hirun.modules.system.entity.po.NotifySubscribe;
 
 /**
  * <p>
@@ -12,7 +12,7 @@ import org.apache.ibatis.annotations.Mapper;
  * @author Steven
  * @since 2019-11-11
  */
-@Mapper
+@Storage
 public interface NotifySubscribeMapper extends BaseMapper<NotifySubscribe> {
 
 }

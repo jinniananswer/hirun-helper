@@ -1,9 +1,9 @@
 package com.microtomato.hirun.modules.organization.mapper;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
-import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Mapper;
+import com.microtomato.hirun.framework.annotation.Storage;
+import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
 
 /**
  * <p>
@@ -13,7 +13,7 @@ import org.apache.ibatis.annotations.Mapper;
  * @author jinnian
  * @since 2019-10-09
  */
-@Mapper
+@Storage
 @DS("ins")
 public interface EmployeeJobRoleMapper extends BaseMapper<EmployeeJobRole> {
 

@@ -1,9 +1,9 @@
 package com.microtomato.hirun.modules.user.mapper;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
-import com.microtomato.hirun.modules.user.entity.po.Role;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Mapper;
+import com.microtomato.hirun.framework.annotation.Storage;
+import com.microtomato.hirun.modules.user.entity.po.Role;
 
 /**
  * <p>
@@ -14,7 +14,7 @@ import org.apache.ibatis.annotations.Mapper;
  * @author Steven
  * @since 2019-09-22
  */
-@Mapper
+@Storage
 @DS("ins")
 public interface RoleMapper extends BaseMapper<Role> {
 

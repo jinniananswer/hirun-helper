@@ -1,9 +1,9 @@
 package com.microtomato.hirun.modules.demo.mapper;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
-import com.microtomato.hirun.modules.demo.entity.po.Steven;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Mapper;
+import com.microtomato.hirun.framework.annotation.Storage;
+import com.microtomato.hirun.modules.demo.entity.po.Steven;
 
 /**
  * <p>
@@ -13,7 +13,7 @@ import org.apache.ibatis.annotations.Mapper;
  * @author Steven
  * @since 2019-10-30
  */
-@Mapper
+@Storage
 @DS("sys")
 public interface StevenMapper extends BaseMapper<Steven> {
 

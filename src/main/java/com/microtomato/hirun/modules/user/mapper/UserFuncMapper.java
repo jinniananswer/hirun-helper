@@ -1,8 +1,8 @@
 package com.microtomato.hirun.modules.user.mapper;
 
-import com.microtomato.hirun.modules.user.entity.po.UserFunc;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Mapper;
+import com.microtomato.hirun.framework.annotation.Storage;
+import com.microtomato.hirun.modules.user.entity.po.UserFunc;
 
 /**
  * <p>
@@ -12,7 +12,7 @@ import org.apache.ibatis.annotations.Mapper;
  * @author jinnian
  * @since 2019-09-09
  */
-@Mapper
+@Storage
 public interface UserFuncMapper extends BaseMapper<UserFunc> {
 
 }

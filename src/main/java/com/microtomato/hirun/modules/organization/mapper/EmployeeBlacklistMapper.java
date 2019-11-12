@@ -1,9 +1,9 @@
 package com.microtomato.hirun.modules.organization.mapper;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
-import com.microtomato.hirun.modules.organization.entity.po.EmployeeBlacklist;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Mapper;
+import com.microtomato.hirun.framework.annotation.Storage;
+import com.microtomato.hirun.modules.organization.entity.po.EmployeeBlacklist;
 
 /**
  * <p>
@@ -14,7 +14,7 @@ import org.apache.ibatis.annotations.Mapper;
  * @since 2019-10-14
  */
 @DS("ins")
-@Mapper
+@Storage
 public interface EmployeeBlacklistMapper extends BaseMapper<EmployeeBlacklist> {
 
 }
