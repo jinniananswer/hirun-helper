@@ -2,7 +2,7 @@ package ${package.Mapper};
 
 import ${package.Entity}.${entity};
 import ${superMapperClassPackage};
-import org.apache.ibatis.annotations.Mapper;
+import com.microtomato.hirun.framework.annotation.Storage;
 
 /**
  * <p>
@@ -12,7 +12,7 @@ import org.apache.ibatis.annotations.Mapper;
  * @author ${author}
  * @since ${date}
  */
-@Mapper
+@Storage
 <#if kotlin>
 interface ${table.mapperName} : ${superMapperClass}<${entity}>
 <#else>

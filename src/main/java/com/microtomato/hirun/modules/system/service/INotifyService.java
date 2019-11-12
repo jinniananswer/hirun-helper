@@ -72,6 +72,10 @@ public interface INotifyService extends IService<Notify> {
      * 目标类型
      */
     enum TargetType {
+
+        // 合同
+        CONTRACT("contract"),
+
         // 方案
         PLAN("plan"),
 
