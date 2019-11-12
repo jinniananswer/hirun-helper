@@ -45,8 +45,8 @@ public class Notify extends BaseEntity {
     /**
      * 消息类型（1: 公告 announce，2: 提醒 remind，3：信息 message）
      */
-    @TableField("nofity_type")
-    private int nofityType;
+    @TableField("notify_type")
+    private int notifyType;
 
     /**
      * 目标ID

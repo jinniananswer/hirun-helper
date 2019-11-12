@@ -2,7 +2,7 @@
     CREATE TABLE `sys_notify` (
       `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
       `content` varchar(512) DEFAULT NULL COMMENT '消息内容',
-      `notify_type` tinyint(1) NOT NULL COMMENT '消息类型（1: 公告 announce，2: 提醒 remind，3：信息 message）',
+      `notify_type` tinyint(1) NOT NULL COMMENT '消息类型（1: 公告 announce，2: 提醒 remind，3：消息（私信） message）',
       `target_id` bigint(20) DEFAULT NULL COMMENT '目标ID',
       `target_type` varchar(32) DEFAULT NULL COMMENT '目标类型',
       `action` varchar(32) DEFAULT NULL COMMENT '提醒信息的动作类型',

@@ -51,6 +51,7 @@ public class NotifyQueueServiceImpl extends ServiceImpl<NotifyQueueMapper, Notif
      */
     @Override
     public LocalDateTime getNewestTimeByUserId() {
+
         UserContext userContext = WebContextUtils.getUserContext();
         Long userId = userContext.getUserId();
 

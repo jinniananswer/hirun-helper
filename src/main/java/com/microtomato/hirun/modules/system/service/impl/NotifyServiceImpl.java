@@ -9,7 +9,6 @@ import com.microtomato.hirun.modules.system.entity.po.NotifySubscribe;
 import com.microtomato.hirun.modules.system.mapper.NotifyMapper;
 import com.microtomato.hirun.modules.system.service.INotifyService;
 import lombok.extern.slf4j.Slf4j;
-import org.mapstruct.TargetType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,21 +27,6 @@ import java.util.List;
 @Service
 public class NotifyServiceImpl extends ServiceImpl<NotifyMapper, Notify> implements INotifyService {
 
-    /**
-     * 公告
-     */
-    private static final int NOTIFY_TYPE_ANNOUNCE = 1;
-
-    /**
-     * 提醒
-     */
-    private static final int NOTIFY_TYPE_REMIND = 2;
-
-    /**
-     * 消息
-     */
-    private static final int NOTIFY_TYPE_MESSAGE = 3;
-
     @Autowired
     private NotifyMapper notifyMapper;
 
@@ -57,21 +41,32 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyMapper, Notify> impleme
 
         Notify notify = new Notify();
         notify.setContent(content);
-        notify.setNofityType(NOTIFY_TYPE_ANNOUNCE);
+        notify.setNotifyType(NotifyType.ANNOUNCE.value());
         notify.setSenderId(userId);
 
         notifyMapper.insert(notify);
     }
 
-    public void sendNotify(String content, int notifyType, long targetId, String TargetType, String action) {
+    /**
+     * 发送提醒
+     *
+     * @param content 提醒内容，可以为空
+     * @param targetId 目标 ID
+     * @param targetType 目标类型
+     * @param action 提醒的动作类型
+     *
+     * @see INotifyService.Action 提醒的动作类型枚举类
+     */
+    @Override
+    public void sendRemind(String content, long targetId, TargetType targetType, Action action) {
         long userId = WebContextUtils.getUserContext().getUserId();
 
         Notify notify = new Notify();
+        notify.setNotifyType(NotifyType.REMIND.value());
         notify.setContent(content);
-        notify.setNofityType(notifyType);
         notify.setTargetId(targetId);
-        notify.setTargetType(TargetType);
-        notify.setAction(action);
+        notify.setTargetType(targetType.value());
+        notify.setAction(action.value());
         notify.setSenderId(userId);
 
         notifyMapper.insert(notify);
