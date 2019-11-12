@@ -18,6 +18,13 @@ import java.util.List;
 public interface INotifyService extends IService<Notify> {
 
     /**
+     * 发送公告
+     *
+     * @param content 公告内容
+     */
+    void sendAnnounce(String content);
+
+    /**
      * 根据订阅信息，查询消息数据
      *
      * @param notifySubscribe 订阅信息

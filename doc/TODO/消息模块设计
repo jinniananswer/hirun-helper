@@ -49,9 +49,18 @@
     示例：王总监  关注了   xxx    预算方案
           user   action   target targetType
 
-=== subscription_config:
-    action: {type: 'json', required: true},   // 用户的设置
-    user: {type: 'integer'}
+=== subscribe_config:
+    action: {type: 'json', required: true}   // 用户的设置
+    user:   {type: 'integer'}
+
+使用场景梳理:
+
+场景一：
+    员工登录，首先触发消息入队动作，再查询所有未读消息，前台给予提示。
+    员工查看某条消息后，触发消息已读接口。
+
+场景二：
+    业务处理过程中可以发送一条消息。包含 notify_type，target_id，target_type，action，content，sender_id
 
 员工登录后:
     查询员工的订阅信息: sys_notify_subscribe
