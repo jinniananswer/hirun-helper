@@ -8,7 +8,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'select', 'layer', 'form'],
             table.render({
                 elem: "#employeeContractTable",
                 height: 500,
-                url: 'api/organization/employee-contract/queryEmployeeContracts?employeeId=' + $("#employee_id").val(),
+                url: 'api/organization/employee-contract/queryContractByParentId?parentContractId=' + $("#parentContractId").val(),
                 loading: true,
                 toolbar: '#toolbar',
                 parseData: function (res) { //res 即为原始返回的数据
@@ -21,19 +21,18 @@ layui.extend({}).define(['ajax', 'table', 'element', 'select', 'layer', 'form'],
                 },
                 cols: [
                     [
-                        {field: 'contractType', fixed:'left', title: '合同类型', align: 'center', width: 120, sort: true, templet: function (d) {
-                                if (d.contractType == 1) {
-                                    return '第一份合同';
-                                } else if (d.contractType == 2) {
-                                    return '第二份合同';
-                                } else if (d.contractType == 3) {
-                                    return '第三方合同';
-                                }else if (d.contractType == 4) {
-                                    return '培训协议';
-                                }else if (d.contractType == 5) {
-                                    return '保密协议';
-                                }
-                                ;
+                        {field: 'contractType',fixed:'left', title: '变更类型', align: 'center', width: 120, sort: true, templet: function (d) {
+                                if (d.contractType == 6) {
+                                    return '时间变更';
+                                } else if (d.contractType == 7) {
+                                    return '岗位变更';
+                                } else if (d.contractType == 8) {
+                                    return '地点变更';
+                                }else if (d.contractType == 9) {
+                                    return '试用期变更';
+                                }else if (d.contractType == 10) {
+                                    return '其他变更';
+                                };
                             }
                         },
                         {field: 'contractSignTime', title: '签订时间', width: 200, align: 'center'},
@@ -43,10 +42,17 @@ layui.extend({}).define(['ajax', 'table', 'element', 'select', 'layer', 'form'],
                                 if (d.status == 1) {
                                     return '<span style="color:#008000;">' + '正常' + '</span>';
                                 } else if (d.status == 2) {
-                                    return '<span style="color:#c00;">' + '删除' + '</span>';
+                                    return '<span style="color:#c00;">' + '终止' + '</span>';
                                 }
                             }
                         },
+                        {field: 'probation', title: '试用期', width: 100, align: 'center',templet: function (d) {
+                                if (d.probation != null && d.probation != '') {
+                                    return d.probation + "个月";
+                                }else{
+                                    return '';
+                                }
+                            }},
                         {field: 'registerNo', title: '房产编号', width: 100, align: 'center'},
                         {field: 'propertyNo', title: '户籍编号', width: 100, align: 'center'},
                         {field: 'remark', title: '备注', width: 300, align: 'center'},
@@ -55,7 +61,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'select', 'layer', 'form'],
                 ],
                 page: true,
                 text: {
-                    none: '暂无员工合同相关数据。'
+                    none: '暂无员工合同变更相关数据。'
                 }
             });
 
@@ -65,7 +71,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'select', 'layer', 'form'],
                     curr: 1
                 },
                 where: {
-                    employeeId: $("input[name='employeeId']").val(),
+                    employeeId: $("input[name='parentContractId']").val(),
                 }
             });
 
@@ -73,11 +79,11 @@ layui.extend({}).define(['ajax', 'table', 'element', 'select', 'layer', 'form'],
                 var data = obj.data;//获取当前行数据
                 var layEvent = obj.event;
                 if (layEvent === 'edit') {
-                    employeeContractManager.edit(data);
+                    employeeContractExtManager.edit(data);
                 } else if (layEvent === 'delete') {
-                    employeeContractManager.delete(data);
-                } else if (layEvent === 'contractExtManager') {
-                    employeeContractManager.contractExtManager(data);
+                    employeeContractExtManager.delete(data);
+                } else if (layEvent === 'stop') {
+                    employeeContractExtManager.stopContract(data);
                 }
             });
         },
@@ -86,15 +92,14 @@ layui.extend({}).define(['ajax', 'table', 'element', 'select', 'layer', 'form'],
             var index = layer.open({
                 type: 2,
                 title: '修改调动申请',
-                content: 'openUrl?url=/modules/organization/contract/update_employee_contract',
+                content: 'openUrl?url=/modules/organization/contract/update_employee_contract_ext',
                 maxmin: true,
                 btn: ['确定', '取消'],
                 area: ['550px', '700px'],
                 skin: 'layui-layer-molv',
                 success: function (layero, index) {
                     var body = layer.getChildFrame('body', index);
-                    var employee_id = $("#employee_id").val();
-                    body.find('#employeeId').val(employee_id);
+                    body.find('#employeeId').val(data.employeeId);
                     body.find('#contractStartTime').val(data.contractStartTime.substr(0,10));
                     body.find('#contractEndTime').val(data.contractEndTime.substr(0,10));
                     body.find('#contractSignTime').val(data.contractSignTime.substr(0,10));
@@ -106,6 +111,8 @@ layui.extend({}).define(['ajax', 'table', 'element', 'select', 'layer', 'form'],
                     body.find('#registerNo').val(data.registerNo);
                     body.find('#propertyNo').val(data.propertyNo);
                     body.find('#contractTypeValue').val(data.contractType);
+                    body.find('#probationValue').val(data.probation);
+                    body.find('#parentContractId').val(data.parentContractId);
                     form.render();
                 },
                 yes: function (index, layero) {
@@ -151,8 +158,8 @@ layui.extend({}).define(['ajax', 'table', 'element', 'select', 'layer', 'form'],
         add: function () {
             var index = layer.open({
                 type: 2,
-                title: '新增合同·协议',
-                content: 'openUrl?url=/modules/organization/contract/create_employee_contract',
+                title: '新增合同变更协议',
+                content: 'openUrl?url=/modules/organization/contract/create_employee_contract_ext',
                 maxmin: true,
                 btn: ['保存', '取消'],
                 skin: 'layui-layer-molv',
@@ -160,11 +167,13 @@ layui.extend({}).define(['ajax', 'table', 'element', 'select', 'layer', 'form'],
                     var employee_id = $("#employee_id").val();
                     var name = $("#name").val();
                     var jobRole = $("#jobRole").val();
+                    var parentContractId = $("#parentContractId").val();
 
                     var body = layer.getChildFrame('body', index);
                     body.find('#employeeId').val(employee_id);
                     body.find('#name').val(name);
                     body.find('#jobRole').val(jobRole);
+                    body.find('#parentContractId').val(parentContractId);
 
                     form.render();
                 },
@@ -177,13 +186,27 @@ layui.extend({}).define(['ajax', 'table', 'element', 'select', 'layer', 'form'],
             layer.full(index);
         },
 
-        contractExtManager: function (data) {
-            var sexName=(data.sex==1)?'男':'女';
-
-            var param='&employee_id='+data.employeeId+'&name='+data.name+'&mobileNo='+data.mobileNo+'&orgName='+data.orgPath+'&sex='+sexName+'&jobRoleName='+data.jobRoleName+
-                '&identityNo='+data.identityNo+'&inDate='+data.inDate.substr(0,10)+'&jobRole='+data.jobRole;
-            var url=encodeURI('openUrl?url=modules/organization/contract/employee_contract_ext_manager'+param);
-            layui.redirect.open(url, '员工合同·协议管理');
+        stopContract: function (data) {
+            layer.open({
+                type: 2,
+                title: '协议终止',
+                content: 'openUrl?url=/modules/organization/contract/stop_employee_contract_ext',
+                maxmin: true,
+                btn: ['确定', '取消'],
+                area: ['550px', '700px'],
+                skin: 'layui-layer-molv',
+                success: function (layero, index) {
+                    var body = layer.getChildFrame('body', index);
+                    body.find('#id').val(data.id);
+                    body.find('#remark').val(data.remark);
+                    form.render();
+                },
+                yes: function (index, layero) {
+                    var body = layer.getChildFrame('body', index);
+                    var submit = body.find("#stop-employeeContract-submit");
+                    submit.click();
+                }
+            });
         },
 
     };

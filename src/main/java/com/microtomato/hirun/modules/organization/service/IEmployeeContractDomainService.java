@@ -32,4 +32,14 @@ public interface IEmployeeContractDomainService {
      * 修改合同
      */
     boolean updateEmployeeContract(EmployeeContract employeeContract);
+
+    /**
+     * 根据合同id查询变更协议
+     */
+    IPage<EmployeeContract> queryContractByParentId(Long parentContractId,Page<EmployeeContract> page);
+
+    /**
+     * 合同终止
+     */
+    boolean stopEmployeeContract(EmployeeContract employeeContract);
 }

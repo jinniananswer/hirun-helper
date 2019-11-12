@@ -8,9 +8,10 @@ layui.extend({
         init: function () {
 
             layui.select.init('contractType','CONTRACT_TYPE','',false);
+            layui.select.init('probation','PROBATION',null,true);
 
 
-            var startTime=laydate.render({
+            laydate.render({
                 elem: '#contractStartTime',
             });
 
@@ -18,28 +19,35 @@ layui.extend({
                 elem: '#contractSignTime',
             });
 
-            var endTime=laydate.render({
+            laydate.render({
                 elem: '#contractEndTime'
             });
 
             form.on('select(contractType)',function (data) {
                 if(data.value==5 || data.value==4){
-                    $("#start").hide();
-                    $("#end").hide();
-                    $("#contractEndTime").removeAttr("lay-verify");
-                    $("#contractStartTime").removeAttr("lay-verify");
-                }else{
-                    $("#end").show();
-                    $("#start").show();
-                    $("#contractEndTime").attr("lay-verify","required");
-                    $("#contractStartTime").attr("lay-verify","required");
+                    createEmployeeContract.timeComponentsController('hide');
+                    $("#probationDiv").hide();
+                    $("#probation").removeAttr("lay-verify");
+                }else if(data.value==1){
+                    createEmployeeContract.timeComponentsController('show');
+                    $("#probationDiv").show();
+                    $("#probation").attr("lay-verify","required");
+                } else{
+                    createEmployeeContract.timeComponentsController('show');
+                    $("#probationDiv").hide();
+                    $("#probation").removeAttr("lay-verify");
                 }
                 form.render('select', 'contractType');
             });
 
             form.on('submit(create-employeeContract-submit)', function (data) {
                 var field = data.field; //获取提交的字段
+                //如果是合同2、3、4、5清空选择的值
+                if(field.contractType==4||field.contractType==5||field.contractType==2 ||field.contractType==3){
+                    field.probation='';
+                }
                 var index = parent.layer.getFrameIndex(window.name);
+
                 $.ajax({
                     url: 'api/organization/employee-contract/createEmployeeContract',
                     type: 'POST',
@@ -65,6 +73,20 @@ layui.extend({
                     }
                 });
             });
+        },
+
+        timeComponentsController: function (type) {
+            if(type=='show'){
+                $("#end").show();
+                $("#start").show();
+                $("#contractEndTime").attr("lay-verify","required");
+                $("#contractStartTime").attr("lay-verify","required");
+            }else{
+                $("#start").hide();
+                $("#end").hide();
+                $("#contractEndTime").removeAttr("lay-verify");
+                $("#contractStartTime").removeAttr("lay-verify");
+            }
         },
 
     };

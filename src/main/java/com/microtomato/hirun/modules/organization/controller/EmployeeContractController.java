@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import lombok.extern.slf4j.Slf4j;
 
-import com.microtomato.hirun.modules.organization.service.IEmployeeContractService;
 
 /**
  * <p>
@@ -52,5 +51,19 @@ public class EmployeeContractController {
     @RestResult
     public boolean updateEmployeeContract(EmployeeContract employeeContract){
         return domainService.updateEmployeeContract(employeeContract);
+    }
+
+    @PostMapping("/stopEmployeeContract")
+    @RestResult
+    public boolean stopEmployeeContract(EmployeeContract employeeContract){
+        return domainService.stopEmployeeContract(employeeContract);
+    }
+
+    @GetMapping("/queryContractByParentId")
+    @RestResult
+    public IPage<EmployeeContract> queryContractByParentId(Long parentContractId, Integer page, Integer limit){
+        Page<EmployeeContract> contractPage = new Page<>(page, limit);
+        IPage<EmployeeContract> iPage=domainService.queryContractByParentId(parentContractId,contractPage);
+        return iPage;
     }
 }

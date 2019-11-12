@@ -1,22 +1,17 @@
-layui.extend({
-}).define(['ajax', 'form', 'layer', 'element', 'laydate', 'select'], function (exports) {
+layui.extend({}).define(['ajax', 'form', 'layer', 'element', 'laydate', 'select'], function (exports) {
     var $ = layui.$;
     var form = layui.form;
     var layer = layui.layer;
     var laydate = layui.laydate;
-    var updateEmployeeContract = {
+    var updateEmployeeContractExt = {
         init: function () {
-            var contractTypeValue=$('#contractTypeValue').val();
-            var probationValue=$('#probationValue').val();
+            var contractTypeValue = $('#contractTypeValue').val();
+            var probationValue = $('#probationValue').val();
 
-            layui.select.init('contractType','CONTRACT_TYPE',contractTypeValue,false);
-            layui.select.init('probation','PROBATION',probationValue,false);
+            layui.select.init('agreementType', 'AGREEMENT_TYPE', contractTypeValue, false);
+            layui.select.init('probation', 'PROBATION', probationValue, false);
 
-            if(contractTypeValue==4||contractTypeValue==5){
-                updateEmployeeContract.timeComponentsController('hide');
-                $("#probationDiv").hide();
-                $("#probation").removeAttr("lay-verify");
-            }else if(contractTypeValue==2||contractTypeValue==3){
+            if (contractTypeValue != 9) {
                 $("#probationDiv").hide();
                 $("#probation").removeAttr("lay-verify");
             };
@@ -33,17 +28,17 @@ layui.extend({
                 elem: '#contractEndTime'
             });
 
-            form.on('select(contractType)',function (data) {
-                if(data.value==5 || data.value==4){
-                    updateEmployeeContract.timeComponentsController('hide');
+            form.on('select(agreementType)', function (data) {
+                if (data.value == 6) {
+                    updateEmployeeContractExt.timeComponentsController('show');
                     $("#probationDiv").hide();
                     $("#probation").removeAttr("lay-verify");
-                }else if(data.value==1){
-                    updateEmployeeContract.timeComponentsController('show');
+                } else if (data.value == 9) {
+                    updateEmployeeContractExt.timeComponentsController('hide');
                     $("#probationDiv").show();
-                    $("#probation").attr("lay-verify","required");
-                } else{
-                    updateEmployeeContract.timeComponentsController('show');
+                    $("#probation").attr("lay-verify", "required");
+                } else {
+                    updateEmployeeContractExt.timeComponentsController('hide');
                     $("#probationDiv").hide();
                     $("#probation").removeAttr("lay-verify");
                 }
@@ -52,10 +47,9 @@ layui.extend({
 
             form.on('submit(update-employeeContract-submit)', function (data) {
                 var field = data.field; //获取提交的字段
-                //如果是合同2、3、4、5清空选择的值
-                if(field.contractType==4||field.contractType==5||field.contractType==2 ||field.contractType==3){
-                    field.probation='';
-                }
+                if (field.contractType != 9) {
+                    field.probation = '';
+                };
                 var index = parent.layer.getFrameIndex(window.name);
                 $.ajax({
                     url: 'api/organization/employee-contract/updateEmployeeContract',
@@ -77,7 +71,7 @@ layui.extend({
                                 top.layui.admin.closeThisTabs();
                             });
                         } else {
-                            parent.layer.msg("提交失败:"+data.message, {icon: 5});
+                            parent.layer.msg("提交失败:" + data.message, {icon: 5});
                         }
                     }
                 });
@@ -85,18 +79,19 @@ layui.extend({
         },
 
         timeComponentsController: function (type) {
-            if(type=='show'){
+            if (type == 'show') {
                 $("#end").show();
                 $("#start").show();
-                $("#contractEndTime").attr("lay-verify","required");
-                $("#contractStartTime").attr("lay-verify","required");
-            }else{
+                $("#contractEndTime").attr("lay-verify", "required");
+                $("#contractStartTime").attr("lay-verify", "required");
+            } else {
                 $("#start").hide();
                 $("#end").hide();
                 $("#contractEndTime").removeAttr("lay-verify");
                 $("#contractStartTime").removeAttr("lay-verify");
             }
-        },
+        }
+
     };
-    exports('updateEmployeeContract', updateEmployeeContract);
+    exports('updateEmployeeContractExt', updateEmployeeContractExt);
 });
