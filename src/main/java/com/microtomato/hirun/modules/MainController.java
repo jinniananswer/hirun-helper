@@ -31,7 +31,7 @@ public class MainController {
 
     @GetMapping("/console")
     public String console() {
-        return "/modules/system/console";
+        return "modules/system/console";
     }
 
     @GetMapping("/openUrl")

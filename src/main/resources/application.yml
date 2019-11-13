@@ -78,11 +78,12 @@ spring:
 
 
   # thymeleaf 模板配置
-  thymeleaf.prefix: classpath:/templates/
-  thymeleaf.suffix: .html
-  thymeleaf.mode: HTML
-  thymeleaf.encoding: UTF-8
-  thymeleaf.cache: false
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+    cache: false # 开发模式下设置为 false，避免改了模板还要重启服务器，线上设置为 true，可以提高性能。
 
   resources.chain.strategy.content.enabled: true
   resources.chain.strategy.content.paths: /**
