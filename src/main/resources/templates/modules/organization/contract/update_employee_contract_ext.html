@@ -40,9 +40,10 @@
                     <div class="layui-input-block">
                         <input type="hidden" name="employeeId" id="employeeId" autocomplete="off" class="layui-input" readonly>
                         <input type="hidden" name="jobRole" id="jobRole" autocomplete="off" class="layui-input" readonly>
-                        <input type="hidden" name="id" id="id" autocomplete="off" class="layui-input" readonly>
+                        <input type="hidden" name="parentContractId" id="parentContractId" autocomplete="off" class="layui-input" readonly>
                         <input type="hidden" name="contractTypeValue" id="contractTypeValue" autocomplete="off" class="layui-input" readonly>
                         <input type="hidden" name="probationValue" id="probationValue" autocomplete="off" class="layui-input" readonly>
+                        <input type="hidden" name="id" id="id" autocomplete="off" class="layui-input" readonly>
                     </div>
                 </div>
 
@@ -53,10 +54,10 @@
                     </div>
                 </div>
                 <div class="layui-form-item">
-                    <label class="layui-form-label layui-required">合同类型</label>
+                    <label class="layui-form-label layui-required">协议类型</label>
                     <div class="layui-input-block">
-                        <div class="layui-form" lay-filter="contractType">
-                            <select id="contractType" name="contractType" lay-verify="required" lay-filter="contractType">
+                        <div class="layui-form" lay-filter="agreementType">
+                            <select id="agreementType" name="contractType" lay-verify="required" lay-filter="agreementType">
 
                             </select>
                         </div>
@@ -122,9 +123,9 @@
 <script>
     layui.extend(
         {
-            updateEmployeeContract: "{/}static/js/modules/organization/contract/update.employee.contract"
-        }).use('updateEmployeeContract', function () {
-        layui.updateEmployeeContract.init();
+            updateEmployeeContractExt: "{/}static/js/modules/organization/contract/update.employee.contract.ext"
+        }).use('updateEmployeeContractExt', function () {
+        layui.updateEmployeeContractExt.init();
     })
 </script>
 </body>

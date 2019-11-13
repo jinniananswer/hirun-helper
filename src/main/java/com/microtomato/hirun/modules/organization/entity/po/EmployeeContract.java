@@ -43,6 +43,9 @@ public class EmployeeContract extends BaseEntity {
     @TableField("contract_type")
     private String contractType;
 
+    @TableField("contract_no")
+    private String contractNo;
+
     @TableField("contract_sign_time")
     private LocalDateTime contractSignTime;
 
@@ -57,6 +60,13 @@ public class EmployeeContract extends BaseEntity {
 
     @TableField("remark")
     private String remark;
+
+    /**
+     * 试用期
+     */
+    @TableField("probation")
+    private String probation;
+
     /**
      * 户籍证明编号
      */

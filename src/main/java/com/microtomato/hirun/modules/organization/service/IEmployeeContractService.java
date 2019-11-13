@@ -9,7 +9,7 @@ import java.util.List;
 
 /**
  * <p>
- *  服务类
+ * 服务类
  * </p>
  *
  * @author liuhui
@@ -18,6 +18,7 @@ import java.util.List;
 public interface IEmployeeContractService extends IService<EmployeeContract> {
     /**
      * 根据员工ID获取员工合同分页数据
+     *
      * @param employeeId
      * @param page
      * @return
@@ -25,4 +26,12 @@ public interface IEmployeeContractService extends IService<EmployeeContract> {
     IPage<EmployeeContract> queryEmployeeContracts(Long employeeId, Page<EmployeeContract> page);
 
     List<EmployeeContract> queryVaildContractByEmpIdAndType(Long employeeId, String contractType);
+
+    /***
+     * 根据合同ID查询变更协议
+     * @param parentContractId
+     * @param page
+     * @return
+     */
+    IPage<EmployeeContract> queryContractByParentId(Long parentContractId, Page<EmployeeContract> page);
 }

@@ -28,7 +28,7 @@
                             <label class="layui-form-label">姓名</label>
                             <div class="layui-input-inline">
                                 <input type="hidden" name="employee_id" id="employee_id" th:value="${param.employee_id}" class="layui-input" readonly/>
-                                <input type="hidden" name="parentContractId" id="parentContractId" th:value="${param.id}" class="layui-input" readonly/>
+                                <input type="hidden" name="parentContractId" id="parentContractId" th:value="${param.parentContractId}" class="layui-input" readonly/>
                             </div>
                             <div class="layui-input-inline">
                                 <input type="text" name="name" id="name" th:value="${param.name}" class="layui-input" readonly/>
@@ -67,19 +67,16 @@
 </div>
 <script type="text/html" id="toolbar">
     <div class="layui-btn-container">
-        <button class="layui-btn" data-type="getCheckData" onclick="layui.employeeContractManager.add();">新增合同</button>
+        <button class="layui-btn" data-type="getCheckData" onclick="layui.employeeContractExtManager.add();">新增变更协议</button>
     </div>
 </script>
 
 <script type="text/html" id="operateTmp">
-    {{#  if(d.status == '1' && (d.contractType=='1' || d.contractType=='2' || d.contractType=='3')){ }}
-    <a href="#" class="layui-btn layui-btn-xs" lay-event="edit">修改</a>
+    {{#  if(d.status == '1' && (d.contractType=='6' || d.contractType=='7' || d.contractType=='8' || d.contractType=='9' || d.contractType=='10')){ }}
+    <a href="#" class="layui-btn layui-btn-xs " lay-event="edit">修改</a>
+    <a href="#" class="layui-btn layui-btn-warm layui-btn-xs" lay-event="stop">终止</a>
     <a href="#" class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delete">删除</a>
-    <a href="#" class="layui-btn layui-btn-normal layui-btn-xs" lay-event="contractExtManager">变更</a>
-    {{#  } else if(d.status=='1' && (d.contractType == '3' || d.contractType == '4') ){ }}
-    <a href="#" class="layui-btn layui-btn-xs" lay-event="edit">修改</a>
-    <a href="#" class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delete">删除</a>
-    {{#  } else if(d.status == "2"){ }}
+    {{#  } else if(d.status == "2" ){ }}
 
     {{#  } }}
 </script>
