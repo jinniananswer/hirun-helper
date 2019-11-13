@@ -68,7 +68,7 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
             funcRoleList.forEach(funcRole -> funcSet.add(funcRole.getFuncId().toString()));
         }
 
-        // 加载户权限
+        // 加载用户权限
         Collection<GrantedAuthority> grantedAuthorities = new HashSet<>();
         for (String funcId : funcSet) {
             grantedAuthorities.add(new SimpleGrantedAuthority(funcId));
