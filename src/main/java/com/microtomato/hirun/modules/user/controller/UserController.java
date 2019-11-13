@@ -56,12 +56,17 @@ public class UserController {
         if (!StringUtils.equals(password, repassword)) {
             throw new PasswordException("新密码与确认输入不一致，请重新输入。");
         }
-
         UserContext userContext = WebContextUtils.getUserContext();
         Long userId = userContext.getUserId();
 
         boolean result = userServiceImpl.changePassword(userId, oldPassword, repassword);
 
         return result;
+    }
+
+    @PostMapping("/resetPassword")
+    @RestResult
+    public boolean resetPassword(Long employeeId) {
+        return userServiceImpl.resetPassword(employeeId);
     }
 }

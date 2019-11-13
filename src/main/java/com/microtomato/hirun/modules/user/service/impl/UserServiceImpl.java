@@ -3,7 +3,11 @@ package com.microtomato.hirun.modules.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.framework.exception.ErrorKind;
+import com.microtomato.hirun.framework.exception.cases.NotFoundException;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
+import com.microtomato.hirun.modules.organization.entity.po.Employee;
+import com.microtomato.hirun.modules.organization.mapper.EmployeeMapper;
 import com.microtomato.hirun.modules.user.entity.consts.UserConst;
 import com.microtomato.hirun.modules.user.entity.domain.UserDO;
 import com.microtomato.hirun.modules.user.entity.po.User;
@@ -29,6 +33,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private EmployeeMapper employeeMapper;
 
     @Override
     public User login(String username, String password) {
@@ -68,6 +75,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     public User queryByUsername(String username) {
         User user = this.getOne(new QueryWrapper<User>().lambda().eq(User::getUsername, username).eq(User::getStatus, UserConst.STATUS_NORMAL));
         return user;
+    }
+
+    @Override
+    public boolean resetPassword(Long employeeId) {
+        Employee employee=employeeMapper.selectById(employeeId);
+        if (employee == null) {
+            throw new NotFoundException("根据ID找不到员工信息，请确认ID是否正确", ErrorKind.NOT_FOUND.getCode());
+        }
+        UserDO userDO=SpringContextUtils.getBean(UserDO.class,employee.getUserId());
+        return userDO.resetPassword();
     }
 
     /**

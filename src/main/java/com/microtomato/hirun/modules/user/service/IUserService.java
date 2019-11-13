@@ -43,4 +43,11 @@ public interface IUserService extends IService<User> {
     UserDTO queryRelatInfoByUserId(Long userId);
 
     User queryByUsername(String username);
+
+    /**
+     * 重置用户密码
+     * @param employeeId
+     * @return
+     */
+    boolean resetPassword(Long employeeId);
 }

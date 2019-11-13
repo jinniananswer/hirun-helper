@@ -25,13 +25,7 @@ layui.define(['ajax', 'form', 'layer'], function (exports) {
         },
 
         changestaffpwd: function (formData) {
-            layui.ajax.post('api/user/user/changePassword', formData, function (data) {
-                layer.confirm('密码修改成功。点击确定返回页面。', {
-                    btn: ['确定']
-                }, function () {
-                    document.location.reload();
-                });
-            });
+            layui.ajax.post('api/user/user/changePassword', formData);
         }
     };
     exports('changestaffpwd', changestaffpwd);
