@@ -80,6 +80,10 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
         for (UserRole userRole : userRoles) {
             grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_" + userRole.getRoleId()));
             roleList.add(new Role(userRole.getRoleId(), ""));
+            if (userRole.getRoleId() == 1) {
+                // 超级管理员
+                userContext.setAdmin(true);
+            }
         }
 
         // 查登录用户的 orgId, employeeId

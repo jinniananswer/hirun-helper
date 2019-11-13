@@ -1,8 +1,10 @@
 package com.microtomato.hirun.framework.util;
 
+import com.microtomato.hirun.framework.security.UserContext;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -23,8 +25,14 @@ public final class SecurityUtils {
      * @return true: 有权限, false: 无权限
      */
     public static final boolean hasFuncId(String funcId) {
+
+        UserContext userContext = WebContextUtils.getUserContext();
+        if (userContext.isAdmin()) {
+            return true;
+        }
+
         SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(funcId);
-        return WebContextUtils.getUserContext().getAuthorities().contains(simpleGrantedAuthority);
+        return userContext.getAuthorities().contains(simpleGrantedAuthority);
     }
 
     /**
@@ -35,7 +43,12 @@ public final class SecurityUtils {
      */
     public static final boolean hasAnyFuncId(String... funcIds) {
 
-        Collection<GrantedAuthority> grantedAuthorities = WebContextUtils.getUserContext().getGrantedAuthorities();
+        UserContext userContext = WebContextUtils.getUserContext();
+        if (userContext.isAdmin()) {
+            return true;
+        }
+
+        Collection<GrantedAuthority> grantedAuthorities = userContext.getGrantedAuthorities();
         for (String funcId : funcIds) {
             SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(funcId);
             if (grantedAuthorities.contains(simpleGrantedAuthority)) {
@@ -53,7 +66,12 @@ public final class SecurityUtils {
      */
     public static final boolean hasAllFuncId(String... funcIds) {
 
-        Collection<GrantedAuthority> grantedAuthorities = WebContextUtils.getUserContext().getGrantedAuthorities();
+        UserContext userContext = WebContextUtils.getUserContext();
+        if (userContext.isAdmin()) {
+            return true;
+        }
+
+        Collection<GrantedAuthority> grantedAuthorities = userContext.getGrantedAuthorities();
         for (String funcId : funcIds) {
             SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(funcId);
             if (!grantedAuthorities.contains(simpleGrantedAuthority)) {
@@ -70,6 +88,7 @@ public final class SecurityUtils {
      * @return
      */
     public static final Set<String> filter(Collection<String> funcIds) {
+
         String[] funcIdArray = funcIds.toArray(new String[funcIds.size()]);
         return filter(funcIdArray);
     }
@@ -80,6 +99,12 @@ public final class SecurityUtils {
     public static final Set<String> filter(String... funcIds) {
 
         Set<String> rtn = new HashSet<>();
+
+        UserContext userContext = WebContextUtils.getUserContext();
+        if (userContext.isAdmin()) {
+            rtn.addAll(Arrays.asList(funcIds));
+            return rtn;
+        }
 
         Collection<GrantedAuthority> grantedAuthorities = WebContextUtils.getUserContext().getGrantedAuthorities();
 

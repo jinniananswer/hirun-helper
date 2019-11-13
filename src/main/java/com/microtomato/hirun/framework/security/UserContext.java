@@ -35,6 +35,11 @@ public class UserContext implements UserDetails {
     private List<Role> roles;
 
     /**
+     * 是否为超级管理员，ins_role.role_id = 1
+     */
+    private boolean admin;
+
+    /**
      * 用户密码
      */
     private String password;
