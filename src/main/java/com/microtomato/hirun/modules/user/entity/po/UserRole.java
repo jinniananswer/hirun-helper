@@ -37,6 +37,12 @@ public class UserRole extends BaseEntity {
     @TableField("role_id")
     private Long roleId;
 
+    /**
+     * 失效时间
+     */
+    @TableField("expire_date")
+    private LocalDateTime expireDate;
+
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)
     private Long createUserId;
 

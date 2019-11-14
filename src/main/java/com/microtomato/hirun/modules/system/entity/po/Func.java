@@ -31,15 +31,27 @@ public class Func extends BaseEntity {
     @TableId(value = "func_id", type = IdType.AUTO)
     private Long funcId;
 
+    /**
+     * 权限编码
+     */
     @TableField("func_code")
     private String funcCode;
 
+    /**
+     * 权限类型（'0' 菜单权限，'M' 操作权限）
+     */
     @TableField("type")
     private String type;
 
+    /**
+     * 权限描述
+     */
     @TableField("func_desc")
     private String funcDesc;
 
+    /**
+     * 状态（'0' 有效）
+     */
     @TableField("status")
     private String status;
 
