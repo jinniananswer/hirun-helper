@@ -27,10 +27,16 @@ public class ExpireFuncTask {
 
     /**
      * 每天凌晨 5:00 开始执行。
+     * 删除过期时间小于当前时间的，以及过期时间大于当前时间 30 天的异常数据。
      */
-    @Scheduled(cron="0 0 5 * * ?")
+    @Scheduled(cron = "0 0 5 * * ?")
     public void scheduled() {
-        LambdaQueryWrapper<FuncTemp> lambdaQueryWrapper = Wrappers.<FuncTemp>lambdaQuery().lt(FuncTemp::getExpireDate, LocalDateTime.now());
+
+        LambdaQueryWrapper<FuncTemp> lambdaQueryWrapper = Wrappers.<FuncTemp>lambdaQuery()
+            .lt(FuncTemp::getExpireDate, LocalDateTime.now())
+            .or()
+            .gt(FuncTemp::getExpireDate, LocalDateTime.now().plusDays(30));
+
         List<FuncTemp> list = funcTempServiceImpl.list(lambdaQueryWrapper);
         if (0 == list.size()) {
             log.info("未发现需要清理的过期临时操作权限");
@@ -44,4 +50,5 @@ public class ExpireFuncTask {
             log.info("清理过期的临时操作权限: {}", funcTemp);
         }
     }
+
 }

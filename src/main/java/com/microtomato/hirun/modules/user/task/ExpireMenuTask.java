@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.microtomato.hirun.modules.user.entity.po.MenuTemp;
 import com.microtomato.hirun.modules.user.service.IMenuTempService;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.cglib.core.Local;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -27,10 +28,15 @@ public class ExpireMenuTask {
 
     /**
      * 每天凌晨 5:10 开始执行。
+     * 删除过期时间小于当前时间的，以及过期时间大于当前时间 30 天的异常数据。
      */
     @Scheduled(cron="0 10 5 * * ?")
     public void scheduled() {
-        LambdaQueryWrapper<MenuTemp> lambdaQueryWrapper = Wrappers.<MenuTemp>lambdaQuery().lt(MenuTemp::getExpireDate, LocalDateTime.now());
+        LambdaQueryWrapper<MenuTemp> lambdaQueryWrapper = Wrappers.<MenuTemp>lambdaQuery()
+            .lt(MenuTemp::getExpireDate, LocalDateTime.now())
+            .or()
+            .gt(MenuTemp::getExpireDate, LocalDateTime.now().plusDays(30));
+
         List<MenuTemp> list = menuTempServiceImpl.list(lambdaQueryWrapper);
         if (0 == list.size()) {
             log.info("未发现需要清理的过期临时菜单权限");
