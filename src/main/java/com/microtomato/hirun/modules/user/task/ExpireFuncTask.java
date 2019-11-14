@@ -1,5 +1,6 @@
 package com.microtomato.hirun.modules.user.task;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.microtomato.hirun.modules.user.entity.po.FuncTemp;
 import com.microtomato.hirun.modules.user.service.IFuncTempService;
@@ -29,12 +30,18 @@ public class ExpireFuncTask {
      */
     @Scheduled(cron="0 0 5 * * ?")
     public void scheduled() {
-        log.info("开始清理过期的临时操作权限");
-        // 为了打印日志，因此没有直接 delete。
-        List<FuncTemp> list = funcTempServiceImpl.list(Wrappers.<FuncTemp>lambdaQuery().lt(FuncTemp::getExpireDate, LocalDateTime.now()));
+        LambdaQueryWrapper<FuncTemp> lambdaQueryWrapper = Wrappers.<FuncTemp>lambdaQuery().lt(FuncTemp::getExpireDate, LocalDateTime.now());
+        List<FuncTemp> list = funcTempServiceImpl.list(lambdaQueryWrapper);
+        if (0 == list.size()) {
+            log.info("未发现需要清理的过期临时操作权限");
+            return;
+        } else {
+            log.info("发现过期的临时操作权限 {} 条。", list.size());
+        }
+
+        funcTempServiceImpl.remove(lambdaQueryWrapper);
         for (FuncTemp funcTemp : list) {
-            funcTempServiceImpl.removeById(funcTemp.getId());
-            log.info("清理: {}", funcTemp);
+            log.info("清理过期的临时操作权限: {}", funcTemp);
         }
     }
 }
