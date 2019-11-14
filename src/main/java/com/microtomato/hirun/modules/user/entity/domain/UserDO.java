@@ -188,4 +188,13 @@ public class UserDO {
         this.user.setRemoveDate(removeTime);
         this.userService.updateById(user);
     }
+
+    /**
+     * 用户密码重置
+     * @return
+     */
+    public boolean resetPassword(){
+        this.user.setPassword(EncryptUtils.passwordEncode(UserConst.INIT_PASSWORD));
+        return this.userService.updateById(user);
+    }
 }
