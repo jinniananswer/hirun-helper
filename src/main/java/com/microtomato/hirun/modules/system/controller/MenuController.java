@@ -1,5 +1,6 @@
 package com.microtomato.hirun.modules.system.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.data.TreeNode;
 import com.microtomato.hirun.framework.security.Role;
@@ -8,12 +9,17 @@ import com.microtomato.hirun.framework.util.TreeUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.system.entity.po.Menu;
 import com.microtomato.hirun.modules.system.service.IMenuService;
+import com.microtomato.hirun.modules.user.entity.po.FuncTemp;
+import com.microtomato.hirun.modules.user.entity.po.MenuTemp;
+import com.microtomato.hirun.modules.user.service.IFuncTempService;
+import com.microtomato.hirun.modules.user.service.IMenuTempService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -30,77 +36,90 @@ import java.util.*;
 @RequestMapping("api/system/menu/")
 public class MenuController {
 
-	@Autowired
-	private IMenuService menuServiceImpl;
+    @Autowired
+    private IMenuService menuServiceImpl;
 
-	@GetMapping("/list")
-	@RestResult
-	public List<TreeNode> getMenuTree() {
+    @Autowired
+    private IMenuTempService menuTempServiceImpl;
 
-		List<Role> roles = WebContextUtils.getUserContext().getRoles();
-		Set<Long> menuidSet = new HashSet<>();
+    @GetMapping("/list")
+    @RestResult
+    public List<TreeNode> getMenuTree() {
 
-		// 查询归属角色下有权访问的菜单ID
-		for (Role role : roles) {
-			List<Long> menuids = menuServiceImpl.listMenusByRole(role);
-			menuidSet.addAll(menuids);
-		}
+        Long userId = WebContextUtils.getUserContext().getUserId();
+        List<Role> roles = WebContextUtils.getUserContext().getRoles();
+        Set<Long> menuidSet = new HashSet<>();
 
-		// 查询所有非嵌入式菜单集合
-		Map<Long, Menu> menuMap = menuServiceImpl.listAllMenus(false);
+	    log.info("查询临时菜单权限");
+        List<MenuTemp> menuTempList = menuTempServiceImpl.list(
+            new QueryWrapper<MenuTemp>().lambda()
+	            .select(MenuTemp::getMenuId)
+                .eq(MenuTemp::getUserId, userId)
+                .lt(MenuTemp::getExpireDate, LocalDateTime.now())
+        );
+        menuTempList.forEach(menuTemp -> menuidSet.add(menuTemp.getMenuId()));
 
-		// 根据权限进行过滤
-		Set<String> menuUrls = new HashSet<>();
-		Map<Long, Menu> filteredMenuMap = new HashMap<>(20);
-		for (Menu currMenu : menuMap.values()) {
+        // 查询归属角色下有权访问的菜单ID
+        for (Role role : roles) {
+            List<Long> menuids = menuServiceImpl.listMenusByRole(role);
+            menuidSet.addAll(menuids);
+        }
 
-			// 如果有该菜单权限
-			if (menuidSet.contains(currMenu.getMenuId())) {
-				filteredMenuMap.put(currMenu.getMenuId(), currMenu);
-				menuUrls.add(currMenu.getMenuUrl());
+        // 查询所有非嵌入式菜单集合
+        Map<Long, Menu> menuMap = menuServiceImpl.listAllMenus(false);
 
-				// 递归增加父菜单
-				addParentMenus(currMenu, filteredMenuMap, menuMap);
-			}
-		}
+        // 根据权限进行过滤
+        Set<String> menuUrls = new HashSet<>();
+        Map<Long, Menu> filteredMenuMap = new HashMap<>(20);
+        for (Menu currMenu : menuMap.values()) {
 
-		// 将有权访问的菜单 URL 设置到上下文中
-		WebContextUtils.getUserContext().setMenuUrls(menuUrls);
+            // 如果有该菜单权限
+            if (menuidSet.contains(currMenu.getMenuId())) {
+                filteredMenuMap.put(currMenu.getMenuId(), currMenu);
+                menuUrls.add(currMenu.getMenuUrl());
 
-		List<Menu> menus = new ArrayList(filteredMenuMap.values());
-		if (ArrayUtils.isEmpty(menus)) {
-			return null;
-		}
+                // 递归增加父菜单
+                addParentMenus(currMenu, filteredMenuMap, menuMap);
+            }
+        }
 
-		// 构建菜单结构树
-		List<TreeNode> nodes = new ArrayList<>();
-		for (Menu menu : menus) {
-			TreeNode node = new TreeNode();
-			node.setId(menu.getMenuId() + "");
-			if (null != menu.getParentMenuId()) {
-				node.setParentId(menu.getParentMenuId() + "");
-			}
-			node.setNode(menu);
-			nodes.add(node);
-		}
+        // 将有权访问的菜单 URL 设置到上下文中
+        WebContextUtils.getUserContext().setMenuUrls(menuUrls);
 
-		List<TreeNode> tree = TreeUtils.build(nodes);
-		return tree;
-	}
+        List<Menu> menus = new ArrayList(filteredMenuMap.values());
+        if (ArrayUtils.isEmpty(menus)) {
+            return null;
+        }
 
-	/**
-	 * 递归将子菜单所有的父菜单添加进去
-	 *
-	 * @param currMenu
-	 * @param filteredMenuMap
-	 * @param menuMap
-	 */
-	private void addParentMenus(Menu currMenu, Map<Long, Menu> filteredMenuMap, Map<Long, Menu> menuMap) {
-		Long parentMenuId = currMenu.getParentMenuId();
-		if (null != parentMenuId) {
-			Menu parentMenu = menuMap.get(parentMenuId);
-			filteredMenuMap.put(parentMenu.getMenuId(), parentMenu);
-			addParentMenus(parentMenu, filteredMenuMap, menuMap);
-		}
-	}
+        // 构建菜单结构树
+        List<TreeNode> nodes = new ArrayList<>();
+        for (Menu menu : menus) {
+            TreeNode node = new TreeNode();
+            node.setId(menu.getMenuId() + "");
+            if (null != menu.getParentMenuId()) {
+                node.setParentId(menu.getParentMenuId() + "");
+            }
+            node.setNode(menu);
+            nodes.add(node);
+        }
+
+        List<TreeNode> tree = TreeUtils.build(nodes);
+        return tree;
+    }
+
+    /**
+     * 递归将子菜单所有的父菜单添加进去
+     *
+     * @param currMenu
+     * @param filteredMenuMap
+     * @param menuMap
+     */
+    private void addParentMenus(Menu currMenu, Map<Long, Menu> filteredMenuMap, Map<Long, Menu> menuMap) {
+        Long parentMenuId = currMenu.getParentMenuId();
+        if (null != parentMenuId) {
+            Menu parentMenu = menuMap.get(parentMenuId);
+            filteredMenuMap.put(parentMenu.getMenuId(), parentMenu);
+            addParentMenus(parentMenu, filteredMenuMap, menuMap);
+        }
+    }
 }

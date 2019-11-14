@@ -2,9 +2,11 @@ package com.microtomato.hirun.framework.security;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.microtomato.hirun.modules.user.entity.po.FuncRole;
+import com.microtomato.hirun.modules.user.entity.po.FuncTemp;
 import com.microtomato.hirun.modules.user.entity.po.User;
 import com.microtomato.hirun.modules.user.entity.po.UserRole;
 import com.microtomato.hirun.modules.user.entity.po.dto.UserDTO;
+import com.microtomato.hirun.modules.user.service.IFuncTempService;
 import com.microtomato.hirun.modules.user.service.impl.FuncRoleServiceImpl;
 import com.microtomato.hirun.modules.user.service.impl.UserRoleServiceImpl;
 import com.microtomato.hirun.modules.user.service.impl.UserServiceImpl;
@@ -17,6 +19,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -30,6 +33,9 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
     private UserServiceImpl userServiceImpl;
+
+    @Autowired
+    private IFuncTempService funcTempServiceImpl;
 
     @Autowired
     private UserRoleServiceImpl userRoleServiceImpl;
@@ -57,6 +63,15 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
         }
 
         Set<String> funcSet = new HashSet<>();
+
+        // 查用户临时操作权限
+        List<FuncTemp> funcTempList = funcTempServiceImpl.list(
+            new QueryWrapper<FuncTemp>().lambda()
+                .select(FuncTemp::getFuncId)
+                .eq(FuncTemp::getUserId, user.getUserId())
+                .lt(FuncTemp::getExpireDate, LocalDateTime.now())
+        );
+        funcTempList.forEach(funcTemp -> funcSet.add(funcTemp.getFuncId().toString()));
 
         // 查用户角色
         List<UserRole> userRoles = userRoleServiceImpl.list(new QueryWrapper<UserRole>().lambda().eq(UserRole::getUserId, user.getUserId()));
