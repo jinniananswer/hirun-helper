@@ -90,22 +90,25 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
      * @param identityNo
      */
     @Override
-    public EmployeeDTO verifyIdentityNo(String createType, String identityNo) {
+    public EmployeeDTO verifyIdentityNo(String createType, String identityNo, Long employeeId, String operType) {
         boolean isBlack = this.employeeBlacklistService.exists(identityNo);
         if (isBlack) {
             throw new EmployeeException(EmployeeException.EmployeeExceptionEnum.IS_BLACK);
         }
 
         Employee employee = this.employeeService.queryByIdentityNo(identityNo);
-        if (employee == null && StringUtils.equals(EmployeeConst.CREATE_TYPE_NEW_ENTRY, createType)) {
+
+        if (employee == null && (StringUtils.equals(EmployeeConst.CREATE_TYPE_NEW_ENTRY, createType) || StringUtils.isBlank(createType))) {
             return null;
         }
         if (employee == null && !StringUtils.equals(EmployeeConst.CREATE_TYPE_NEW_ENTRY, createType)) {
             throw new EmployeeException(EmployeeException.EmployeeExceptionEnum.CREATE_TYPE_ERROR);
         }
-        String status = employee.getStatus();
-        if (StringUtils.equals(EmployeeConst.STATUS_NORMAL, status)) {
-            //创建员工时如果存在证件号码相同的正常员工，则报错
+
+        if ((StringUtils.equals(EmployeeConst.CREATE_TYPE_NEW_ENTRY, createType) && StringUtils.equals(operType, EmployeeConst.OPER_TYPE_CREATE))) {
+            //创建员工时如果存在证件号码相同的员工，则报错
+            throw new EmployeeException(EmployeeException.EmployeeExceptionEnum.IS_EXISTS, "证件号码", employee.getName(), employee.getMobileNo());
+        } else if(StringUtils.equals(operType, EmployeeConst.OPER_TYPE_EDIT) && employeeId != null && !employeeId.equals(employee.getEmployeeId())) {
             throw new EmployeeException(EmployeeException.EmployeeExceptionEnum.IS_EXISTS, "证件号码", employee.getName(), employee.getMobileNo());
         } else {
             EmployeeDTO employeeDTO = new EmployeeDTO();
@@ -115,13 +118,19 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
     }
 
     @Override
-    public void verifyMobileNo(String mobileNo) {
+    public void verifyMobileNo(String mobileNo, String operType, Long employeeId) {
         User user = this.userService.queryByUsername(mobileNo);
         if (user != null) {
-            if (!StringUtils.equals("0", user.getStatus())) {
+            if (!StringUtils.equals(EmployeeConst.STATUS_NORMAL, user.getStatus())) {
                 return;
             }
             Employee employee = this.employeeService.queryByUserId(user.getUserId());
+            if (StringUtils.equals(EmployeeConst.OPER_TYPE_EDIT, operType) && employeeId != null && !employeeId.equals(employee.getEmployeeId())) {
+                throw new EmployeeException(EmployeeException.EmployeeExceptionEnum.IS_EXISTS, "手机号码", employee.getName(), employee.getMobileNo());
+            } else if (StringUtils.equals(EmployeeConst.OPER_TYPE_EDIT, operType)) {
+                return;
+            }
+
             if (employee != null) {
                 throw new EmployeeException(EmployeeException.EmployeeExceptionEnum.IS_EXISTS, "手机号码", employee.getName(), employee.getMobileNo());
             }
@@ -163,6 +172,14 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
 
             OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, jobRole.getOrgId());
             jobRoleDTO.setOrgPath(orgDO.getCompanyLinePath());
+
+            Long parentEmployeeId = jobRole.getParentEmployeeId();
+            if (parentEmployeeId != null) {
+                Employee parentEmployee = this.employeeService.getById(parentEmployeeId);
+                if (parentEmployee != null) {
+                    jobRoleDTO.setParentEmployeeName(parentEmployee.getName());
+                }
+            }
 
             employeeDTO.setEmployeeJobRole(jobRoleDTO);
         }

@@ -18,9 +18,9 @@ public interface IEmployeeDomainService {
 
     List<EmployeeInfoDTO> searchEmployee(String searchText);
 
-    EmployeeDTO verifyIdentityNo(String createType, String identityNo);
+    EmployeeDTO verifyIdentityNo(String createType, String identityNo, Long employeeId, String operType);
 
-    void verifyMobileNo(String mobileNo);
+    void verifyMobileNo(String mobileNo, String operType, Long employeeId);
 
     EmployeeDTO load(Long employeeId, boolean normal);
 

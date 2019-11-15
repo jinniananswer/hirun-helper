@@ -9,6 +9,7 @@ import com.microtomato.hirun.modules.user.entity.consts.UserConst;
 import com.microtomato.hirun.modules.user.entity.po.User;
 import com.microtomato.hirun.modules.user.entity.po.UserContact;
 import com.microtomato.hirun.modules.user.exception.PasswordException;
+import com.microtomato.hirun.modules.user.exception.UserException;
 import com.microtomato.hirun.modules.user.service.IUserContactService;
 import com.microtomato.hirun.modules.user.service.IUserService;
 import com.microtomato.hirun.modules.user.service.impl.UserServiceImpl;
@@ -88,12 +89,31 @@ public class UserDO {
     }
 
     /**
+     * 判断用户名是否存在
+     * @param username
+     * @return
+     */
+    public boolean isExists(String username) {
+        User user = this.userService.queryByUsername(username);
+
+        if (user != null && StringUtils.equals(UserConst.STATUS_NORMAL, user.getStatus())) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * 创建用户信息
      * @param mobileNo
      * @param password
      * @return
      */
     public Long create(String mobileNo, String password) {
+        if (isExists(mobileNo)) {
+            throw new UserException(UserException.UserExceptionEnum.IS_EXISTS, mobileNo);
+        }
+
         if (StringUtils.isBlank(password)) {
             password = EncryptUtils.passwordEncode(UserConst.INIT_PASSWORD);
         }
@@ -115,6 +135,11 @@ public class UserDO {
     }
 
     public void modify(String username, String password) {
+        User tempUser = this.userService.queryByUsername(username);
+        if (tempUser != null && !tempUser.getUserId().equals(this.user.getUserId()) && StringUtils.equals(UserConst.STATUS_NORMAL, tempUser.getStatus())) {
+            throw new UserException(UserException.UserExceptionEnum.IS_EXISTS, username);
+        }
+
         String originalUsername = this.user.getUsername();
         this.user.setUsername(username);
         this.user.setStatus(UserConst.STATUS_NORMAL);
