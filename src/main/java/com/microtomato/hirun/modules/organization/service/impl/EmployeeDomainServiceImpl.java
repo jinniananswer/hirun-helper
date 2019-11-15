@@ -263,17 +263,19 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             Employee oldEmployee = employeeDO.getEmployee();
 
             Long userId = oldEmployee.getUserId();
-            UserDO userDO = SpringContextUtils.getBean(UserDO.class, userId);
-            userDO.modify(employeeDTO.getMobileNo(), UserConst.INIT_PASSWORD);
+            employee.setUserId(userId);
 
-            employee.setUserId(oldEmployee.getUserId());
+            UserDO userDO = SpringContextUtils.getBean(UserDO.class, userId);
 
             String createType = employeeDTO.getCreateType();
             if (StringUtils.equals(EmployeeConst.CREATE_TYPE_REHIRE, createType)) {
+                userDO.modify(employeeDTO.getMobileNo(), UserConst.INIT_PASSWORD, UserConst.STATUS_NORMAL);
                 employeeDO.rehire(employee, jobRole, workExperiences);
             } else if(StringUtils.equals(createType, EmployeeConst.CREATE_TYPE_REHELLORING)) {
+                userDO.modify(employeeDTO.getMobileNo(), UserConst.INIT_PASSWORD, UserConst.STATUS_NORMAL);
                 employeeDO.rehelloring(employee, jobRole, workExperiences);
             } else {
+                userDO.modify(employeeDTO.getMobileNo(), UserConst.INIT_PASSWORD, null);
                 employeeDO.modify(employee, jobRole, workExperiences);
             }
 

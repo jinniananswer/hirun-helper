@@ -134,7 +134,7 @@ public class UserDO {
         return user.getUserId();
     }
 
-    public void modify(String username, String password) {
+    public void modify(String username, String password, String status) {
         User tempUser = this.userService.queryByUsername(username);
         if (tempUser != null && !tempUser.getUserId().equals(this.user.getUserId()) && StringUtils.equals(UserConst.STATUS_NORMAL, tempUser.getStatus())) {
             throw new UserException(UserException.UserExceptionEnum.IS_EXISTS, username);
@@ -142,7 +142,9 @@ public class UserDO {
 
         String originalUsername = this.user.getUsername();
         this.user.setUsername(username);
-        this.user.setStatus(UserConst.STATUS_NORMAL);
+        if (StringUtils.isNotBlank(status)) {
+            this.user.setStatus(status);
+        }
 
         if (StringUtils.isNotBlank(password)) {
             this.user.setPassword(EncryptUtils.passwordEncode(password));
