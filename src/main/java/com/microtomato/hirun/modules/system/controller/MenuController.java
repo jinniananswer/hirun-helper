@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.data.TreeNode;
 import com.microtomato.hirun.framework.security.Role;
+import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.TreeUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
@@ -42,27 +43,38 @@ public class MenuController {
     @Autowired
     private IMenuTempService menuTempServiceImpl;
 
+    private void normal() {
+
+    }
+
     @GetMapping("/list")
     @RestResult
     public List<TreeNode> getMenuTree() {
 
-        Long userId = WebContextUtils.getUserContext().getUserId();
-        List<Role> roles = WebContextUtils.getUserContext().getRoles();
+        UserContext userContext = WebContextUtils.getUserContext();
+        Long userId = userContext.getUserId();
+        List<Role> roles = userContext.getRoles();
         Set<Long> menuidSet = new HashSet<>();
 
-	    log.info("查询临时菜单权限");
-        List<MenuTemp> menuTempList = menuTempServiceImpl.list(
-            new QueryWrapper<MenuTemp>().lambda()
-	            .select(MenuTemp::getMenuId)
-                .eq(MenuTemp::getUserId, userId)
-                .lt(MenuTemp::getExpireDate, LocalDateTime.now())
-        );
-        menuTempList.forEach(menuTemp -> menuidSet.add(menuTemp.getMenuId()));
-
-        // 查询归属角色下有权访问的菜单ID
-        for (Role role : roles) {
-            List<Long> menuids = menuServiceImpl.listMenusByRole(role);
+        if (userContext.isAdmin()) {
+            menuServiceImpl.list();
+            List<Long> menuids = menuServiceImpl.listMenusForAdmin();
             menuidSet.addAll(menuids);
+        } else {
+            log.info("查询临时菜单权限");
+            List<MenuTemp> menuTempList = menuTempServiceImpl.list(
+                new QueryWrapper<MenuTemp>().lambda()
+                    .select(MenuTemp::getMenuId)
+                    .eq(MenuTemp::getUserId, userId)
+                    .lt(MenuTemp::getExpireDate, LocalDateTime.now())
+            );
+            menuTempList.forEach(menuTemp -> menuidSet.add(menuTemp.getMenuId()));
+
+            // 查询归属角色下有权访问的菜单ID
+            for (Role role : roles) {
+                List<Long> menuids = menuServiceImpl.listMenusByRole(role);
+                menuidSet.addAll(menuids);
+            }
         }
 
         // 查询所有非嵌入式菜单集合

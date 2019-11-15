@@ -19,6 +19,11 @@ import java.util.Map;
 public interface IMenuService extends IService<Menu> {
 
     /**
+     * 超级管理员默认能看到所有菜单
+     */
+    List<Long> listMenusForAdmin();
+
+    /**
      * 获取菜单集合
      *
      * @param isEmbedPage

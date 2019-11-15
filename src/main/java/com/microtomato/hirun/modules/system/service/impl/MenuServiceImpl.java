@@ -36,6 +36,9 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 	@Autowired
 	private IMenuRoleService menuRoleServiceImpl;
 
+	@Autowired
+	private IMenuService menuServiceImpl;
+
 	@Cacheable(value = "menuid-with-role", key = "#role.id")
 	@Override
 	public List<Long> listMenusByRole(Role role) {
@@ -46,6 +49,21 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 		lambdaQueryWrapper.eq(MenuRole::getRoleId, role.getId()).eq(MenuRole::getStatus, Constants.STATUS_OK);
 		List<MenuRole> menuRoleList = menuRoleServiceImpl.list(lambdaQueryWrapper);
 		menuRoleList.forEach(menuRole -> myMenuIds.add(menuRole.getMenuId()));
+
+		return myMenuIds;
+	}
+
+	/**
+	 * 超级管理员默认能看到所有菜单
+	 */
+	@Override
+	public List<Long> listMenusForAdmin() {
+		List<Long> myMenuIds = new ArrayList<>(100);
+
+		LambdaQueryWrapper<MenuRole> lambdaQueryWrapper = Wrappers.lambdaQuery();
+		lambdaQueryWrapper.eq(MenuRole::getStatus, Constants.STATUS_OK);
+		List<Menu> menuList = menuServiceImpl.list();
+		menuList.forEach(menu -> myMenuIds.add(menu.getMenuId()));
 
 		return myMenuIds;
 	}
