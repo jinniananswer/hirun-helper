@@ -57,6 +57,7 @@ public class MenuController {
         Set<Long> menuidSet = new HashSet<>();
 
         if (userContext.isAdmin()) {
+            log.info("我是超级管理员，能看到所有菜单！");
             menuServiceImpl.list();
             List<Long> menuids = menuServiceImpl.listMenusForAdmin();
             menuidSet.addAll(menuids);

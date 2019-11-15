@@ -10,6 +10,7 @@ import com.microtomato.hirun.modules.user.service.IFuncTempService;
 import com.microtomato.hirun.modules.user.service.impl.FuncRoleServiceImpl;
 import com.microtomato.hirun.modules.user.service.impl.UserRoleServiceImpl;
 import com.microtomato.hirun.modules.user.service.impl.UserServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -28,6 +29,7 @@ import java.util.*;
  * @author Steven
  * @date 2019-09-09
  */
+@Slf4j
 @Component
 public class CustomUserDetailsServiceImpl implements UserDetailsService {
 
