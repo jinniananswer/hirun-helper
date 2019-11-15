@@ -58,7 +58,11 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
         UserContext userContext = new UserContext();
 
         // 查询用户
-        User user = userServiceImpl.getOne(new QueryWrapper<User>().lambda().eq(User::getUsername, username));
+        User user = userServiceImpl.getOne(
+            new QueryWrapper<User>().lambda()
+                .select(User::getUserId, User::getUsername, User::getPassword, User::getMobileNo, User::getStatus)
+                .eq(User::getUsername, username)
+        );
         if (null == user) {
             // 这里找不到必须抛异常
             throw new UsernameNotFoundException("User " + username + " was not found in database!");
@@ -76,12 +80,12 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
         funcTempList.forEach(funcTemp -> funcSet.add(funcTemp.getFuncId().toString()));
 
         // 查用户角色
-        List<UserRole> userRoles = userRoleServiceImpl.list(new QueryWrapper<UserRole>().lambda().eq(UserRole::getUserId, user.getUserId()));
+        List<UserRole> userRoles = userRoleServiceImpl.list(new QueryWrapper<UserRole>().lambda().select(UserRole::getRoleId).eq(UserRole::getUserId, user.getUserId()));
 
         // 查用户角色对应的所有权限
         for (UserRole userRole : userRoles) {
             Long roleId = userRole.getRoleId();
-            List<FuncRole> funcRoleList = funcRoleServiceImpl.list(new QueryWrapper<FuncRole>().lambda().eq(FuncRole::getRoleId, roleId));
+            List<FuncRole> funcRoleList = funcRoleServiceImpl.list(new QueryWrapper<FuncRole>().lambda().select(FuncRole::getFuncId).eq(FuncRole::getRoleId, roleId));
             funcRoleList.forEach(funcRole -> funcSet.add(funcRole.getFuncId().toString()));
         }
 

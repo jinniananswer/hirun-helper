@@ -10,9 +10,7 @@ import com.microtomato.hirun.framework.util.TreeUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.system.entity.po.Menu;
 import com.microtomato.hirun.modules.system.service.IMenuService;
-import com.microtomato.hirun.modules.user.entity.po.FuncTemp;
 import com.microtomato.hirun.modules.user.entity.po.MenuTemp;
-import com.microtomato.hirun.modules.user.service.IFuncTempService;
 import com.microtomato.hirun.modules.user.service.IMenuTempService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,39 +41,19 @@ public class MenuController {
     @Autowired
     private IMenuTempService menuTempServiceImpl;
 
-    private void normal() {
-
-    }
-
     @GetMapping("/list")
     @RestResult
     public List<TreeNode> getMenuTree() {
 
         UserContext userContext = WebContextUtils.getUserContext();
-        Long userId = userContext.getUserId();
-        List<Role> roles = userContext.getRoles();
-        Set<Long> menuidSet = new HashSet<>();
 
+        Set<Long> menuidSet;
         if (userContext.isAdmin()) {
-            log.info("我是超级管理员，能看到所有菜单！");
-            menuServiceImpl.list();
-            List<Long> menuids = menuServiceImpl.listMenusForAdmin();
-            menuidSet.addAll(menuids);
+            // 查超级管理员能看到的菜单
+            menuidSet = listMenusForAdmin(userContext);
         } else {
-            log.info("查询临时菜单权限");
-            List<MenuTemp> menuTempList = menuTempServiceImpl.list(
-                new QueryWrapper<MenuTemp>().lambda()
-                    .select(MenuTemp::getMenuId)
-                    .eq(MenuTemp::getUserId, userId)
-                    .lt(MenuTemp::getExpireDate, LocalDateTime.now())
-            );
-            menuTempList.forEach(menuTemp -> menuidSet.add(menuTemp.getMenuId()));
-
-            // 查询归属角色下有权访问的菜单ID
-            for (Role role : roles) {
-                List<Long> menuids = menuServiceImpl.listMenusByRole(role);
-                menuidSet.addAll(menuids);
-            }
+            // 查普通用户能看到的菜单ID
+            menuidSet = listMenusForNormal(userContext);
         }
 
         // 查询所有非嵌入式菜单集合
@@ -118,6 +96,45 @@ public class MenuController {
 
         List<TreeNode> tree = TreeUtils.build(nodes);
         return tree;
+    }
+
+    /**
+     * 查超级管理员能看到的菜单ID
+     *
+     * @return 菜单 Id 集合
+     */
+    private Set<Long> listMenusForAdmin(UserContext userContext) {
+        log.debug("username: {}, 超级管理员，能看到所有菜单", userContext.getUsername());
+        Set<Long> rtn = new HashSet<>(100);
+        List<Long> menuids = menuServiceImpl.listMenusForAdmin();
+        rtn.addAll(menuids);
+        return rtn;
+    }
+
+    /**
+     * 查普通用户能看到的菜单ID
+     *
+     * @return 菜单 Id 集合
+     */
+    private Set<Long> listMenusForNormal(UserContext userContext) {
+        Set<Long> rtn = new HashSet<>(100);
+        log.debug("username: {}, 查询临时菜单权限 + 角色对应的菜单权限", userContext.getUsername());
+        List<MenuTemp> menuTempList = menuTempServiceImpl.list(
+            new QueryWrapper<MenuTemp>().lambda()
+                .select(MenuTemp::getMenuId)
+                .eq(MenuTemp::getUserId, userContext.getUserId())
+                .lt(MenuTemp::getExpireDate, LocalDateTime.now())
+        );
+        menuTempList.forEach(menuTemp -> rtn.add(menuTemp.getMenuId()));
+
+        // 查询归属角色下有权访问的菜单ID
+        List<Role> roles = userContext.getRoles();
+        for (Role role : roles) {
+            List<Long> menuids = menuServiceImpl.listMenusByRole(role);
+            rtn.addAll(menuids);
+        }
+
+        return rtn;
     }
 
     /**
