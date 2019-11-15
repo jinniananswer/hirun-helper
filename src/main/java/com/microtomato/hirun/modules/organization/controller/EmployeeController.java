@@ -51,14 +51,14 @@ public class EmployeeController {
 
     @RequestMapping("/verifyIdentityNo")
     @RestResult
-    public EmployeeDTO verifyIdentityNo(String createType, String identityNo) {
-        return this.employeeDomainServiceImpl.verifyIdentityNo(createType, identityNo);
+    public EmployeeDTO verifyIdentityNo(String createType, String identityNo, Long employeeId, String operType) {
+        return this.employeeDomainServiceImpl.verifyIdentityNo(createType, identityNo, employeeId, operType);
     }
 
     @RequestMapping("/verifyMobileNo")
     @RestResult
-    public void verifyMobileNo(String mobileNo) {
-        this.employeeDomainServiceImpl.verifyMobileNo(mobileNo);
+    public void verifyMobileNo(String mobileNo, String operType, Long employeeId) {
+        this.employeeDomainServiceImpl.verifyMobileNo(mobileNo, operType, employeeId);
     }
 
     @RequestMapping("/loadAbnormal")

@@ -14,6 +14,10 @@ public class EmployeeConst {
 
     public static final String CREATE_TYPE_REHELLORING = "2";
 
+    public static final String OPER_TYPE_CREATE = "create";
+
+    public static final String OPER_TYPE_EDIT = "edit";
+
     public static final String STATUS_NORMAL = "0";
 
     public static final String STATUS_RETIRE = "1";
@@ -22,8 +26,8 @@ public class EmployeeConst {
 
     public static final String JOB_ROLE_MAIN = "1";
 
-    //内部员工
-    public static final String TYPE_INSIDE = "1";
+    //全职员工
+    public static final String TYPE_FULL_TIME = "1";
 
     //外聘员工
     public static final String TYPE_OUTSIDE = "2";

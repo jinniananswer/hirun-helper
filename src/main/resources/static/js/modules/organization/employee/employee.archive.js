@@ -156,14 +156,12 @@ layui.extend({
             }
             var birthday = identityNo.substring(6, 10) + "-" + identityNo.substring(10, 12) + "-" + identityNo.substring(12, 14);
 
-            var year = layui.time.getYearDiff(birthday);
-            $("")
             laydate.render({
                 elem: '#birthday',
                 value: birthday
             });
 
-            var sex = parseInt(identityNo.substring(16, 1)) % 2;
+            var sex = parseInt(identityNo.substring(16, 17)) % 2;
             if (sex == 1) {
                 $("#male").prop("checked", "true");
                 form.render("radio");
@@ -182,13 +180,19 @@ layui.extend({
             }
 
             var createType = $("#createType").val();
+            var employeeId = $("#employeeId").val();
+            var operType = $("#operType").val();
 
-            layui.ajax.post('api/organization/employee/verifyIdentityNo', '&createType='+createType+'&identityNo='+identityNo, function(data){
+            layui.ajax.post('api/organization/employee/verifyIdentityNo', '&createType='+createType+'&identityNo='+identityNo+"&employeeId="+employeeId+'&operType='+operType, function(data){
                 var employee = data.rows;
                 if (employee == null) {
                     return;
                 }
                 var status = employee.status;
+
+                if (operType == "edit") {
+                    return;
+                }
                 if (status == "3") {
                     layui.employee.renderCreateType("该证件号码的员工"+employee.name+"已离职，是否做复职处理？", "2", employee.employeeId);
                 } else if (status == "1") {
@@ -203,7 +207,9 @@ layui.extend({
                 return;
             }
 
-            layui.ajax.post('api/organization/employee/verifyMobileNo', '&mobileNo='+mobileNo, function(data){
+            var operType = $("#operType").val();
+            var employeeId = $("#employeeId").val();
+            layui.ajax.post('api/organization/employee/verifyMobileNo', '&mobileNo='+mobileNo+'&operType='+operType+'&employeeId='+employeeId, function(data){
 
             });
         },
