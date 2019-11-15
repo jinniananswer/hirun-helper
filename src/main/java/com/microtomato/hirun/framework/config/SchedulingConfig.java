@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * 前端应用不启用 @EnableScheduling
  * 后台任务需启用 @EnableScheduling
  * <p>
- * 启用 @EnableScheduling 的方法两种人选其一：
+ * 启用 @EnableScheduling 的方法两种任选其一：
  * 1. application.yml 添加 scheduling.enabled: true
  * 2. 启动命令行添加 --scheduling.enabled=true
  *
