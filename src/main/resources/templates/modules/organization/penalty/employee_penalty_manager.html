@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>dolphin-admin</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/static/layui/css/layui.css" th:href="@{static/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" href="/static/css/admin.css" th:href="@{static/css/admin.css}" media="all">
+    <script src="../static/layui/layui.js" th:src="@{static/layui/layui.js}"></script>
+    <script src="../static/js/base.js" th:src="@{static/js/base.js}"></script>
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">员工奖惩列表</div>
+                <div class="layui-card-body">
+                    <form class="layui-form" id="query_form">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">姓名</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="employeeName" id="employeeName" autocomplete="off" class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">奖惩类型</label>
+                                <div class="layui-input-block">
+                                    <div class="layui-form" lay-filter="penaltyType">
+                                        <select id="penaltyType" name="penaltyType" lay-filter="penaltyType">
+
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">
+                                    <button class="layui-btn" type="button" id="queryEmployeePenalty"><i class="layui-icon">&#xe615;</i>查询</button>
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                    <table lay-even class="layui-hide" id="penalty_table" lay-filter="penalty_table" lay-size="lg"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/html" id="toolbar">
+    <div class="layui-btn-container">
+        <button class="layui-btn" lay-event="create">新增奖惩</button>
+    </div>
+</script>
+
+
+<script type="text/html" id="operateTmp">
+    <a href="#" class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">修改</a>
+    <a href="#" class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delete">删除</a>
+</script>
+
+<script>
+    layui.extend(
+        {
+            employeePenaltyManager: "{/}static/js/modules/organization/penalty/employee.penalty.manager"
+        }).use('employeePenaltyManager', function () {
+        layui.employeePenaltyManager.init();
+    })
+</script>
+</body>
+</html>
