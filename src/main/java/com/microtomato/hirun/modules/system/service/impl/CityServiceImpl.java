@@ -1,5 +1,6 @@
 package com.microtomato.hirun.modules.system.service.impl;
 
+import com.alibaba.druid.util.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
@@ -49,7 +50,7 @@ public class CityServiceImpl extends ServiceImpl<CityMapper, City> implements IC
         }
 
         for (City city : citys) {
-            if (cityId.equals(city.getId())) {
+            if (StringUtils.equals(cityId.toString(), city.getCityId())) {
                 return city;
             }
         }

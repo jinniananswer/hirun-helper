@@ -1,5 +1,6 @@
 package com.microtomato.hirun.modules.system.service.impl;
 
+import com.alibaba.druid.util.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
@@ -31,7 +32,7 @@ public class CountyServiceImpl extends ServiceImpl<CountyMapper, County> impleme
     @Override
     @Cacheable(value="all-counties")
     public List<County> getAllDatas() {
-        return null;
+        return this.list();
     }
 
     /**
@@ -49,7 +50,7 @@ public class CountyServiceImpl extends ServiceImpl<CountyMapper, County> impleme
         }
 
         for (County county : counties) {
-            if (countyId.equals(county.getId())) {
+            if (StringUtils.equals(countyId.toString(), county.getCountyId())) {
                 return county;
             }
         }

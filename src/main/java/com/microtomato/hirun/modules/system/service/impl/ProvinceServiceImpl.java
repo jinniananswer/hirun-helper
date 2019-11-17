@@ -1,5 +1,6 @@
 package com.microtomato.hirun.modules.system.service.impl;
 
+import com.alibaba.druid.util.StringUtils;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.modules.system.entity.po.Province;
@@ -49,7 +50,7 @@ public class ProvinceServiceImpl extends ServiceImpl<ProvinceMapper, Province> i
         }
 
         for (Province province : provinces) {
-            if (provinceId.equals(province.getId())) {
+            if (StringUtils.equals(provinceId.toString(), province.getProvinceId())) {
                 return province;
             }
         }
