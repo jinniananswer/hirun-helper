@@ -9,7 +9,9 @@ import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.TreeUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.system.entity.po.Menu;
+import com.microtomato.hirun.modules.system.entity.po.Page;
 import com.microtomato.hirun.modules.system.service.IMenuService;
+import com.microtomato.hirun.modules.system.service.IPageService;
 import com.microtomato.hirun.modules.user.entity.po.MenuTemp;
 import com.microtomato.hirun.modules.user.service.IMenuTempService;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +41,9 @@ public class MenuController {
     private IMenuService menuServiceImpl;
 
     @Autowired
+    private IPageService pageServiceImpl;
+
+    @Autowired
     private IMenuTempService menuTempServiceImpl;
 
     @GetMapping("/list")
@@ -56,7 +61,7 @@ public class MenuController {
             menuidSet = listMenusForNormal(userContext);
         }
 
-        // 查询所有非嵌入式菜单集合
+        // 查询所有菜单集合
         Map<Long, Menu> menuMap = menuServiceImpl.listAllMenus(false);
 
         // 根据权限进行过滤
@@ -71,6 +76,15 @@ public class MenuController {
 
                 // 递归增加父菜单
                 addParentMenus(currMenu, filteredMenuMap, menuMap);
+            }
+        }
+
+        // 查询所有页面
+        Map<Long, Page> pageMap = pageServiceImpl.listAllPages();
+        for (Page page : pageMap.values()) {
+            // 如果页面的归属菜单有权限，那么将此页面 url 加入可信集合。
+            if (menuidSet.contains(page.getMenuId())) {
+                menuUrls.add(page.getUrl());
             }
         }
 

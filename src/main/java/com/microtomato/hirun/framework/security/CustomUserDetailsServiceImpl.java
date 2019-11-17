@@ -75,12 +75,15 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
             new QueryWrapper<FuncTemp>().lambda()
                 .select(FuncTemp::getFuncId)
                 .eq(FuncTemp::getUserId, user.getUserId())
-                .lt(FuncTemp::getExpireDate, LocalDateTime.now())
+                .gt(FuncTemp::getExpireDate, LocalDateTime.now())
         );
         funcTempList.forEach(funcTemp -> funcSet.add(funcTemp.getFuncId().toString()));
 
         // 查用户角色
-        List<UserRole> userRoles = userRoleServiceImpl.list(new QueryWrapper<UserRole>().lambda().select(UserRole::getRoleId).eq(UserRole::getUserId, user.getUserId()));
+        LocalDateTime now = LocalDateTime.now();
+        List<UserRole> userRoles = userRoleServiceImpl.list(new QueryWrapper<UserRole>().lambda().select(UserRole::getRoleId)
+            .eq(UserRole::getUserId, user.getUserId()).lt(UserRole::getStartDate, now).gt(UserRole::getEndDate, now)
+        );
 
         // 查用户角色对应的所有权限
         for (UserRole userRole : userRoles) {
