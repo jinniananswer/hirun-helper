@@ -1,5 +1,6 @@
 package com.microtomato.hirun.modules.organization.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import com.microtomato.hirun.modules.organization.entity.consts.EmployeeConst;
@@ -10,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * <p>
@@ -66,6 +68,16 @@ public class EmployeeHistoryServiceImpl extends ServiceImpl<EmployeeHistoryMappe
         history.setEventContent("回到鸿扬大家庭发挥余热的第一天");
 
         this.save(history);
+    }
+
+    /**
+     * 查询员工历史信息
+     * @param employeeId
+     * @return
+     */
+    @Override
+    public List<EmployeeHistory> queryHistories(Long employeeId) {
+        return this.list(new QueryWrapper<EmployeeHistory>().lambda().eq(EmployeeHistory::getEmployeeId, employeeId).orderByAsc(EmployeeHistory::getEventDate));
     }
 
     /**

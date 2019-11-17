@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeHistory;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * <p>
@@ -20,4 +21,6 @@ public interface IEmployeeHistoryService extends IService<EmployeeHistory> {
     void createRehire(Long employeeId, LocalDate eventDate);
 
     void createRehelloring(Long employeeId, LocalDate eventDate);
+
+    List<EmployeeHistory> queryHistories(Long employeeId);
 }

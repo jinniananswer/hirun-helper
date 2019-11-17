@@ -1,6 +1,5 @@
 package com.microtomato.hirun.modules.system.service.impl;
 
-import com.alibaba.druid.util.StringUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.util.ArrayUtils;
@@ -9,9 +8,11 @@ import com.microtomato.hirun.modules.system.entity.po.StaticData;
 import com.microtomato.hirun.modules.system.mapper.StaticDataMapper;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,19 +27,41 @@ import java.util.List;
 @Service
 public class StaticDataServiceImpl extends ServiceImpl<StaticDataMapper, StaticData> implements IStaticDataService {
 
+    /**
+     * 根据类型获取静态参数表数据
+     * @param codeType
+     * @return
+     */
     @Override
     @Cacheable(value = "static-data-with-codetype")
     public List<StaticData> getStaticDatas(String codeType) {
-        List<StaticData> datas = this.list(new QueryWrapper<StaticData>().lambda()
-                                                                         .eq(StaticData::getCodeType, codeType)
-                                                                         .eq(StaticData::getStatus, "0")
-                                                                         .orderByAsc(StaticData::getSortNo));
-        return datas;
+        IStaticDataService staticDataService = SpringContextUtils.getBean(StaticDataServiceImpl.class);
+        List<StaticData> datas = staticDataService.getAllDatas();
+        if (ArrayUtils.isEmpty(datas)) {
+            return null;
+        }
+
+        List<StaticData> result = new ArrayList<StaticData>();
+        for (StaticData data : datas) {
+            if (StringUtils.equals(codeType, data.getCodeType())) {
+                result.add(data);
+            }
+        }
+        return result;
     }
 
+    /**
+     * 根据参数类型和参数值翻译参数名称
+     * @param codeType
+     * @param codeValue
+     * @return
+     */
     @Override
     @Cacheable(value="codename-with-codetype-value")
     public String getCodeName(String codeType, String codeValue) {
+        if (StringUtils.isBlank(codeValue)) {
+            return "";
+        }
         IStaticDataService staticDataService = SpringContextUtils.getBean(StaticDataServiceImpl.class);
         List<StaticData> datas = staticDataService.getStaticDatas(codeType);
         if (ArrayUtils.isEmpty(datas)) {
@@ -52,5 +75,16 @@ public class StaticDataServiceImpl extends ServiceImpl<StaticDataMapper, StaticD
         }
 
         return null;
+    }
+
+    /**
+     *查询所有的静态参数数据
+     * @return
+     */
+    @Override
+    @Cacheable(value="static-data-all")
+    public List<StaticData> getAllDatas() {
+        List<StaticData> datas = this.list(new QueryWrapper<StaticData>().lambda().eq(StaticData::getStatus, "0"));
+        return datas;
     }
 }

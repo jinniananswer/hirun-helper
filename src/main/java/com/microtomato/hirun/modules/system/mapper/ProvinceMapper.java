@@ -9,8 +9,8 @@ import com.microtomato.hirun.framework.annotation.Storage;
  *  Mapper 接口
  * </p>
  *
- * @author Steven
- * @since 2019-11-15
+ * @author jinnian
+ * @since 2019-11-17
  */
 @Storage
 public interface ProvinceMapper extends BaseMapper<Province> {

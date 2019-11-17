@@ -24,4 +24,6 @@ public interface IStaticDataService extends IService<StaticData> {
     List<StaticData> getStaticDatas(String codeType);
 
     String getCodeName(String codeType, String codeValue);
+
+    List<StaticData> getAllDatas();
 }
