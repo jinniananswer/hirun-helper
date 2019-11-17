@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>dolphin-admin</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/static/layui/css/layui.css" th:href="@{static/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" href="/static/css/admin.css" th:href="@{static/css/admin.css}" media="all">
+    <link rel="stylesheet" href="/static/css/template.css" th:href="@{static/css/template.css}" media="all">
+    <script src="../static/layui/layui.js" th:src="@{static/layui/layui.js}"></script>
+    <script src="../static/js/base.js" th:src="@{static/js/base.js}"></script>
+    <style>
+        .layui-form-label {
+            width: 65px;
+        }
+
+        .layui-form-label.layui-required:before {
+            content: "*";
+            color: #FF5722;
+        }
+
+        .layui-input-block {
+            margin-left: 95px;
+        }
+
+        .layui-card-body {
+            margin: 0px
+        }
+    </style>
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="layui-form" lay-filter="employee-trans-form" id="employee-trans-form"
+                 style="padding: 20px 30px 0 0;">
+                <div class="layui-form-item">
+                    <label class="layui-form-label layui-required">员工</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="employeeName" name="employeeName" onclick="layui.updateEmployeePenalty.selectEmployee();" placeholder="请选择事件员工" autocomplete="off" class="layui-input" required lay-verify="required"/>
+                        <input type="hidden" id="employeeId" name="employeeId"/>
+                        <input type="hidden" id="penaltyTypeValue" name="penaltyTypeValue"/>
+                        <input type="hidden" id="id" name="id"/>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label layui-required">奖惩类型</label>
+                    <div class="layui-input-block">
+                        <div class="layui-form" lay-filter="penaltyType">
+                            <select id="penaltyType" name="penaltyType" lay-filter="penaltyType">
+
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label layui-required">事件时间</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="penaltyTime" name="penaltyTime"  lay-verify="required" readonly
+                               autocomplete="off" class="layui-input"/>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label layui-required">事件分数</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="penaltyScore" name="penaltyScore"  lay-verify="required" autocomplete="off" class="layui-input"/>
+                    </div>
+                </div>
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label layui-required">事件内容</label>
+                    <div class="layui-input-block">
+                        <textarea name="penaltyContent" id="penaltyContent" autocomplete="off" class="layui-textarea"></textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">备注</label>
+                    <div class="layui-input-block">
+                        <textarea name="remark" id="remark"  autocomplete="off" class="layui-textarea"></textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <input type="button" lay-submit lay-filter="update-employeePenalty-submit" id="update-employeePenalty-submit"
+                           value="确定">
+                    <input type="button" lay-submit lay-filter="employee-cancle-submit" id="employee-cancle-submit"
+                           value="取消">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="employeeList" style="display:none">
+
+</div>
+<script>
+    layui.extend(
+        {
+            updateEmployeePenalty: "{/}static/js/modules/organization/penalty/update.employee.penalty"
+        }).use('updateEmployeePenalty', function () {
+        layui.updateEmployeePenalty.init();
+    })
+</script>
+</body>
+</html>
