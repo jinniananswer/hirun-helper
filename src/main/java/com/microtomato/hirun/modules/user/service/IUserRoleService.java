@@ -3,6 +3,8 @@ package com.microtomato.hirun.modules.user.service;
 import com.microtomato.hirun.modules.user.entity.po.UserRole;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.time.LocalDateTime;
+
 /**
  * <p>
  *  服务类
@@ -19,6 +21,8 @@ public interface IUserRoleService extends IService<UserRole> {
      * @param userId 用户Id
      * @param orgId 部门Id，对应 ins_org.org_id
      * @param jobRole 岗位编码，对应 code_value, select * from sys_static_data t where t.code_type='JOB_ROLE';
+     * @param startDateTime 生效时间
+     * @param endDateTime 失效时间
      */
-    void createUserRole(Long userId, Long orgId, String jobRole);
+    void createUserRole(Long userId, Long orgId, String jobRole, LocalDateTime startDateTime, LocalDateTime endDateTime);
 }
