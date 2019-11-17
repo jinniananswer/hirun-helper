@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>dolphin-admin</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/static/layui/css/layui.css" th:href="@{static/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" href="/static/css/admin.css" th:href="@{static/css/admin.css}" media="all">
+    <link rel="stylesheet" href="/static/css/template.css" th:href="@{static/css/template.css}" media="all">
+    <script src="../static/layui/layui.js" th:src="@{static/layui/layui.js}"></script>
+    <script src="../static/js/base.js" th:src="@{static/js/base.js}"></script>
+</head>
+<body>
+<div class="layui-fluid layadmin-homepage-fluid">
+    <div class="layui-row layui-col-space8">
+        <div class="layui-col-md2">
+            <div class="layadmin-homepage-panel layadmin-homepage-shadow">
+                <div class="layui-card text-center">
+                    <div class="layui-card-body" id="employeeMain">
+
+                    </div>
+                </div>
+                <div class="layadmin-homepage-pad-hor">
+
+                </div>
+                <p class="layadmin-homepage-about">
+                    技能
+                </p>
+                <ul class="layadmin-homepage-list-inline" id="employeeTech">
+
+                </ul>
+            </div>
+        </div>
+        <div class="layui-col-md10">
+            <div class="layui-fluid layadmin-homepage-content">
+                <div class="layui-row layui-col-space20 layadmin-homepage-list-imgtxt">
+                    <div class="layui-col-md9">
+                        <div class="grid-demo">
+                            <div class="panel-body layadmin-homepage-shadow">
+                                <div class="layui-tab layui-tab-brief" lay-filter="employeeTab">
+                                    <ul class="layui-tab-title">
+                                        <li class="layui-this" lay-id="1">档案信息</li>
+                                        <li lay-id="2">培训学习</li>
+                                    </ul>
+                                    <div class="layui-tab-content">
+                                        <div class="layui-tab-item layui-show">
+                                            <br/>
+                                            <fieldset class="layui-elem-field">
+                                                <legend>基本信息</legend>
+                                                <div class="layui-field-box" id="employeeBase">
+
+                                                </div>
+                                            </fieldset>
+                                            <fieldset class="layui-elem-field">
+                                                <legend>岗位信息</legend>
+                                                <div class="layui-field-box" id="employeeJob">
+
+                                                </div>
+                                            </fieldset>
+                                            <fieldset class="layui-elem-field">
+                                                <legend>教育信息</legend>
+                                                <div class="layui-field-box" id="employeeEducation">
+
+                                                </div>
+                                            </fieldset>
+                                            <fieldset class="layui-elem-field">
+                                                <legend>工作经历</legend>
+                                                <div class="layui-field-box" id="employeeWorkExperience">
+
+                                                </div>
+                                            </fieldset>
+                                        </div>
+                                        <div class="layui-tab-item">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md3">
+                        <div class="grid-demo">
+                            <div class="layui-card homepage-top">
+                                <div class="layui-card-header">
+                                    <h3 class="panel-title">
+                                        <i class="layui-icon layui-icon-rate-solid"></i>
+                                        鸿扬工作经历
+                                    </h3>
+                                </div>
+                                <div class="layui-card-body">
+                                    <ul class="layui-timeline" id="employeeHistory">
+
+
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script id="employeeMainInfo" type="text/html">
+    <div class="layadmin-homepage-pad-ver">
+        {{# if (d.sexName == '男' ) { }}
+            <img class="layadmin-homepage-pad-img" src="static/img/male.jpg" width="96" height="96">
+        {{# } else { }}
+            <img class="layadmin-homepage-pad-img" src="static/img/female.jpg" width="96" height="96">
+        {{# } }}
+    </div>
+    <h4 class="layadmin-homepage-font">{{d.name}}</h4>
+    <p class="layadmin-homepage-min-font">{{d.orgPath}}</p>
+    <p class="layadmin-homepage-min-font">{{d.jobRoleName}}</p>
+    <ul class="layadmin-homepage-list-group">
+        <li class="list-group-item"><i class="layui-icon layui-icon-cellphone"></i>{{d.mobileNo}}</li>
+        <li class="list-group-item"></li>
+    </ul>
+</script>
+<script id="employeeTechInfo" type="text/html">
+    <a href="javascript:;" class="layui-btn layui-btn-primary">{{d.jobRoleName}}</a>
+</script>
+<script id="employeeBaseInfo" type="text/html">
+    <div class="layadmin-caller">
+        <div class="caller-contar">
+            <div class="caller-item" style="border-bottom:0px">
+                <div class="caller-main caller-fl">
+                    <p><strong>姓名：{{d.name}}</strong></p>
+                    <p class="caller-adds"><i class="layui-icon layui-icon-username"></i><em>性别：</em><strong>{{d.sexName}}</strong></p>
+                    <p class="caller-adds"><i class="layui-icon layui-icon-form"></i><em>身份证号码：</em><strong>{{d.identityNo}}</strong></p>
+                    <p class="caller-adds"><i class="layui-icon layui-icon-star"></i><em>生日：</em><strong>{{layui.employee.transUndefined(d.birthday)}}</strong></p>
+                    <p class="caller-adds"><i class="layui-icon layui-icon-rate-solid"></i><em>年龄：</em><strong>{{layui.employee.transUndefined(d.age)}}</strong></p>
+                    <p class="caller-adds"><i class="layui-icon layui-icon-cellphone"></i><em>手机号码：</em><strong>{{layui.employee.transUndefined(d.mobileNo)}}</strong></p>
+                    <p class="caller-adds"><i class="layui-icon layui-icon-note"></i><em>在职类型：</em><strong>{{layui.employee.transUndefined(d.typeName)}}</strong></p>
+                    <p class="caller-adds"><i class="layui-icon layui-icon-location"></i><em>家庭所在地：</em><strong>{{layui.employee.transUndefined(d.homeArea)}}</strong></p>
+                    <p class="caller-adds"><i class="layui-icon layui-icon-home"></i><em>详细家庭住址：</em><strong>{{layui.employee.transUndefined(d.homeAddress)}}</strong></p>
+                    <p class="caller-adds"><i class="layui-icon layui-icon-location"></i><em>籍贯所在地：</em><strong>{{layui.employee.transUndefined(d.nativeArea)}}</strong></p>
+                    <p class="caller-adds"><i class="layui-icon layui-icon-home"></i><em>籍贯详细地址：</em><strong>{{layui.employee.transUndefined(d.nativeAddress)}}</strong></p>
+                    <p class="caller-adds"><i class="layui-icon layui-icon-date"></i><em>入职日期：</em><strong>{{layui.employee.transUndefined(d.inDate)}}</strong></p>
+                    <p class="caller-adds"><i class="layui-icon layui-icon-date"></i><em>转正日期：</em><strong>{{layui.employee.transUndefined(d.regularDate)}}</strong></p>
+                    <p class="caller-adds"><i class="layui-icon layui-icon-flag"></i><em>司龄：</em><strong>{{layui.employee.transUndefined(d.companyAge)}}年</strong></p>
+                    <p class="caller-adds"><i class="layui-icon layui-icon-flag"></i><em>在职状态：</em><strong>{{layui.employee.transUndefined(d.statusName)}}</strong></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+<script id="employeeJobInfo" type="text/html">
+    <div class="layadmin-caller">
+        <div class="caller-contar">
+            <div class="caller-item" style="border-bottom:0px">
+                <div class="caller-main caller-fl">
+                    <p class="caller-adds"><i class="layui-icon layui-icon-website"></i><em>所在部门：</em><strong>{{layui.employee.transUndefined(d.orgPath)}}</strong></p>
+                    <p class="caller-adds"><i class="layui-icon layui-icon-edit"></i><em>岗位：</em><strong>{{layui.employee.transUndefined(d.jobRoleName)}}</strong></p>
+                    <p class="caller-adds"><i class="layui-icon layui-icon-util"></i><em>岗位性质：</em><strong>{{layui.employee.transUndefined(d.jobRoleNatureName)}}</strong></p>
+                    <p class="caller-adds"><i class="layui-icon layui-icon-rmb"></i><em>业务折算比例：</em><strong>{{layui.employee.transUndefined(d.discountRate)}}</strong></p>
+                    <p class="caller-adds"><i class="layui-icon layui-icon-user"></i><em>上级：</em><strong>{{layui.employee.transUndefined(d.parentEmployeeName)}}</strong></p>
+                    <p class="caller-adds"><i class="layui-icon layui-icon-top"></i><em>技术职称：</em><strong>{{layui.employee.transUndefined(d.techTitle)}}</strong></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+<script id="employeeEducationInfo" type="text/html">
+    <div class="layadmin-caller">
+        <div class="caller-contar">
+            <div class="caller-item" style="border-bottom:0px">
+                <div class="caller-main caller-fl">
+                    <p class="caller-adds"><i class="layui-icon layui-icon-list"></i><em>最高学历：</em><strong>{{layui.employee.transUndefined(d.educationLevelName)}}</strong></p>
+                    <p class="caller-adds"><i class="layui-icon layui-icon-list"></i><em>第一学历：</em><strong>{{layui.employee.transUndefined(d.firstEducationLevelName)}}</strong></p>
+                    <p class="caller-adds"><i class="layui-icon layui-icon-home"></i><em>毕业学校：</em><strong>{{layui.employee.transUndefined(d.school)}}</strong></p>
+                    <p class="caller-adds"><i class="layui-icon layui-icon-template"></i><em>学校类型：</em><strong>{{layui.employee.transUndefined(d.schoolTypeName)}}</strong></p>
+                    <p class="caller-adds"><i class="layui-icon layui-icon-tips"></i><em>专业：</em><strong>{{layui.employee.transUndefined(d.major)}}</strong></p>
+                    <p class="caller-adds"><i class="layui-icon layui-icon-file"></i><em>毕业证书编号：</em><strong>{{layui.employee.transUndefined(d.certificateNo)}}</strong></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+<script id="employeeWorkExperienceInfo" type="text/html">
+    {{# if (d.workExperiences != null && d.workExperiences.length > 0) { }}
+        <div class="layadmin-caller">
+            <div class="caller-contar">
+                <div class="caller-item" style="border-bottom:0px">
+                    <div class="caller-main caller-fl">
+                        {{#  layui.each(d.workExperiences, function(index, item){ }}
+                            <p class="caller-adds"><i class="layui-icon layui-icon-date"></i><em>开始时间：</em><strong>{{layui.employee.transUndefined(item.startDate)}}</strong>~<em>结束时间：</em><strong>{{layui.employee.transUndefined(item.endDate)}}</strong></p>
+                            <p class="caller-adds"><i class="layui-icon layui-icon-list"></i><em>工作内容：</em><strong>{{layui.employee.transUndefined(item.content)}}</strong></p>
+                            <br/>
+                        {{#  }); }}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{# } else { }}
+        <p>暂无信息</p>
+    {{# } }}
+</script>
+<script id="employeeHistoryInfo" type="text/html">
+    {{# if (d.histories != null && d.histories.length > 0) { }}
+    {{#  layui.each(d.histories, function(index, item){ }}
+    <li class="layui-timeline-item">
+        <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+        <div class="layui-timeline-content layui-text">
+            <h3 class="layui-timeline-title">{{layui.employee.transUndefined(item.eventDate)}}</h3>
+            <p>
+                {{layui.employee.transUndefined(item.eventContent)}}
+            </p>
+        </div>
+    </li>
+    {{#  }); }}
+    {{# } else { }}
+    <li><p>暂无信息</p></li>
+    {{# } }}
+</script>
+<script>
+    layui.extend(
+        {
+            employee : "{/}static/js/modules/organization/employee/my.archive"
+        }
+    ).use('employee',function(args){
+        layui.employee.init();
+    });
+</script>
+</body>
+</html>
