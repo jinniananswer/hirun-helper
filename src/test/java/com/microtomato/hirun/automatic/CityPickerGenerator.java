@@ -27,8 +27,8 @@ import java.util.List;
  */
 
 @Slf4j
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = HirunHelperApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+//@RunWith(SpringRunner.class)
+//@SpringBootTest(classes = HirunHelperApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class CityPickerGenerator {
 
     @Autowired
@@ -41,7 +41,7 @@ public class CityPickerGenerator {
     private ICountyService countyServiceImpl;
 
 
-    @Test
+    //@Test
     public void createData() throws IOException {
 
         //文件目录
