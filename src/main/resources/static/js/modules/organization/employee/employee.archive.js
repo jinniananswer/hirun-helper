@@ -288,6 +288,12 @@ layui.extend({
                 $("#parentEmployeeName").val(parentEmployeeName);
             }
 
+            var parentEmployeeId = employeeJobRole.parentEmployeeId;
+            if (parentEmployeeId != null) {
+                $(document.getElementById("employeeJobRole.parentEmployeeId")).val(parentEmployeeId);
+            }
+
+
             var jobGrade = employeeJobRole.jobGrade;
             if (jobGrade != null) {
                 $(document.getElementById("employeeJobRole.jobGrade")).val(jobGrade);
