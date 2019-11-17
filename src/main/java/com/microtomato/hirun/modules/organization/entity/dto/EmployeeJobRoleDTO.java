@@ -31,4 +31,6 @@ public class EmployeeJobRoleDTO {
 
     private String jobLevel;
 
+    private String jobGrade;
+
 }

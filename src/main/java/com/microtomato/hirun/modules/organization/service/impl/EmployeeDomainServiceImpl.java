@@ -11,13 +11,11 @@ import com.microtomato.hirun.modules.organization.entity.domain.EmployeeBlackLis
 import com.microtomato.hirun.modules.organization.entity.domain.EmployeeDO;
 import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
 import com.microtomato.hirun.modules.organization.entity.dto.*;
-import com.microtomato.hirun.modules.organization.entity.po.Employee;
-import com.microtomato.hirun.modules.organization.entity.po.EmployeeBlacklist;
-import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
-import com.microtomato.hirun.modules.organization.entity.po.EmployeeWorkExperience;
+import com.microtomato.hirun.modules.organization.entity.po.*;
 import com.microtomato.hirun.modules.organization.exception.EmployeeException;
 import com.microtomato.hirun.modules.organization.mapper.EmployeeMapper;
 import com.microtomato.hirun.modules.organization.service.*;
+import com.microtomato.hirun.modules.system.entity.domain.AddressDO;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import com.microtomato.hirun.modules.user.entity.consts.UserConst;
 import com.microtomato.hirun.modules.user.entity.domain.UserDO;
@@ -64,6 +62,9 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
 
     @Autowired
     private IEmployeeBlacklistService employeeBlacklistService;
+
+    @Autowired
+    private IEmployeeHistoryService employeeHistoryService;
 
     @Autowired
     private EmployeeMapper employeeMapper;
@@ -151,7 +152,6 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
 
         EmployeeDTO employeeDTO = new EmployeeDTO();
         BeanUtils.copyProperties(employee, employeeDTO);
-        int age = employeeDO.getAge();
         int jobYear = employeeDO.getJobYear();
 
         employeeDTO.setJobYear(new Integer(jobYear));
@@ -354,5 +354,73 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         return iPage.setRecords(employeeDTOList);
     }
 
+    /**
+     * 加载员工档案
+     * @param employeeId
+     * @return
+     */
+    @Override
+    public EmployeeArchiveDTO loadMyArchive(Long employeeId) {
+        Employee employee = this.employeeService.getById(employeeId);
 
+        EmployeeArchiveDTO archive = new EmployeeArchiveDTO();
+        BeanUtils.copyProperties(employee, archive);
+
+        EmployeeJobRole jobRole = this.employeeJobRoleService.queryValidMain(employeeId);
+        BeanUtils.copyProperties(jobRole, archive);
+
+        List<EmployeeHistory> histories = this.employeeHistoryService.queryHistories(employeeId);
+        if (ArrayUtils.isNotEmpty(histories)) {
+            List<EmployeeHistoryDTO> historyDTOs = new ArrayList<>();
+            for (EmployeeHistory history : histories) {
+                EmployeeHistoryDTO historyDTO = new EmployeeHistoryDTO();
+                BeanUtils.copyProperties(history, historyDTO);
+
+                historyDTO.setEventTypeName(this.staticDataService.getCodeName("HISTORY_EVENT_TYPE", history.getEventType()));
+                historyDTOs.add(historyDTO);
+            }
+            archive.setHistories(historyDTOs);
+        }
+
+        List<EmployeeWorkExperience> workExperiences = this.employeeWorkExperienceService.queryByEmployeeId(employeeId);
+        if (ArrayUtils.isNotEmpty(workExperiences)) {
+            List<EmployeeWorkExperienceDTO> workExperienceDTOS = new ArrayList<>();
+            for (EmployeeWorkExperience workExperience : workExperiences) {
+                EmployeeWorkExperienceDTO workExperienceDTO = new EmployeeWorkExperienceDTO();
+                BeanUtils.copyProperties(workExperience, workExperienceDTO);
+                workExperienceDTOS.add(workExperienceDTO);
+            }
+            archive.setWorkExperiences(workExperienceDTOS);
+        }
+
+        EmployeeDO employeeDO = new EmployeeDO(employee);
+        archive.setSexName(this.staticDataService.getCodeName("SEX", employee.getSex()));
+        archive.setAge(employeeDO.getAge() + "");
+        archive.setTypeName(this.staticDataService.getCodeName("EMPLOYEE_TYPE", employee.getType()));
+
+        AddressDO addressDO = SpringContextUtils.getBean(AddressDO.class);
+        archive.setNativeArea(addressDO.getFullName(employee.getNativeRegion()));
+        archive.setHomeArea(addressDO.getFullName(employee.getHomeRegion()));
+        archive.setCompanyAge(employeeDO.getJobYear() + "");
+        archive.setEducationLevelName(this.staticDataService.getCodeName("EDUCATION_LEVEL", employee.getEducationLevel()));
+        archive.setFirstEducationLevelName(this.staticDataService.getCodeName("EDUCATION_LEVEL", employee.getFirstEducationLevel()));
+        archive.setSchoolTypeName(this.staticDataService.getCodeName("SCHOOL_TYPE", employee.getSchoolType()));
+        archive.setStatusName(this.staticDataService.getCodeName("EMPLOYEE_STATUS", employee.getStatus()));
+
+        archive.setJobRoleName(this.staticDataService.getCodeName("JOB_ROLE", jobRole.getJobRole()));
+
+        Long parentEmployeeId = jobRole.getParentEmployeeId();
+        if (parentEmployeeId != null) {
+            Employee parentEmployee = this.employeeService.getById(parentEmployeeId);
+            if (parentEmployee != null) {
+                archive.setParentEmployeeName(parentEmployee.getName());
+            }
+        }
+
+        OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, jobRole.getOrgId());
+        archive.setOrgPath(orgDO.getCompanyLinePath());
+        archive.setJobRoleNatureName(this.staticDataService.getCodeName("JOB_NATURE", jobRole.getJobRoleNature()));
+
+        return archive;
+    }
 }

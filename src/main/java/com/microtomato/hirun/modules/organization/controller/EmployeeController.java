@@ -3,6 +3,8 @@ package com.microtomato.hirun.modules.organization.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
+import com.microtomato.hirun.framework.security.UserContext;
+import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.organization.entity.dto.*;
 import com.microtomato.hirun.modules.organization.service.IEmployeeDomainService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
@@ -89,6 +91,17 @@ public class EmployeeController {
     public boolean destroyEmployee(EmployeeDestroyInfoDTO employeeDestroyInfoDTO) {
         boolean destroyRusult=employeeDomainServiceImpl.destroyEmployee(employeeDestroyInfoDTO);
         return destroyRusult;
+    }
+
+    @RequestMapping("/loadEmployeeArchive")
+    @RestResult
+    public EmployeeArchiveDTO loadEmployeeArchive(Long employeeId) {
+        if (employeeId == null) {
+            UserContext userContext = WebContextUtils.getUserContext();
+            employeeId = userContext.getEmployeeId();
+        }
+
+        return this.employeeDomainServiceImpl.loadMyArchive(employeeId);
     }
 
     /**
