@@ -19,7 +19,7 @@ layui.extend({
                 url: 'api/organization/employee/queryEmployeeList4Page',
                 //loading: true,
                 toolbar: '#toolbar',
-                defaultToolbar: ['exports'],
+                defaultToolbar: [''],
                 parseData: function (res) { //res 即为原始返回的数据
                     return {
                         "code": res.code, //解析接口状态
@@ -68,11 +68,6 @@ layui.extend({
                 ],
                 page: true,
                 text: {none: '暂无相关数据，请检查查询条件。'},
-                done: function (res, curr, count) {
-                    layui.ajax.post('api/organization/employee/queryEmployeeList4Export', '', function (data) {
-                        exportData = data.rows;
-                    })
-                }
             });
 
 
@@ -84,7 +79,7 @@ layui.extend({
                     where: {
                         name: $("input[name='name']").val(),
                         sex: $("select[name='sex']").val(),
-                        orgId: $("input[name='orgId']").val(),
+                        orgSet: $("input[name='orgSet']").val(),
                         mobileNo: $("input[name='mobileNo']").val(),
                         employeeStatus: $("select[name='employeeStatus']").val(),
                         type: $("select[name='type']").val(),
@@ -100,7 +95,7 @@ layui.extend({
                 var data = checkStatus.data;
                 var event = obj.event;
 
-                if ((event != 'create' && event != 'LAYTABLE_EXPORT') && data.length <= 0) {
+                if ((event != 'create' && event != 'export') && data.length <= 0) {
                     layer.msg('请选中一条数据,再进行操作。');
                     return;
                 }
@@ -137,8 +132,8 @@ layui.extend({
                     }
                 } else if (event === 'contract') {
                     employee.contractManager(data[0]);
-                } else if (event === 'LAYTABLE_EXPORT') {
-                    table.exportFile(ins.config.id, exportData, 'xls');
+                } else if (event === 'export') {
+                    employee.export();
                 }
             });
 
@@ -198,12 +193,16 @@ layui.extend({
         },
 
         selectOrg: function () {
-            layui.orgTree.init('orgTree', 'orgId', 'orgPath', false);
+            layui.orgTree.init('orgTree', 'orgSet', 'orgPath', true);
         },
 
         edit: function (data) {
             layui.redirect.open('openUrl?url=/modules/organization/employee/employee_archive&operType=edit&employeeId=' + data.employeeId, '编辑员工资料');
         },
+
+        export: function(){
+            window.location.href = "api/organization/employee/queryEmployeeList4Export";
+        }
 
     };
     exports('employee', employee);

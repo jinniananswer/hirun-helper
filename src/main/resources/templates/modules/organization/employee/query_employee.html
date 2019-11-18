@@ -37,7 +37,7 @@
                                 <label class="layui-form-label">部门：</label>
                                 <div class="layui-input-block">
                                     <input type="text" id="orgPath" name="orgPath" onclick="layui.employee.selectOrg();" placeholder="请点击选择部门" autocomplete="off" class="layui-input"/>
-                                    <input type="hidden" id="orgId" name="orgId"/>
+                                    <input type="hidden" id="orgSet" name="orgSet"/>
                                 </div>
                             </div>
                             <div class="layui-inline">
@@ -101,6 +101,7 @@
         <button class="layui-btn layui-btn-warm"  lay-event="holiday"><i class="layui-icon layui-icon-log"></i>休假</button>
         <button class="layui-btn" style="background-color:#13227a;" lay-event="transOrg"><i class="layui-icon">&#x21c4;</i>调动</button>
         <button class="layui-btn " style="background-color:#e87233;"  lay-event="contract"><i class="layui-icon layui-icon-templeate-1"></i>合同</button>
+        <button class="layui-btn"  lay-event="export"><i class="layui-icon layui-icon-download-circle"></i>导出</button>
     </div>
 </script>
 

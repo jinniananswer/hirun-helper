@@ -235,7 +235,8 @@ public class OrgDO {
     }
 
     /**
-     * 根据输入的orgId查询出下级部门的集合
+     * 递归查找所在部门位于某类型的父子线上的所有组织,返回结果为orgId集合
+     *
      * @return
      */
     public String getOrgLine() {
@@ -243,19 +244,20 @@ public class OrgDO {
         if (orgs.size() <= 0) {
             return null;
         }
-        String orgLine = buildSubOrg(this.org.getOrgId(), orgs, this.org.getOrgId()+"");
+        Org orgPO = findParent("2", orgs, this.org.getOrgId());
+        String orgLine = buildSubOrg(orgPO.getOrgId(), orgs, orgPO.getOrgId() + "");
         return orgLine;
     }
 
-    public static String buildSubOrg(Long rootOrgId, List<Org> orgs, String orgLine) {
+    private String buildSubOrg(Long rootOrgId, List<Org> orgs, String orgLine) {
         if (ArrayUtils.isEmpty(orgs)) {
             return orgLine;
         }
         for (Org org : orgs) {
-            if(rootOrgId.equals(org.getParentOrgId())){
-                String subOrgs =  buildSubOrg(org.getOrgId(), orgs, org.getOrgId()+"");
-                if(StringUtils.isNotBlank(subOrgs)){
-                    orgLine += ","+subOrgs;
+            if (rootOrgId.equals(org.getParentOrgId())) {
+                String subOrgs = buildSubOrg(org.getOrgId(), orgs, org.getOrgId() + "");
+                if (StringUtils.isNotBlank(subOrgs)) {
+                    orgLine += "," + subOrgs;
                 }
             }
         }

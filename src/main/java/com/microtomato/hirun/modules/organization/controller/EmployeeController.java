@@ -1,5 +1,6 @@
 package com.microtomato.hirun.modules.organization.controller;
 
+import com.alibaba.excel.support.ExcelTypeEnum;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +34,7 @@ import java.util.Map;
 @RestController
 @Slf4j
 @RequestMapping("api/organization/employee")
-public class EmployeeController extends AbstractExcelHarbour {
+public class EmployeeController extends AbstractExcelHarbour  {
 
     @Autowired
     private IEmployeeService employeeServiceImpl;
@@ -114,10 +117,10 @@ public class EmployeeController extends AbstractExcelHarbour {
         return employeeServiceImpl.selectEmployeePageExample(stevenDTO.getName(), stevenDTO.getOrgId(), stevenDTO.getJobRole());
     }
 
-    @PostMapping("/queryEmployeeList4Export")
+    @GetMapping("/queryEmployeeList4Export")
     @RestResult
-    public List<EmployeeInfoDTO> queryEmployeeList4Export(EmployeeInfoDTO employeeInfoDTO){
+    public void queryEmployeeList4Export(EmployeeInfoDTO employeeInfoDTO, HttpServletResponse response) throws IOException {
         List<EmployeeInfoDTO> list=employeeDomainServiceImpl.queryEmployeeList(employeeInfoDTO);
-        return list;
+        exportExcel(response, "users", EmployeeInfoDTO.class, list, ExcelTypeEnum.XLSX);
     }
 }
