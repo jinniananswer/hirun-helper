@@ -1,6 +1,6 @@
 layui.extend({
     orgTree: 'org'
-}).define(['ajax', 'table', 'element', 'orgTree', 'layer', 'form','select','redirect'], function (exports) {
+}).define(['ajax', 'table', 'element', 'orgTree', 'layer', 'form', 'select', 'redirect'], function (exports) {
     var $ = layui.$;
     var table = layui.table;
     var layer = layui.layer;
@@ -10,14 +10,16 @@ layui.extend({
 
             layui.select.init('sex', 'SEX', '', true);
             layui.select.init('employeeStatus', 'EMPLOYEE_STATUS', '', true);
+            layui.select.init('type', 'EMPLOYEE_TYPE', '1', false);
 
 
-            table.render({
+            var ins = table.render({
                 elem: "#employee_table",
                 height: 550,
-                url: 'api/organization/employee/selectEmployeeList',
-                loading: true,
+                url: 'api/organization/employee/queryEmployeeList4Page',
+                //loading: true,
                 toolbar: '#toolbar',
+                defaultToolbar: ['exports'],
                 parseData: function (res) { //res 即为原始返回的数据
                     return {
                         "code": res.code, //解析接口状态
@@ -29,9 +31,9 @@ layui.extend({
                 cols: [
                     [
                         {type: 'radio', fixed: 'left'},
-                        {field: 'name', title: '姓名', width: 120,fixed :'left',align: 'center'},
+                        {field: 'name', title: '姓名', width: 120, fixed: 'left', align: 'center'},
                         {
-                            field: 'sex', title: '性别', width: 80, sort: true,align: 'center', templet: function (d) {
+                            field: 'sex', title: '性别', width: 80, sort: true, align: 'center', templet: function (d) {
                                 if (d.sex == 1) {
                                     return '男'
                                 } else {
@@ -39,33 +41,37 @@ layui.extend({
                                 }
                             }
                         },
-                        {field: 'identityNo', title: '身份证号码', width: 200,align: 'center'},
-                        {field: 'mobileNo', title: '电话号码', width: 150,align: 'center'},
-                        {field: 'inDate', title: '入职时间',align: 'center',width: 120,templet:function (d) {
-                                if(d.inDate!=''){
-                                    return d.inDate.substr(0,10)
+                        {field: 'identityNo', title: '身份证号码', width: 200, align: 'center'},
+                        {field: 'mobileNo', title: '电话号码', width: 150, align: 'center'},
+                        {
+                            field: 'inDate', title: '入职时间', align: 'center', width: 120, templet: function (d) {
+                                if (d.inDate != '') {
+                                    return d.inDate.substr(0, 10)
                                 }
-                            }},
-                        {field: 'jobRoleName', title: '岗位', width: 120,align: 'center'},
-                        {field: 'orgPath', title: '部门',align: 'center'},
+                            }
+                        },
+                        {field: 'jobRoleName', title: '岗位', width: 120, align: 'center'},
+                        {field: 'orgPath', title: '部门', align: 'center'},
 
                         {
-                            field: 'status', title: '状态', width: 100,align: 'center', templet: function (d) {
+                            field: 'status', title: '状态', width: 100, align: 'center', templet: function (d) {
                                 if (d.employeeStatus == 0) {
                                     return '在职';
                                 } else if (d.employeeStatus == 3) {
                                     return '离职';
-                                } else if(d.employeeStatus==1){
+                                } else if (d.employeeStatus == 1) {
                                     return '退休';
                                 }
                             }
                         },
-                        {align: 'center', title: '操作', fixed: 'right',width:220,templet:'#operateTmp'}
                     ]
                 ],
                 page: true,
-                text: {
-                    none: '暂无相关数据，请检查查询条件。'
+                text: {none: '暂无相关数据，请检查查询条件。'},
+                done: function (res, curr, count) {
+                    layui.ajax.post('api/organization/employee/queryEmployeeList4Export', '', function (data) {
+                        exportData = data.rows;
+                    })
                 }
             });
 
@@ -81,44 +87,58 @@ layui.extend({
                         orgId: $("input[name='orgId']").val(),
                         mobileNo: $("input[name='mobileNo']").val(),
                         employeeStatus: $("select[name='employeeStatus']").val(),
+                        type: $("select[name='type']").val(),
+                        isBlackList: $("#isBlackList").val(),
                     }
                 })
             });
 
-            table.on('tool(employee_table)', function (obj) {
-                var data = obj.data;//获取当前行数据
-                var layEvent = obj.event;
-                if (layEvent === 'contract') {
-                    employee.contractManager(data);
-                } else if (layEvent === 'transOrg') {
-                    employee.transOrg(data);
-                } else if (layEvent === 'holiday') {
-                    employee.holiday(data);
-                }
-            });
 
-            //监听工具栏新增按钮
-            table.on('toolbar(employee_table)',function (obj) {
+            //监听工具栏按钮
+            table.on('toolbar(employee_table)', function (obj) {
                 var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
                 var data = checkStatus.data;
                 var event = obj.event;
 
-                if(event==='create'){
-                    layui.redirect.open('openUrl?url=/modules/organization/employee/employee_archive&operType=create','编辑员工资料');
-                }else if(event==='remove'){
-                    if(data.length <=0){
-                        layer.msg('请选中一条数据,再进行操作。');
+                if ((event != 'create' && event != 'LAYTABLE_EXPORT') && data.length <= 0) {
+                    layer.msg('请选中一条数据,再进行操作。');
+                    return;
+                }
+
+                if (event === 'create') {
+                    layui.redirect.open('openUrl?url=/modules/organization/employee/employee_archive&operType=create', '编辑员工资料');
+                } else if (event === 'remove') {
+                    if (data[0].employeeStatus == 1 || data[0].employeeStatus == 3) {
+                        layer.msg('员工已为离职状态,不允许做离职操作。');
                         return;
-                    }else{
+                    } else {
                         employee.destroy(data[0]);
                     }
-                }else if(event==='edit'){
-                    if(data.length <=0){
-                        layer.msg('请选中一条数据,再进行操作。');
+                } else if (event === 'edit') {
+                    if (data[0].employeeStatus == 1 || data[0].employeeStatus == 3) {
+                        layer.msg('员工已为离职状态,不允许再编辑。');
                         return;
-                    }else{
+                    } else {
                         employee.edit(data[0]);
                     }
+                } else if (event === 'holiday') {
+                    if (data[0].employeeStatus == 1 || data[0].employeeStatus == 3) {
+                        layer.msg('员工已为离职状态,不允许再做休假。');
+                        return;
+                    } else {
+                        employee.holiday(data[0]);
+                    }
+                } else if (event === 'transOrg') {
+                    if (data[0].employeeStatus == 1 || data[0].employeeStatus == 3) {
+                        layer.msg('员工已为离职状态,不允许办理调动操作。');
+                        return;
+                    } else {
+                        employee.transOrg(data[0]);
+                    }
+                } else if (event === 'contract') {
+                    employee.contractManager(data[0]);
+                } else if (event === 'LAYTABLE_EXPORT') {
+                    table.exportFile(ins.config.id, exportData, 'xls');
                 }
             });
 
@@ -126,7 +146,7 @@ layui.extend({
         },
 
         destroy: function (data) {
-            var index=layer.open({
+            var index = layer.open({
                 type: 2,
                 title: '员工离职',
                 content: 'openUrl?url=/modules/organization/employee/destroy_employee',
@@ -152,39 +172,38 @@ layui.extend({
         },
 
         holiday: function (data) {
-            var sexName=(data.sex==1)?'男':'女';
+            var sexName = (data.sex == 1) ? '男' : '女';
 
-            var param='&employee_id='+data.employeeId+'&name='+data.name+'&mobileNo='+data.mobileNo+'&orgName='+data.orgPath+'&sex='+sexName+'&jobRoleName='+data.jobRoleName+
-                '&identityNo='+data.identityNo+'&inDate='+data.inDate.substr(0,10);
-            layui.redirect.open('openUrl?url=modules/organization/employee/employeeholiday_manager'+param, '员工休假管理');
+            var param = '&employee_id=' + data.employeeId + '&name=' + data.name + '&mobileNo=' + data.mobileNo + '&orgName=' + data.orgPath + '&sex=' + sexName + '&jobRoleName=' + data.jobRoleName +
+                '&identityNo=' + data.identityNo + '&inDate=' + data.inDate.substr(0, 10);
+            layui.redirect.open('openUrl?url=modules/organization/employee/employeeholiday_manager' + param, '员工休假管理');
         },
 
         transOrg: function (data) {
-            var sexName=(data.sex==1)?'男':'女';
+            var sexName = (data.sex == 1) ? '男' : '女';
 
-            var param='&employee_id='+data.employeeId+'&name='+data.name+'&mobileNo='+data.mobileNo+'&orgName='+data.orgPath+'&sex='+sexName+'&jobRoleName='+data.jobRoleName+
-                '&identityNo='+data.identityNo+'&inDate='+data.inDate.substr(0,10);
-            var url=encodeURI('openUrl?url=modules/organization/employee/employee_trans_manager'+param);
+            var param = '&employee_id=' + data.employeeId + '&name=' + data.name + '&mobileNo=' + data.mobileNo + '&orgName=' + data.orgPath + '&sex=' + sexName + '&jobRoleName=' + data.jobRoleName +
+                '&identityNo=' + data.identityNo + '&inDate=' + data.inDate.substr(0, 10);
+            var url = encodeURI('openUrl?url=modules/organization/employee/employee_trans_manager' + param);
             layui.redirect.open(url, '员工调动管理');
         },
 
         contractManager: function (data) {
-            var sexName=(data.sex==1)?'男':'女';
+            var sexName = (data.sex == 1) ? '男' : '女';
 
-            var param='&employee_id='+data.employeeId+'&name='+data.name+'&mobileNo='+data.mobileNo+'&orgName='+data.orgPath+'&sex='+sexName+'&jobRoleName='+data.jobRoleName+
-                '&identityNo='+data.identityNo+'&inDate='+data.inDate.substr(0,10)+'&jobRole='+data.jobRole;
-            var url=encodeURI('openUrl?url=modules/organization/contract/employee_contract_manager'+param);
+            var param = '&employee_id=' + data.employeeId + '&name=' + data.name + '&mobileNo=' + data.mobileNo + '&orgName=' + data.orgPath + '&sex=' + sexName + '&jobRoleName=' + data.jobRoleName +
+                '&identityNo=' + data.identityNo + '&inDate=' + data.inDate.substr(0, 10) + '&jobRole=' + data.jobRole;
+            var url = encodeURI('openUrl?url=modules/organization/contract/employee_contract_manager' + param);
             layui.redirect.open(url, '员工合同·协议管理');
         },
 
-        selectOrg : function() {
+        selectOrg: function () {
             layui.orgTree.init('orgTree', 'orgId', 'orgPath', false);
         },
 
-        edit : function(data) {
-            layui.redirect.open('openUrl?url=/modules/organization/employee/employee_archive&operType=edit&employeeId='+data.employeeId,'编辑员工资料');
-        }
-
+        edit: function (data) {
+            layui.redirect.open('openUrl?url=/modules/organization/employee/employee_archive&operType=edit&employeeId=' + data.employeeId, '编辑员工资料');
+        },
 
     };
     exports('employee', employee);

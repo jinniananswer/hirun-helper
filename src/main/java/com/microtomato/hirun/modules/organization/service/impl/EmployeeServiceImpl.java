@@ -47,14 +47,18 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
     /**
      * 查询员工档案
      */
-    public IPage<EmployeeInfoDTO> queryEmployeeList(EmployeeInfoDTO employeeInfoDTO, Page<EmployeeInfoDTO> employeePage) {
+    public IPage<EmployeeInfoDTO> queryEmployeeList4Page(EmployeeInfoDTO employeeInfoDTO, Page<EmployeeInfoDTO> employeePage) {
         QueryWrapper<EmployeeDTO> queryWrapper = new QueryWrapper<>();
         queryWrapper.apply("b.employee_id=a.employee_id AND (now() between b.start_date and b.end_date) AND c.org_id = b.org_id");
         queryWrapper.like(StringUtils.isNotEmpty(employeeInfoDTO.getName()), "a.name", employeeInfoDTO.getName());
         queryWrapper.eq(StringUtils.isNotEmpty(employeeInfoDTO.getSex()), "a.sex", employeeInfoDTO.getSex());
         queryWrapper.likeRight(StringUtils.isNotEmpty(employeeInfoDTO.getMobileNo()), "a.mobile_no", employeeInfoDTO.getMobileNo());
         queryWrapper.eq(StringUtils.isNotEmpty(employeeInfoDTO.getEmployeeStatus()), "a.status", employeeInfoDTO.getEmployeeStatus());
+        queryWrapper.eq(StringUtils.isNotEmpty(employeeInfoDTO.getType()), "a.type", employeeInfoDTO.getType());
 
+/*        if (StringUtils.equals(employeeInfoDTO.getIsBlackList(), "on")) {
+            queryWrapper.apply("EXISTS (select * FROM ins_employee_blacklist bb WHERE bb.employee_id = a.employee_id) ");
+        }*/
         IPage<EmployeeInfoDTO> iPage = employeeMapper.selectEmployeePage(employeePage, queryWrapper);
 
         return iPage;
@@ -95,6 +99,19 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
     public List<Employee> findSubordinate(Long parentEmployeeId) {
         List<Employee> childEmployees = employeeMapper.queryEmployeeByParentEmployeeId(parentEmployeeId);
         return childEmployees;
+    }
+
+    @Override
+    public List<EmployeeInfoDTO> queryEmployeeList(EmployeeInfoDTO employeeInfoDTO) {
+        QueryWrapper<EmployeeDTO> queryWrapper = new QueryWrapper<>();
+        queryWrapper.apply("b.employee_id=a.employee_id AND (now() between b.start_date and b.end_date) AND c.org_id = b.org_id");
+        queryWrapper.like(StringUtils.isNotEmpty(employeeInfoDTO.getName()), "a.name", employeeInfoDTO.getName());
+        queryWrapper.eq(StringUtils.isNotEmpty(employeeInfoDTO.getSex()), "a.sex", employeeInfoDTO.getSex());
+        queryWrapper.likeRight(StringUtils.isNotEmpty(employeeInfoDTO.getMobileNo()), "a.mobile_no", employeeInfoDTO.getMobileNo());
+        queryWrapper.eq(StringUtils.isNotEmpty(employeeInfoDTO.getEmployeeStatus()), "a.status", employeeInfoDTO.getEmployeeStatus());
+        List<EmployeeInfoDTO> list=employeeMapper.queryEmployeeList(queryWrapper);
+
+        return list;
     }
 
 }

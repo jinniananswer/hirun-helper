@@ -21,7 +21,7 @@ public interface IEmployeeService extends IService<Employee> {
 
     Employee queryByIdentityNo(String identityNo);
 
-    IPage<EmployeeInfoDTO> queryEmployeeList(EmployeeInfoDTO employeeInfoDTO, Page<EmployeeInfoDTO> employeePage);
+    IPage<EmployeeInfoDTO> queryEmployeeList4Page(EmployeeInfoDTO employeeInfoDTO, Page<EmployeeInfoDTO> employeePage);
 
     /**
      * 测试（后期删除）
@@ -41,4 +41,11 @@ public interface IEmployeeService extends IService<Employee> {
      * @return
      */
     List<Employee> findSubordinate(Long parentEmployeeId);
+
+    /**
+     *
+     * @param employeeInfoDTO
+     * @return
+     */
+    List<EmployeeInfoDTO> queryEmployeeList(EmployeeInfoDTO employeeInfoDTO);
 }

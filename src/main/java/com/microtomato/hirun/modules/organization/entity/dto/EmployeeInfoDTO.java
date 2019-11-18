@@ -69,4 +69,6 @@ public class EmployeeInfoDTO {
     private String isMain;
 
     private String isBlackList;
+
+    private String type;
 }

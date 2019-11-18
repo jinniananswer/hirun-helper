@@ -109,7 +109,7 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         if ((StringUtils.equals(EmployeeConst.CREATE_TYPE_NEW_ENTRY, createType) && StringUtils.equals(operType, EmployeeConst.OPER_TYPE_CREATE))) {
             //创建员工时如果存在证件号码相同的员工，则报错
             throw new EmployeeException(EmployeeException.EmployeeExceptionEnum.IS_EXISTS, "证件号码", employee.getName(), employee.getMobileNo());
-        } else if(StringUtils.equals(operType, EmployeeConst.OPER_TYPE_EDIT) && employeeId != null && !employeeId.equals(employee.getEmployeeId())) {
+        } else if (StringUtils.equals(operType, EmployeeConst.OPER_TYPE_EDIT) && employeeId != null && !employeeId.equals(employee.getEmployeeId())) {
             throw new EmployeeException(EmployeeException.EmployeeExceptionEnum.IS_EXISTS, "证件号码", employee.getName(), employee.getMobileNo());
         } else {
             EmployeeDTO employeeDTO = new EmployeeDTO();
@@ -271,7 +271,7 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             if (StringUtils.equals(EmployeeConst.CREATE_TYPE_REHIRE, createType)) {
                 userDO.modify(employeeDTO.getMobileNo(), UserConst.INIT_PASSWORD, UserConst.STATUS_NORMAL);
                 employeeDO.rehire(employee, jobRole, workExperiences);
-            } else if(StringUtils.equals(createType, EmployeeConst.CREATE_TYPE_REHELLORING)) {
+            } else if (StringUtils.equals(createType, EmployeeConst.CREATE_TYPE_REHELLORING)) {
                 userDO.modify(employeeDTO.getMobileNo(), UserConst.INIT_PASSWORD, UserConst.STATUS_NORMAL);
                 employeeDO.rehelloring(employee, jobRole, workExperiences);
             } else {
@@ -296,7 +296,7 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         Employee employee = new Employee();
         BeanUtils.copyProperties(employeeDestroyInfoDTO, employee);
 
-        EmployeeDO employeeDO = SpringContextUtils.getBean(EmployeeDO.class,employee);
+        EmployeeDO employeeDO = SpringContextUtils.getBean(EmployeeDO.class, employee);
         //todo 这是测试代码，之后要改的
         List<Employee> employeeList = employeeDO.findSubordinate();
         if (ArrayUtils.isNotEmpty(employeeList)) {
@@ -337,8 +337,14 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
      * @return
      */
     @Override
-    public IPage<EmployeeInfoDTO> queryEmployeeList(EmployeeInfoDTO employeeInfoDTO, Page<EmployeeInfoDTO> page) {
-        IPage<EmployeeInfoDTO> iPage = employeeService.queryEmployeeList(employeeInfoDTO, page);
+    public IPage<EmployeeInfoDTO> queryEmployeeList4Page(EmployeeInfoDTO employeeInfoDTO, Page<EmployeeInfoDTO> page) {
+
+        if(employeeInfoDTO.getOrgId()!=null){
+            OrgDO orgDO=SpringContextUtils.getBean(OrgDO.class,employeeInfoDTO.getOrgId());
+            String orgLine=orgDO.getOrgLine();
+            System.out.println(orgLine);
+        }
+        IPage<EmployeeInfoDTO> iPage = employeeService.queryEmployeeList4Page(employeeInfoDTO, page);
         if (iPage == null) {
             return null;
         }
@@ -348,14 +354,13 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, employeeInfoDTOResult.getOrgId());
             employeeInfoDTOResult.setOrgPath(orgDO.getCompanyLinePath());
             employeeDTOList.add(employeeInfoDTOResult);
-
-
         }
         return iPage.setRecords(employeeDTOList);
     }
 
     /**
      * 加载员工档案
+     *
      * @param employeeId
      * @return
      */
@@ -422,5 +427,19 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         archive.setJobRoleNatureName(this.staticDataService.getCodeName("JOB_NATURE", jobRole.getJobRoleNature()));
 
         return archive;
+    }
+
+    @Override
+    public List<EmployeeInfoDTO> queryEmployeeList(EmployeeInfoDTO employeeInfoDTO) {
+        List<EmployeeInfoDTO> list = employeeService.queryEmployeeList(employeeInfoDTO);
+        if (list.size() <= 0) {
+            return list;
+        }
+        for (EmployeeInfoDTO employeeInfo : list) {
+            employeeInfo.setJobRoleName(staticDataService.getCodeName("JOB_ROLE", employeeInfo.getJobRole()));
+            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, employeeInfo.getOrgId());
+            employeeInfo.setOrgPath(orgDO.getCompanyLinePath());
+        }
+        return list;
     }
 }

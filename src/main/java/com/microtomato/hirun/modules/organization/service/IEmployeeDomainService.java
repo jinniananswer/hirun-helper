@@ -31,7 +31,9 @@ public interface IEmployeeDomainService {
 
     boolean destroyEmployee(EmployeeDestroyInfoDTO employeeDestroyInfoDTO);
 
-    IPage<EmployeeInfoDTO> queryEmployeeList(EmployeeInfoDTO employeeInfoDTO, Page<EmployeeInfoDTO> page);
+    IPage<EmployeeInfoDTO> queryEmployeeList4Page(EmployeeInfoDTO employeeInfoDTO, Page<EmployeeInfoDTO> page);
 
     EmployeeArchiveDTO loadMyArchive(Long employeeId);
+
+    List<EmployeeInfoDTO> queryEmployeeList(EmployeeInfoDTO employeeInfoDTO);
 }

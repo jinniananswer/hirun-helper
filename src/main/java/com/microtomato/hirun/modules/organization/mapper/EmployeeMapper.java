@@ -70,4 +70,16 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
             " and (now() between b.start_date and b.end_date)" +
             " and b.parent_employee_id=#{parentEmployeeId}")
     List<Employee> queryEmployeeByParentEmployeeId(Long parentEmployeeId);
+
+    /**
+     * 导出员工档案信息
+     * @param wrapper
+     * @return
+     */
+    @Select("select a.name,a.employee_id,a.sex,a.mobile_no ,a.identity_no,a.status employee_status, date_format(a.in_date,'%Y-%m-%d') in_date," +
+            " b.job_role,b.org_id, c.name org_name from " +
+            " ins_employee a, ins_employee_job_role b, ins_org c \n" +
+            " ${ew.customSqlSegment}"
+    )
+    List<EmployeeInfoDTO> queryEmployeeList(@Param(Constants.WRAPPER) Wrapper wrapper);
 }

@@ -15,8 +15,6 @@
 </head>
 <body>
 <div class="layui-fluid">
-    <div class="layui-row layui-col-space15">
-        <div class="layui-col-md12">
             <div class="layui-card">
                 <div class="layui-card-header">员工档案列表</div>
                 <div class="layui-card-body">
@@ -29,13 +27,10 @@
                                 </div>
                             </div>
                             <div class="layui-inline">
-                                <label class="layui-form-label">性别：</label>
-                                <div class="layui-input-block">
-                                    <div class="layui-form" lay-filter="sex">
-                                        <select id="sex" name="sex">
-
-                                        </select>
-                                    </div>
+                                <label class="layui-form-label">电话号码：</label>
+                                <div class="layui-input-block" style="">
+                                    <input type="text" name="mobileNo" id="mobileNo" autocomplete="off" class="layui-input"
+                                           placeholder=""/>
                                 </div>
                             </div>
                             <div class="layui-inline">
@@ -45,12 +40,11 @@
                                     <input type="hidden" id="orgId" name="orgId"/>
                                 </div>
                             </div>
-
                             <div class="layui-inline">
-                                <label class="layui-form-label">状态：</label>
-                                <div class="layui-input-block">
-                                    <div class="layui-form" lay-filter="employeeStatus">
-                                        <select id="employeeStatus" name="employeeStatus">
+                                <label class="layui-form-label">性别：</label>
+                                <div class="layui-input-block" >
+                                    <div class="layui-form" lay-filter="sex" style="width: 184px">
+                                        <select id="sex" name="sex">
 
                                         </select>
                                     </div>
@@ -59,15 +53,28 @@
                         </div>
                         <div class="layui-form-item">
                             <div class="layui-inline">
-                                <label class="layui-form-label">电话号码：</label>
-                                <div class="layui-input-block" style="">
-                                    <input type="text" name="mobileNo" id="mobileNo" autocomplete="off" class="layui-input"
-                                           placeholder=""/>
+                                <label class="layui-form-label">状态：</label>
+                                <div class="layui-input-block">
+                                    <div class="layui-form" lay-filter="employeeStatus" style="width: 184px">
+                                        <select id="employeeStatus" name="employeeStatus">
+
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">员工类型：</label>
+                                <div class="layui-input-block">
+                                    <div class="layui-form" lay-filter="type" style="width: 184px">
+                                        <select id="type" name="type">
+
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                             <div class="layui-inline">
                                 <label class="layui-form-label">黑名单</label>
-                                <div class="layui-input-block">
+                                <div class="layui-input-block" style="width: 184px">
                                     <input type="checkbox" name="isBlackList" id="isBlackList" lay-skin="switch" lay-text="是|否">
                                 </div>
                             </div>
@@ -83,23 +90,20 @@
                     <table lay-even class="layui-hide" id="employee_table" lay-filter="employee_table" lay-size="lg"></table>
                 </div>
             </div>
-        </div>
-    </div>
+
+
 </div>
 <script type="text/html" id="toolbar">
     <div class="layui-btn-container">
-        <button class="layui-btn"  lay-event="create">新增员工</button>
-        <button class="layui-btn"  lay-event="edit">信息变更</button>
-        <button class="layui-btn"  lay-event="remove">员工离职</button>
+        <button class="layui-btn " style="background-color:#9e2d09;"  lay-event="create"><i class="layui-icon">&#xe608;</i>新增</button>
+        <button class="layui-btn layui-btn-normal"  lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</button>
+        <button class="layui-btn layui-btn-danger"  lay-event="remove"><i class="layui-icon layui-icon-delete"></i>离职</button>
+        <button class="layui-btn layui-btn-warm"  lay-event="holiday"><i class="layui-icon layui-icon-log"></i>休假</button>
+        <button class="layui-btn" style="background-color:#13227a;" lay-event="transOrg"><i class="layui-icon">&#x21c4;</i>调动</button>
+        <button class="layui-btn " style="background-color:#e87233;"  lay-event="contract"><i class="layui-icon layui-icon-templeate-1"></i>合同</button>
     </div>
 </script>
 
-
-<script type="text/html" id="operateTmp">
-    <a href="#" class="layui-btn layui-btn-normal layui-btn-xs" lay-event="holiday">休假</a>
-    <a href="#" class="layui-btn layui-btn-danger layui-btn-xs" lay-event="transOrg">调动</a>
-    <a href="#" class="layui-btn layui-btn-xs" lay-event="contract">合同</a>
-</script>
 
 <script>
     layui.extend(

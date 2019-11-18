@@ -3,6 +3,7 @@ package com.microtomato.hirun.modules.organization.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
+import com.microtomato.hirun.framework.harbour.excel.AbstractExcelHarbour;
 import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.organization.entity.dto.*;
@@ -30,7 +31,7 @@ import java.util.Map;
 @RestController
 @Slf4j
 @RequestMapping("api/organization/employee")
-public class EmployeeController {
+public class EmployeeController extends AbstractExcelHarbour {
 
     @Autowired
     private IEmployeeService employeeServiceImpl;
@@ -78,11 +79,11 @@ public class EmployeeController {
         return result;
     }
 
-    @GetMapping("/selectEmployeeList")
+    @GetMapping("/queryEmployeeList4Page")
     @RestResult
-    public IPage<EmployeeInfoDTO> employeeList(EmployeeInfoDTO employeeInfoDTO, Integer page, Integer limit) {
+    public IPage<EmployeeInfoDTO> queryEmployeeList4Page(EmployeeInfoDTO employeeInfoDTO, Integer page, Integer limit) {
         Page<EmployeeInfoDTO> employeeInfoDTOPage = new Page<>(page, limit);
-        IPage<EmployeeInfoDTO> employeeList = employeeDomainServiceImpl.queryEmployeeList(employeeInfoDTO,employeeInfoDTOPage);
+        IPage<EmployeeInfoDTO> employeeList = employeeDomainServiceImpl.queryEmployeeList4Page(employeeInfoDTO,employeeInfoDTOPage);
         return employeeList;
     }
 
@@ -111,5 +112,12 @@ public class EmployeeController {
     @RestResult
     public IPage<EmployeeExampleDTO> selectEmployeePageExample(EmployeeExampleDTO stevenDTO) {
         return employeeServiceImpl.selectEmployeePageExample(stevenDTO.getName(), stevenDTO.getOrgId(), stevenDTO.getJobRole());
+    }
+
+    @PostMapping("/queryEmployeeList4Export")
+    @RestResult
+    public List<EmployeeInfoDTO> queryEmployeeList4Export(EmployeeInfoDTO employeeInfoDTO){
+        List<EmployeeInfoDTO> list=employeeDomainServiceImpl.queryEmployeeList(employeeInfoDTO);
+        return list;
     }
 }
