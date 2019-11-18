@@ -1,6 +1,5 @@
 package com.microtomato.hirun.modules.organization.entity.domain;
 
-import com.alibaba.druid.util.StringUtils;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.modules.organization.entity.po.Org;
@@ -9,6 +8,8 @@ import com.microtomato.hirun.modules.organization.service.impl.OrgServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.apache.commons.lang3.StringUtils;
+
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,6 +36,7 @@ public class OrgDO {
 
     /**
      * 构造函数
+     *
      * @param orgId
      */
     public OrgDO(Long orgId) {
@@ -43,6 +45,7 @@ public class OrgDO {
 
     /**
      * 设置部门数据
+     *
      * @param org
      */
     public void setOrg(Org org) {
@@ -51,6 +54,7 @@ public class OrgDO {
 
     /**
      * 根据部门ID设置部门数据
+     *
      * @param orgId
      */
     public void setOrg(Long orgId) {
@@ -59,6 +63,7 @@ public class OrgDO {
 
     /**
      * 根据当前组织机构ID获取归属的公司
+     *
      * @return
      */
     public Org getBelongCompany() {
@@ -71,6 +76,7 @@ public class OrgDO {
 
     /**
      * 根据当前组织机构ID获取归属的门店
+     *
      * @return
      */
     public Org getBelongShop() {
@@ -83,6 +89,7 @@ public class OrgDO {
 
     /**
      * 获取所在部门位于公司的父子线上的所有组织
+     *
      * @return
      */
     public List<Org> getCompanyLine() {
@@ -95,6 +102,7 @@ public class OrgDO {
 
     /**
      * 获取所在部门位于公司的父子线上的所有组织的路径
+     *
      * @return
      */
     public String getCompanyLinePath() {
@@ -105,15 +113,16 @@ public class OrgDO {
 
         int size = lineOrgs.size();
         String path = "";
-        for (int i=size-1; i >= 0; i--) {
-            path += lineOrgs.get(i).getName()+"-";
+        for (int i = size - 1; i >= 0; i--) {
+            path += lineOrgs.get(i).getName() + "-";
         }
 
-        return path.substring(0, path.length()-1);
+        return path.substring(0, path.length() - 1);
     }
 
     /**
      * 获取所在部门直到集团的父子线上的所有组织
+     *
      * @return
      */
     public List<Org> getFullLine() {
@@ -125,6 +134,7 @@ public class OrgDO {
 
     /**
      * 递归找符合类型的组织机构
+     *
      * @param type: 0-集团公司 1-事业部 2-公司（分公司或者集团公司） 3-部门 4-店铺 5-组
      * @param orgs
      * @param orgId
@@ -153,6 +163,7 @@ public class OrgDO {
 
     /**
      * 递归查找所在部门位于某类型的父子线上的所有组织
+     *
      * @param type: 0-集团公司 1-事业部 2-公司（分公司或者集团公司） 3-部门 4-店铺 5-组
      * @param orgs
      * @param orgId
@@ -185,6 +196,7 @@ public class OrgDO {
 
     /**
      * 找到部门自身的数据
+     *
      * @param orgId
      * @return
      */
@@ -205,6 +217,7 @@ public class OrgDO {
 
     /**
      * 是否是家装事业部下的组织
+     *
      * @return
      */
     public boolean isHomeDecoration() {
@@ -219,5 +232,33 @@ public class OrgDO {
             }
         }
         return false;
+    }
+
+    /**
+     * 根据输入的orgId查询出下级部门的集合
+     * @return
+     */
+    public String getOrgLine() {
+        List<Org> orgs = orgService.listAllOrgs();
+        if (orgs.size() <= 0) {
+            return null;
+        }
+        String orgLine = buildSubOrg(this.org.getOrgId(), orgs, this.org.getOrgId()+"");
+        return orgLine;
+    }
+
+    public static String buildSubOrg(Long rootOrgId, List<Org> orgs, String orgLine) {
+        if (ArrayUtils.isEmpty(orgs)) {
+            return orgLine;
+        }
+        for (Org org : orgs) {
+            if(rootOrgId.equals(org.getParentOrgId())){
+                String subOrgs =  buildSubOrg(org.getOrgId(), orgs, org.getOrgId()+"");
+                if(StringUtils.isNotBlank(subOrgs)){
+                    orgLine += ","+subOrgs;
+                }
+            }
+        }
+        return orgLine;
     }
 }
