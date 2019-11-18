@@ -68,11 +68,11 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 		return myMenuIds;
 	}
 
-	@Cacheable(value = "all-menus", key = "#isEmbedPage")
+	@Cacheable(value = "all-menus")
 	@Override
 	public Map<Long, Menu> listAllMenus(boolean isEmbedPage) {
 
-		List<Menu> menuList = this.list(Wrappers.<Menu>lambdaQuery().eq(Menu::getEmbedPage, isEmbedPage));
+		List<Menu> menuList = this.list();
 
 		// 转换成 menuid 为 key 的 Map
 		Map<Long, Menu> menuMap = new HashMap<>(menuList.size());

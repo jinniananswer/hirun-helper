@@ -80,11 +80,4 @@ public class Menu extends BaseEntity {
     @TableField("is_common_use")
     private String isCommonUse;
 
-    /**
-     * 是否为嵌入页面
-     */
-    @TableField("is_embed_page")
-    private Boolean embedPage;
-
-
 }
