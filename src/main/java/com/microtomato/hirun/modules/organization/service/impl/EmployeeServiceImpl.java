@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -55,10 +56,8 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         queryWrapper.likeRight(StringUtils.isNotEmpty(employeeInfoDTO.getMobileNo()), "a.mobile_no", employeeInfoDTO.getMobileNo());
         queryWrapper.eq(StringUtils.isNotEmpty(employeeInfoDTO.getEmployeeStatus()), "a.status", employeeInfoDTO.getEmployeeStatus());
         queryWrapper.eq(StringUtils.isNotEmpty(employeeInfoDTO.getType()), "a.type", employeeInfoDTO.getType());
+        queryWrapper.apply(StringUtils.isNotBlank(employeeInfoDTO.getOrgSet()),"b.org_id in ("+employeeInfoDTO.getOrgSet()+")");
 
-/*        if (StringUtils.equals(employeeInfoDTO.getIsBlackList(), "on")) {
-            queryWrapper.apply("EXISTS (select * FROM ins_employee_blacklist bb WHERE bb.employee_id = a.employee_id) ");
-        }*/
         IPage<EmployeeInfoDTO> iPage = employeeMapper.selectEmployeePage(employeePage, queryWrapper);
 
         return iPage;

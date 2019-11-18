@@ -3,9 +3,11 @@ package com.microtomato.hirun.modules.organization.service.impl;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
+import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.organization.entity.consts.EmployeeConst;
 import com.microtomato.hirun.modules.organization.entity.domain.EmployeeBlackListDO;
 import com.microtomato.hirun.modules.organization.entity.domain.EmployeeDO;
@@ -339,10 +341,14 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
     @Override
     public IPage<EmployeeInfoDTO> queryEmployeeList4Page(EmployeeInfoDTO employeeInfoDTO, Page<EmployeeInfoDTO> page) {
 
-        if(employeeInfoDTO.getOrgId()!=null){
-            OrgDO orgDO=SpringContextUtils.getBean(OrgDO.class,employeeInfoDTO.getOrgId());
+        if(StringUtils.isBlank(employeeInfoDTO.getOrgSet())){
+            UserContext userContext= WebContextUtils.getUserContext();
+            Long orgId=userContext.getOrgId();
+
+            OrgDO orgDO=SpringContextUtils.getBean(OrgDO.class,orgId);
             String orgLine=orgDO.getOrgLine();
-            System.out.println(orgLine);
+
+            employeeInfoDTO.setOrgSet(orgLine);
         }
         IPage<EmployeeInfoDTO> iPage = employeeService.queryEmployeeList4Page(employeeInfoDTO, page);
         if (iPage == null) {
@@ -439,6 +445,9 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             employeeInfo.setJobRoleName(staticDataService.getCodeName("JOB_ROLE", employeeInfo.getJobRole()));
             OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, employeeInfo.getOrgId());
             employeeInfo.setOrgPath(orgDO.getCompanyLinePath());
+            employeeInfo.setSex(this.staticDataService.getCodeName("SEX", employeeInfo.getSex()));
+            employeeInfo.setEmployeeStatus(this.staticDataService.getCodeName("EMPLOYEE_STATUS", employeeInfo.getSex()));
+            employeeInfo.setType(this.staticDataService.getCodeName("EMPLOYEE_TYPE", employeeInfo.getType()));
         }
         return list;
     }
