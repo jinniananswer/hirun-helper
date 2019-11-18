@@ -20,16 +20,17 @@ public interface IMenuService extends IService<Menu> {
 
     /**
      * 超级管理员默认能看到所有菜单
+     *
+     * @return
      */
     List<Long> listMenusForAdmin();
 
     /**
      * 获取菜单集合
      *
-     * @param isEmbedPage
      * @return
      */
-    Map<Long, Menu> listAllMenus(boolean isEmbedPage);
+    Map<Long, Menu> listAllMenus();
 
     /**
      * 根据角色获取菜单 ID 集合

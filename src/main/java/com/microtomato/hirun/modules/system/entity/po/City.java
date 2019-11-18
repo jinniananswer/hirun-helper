@@ -26,7 +26,7 @@ public class City extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId("_id")
+    @TableId("id")
     private Integer id;
 
     @TableField("name")

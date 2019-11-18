@@ -1,6 +1,7 @@
 package com.microtomato.hirun.framework.security;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.microtomato.hirun.modules.user.entity.po.FuncRole;
 import com.microtomato.hirun.modules.user.entity.po.FuncTemp;
 import com.microtomato.hirun.modules.user.entity.po.User;
@@ -86,11 +87,12 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
         );
 
         // 查用户角色对应的所有权限
-        for (UserRole userRole : userRoles) {
-            Long roleId = userRole.getRoleId();
-            List<FuncRole> funcRoleList = funcRoleServiceImpl.list(new QueryWrapper<FuncRole>().lambda().select(FuncRole::getFuncId).eq(FuncRole::getRoleId, roleId));
-            funcRoleList.forEach(funcRole -> funcSet.add(funcRole.getFuncId().toString()));
-        }
+        List<Long> roleIdList = new ArrayList<>();
+        userRoles.forEach(userRole -> roleIdList.add(userRole.getRoleId()));
+        List<FuncRole> funcRoleList = funcRoleServiceImpl.list(
+            Wrappers.<FuncRole>lambdaQuery().select(FuncRole::getFuncId).in(FuncRole::getRoleId, roleIdList)
+        );
+        funcRoleList.forEach(funcRole -> funcSet.add(funcRole.getFuncId().toString()));
 
         // 加载用户权限
         Collection<GrantedAuthority> grantedAuthorities = new HashSet<>();

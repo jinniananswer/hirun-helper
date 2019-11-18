@@ -62,7 +62,7 @@ public class MenuController {
         }
 
         // 查询所有菜单集合
-        Map<Long, Menu> menuMap = menuServiceImpl.listAllMenus(false);
+        Map<Long, Menu> menuMap = menuServiceImpl.listAllMenus();
 
         // 根据权限进行过滤
         Set<String> menuUrls = new HashSet<>();
@@ -137,7 +137,7 @@ public class MenuController {
             new QueryWrapper<MenuTemp>().lambda()
                 .select(MenuTemp::getMenuId)
                 .eq(MenuTemp::getUserId, userContext.getUserId())
-                .lt(MenuTemp::getExpireDate, LocalDateTime.now())
+                .gt(MenuTemp::getExpireDate, LocalDateTime.now())
         );
         menuTempList.forEach(menuTemp -> rtn.add(menuTemp.getMenuId()));
 
