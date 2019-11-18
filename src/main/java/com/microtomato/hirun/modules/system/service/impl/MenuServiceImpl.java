@@ -1,6 +1,5 @@
 package com.microtomato.hirun.modules.system.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.security.Role;
@@ -45,9 +44,9 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 
 		List<Long> myMenuIds = new ArrayList<>(100);
 
-		LambdaQueryWrapper<MenuRole> lambdaQueryWrapper = Wrappers.lambdaQuery();
-		lambdaQueryWrapper.eq(MenuRole::getRoleId, role.getId()).eq(MenuRole::getStatus, Constants.STATUS_OK);
-		List<MenuRole> menuRoleList = menuRoleServiceImpl.list(lambdaQueryWrapper);
+		List<MenuRole> menuRoleList = menuRoleServiceImpl.list(
+			Wrappers.<MenuRole>lambdaQuery().eq(MenuRole::getRoleId, role.getId()).eq(MenuRole::getStatus, Constants.STATUS_OK)
+		);
 		menuRoleList.forEach(menuRole -> myMenuIds.add(menuRole.getMenuId()));
 
 		return myMenuIds;
@@ -59,18 +58,14 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 	@Override
 	public List<Long> listMenusForAdmin() {
 		List<Long> myMenuIds = new ArrayList<>(100);
-
-		LambdaQueryWrapper<MenuRole> lambdaQueryWrapper = Wrappers.lambdaQuery();
-		lambdaQueryWrapper.eq(MenuRole::getStatus, Constants.STATUS_OK);
 		List<Menu> menuList = menuServiceImpl.list();
 		menuList.forEach(menu -> myMenuIds.add(menu.getMenuId()));
-
 		return myMenuIds;
 	}
 
 	@Cacheable(value = "all-menus")
 	@Override
-	public Map<Long, Menu> listAllMenus(boolean isEmbedPage) {
+	public Map<Long, Menu> listAllMenus() {
 
 		List<Menu> menuList = this.list();
 
