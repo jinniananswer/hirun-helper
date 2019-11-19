@@ -38,8 +38,9 @@
                     <ul class="layui-tab-title">
                         <li class="layui-this" lay-id="1">基本信息</li>
                         <li lay-id="2">岗位信息</li>
-                        <li lay-id="3">教育信息</li>
-                        <li lay-id="4">工作经历</li>
+                        <li lay-id="3">社保与子女信息</li>
+                        <li lay-id="4">教育信息</li>
+                        <li lay-id="5">工作经历</li>
                     </ul>
                     <div class="layui-tab-content">
                         <div class="layui-tab-item layui-show">
@@ -190,6 +191,40 @@
                                 <label class="layui-form-label">职称</label>
                                 <div class="layui-input-block">
                                     <input type="text" id="employeeJobRole.jobGrade" name="employeeJobRole.jobGrade" placeholder="请输入职称" autocomplete="off" class="layui-input"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-tab-item">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">购买社保</label>
+                                <div class="layui-input-block">
+                                    <div class="layui-form" lay-filter="isSocialSecurity">
+                                        <select id="isSocialSecurity" name="isSocialSecurity" lay-filter="isSocialSecurityFilter">
+
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item" id="socialSecurityDateArea">
+                                <label class="layui-form-label">购买日期</label>
+                                <div class="layui-input-block">
+                                    <input type="text" id="socialSecurityDate" name="socialSecurityDate" placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-form-item" id="socialSecurityPlaceArea">
+                                <label class="layui-form-label">购买地</label>
+                                <div class="layui-input-block">
+                                    <input type="text" id="socialSecurityPlace" name="socialSecurityPlace" placeholder="请输入社保购买地" autocomplete="off" class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-form-item" id="socialSecurityStatusArea" style="display:none">
+                                <label class="layui-form-label">不买原因</label>
+                                <div class="layui-input-block">
+                                    <div class="layui-form" lay-filter="socialSecurityStatus">
+                                        <select id="socialSecurityStatus" name="socialSecurityStatus" lay-verify="required">
+
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </div>
