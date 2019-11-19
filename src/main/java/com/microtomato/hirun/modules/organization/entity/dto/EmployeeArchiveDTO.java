@@ -63,6 +63,8 @@ public class EmployeeArchiveDTO {
 
     private LocalDate socialSecurityDate;
 
+    private LocalDate socialSecurityEnd;
+
     private String socialSecurityPlace;
 
     private String socialSecurityStatusName;
