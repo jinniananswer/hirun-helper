@@ -221,9 +221,42 @@
                                 <label class="layui-form-label">不买原因</label>
                                 <div class="layui-input-block">
                                     <div class="layui-form" lay-filter="socialSecurityStatus">
-                                        <select id="socialSecurityStatus" name="socialSecurityStatus" lay-verify="required">
+                                        <select id="socialSecurityStatus" name="socialSecurityStatus">
 
                                         </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="children_0">
+                                <fieldset class="layui-elem-field layui-field-title">
+                                    <legend>
+                                        <div class="layui-btn-group">
+                                            <button type="button" class="layui-btn layui-btn-primary layui-btn-sm" onclick="layui.employee.addChildren();"><i class="layui-icon layui-icon-add-1"></i></button>
+                                        </div>
+                                    </legend>
+                                </fieldset>
+                                <div class="layui-form-item">
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">小孩姓名</label>
+                                        <div class="layui-input-inline">
+                                            <input type="text" id="childrenName_0" name="children[0].name" placeholder="小孩姓名" autocomplete="off" class="layui-input"/>
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">小孩性别</label>
+                                        <div class="layui-input-inline">
+                                            <div class="layui-form" lay-filter="childrenSex_0">
+                                                <select id="childrenSex_0" name="children[0].sex" lay-verify="required" lay-filter="childrenSexFilter_0">
+
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">出生日期</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" id="childrenBirthday_0" name="children[0].birthday" placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input"/>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -376,6 +409,42 @@
                 <label class="layui-form-label">工作内容</label>
                 <div class="layui-input-block">
                     <input type="text" id="workContent_{{d}}" name="employeeWorkExperiences[{{d}}].content" placeholder="请输入入职前工作具体内容" autocomplete="off" class="layui-input"/>
+                </div>
+            </div>
+        </div>
+    </script>
+    <script id="children" type="text/html">
+        <div id="children_{{d}}">
+            <fieldset class="layui-elem-field layui-field-title">
+                <legend>
+                    <div class="layui-btn-group">
+                        <button type="button" class="layui-btn layui-btn-primary layui-btn-sm" onclick="layui.employee.addChildren();"><i class="layui-icon layui-icon-add-1"></i></button>
+                        <button type="button" class="layui-btn layui-btn-primary layui-btn-sm" onclick="layui.employee.delChildren({{d}});"><i class="layui-icon layui-icon-delete"></i></button>
+                    </div>
+                </legend>
+            </fieldset>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">小孩姓名</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="childrenName_{{d}}" name="children[{{d}}].name" placeholder="小孩姓名" autocomplete="off" class="layui-input"/>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">小孩性别</label>
+                    <div class="layui-input-inline">
+                        <div class="layui-form" lay-filter="childrenSex_{{d}}">
+                            <select id="childrenSex_{{d}}" name="children[{{d}}].sex" lay-verify="required" lay-filter="childrenSexFilter_{{d}}">
+
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">出生日期</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="childrenBirthday_{{d}}" name="children[{{d}}].birthday" placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input"/>
+                    </div>
                 </div>
             </div>
         </div>
