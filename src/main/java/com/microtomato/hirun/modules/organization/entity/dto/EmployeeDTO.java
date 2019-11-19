@@ -94,4 +94,6 @@ public class EmployeeDTO {
     private EmployeeJobRoleDTO employeeJobRole;
 
     private List<EmployeeWorkExperienceDTO> employeeWorkExperiences;
+
+    private List<EmployeeChildrenDTO> children;
 }

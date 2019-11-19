@@ -81,6 +81,8 @@ public class EmployeeArchiveDTO {
 
     private List<EmployeeWorkExperienceDTO> workExperiences;
 
+    private List<EmployeeChildrenDTO> children;
+
     private List<EmployeeHistoryDTO> histories;
 
 }

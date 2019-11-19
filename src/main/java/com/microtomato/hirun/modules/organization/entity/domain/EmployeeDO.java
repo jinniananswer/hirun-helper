@@ -6,6 +6,7 @@ import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.organization.entity.consts.EmployeeConst;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
+import com.microtomato.hirun.modules.organization.entity.po.EmployeeChildren;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeWorkExperience;
 import com.microtomato.hirun.modules.organization.exception.EmployeeException;
@@ -48,6 +49,9 @@ public class EmployeeDO {
 
     @Autowired
     private IEmployeeHistoryService employeeHistoryService;
+
+    @Autowired
+    private IEmployeeChildrenService employeeChildrenService;
 
     /**
      * 默认构造函数
@@ -107,7 +111,7 @@ public class EmployeeDO {
     /**
      * 员工新入职
      */
-    public void newEntry(EmployeeJobRole jobRole, List<EmployeeWorkExperience> workExperiences) {
+    public void newEntry(EmployeeJobRole jobRole, List<EmployeeWorkExperience> workExperiences, List<EmployeeChildren> children) {
         if (this.isExists()) {
             //如果证件号码已存在，则不允许做为新入职录入
             throw new EmployeeException(EmployeeException.EmployeeExceptionEnum.IS_EXISTS, "证件号码", this.employee.getName(), this.employee.getMobileNo());
@@ -138,7 +142,7 @@ public class EmployeeDO {
      * @param jobRole
      * @param workExperiences
      */
-    public void modify(Employee employee, EmployeeJobRole jobRole, List<EmployeeWorkExperience> workExperiences) {
+    public void modify(Employee employee, EmployeeJobRole jobRole, List<EmployeeWorkExperience> workExperiences, List<EmployeeChildren> children) {
         if (!employee.getEmployeeId().equals(this.employee.getEmployeeId())) {
             //员工ID不相等，表示不是修改的同一员工数据
             return;
@@ -155,9 +159,15 @@ public class EmployeeDO {
         }
 
         if (ArrayUtils.isNotEmpty(workExperiences)) {
-            this.destroyWorkExperiences();
+            this.deleteWorkExperiences();
             this.addWorkExperience(workExperiences);
         }
+
+        if (ArrayUtils.isNotEmpty(children)) {
+            this.deleteChildren();
+            this.addChildren(children);
+        }
+
     }
 
     /**
@@ -194,7 +204,7 @@ public class EmployeeDO {
     /**
      * 删除员工的入职前工作经历数据
      */
-    public void destroyWorkExperiences() {
+    public void deleteWorkExperiences() {
         List<EmployeeWorkExperience> workExperiences = this.employeeWorkExperienceService.queryByEmployeeId(this.employee.getEmployeeId());
         if (ArrayUtils.isNotEmpty(workExperiences)) {
             for (EmployeeWorkExperience workExperience : workExperiences) {
@@ -215,21 +225,44 @@ public class EmployeeDO {
             workExperience.setEmployeeId(this.employee.getEmployeeId());
             this.employeeWorkExperienceService.save(workExperience);
         }
+
+    }
+
+    /**
+     * 添加员工子女信息
+     * @param children
+     */
+    public void addChildren(List<EmployeeChildren> children) {
+        if (ArrayUtils.isEmpty(children)) {
+            return;
+        }
+
+        for (EmployeeChildren child : children) {
+            child.setEmployeeId(this.employee.getEmployeeId());
+            this.employeeChildrenService.save(child);
+        }
+    }
+
+    /**
+     * 删除员工子女信息
+     */
+    public void deleteChildren() {
+        this.employeeChildrenService.deleteByEmployeeId(this.employee.getEmployeeId());
     }
 
     /**
      * 员工复职
      */
-    public void rehire(Employee employee, EmployeeJobRole jobRole, List<EmployeeWorkExperience> workExperiences) {
-        this.modify(employee, jobRole, workExperiences);
+    public void rehire(Employee employee, EmployeeJobRole jobRole, List<EmployeeWorkExperience> workExperiences, List<EmployeeChildren> children) {
+        this.modify(employee, jobRole, workExperiences, children);
         this.employeeHistoryService.createRehire(employee.getEmployeeId(), employee.getInDate().toLocalDate());
     }
 
     /**
      * 返聘
      */
-    public void rehelloring(Employee employee, EmployeeJobRole jobRole, List<EmployeeWorkExperience> workExperiences) {
-        this.modify(employee, jobRole, workExperiences);
+    public void rehelloring(Employee employee, EmployeeJobRole jobRole, List<EmployeeWorkExperience> workExperiences, List<EmployeeChildren> children) {
+        this.modify(employee, jobRole, workExperiences, children);
         this.employeeHistoryService.createRehelloring(employee.getEmployeeId(), employee.getInDate().toLocalDate());
     }
 
