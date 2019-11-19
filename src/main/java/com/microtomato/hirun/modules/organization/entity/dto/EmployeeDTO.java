@@ -63,6 +63,14 @@ public class EmployeeDTO {
 
     private String discountRate;
 
+    private Integer isSocialSecurity;
+
+    private LocalDate socialSecurityDate;
+
+    private String socialSecurityPlace;
+
+    private String socialSecurityStatus;
+
     private String firstEducationLevel;
 
     private String educationLevel;

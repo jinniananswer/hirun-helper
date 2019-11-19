@@ -59,6 +59,14 @@ public class EmployeeArchiveDTO {
 
     private String certificateNo;
 
+    private String isSocialSecurityName;
+
+    private LocalDate socialSecurityDate;
+
+    private String socialSecurityPlace;
+
+    private String socialSecurityStatusName;
+
     private String statusName;
 
     private String jobRoleName;

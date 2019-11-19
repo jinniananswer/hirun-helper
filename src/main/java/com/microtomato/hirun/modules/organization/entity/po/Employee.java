@@ -131,6 +131,18 @@ public class Employee extends BaseEntity {
     @TableField("certificate_no")
     private String certificateNo;
 
+    @TableField("is_social_security")
+    private Integer isSocialSecurity;
+
+    @TableField("social_security_date")
+    private LocalDate socialSecurityDate;
+
+    @TableField("social_security_place")
+    private String socialSecurityPlace;
+
+    @TableField("social_security_status")
+    private String socialSecurityStatus;
+
     @TableField("before_hirun_year")
     private String beforeHirunYear;
 
