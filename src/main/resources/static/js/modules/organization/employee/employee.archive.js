@@ -23,6 +23,8 @@ layui.extend({
             layui.select.init('birthdayType', 'BIRTHDAY_TYPE', '1', false);
             layui.select.init('jobRoleNature', 'JOB_NATURE', '1', false);
             layui.select.init('jobRole', 'JOB_ROLE', null, true, '请选择或搜索岗位');
+            layui.select.init('isSocialSecurity', 'YES_NO', '1', false);
+            layui.select.init('socialSecurityStatus', 'SOCIAL_SECURITY_STATUS', '1', true);
             layui.select.init('firstEducationLevel', 'EDUCATION_LEVEL', '3', false);
             layui.select.init('educationLevel', 'EDUCATION_LEVEL', '3', false);
             layui.select.init('schoolType', 'SCHOOL_TYPE', '1', false);
@@ -39,6 +41,22 @@ layui.extend({
                 }
             });
 
+            form.on('select(isSocialSecurityFilter)', function(data) {
+                var isSocialSecurity = $("#isSocialSecurity").val();
+                if (isSocialSecurity == "1") {
+                    $("#socialSecurityDateArea").css("display", "");
+                    $("#socialSecurityPlaceArea").css("display", "");
+                    $("#socialSecurityStatusArea").css("display", "none");
+                    $("#socialSecurityStatus").val("");
+                } else {
+                    $("#socialSecurityDateArea").css("display", "none");
+                    $("#socialSecurityDate").val("");
+                    $("#socialSecurityPlaceArea").css("display", "none");
+                    $("#socialSecurityPlace").val("");
+                    $("#socialSecurityStatusArea").css("display", "");
+                }
+            });
+
             layui.element.on('tab(employeeTab)', function(data){
                 layui.employee.currentTab = data.index + 1;
                 if (layui.employee.currentTab <= 1) {
@@ -50,6 +68,11 @@ layui.extend({
 
             laydate.render({
                 elem: '#birthday'
+            });
+
+            laydate.render({
+                elem: '#socialSecurityDate',
+                value: new Date()
             });
 
             laydate.render({
