@@ -137,6 +137,9 @@ public class Employee extends BaseEntity {
     @TableField("social_security_date")
     private LocalDate socialSecurityDate;
 
+    @TableField("social_security_end")
+    private LocalDate socialSecurityEnd;
+
     @TableField("social_security_place")
     private String socialSecurityPlace;
 
