@@ -263,7 +263,7 @@ layui.extend({
         },
 
         loadEmployee : function(employeeId) {
-            layui.ajax.post('api/organization/employee/loadAbnormal', '&employeeId='+employeeId, function(data){
+            layui.ajax.post('api/organization/employee/load', '&employeeId='+employeeId, function(data){
                 var employee = data.rows;
                 layui.employee.refreshEmployee(employee);
                 if (createType == "3") {
