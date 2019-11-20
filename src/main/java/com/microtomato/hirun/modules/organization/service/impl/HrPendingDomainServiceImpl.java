@@ -169,7 +169,7 @@ public class HrPendingDomainServiceImpl implements IHrPendingDomainService {
         employeeTransDetail.setSourceHomeRegion(originalEmployee.getHomeRegion());
         //修改员工现居住地址
         EmployeeDO employeeDo=SpringContextUtils.getBean(EmployeeDO.class,employee);
-        employeeDo.modify(employee,null,null);
+        employeeDo.modify(employee,null,null, null);
         //查询出未更新前的员工jobrole数据，拼装完整调动记录
         EmployeeJobRole validEmployeeJobRole = employeeJobRoleService.queryValidMain(transDetail.getEmployeeId());
 

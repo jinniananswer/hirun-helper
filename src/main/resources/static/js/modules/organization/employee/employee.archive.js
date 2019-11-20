@@ -11,7 +11,9 @@ layui.extend({
     var employee = {
         currentTab : 1,
         workExpIndex : 0,
-
+        childrenIndex : 0,
+        registerPicker : null,
+        homePicker : null,
         init : function() {
             if ($("#operType").val() == "create") {
                 $("#operTypeArea").css("display", "");
@@ -23,6 +25,8 @@ layui.extend({
             layui.select.init('birthdayType', 'BIRTHDAY_TYPE', '1', false);
             layui.select.init('jobRoleNature', 'JOB_NATURE', '1', false);
             layui.select.init('jobRole', 'JOB_ROLE', null, true, '请选择或搜索岗位');
+            layui.select.init('isSocialSecurity', 'YES_NO', '1', false);
+            layui.select.init('socialSecurityStatus', 'SOCIAL_SECURITY_STATUS', '1', true);
             layui.select.init('firstEducationLevel', 'EDUCATION_LEVEL', '3', false);
             layui.select.init('educationLevel', 'EDUCATION_LEVEL', '3', false);
             layui.select.init('schoolType', 'SCHOOL_TYPE', '1', false);
@@ -39,6 +43,25 @@ layui.extend({
                 }
             });
 
+            form.on('select(isSocialSecurityFilter)', function(data) {
+                var isSocialSecurity = $("#isSocialSecurity").val();
+                if (isSocialSecurity == "1") {
+                    $("#socialSecurityDateArea").css("display", "");
+                    $("#socialSecurityPlaceArea").css("display", "");
+                    $("#socialSecurityStatusArea").css("display", "none");
+                    $("#socialSecurityStatus").val("");
+                } else {
+                    $("#socialSecurityDateArea").css("display", "none");
+                    $("#socialSecurityDate").val("");
+                    laydate.render({
+                        elem: '#socialSecurityDate'
+                    });
+                    $("#socialSecurityPlaceArea").css("display", "none");
+                    $("#socialSecurityPlace").val("");
+                    $("#socialSecurityStatusArea").css("display", "");
+                }
+            });
+
             layui.element.on('tab(employeeTab)', function(data){
                 layui.employee.currentTab = data.index + 1;
                 if (layui.employee.currentTab <= 1) {
@@ -50,6 +73,10 @@ layui.extend({
 
             laydate.render({
                 elem: '#birthday'
+            });
+
+            laydate.render({
+                elem: '#socialSecurityDate'
             });
 
             laydate.render({
@@ -85,22 +112,27 @@ layui.extend({
                 type: 'month'
             });
 
+            laydate.render({
+                elem: '#childrenBirthday_0'
+            });
 
-            var registerPicker = new layui.citypicker("#city-picker", {
+            layui.select.init('childrenSex_0', 'SEX', '1', false);
+
+            this.registerPicker = new layui.citypicker("#city-picker", {
                 provincename:"nativeProv",
                 cityname:"nativeCity",
                 districtname: "nativeRegion",
                 level: 'nativeRegion',// 级别
             });
-            registerPicker.setValue("湖南省/长沙市/天心区");
+            this.registerPicker.setValue("湖南省/长沙市/天心区");
 
-            var homePicker = new layui.citypicker("#home-city-picker", {
+            this.homePicker = new layui.citypicker("#home-city-picker", {
                 provincename:"homeProv",
                 cityname:"homeCity",
                 districtname: "homeRegion",
                 level: 'homeRegion',// 级别
             });
-            homePicker.setValue("湖南省/长沙市/天心区");
+            this.homePicker.setValue("湖南省/长沙市/天心区");
 
             form.on('submit(btnSubmit)', function(data){
                 layui.employee.create(data.field);
@@ -253,6 +285,31 @@ layui.extend({
                 $("#regularDate").val(regularDate);
             }
 
+            var isSocialSecurity = employee.isSocialSecurity;
+            if (isSocialSecurity == "1") {
+                $("#socialSecurityDateArea").css("display", "");
+                $("#socialSecurityPlaceArea").css("display", "");
+                $("#socialSecurityStatusArea").css("display", "none");
+                $("#socialSecurityStatus").val("");
+            } else {
+                $("#socialSecurityDateArea").css("display", "none");
+                laydate.render({
+                    elem: '#socialSecurityDate',
+                    value : ''
+                });
+                $("#socialSecurityPlaceArea").css("display", "none");
+                $("#socialSecurityPlace").val("");
+                $("#socialSecurityStatusArea").css("display", "");
+            }
+
+            var native = employee.natives;
+            var home = employee.home;
+            if (native != null) {
+                this.registerPicker.setValue(native);
+            }
+            if (home != null) {
+                this.homePicker.setValue(home);
+            }
 
             var employeeJobRole = employee.employeeJobRole;
 
@@ -320,6 +377,29 @@ layui.extend({
                     $("#workContent_"+i).val(employeeWorkExperience.content);
                 }
             }
+
+            if (this.childrenIndex > 0) {
+                for (var i=this.childrenIndex;i>0;i--) {
+                    $("#children_"+i).remove();
+                }
+                this.childrenIndex = 0;
+            }
+
+            var children = employee.children;
+            if (children != null && children.length > 0) {
+                var length = children.length;
+                for (var i=0; i<length; i++) {
+                    var child = children[i];
+                    if (i > 0) {
+                        this.addChildren();
+                    }
+
+                    $("#childrenName_"+i).val(child.name);
+                    $("#childrenSex_"+i).val(child.sex);
+                    $("#childrenBirthday_"+i).val(child.birthday);
+                    form.render('select', 'childrenSex_'+i);
+                }
+            }
         },
 
         calculateJobYear : function(jobDate) {
@@ -365,6 +445,26 @@ layui.extend({
 
         delWorkExp : function(index) {
             $("#workExp_"+index).remove();
+        },
+
+        addChildren : function() {
+            this.childrenIndex++;
+            var template = document.getElementById("children").innerHTML;
+            var index = this.childrenIndex;
+            layui.laytpl(template).render(index, function(html){
+                $("#children_0").parent().append(html);
+                laydate.render({
+                    elem: '#childrenBirthday_'+index,
+                    value: $("#childrenBirthday_"+index).val()
+                });
+
+                layui.select.init('childrenSex_'+index, 'SEX', '1', false);
+                form.render('select', 'childrenSex_'+index);
+            });
+        },
+
+        delChildren : function(index) {
+            $("#children_"+index).remove();
         },
 
         create : function(formData) {

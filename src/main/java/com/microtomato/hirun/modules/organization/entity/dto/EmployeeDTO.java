@@ -63,6 +63,14 @@ public class EmployeeDTO {
 
     private String discountRate;
 
+    private Integer isSocialSecurity;
+
+    private LocalDate socialSecurityDate;
+
+    private String socialSecurityPlace;
+
+    private String socialSecurityStatus;
+
     private String firstEducationLevel;
 
     private String educationLevel;
@@ -86,4 +94,6 @@ public class EmployeeDTO {
     private EmployeeJobRoleDTO employeeJobRole;
 
     private List<EmployeeWorkExperienceDTO> employeeWorkExperiences;
+
+    private List<EmployeeChildrenDTO> children;
 }

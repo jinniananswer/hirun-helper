@@ -40,6 +40,18 @@ layui.extend({
                     educationArea.innerHTML = html;
                 });
 
+                var socialSecurity = document.getElementById("employeeSocialSecurityInfo").innerHTML;
+                var socialSecurityArea = document.getElementById("employeeSocialSecurity")
+                layui.laytpl(socialSecurity).render(archive, function(html){
+                    socialSecurityArea.innerHTML = html;
+                });
+
+                var children = document.getElementById("employeeChidrenInfo").innerHTML;
+                var childrenArea = document.getElementById("employeeChildren")
+                layui.laytpl(children).render(archive, function(html){
+                    childrenArea.innerHTML = html;
+                });
+
                 var workExperience = document.getElementById("employeeWorkExperienceInfo").innerHTML;
                 var workExperienceArea = document.getElementById("employeeWorkExperience")
                 layui.laytpl(workExperience).render(archive, function(html){

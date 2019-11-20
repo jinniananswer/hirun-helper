@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,6 +68,9 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
 
     @Autowired
     private IEmployeeHistoryService employeeHistoryService;
+
+    @Autowired
+    private IEmployeeChildrenService employeeChildrenService;
 
     @Autowired
     private EmployeeMapper employeeMapper;
@@ -158,6 +162,10 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
 
         employeeDTO.setJobYear(new Integer(jobYear));
 
+        AddressDO addressDO = SpringContextUtils.getBean(AddressDO.class);
+        employeeDTO.setNatives(addressDO.getFullName(employee.getNativeRegion()));
+        employeeDTO.setHome(addressDO.getFullName(employee.getHomeRegion()));
+
         //获取员工岗位信息
         EmployeeJobRole jobRole = null;
         if (normal) {
@@ -195,6 +203,17 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
                 workExperienceDTOS.add(workExperienceDTO);
             }
             employeeDTO.setEmployeeWorkExperiences(workExperienceDTOS);
+        }
+
+        List<EmployeeChildren> children = this.employeeChildrenService.queryByEmployeeId(employeeId);
+        if (ArrayUtils.isNotEmpty(children)) {
+            List<EmployeeChildrenDTO> childrenDTOS = new ArrayList<>();
+            for (EmployeeChildren child : children) {
+                EmployeeChildrenDTO childDTO = new EmployeeChildrenDTO();
+                BeanUtils.copyProperties(child, childDTO);
+                childrenDTOS.add(childDTO);
+            }
+            employeeDTO.setChildren(childrenDTOS);
         }
 
         return employeeDTO;
@@ -250,6 +269,19 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             }
         }
 
+        List<EmployeeChildrenDTO> childrenDTOS = employeeDTO.getChildren();
+        List<EmployeeChildren> children = new ArrayList<>();
+
+        if (ArrayUtils.isNotEmpty(childrenDTOS)) {
+            for (EmployeeChildrenDTO childrenDTO : childrenDTOS) {
+                if (StringUtils.isNotBlank(childrenDTO.getName())) {
+                    EmployeeChildren child = new EmployeeChildren();
+                    BeanUtils.copyProperties(childrenDTO, child);
+                    children.add(child);
+                }
+            }
+        }
+
         if (employeeDTO.getEmployeeId() == null) {
             //没有employeeId，表示是新入职操作
 
@@ -259,7 +291,7 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             employee.setUserId(userId);
 
             EmployeeDO employeeDO = SpringContextUtils.getBean(EmployeeDO.class, employee);
-            employeeDO.newEntry(jobRole, workExperiences);
+            employeeDO.newEntry(jobRole, workExperiences, children);
         } else {
             EmployeeDO employeeDO = SpringContextUtils.getBean(EmployeeDO.class, employeeDTO.getEmployeeId());
             Employee oldEmployee = employeeDO.getEmployee();
@@ -272,13 +304,13 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             String createType = employeeDTO.getCreateType();
             if (StringUtils.equals(EmployeeConst.CREATE_TYPE_REHIRE, createType)) {
                 userDO.modify(employeeDTO.getMobileNo(), UserConst.INIT_PASSWORD, UserConst.STATUS_NORMAL);
-                employeeDO.rehire(employee, jobRole, workExperiences);
+                employeeDO.rehire(employee, jobRole, workExperiences, children);
             } else if (StringUtils.equals(createType, EmployeeConst.CREATE_TYPE_REHELLORING)) {
                 userDO.modify(employeeDTO.getMobileNo(), UserConst.INIT_PASSWORD, UserConst.STATUS_NORMAL);
-                employeeDO.rehelloring(employee, jobRole, workExperiences);
+                employeeDO.rehelloring(employee, jobRole, workExperiences, children);
             } else {
                 userDO.modify(employeeDTO.getMobileNo(), UserConst.INIT_PASSWORD, null);
-                employeeDO.modify(employee, jobRole, workExperiences);
+                employeeDO.modify(employee, jobRole, workExperiences, children);
             }
 
         }
@@ -404,6 +436,26 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             archive.setWorkExperiences(workExperienceDTOS);
         }
 
+        List<EmployeeChildren> children = this.employeeChildrenService.queryByEmployeeId(employeeId);
+        if (ArrayUtils.isNotEmpty(children)) {
+            List<EmployeeChildrenDTO> childrenDTO = new ArrayList<>();
+            for (EmployeeChildren child :children) {
+                EmployeeChildrenDTO childDTO = new EmployeeChildrenDTO();
+                BeanUtils.copyProperties(child, childDTO);
+                childDTO.setSexName(this.staticDataService.getCodeName("SEX", child.getSex()));
+
+                int age = 0;
+                LocalDate birthday = child.getBirthday();
+                if (birthday != null) {
+                    LocalDate today = LocalDate.now();
+                    age = TimeUtils.getAbsDateDiffYear(birthday, today);
+                }
+                childDTO.setAge(age);
+                childrenDTO.add(childDTO);
+            }
+            archive.setChildren(childrenDTO);
+        }
+
         EmployeeDO employeeDO = new EmployeeDO(employee);
         archive.setSexName(this.staticDataService.getCodeName("SEX", employee.getSex()));
         archive.setAge(employeeDO.getAge() + "");
@@ -416,7 +468,11 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         archive.setEducationLevelName(this.staticDataService.getCodeName("EDUCATION_LEVEL", employee.getEducationLevel()));
         archive.setFirstEducationLevelName(this.staticDataService.getCodeName("EDUCATION_LEVEL", employee.getFirstEducationLevel()));
         archive.setSchoolTypeName(this.staticDataService.getCodeName("SCHOOL_TYPE", employee.getSchoolType()));
+        archive.setIsSocialSecurityName(this.staticDataService.getCodeName("YES_NO", employee.getIsSocialSecurity() + ""));
+        archive.setIsSocialSecurityName(this.staticDataService.getCodeName("SOCIAL_SECURITY_STATUS", employee.getSocialSecurityStatus()));
         archive.setStatusName(this.staticDataService.getCodeName("EMPLOYEE_STATUS", employee.getStatus()));
+        archive.setIsSocialSecurityName(this.staticDataService.getCodeName("YES_NO", employee.getIsSocialSecurity()+""));
+        archive.setSocialSecurityStatusName(this.staticDataService.getCodeName("SOCIAL_SECURITY_STATUS", employee.getSocialSecurityStatus()));
 
         archive.setJobRoleName(this.staticDataService.getCodeName("JOB_ROLE", jobRole.getJobRole()));
 

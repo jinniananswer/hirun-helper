@@ -59,6 +59,16 @@ public class EmployeeArchiveDTO {
 
     private String certificateNo;
 
+    private String isSocialSecurityName;
+
+    private LocalDate socialSecurityDate;
+
+    private LocalDate socialSecurityEnd;
+
+    private String socialSecurityPlace;
+
+    private String socialSecurityStatusName;
+
     private String statusName;
 
     private String jobRoleName;
@@ -72,6 +82,8 @@ public class EmployeeArchiveDTO {
     private String parentEmployeeName;
 
     private List<EmployeeWorkExperienceDTO> workExperiences;
+
+    private List<EmployeeChildrenDTO> children;
 
     private List<EmployeeHistoryDTO> histories;
 
