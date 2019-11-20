@@ -73,9 +73,6 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
     private IEmployeeChildrenService employeeChildrenService;
 
     @Autowired
-    private IEmployeeContractService employeeContractService;
-
-    @Autowired
     private EmployeeMapper employeeMapper;
 
     @Override
@@ -151,11 +148,10 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
      * 装载员工档案信息
      *
      * @param employeeId 员工ID
-     * @param normal     是否在职员工
      * @return
      */
     @Override
-    public EmployeeDTO load(Long employeeId, boolean normal) {
+    public EmployeeDTO load(Long employeeId) {
         EmployeeDO employeeDO = SpringContextUtils.getBean(EmployeeDO.class, employeeId);
         Employee employee = employeeDO.getEmployee();
 
@@ -171,7 +167,8 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
 
         //获取员工岗位信息
         EmployeeJobRole jobRole = null;
-        if (normal) {
+        String status = employee.getStatus();
+        if (StringUtils.equals(EmployeeConst.STATUS_NORMAL, status)) {
             jobRole = this.employeeJobRoleService.queryValidMain(employeeId);
         } else {
             jobRole = this.employeeJobRoleService.queryLast(employeeId);
@@ -329,17 +326,22 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
     @DS("ins")
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public boolean destroyEmployee(EmployeeDestroyInfoDTO employeeDestroyInfoDTO) {
-        UserContext userContext=WebContextUtils.getUserContext();
-        Long loginUserId=userContext.getUserId();
-        //注销employee信息包括社保信息
+        //注销employee信息
         Employee employee = new Employee();
         BeanUtils.copyProperties(employeeDestroyInfoDTO, employee);
 
         EmployeeDO employeeDO = SpringContextUtils.getBean(EmployeeDO.class, employee);
+        //todo 这是测试代码，之后要改的
+        List<Employee> employeeList = employeeDO.findSubordinate();
+        if (ArrayUtils.isNotEmpty(employeeList)) {
+            throw new EmployeeException(EmployeeException.EmployeeExceptionEnum.IS_EXISTS);
+        }
         employeeDO.destroy(employeeDestroyInfoDTO.getDestroyDate());
 
-        //据离职时间终止合同记录
-        employeeContractService.stopEmployeeContract(employeeDestroyInfoDTO.getEmployeeId(),employeeDestroyInfoDTO.getDestroyDate(),loginUserId);
+        //todo 根据社保停买时间更新社保记录
+
+        //todo 根据离职时间终止合同记录
+
         //终止暂停操作员账号
         Employee userEmployee = employeeService.getById(employeeDestroyInfoDTO.getEmployeeId());
         Long userId = userEmployee.getUserId();
@@ -357,10 +359,6 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             employeeBlackListDO.addBlackList(employeeBlacklist);
         }
 
-        //变更直属下级的上级员工
-        if (employeeDestroyInfoDTO.getNewParentEmployeeId() != null) {
-            employeeJobRoleService.changeParentEmployee(employeeDestroyInfoDTO.getEmployeeId(), employeeDestroyInfoDTO.getNewParentEmployeeId(),loginUserId);
-        }
 
         return true;
     }

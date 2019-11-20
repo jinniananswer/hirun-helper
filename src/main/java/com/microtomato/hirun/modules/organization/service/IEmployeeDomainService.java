@@ -23,7 +23,7 @@ public interface IEmployeeDomainService {
 
     void verifyMobileNo(String mobileNo, String operType, Long employeeId);
 
-    EmployeeDTO load(Long employeeId, boolean normal);
+    EmployeeDTO load(Long employeeId);
 
     Double calculateDiscountRate(Long orgId, String jobRoleNature);
 
