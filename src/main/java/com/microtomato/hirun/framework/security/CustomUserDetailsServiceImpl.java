@@ -2,6 +2,7 @@ package com.microtomato.hirun.framework.security;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.microtomato.hirun.framework.util.Constants;
 import com.microtomato.hirun.modules.user.entity.po.FuncRole;
 import com.microtomato.hirun.modules.user.entity.po.FuncTemp;
 import com.microtomato.hirun.modules.user.entity.po.User;
@@ -88,6 +89,7 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
 
         // 查用户角色对应的所有权限
         List<Long> roleIdList = new ArrayList<>();
+        roleIdList.add(Constants.DEFAULT_ROLE_ID);
         userRoles.forEach(userRole -> roleIdList.add(userRole.getRoleId()));
         List<FuncRole> funcRoleList = funcRoleServiceImpl.list(
             Wrappers.<FuncRole>lambdaQuery().select(FuncRole::getFuncId).in(FuncRole::getRoleId, roleIdList)
