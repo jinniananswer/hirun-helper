@@ -2,6 +2,7 @@ package com.microtomato.hirun.modules.organization.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.util.ArrayUtils;
@@ -71,5 +72,19 @@ public class EmployeeJobRoleServiceImpl extends ServiceImpl<EmployeeJobRoleMappe
         }
 
         return jobRoles.get(0);
+    }
+
+    @Override
+    public boolean changeParentEmployee(Long oldParentEmployeeId, Long newParentEmployeeId,Long userId) {
+        UpdateWrapper<EmployeeJobRole> updateWrapper=new UpdateWrapper<>();
+        updateWrapper.eq("parent_employee_id",oldParentEmployeeId);
+        updateWrapper.apply("end_date > now() ");
+
+        EmployeeJobRole employeeJobRole=new EmployeeJobRole();
+        employeeJobRole.setParentEmployeeId(newParentEmployeeId);
+        employeeJobRole.setUpdateUserId(userId);
+        employeeJobRole.setUpdateTime(LocalDateTime.now());
+
+        return this.update(employeeJobRole,updateWrapper);
     }
 }

@@ -9,6 +9,7 @@
           content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <link rel="stylesheet" href="/static/layui/css/layui.css" th:href="@{static/layui/css/layui.css}" media="all">
     <link rel="stylesheet" href="/static/css/admin.css" th:href="@{static/css/admin.css}" media="all">
+    <link rel="stylesheet" href="/static/css/template.css" th:href="@{static/css/template.css}" media="all">
     <script src="../static/layui/layui.js" th:src="@{static/layui/layui.js}"></script>
     <script src="../static/js/base.js" th:src="@{static/js/base.js}"></script>
     <style>
@@ -28,88 +29,105 @@
 </head>
 <body>
 <div class="layui-fluid">
-    <div class="layui-form" lay-filter="employee-remove-form" id="employee-remove-form"
-         style="padding: 20px 30px 0 0;">
-        <div class="layui-form-item" style="display: none">
-            <label class="layui-form-label">员工编号</label>
-            <div class="layui-input-block">
-                <input type="hidden" name="employeeId" id="employeeId" autocomplete="off" class="layui-input" readonly>
-            </div>
-        </div>
-
-        <div class="layui-form-item" style="display: none">
-            <label class="layui-form-label">证件号码</label>
-            <div class="layui-input-block">
-                <input type="hidden" name="identityNo" id="identityNo" autocomplete="off" class="layui-input" readonly>
-            </div>
-        </div>
-
-        <div class="layui-form-item" style="display: none">
-            <label class="layui-form-label">电话号码</label>
-            <div class="layui-input-block">
-                <input type="hidden" name="mobileNo" id="mobileNo" autocomplete="off" class="layui-input" readonly>
-            </div>
-        </div>
-
-        <div class="layui-form-item">
-            <label class="layui-form-label">姓名</label>
-            <div class="layui-input-block">
-                <input type="text" name="name" id="name" autocomplete="off" class="layui-input" readonly>
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label layui-required">离职时间</label>
-            <div class="layui-input-block">
-                <input type="text" id="destroyDate" name="destroyDate" required lay-verify="required"
-                       placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input"/>
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label layui-required">社保停买时间</label>
-            <div class="layui-input-block">
-                <input type="text" id="socialStopDate" name="social-stop-date" required lay-verify="required"
-                       placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input"/>
-            </div>
-        </div>
-        <div class="layui-form-item" >
-            <label class="layui-form-label">离职次数</label>
-            <div class="layui-input-block" style="">
-                <select name="destroyTimes" id="destroyTimes">
-                    <option value="1" selected>1</option>
-                    <option value="2">2</option>
-                </select>
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label layui-required">离职方式</label>
-            <div class="layui-input-block"  >
-                <div class="layui-form" lay-filter="destroyWay">
-                    <select id="destroyWay" name="destroyWay" lay-verify="required">
-
-                    </select>
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="layui-form" lay-filter="employee-remove-form" id="employee-remove-form"
+                 style="padding: 20px 30px 0 0;">
+                <div class="layui-form-item" style="display: none">
+                    <label class="layui-form-label">员工编号</label>
+                    <div class="layui-input-block">
+                        <input type="hidden" name="employeeId" id="employeeId" autocomplete="off" class="layui-input" readonly>
+                    </div>
                 </div>
+
+                <div class="layui-form-item" style="display: none">
+                    <label class="layui-form-label">证件号码</label>
+                    <div class="layui-input-block">
+                        <input type="hidden" name="identityNo" id="identityNo" autocomplete="off" class="layui-input"
+                               readonly>
+                    </div>
+                </div>
+
+                <div class="layui-form-item" style="display: none">
+                    <label class="layui-form-label">电话号码</label>
+                    <div class="layui-input-block">
+                        <input type="hidden" name="mobileNo" id="mobileNo" autocomplete="off" class="layui-input"
+                               readonly>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">姓名</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="name" id="name" autocomplete="off" class="layui-input" readonly>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label layui-required">离职时间</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="destroyDate" name="destroyDate" required lay-verify="required"
+                               placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input" readonly/>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label layui-required">社保停买</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="socialSecurityEnd" name="socialSecurityEnd" required lay-verify="required"
+                               placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input" readonly/>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">离职次数</label>
+                    <div class="layui-input-block" style="">
+                        <select name="destroyTimes" id="destroyTimes">
+                            <option value="1" selected>1</option>
+                            <option value="2">2</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label layui-required">离职方式</label>
+                    <div class="layui-input-block">
+                        <div class="layui-form" lay-filter="destroyWay">
+                            <select id="destroyWay" name="destroyWay" lay-verify="required">
+
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">离职原因</label>
+                    <div class="layui-input-block">
+                        <textarea name="destroyReason" id="destroyReason" autocomplete="off" class="layui-textarea"></textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">永不录用</label>
+                    <div class="layui-input-block">
+                        <input type="checkbox" name="isBlackList" lay-skin="switch" lay-text="是|否">
+                    </div>
+                </div>
+                <div class="layui-form-item" id="newParent" style="display: none">
+                    <label class="layui-form-label layui-required">下级转移</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="parentEmployeeName" name="parentEmployeeName" onclick="layui.destroyemployee.selectNewParent();" readonly placeholder="请为注销员工的下级员工重新选择上级" autocomplete="off" class="layui-input" required lay-verify="required"/>
+                        <input type="hidden" id="newParentEmployeeId" name="newParentEmployeeId" />
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <input type="button" lay-submit lay-filter="employee-remove-submit" id="employee-remove-submit"
+                           value="确定">
+                    <input type="button" lay-submit lay-filter="employee-cancle-submit" id="employee-cancle-submit"
+                           value="取消">
+                </div>
+                <span style="color :red;display: none" id="remind">注意:您注销的员工拥有直属下级员工，请为该员工的直属下级员工选择新的上级。</span>
+
             </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">离职原因</label>
-            <div class="layui-input-block">
-                <textarea name="destroyReason" id="destroyReason"  autocomplete="off"
-                          class="layui-textarea"></textarea>
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">永不录用</label>
-            <div class="layui-input-block">
-                <input type="checkbox" name="isBlackList"  lay-skin="switch" lay-text="是|否">
-            </div>
-        </div>
-        <div class="layui-form-item layui-hide">
-            <input type="button" lay-submit lay-filter="employee-remove-submit" id="employee-remove-submit"
-                   value="确定">
-            <input type="button" lay-submit lay-filter="employee-cancle-submit" id="employee-cancle-submit"
-                   value="取消">
         </div>
     </div>
+</div>
+<div id="employeeList" style="display:none">
+
 </div>
 <script>
     layui.extend(

@@ -73,6 +73,9 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
     private IEmployeeChildrenService employeeChildrenService;
 
     @Autowired
+    private IEmployeeContractService employeeContractService;
+
+    @Autowired
     private EmployeeMapper employeeMapper;
 
     @Override
@@ -326,22 +329,17 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
     @DS("ins")
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public boolean destroyEmployee(EmployeeDestroyInfoDTO employeeDestroyInfoDTO) {
-        //注销employee信息
+        UserContext userContext=WebContextUtils.getUserContext();
+        Long loginUserId=userContext.getUserId();
+        //注销employee信息包括社保信息
         Employee employee = new Employee();
         BeanUtils.copyProperties(employeeDestroyInfoDTO, employee);
 
         EmployeeDO employeeDO = SpringContextUtils.getBean(EmployeeDO.class, employee);
-        //todo 这是测试代码，之后要改的
-        List<Employee> employeeList = employeeDO.findSubordinate();
-        if (ArrayUtils.isNotEmpty(employeeList)) {
-            throw new EmployeeException(EmployeeException.EmployeeExceptionEnum.IS_EXISTS);
-        }
         employeeDO.destroy(employeeDestroyInfoDTO.getDestroyDate());
 
-        //todo 根据社保停买时间更新社保记录
-
-        //todo 根据离职时间终止合同记录
-
+        //据离职时间终止合同记录
+        employeeContractService.stopEmployeeContract(employeeDestroyInfoDTO.getEmployeeId(),employeeDestroyInfoDTO.getDestroyDate(),loginUserId);
         //终止暂停操作员账号
         Employee userEmployee = employeeService.getById(employeeDestroyInfoDTO.getEmployeeId());
         Long userId = userEmployee.getUserId();
@@ -359,6 +357,10 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             employeeBlackListDO.addBlackList(employeeBlacklist);
         }
 
+        //变更直属下级的上级员工
+        if (employeeDestroyInfoDTO.getNewParentEmployeeId() != null) {
+            employeeJobRoleService.changeParentEmployee(employeeDestroyInfoDTO.getEmployeeId(), employeeDestroyInfoDTO.getNewParentEmployeeId(),loginUserId);
+        }
 
         return true;
     }

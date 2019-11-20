@@ -1,6 +1,8 @@
 package com.microtomato.hirun.modules.organization.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeContract;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -56,5 +59,19 @@ public class EmployeeContractServiceImpl extends ServiceImpl<EmployeeContractMap
         queryWrapper.eq("parent_contract_id", parentContractId);
         queryWrapper.in("status", Arrays.asList(1, 2));
         return this.contractMapper.selectPage(page, queryWrapper);
+    }
+
+    @Override
+    public boolean stopEmployeeContract(Long employeeId, LocalDateTime destoryTime,Long userId) {
+        UpdateWrapper<EmployeeContract> updateWrapper=new UpdateWrapper<>();
+        updateWrapper.eq("employee_id",employeeId);
+        updateWrapper.apply("contract_end_time > now() ");
+
+        EmployeeContract employeeContract=new EmployeeContract();
+        employeeContract.setContractEndTime(destoryTime);
+        employeeContract.setUpdateUserId(userId);
+        employeeContract.setStatus("2");
+        employeeContract.setUpdateTime(LocalDateTime.now());
+        return this.update(employeeContract,updateWrapper);
     }
 }

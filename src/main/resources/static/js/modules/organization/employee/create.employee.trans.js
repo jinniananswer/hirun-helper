@@ -76,9 +76,6 @@ layui.extend({
             layui.selectEmployee.init('executeEmployeeList', 'employeeSearch', 'pendingExecuteId', 'pendExecuteName', false);
         },
 
-        changeType :function (data) {
-            alert(data);
-        },
     };
     exports('createEmployeeTrans', createEmployeeTrans);
 });

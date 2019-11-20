@@ -20,4 +20,6 @@ public interface IEmployeeJobRoleService extends IService<EmployeeJobRole> {
     List<EmployeeJobRole> queryAll(Long employeeId);
 
     EmployeeJobRole queryLast(Long employeeId);
+
+    boolean changeParentEmployee(Long oldParentEmployeeId,Long newParentEmployeeId,Long userId);
 }

@@ -8,6 +8,7 @@ import com.microtomato.hirun.framework.harbour.excel.AbstractExcelHarbour;
 import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.organization.entity.dto.*;
+import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.service.IEmployeeDomainService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import lombok.extern.slf4j.Slf4j;
@@ -122,5 +123,11 @@ public class EmployeeController extends AbstractExcelHarbour  {
     public void queryEmployeeList4Export(EmployeeInfoDTO employeeInfoDTO, HttpServletResponse response) throws IOException {
         List<EmployeeInfoDTO> list=employeeDomainServiceImpl.queryEmployeeList(employeeInfoDTO);
         exportExcel(response, "users", EmployeeInfoDTO.class, list, ExcelTypeEnum.XLSX);
+    }
+
+    @PostMapping("/queryChildEmployee4Destroy")
+    @RestResult
+    public List<Employee> queryChildEmployee4Destroy(Long employeeId) {
+        return employeeServiceImpl.findSubordinate(employeeId);
     }
 }

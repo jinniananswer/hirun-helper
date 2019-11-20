@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeContract;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -34,4 +35,6 @@ public interface IEmployeeContractService extends IService<EmployeeContract> {
      * @return
      */
     IPage<EmployeeContract> queryContractByParentId(Long parentContractId, Page<EmployeeContract> page);
+
+    boolean stopEmployeeContract(Long employeeId, LocalDateTime destoryTime,Long userId);
 }

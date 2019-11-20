@@ -1,10 +1,25 @@
-layui.extend({}).define(['ajax', 'form', 'layer', 'element', 'laydate', 'select'], function (exports) {
+layui.extend({
+    selectEmployee: 'employee'
+}).define(['ajax', 'form', 'layer', 'element', 'laydate', 'select','selectEmployee'], function (exports) {
     var $ = layui.$;
     var form = layui.form;
     var layer = layui.layer;
     var laydate = layui.laydate;
     var destroyemployee = {
         init: function () {
+
+            layui.ajax.post('api/organization/employee/queryChildEmployee4Destroy', 'employeeId=' + $('#employeeId').val(), function (data) {
+                var employeeList = data.rows;
+                if (employeeList.length <= 0) {
+                    $("#newParent").hide();
+                    $("#remind").hide();
+                    $("#parentEmployeeName").removeAttr("lay-verify");
+                }else{
+                    $("#newParent").show();
+                    $("#remind").show();
+                    $("#parentEmployeeName").attr("lay-verify","required");
+                }
+            });
 
             layui.select.init('destroyWay', 'DESTROY_WAY', '1', false);
 
@@ -13,7 +28,7 @@ layui.extend({}).define(['ajax', 'form', 'layer', 'element', 'laydate', 'select'
             });
 
             laydate.render({
-                elem: '#socialStopDate',
+                elem: '#socialSecurityEnd',
             });
 
             form.on('submit(employee-remove-submit)', function (data) {
@@ -43,8 +58,14 @@ layui.extend({}).define(['ajax', 'form', 'layer', 'element', 'laydate', 'select'
                         }
                     }
                 });
+
             });
         },
+
+        selectNewParent : function() {
+            layui.selectEmployee.init('employeeList', 'employeeSearch', 'newParentEmployeeId', 'parentEmployeeName', false);
+        },
+
 
     };
     exports('destroyemployee', destroyemployee);

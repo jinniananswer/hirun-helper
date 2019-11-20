@@ -10,7 +10,7 @@ layui.extend({
 
             layui.select.init('sex', 'SEX', '', true);
             layui.select.init('employeeStatus', 'EMPLOYEE_STATUS', '', true);
-            layui.select.init('type', 'EMPLOYEE_TYPE', '1', false);
+            layui.select.init('type', 'EMPLOYEE_TYPE', '', true);
 
 
             var ins = table.render({

@@ -31,5 +31,7 @@ public class EmployeeDestroyInfoDTO {
 
     private String isBlackList;
 
-    private LocalDate socialStopDate;
+    private LocalDate socialSecurityEnd;
+
+    private Long newParentEmployeeId;
 }
