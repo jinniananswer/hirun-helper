@@ -68,10 +68,10 @@ public class EmployeeController extends AbstractExcelHarbour  {
         this.employeeDomainServiceImpl.verifyMobileNo(mobileNo, operType, employeeId);
     }
 
-    @RequestMapping("/loadAbnormal")
+    @RequestMapping("/load")
     @RestResult
-    public EmployeeDTO loadAbnormal(Long employeeId) {
-        return this.employeeDomainServiceImpl.load(employeeId, false);
+    public EmployeeDTO load(Long employeeId) {
+        return this.employeeDomainServiceImpl.load(employeeId);
     }
 
     @RequestMapping("/calculateDiscountRate")
