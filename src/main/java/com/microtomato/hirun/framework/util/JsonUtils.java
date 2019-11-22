@@ -4,12 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Jackson 工具类
+ * Json 工具类，基于 Jackson 的实现
  *
  * @author Steven
  * @date 2019-04-29
  */
-public final class JacksonUtils {
+public final class JsonUtils {
 
     private final static ObjectMapper mapper = new ObjectMapper();
 

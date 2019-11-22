@@ -1,6 +1,5 @@
 package com.microtomato.hirun.framework.harbour.excel;
 
-import com.alibaba.druid.support.json.JSONUtils;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.read.listener.ReadListener;
 import com.alibaba.excel.support.ExcelTypeEnum;
@@ -8,7 +7,7 @@ import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.metadata.style.WriteFont;
 import com.alibaba.excel.write.style.HorizontalCellStyleStrategy;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.microtomato.hirun.framework.util.JacksonUtils;
+import com.microtomato.hirun.framework.util.JsonUtils;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.modules.system.entity.po.ExcelImportError;
 import com.microtomato.hirun.modules.system.service.IExcelImportErrorService;
@@ -187,8 +186,7 @@ public abstract class AbstractExcelHarbour {
         List<List<String>> rows = new ArrayList<>();
         for (ExcelImportError excelImportError : list) {
             String rowContent = excelImportError.getRowContent();
-            List<String> row = JacksonUtils.decode(rowContent, List.class);
-            //List<String> row = (List<String>)JSONUtils.parse(rowContent);
+            List<String> row = JsonUtils.decode(rowContent, List.class);
             rows.add(row);
         }
 

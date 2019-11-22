@@ -5,7 +5,7 @@ import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.excel.metadata.CellData;
 import com.alibaba.excel.read.metadata.holder.ReadRowHolder;
-import com.microtomato.hirun.framework.util.JacksonUtils;
+import com.microtomato.hirun.framework.util.JsonUtils;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.modules.system.entity.po.ExcelImportError;
 import com.microtomato.hirun.modules.system.service.IExcelImportErrorService;
@@ -69,8 +69,7 @@ public abstract class ExcelEventListener<T> extends AnalysisEventListener<T> {
             LocalDateTime now = LocalDateTime.now();
             errBatchId = UUID.randomUUID().toString();
             for (List<String> row : errDatas) {
-                //String rowContent = JSONUtils.toJSONString(row);
-                String rowContent = JacksonUtils.encode(row);
+                String rowContent = JsonUtils.encode(row);
                 ExcelImportError excelImportError = new ExcelImportError();
                 excelImportError.setBatchId(errBatchId);
                 excelImportError.setRowContent(rowContent);
