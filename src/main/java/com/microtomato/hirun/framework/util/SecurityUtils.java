@@ -16,7 +16,8 @@ import java.util.Set;
  * @date 2019-11-13
  */
 public final class SecurityUtils {
-    private SecurityUtils() {}
+    private SecurityUtils() {
+    }
 
     /**
      * 是否有某个权限

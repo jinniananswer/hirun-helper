@@ -8,6 +8,7 @@ import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.metadata.style.WriteFont;
 import com.alibaba.excel.write.style.HorizontalCellStyleStrategy;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.microtomato.hirun.framework.util.JacksonUtils;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.modules.system.entity.po.ExcelImportError;
 import com.microtomato.hirun.modules.system.service.IExcelImportErrorService;
@@ -186,7 +187,8 @@ public abstract class AbstractExcelHarbour {
         List<List<String>> rows = new ArrayList<>();
         for (ExcelImportError excelImportError : list) {
             String rowContent = excelImportError.getRowContent();
-            List<String> row = (List<String>)JSONUtils.parse(rowContent);
+            List<String> row = JacksonUtils.decode(rowContent, List.class);
+            //List<String> row = (List<String>)JSONUtils.parse(rowContent);
             rows.add(row);
         }
 

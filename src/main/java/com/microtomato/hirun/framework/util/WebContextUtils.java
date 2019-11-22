@@ -13,23 +13,23 @@ import org.springframework.security.core.context.SecurityContextHolder;
 @Slf4j
 public class WebContextUtils {
 
-	/**
-	 * 获取当前登录用户信息
-	 *
-	 * @return
-	 */
-	public static final UserContext getUserContext() {
+    /**
+     * 获取当前登录用户信息
+     *
+     * @return
+     */
+    public static final UserContext getUserContext() {
 
-		UserContext userContext = null;
-		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UserContext userContext = null;
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-		if (principal instanceof UserContext) {
-			userContext = (UserContext) principal;
-		} else {
-			log.error("principal is not UserContext, " + principal + ", " + principal.getClass());
-		}
+        if (principal instanceof UserContext) {
+            userContext = (UserContext) principal;
+        } else {
+            log.error("principal is not UserContext, " + principal + ", " + principal.getClass());
+        }
 
-		return userContext;
-	}
+        return userContext;
+    }
 
 }

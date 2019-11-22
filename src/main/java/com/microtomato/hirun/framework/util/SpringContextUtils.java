@@ -7,12 +7,12 @@ import org.springframework.stereotype.Component;
 
 /**
  * @program: hirun-helper
- * @description: spring上下文工具类
+ * @description: Spring 上下文工具类
  * @author: jinnian
  * @create: 2019-10-27 12:29
  **/
 @Component
-public class SpringContextUtils implements ApplicationContextAware {
+public final class SpringContextUtils implements ApplicationContextAware {
 
     private static ApplicationContext context;
 
@@ -22,7 +22,8 @@ public class SpringContextUtils implements ApplicationContextAware {
     }
 
     /**
-     * 获取spring上下文对象
+     * 获取 Spring 上下文对象
+     *
      * @return
      */
     public static ApplicationContext getContext() {
@@ -30,22 +31,24 @@ public class SpringContextUtils implements ApplicationContextAware {
     }
 
     /**
-     * 获取bean对象
+     * 获取 Bean 对象
+     *
      * @param clazz
      * @param <T>
      * @return
      */
     public static <T> T getBean(Class<T> clazz) {
-        return (T)getContext().getBean(clazz);
+        return (T) getContext().getBean(clazz);
     }
 
     /**
-     * 获取bean对象，调用其带参数的构造函数
+     * 获取 Bean 对象，调用其带参数的构造函数
+     *
      * @param clazz
      * @param <T>
      * @return
      */
     public static <T> T getBean(Class<T> clazz, Object... args) {
-        return (T)getContext().getBean(clazz, args);
+        return (T) getContext().getBean(clazz, args);
     }
 }

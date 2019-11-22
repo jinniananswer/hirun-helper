@@ -36,8 +36,8 @@ public final class ValidationUtils {
     public static void isNotFound(Object object, String entity, String parameter, Object value) {
         if (null == object) {
             String msg = entity
-                    + " is not found! "
-                    + "{ " + parameter + ":" + value.toString() + " }";
+                + " is not found! "
+                + "{ " + parameter + ":" + value.toString() + " }";
             throw new NotFoundException(msg, NOT_FOUND.getCode());
         }
     }
@@ -53,8 +53,8 @@ public final class ValidationUtils {
     public static void isNotFound(int ret, String entity, String parameter, Object value) {
         if (0 == ret) {
             String msg = entity
-                    + " is not found! "
-                    + "{ " + parameter + ":" + value.toString() + " }";
+                + " is not found! "
+                + "{ " + parameter + ":" + value.toString() + " }";
             throw new NotFoundException(msg, NOT_FOUND.getCode());
         }
     }
@@ -70,8 +70,8 @@ public final class ValidationUtils {
     public static void isAlreadyExist(int ret, String entity, String parameter, Object value) {
         if (0 == ret) {
             String msg = entity
-                    + " already exist! "
-                    + "{ " + parameter + ":" + value.toString() + " }";
+                + " already exist! "
+                + "{ " + parameter + ":" + value.toString() + " }";
             throw new AlreadyExistException(msg, ALREADY_EXIST.getCode());
         }
     }
@@ -80,7 +80,7 @@ public final class ValidationUtils {
 
     /**
      * 基于 JSR303 规则的验证
-     *
+     * <p>
      * 如果返回 null 则表示没有错误
      *
      * @param obj
