@@ -2,8 +2,8 @@ package com.microtomato.hirun.framework.harbour.excel.demo;
 
 import com.alibaba.excel.context.AnalysisContext;
 import com.microtomato.hirun.framework.harbour.excel.ExcelEventListener;
-import com.microtomato.hirun.framework.util.Jsr303Utils;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
+import com.microtomato.hirun.framework.util.ValidationUtils;
 import com.microtomato.hirun.modules.demo.entity.po.Steven;
 import com.microtomato.hirun.modules.demo.service.IStevenService;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ public class UserReadListener extends ExcelEventListener<UserExcelImportDTO> {
     @Override
     public void invoke(UserExcelImportDTO data, AnalysisContext context) {
 
-        String checkResult = Jsr303Utils.check(data);
+        String checkResult = ValidationUtils.jsr303Check(data);
         if (null != checkResult) {
             addErrData(context, data, checkResult);
             log.error(data + " 数据校验结果：" + checkResult);
