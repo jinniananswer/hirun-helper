@@ -1,11 +1,16 @@
 package com.microtomato.hirun.framework.harbour.excel;
 
+import com.alibaba.druid.support.json.JSONUtils;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.read.listener.ReadListener;
 import com.alibaba.excel.support.ExcelTypeEnum;
 import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.metadata.style.WriteFont;
 import com.alibaba.excel.write.style.HorizontalCellStyleStrategy;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.microtomato.hirun.framework.util.SpringContextUtils;
+import com.microtomato.hirun.modules.system.entity.po.ExcelImportError;
+import com.microtomato.hirun.modules.system.service.IExcelImportErrorService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
@@ -17,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -84,6 +90,16 @@ public abstract class AbstractExcelHarbour {
             defaultContentWriteCellStyle());
     }
 
+    protected void exportExcelWithErrorData(HttpServletResponse response, String fileName, List<?> list) throws IOException {
+        response.setContentType("application/vnd.ms-excel");
+        response.setCharacterEncoding("UTF-8");
+        fileName = URLEncoder.encode(fileName, "UTF-8");
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName);
+        //File file = new File("F:\\异常数据.xlsx");
+        //FileOutputStream fileOutputStream = new FileOutputStream(file);
+        EasyExcel.write(response.getOutputStream()).sheet("异常数据").doWrite(list);
+    }
+
     /**
      * @param response              HTTP 响应
      * @param fileName              文件名
@@ -96,13 +112,13 @@ public abstract class AbstractExcelHarbour {
      * @throws IOException 异常
      */
     protected void exportExcel(HttpServletResponse response,
-                        String fileName,
-                        Class dataType,
-                        List<?> list,
-                        String sheetName,
-                        ExcelTypeEnum excelTypeEnum,
-                        WriteCellStyle headWriteCellStyle,
-                        WriteCellStyle contentWriteCellStyle) throws IOException {
+                               String fileName,
+                               Class dataType,
+                               List<?> list,
+                               String sheetName,
+                               ExcelTypeEnum excelTypeEnum,
+                               WriteCellStyle headWriteCellStyle,
+                               WriteCellStyle contentWriteCellStyle) throws IOException {
 
         if ((!StringUtils.endsWith(fileName, ExcelTypeEnum.XLS.getValue())) &&
             (!StringUtils.endsWith(fileName, ExcelTypeEnum.XLSX.getValue()))) {
@@ -127,11 +143,57 @@ public abstract class AbstractExcelHarbour {
 
     /**
      * 从 MultipartFile 中以流的方式获取数据
-     *
+     * <p>
      * Excel 导入
      */
     protected void importExcel(MultipartFile multipartFile, Class dataType, ReadListener readListener) throws IOException {
         InputStream ins = multipartFile.getInputStream();
         EasyExcel.read(ins, dataType, readListener).sheet().doRead();
+    }
+
+    /**
+     * 下载导入模板
+     *
+     * @param response
+     * @param fileName
+     * @param dataType
+     * @param list
+     * @param sheetName
+     * @param excelTypeEnum
+     * @throws IOException
+     */
+    protected void downloadImportTemplate(HttpServletResponse response, String fileName, Class dataType, List<?> list,
+                                          String sheetName, ExcelTypeEnum excelTypeEnum) throws IOException {
+        exportExcel(response, fileName, dataType, list, sheetName, excelTypeEnum,
+            defaultHeadWriteCellStyle(), defaultContentWriteCellStyle());
+    }
+
+    /**
+     * 导出异常数据
+     *
+     * @param response
+     * @param batchId
+     * @throws Exception
+     */
+    protected void downloadError(HttpServletResponse response, String batchId) throws Exception {
+        IExcelImportErrorService excelImportErrorServiceImpl = SpringContextUtils.getBean(IExcelImportErrorService.class);
+        List<ExcelImportError> list = excelImportErrorServiceImpl.list(
+            Wrappers.<ExcelImportError>lambdaQuery()
+                .select(ExcelImportError::getRowContent)
+                .eq(ExcelImportError::getBatchId, batchId)
+        );
+
+        List<List<String>> rows = new ArrayList<>();
+        for (ExcelImportError excelImportError : list) {
+            String rowContent = excelImportError.getRowContent();
+            List<String> row = (List<String>)JSONUtils.parse(rowContent);
+            rows.add(row);
+        }
+
+        response.setContentType("application/vnd.ms-excel");
+        response.setCharacterEncoding("utf-8");
+        String fileName = URLEncoder.encode("异常数据", "UTF-8");
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+        EasyExcel.write(response.getOutputStream()).sheet("Sheet1").doWrite(rows);
     }
 }

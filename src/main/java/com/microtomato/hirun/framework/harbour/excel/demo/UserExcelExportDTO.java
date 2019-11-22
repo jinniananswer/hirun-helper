@@ -1,5 +1,6 @@
 package com.microtomato.hirun.framework.harbour.excel.demo;
 
+import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.annotation.write.style.ColumnWidth;
 import com.microtomato.hirun.framework.harbour.excel.convert.LocalDateTimeConvert;
@@ -14,7 +15,13 @@ import java.time.LocalDateTime;
  * @date 2019-10-30
  */
 @Data
-public class UserExportData {
+public class UserExcelExportDTO {
+
+    /**
+     * 默认所有字段都会和 excel 去匹配，加了这个注解会忽略该字段
+     */
+    @ExcelIgnore
+    private Long id;
 
     @ColumnWidth(20)
     @ExcelProperty("用户ID")

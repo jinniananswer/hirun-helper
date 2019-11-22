@@ -14,7 +14,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -35,24 +37,60 @@ public class ExcelDemoHarbourController extends AbstractExcelHarbour {
     @GetMapping("export")
     public void export(HttpServletResponse response) throws IOException {
         List<User> list = userServiceImpl.list();
-        List<UserExportData> datas = new ArrayList<>(list.size());
+        List<UserExcelExportDTO> datas = new ArrayList<>(list.size());
         for (User user : list) {
-            UserExportData data = new UserExportData();
+            UserExcelExportDTO data = new UserExcelExportDTO();
             BeanUtils.copyProperties(user, data);
             datas.add(data);
         }
 
         // 调用基类导出函数
-        exportExcel(response, "users", UserExportData.class, datas, ExcelTypeEnum.XLSX);
+        exportExcel(response, "users", UserExcelExportDTO.class, datas, ExcelTypeEnum.XLSX);
+    }
+
+    /**
+     * 下载导入模板
+     *
+     * @param response
+     */
+    @GetMapping(value = "download-template")
+    public void downloadTemplate(HttpServletResponse response) {
+        try {
+            // 文件名
+            String fileName = "社保缴纳数据导入模板";
+
+            // Sheet名
+            String sheetName = "员工数据";
+
+            // 携带示例数据
+            UserExcelImportDTO userExcelImportDTO = new UserExcelImportDTO();
+            userExcelImportDTO.setName("小蕃茄头号悍匪");
+            userExcelImportDTO.setCreateTime(LocalDateTime.now());
+            List<UserExcelImportDTO> list = Arrays.asList(userExcelImportDTO);
+
+            // 不携带示例数据
+            List<UserExcelImportDTO> list2 = Arrays.asList();
+            downloadImportTemplate(response, fileName, UserExcelImportDTO.class, list, sheetName, ExcelTypeEnum.XLSX);
+        } catch (Exception e) {
+            log.error("模板下载失败", e);
+        }
     }
 
     @PostMapping("import")
     @RestResult
-    public void upload(@RequestParam("fileUpload") MultipartFile multipartFile) throws IOException {
+    public String importData(@RequestParam("fileUpload") MultipartFile multipartFile) throws IOException {
+
+        UserReadListener listener = new UserReadListener(stevenServiceImpl);
 
         // 调用基类导入函数
-        importExcel(multipartFile, UserImportData.class, new UserReadListener(stevenServiceImpl));
+        importExcel(multipartFile, UserExcelImportDTO.class, listener);
+        return listener.getErrBatchId();
 
+    }
+
+    @GetMapping(value = "download-error/{batchId}")
+    public void downloadErrorByBatchId(HttpServletResponse response, @PathVariable(value = "batchId") String batchId) throws Exception {
+        super.downloadError(response, batchId);
     }
 
 }

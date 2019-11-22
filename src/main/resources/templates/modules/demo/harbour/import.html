@@ -38,7 +38,12 @@
                 auto: false,
                 multiple: false,
                 bindAction: '#uploadBtn',
-                done: function (res, index, upload) {
+                done: function (xhr, res, index, upload) {
+                    let contentType = xhr.getResponseHeader('Content-Type');
+                    alert('Content-Type：' + contentType);
+                    if (contentType == "application/vnd.ms-excel") {
+                        alert(contentType);
+                    }
                     console.log(res)
                     //假设code=0代表上传成功
                     if (res.code == 0) {

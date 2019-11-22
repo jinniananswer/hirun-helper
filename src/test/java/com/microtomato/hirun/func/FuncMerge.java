@@ -129,9 +129,26 @@ public class FuncMerge {
         }
 
         System.out.println("============ 汇总数据 ============");
-        for (FuncGroup funcGroup : FUNC_GROUP_LIST) {
-            System.out.println("userId: " + funcGroup.userIdList);
-            System.out.println("    funcId: " + funcGroup.funcIdList);
+        FuncGroup[] array = FUNC_GROUP_LIST.toArray(new FuncGroup[0]);
+        Arrays.sort(array, new Comparator<FuncGroup>() {
+                @Override
+                public int compare(FuncGroup o1, FuncGroup o2) {
+                    int size1 = o1.userIdList.size();
+                    int size2 = o2.userIdList.size();
+                    if (size1 == size2) {
+                        return 0;
+                    }
+                    if (size1 < size2) {
+                        return 1;
+                    } else {
+                        return -1;
+                    }
+                }
+            }
+        );
+        for (FuncGroup funcGroup : array) {
+            System.out.println("user_id: " + funcGroup.userIdList);
+            System.out.println("    func_id: " + funcGroup.funcIdList);
         }
     }
 
