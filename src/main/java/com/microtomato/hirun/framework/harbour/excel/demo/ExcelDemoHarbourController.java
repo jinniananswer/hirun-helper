@@ -31,9 +31,6 @@ public class ExcelDemoHarbourController extends AbstractExcelHarbour {
     @Autowired
     private IUserService userServiceImpl;
 
-    @Autowired
-    private IStevenService stevenServiceImpl;
-
     @GetMapping("export")
     public void export(HttpServletResponse response) throws IOException {
         List<User> list = userServiceImpl.list();
@@ -76,11 +73,18 @@ public class ExcelDemoHarbourController extends AbstractExcelHarbour {
         }
     }
 
+    /**
+     * 导入数据
+     *
+     * @param multipartFile
+     * @return 返回异常 batchId, 如果为 null，表示全部导入成功，如果不为空，通过 downloadErrorByBatchId 接口可以下载异常文件。
+     * @throws IOException
+     */
     @PostMapping("import")
     @RestResult
     public String importData(@RequestParam("fileUpload") MultipartFile multipartFile) throws IOException {
 
-        UserReadListener listener = new UserReadListener(stevenServiceImpl);
+        UserReadListener listener = new UserReadListener();
 
         // 调用基类导入函数
         importExcel(multipartFile, UserExcelImportDTO.class, listener);
@@ -88,6 +92,13 @@ public class ExcelDemoHarbourController extends AbstractExcelHarbour {
 
     }
 
+    /**
+     * 通过批次号下载导入异常文件
+     *
+     * @param response
+     * @param batchId
+     * @throws Exception
+     */
     @GetMapping(value = "download-error/{batchId}")
     public void downloadErrorByBatchId(HttpServletResponse response, @PathVariable(value = "batchId") String batchId) throws Exception {
         super.downloadError(response, batchId);

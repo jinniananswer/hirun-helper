@@ -34,5 +34,4 @@ public class UserExcelExportDTO {
     @ColumnWidth(20)
     @ExcelProperty(value = "注册时间", converter = LocalDateTimeConvert.class)
     private LocalDateTime createTime;
-
 }

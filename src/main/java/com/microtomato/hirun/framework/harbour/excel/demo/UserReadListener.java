@@ -3,6 +3,7 @@ package com.microtomato.hirun.framework.harbour.excel.demo;
 import com.alibaba.excel.context.AnalysisContext;
 import com.microtomato.hirun.framework.harbour.excel.ExcelEventListener;
 import com.microtomato.hirun.framework.util.Jsr303Utils;
+import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.modules.demo.entity.po.Steven;
 import com.microtomato.hirun.modules.demo.service.IStevenService;
 import lombok.extern.slf4j.Slf4j;
@@ -15,11 +16,7 @@ import org.springframework.beans.BeanUtils;
 @Slf4j
 public class UserReadListener extends ExcelEventListener<UserExcelImportDTO> {
 
-    private IStevenService stevenServiceImpl;
-
-    public UserReadListener(IStevenService stevenServiceImpl) {
-        this.stevenServiceImpl = stevenServiceImpl;
-    }
+    private IStevenService stevenServiceImpl = SpringContextUtils.getBean(IStevenService.class);
 
     /**
      * 每读取一行触发一次该函数

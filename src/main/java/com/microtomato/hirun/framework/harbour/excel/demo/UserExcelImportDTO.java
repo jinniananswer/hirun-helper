@@ -17,6 +17,9 @@ import java.time.LocalDateTime;
 @Data
 public class UserExcelImportDTO {
 
+    /**
+     * 这里可以使用了 JSR303 的校验注解，https://www.cnblogs.com/pingxin/p/p00088.html
+     */
     @NotNull(message = "用户名不能为空！")
     @Size(message = "用户名长度不合法，有效范围: 11位！", min = 11, max = 11)
     @Digits(message = "用户名必须是11位长度的数字！", integer = 11, fraction = 0)
