@@ -196,4 +196,17 @@ public abstract class AbstractExcelHarbour {
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
         EasyExcel.write(response.getOutputStream()).sheet("Sheet1").doWrite(rows);
     }
+
+    /**
+     * 是否导入成功？如果异常数据批次号不为空，那么说明导入遇到了问题，可以通过批次号查看异常数据
+     *
+     * @param batchId 异常数据批次号
+     */
+    protected void isImportOk(String batchId) {
+        if (null == batchId) {
+            return;
+        } else {
+            throw new IllegalArgumentException(batchId);
+        }
+    }
 }

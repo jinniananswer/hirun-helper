@@ -3,7 +3,6 @@ package com.microtomato.hirun.framework.harbour.excel.demo;
 import com.alibaba.excel.support.ExcelTypeEnum;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.harbour.excel.AbstractExcelHarbour;
-import com.microtomato.hirun.modules.demo.service.IStevenService;
 import com.microtomato.hirun.modules.user.entity.po.User;
 import com.microtomato.hirun.modules.user.service.IUserService;
 import lombok.extern.slf4j.Slf4j;
@@ -82,14 +81,13 @@ public class ExcelDemoHarbourController extends AbstractExcelHarbour {
      */
     @PostMapping("import")
     @RestResult
-    public String importData(@RequestParam("fileUpload") MultipartFile multipartFile) throws IOException {
+    public void importData(@RequestParam("fileUpload") MultipartFile multipartFile) throws IOException {
 
         UserReadListener listener = new UserReadListener();
 
         // 调用基类导入函数
         importExcel(multipartFile, UserExcelImportDTO.class, listener);
-        return listener.getErrBatchId();
-
+        isImportOk(listener.getErrBatchId());
     }
 
     /**
