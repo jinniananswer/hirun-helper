@@ -38,10 +38,11 @@ public class EmployeePerformanceController extends AbstractExcelHarbour {
 
     @PostMapping("importEmployeePerformance")
     @RestResult
-    public void upload(@RequestParam("fileUpload") MultipartFile multipartFile) throws IOException {
+    public void importEmployeePerformance(@RequestParam("fileUpload") MultipartFile multipartFile) throws IOException {
         // 调用基类导入函数
-        importExcel(multipartFile, EmployeePerformanceImportDTO.class, new EmployeePerformanceImplortListener(employeePerformanceServiceImpl));
-
+        EmployeePerformanceImplortListener listener=new EmployeePerformanceImplortListener();
+        importExcel(multipartFile, EmployeePerformanceImportDTO.class, listener);
+        isImportOk(listener.getErrBatchId());
     }
 
     @GetMapping("employeePerformanceList")
@@ -68,5 +69,17 @@ public class EmployeePerformanceController extends AbstractExcelHarbour {
     public void exportEmployee4ImportPerformance(String name, String orgSet,String year,String performance,HttpServletResponse response) throws IOException {
         List<EmployeePerformanceInfoDTO> list=employeePerformanceServiceImpl.queryPerformanceList(name,orgSet,year,performance);
         exportExcel(response, "员工列表", EmployeePerformanceInfoDTO.class, list, ExcelTypeEnum.XLSX);
+    }
+
+    /**
+     * 通过批次号下载导入异常文件
+     *
+     * @param response
+     * @param batchId
+     * @throws Exception
+     */
+    @GetMapping(value = "download-error/{batchId}")
+    public void downloadErrorByBatchId(HttpServletResponse response, @PathVariable(value = "batchId") String batchId) throws Exception {
+        super.downloadError(response, batchId);
     }
 }
