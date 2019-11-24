@@ -25,6 +25,9 @@ import java.util.*;
 @Slf4j
 public abstract class ExcelEventListener<T> extends AnalysisEventListener<T> {
 
+    /**
+     * 错误批次号，对应 excel_import_error.batch_id
+     */
     @Getter
     private String errBatchId = null;
 
@@ -35,11 +38,8 @@ public abstract class ExcelEventListener<T> extends AnalysisEventListener<T> {
     protected List<List<String>> errDatas = new ArrayList<>();
 
     /**
-     * 每读取一行触发一次该函数
+     * 每读取一行，将 CellData 解析成业务 POJO对象发生错误时，会触发一次该函数
      * 框架会将 Excel 里每行数据会转成 TreeMap<Integer, CellData> 数据，key 为列下标。
-     *
-     * @param exception
-     * @param context
      */
     @Override
     public void onException(Exception exception, AnalysisContext context) {
@@ -65,6 +65,9 @@ public abstract class ExcelEventListener<T> extends AnalysisEventListener<T> {
     @Override
     public void doAfterAllAnalysed(AnalysisContext context) {
         if (errDatas.size() > 0) {
+            /**
+             * 如果导入过程中，发现异常数据，则将数据进行入库处理
+             */
             IExcelImportErrorService excelImportErrorServiceImpl = SpringContextUtils.getBean(IExcelImportErrorService.class);
             LocalDateTime now = LocalDateTime.now();
             errBatchId = UUID.randomUUID().toString();
@@ -84,7 +87,7 @@ public abstract class ExcelEventListener<T> extends AnalysisEventListener<T> {
      *
      * @param context     上下文
      * @param t           POJO实例
-     * @param checkResult JSR303 校验的结果
+     * @param checkResult 校验结果
      */
     protected void addErrData(AnalysisContext context, T t, String checkResult) {
         Map<Integer, Field> fieldTreeMap = new TreeMap<>();

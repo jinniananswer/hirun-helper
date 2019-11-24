@@ -29,8 +29,11 @@ public class UserReadListener extends ExcelEventListener<UserExcelImportDTO> {
 
         String checkResult = ValidationUtils.jsr303Check(data);
         if (null != checkResult) {
+            /**
+             * 业务校验失败时，亦可调用该函数，将异常数据收集起来。
+             */
             addErrData(context, data, checkResult);
-            log.error(data + " 数据校验结果：" + checkResult);
+            log.error("{} 数据校验结果：{}", data, checkResult);
             return;
         }
 

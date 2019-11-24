@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Excel 导入导出抽象类
+ * Excel 导入导出抽象类，被业务级 Controller 类直接继承
  *
  * @author Steven
  * @date 2019-10-30
@@ -65,6 +65,9 @@ public abstract class AbstractExcelHarbour {
         return contentWriteCellStyle;
     }
 
+    /**
+     * 使用 XLSX 格式
+     */
     protected void exportExcel(HttpServletResponse response, String fileName, Class dataType, List<?> list) throws IOException {
         exportExcel(response,
             fileName,
@@ -88,16 +91,6 @@ public abstract class AbstractExcelHarbour {
             excelTypeEnum,
             defaultHeadWriteCellStyle(),
             defaultContentWriteCellStyle());
-    }
-
-    protected void exportExcelWithErrorData(HttpServletResponse response, String fileName, List<?> list) throws IOException {
-        response.setContentType("application/vnd.ms-excel");
-        response.setCharacterEncoding("UTF-8");
-        fileName = URLEncoder.encode(fileName, "UTF-8");
-        response.setHeader("Content-disposition", "attachment;filename=" + fileName);
-        //File file = new File("F:\\异常数据.xlsx");
-        //FileOutputStream fileOutputStream = new FileOutputStream(file);
-        EasyExcel.write(response.getOutputStream()).sheet("异常数据").doWrite(list);
     }
 
     /**
