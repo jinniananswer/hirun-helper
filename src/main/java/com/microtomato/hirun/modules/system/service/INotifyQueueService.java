@@ -1,7 +1,8 @@
 package com.microtomato.hirun.modules.system.service;
 
-import com.microtomato.hirun.modules.system.entity.po.NotifyQueue;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.microtomato.hirun.modules.system.entity.po.Notify;
+import com.microtomato.hirun.modules.system.entity.po.NotifyQueue;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,23 +22,48 @@ public interface INotifyQueueService extends IService<NotifyQueue> {
      *
      * @return
      */
-    LocalDateTime getNewestTimeByUserId();
+    LocalDateTime getLatestTimeByUserId();
 
     /**
-     * 消息入队操作
+     * 获取用户队列里最新的时间戳
+     *
+     * @return
      */
-    void enqueue();
+    LocalDateTime getLatestTimeByUserId(Long userId);
 
     /**
-     * 查用户的未读消息
+     * 公告入队的操作
+     *
+     * @param list
+     */
+    void announceEnqueue(List<Notify> list);
+
+    /**
+     * 私信的入队操作
+     *
+     * @param list
+     */
+    void messageEnqueue(List<Notify> list);
+
+    /**
+     * 查用户的未读信息（包括：公告/私信/提醒）
+     *
      * @return 未读消息列表
      */
-    List<NotifyQueue> queryUnReadNotifyFromQueue();
+    List<NotifyQueue> queryUnread();
 
     /**
      * 标记消息已读
      *
-     * @param notifyId 消息ID
+     * @param notifyId 消息Id
      */
-    void markReadByNotifyId(Long notifyId);
+    void markRead(Long notifyId);
+
+    /**
+     * 标记消息已读
+     *
+     * @param notifyId 消息Id
+     * @param userId 用户Id
+     */
+    void markRead(Long notifyId, Long userId);
 }

@@ -7,7 +7,6 @@ import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.system.entity.po.Notify;
 import com.microtomato.hirun.modules.system.entity.po.NotifyQueue;
-import com.microtomato.hirun.modules.system.entity.po.NotifySubscribe;
 import com.microtomato.hirun.modules.system.mapper.NotifyQueueMapper;
 import com.microtomato.hirun.modules.system.service.INotifyQueueService;
 import com.microtomato.hirun.modules.system.service.INotifyService;
@@ -17,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,86 +34,105 @@ public class NotifyQueueServiceImpl extends ServiceImpl<NotifyQueueMapper, Notif
     private NotifyQueueMapper notifyQueueMapper;
 
     @Autowired
-    private INotifyService notifyServiceImpl;
-
-    @Autowired
     private INotifyQueueService notifyQueueServiceImpl;
-
-    @Autowired
-    private INotifySubscribeService notifySubscribeServiceImpl;
-
+    
     /**
      * 从队列里获取当前用户最新数据的时间
      *
      * @return
      */
     @Override
-    public LocalDateTime getNewestTimeByUserId() {
-
+    public LocalDateTime getLatestTimeByUserId() {
         UserContext userContext = WebContextUtils.getUserContext();
         Long userId = userContext.getUserId();
+        return getLatestTimeByUserId(userId);
+    }
 
-        LambdaQueryWrapper<NotifyQueue> lambdaQueryWrapper = Wrappers.lambdaQuery();
-        lambdaQueryWrapper.eq(NotifyQueue::getUserId, userId);
-        lambdaQueryWrapper.orderByDesc(NotifyQueue::getCreateTime);
-        NotifyQueue notifyQueue = notifyQueueMapper.selectOne(lambdaQueryWrapper);
+    /**
+     * 从队列里获取当前用户最新数据的时间
+     *
+     * @param userId 用户 Id
+     * @return
+     */
+    @Override
+    public LocalDateTime getLatestTimeByUserId(Long userId) {
+        NotifyQueue notifyQueue = notifyQueueMapper.selectOne(
+            Wrappers.<NotifyQueue>lambdaQuery()
+                .eq(NotifyQueue::getUserId, userId)
+                .orderByDesc(NotifyQueue::getCreateTime)
+        );
 
         return notifyQueue.getCreateTime();
     }
 
+    /**
+     * 公告入队的操作
+     *
+     * @param list
+     */
     @Override
-    public void enqueue() {
+    public void announceEnqueue(List<Notify> list) {
+        enqueue(list);
+    }
 
-        List<Notify> rtn = new ArrayList<>(32);
+    /**
+     * 私信入队操作
+     *
+     * @param list
+     */
+    @Override
+    public void messageEnqueue(List<Notify> list) {
+        enqueue(list);
+    }
 
+    private void enqueue(List<Notify> list) {
         Long userId = WebContextUtils.getUserContext().getUserId();
-        LocalDateTime localDateTime = getNewestTimeByUserId();
+        LocalDateTime now = LocalDateTime.now();
 
-        // 查询用户的订阅信息
-        List<NotifySubscribe> notifySubscribes = notifySubscribeServiceImpl.queryNotifySubscribeByUserId();
-        for (NotifySubscribe notifySubscribe : notifySubscribes) {
-            // 根据订阅信息和时间戳，查对应的消息数据
-            List<Notify> notifies = notifyServiceImpl.queryNotifyByNotifySubscribe(notifySubscribe, localDateTime);
-            rtn.addAll(notifies);
-        }
-
-        // 消息数据的入队操作
-        for (Notify notify : rtn) {
+        for (Notify notify : list) {
             NotifyQueue notifyQueue = new NotifyQueue();
-            notifyQueue.setRead(false);
-            notifyQueue.setUserId(userId);
             notifyQueue.setNotifyId(notify.getId());
-            notifyQueue.setCreateTime(notify.getCreateTime());
+            notifyQueue.setUserId(userId);
+            notifyQueue.setRead(false);
+            notifyQueue.setCreateTime(now);
             notifyQueueServiceImpl.save(notifyQueue);
         }
     }
 
     /**
-     * 查用户的未读消息
+     * 查用户的未读消息（包括：公告/私信/提醒）
      *
      * @return 未读消息列表
      */
     @Override
-    public List<NotifyQueue> queryUnReadNotifyFromQueue() {
-
+    public List<NotifyQueue> queryUnread() {
         Long userId = WebContextUtils.getUserContext().getUserId();
-
-        LambdaQueryWrapper<NotifyQueue> lambdaQueryWrapper = Wrappers.lambdaQuery();
-        lambdaQueryWrapper.eq(NotifyQueue::getRead, false);
-        lambdaQueryWrapper.eq(NotifyQueue::getUserId, userId);
-
-        return notifyQueueMapper.selectList(lambdaQueryWrapper);
+        return notifyQueueMapper.selectList(
+            Wrappers.<NotifyQueue>lambdaQuery()
+                .eq(NotifyQueue::getRead, false)
+                .eq(NotifyQueue::getUserId, userId)
+        );
     }
 
     /**
      * 标记消息已读
      *
-     * @param notifyId 消息ID
+     * @param notifyId 消息Id
      */
     @Override
-    public void markReadByNotifyId(Long notifyId) {
+    public void markRead(Long notifyId) {
         Long userId = WebContextUtils.getUserContext().getUserId();
+        markRead(notifyId, userId);
+    }
 
+    /**
+     * 标记消息已读
+     *
+     * @param notifyId 消息Id
+     * @param userId   用户Id
+     */
+    @Override
+    public void markRead(Long notifyId, Long userId) {
         LambdaQueryWrapper<NotifyQueue> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.eq(NotifyQueue::getNotifyId, notifyId);
         lambdaQueryWrapper.eq(NotifyQueue::getUserId, userId);

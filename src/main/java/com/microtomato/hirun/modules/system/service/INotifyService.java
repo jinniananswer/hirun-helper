@@ -2,9 +2,7 @@ package com.microtomato.hirun.modules.system.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.microtomato.hirun.modules.system.entity.po.Notify;
-import com.microtomato.hirun.modules.system.entity.po.NotifySubscribe;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -25,23 +23,51 @@ public interface INotifyService extends IService<Notify> {
     void sendAnnounce(String content);
 
     /**
-     * 发送提醒
+     * 查未读公告
      *
-     * @param content    提醒内容，可以为空！
-     * @param targetId
-     * @param targetType
-     * @param action
+     * @return
      */
-    void sendRemind(String content, long targetId, TargetType targetType, Action action);
+    List<Notify> queryUnreadAnnounce();
 
     /**
-     * 根据订阅信息，查询消息数据
+     * 查未读公告
      *
-     * @param notifySubscribe 订阅信息
-     * @param createTime      时间
-     * @return 消息
+     * @param userId
+     * @return
      */
-    List<Notify> queryNotifyByNotifySubscribe(NotifySubscribe notifySubscribe, LocalDateTime createTime);
+    List<Notify> queryUnreadAnnounce(Long userId);
+
+    /**
+     * 查未读私信
+     *
+     * @return
+     */
+    List<Notify> queryUnreadMessage();
+
+    /**
+     * 查未读私信
+     *
+     * @param userId 用户Id
+     * @return
+     */
+    List<Notify> queryUnreadMessage(Long userId);
+
+    /**
+     * 发送私信
+     *
+     * @param toUserId 目标用户Id
+     * @param content 私信内容
+     */
+    void sendMessage(Long toUserId, String content);
+
+    /**
+     * 发送私信
+     *
+     * @param toUserId 给谁发私信
+     * @param content 私信内容
+     * @param fromUserId 谁发的私信
+     */
+    void sendMessage(Long toUserId, String content, Long fromUserId);
 
     /**
      * 消息类型
