@@ -78,8 +78,8 @@ public class EmployeePerformanceController extends AbstractExcelHarbour {
      * @param batchId
      * @throws Exception
      */
-    @GetMapping(value = "download-error/{batchId}")
-    public void downloadErrorByBatchId(HttpServletResponse response, @PathVariable(value = "batchId") String batchId) throws Exception {
+    @GetMapping("/download-error")
+    public void downloadErrorByBatchId(HttpServletResponse response,String batchId) throws Exception {
         super.downloadError(response, batchId);
     }
 }

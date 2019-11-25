@@ -105,7 +105,7 @@ layui.extend({
                 content: 'openUrl?url=/modules/organization/performance/performance_import',
                 maxmin: true,
                  offset: ['150px', '350px'],
-                 area: ['550px', '500px'],
+                 area: ['800px', '500px'],
                 skin: 'layui-layer-molv',
             });
         },
