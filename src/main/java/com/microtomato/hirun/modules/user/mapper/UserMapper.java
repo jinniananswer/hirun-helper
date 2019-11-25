@@ -23,6 +23,6 @@ import org.apache.ibatis.annotations.Select;
 @DS("ins")
 public interface UserMapper extends BaseMapper<User> {
 
-    @Select("SELECT c.org_id, b.employee_id FROM ins_user a, ins_employee b, ins_employee_job_role c ${ew.customSqlSegment}")
+    @Select("SELECT c.org_id, b.employee_id, b.name FROM ins_user a, ins_employee b, ins_employee_job_role c ${ew.customSqlSegment}")
     UserDTO queryRelatInfoByUserId(@Param(Constants.WRAPPER) Wrapper wrapper);
 }

@@ -10,7 +10,6 @@ import com.microtomato.hirun.modules.system.entity.po.NotifyQueue;
 import com.microtomato.hirun.modules.system.mapper.NotifyQueueMapper;
 import com.microtomato.hirun.modules.system.service.INotifyQueueService;
 import com.microtomato.hirun.modules.system.service.INotifyService;
-import com.microtomato.hirun.modules.system.service.INotifySubscribeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,7 +34,9 @@ public class NotifyQueueServiceImpl extends ServiceImpl<NotifyQueueMapper, Notif
 
     @Autowired
     private INotifyQueueService notifyQueueServiceImpl;
-    
+
+    private INotifyService notifyServiceImpl;
+
     /**
      * 从队列里获取当前用户最新数据的时间
      *
@@ -66,22 +67,20 @@ public class NotifyQueueServiceImpl extends ServiceImpl<NotifyQueueMapper, Notif
     }
 
     /**
-     * 公告入队的操作
-     *
-     * @param list
+     * 公告的入队操作
      */
     @Override
-    public void announceEnqueue(List<Notify> list) {
+    public void announceEnqueue() {
+        List<Notify> list = notifyServiceImpl.queryUnreadAnnounce();
         enqueue(list);
     }
 
     /**
-     * 私信入队操作
-     *
-     * @param list
+     * 消息的入队操作
      */
     @Override
-    public void messageEnqueue(List<Notify> list) {
+    public void messageEnqueue() {
+        List<Notify> list = notifyServiceImpl.queryUnreadMessage();
         enqueue(list);
     }
 

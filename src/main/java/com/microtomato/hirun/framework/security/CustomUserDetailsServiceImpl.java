@@ -119,10 +119,10 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
 
         userContext.setOrgId(userDTO.getOrgId());
         userContext.setEmployeeId(userDTO.getEmployeeId());
+        userContext.setName(userDTO.getName());
         userContext.setRoles(roleList);
         userContext.setGrantedAuthorities(grantedAuthorities);
         BeanUtils.copyProperties(user, userContext);
-
         return userContext;
 
     }

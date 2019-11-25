@@ -33,17 +33,13 @@ public interface INotifyQueueService extends IService<NotifyQueue> {
 
     /**
      * 公告入队的操作
-     *
-     * @param list
      */
-    void announceEnqueue(List<Notify> list);
+    void announceEnqueue();
 
     /**
      * 私信的入队操作
-     *
-     * @param list
      */
-    void messageEnqueue(List<Notify> list);
+    void messageEnqueue();
 
     /**
      * 查用户的未读信息（包括：公告/私信/提醒）

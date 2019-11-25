@@ -10,4 +10,5 @@ import lombok.Data;
 public class UserDTO {
     private Long orgId;
     private Long employeeId;
+    private String name;
 }

@@ -65,6 +65,11 @@ public class UserContext implements UserDetails {
     private Long employeeId;
 
     /**
+     * 用户姓名
+     */
+    private String name;
+
+    /**
      * 登录时间
      */
     private LocalDateTime loginTime = LocalDateTime.now();
