@@ -8,10 +8,8 @@ import com.microtomato.hirun.modules.organization.entity.dto.EmployeePerformance
 import com.microtomato.hirun.modules.organization.entity.po.EmployeePerformance;
 import com.microtomato.hirun.modules.organization.service.IEmployeePerformanceService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,10 +19,6 @@ import java.util.List;
 @Slf4j
 public class EmployeePerformanceImplortListener extends ExcelEventListener<EmployeePerformanceImportDTO> {
 
-
-    private static final int BATCH_COUNT = 5;
-
-    private List<EmployeePerformance> list = new ArrayList<>(BATCH_COUNT);
     private IEmployeePerformanceService performanceService = SpringContextUtils.getBean(IEmployeePerformanceService.class);
 
 
@@ -47,8 +41,7 @@ public class EmployeePerformanceImplortListener extends ExcelEventListener<Emplo
         List<EmployeePerformance> performanceList = performanceService.queryEmployeePerformance(data.getEmployeeId(), data.getYear());
 
         if (performanceList.size() > 0) {
-            data.setResultInfo("该员工本年度已录入了绩效成绩，如有调整，请进行单独修改");
-            addErrData(context, data, "该员工本年度已录入了绩效成绩，如有调整，请进行单独修改(新的)");
+            addErrData(context, data, "该员工本年度已录入了绩效成绩，如有调整，请进行单独修改.");
             return;
         }
 

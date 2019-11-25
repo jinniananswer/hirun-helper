@@ -27,8 +27,6 @@ public class EmployeePerformanceImportDTO {
     @Pattern(regexp = "[1-5]{1}", message = "绩效的类型值为1-5中的一个类型")
     private String performance;
 
-    private String resultInfo;
-
     @ExcelProperty(index = 6)
     private String remark;
 }
