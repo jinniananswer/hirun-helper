@@ -51,7 +51,7 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label layui-required">调动类型</label>
                     <div class="layui-input-block">
-                        <select name="pendingType" id="pendingType" lay-verify="required" lay-filter="pendingType">
+                        <select name="pendingType" id="pendingType" lay-verify="required" lay-filter="pendingType" readonly disabled>
                             <option value="1">借调</option>
                             <option value="2">调出</option>
                         </select>
@@ -60,22 +60,19 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label layui-required">开始时间</label>
                     <div class="layui-input-block">
-                        <input type="text" id="startTime" name="startTime" required lay-verify="required" readonly
-                               autocomplete="off" class="layui-input"/>
+                        <input type="text" id="startTime" name="startTime" required lay-verify="required" readonly autocomplete="off" class="layui-input" disabled/>
                     </div>
                 </div>
                 <div class="layui-form-item" id="end">
                     <label class="layui-form-label layui-required">结束时间</label>
                     <div class="layui-input-block">
-                        <input type="text" id="endTime" name="endTime"  lay-verify="required" readonly
-                               autocomplete="off" class="layui-input"/>
+                        <input type="text" id="endTime" name="endTime"  lay-verify="required" readonly autocomplete="off" class="layui-input" disabled/>
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label layui-required">归属部门</label>
                     <div class="layui-input-block">
-                        <input type="text" id="orgPath" name="orgPath" onclick="layui.transPendingConfirm.selectOrg();"
-                               placeholder="请点击选择部门" autocomplete="off" class="layui-input"/>
+                        <input type="text" id="orgPath" name="orgPath" onclick="layui.transPendingConfirm.selectOrg();" placeholder="请点击选择部门" autocomplete="off" class="layui-input"/>
                         <input type="hidden" id="orgId" name="orgId" lay-verify="required"/>
                     </div>
                 </div>
@@ -93,7 +90,7 @@
                     <label class="layui-form-label layui-required">岗位性质</label>
                     <div class="layui-input-block">
                         <div class="layui-form" lay-filter="jobRoleNature">
-                            <select id="jobRoleNature" name="jobRoleNature" lay-verify="required">
+                            <select id="jobRoleNature" name="jobRoleNature" lay-verify="required" lay-filter="jobRoleNature">
 
                             </select>
                         </div>
@@ -138,7 +135,7 @@
             </div>
         </div>
     </div>
-    <span style="color :red">注意:(确认之后请重新签订合同)。</span>
+    <span style="color :red">注意:(调出确认之后请重新签订合同)。</span>
 </div>
 
 <div id="orgTree" style="display:none">

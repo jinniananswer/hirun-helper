@@ -64,6 +64,8 @@ public class EmployeeTransDetailDTO {
 
     private String homeAddress;
 
+    private String homeArea;
+
     private Integer sourceHomeProv;
 
     private Integer sourceHomeCity;
@@ -71,6 +73,8 @@ public class EmployeeTransDetailDTO {
     private Integer sourceHomeRegion;
 
     private String sourceHomeAddress;
+
+    private String sourceHomeArea;
 
     private String pendingType;
 

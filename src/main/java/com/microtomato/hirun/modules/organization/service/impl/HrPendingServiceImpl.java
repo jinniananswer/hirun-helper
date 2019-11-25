@@ -46,8 +46,10 @@ public class HrPendingServiceImpl extends ServiceImpl<HrPendingMapper, HrPending
     @Override
     public IPage<HrPendingInfoDTO> queryPendingByExecuteId(HrPending hrPending, Page<HrPending> pendingPage) {
         QueryWrapper<HrPending> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq(StringUtils.isNotBlank(hrPending.getPendingStatus()), "a.pending_status", hrPending.getPendingStatus());
+
         queryWrapper.eq(StringUtils.isNotBlank(hrPending.getPendingType()), "a.pending_type", hrPending.getPendingType());
+        queryWrapper.eq(StringUtils.isNotBlank(hrPending.getPendingStatus()), "a.pending_status", hrPending.getPendingStatus());
+        queryWrapper.apply("a.start_time < now() and a.end_time > a.start_time ");
         queryWrapper.eq("a.pending_execute_id", hrPending.getPendingExecuteId());
         queryWrapper.orderByDesc("a.create_time");
         return this.hrPendingMapper.queryPendingByExecuteId(pendingPage, queryWrapper);
@@ -59,6 +61,24 @@ public class HrPendingServiceImpl extends ServiceImpl<HrPendingMapper, HrPending
         queryWrapper.eq("employee_id",employeeId);
         queryWrapper.in("pending_type", Arrays.asList(1, 2));
         queryWrapper.eq("pending_status", HrPendingConst.PENDING_STATUS_1);
+        return this.hrPendingMapper.selectList(queryWrapper);
+    }
+
+    @Override
+    public List<HrPending> queryEffectBorrowPendingByEmployeeId(Long employeeId) {
+        QueryWrapper<HrPending> queryWrapper=new QueryWrapper<>();
+        queryWrapper.eq("employee_id",employeeId);
+        queryWrapper.in("pending_type", Arrays.asList(1));
+        queryWrapper.eq("pending_status", HrPendingConst.PENDING_STATUS_2);
+        queryWrapper.apply("now() between start_time and end_time ");
+        return this.hrPendingMapper.selectList(queryWrapper);
+    }
+
+    @Override
+    public List<HrPending> queryPendingByExecuteId(Long executId) {
+        QueryWrapper<HrPending> queryWrapper=new QueryWrapper<>();
+        queryWrapper.eq("pending_execute_id",executId);
+        queryWrapper.eq("pending_status",HrPendingConst.PENDING_STATUS_1);
         return this.hrPendingMapper.selectList(queryWrapper);
     }
 

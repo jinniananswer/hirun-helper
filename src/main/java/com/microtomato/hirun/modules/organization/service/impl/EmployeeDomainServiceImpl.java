@@ -3,6 +3,8 @@ package com.microtomato.hirun.modules.organization.service.impl;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.microtomato.hirun.framework.exception.ErrorKind;
+import com.microtomato.hirun.framework.exception.cases.AlreadyExistException;
 import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
@@ -74,6 +76,12 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
 
     @Autowired
     private EmployeeMapper employeeMapper;
+
+    @Autowired
+    private IEmployeeContractService employeeContractService;
+
+    @Autowired
+    private IHrPendingService hrPendingService;
 
     @Override
     public List<EmployeeInfoDTO> searchEmployee(String searchText) {
@@ -326,21 +334,25 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
     @DS("ins")
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public boolean destroyEmployee(EmployeeDestroyInfoDTO employeeDestroyInfoDTO) {
+
+        List<HrPending> hrPendingList=hrPendingService.queryPendingByExecuteId(employeeDestroyInfoDTO.getEmployeeId());
+
+        if (hrPendingList.size() > 0) {
+            throw new AlreadyExistException(" 该员工下存在未处理的待办任务，请将待办任务转移之后再办理离职！.", ErrorKind.ALREADY_EXIST.getCode());
+        }
+
+        UserContext userContext=WebContextUtils.getUserContext();
+        Long loginUserId=userContext.getUserId();
+
         //注销employee信息
         Employee employee = new Employee();
         BeanUtils.copyProperties(employeeDestroyInfoDTO, employee);
 
         EmployeeDO employeeDO = SpringContextUtils.getBean(EmployeeDO.class, employee);
-        //todo 这是测试代码，之后要改的
-        List<Employee> employeeList = employeeDO.findSubordinate();
-        if (ArrayUtils.isNotEmpty(employeeList)) {
-            throw new EmployeeException(EmployeeException.EmployeeExceptionEnum.IS_EXISTS);
-        }
         employeeDO.destroy(employeeDestroyInfoDTO.getDestroyDate());
 
-        //todo 根据社保停买时间更新社保记录
-
-        //todo 根据离职时间终止合同记录
+        //根据离职时间终止合同记录
+        employeeContractService.stopEmployeeContract(employeeDestroyInfoDTO.getEmployeeId(),employeeDestroyInfoDTO.getDestroyDate(),loginUserId);
 
         //终止暂停操作员账号
         Employee userEmployee = employeeService.getById(employeeDestroyInfoDTO.getEmployeeId());
@@ -359,6 +371,10 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             employeeBlackListDO.addBlackList(employeeBlacklist);
         }
 
+        //变更直属下级的上级员工
+        if (employeeDestroyInfoDTO.getNewParentEmployeeId() != null) {
+            employeeJobRoleService.changeParentEmployee(employeeDestroyInfoDTO.getEmployeeId(), employeeDestroyInfoDTO.getNewParentEmployeeId(),loginUserId);
+        }
 
         return true;
     }
@@ -386,14 +402,17 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         if (iPage == null) {
             return null;
         }
-        List<EmployeeInfoDTO> employeeDTOList = new ArrayList<EmployeeInfoDTO>();
         for (EmployeeInfoDTO employeeInfoDTOResult : iPage.getRecords()) {
             employeeInfoDTOResult.setJobRoleName(staticDataService.getCodeName("JOB_ROLE", employeeInfoDTOResult.getJobRole()));
             OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, employeeInfoDTOResult.getOrgId());
             employeeInfoDTOResult.setOrgPath(orgDO.getCompanyLinePath());
-            employeeDTOList.add(employeeInfoDTOResult);
+            employeeInfoDTOResult.setTypeName(this.staticDataService.getCodeName("EMPLOYEE_TYPE", employeeInfoDTOResult.getType()));
+
+            EmployeeDO employeeDO=SpringContextUtils.getBean(EmployeeDO.class,employeeInfoDTOResult.getEmployeeId());
+            employeeInfoDTOResult.setCompanyAge(employeeDO.getJobYear() + "");
+
         }
-        return iPage.setRecords(employeeDTOList);
+        return iPage;
     }
 
     /**
@@ -503,7 +522,9 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             employeeInfo.setOrgPath(orgDO.getCompanyLinePath());
             employeeInfo.setSex(this.staticDataService.getCodeName("SEX", employeeInfo.getSex()));
             employeeInfo.setEmployeeStatus(this.staticDataService.getCodeName("EMPLOYEE_STATUS", employeeInfo.getSex()));
-            employeeInfo.setType(this.staticDataService.getCodeName("EMPLOYEE_TYPE", employeeInfo.getType()));
+            employeeInfo.setTypeName(this.staticDataService.getCodeName("EMPLOYEE_TYPE", employeeInfo.getType()));
+            EmployeeDO employeeDO=SpringContextUtils.getBean(EmployeeDO.class,employeeInfo.getEmployeeId());
+            employeeInfo.setCompanyAge(employeeDO.getJobYear() + "");
         }
         return list;
     }

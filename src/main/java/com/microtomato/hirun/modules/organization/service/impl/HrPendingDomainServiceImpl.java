@@ -3,7 +3,8 @@ package com.microtomato.hirun.modules.organization.service.impl;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.microtomato.hirun.framework.exception.BaseException;
+import com.microtomato.hirun.framework.exception.ErrorKind;
+import com.microtomato.hirun.framework.exception.cases.AlreadyExistException;
 import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
@@ -20,6 +21,9 @@ import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeTransDetail;
 import com.microtomato.hirun.modules.organization.entity.po.HrPending;
 import com.microtomato.hirun.modules.organization.service.*;
+import com.microtomato.hirun.modules.system.entity.domain.AddressDO;
+import com.microtomato.hirun.modules.system.entity.po.Notify;
+import com.microtomato.hirun.modules.system.service.INotifyService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -29,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,6 +53,9 @@ public class HrPendingDomainServiceImpl implements IHrPendingDomainService {
     private HrPendingDO hrPendingDO;
 
     @Autowired
+    private INotifyService notifyService;
+
+    @Autowired
     private IStaticDataService staticDataService;
 
     @Autowired
@@ -61,22 +69,42 @@ public class HrPendingDomainServiceImpl implements IHrPendingDomainService {
 
 
     @Override
-    @DS("ins")
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public boolean addHrPending(HrPending hrPending) {
-        //判断该员工是否还存在其他申请转部门记录，如果又则不让新增申请
-        List<HrPending> pendingList=hrPendingService.queryVaildPendingByEmployeeId(hrPending.getEmployeeId());
-        if(ArrayUtils.isNotEmpty(pendingList)){
-            throw new BaseException("该员工存在未处理的调动待办任务，请处理后再新增.",400001);
+        //判断该员工是否还存在其他申请转部门记录，如果有则不让新增申请
+        List<HrPending> pendingList = hrPendingService.queryVaildPendingByEmployeeId(hrPending.getEmployeeId());
+        if (ArrayUtils.isNotEmpty(pendingList)) {
+            throw new AlreadyExistException(" 该员工存在未处理的调动待办任务，请处理后再新增.", ErrorKind.ALREADY_EXIST.getCode());
         }
+        //判断员工是否有在生效的借调记录
+        List<HrPending> effectList = hrPendingService.queryEffectBorrowPendingByEmployeeId(hrPending.getEmployeeId());
+        if (effectList.size() > 0) {
+            throw new AlreadyExistException(" 该员工存在正在生效的借调记录，请处理后再新增.", ErrorKind.ALREADY_EXIST.getCode());
+        }
+        //判断进行调动申请的员工是否有下属员工
+        List<Employee> childEmployeeList = employeeService.findSubordinate(hrPending.getEmployeeId());
+        if (childEmployeeList.size() > 0) {
+            throw new AlreadyExistException("该员工下存在下属员工，请将下属员工转移之后，再进行调动申请。", ErrorKind.ALREADY_EXIST.getCode());
+        }
+
 
         UserContext userContext = WebContextUtils.getUserContext();
         hrPending.setPendingCreateId(userContext.getEmployeeId());
         hrPending.setPendingStatus(HrPendingConst.PENDING_STATUS_1);
         if (StringUtils.equals(hrPending.getPendingType(), HrPendingConst.PENDING_TYPE_2)) {
-            hrPending.setEndTime(TimeUtils.stringToLocalDateTime("2099-12-31 23:59:59", "yyyy-MM-dd HH:mm:ss"));
+            hrPending.setEndTime(TimeUtils.getForeverTime());
         }
+        String content = employeeService.getEmployeeNameEmployeeId(hrPending.getPendingExecuteId()) + ",你好。"
+                + employeeService.getEmployeeNameEmployeeId(userContext.getEmployeeId()) + "发起了员工【"
+                + employeeService.getEmployeeNameEmployeeId(hrPending.getEmployeeId()) + "】的调动申请。调动时间为"
+                + hrPending.getStartTime() + "至" + hrPending.getEndTime()
+                + "。请到期进行待办确认！";
+
+        hrPending.setContent(content);
         int result = hrPendingDO.add(hrPending);
-        //todo 发送消息
+        //发送消息
+        sendPendingNotice(content, 2, hrPending.getPendingExecuteId(), userContext.getEmployeeId());
+
         if (result <= 0) {
             return false;
         }
@@ -90,14 +118,12 @@ public class HrPendingDomainServiceImpl implements IHrPendingDomainService {
             return iPage;
         }
         //翻译名字
-        List<HrPendingInfoDTO> dtoList = new ArrayList<>();
         for (HrPendingInfoDTO hrPendingInfoDTO : iPage.getRecords()) {
             hrPendingInfoDTO.setEmployeeName(employeeService.getEmployeeNameEmployeeId(hrPendingInfoDTO.getEmployeeId()));
             hrPendingInfoDTO.setPendingCreateName(employeeService.getEmployeeNameEmployeeId(hrPendingInfoDTO.getPendingCreateId()));
             hrPendingInfoDTO.setPendingExecuteName(employeeService.getEmployeeNameEmployeeId(hrPendingInfoDTO.getPendingExecuteId()));
-            dtoList.add(hrPendingInfoDTO);
         }
-        return iPage.setRecords(dtoList);
+        return iPage;
     }
 
     /**
@@ -108,17 +134,44 @@ public class HrPendingDomainServiceImpl implements IHrPendingDomainService {
      */
     @Override
     public boolean deleteHrPending(HrPending hrPending) {
+        UserContext userContext = WebContextUtils.getUserContext();
+        HrPending originalHrPending = hrPendingService.getById(hrPending.getId());
+
         hrPending.setPendingStatus(HrPendingConst.PENDING_STATUS_3);
-        //todo 发送消息
-        return hrPendingDO.delete(hrPending);
+
+        boolean result = hrPendingDO.delete(hrPending);
+
+        //发送消息告知人资调动申请已删除
+
+        String content = employeeService.getEmployeeNameEmployeeId(originalHrPending.getPendingExecuteId()) + ",你好。"
+                + employeeService.getEmployeeNameEmployeeId(originalHrPending.getPendingCreateId()) + "发起的员工【"
+                + employeeService.getEmployeeNameEmployeeId(originalHrPending.getEmployeeId()) + "】的调动申请，已删除，请知悉。删除时间为"
+                + LocalDateTime.now();
+
+        sendPendingNotice(content, 2, originalHrPending.getPendingExecuteId(), originalHrPending.getPendingCreateId());
+
+        return result;
     }
 
     @Override
     public boolean updateHrPending(HrPending hrPending) {
+        UserContext userContext = WebContextUtils.getUserContext();
+
         if (StringUtils.equals(hrPending.getPendingType(), HrPendingConst.PENDING_TYPE_2)) {
-            hrPending.setEndTime(TimeUtils.stringToLocalDateTime("2099-12-31 23:59:59", "yyyy-MM-dd HH:mm:ss"));
+            hrPending.setEndTime(TimeUtils.getForeverTime());
         }
-        return hrPendingDO.update(hrPending);
+
+        boolean result = hrPendingDO.update(hrPending);
+
+        String content = employeeService.getEmployeeNameEmployeeId(hrPending.getPendingExecuteId()) + ",你好。"
+                + employeeService.getEmployeeNameEmployeeId(userContext.getEmployeeId()) + "发起了员工【"
+                + employeeService.getEmployeeNameEmployeeId(hrPending.getEmployeeId()) + "】的调动申请修改。调动时间为"
+                + hrPending.getStartTime() + "至" + hrPending.getEndTime()
+                + "。请到期进行待办确认！";
+
+        sendPendingNotice(content, 2, hrPending.getPendingExecuteId(), userContext.getEmployeeId());
+
+        return result;
     }
 
     @Override
@@ -146,11 +199,16 @@ public class HrPendingDomainServiceImpl implements IHrPendingDomainService {
      * @param transDetail
      * @return
      */
-    @DS("ins")
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @Override
     public boolean confirmTransPending(EmployeeTransDetailDTO transDetail) {
-        //todo  还应该加上该员工如果为调出的情况下，存在下级员工需要转移下级员工
+        UserContext userContext = WebContextUtils.getUserContext();
+
+        List<Employee> childEmployeeList = employeeService.findSubordinate(transDetail.getEmployeeId());
+        if (childEmployeeList.size() > 0) {
+            throw new AlreadyExistException("该员工下存在下属员工，请将下属员工转移之后，再进行调动申请。", ErrorKind.ALREADY_EXIST.getCode());
+        }
+
         Employee employee = new Employee();
         EmployeeJobRole employeeJobRole = new EmployeeJobRole();
         EmployeeTransDetail employeeTransDetail = new EmployeeTransDetail();
@@ -168,8 +226,8 @@ public class HrPendingDomainServiceImpl implements IHrPendingDomainService {
         employeeTransDetail.setSourceHomeCity(originalEmployee.getHomeCity());
         employeeTransDetail.setSourceHomeRegion(originalEmployee.getHomeRegion());
         //修改员工现居住地址
-        EmployeeDO employeeDo=SpringContextUtils.getBean(EmployeeDO.class,employee);
-        employeeDo.modify(employee,null,null, null);
+        EmployeeDO employeeDo = SpringContextUtils.getBean(EmployeeDO.class, employee);
+        employeeDo.modify(employee, null, null, null);
         //查询出未更新前的员工jobrole数据，拼装完整调动记录
         EmployeeJobRole validEmployeeJobRole = employeeJobRoleService.queryValidMain(transDetail.getEmployeeId());
 
@@ -179,17 +237,14 @@ public class HrPendingDomainServiceImpl implements IHrPendingDomainService {
         employeeTransDetail.setSourceJobRole(validEmployeeJobRole.getJobRole());
         employeeTransDetail.setSourceOrgId(validEmployeeJobRole.getOrgId());
         //结束原来生效的jobrole数据
-        employeeDo.destroy(transDetail.getStartTime());
+        employeeDo.destroyJob(transDetail.getStartTime());
         //新增员工jobRole数据
         employeeJobRole.setIsMain(validEmployeeJobRole.getIsMain());
         employeeJobRole.setRemark(validEmployeeJobRole.getRemark());
         employeeJobRole.setStartDate(transDetail.getStartTime());
-        if (StringUtils.equals(transDetail.getPendingType(), HrPendingConst.PENDING_TYPE_2)) {
-            employeeJobRole.setEndDate(TimeUtils.stringToLocalDateTime("2999-12-31 00:00:00", "yyyy-MM-dd HH:mm:ss"));
-        } else {
-            employeeJobRole.setEndDate(transDetail.getEndTime());
-        }
-        //todo 如果这个地方选择的为借调需要再插一条根据结束时间到2099年的数据。前提先找洪慧确认借调走不走这套流程
+        employeeJobRole.setEndDate(TimeUtils.getForeverTime());
+
+        //借调同样走借出流程
         employeeJobRoleService.save(employeeJobRole);
         //拼装调动记录的其他数据
         employeeTransDetail.setRelPendingId(transDetail.getId());
@@ -198,7 +253,14 @@ public class HrPendingDomainServiceImpl implements IHrPendingDomainService {
         //更新待办数据
         hrPending.setPendingStatus(HrPendingConst.PENDING_STATUS_2);
         boolean result = hrPendingService.updateById(hrPending);
-        //todo 发送消息重新签订合同与回执消息
+
+        //调动状态为调出，则发送消息提醒重签合同
+        if (StringUtils.equals(transDetail.getPendingType(), HrPendingConst.PENDING_TYPE_2)) {
+            String content = employeeService.getEmployeeNameEmployeeId(transDetail.getEmployeeId()) +
+                    "，已确认调出,请签订变更协议！";
+            this.sendPendingNotice(content, 2, userContext.getEmployeeId(), userContext.getEmployeeId());
+        }
+
         return result;
     }
 
@@ -213,15 +275,34 @@ public class HrPendingDomainServiceImpl implements IHrPendingDomainService {
 
         hrPendingDetailDTO.setSourceParentEmployeeName(employeeService.getEmployeeNameEmployeeId(hrPendingDetailDTO.getSourceParentEmployeeId()));
         hrPendingDetailDTO.setParentEmployeeName(employeeService.getEmployeeNameEmployeeId(hrPendingDetailDTO.getParentEmployeeId()));
-        OrgDO sourceOrgDO=SpringContextUtils.getBean(OrgDO.class,employeeTransDetail.getSourceOrgId());
+
+        OrgDO sourceOrgDO = SpringContextUtils.getBean(OrgDO.class, employeeTransDetail.getSourceOrgId());
         hrPendingDetailDTO.setSourceOrgPath(sourceOrgDO.getCompanyLinePath());
-        OrgDO targetOrgDO=SpringContextUtils.getBean(OrgDO.class,employeeTransDetail.getOrgId());
+
+        OrgDO targetOrgDO = SpringContextUtils.getBean(OrgDO.class, employeeTransDetail.getOrgId());
         hrPendingDetailDTO.setOrgPath(targetOrgDO.getCompanyLinePath());
+
+        AddressDO addressDO = SpringContextUtils.getBean(AddressDO.class);
+        log.debug(addressDO.getFullName(employeeTransDetail.getHomeRegion()));
+        hrPendingDetailDTO.setHomeArea(addressDO.getFullName(employeeTransDetail.getHomeRegion()));
+        hrPendingDetailDTO.setSourceHomeArea(addressDO.getFullName(employeeTransDetail.getSourceHomeRegion()));
+
         hrPendingDetailDTO.setSourceJobRoleName(staticDataService.getCodeName("JOB_ROLE", hrPendingDetailDTO.getSourceJobRole()));
         hrPendingDetailDTO.setJobRoleName(staticDataService.getCodeName("JOB_ROLE", hrPendingDetailDTO.getJobRole()));
-        hrPendingDetailDTO.setSourceJobRoleNatureName(staticDataService.getCodeName("JOB_NATURE",hrPendingDetailDTO.getSourceJobRoleNature()));
-        hrPendingDetailDTO.setJobRoleNatureName(staticDataService.getCodeName("JOB_NATURE",hrPendingDetailDTO.getJobRoleNature()));
+        hrPendingDetailDTO.setSourceJobRoleNatureName(staticDataService.getCodeName("JOB_NATURE", hrPendingDetailDTO.getSourceJobRoleNature()));
+        hrPendingDetailDTO.setJobRoleNatureName(staticDataService.getCodeName("JOB_NATURE", hrPendingDetailDTO.getJobRoleNature()));
+
         return hrPendingDetailDTO;
+    }
+
+    private void sendPendingNotice(String content, Integer type, Long targetId, Long sendId) {
+        Notify notify = new Notify();
+        notify.setContent(content);
+        notify.setNotifyType(type);
+        notify.setTargetId(targetId);
+        notify.setSenderId(sendId);
+        notify.setCreateTime(LocalDateTime.now());
+        notifyService.save(notify);
     }
 
 }

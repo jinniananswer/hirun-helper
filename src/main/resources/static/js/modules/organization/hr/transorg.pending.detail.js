@@ -20,8 +20,8 @@ layui.extend({}).define(['ajax', 'form', 'element'], function (exports) {
                     "discountRate": detail.discountRate,
                     "sourceParentEmployeeName": detail.sourceParentEmployeeName,
                     "parentEmployeeName": detail.parentEmployeeName,
-                    "sourceHomeAddress":detail.sourceHomeAddress,
-                    "homeAddress":detail.homeAddress
+                    "sourceHomeAddress":detail.sourceHomeArea+"/"+detail.sourceHomeAddress,
+                    "homeAddress":detail.homeArea+"/"+detail.homeAddress
                 });
             });
         },

@@ -10,8 +10,9 @@ layui.extend({
     var transPendingConfirm = {
         init: function () {
 
-            layui.select.init('jobRoleNature', 'JOB_NATURE', '', false);
+            layui.select.init('jobRoleNature', 'JOB_NATURE', '1', false);
             layui.select.init('jobRole', 'JOB_ROLE', null, true, '请选择或搜索岗位');
+
 
             $("#pendingType option[value='"+$('#pendingTypeValue').val()+"']").prop("selected",true);
             form.render("select");
@@ -47,6 +48,10 @@ layui.extend({
                     $("#endTime").attr("disabled","true");
                     $("#endTime").removeAttr("lay-verify");
                 }
+            });
+
+            form.on('select(jobRoleNature)', function(data) {
+                layui.transPendingConfirm.calculateDiscountRate();
             });
 
             var homePicker = new layui.citypicker("#home-city-picker", {
@@ -93,6 +98,20 @@ layui.extend({
 
         selectParentEmployee : function() {
             layui.selectEmployee.init('parentEmployeeList', 'employeeSearch', 'parentEmployeeId', 'parentEmployeeName', false);
+        },
+
+        calculateDiscountRate : function(data) {
+            var jobRoleNature = $(document.getElementById("jobRoleNature")).val();
+            var orgId = $(document.getElementById("orgId")).val();
+            console.log(jobRoleNature,orgId);
+            if (orgId == null || orgId == "") {
+                this.selectOrg();
+                return;
+            } else {
+                layui.ajax.post('api/organization/employee/calculateDiscountRate', '&orgId='+orgId+"&jobRoleNature="+jobRoleNature, function(data){
+                    $(document.getElementById("discountRate")).val(data.rows.discountRate);
+                });
+            }
         },
 
     };

@@ -99,5 +99,9 @@ public class EmployeeInfoDTO {
     @ExcelProperty("员工类型")
     private String type;
 
+    private String typeName;
+
     private String orgSet;
+
+    private String companyAge;
 }

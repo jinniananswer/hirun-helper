@@ -41,20 +41,19 @@ layui.extend({
                                 }
                             }
                         },
+                        {field: 'typeName', title: '员工类型', width: 120, align: 'center'},
                         {field: 'identityNo', title: '身份证号码', width: 200, align: 'center'},
                         {field: 'mobileNo', title: '电话号码', width: 150, align: 'center'},
-                        {
-                            field: 'inDate', title: '入职时间', align: 'center', width: 120, templet: function (d) {
+                        {field: 'inDate', title: '入职时间', align: 'center', width: 120, templet: function (d) {
                                 if (d.inDate != '') {
                                     return d.inDate.substr(0, 10)
                                 }
                             }
                         },
-                        {field: 'jobRoleName', title: '岗位', width: 120, align: 'center'},
-                        {field: 'orgPath', title: '部门', align: 'center'},
-
-                        {
-                            field: 'status', title: '状态', width: 100, align: 'center', templet: function (d) {
+                        {field: 'jobRoleName', title: '岗位', width: 150, align: 'center'},
+                        {field: 'orgPath', title: '部门',width: 200, align: 'center'},
+                        {field: 'companyAge', title: '工龄', width: 80, align: 'center'},
+                        {field: 'status', title: '状态', width: 100, align: 'center',fixed: 'right', templet: function (d) {
                                 if (d.employeeStatus == 0) {
                                     return '在职';
                                 } else if (d.employeeStatus == 3) {
