@@ -69,4 +69,9 @@ public interface INotifyQueueService extends IService<NotifyQueue> {
      * @param userId 用户Id
      */
     void markReaded(Long notifyId, Long userId);
+
+    /**
+     * 标记全部已读
+     */
+    void markReadedAll();
 }

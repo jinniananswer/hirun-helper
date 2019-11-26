@@ -30,6 +30,14 @@ public class NotifyQueueController {
     @Autowired
     private INotifyService notifyServiceImpl;
 
+
+    @GetMapping("announce-list")
+    @RestResult
+    public List<NotifyQueue> announceList() {
+        List<NotifyQueue> notifyQueues = notifyQueueServiceImpl.queryUnread();
+        return notifyQueues;
+    }
+
     @GetMapping("message-list")
     @RestResult
     public List<NotifyQueue> messageList() {
@@ -38,7 +46,15 @@ public class NotifyQueueController {
     }
 
     @PostMapping("markReaded")
+    @RestResult
     public void markReaded(@RequestBody List<Long> list) {
         notifyQueueServiceImpl.markReaded(list);
     }
+
+    @GetMapping("markReadedAll")
+    @RestResult
+    public void markReadedAll() {
+        notifyQueueServiceImpl.markReadedAll();
+    }
+
 }

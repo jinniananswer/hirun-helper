@@ -3,12 +3,39 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'form', 'select', 
     let table = layui.table;
     let layer = layui.layer;
     let form = layui.form;
+    let element = layui.element;
+
     let message = {
         init: function () {
 
-            let ins = table.render({
+            element.on('nav(nav-ul)', function (elem) {
+                console.log(elem)
+                layer.msg(elem.text());
+            });
+
+            let announce = table.render({
+                elem: '#announce-table',
+                toolbar: '#announceToolbar',
+                height: 'full-20',
+                url: 'api/system/notify-queue/announce-list',
+                fitColumns: true,
+                response: {
+                    msgName: 'message',
+                    countName: 'total',
+                    dataName: 'rows'
+                },
+                page: true,
+                cols: [[
+                    {type: 'checkbox'},
+                    {field: 'id', title: 'ID', width: 60, align: 'center'},
+                    {field: 'userId', title: '公告内容', align: 'left'},
+                    {field: 'createTime', title: '时间', align: 'center'}
+                ]]
+            });
+
+            let message = table.render({
                 elem: '#message-table',
-                toolbar: '#toolbar',
+                toolbar: '#messageToolbar',
                 height: 'full-20',
                 url: 'api/system/notify-queue/message-list',
                 fitColumns: true,
@@ -21,7 +48,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'form', 'select', 
                 cols: [[
                     {type: 'checkbox'},
                     {field: 'id', title: 'ID', width: 60, align: 'center'},
-                    {field: 'userId', title: '标题内容', align: 'left'},
+                    {field: 'userId', title: '私信内容', align: 'left'},
                     {field: 'createTime', title: '时间', align: 'center'}
                 ]]
             });
@@ -38,22 +65,13 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'form', 'select', 
                 let data = checkStatus.data;
                 let event = obj.event;
 
-                if (data.length <= 0) {
-                    layer.msg('请选中一条数据，再进行操作。');
-                    return;
-                }
-
                 switch (event) {
-                    case 'delete':
-                        layer.msg('删除: ' + data[0].createTime);
-                        break;
                     case 'markReaded':
+                        if (data.length <= 0) {
+                            layer.msg('请选中一条数据，再进行操作。');
+                            return;
+                        }
                         let param = data.map(item => item.id);
-                        console.log(param);
-                        // layui.ajax.post('api/system/notify-queue/markReaded', param, function (data) {
-                        //
-                        // });
-
                         $.ajax({
                             type: "post",
                             url: "api/system/notify-queue/markReaded",
@@ -61,28 +79,37 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'form', 'select', 
                             contentType: "application/json",
                             data: JSON.stringify(param),
                             success: function (obj) {
-                                alert(obj.description);
+                                layer.msg("操作成功！");
+                                table.reload('message-table');
                             },
                             error: function (obj) {
-                                alert("操作出错");
-                                return false;
+                                layer.alert("操作失败！");
                             }
                         });
-
-                        layer.msg('标记已读: ' + data[0].createTime);
                         break;
                     case 'markReadedAll':
-                        layer.msg('全部已读: ' + data[0].createTime);
+
+                        layer.confirm('要全部标记已读？', {
+                            btn: ['Yes', 'No'],
+                            closeBtn: 0,
+                            icon: 6,
+                            title: '提示信息',
+                            shade: [0.5, '#fff'],
+                            skin: 'layui-layer-admin layui-anim'
+                        }, function (index) {
+                            layui.ajax.get('api/system/notify-queue/markReadedAll', '', function (data) {
+                                layer.msg('操作成功！');
+                                table.reload('message-table');
+                            });
+                        }, function () {
+
+                        });
+
                         break;
                 }
                 ;
             });
         },
-
-        deleteMessage: function (data) {
-
-        },
-
     };
     exports('message', message);
 });

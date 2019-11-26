@@ -138,12 +138,13 @@ public class NotifyQueueServiceImpl extends ServiceImpl<NotifyQueueMapper, Notif
             .eq(NotifyQueue::getEmployeeId, employeeId)
             .in(NotifyQueue::getId, idList)
         );
+
     }
 
     /**
      * 标记消息已读
      *
-     * @param notifyId 消息Id
+     * @param notifyId   消息Id
      * @param employeeId 雇员Id
      */
     @Override
@@ -155,6 +156,18 @@ public class NotifyQueueServiceImpl extends ServiceImpl<NotifyQueueMapper, Notif
         NotifyQueue entity = new NotifyQueue();
         entity.setReaded(true);
         notifyQueueMapper.update(entity, lambdaQueryWrapper);
+    }
+
+    /**
+     * 标记全部已读
+     */
+    @Override
+    public void markReadedAll() {
+        Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
+        NotifyQueue entity = new NotifyQueue();
+        entity.setReaded(true);
+
+        notifyQueueMapper.update(entity, Wrappers.<NotifyQueue>lambdaUpdate().eq(NotifyQueue::getEmployeeId, employeeId));
     }
 
 }

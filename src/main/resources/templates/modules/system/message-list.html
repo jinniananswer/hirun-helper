@@ -16,10 +16,33 @@
             th:src="@{static/js/modules/system/message-list.js}"></script>
 </head>
 <body>
-<table id="message-table" lay-filter="message-table"></table>
-<script type="text/html" id="toolbar">
+<div class="layui-fluid" id="LAY-app-message">
+    <div class="layui-card">
+        <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+            <ul class="layui-tab-title">
+                <li>公告</li>
+                <li class="layui-this">私信</li>
+            </ul>
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show">
+                    <table id="announce-table" lay-filter="announce-table"></table>
+                </div>
+                <div class="layui-tab-item">
+                    <table id="message-table" lay-filter="message-table"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/html" id="announceToolbar">
     <div class="layui-btn-container">
-        <button class="layui-btn layui-btn-sm" lay-event="delete">删除</button>
+        <button class="layui-btn layui-btn-sm" lay-event="markReaded">标记已读</button>
+        <button class="layui-btn layui-btn-sm" lay-event="markReadedAll">全部已读</button>
+    </div>
+</script>
+<script type="text/html" id="messageToolbar">
+    <div class="layui-btn-container">
         <button class="layui-btn layui-btn-sm" lay-event="markReaded">标记已读</button>
         <button class="layui-btn layui-btn-sm" lay-event="markReadedAll">全部已读</button>
     </div>
