@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.system.controller;
 
 import com.microtomato.hirun.framework.annotation.RestResult;
+import com.microtomato.hirun.modules.system.entity.dto.AnnounceDTO;
 import com.microtomato.hirun.modules.system.entity.po.NotifyQueue;
 import com.microtomato.hirun.modules.system.service.INotifyService;
 import org.springframework.web.bind.annotation.*;
@@ -33,9 +34,9 @@ public class NotifyQueueController {
 
     @GetMapping("announce-list")
     @RestResult
-    public List<NotifyQueue> announceList() {
-        List<NotifyQueue> notifyQueues = notifyQueueServiceImpl.queryUnread();
-        return notifyQueues;
+    public List<AnnounceDTO> announceList() {
+        List<AnnounceDTO> announceDTOS = notifyQueueServiceImpl.queryUnreadAnnounce();
+        return announceDTOS;
     }
 
     @GetMapping("message-list")

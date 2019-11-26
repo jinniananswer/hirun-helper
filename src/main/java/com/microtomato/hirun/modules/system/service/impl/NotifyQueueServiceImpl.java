@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.WebContextUtils;
+import com.microtomato.hirun.modules.system.entity.dto.AnnounceDTO;
 import com.microtomato.hirun.modules.system.entity.po.Notify;
 import com.microtomato.hirun.modules.system.entity.po.NotifyQueue;
 import com.microtomato.hirun.modules.system.mapper.NotifyQueueMapper;
@@ -111,6 +112,17 @@ public class NotifyQueueServiceImpl extends ServiceImpl<NotifyQueueMapper, Notif
                 .eq(NotifyQueue::getReaded, false)
                 .eq(NotifyQueue::getEmployeeId, employeeId)
         );
+    }
+
+    /**
+     * 查未读公告
+     *
+     * @return
+     */
+    @Override
+    public List<AnnounceDTO> queryUnreadAnnounce() {
+        Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
+        return notifyQueueMapper.queryUnreadAnnounce(INotifyService.NotifyType.REMIND.value(), employeeId);
     }
 
     /**

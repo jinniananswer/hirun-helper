@@ -28,8 +28,8 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'form', 'select', 
                 cols: [[
                     {type: 'checkbox'},
                     {field: 'id', title: 'ID', width: 60, align: 'center'},
-                    {field: 'userId', title: '公告内容', align: 'left'},
-                    {field: 'createTime', title: '时间', align: 'center'}
+                    {field: 'content', title: '公告内容', align: 'left'},
+                    {field: 'createTime', title: '时间', width: 180, align: 'center'}
                 ]]
             });
 
@@ -48,8 +48,8 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'form', 'select', 
                 cols: [[
                     {type: 'checkbox'},
                     {field: 'id', title: 'ID', width: 60, align: 'center'},
-                    {field: 'userId', title: '私信内容', align: 'left'},
-                    {field: 'createTime', title: '时间', align: 'center'}
+                    {field: 'content', title: '私信内容', align: 'left'},
+                    {field: 'createTime', title: '时间', width: 180, align: 'center'}
                 ]]
             });
 

@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.system.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.microtomato.hirun.modules.system.entity.dto.AnnounceDTO;
 import com.microtomato.hirun.modules.system.entity.po.Notify;
 import com.microtomato.hirun.modules.system.entity.po.NotifyQueue;
 
@@ -47,6 +48,8 @@ public interface INotifyQueueService extends IService<NotifyQueue> {
      * @return 未读消息列表
      */
     List<NotifyQueue> queryUnread();
+
+    List<AnnounceDTO> queryUnreadAnnounce();
 
     /**
      * 标记消息已读
