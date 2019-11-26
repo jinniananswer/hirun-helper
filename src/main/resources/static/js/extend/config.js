@@ -11,7 +11,7 @@ layui.define(['laytpl', 'layer', 'element', 'util'], function(exports){
   exports('setter', {
     container: 'LAY_app' //容器ID
     ,base: layui.cache.base //记录静态资源所在路径
-    ,views: layui.cache.base + 'tpl/' //动态模板所在目录
+    ,views: '' //动态模板所在目录
     ,entry: 'index' //默认视图文件名
     ,engine: '.html' //视图文件后缀名
     ,pageTabs: true //是否开启页面选项卡功能。iframe版推荐开启
@@ -99,7 +99,7 @@ layui.define(['laytpl', 'layer', 'element', 'util'], function(exports){
       
       //初始的颜色索引，对应上面的配色方案数组索引
       //如果本地已经有主题色记录，则以本地记录为优先，除非请求本地数据（localStorage）
-      ,initColorIndex: 0
+      ,initColorIndex: 11
     }
   });
 });

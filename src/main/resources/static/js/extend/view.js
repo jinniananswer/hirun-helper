@@ -167,7 +167,7 @@ layui.define(['laytpl', 'layer'], function(exports){
   //请求模板文件渲染
   Class.prototype.render = function(views, params){
     var that = this, router = layui.router();
-    views = setter.views + views + setter.engine;
+    views = setter.views + views;
     
     $('#'+ LAY_BODY).children('.layadmin-loading').remove();
     view.loading(that.container); //loading
