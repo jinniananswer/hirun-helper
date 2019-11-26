@@ -92,7 +92,7 @@ public class NotifyQueueServiceImpl extends ServiceImpl<NotifyQueueMapper, Notif
             NotifyQueue notifyQueue = new NotifyQueue();
             notifyQueue.setNotifyId(notify.getId());
             notifyQueue.setUserId(userId);
-            notifyQueue.setRead(false);
+            notifyQueue.setReaded(false);
             notifyQueue.setCreateTime(now);
             notifyQueueServiceImpl.save(notifyQueue);
         }
@@ -108,7 +108,7 @@ public class NotifyQueueServiceImpl extends ServiceImpl<NotifyQueueMapper, Notif
         Long userId = WebContextUtils.getUserContext().getUserId();
         return notifyQueueMapper.selectList(
             Wrappers.<NotifyQueue>lambdaQuery()
-                .eq(NotifyQueue::getRead, false)
+                .eq(NotifyQueue::getReaded, false)
                 .eq(NotifyQueue::getUserId, userId)
         );
     }
@@ -137,7 +137,7 @@ public class NotifyQueueServiceImpl extends ServiceImpl<NotifyQueueMapper, Notif
         lambdaQueryWrapper.eq(NotifyQueue::getUserId, userId);
 
         NotifyQueue entity = new NotifyQueue();
-        entity.setRead(true);
+        entity.setReaded(true);
         notifyQueueMapper.update(entity, lambdaQueryWrapper);
     }
 
