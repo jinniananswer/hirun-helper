@@ -372,7 +372,7 @@ layui.define('view', function(exports){
       admin.popupRight({
         id: 'LAY_adminPopupTheme'
         ,success: function(){
-          view(this.id).render('system/theme')
+          view(this.id).render('theme')
         }
       });
     }
