@@ -22,14 +22,14 @@ public interface INotifyQueueService extends IService<NotifyQueue> {
      *
      * @return
      */
-    LocalDateTime getLatestTimeByUserId();
+    LocalDateTime getLatestTime();
 
     /**
      * 获取用户队列里最新的时间戳
      *
      * @return
      */
-    LocalDateTime getLatestTimeByUserId(Long userId);
+    LocalDateTime getLatestTime(Long employeeId);
 
     /**
      * 公告入队的操作
@@ -53,7 +53,14 @@ public interface INotifyQueueService extends IService<NotifyQueue> {
      *
      * @param notifyId 消息Id
      */
-    void markRead(Long notifyId);
+    void markReaded(Long notifyId);
+
+    /**
+     * 标记消息已读
+     *
+     * @param idList
+     */
+    void markReaded(List<Long> idList);
 
     /**
      * 标记消息已读
@@ -61,5 +68,5 @@ public interface INotifyQueueService extends IService<NotifyQueue> {
      * @param notifyId 消息Id
      * @param userId 用户Id
      */
-    void markRead(Long notifyId, Long userId);
+    void markReaded(Long notifyId, Long userId);
 }

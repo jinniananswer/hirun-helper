@@ -3,15 +3,11 @@ package com.microtomato.hirun.modules.system.controller;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.modules.system.entity.po.NotifyQueue;
 import com.microtomato.hirun.modules.system.service.INotifyService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import lombok.extern.slf4j.Slf4j;
 
 import com.microtomato.hirun.modules.system.service.INotifyQueueService;
-
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -36,9 +32,13 @@ public class NotifyQueueController {
 
     @GetMapping("message-list")
     @RestResult
-    public List<NotifyQueue> test() {
+    public List<NotifyQueue> messageList() {
         List<NotifyQueue> notifyQueues = notifyQueueServiceImpl.queryUnread();
         return notifyQueues;
     }
 
+    @PostMapping("markReaded")
+    public void markReaded(@RequestBody List<Long> list) {
+        notifyQueueServiceImpl.markReaded(list);
+    }
 }

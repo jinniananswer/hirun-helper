@@ -55,19 +55,19 @@ public interface INotifyService extends IService<Notify> {
     /**
      * 发送私信
      *
-     * @param toUserId 目标用户Id
+     * @param toEmployeeId 目标雇员Id
      * @param content 私信内容
      */
-    void sendMessage(Long toUserId, String content);
+    void sendMessage(Long toEmployeeId, String content);
 
     /**
      * 发送私信
      *
-     * @param toUserId 给谁发私信
+     * @param toEmployeeId 给谁发私信
      * @param content 私信内容
-     * @param fromUserId 谁发的私信
+     * @param fromEmployeeId 谁发的私信
      */
-    void sendMessage(Long toUserId, String content, Long fromUserId);
+    void sendMessage(Long toEmployeeId, String content, Long fromEmployeeId);
 
     /**
      * 消息类型
