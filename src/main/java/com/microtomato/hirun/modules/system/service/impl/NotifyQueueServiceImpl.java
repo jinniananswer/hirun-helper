@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.WebContextUtils;
+import com.microtomato.hirun.modules.system.entity.dto.AnnounceDTO;
 import com.microtomato.hirun.modules.system.entity.po.Notify;
 import com.microtomato.hirun.modules.system.entity.po.NotifyQueue;
 import com.microtomato.hirun.modules.system.mapper.NotifyQueueMapper;
@@ -43,23 +44,23 @@ public class NotifyQueueServiceImpl extends ServiceImpl<NotifyQueueMapper, Notif
      * @return
      */
     @Override
-    public LocalDateTime getLatestTimeByUserId() {
+    public LocalDateTime getLatestTime() {
         UserContext userContext = WebContextUtils.getUserContext();
-        Long userId = userContext.getUserId();
-        return getLatestTimeByUserId(userId);
+        Long employeeId = userContext.getEmployeeId();
+        return getLatestTime(employeeId);
     }
 
     /**
      * 从队列里获取当前用户最新数据的时间
      *
-     * @param userId 用户 Id
+     * @param employeeId 用户 Id
      * @return
      */
     @Override
-    public LocalDateTime getLatestTimeByUserId(Long userId) {
+    public LocalDateTime getLatestTime(Long employeeId) {
         NotifyQueue notifyQueue = notifyQueueMapper.selectOne(
             Wrappers.<NotifyQueue>lambdaQuery()
-                .eq(NotifyQueue::getUserId, userId)
+                .eq(NotifyQueue::getEmployeeId, employeeId)
                 .orderByDesc(NotifyQueue::getCreateTime)
         );
 
@@ -85,14 +86,14 @@ public class NotifyQueueServiceImpl extends ServiceImpl<NotifyQueueMapper, Notif
     }
 
     private void enqueue(List<Notify> list) {
-        Long userId = WebContextUtils.getUserContext().getUserId();
+        Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
         LocalDateTime now = LocalDateTime.now();
 
         for (Notify notify : list) {
             NotifyQueue notifyQueue = new NotifyQueue();
             notifyQueue.setNotifyId(notify.getId());
-            notifyQueue.setUserId(userId);
-            notifyQueue.setRead(false);
+            notifyQueue.setEmployeeId(employeeId);
+            notifyQueue.setReaded(false);
             notifyQueue.setCreateTime(now);
             notifyQueueServiceImpl.save(notifyQueue);
         }
@@ -105,40 +106,80 @@ public class NotifyQueueServiceImpl extends ServiceImpl<NotifyQueueMapper, Notif
      */
     @Override
     public List<NotifyQueue> queryUnread() {
-        Long userId = WebContextUtils.getUserContext().getUserId();
+        Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
         return notifyQueueMapper.selectList(
             Wrappers.<NotifyQueue>lambdaQuery()
-                .eq(NotifyQueue::getRead, false)
-                .eq(NotifyQueue::getUserId, userId)
+                .eq(NotifyQueue::getReaded, false)
+                .eq(NotifyQueue::getEmployeeId, employeeId)
         );
     }
 
     /**
-     * 标记消息已读
+     * 查未读公告
      *
-     * @param notifyId 消息Id
+     * @return
      */
     @Override
-    public void markRead(Long notifyId) {
-        Long userId = WebContextUtils.getUserContext().getUserId();
-        markRead(notifyId, userId);
+    public List<AnnounceDTO> queryUnreadAnnounce() {
+        Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
+        return notifyQueueMapper.queryUnreadAnnounce(INotifyService.NotifyType.REMIND.value(), employeeId);
     }
 
     /**
      * 标记消息已读
      *
      * @param notifyId 消息Id
-     * @param userId   用户Id
      */
     @Override
-    public void markRead(Long notifyId, Long userId) {
+    public void markReaded(Long notifyId) {
+        Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
+        markReaded(notifyId, employeeId);
+    }
+
+    /**
+     * 标记消息已读
+     *
+     * @param idList
+     */
+    @Override
+    public void markReaded(List<Long> idList) {
+        Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
+        NotifyQueue entity = new NotifyQueue();
+        entity.setReaded(true);
+        notifyQueueMapper.update(entity, Wrappers.<NotifyQueue>lambdaUpdate()
+            .eq(NotifyQueue::getEmployeeId, employeeId)
+            .in(NotifyQueue::getId, idList)
+        );
+
+    }
+
+    /**
+     * 标记消息已读
+     *
+     * @param notifyId   消息Id
+     * @param employeeId 雇员Id
+     */
+    @Override
+    public void markReaded(Long notifyId, Long employeeId) {
         LambdaQueryWrapper<NotifyQueue> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.eq(NotifyQueue::getNotifyId, notifyId);
-        lambdaQueryWrapper.eq(NotifyQueue::getUserId, userId);
+        lambdaQueryWrapper.eq(NotifyQueue::getEmployeeId, employeeId);
 
         NotifyQueue entity = new NotifyQueue();
-        entity.setRead(true);
+        entity.setReaded(true);
         notifyQueueMapper.update(entity, lambdaQueryWrapper);
+    }
+
+    /**
+     * 标记全部已读
+     */
+    @Override
+    public void markReadedAll() {
+        Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
+        NotifyQueue entity = new NotifyQueue();
+        entity.setReaded(true);
+
+        notifyQueueMapper.update(entity, Wrappers.<NotifyQueue>lambdaUpdate().eq(NotifyQueue::getEmployeeId, employeeId));
     }
 
 }

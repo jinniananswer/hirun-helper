@@ -39,12 +39,12 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyMapper, Notify> impleme
      */
     @Override
     public void sendAnnounce(String content) {
-        long userId = WebContextUtils.getUserContext().getUserId();
+        long employeeId = WebContextUtils.getUserContext().getEmployeeId();
 
         Notify notify = new Notify();
         notify.setContent(content);
         notify.setNotifyType(NotifyType.ANNOUNCE.value());
-        notify.setSenderId(userId);
+        notify.setSenderId(employeeId);
 
         notifyMapper.insert(notify);
     }
@@ -56,8 +56,8 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyMapper, Notify> impleme
      */
     @Override
     public List<Notify> queryUnreadAnnounce() {
-        long userId = WebContextUtils.getUserContext().getUserId();
-        return queryUnreadAnnounce(userId);
+        long employeeId = WebContextUtils.getUserContext().getEmployeeId();
+        return queryUnreadAnnounce(employeeId);
     }
 
     /**
@@ -68,7 +68,7 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyMapper, Notify> impleme
      */
     @Override
     public List<Notify> queryUnreadAnnounce(Long userId) {
-        LocalDateTime latest = notifyQueueServiceImpl.getLatestTimeByUserId(userId);
+        LocalDateTime latest = notifyQueueServiceImpl.getLatestTime(userId);
         List<Notify> announceList = notifyMapper.selectList(
             Wrappers.<Notify>lambdaQuery()
                 .select(Notify::getId)
@@ -81,29 +81,29 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyMapper, Notify> impleme
     /**
      * 发送私信
      *
-     * @param toUserId 目标用户Id
+     * @param toEmployeeId 目标用户Id
      * @param content 私信内容
      */
     @Override
-    public void sendMessage(Long toUserId, String content) {
-        long userId = WebContextUtils.getUserContext().getUserId();
-        sendMessage(toUserId, content, userId);
+    public void sendMessage(Long toEmployeeId, String content) {
+        Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
+        sendMessage(toEmployeeId, content, employeeId);
     }
 
     /**
      * 发送私信
      *
-     * @param toUserId 给谁发私信
+     * @param toEmployeeId 给谁发私信
      * @param content 私信内容
-     * @param fromUserId 谁发的私信
+     * @param fromEmployeeId 谁发的私信
      */
     @Override
-    public void sendMessage(Long toUserId, String content, Long fromUserId) {
+    public void sendMessage(Long toEmployeeId, String content, Long fromEmployeeId) {
         Notify notify = new Notify();
         notify.setContent(content);
         notify.setNotifyType(NotifyType.MESSAGE.value());
-        notify.setTargetId(toUserId);
-        notify.setSenderId(fromUserId);
+        notify.setTargetId(toEmployeeId);
+        notify.setSenderId(fromEmployeeId);
         notifyMapper.insert(notify);
     }
 
@@ -114,19 +114,19 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyMapper, Notify> impleme
      */
     @Override
     public List<Notify> queryUnreadMessage() {
-        long userId = WebContextUtils.getUserContext().getUserId();
-        return queryUnreadMessage(userId);
+        long employeeId = WebContextUtils.getUserContext().getEmployeeId();
+        return queryUnreadMessage(employeeId);
     }
 
     /**
      * 查未读私信
      *
-     * @param userId 用户Id
+     * @param employeeId 雇员Id
      * @return
      */
     @Override
-    public List<Notify> queryUnreadMessage(Long userId) {
-        LocalDateTime latest = notifyQueueServiceImpl.getLatestTimeByUserId(userId);
+    public List<Notify> queryUnreadMessage(Long employeeId) {
+        LocalDateTime latest = notifyQueueServiceImpl.getLatestTime(employeeId);
         List<Notify> messageList = notifyMapper.selectList(
             Wrappers.<Notify>lambdaQuery()
                 .select(Notify::getId)

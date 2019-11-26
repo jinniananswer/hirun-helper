@@ -39,14 +39,14 @@ public class NotifyQueue extends BaseEntity {
     /**
      * 是否已读
      */
-    @TableField("is_read")
-    private Boolean read;
+    @TableField("is_readed")
+    private Boolean readed;
 
     /**
      * 用户消息所属者
      */
-    @TableField("user_id")
-    private Long userId;
+    @TableField("employee_id")
+    private Long employeeId;
 
     /**
      * 关联的 notify
