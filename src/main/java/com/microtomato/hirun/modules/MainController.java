@@ -24,6 +24,11 @@ public class MainController {
         return "index";
     }
 
+    @GetMapping("/theme")
+    public String theme() {
+        return "theme";
+    }
+
     @GetMapping("/login")
     public String login() {
         return "login";
