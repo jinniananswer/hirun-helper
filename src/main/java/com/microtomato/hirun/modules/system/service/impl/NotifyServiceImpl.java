@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.system.entity.po.Notify;
+import com.microtomato.hirun.modules.system.entity.po.NotifyQueue;
 import com.microtomato.hirun.modules.system.mapper.NotifyMapper;
 import com.microtomato.hirun.modules.system.service.INotifyQueueService;
 import com.microtomato.hirun.modules.system.service.INotifyService;
@@ -105,6 +106,12 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyMapper, Notify> impleme
         notify.setTargetId(toEmployeeId);
         notify.setSenderId(fromEmployeeId);
         notifyMapper.insert(notify);
+
+        NotifyQueue notifyQueue = new NotifyQueue();
+        notifyQueue.setReaded(false);
+        notifyQueue.setEmployeeId(toEmployeeId);
+        notifyQueue.setNotifyId(notify.getId());
+        notifyQueueServiceImpl.save(notifyQueue);
     }
 
     /**
