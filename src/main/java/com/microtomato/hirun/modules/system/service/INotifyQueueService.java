@@ -1,8 +1,7 @@
 package com.microtomato.hirun.modules.system.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.microtomato.hirun.modules.system.entity.dto.AnnounceDTO;
-import com.microtomato.hirun.modules.system.entity.po.Notify;
+import com.microtomato.hirun.modules.system.entity.dto.UnReadedDTO;
 import com.microtomato.hirun.modules.system.entity.po.NotifyQueue;
 
 import java.time.LocalDateTime;
@@ -43,13 +42,18 @@ public interface INotifyQueueService extends IService<NotifyQueue> {
     void messageEnqueue();
 
     /**
-     * 查用户的未读信息（包括：公告/私信/提醒）
+     * 查未读私信
      *
      * @return 未读消息列表
      */
-    List<NotifyQueue> queryUnread();
+    List<UnReadedDTO> queryUnreadMessage();
 
-    List<AnnounceDTO> queryUnreadAnnounce();
+    /**
+     * 查未读公告
+     *
+     * @return
+     */
+    List<UnReadedDTO> queryUnreadAnnounce();
 
     /**
      * 标记消息已读
@@ -75,6 +79,8 @@ public interface INotifyQueueService extends IService<NotifyQueue> {
 
     /**
      * 标记全部已读
+     *
+     * @param notifyType
      */
-    void markReadedAll();
+    void markReadedAll(INotifyService.NotifyType notifyType);
 }

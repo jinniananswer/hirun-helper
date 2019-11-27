@@ -365,7 +365,7 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             EmployeeBlacklist employeeBlacklist = new EmployeeBlacklist();
             BeanUtils.copyProperties(employeeDestroyInfoDTO, employeeBlacklist);
             employeeBlacklist.setStartTime(employeeDestroyInfoDTO.getDestroyDate());
-            employeeBlacklist.setEndTime(TimeUtils.stringToLocalDateTime("2999-12-31 00:00:00", "yyyy-MM-dd HH:mm:ss"));
+            employeeBlacklist.setEndTime(TimeUtils.getForeverTime());
 
             EmployeeBlackListDO employeeBlackListDO = SpringContextUtils.getBean(EmployeeBlackListDO.class);
             employeeBlackListDO.addBlackList(employeeBlacklist);
@@ -387,8 +387,8 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
      * @return
      */
     @Override
-    public IPage<EmployeeInfoDTO> queryEmployeeList4Page(EmployeeInfoDTO employeeInfoDTO, Page<EmployeeInfoDTO> page) {
-
+    public IPage<EmployeeInfoDTO> queryEmployeeList4Page(EmployeeQueryConditionDTO employeeInfoDTO, Page<EmployeeQueryConditionDTO> page) {
+         //当传入部门为空时判断，根据登录员工的部门计算得到可以查询的部门集合
         if(StringUtils.isBlank(employeeInfoDTO.getOrgSet())){
             UserContext userContext= WebContextUtils.getUserContext();
             Long orgId=userContext.getOrgId();
@@ -408,8 +408,12 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             employeeInfoDTOResult.setOrgPath(orgDO.getCompanyLinePath());
             employeeInfoDTOResult.setTypeName(this.staticDataService.getCodeName("EMPLOYEE_TYPE", employeeInfoDTOResult.getType()));
 
-            EmployeeDO employeeDO=SpringContextUtils.getBean(EmployeeDO.class,employeeInfoDTOResult.getEmployeeId());
-            employeeInfoDTOResult.setCompanyAge(employeeDO.getJobYear() + "");
+            LocalDate jobDate = employeeInfoDTOResult.getJobDate();
+            if (jobDate == null) {
+                employeeInfoDTOResult.setCompanyAge("0");
+            }else{
+                employeeInfoDTOResult.setCompanyAge(TimeUtils.getAbsDateDiffYear(jobDate, LocalDate.now())+"");
+            }
 
         }
         return iPage;
@@ -511,8 +515,19 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
     }
 
     @Override
-    public List<EmployeeInfoDTO> queryEmployeeList(EmployeeInfoDTO employeeInfoDTO) {
-        List<EmployeeInfoDTO> list = employeeService.queryEmployeeList(employeeInfoDTO);
+    public List<EmployeeInfoDTO> queryEmployeeList(EmployeeQueryConditionDTO conditionDTO) {
+        //当传入部门为空时判断，根据登录员工的部门计算得到可以查询的部门集合
+        if(StringUtils.isBlank(conditionDTO.getOrgSet())){
+            UserContext userContext= WebContextUtils.getUserContext();
+            Long orgId=userContext.getOrgId();
+
+            OrgDO orgDO=SpringContextUtils.getBean(OrgDO.class,orgId);
+            String orgLine=orgDO.getOrgLine();
+
+            conditionDTO.setOrgSet(orgLine);
+        }
+
+        List<EmployeeInfoDTO> list = employeeService.queryEmployeeList(conditionDTO);
         if (list.size() <= 0) {
             return list;
         }
@@ -521,10 +536,22 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, employeeInfo.getOrgId());
             employeeInfo.setOrgPath(orgDO.getCompanyLinePath());
             employeeInfo.setSex(this.staticDataService.getCodeName("SEX", employeeInfo.getSex()));
-            employeeInfo.setEmployeeStatus(this.staticDataService.getCodeName("EMPLOYEE_STATUS", employeeInfo.getSex()));
             employeeInfo.setTypeName(this.staticDataService.getCodeName("EMPLOYEE_TYPE", employeeInfo.getType()));
-            EmployeeDO employeeDO=SpringContextUtils.getBean(EmployeeDO.class,employeeInfo.getEmployeeId());
-            employeeInfo.setCompanyAge(employeeDO.getJobYear() + "");
+            LocalDate jobDate = employeeInfo.getJobDate();
+            if (jobDate == null) {
+                employeeInfo.setCompanyAge("0");
+            }else{
+                employeeInfo.setCompanyAge(TimeUtils.getAbsDateDiffYear(jobDate, LocalDate.now())+"");
+            }
+            AddressDO addressDO = SpringContextUtils.getBean(AddressDO.class);
+            employeeInfo.setNativeArea(addressDO.getFullName(employeeInfo.getNativeRegion()));
+            employeeInfo.setHomeArea(addressDO.getFullName(employeeInfo.getHomeRegion()));
+            employeeInfo.setEducationLevelName(this.staticDataService.getCodeName("EDUCATION_LEVEL", employeeInfo.getEducationLevel()));
+            employeeInfo.setFirstEducationLevelName(this.staticDataService.getCodeName("EDUCATION_LEVEL", employeeInfo.getFirstEducationLevel()));
+            employeeInfo.setSchoolTypeName(this.staticDataService.getCodeName("SCHOOL_TYPE", employeeInfo.getSchoolType()));
+            employeeInfo.setParentEmployeeName(employeeService.getEmployeeNameEmployeeId(employeeInfo.getParentEmployeeId()));
+            employeeInfo.setEmployeeStatusName(this.staticDataService.getCodeName("EMPLOYEE_STATUS", employeeInfo.getEmployeeStatus()));
+            employeeInfo.setJobRoleNatureName(this.staticDataService.getCodeName("JOB_NATURE", employeeInfo.getJobRoleNature()));
         }
         return list;
     }

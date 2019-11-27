@@ -85,9 +85,9 @@ public class EmployeeController extends AbstractExcelHarbour  {
 
     @GetMapping("/queryEmployeeList4Page")
     @RestResult
-    public IPage<EmployeeInfoDTO> queryEmployeeList4Page(EmployeeInfoDTO employeeInfoDTO, Integer page, Integer limit) {
-        Page<EmployeeInfoDTO> employeeInfoDTOPage = new Page<>(page, limit);
-        IPage<EmployeeInfoDTO> employeeList = employeeDomainServiceImpl.queryEmployeeList4Page(employeeInfoDTO,employeeInfoDTOPage);
+    public IPage<EmployeeInfoDTO> queryEmployeeList4Page(EmployeeQueryConditionDTO conditionDTO, Integer page, Integer limit) {
+        Page<EmployeeQueryConditionDTO> employeeInfoDTOPage = new Page<>(page, limit);
+        IPage<EmployeeInfoDTO> employeeList = employeeDomainServiceImpl.queryEmployeeList4Page(conditionDTO,employeeInfoDTOPage);
         return employeeList;
     }
 
@@ -120,8 +120,8 @@ public class EmployeeController extends AbstractExcelHarbour  {
 
     @GetMapping("/queryEmployeeList4Export")
     @RestResult
-    public void queryEmployeeList4Export(EmployeeInfoDTO employeeInfoDTO, HttpServletResponse response) throws IOException {
-        List<EmployeeInfoDTO> list=employeeDomainServiceImpl.queryEmployeeList(employeeInfoDTO);
+    public void queryEmployeeList4Export(EmployeeQueryConditionDTO conditionDTO, HttpServletResponse response) throws IOException {
+        List<EmployeeInfoDTO> list=employeeDomainServiceImpl.queryEmployeeList(conditionDTO);
         exportExcel(response, "users", EmployeeInfoDTO.class, list, ExcelTypeEnum.XLSX);
     }
 

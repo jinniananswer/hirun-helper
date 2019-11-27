@@ -1,14 +1,12 @@
 package com.microtomato.hirun.modules.system.controller;
 
 import com.microtomato.hirun.framework.annotation.RestResult;
-import com.microtomato.hirun.modules.system.entity.dto.AnnounceDTO;
-import com.microtomato.hirun.modules.system.entity.po.NotifyQueue;
-import com.microtomato.hirun.modules.system.service.INotifyService;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import lombok.extern.slf4j.Slf4j;
-
+import com.microtomato.hirun.modules.system.entity.dto.UnReadedDTO;
 import com.microtomato.hirun.modules.system.service.INotifyQueueService;
+import com.microtomato.hirun.modules.system.service.INotifyService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -31,19 +29,28 @@ public class NotifyQueueController {
     @Autowired
     private INotifyService notifyServiceImpl;
 
-
+    /**
+     * 获取公告列表
+     *
+     * @return
+     */
     @GetMapping("announce-list")
     @RestResult
-    public List<AnnounceDTO> announceList() {
-        List<AnnounceDTO> announceDTOS = notifyQueueServiceImpl.queryUnreadAnnounce();
-        return announceDTOS;
+    public List<UnReadedDTO> announceList() {
+        List<UnReadedDTO> unreadedDTOS = notifyQueueServiceImpl.queryUnreadAnnounce();
+        return unreadedDTOS;
     }
 
+    /**
+     * 获取私信列表
+     *
+     * @return
+     */
     @GetMapping("message-list")
     @RestResult
-    public List<NotifyQueue> messageList() {
-        List<NotifyQueue> notifyQueues = notifyQueueServiceImpl.queryUnread();
-        return notifyQueues;
+    public List<UnReadedDTO> messageList() {
+        List<UnReadedDTO> messageDTOS = notifyQueueServiceImpl.queryUnreadMessage();
+        return messageDTOS;
     }
 
     @PostMapping("markReaded")
@@ -52,10 +59,20 @@ public class NotifyQueueController {
         notifyQueueServiceImpl.markReaded(list);
     }
 
-    @GetMapping("markReadedAll")
+    @GetMapping("markReadedAll/{notifyType}")
     @RestResult
-    public void markReadedAll() {
-        notifyQueueServiceImpl.markReadedAll();
+    public void markReadedAll(@PathVariable Integer notifyType) {
+        if (notifyType == INotifyService.NotifyType.ANNOUNCE.value()) {
+            notifyQueueServiceImpl.markReadedAll(INotifyService.NotifyType.ANNOUNCE);
+        } else if (notifyType == INotifyService.NotifyType.MESSAGE.value()) {
+            notifyQueueServiceImpl.markReadedAll(INotifyService.NotifyType.MESSAGE);
+        }
+    }
+
+    @GetMapping("announceEnqueue")
+    @RestResult
+    public void announceEnqueue() {
+        notifyQueueServiceImpl.announceEnqueue();
     }
 
 }

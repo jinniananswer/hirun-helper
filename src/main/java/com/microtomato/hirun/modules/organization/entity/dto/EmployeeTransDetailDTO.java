@@ -82,5 +82,6 @@ public class EmployeeTransDetailDTO {
 
     private LocalDateTime endTime;
 
+    private String transType;
 
 }
