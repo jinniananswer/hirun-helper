@@ -1,6 +1,6 @@
 layui.extend({
     orgTree: 'org',
-}).define(['ajax', 'table', 'element', 'orgTree', 'layer', 'form', 'select', 'redirect','multiSelect'], function (exports) {
+}).define(['ajax', 'table', 'element', 'orgTree', 'layer', 'form', 'select', 'redirect'], function (exports) {
     var $ = layui.$;
     var table = layui.table;
     var layer = layui.layer;
@@ -51,7 +51,7 @@ layui.extend({
                         },
                         {field: 'jobRoleName', title: '岗位', width: 150, align: 'center'},
                         {field: 'orgPath', title: '部门', align: 'center'},
-                        {field: 'companyAge', title: '工龄', width: 80, align: 'center'},
+                        {field: 'companyAge', title: '工作年限', width: 80, align: 'center'},
                         {field: 'status', title: '状态', width: 100, align: 'center',fixed: 'right', templet: function (d) {
                                 if (d.employeeStatus == 0) {
                                     return '在职';

@@ -90,7 +90,7 @@ public class HrPendingDomainServiceImpl implements IHrPendingDomainService {
         UserContext userContext = WebContextUtils.getUserContext();
         hrPending.setPendingCreateId(userContext.getEmployeeId());
         hrPending.setPendingStatus(HrPendingConst.PENDING_STATUS_1);
-        if (StringUtils.equals(hrPending.getPendingType(), HrPendingConst.PENDING_TYPE_2)) {
+        if (StringUtils.equals(hrPending.getPendingType(), HrPendingConst.PENDING_TYPE_TRANS)) {
             hrPending.setEndTime(TimeUtils.getForeverTime());
         }
         String content = employeeService.getEmployeeNameEmployeeId(hrPending.getPendingExecuteId()) + ",你好。"
@@ -154,7 +154,7 @@ public class HrPendingDomainServiceImpl implements IHrPendingDomainService {
     public boolean updateHrPending(HrPending hrPending) {
         UserContext userContext = WebContextUtils.getUserContext();
 
-        if (StringUtils.equals(hrPending.getPendingType(), HrPendingConst.PENDING_TYPE_2)) {
+        if (StringUtils.equals(hrPending.getPendingType(), HrPendingConst.PENDING_TYPE_TRANS)) {
             hrPending.setEndTime(TimeUtils.getForeverTime());
         }
 
@@ -251,7 +251,7 @@ public class HrPendingDomainServiceImpl implements IHrPendingDomainService {
         boolean result = hrPendingService.updateById(hrPending);
 
         //调动状态为调出，则发送消息提醒重签合同
-        if (StringUtils.equals(transDetail.getTransType(), HrPendingConst.PENDING_TYPE_2)) {
+        if (StringUtils.equals(transDetail.getTransType(), HrPendingConst.PENDING_TYPE_TRANS)) {
             String content = employeeService.getEmployeeNameEmployeeId(transDetail.getEmployeeId()) +
                     "，已确认调出,请签订变更协议！";
             notifyService.sendMessage(userContext.getEmployeeId(),content);

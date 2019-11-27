@@ -55,34 +55,77 @@ public class EmployeeConst {
     //离职方式-退休
     public static final String DESTORY_WAY_RETIRE = "5";
 
-    //培训协议
+    /**
+     * 培训协议
+     */
     public static final String CONTRACT_TYPE_TRAIN = "4";
 
-    //保密协议
+    /**
+     * 保密
+     */
     public static final String CONTRACT_TYPE_SECRET = "5";
 
-    //合同时间变更类型
+    /**
+     * 合同时间变更类型
+     */
     public static final String CONTRACT_TYPE_POSTPONE = "6";
 
-    //合同岗位变更类型
+    /**
+     * 合同岗位变更
+     */
     public static final String CONTRACT_TYPE_CHANGE_ROLE = "7";
 
-    //合同地点变更类型
+    /**
+     * 合同地点变更类型
+     */
     public static final String CONTRACT_TYPE_CHANGE_PLACE = "8";
 
-    //合同试用期变更类型
+    /**
+     * 合同试用期变更
+     */
     public static final String CONTRACT_TYPE_CHANGE_PROBLATION = "9";
 
-    //合同其他变更类型
+    /**
+     * 合同其他变更类型
+     */
     public static final String CONTRACT_TYPE_OTHER = "10";
 
-    //合同正常状态
+    /**
+     * 合同正常状态
+     */
     public static final String CONTRACT_STATUS_NORMAL = "1";
 
-    //合同结束状态
+    /**
+     * 合同结束状态
+     */
     public static final String CONTRACT_STATUS_END = "2";
 
-    //合同删除状态
+    /**
+     * 合同删除状态
+     */
     public static final String CONTRACT_STATUS_DELETE = "3";
 
+    /**
+     * 是
+     */
+    public static final String YES="1";
+    /**
+     * 否
+     */
+    public static final String NO="2";
+
+    /**
+     * 休假状态
+     */
+    public static final String EMPLOYEE_HOLIDAY_STATUS="1";
+
+    /**
+     * 借调状态
+     */
+    public static final String EMPLOYEE_BORROW_STATUS="2";
+
+    /**
+     * 调出状态
+     */
+    public static final String EMPLOYEE_TRANS_STATUS="3";
 }

@@ -515,8 +515,19 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
     }
 
     @Override
-    public List<EmployeeInfoDTO> queryEmployeeList(EmployeeQueryConditionDTO employeeInfoDTO) {
-        List<EmployeeInfoDTO> list = employeeService.queryEmployeeList(employeeInfoDTO);
+    public List<EmployeeInfoDTO> queryEmployeeList(EmployeeQueryConditionDTO conditionDTO) {
+        //当传入部门为空时判断，根据登录员工的部门计算得到可以查询的部门集合
+        if(StringUtils.isBlank(conditionDTO.getOrgSet())){
+            UserContext userContext= WebContextUtils.getUserContext();
+            Long orgId=userContext.getOrgId();
+
+            OrgDO orgDO=SpringContextUtils.getBean(OrgDO.class,orgId);
+            String orgLine=orgDO.getOrgLine();
+
+            conditionDTO.setOrgSet(orgLine);
+        }
+
+        List<EmployeeInfoDTO> list = employeeService.queryEmployeeList(conditionDTO);
         if (list.size() <= 0) {
             return list;
         }
@@ -525,7 +536,6 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, employeeInfo.getOrgId());
             employeeInfo.setOrgPath(orgDO.getCompanyLinePath());
             employeeInfo.setSex(this.staticDataService.getCodeName("SEX", employeeInfo.getSex()));
-            employeeInfo.setEmployeeStatus(this.staticDataService.getCodeName("EMPLOYEE_STATUS", employeeInfo.getSex()));
             employeeInfo.setTypeName(this.staticDataService.getCodeName("EMPLOYEE_TYPE", employeeInfo.getType()));
             LocalDate jobDate = employeeInfo.getJobDate();
             if (jobDate == null) {
@@ -533,6 +543,15 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             }else{
                 employeeInfo.setCompanyAge(TimeUtils.getAbsDateDiffYear(jobDate, LocalDate.now())+"");
             }
+            AddressDO addressDO = SpringContextUtils.getBean(AddressDO.class);
+            employeeInfo.setNativeArea(addressDO.getFullName(employeeInfo.getNativeRegion()));
+            employeeInfo.setHomeArea(addressDO.getFullName(employeeInfo.getHomeRegion()));
+            employeeInfo.setEducationLevelName(this.staticDataService.getCodeName("EDUCATION_LEVEL", employeeInfo.getEducationLevel()));
+            employeeInfo.setFirstEducationLevelName(this.staticDataService.getCodeName("EDUCATION_LEVEL", employeeInfo.getFirstEducationLevel()));
+            employeeInfo.setSchoolTypeName(this.staticDataService.getCodeName("SCHOOL_TYPE", employeeInfo.getSchoolType()));
+            employeeInfo.setParentEmployeeName(employeeService.getEmployeeNameEmployeeId(employeeInfo.getParentEmployeeId()));
+            employeeInfo.setEmployeeStatusName(this.staticDataService.getCodeName("EMPLOYEE_STATUS", employeeInfo.getEmployeeStatus()));
+            employeeInfo.setJobRoleNatureName(this.staticDataService.getCodeName("JOB_NATURE", employeeInfo.getJobRoleNature()));
         }
         return list;
     }

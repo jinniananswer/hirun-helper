@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.modules.organization.entity.consts.EmployeeConst;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeExampleDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeInfoDTO;
@@ -57,22 +58,33 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         queryWrapper.likeRight(StringUtils.isNotEmpty(conditionDTO.getMobileNo()), "a.mobile_no", conditionDTO.getMobileNo());
         queryWrapper.eq(StringUtils.isNotEmpty(conditionDTO.getEmployeeStatus()), "a.status", conditionDTO.getEmployeeStatus());
         queryWrapper.eq(StringUtils.isNotEmpty(conditionDTO.getType()), "a.type", conditionDTO.getType());
-        queryWrapper.apply(StringUtils.isNotBlank(conditionDTO.getOrgSet()),"b.org_id in ("+conditionDTO.getOrgSet()+")");
+        if (!StringUtils.equals(conditionDTO.getOtherStatus(), EmployeeConst.EMPLOYEE_BORROW_STATUS) &&
+                !StringUtils.equals(conditionDTO.getOtherStatus(), EmployeeConst.EMPLOYEE_TRANS_STATUS)) {
+            queryWrapper.apply(StringUtils.isNotBlank(conditionDTO.getOrgSet()), "b.org_id in (" + conditionDTO.getOrgSet() + ")");
+        }
         queryWrapper.orderByAsc("a.employee_id");
-
-        if(StringUtils.equals(conditionDTO.getOtherStatus(),"1")){
+        //休假
+        if (StringUtils.equals(conditionDTO.getOtherStatus(), EmployeeConst.EMPLOYEE_HOLIDAY_STATUS)) {
             queryWrapper.exists("select * from ins_employee_holiday ieh where a.employee_id=ieh.employee_id and (now() between ieh.start_time and ieh.end_time)");
         }
-        if(StringUtils.equals(conditionDTO.getOtherStatus(),"2")){
-            queryWrapper.exists("select * from ins_hr_pending iep where a.employee_id=iep.employee_id and iep.pending_status='2' and iep.pending_type='1' and (now() between iep.start_time and iep.end_time)");
+        //借调
+        if (StringUtils.equals(conditionDTO.getOtherStatus(), EmployeeConst.EMPLOYEE_BORROW_STATUS)) {
+            queryWrapper.exists("select * from ins_employee_trans_detail iep where a.employee_id=iep.employee_id  " +
+                    "and iep.trans_type='1' and (now() between iep.start_time and iep.end_time)" +
+                    "and (iep.source_org_id in(" + conditionDTO.getOrgSet() + ") or iep.org_id in (" + conditionDTO.getOrgSet() + "))");
         }
-        if(StringUtils.equals(conditionDTO.getOtherStatus(),"3")){
-            queryWrapper.exists("select * from ins_hr_pending iep where a.employee_id=iep.employee_id and iep.pending_status='2' and iep.pending_type='2' and (now() between iep.start_time and iep.end_time)");
+        //调出
+        if (StringUtils.equals(conditionDTO.getOtherStatus(), EmployeeConst.EMPLOYEE_TRANS_STATUS)) {
+            queryWrapper.exists("select * from ins_employee_trans_detail iep where a.employee_id=iep.employee_id  " +
+                    "and iep.trans_type='2' and (now() between iep.start_time and iep.end_time)" +
+                    "and (iep.source_org_id in(" + conditionDTO.getOrgSet() + ") or iep.org_id in (" + conditionDTO.getOrgSet() + "))");
         }
-        if(StringUtils.equals(conditionDTO.getIsBlackList(),"1")){
+        //是黑名单
+        if (StringUtils.equals(conditionDTO.getIsBlackList(), EmployeeConst.YES)) {
             queryWrapper.exists("select * from ins_employee_blacklist ieb where a.employee_id=ieb.employee_id  and (now() between ieb.start_time and ieb.end_time)");
         }
-        if(StringUtils.equals(conditionDTO.getIsBlackList(),"2")){
+        //不是黑名单
+        if (StringUtils.equals(conditionDTO.getIsBlackList(), EmployeeConst.NO)) {
             queryWrapper.notExists("select * from ins_employee_blacklist ieb where a.employee_id=ieb.employee_id  and (now() between ieb.start_time and ieb.end_time)");
         }
         IPage<EmployeeInfoDTO> iPage = employeeMapper.selectEmployeePage(employeePage, queryWrapper);
@@ -98,8 +110,8 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
     @Override
     @Cacheable(value = "employee_name_cache")
     public String getEmployeeNameEmployeeId(Long employeeId) {
-        Employee employee=this.employeeMapper.selectById(employeeId);
-        if(employee ==null){
+        Employee employee = this.employeeMapper.selectById(employeeId);
+        if (employee == null) {
             return null;
         }
         return employee.getName();
@@ -126,26 +138,37 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         queryWrapper.likeRight(StringUtils.isNotEmpty(conditionDTO.getMobileNo()), "a.mobile_no", conditionDTO.getMobileNo());
         queryWrapper.eq(StringUtils.isNotEmpty(conditionDTO.getEmployeeStatus()), "a.status", conditionDTO.getEmployeeStatus());
         queryWrapper.eq(StringUtils.isNotEmpty(conditionDTO.getType()), "a.type", conditionDTO.getType());
-        queryWrapper.apply(StringUtils.isNotBlank(conditionDTO.getOrgSet()),"b.org_id in ("+conditionDTO.getOrgSet()+")");
-        queryWrapper.orderByAsc("a.employee_id");
 
-        if(StringUtils.equals(conditionDTO.getOtherStatus(),"1")){
+        if (!StringUtils.equals(conditionDTO.getOtherStatus(), EmployeeConst.EMPLOYEE_BORROW_STATUS) &&
+                !StringUtils.equals(conditionDTO.getOtherStatus(), EmployeeConst.EMPLOYEE_TRANS_STATUS)) {
+            queryWrapper.apply(StringUtils.isNotBlank(conditionDTO.getOrgSet()), "b.org_id in (" + conditionDTO.getOrgSet() + ")");
+        }        queryWrapper.orderByAsc("a.employee_id");
+
+        //休假
+        if (StringUtils.equals(conditionDTO.getOtherStatus(), EmployeeConst.EMPLOYEE_HOLIDAY_STATUS)) {
             queryWrapper.exists("select * from ins_employee_holiday ieh where a.employee_id=ieh.employee_id and (now() between ieh.start_time and ieh.end_time)");
         }
-        if(StringUtils.equals(conditionDTO.getOtherStatus(),"2")){
-            queryWrapper.exists("select * from ins_hr_pending iep where a.employee_id=iep.employee_id and iep.pending_status='2' and iep.pending_type='1' and (now() between iep.start_time and iep.end_time)");
+        //借调
+        if (StringUtils.equals(conditionDTO.getOtherStatus(), EmployeeConst.EMPLOYEE_BORROW_STATUS)) {
+            queryWrapper.exists("select * from ins_employee_trans_detail iep where a.employee_id=iep.employee_id  " +
+                    "and iep.trans_type='1' and (now() between iep.start_time and iep.end_time)" +
+                    "and (iep.source_org_id in(" + conditionDTO.getOrgSet() + ") or iep.org_id in (" + conditionDTO.getOrgSet() + "))");
         }
-        if(StringUtils.equals(conditionDTO.getOtherStatus(),"3")){
-            queryWrapper.exists("select * from ins_hr_pending iep where a.employee_id=iep.employee_id and iep.pending_status='2' and iep.pending_type='2' and (now() between iep.start_time and iep.end_time)");
+        //调出
+        if (StringUtils.equals(conditionDTO.getOtherStatus(), EmployeeConst.EMPLOYEE_TRANS_STATUS)) {
+            queryWrapper.exists("select * from ins_employee_trans_detail iep where a.employee_id=iep.employee_id  " +
+                    "and iep.trans_type='2' and (now() between iep.start_time and iep.end_time)" +
+                    "and (iep.source_org_id in(" + conditionDTO.getOrgSet() + ") or iep.org_id in (" + conditionDTO.getOrgSet() + "))");
         }
-        if(StringUtils.equals(conditionDTO.getIsBlackList(),"1")){
+        //是黑名单
+        if (StringUtils.equals(conditionDTO.getIsBlackList(), EmployeeConst.YES)) {
             queryWrapper.exists("select * from ins_employee_blacklist ieb where a.employee_id=ieb.employee_id  and (now() between ieb.start_time and ieb.end_time)");
         }
-
-        if(StringUtils.equals(conditionDTO.getIsBlackList(),"2")){
+        //不是黑名单
+        if (StringUtils.equals(conditionDTO.getIsBlackList(), EmployeeConst.NO)) {
             queryWrapper.notExists("select * from ins_employee_blacklist ieb where a.employee_id=ieb.employee_id  and (now() between ieb.start_time and ieb.end_time)");
         }
-        List<EmployeeInfoDTO> list=employeeMapper.queryEmployeeList(queryWrapper);
+        List<EmployeeInfoDTO> list = employeeMapper.queryEmployeeList(queryWrapper);
 
         return list;
     }
