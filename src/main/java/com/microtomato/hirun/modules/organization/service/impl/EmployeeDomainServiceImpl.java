@@ -432,7 +432,7 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         EmployeeArchiveDTO archive = new EmployeeArchiveDTO();
         BeanUtils.copyProperties(employee, archive);
 
-        EmployeeJobRole jobRole = this.employeeJobRoleService.queryValidMain(employeeId);
+        EmployeeJobRole jobRole = this.employeeJobRoleService.queryLast(employeeId);
         BeanUtils.copyProperties(jobRole, archive);
 
         List<EmployeeHistory> histories = this.employeeHistoryService.queryHistories(employeeId);

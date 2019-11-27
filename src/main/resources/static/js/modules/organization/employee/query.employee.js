@@ -207,8 +207,8 @@ layui.extend({
             window.location.href = "api/organization/employee/queryEmployeeList4Export"+param;
         },
 
-        loadEmployeeArchive:function (employeeId,name) {
-            layui.redirect.open('openUrl?url=/modules/organization/employee/my_archive&employeeId='+employeeId, name+'的档案');
+        loadEmployeeArchive:function (id,name) {
+            layui.redirect.open('openUrl?url=/modules/organization/employee/my_archive&employeeId='+id, name+'的档案');
         }
 
     };
