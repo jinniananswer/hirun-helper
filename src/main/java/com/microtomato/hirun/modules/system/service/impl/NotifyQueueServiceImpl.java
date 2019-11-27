@@ -67,7 +67,7 @@ public class NotifyQueueServiceImpl extends ServiceImpl<NotifyQueueMapper, Notif
         NotifyQueue notifyQueue = notifyQueueMapper.selectOne(
             Wrappers.<NotifyQueue>lambdaQuery()
                 .eq(NotifyQueue::getEmployeeId, employeeId)
-                .orderByDesc(NotifyQueue::getCreateTime)
+                .orderByDesc(NotifyQueue::getCreateTime).last(" limit 1")
         );
 
         return notifyQueue.getCreateTime();

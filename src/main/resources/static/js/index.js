@@ -1,27 +1,26 @@
-
 layui.extend({
     setter: 'config' //配置模块
-    ,admin: 'admin' //核心模块
-    ,view: 'view' //视图渲染模块
-}).define(['setter', 'admin'], function(exports){
+    , admin: 'admin' //核心模块
+    , view: 'view' //视图渲染模块
+}).define(['setter', 'admin'], function (exports) {
     var setter = layui.setter
-        ,element = layui.element
-        ,admin = layui.admin
-        ,tabsPage = admin.tabsPage
-        ,view = layui.view
+        , element = layui.element
+        , admin = layui.admin
+        , tabsPage = admin.tabsPage
+        , view = layui.view
 
         //打开标签页
-        ,openTabsPage = function(url, text){
+        , openTabsPage = function (url, text) {
             //遍历页签选项卡
             var matchTo
-                ,tabs = $('#LAY_app_tabsheader>li')
-                ,path = url.replace(/(^http(s*):)|(\?[\s\S]*$)/g, '');
+                , tabs = $('#LAY_app_tabsheader>li')
+                , path = url.replace(/(^http(s*):)|(\?[\s\S]*$)/g, '');
 
-            tabs.each(function(index){
+            tabs.each(function (index) {
                 var li = $(this)
-                    ,layid = li.attr('lay-id');
+                    , layid = li.attr('lay-id');
 
-                if(layid === url){
+                if (layid === url) {
                     matchTo = true;
                     tabsPage.index = index;
                 }
@@ -29,19 +28,19 @@ layui.extend({
 
             text = text || '新标签页';
 
-            if(setter.pageTabs){
+            if (setter.pageTabs) {
                 //如果未在选项卡中匹配到，则追加选项卡
-                if(!matchTo){
+                if (!matchTo) {
                     $(APP_BODY).append([
                         '<div class="layadmin-tabsbody-item layui-show">'
-                        ,'<iframe src="'+ url +'" frameborder="0" class="layadmin-iframe"></iframe>'
-                        ,'</div>'
+                        , '<iframe src="' + url + '" frameborder="0" class="layadmin-iframe"></iframe>'
+                        , '</div>'
                     ].join(''));
                     tabsPage.index = tabs.length;
                     element.tabAdd(FILTER_TAB_TBAS, {
-                        title: '<span>'+ text +'</span>'
-                        ,id: url
-                        ,attr: path
+                        title: '<span>' + text + '</span>'
+                        , id: url
+                        , attr: path
                     });
                 }
             } else {
@@ -53,15 +52,15 @@ layui.extend({
             element.tabChange(FILTER_TAB_TBAS, url);
             admin.tabsBodyChange(tabsPage.index, {
                 url: url
-                ,text: text
+                , text: text
             });
         }
 
-        ,APP_BODY = '#LAY_app_body', FILTER_TAB_TBAS = 'layadmin-layout-tabs'
-        ,$ = layui.$, $win = $(window);
+        , APP_BODY = '#LAY_app_body', FILTER_TAB_TBAS = 'layadmin-layout-tabs'
+        , $ = layui.$, $win = $(window);
 
     //初始
-    if(admin.screen() < 2) admin.sideFlexible();
+    if (admin.screen() < 2) admin.sideFlexible();
 
     view().autoRender();
 
@@ -71,18 +70,18 @@ layui.extend({
     });
 });
 
-layui.define(['ajax', 'element', 'laytpl'],function(exports){
- 	var $ = layui.$;
- 	var laytpl = layui.laytpl;
- 	var index = {
- 		loadMenus : function() {
-			layui.ajax.get('api/system/menu/list', '', function (data) {
+layui.define(['ajax', 'element', 'laytpl'], function (exports) {
+    var $ = layui.$;
+    var laytpl = layui.laytpl;
+    var index = {
+        loadMenus: function () {
+            layui.ajax.get('api/system/menu/list', '', function (data) {
                 var json = eval(data);
                 var menus = json.rows;
                 var rootTpl = document.getElementById("menuRoot").innerHTML;
                 var menu = document.getElementById("layadmin-system-side-menu");
 
-                laytpl(rootTpl).render(menus, function(html){
+                laytpl(rootTpl).render(menus, function (html) {
                     menu.innerHTML = html;
                     $.each(menus, function (i, item) {
                         var children = item.children;
@@ -94,13 +93,17 @@ layui.define(['ajax', 'element', 'laytpl'],function(exports){
                 });
                 layui.element.render('nav', 'layadmin-system-side-menu');
             });
-	 	},
 
-		recursiveChildren : function(children, menuId) {
+            layui.ajax.get('api/system/notify-queue/announceEnqueue', '', function (data) {
+                // 每次登录时，做一次公告入队操作
+            });
+        },
+
+        recursiveChildren: function (children, menuId) {
             var childTpl = document.getElementById("menuChild").innerHTML;
-            var childMenu = document.getElementById("menu_"+menuId);
+            var childMenu = document.getElementById("menu_" + menuId);
 
-            laytpl(childTpl).render(children, function(html){
+            laytpl(childTpl).render(children, function (html) {
                 childMenu.innerHTML = childMenu.innerHTML + html;
                 $.each(children, function (i, item) {
                     var childrenMenus = item.children;
@@ -110,7 +113,7 @@ layui.define(['ajax', 'element', 'laytpl'],function(exports){
                     }
                 });
             });
-		}
-	};
-	exports('index', index);
- });
+        }
+    };
+    exports('index', index);
+});

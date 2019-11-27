@@ -123,9 +123,8 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
         userContext.setRoles(roleList);
         userContext.setGrantedAuthorities(grantedAuthorities);
         BeanUtils.copyProperties(user, userContext);
+
         return userContext;
-
     }
-
 
 }

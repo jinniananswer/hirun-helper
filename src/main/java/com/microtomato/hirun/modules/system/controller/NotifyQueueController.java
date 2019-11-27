@@ -69,4 +69,10 @@ public class NotifyQueueController {
         }
     }
 
+    @GetMapping("announceEnqueue")
+    @RestResult
+    public void announceEnqueue() {
+        notifyQueueServiceImpl.announceEnqueue();
+    }
+
 }

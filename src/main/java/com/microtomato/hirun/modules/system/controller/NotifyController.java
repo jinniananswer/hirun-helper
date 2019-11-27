@@ -1,13 +1,11 @@
 package com.microtomato.hirun.modules.system.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.beans.factory.annotation.Autowired;
-import lombok.extern.slf4j.Slf4j;
-
+import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.modules.system.service.INotifyService;
-
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -26,6 +24,16 @@ public class NotifyController {
     @Autowired
     private INotifyService notifyServiceImpl;
 
+    @GetMapping("/testSendAnnounce")
+    @RestResult
+    public void sendAnnounce() {
+        notifyServiceImpl.sendAnnounce("公告：上线在即，请各位小伙伴快马加鞭。");
+    }
 
+    @GetMapping("/testSendMessage")
+    @RestResult
+    public void sendMessage() {
+        notifyServiceImpl.sendMessage(1473L, "这是一条测试消息");
+    }
 
 }

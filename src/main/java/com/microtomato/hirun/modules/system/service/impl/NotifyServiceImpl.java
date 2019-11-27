@@ -73,7 +73,7 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyMapper, Notify> impleme
         List<Notify> announceList = notifyMapper.selectList(
             Wrappers.<Notify>lambdaQuery()
                 .select(Notify::getId)
-                .eq(Notify::getNotifyType, NotifyType.ANNOUNCE)
+                .eq(Notify::getNotifyType, NotifyType.ANNOUNCE.value())
                 .gt(Notify::getCreateTime, latest)
         );
         return announceList;
@@ -137,7 +137,7 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyMapper, Notify> impleme
         List<Notify> messageList = notifyMapper.selectList(
             Wrappers.<Notify>lambdaQuery()
                 .select(Notify::getId)
-                .eq(Notify::getNotifyType, NotifyType.MESSAGE)
+                .eq(Notify::getNotifyType, NotifyType.MESSAGE.value())
                 .gt(Notify::getCreateTime, latest)
         );
         return messageList;
