@@ -8,6 +8,7 @@ import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeExampleDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeInfoDTO;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeQueryConditionDTO;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.mapper.EmployeeMapper;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
@@ -48,16 +49,32 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
     /**
      * 查询员工档案
      */
-    public IPage<EmployeeInfoDTO> queryEmployeeList4Page(EmployeeInfoDTO employeeInfoDTO, Page<EmployeeInfoDTO> employeePage) {
+    public IPage<EmployeeInfoDTO> queryEmployeeList4Page(EmployeeQueryConditionDTO conditionDTO, Page<EmployeeQueryConditionDTO> employeePage) {
         QueryWrapper<EmployeeDTO> queryWrapper = new QueryWrapper<>();
-        queryWrapper.apply("b.employee_id=a.employee_id AND (now() between b.start_date and b.end_date) AND c.org_id = b.org_id");
-        queryWrapper.like(StringUtils.isNotEmpty(employeeInfoDTO.getName()), "a.name", employeeInfoDTO.getName());
-        queryWrapper.eq(StringUtils.isNotEmpty(employeeInfoDTO.getSex()), "a.sex", employeeInfoDTO.getSex());
-        queryWrapper.likeRight(StringUtils.isNotEmpty(employeeInfoDTO.getMobileNo()), "a.mobile_no", employeeInfoDTO.getMobileNo());
-        queryWrapper.eq(StringUtils.isNotEmpty(employeeInfoDTO.getEmployeeStatus()), "a.status", employeeInfoDTO.getEmployeeStatus());
-        queryWrapper.eq(StringUtils.isNotEmpty(employeeInfoDTO.getType()), "a.type", employeeInfoDTO.getType());
-        queryWrapper.apply(StringUtils.isNotBlank(employeeInfoDTO.getOrgSet()),"b.org_id in ("+employeeInfoDTO.getOrgSet()+")");
+        queryWrapper.apply("c.org_id = b.org_id");
+        queryWrapper.like(StringUtils.isNotEmpty(conditionDTO.getName()), "a.name", conditionDTO.getName());
+        queryWrapper.eq(StringUtils.isNotEmpty(conditionDTO.getSex()), "a.sex", conditionDTO.getSex());
+        queryWrapper.likeRight(StringUtils.isNotEmpty(conditionDTO.getMobileNo()), "a.mobile_no", conditionDTO.getMobileNo());
+        queryWrapper.eq(StringUtils.isNotEmpty(conditionDTO.getEmployeeStatus()), "a.status", conditionDTO.getEmployeeStatus());
+        queryWrapper.eq(StringUtils.isNotEmpty(conditionDTO.getType()), "a.type", conditionDTO.getType());
+        queryWrapper.apply(StringUtils.isNotBlank(conditionDTO.getOrgSet()),"b.org_id in ("+conditionDTO.getOrgSet()+")");
+        queryWrapper.orderByAsc("a.employee_id");
 
+        if(StringUtils.equals(conditionDTO.getOtherStatus(),"1")){
+            queryWrapper.exists("select * from ins_employee_holiday ieh where a.employee_id=ieh.employee_id and (now() between ieh.start_time and ieh.end_time)");
+        }
+        if(StringUtils.equals(conditionDTO.getOtherStatus(),"2")){
+            queryWrapper.exists("select * from ins_hr_pending iep where a.employee_id=iep.employee_id and iep.pending_status='2' and iep.pending_type='1' and (now() between iep.start_time and iep.end_time)");
+        }
+        if(StringUtils.equals(conditionDTO.getOtherStatus(),"3")){
+            queryWrapper.exists("select * from ins_hr_pending iep where a.employee_id=iep.employee_id and iep.pending_status='2' and iep.pending_type='2' and (now() between iep.start_time and iep.end_time)");
+        }
+        if(StringUtils.equals(conditionDTO.getIsBlackList(),"1")){
+            queryWrapper.exists("select * from ins_employee_blacklist ieb where a.employee_id=ieb.employee_id  and (now() between ieb.start_time and ieb.end_time)");
+        }
+        if(StringUtils.equals(conditionDTO.getIsBlackList(),"2")){
+            queryWrapper.notExists("select * from ins_employee_blacklist ieb where a.employee_id=ieb.employee_id  and (now() between ieb.start_time and ieb.end_time)");
+        }
         IPage<EmployeeInfoDTO> iPage = employeeMapper.selectEmployeePage(employeePage, queryWrapper);
 
         return iPage;
@@ -101,13 +118,33 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
     }
 
     @Override
-    public List<EmployeeInfoDTO> queryEmployeeList(EmployeeInfoDTO employeeInfoDTO) {
-        QueryWrapper<EmployeeDTO> queryWrapper = new QueryWrapper<>();
-        queryWrapper.apply("b.employee_id=a.employee_id AND (now() between b.start_date and b.end_date) AND c.org_id = b.org_id");
-        queryWrapper.like(StringUtils.isNotEmpty(employeeInfoDTO.getName()), "a.name", employeeInfoDTO.getName());
-        queryWrapper.eq(StringUtils.isNotEmpty(employeeInfoDTO.getSex()), "a.sex", employeeInfoDTO.getSex());
-        queryWrapper.likeRight(StringUtils.isNotEmpty(employeeInfoDTO.getMobileNo()), "a.mobile_no", employeeInfoDTO.getMobileNo());
-        queryWrapper.eq(StringUtils.isNotEmpty(employeeInfoDTO.getEmployeeStatus()), "a.status", employeeInfoDTO.getEmployeeStatus());
+    public List<EmployeeInfoDTO> queryEmployeeList(EmployeeQueryConditionDTO conditionDTO) {
+        QueryWrapper<EmployeeQueryConditionDTO> queryWrapper = new QueryWrapper<>();
+        queryWrapper.apply("c.org_id = b.org_id");
+        queryWrapper.like(StringUtils.isNotEmpty(conditionDTO.getName()), "a.name", conditionDTO.getName());
+        queryWrapper.eq(StringUtils.isNotEmpty(conditionDTO.getSex()), "a.sex", conditionDTO.getSex());
+        queryWrapper.likeRight(StringUtils.isNotEmpty(conditionDTO.getMobileNo()), "a.mobile_no", conditionDTO.getMobileNo());
+        queryWrapper.eq(StringUtils.isNotEmpty(conditionDTO.getEmployeeStatus()), "a.status", conditionDTO.getEmployeeStatus());
+        queryWrapper.eq(StringUtils.isNotEmpty(conditionDTO.getType()), "a.type", conditionDTO.getType());
+        queryWrapper.apply(StringUtils.isNotBlank(conditionDTO.getOrgSet()),"b.org_id in ("+conditionDTO.getOrgSet()+")");
+        queryWrapper.orderByAsc("a.employee_id");
+
+        if(StringUtils.equals(conditionDTO.getOtherStatus(),"1")){
+            queryWrapper.exists("select * from ins_employee_holiday ieh where a.employee_id=ieh.employee_id and (now() between ieh.start_time and ieh.end_time)");
+        }
+        if(StringUtils.equals(conditionDTO.getOtherStatus(),"2")){
+            queryWrapper.exists("select * from ins_hr_pending iep where a.employee_id=iep.employee_id and iep.pending_status='2' and iep.pending_type='1' and (now() between iep.start_time and iep.end_time)");
+        }
+        if(StringUtils.equals(conditionDTO.getOtherStatus(),"3")){
+            queryWrapper.exists("select * from ins_hr_pending iep where a.employee_id=iep.employee_id and iep.pending_status='2' and iep.pending_type='2' and (now() between iep.start_time and iep.end_time)");
+        }
+        if(StringUtils.equals(conditionDTO.getIsBlackList(),"1")){
+            queryWrapper.exists("select * from ins_employee_blacklist ieb where a.employee_id=ieb.employee_id  and (now() between ieb.start_time and ieb.end_time)");
+        }
+
+        if(StringUtils.equals(conditionDTO.getIsBlackList(),"2")){
+            queryWrapper.notExists("select * from ins_employee_blacklist ieb where a.employee_id=ieb.employee_id  and (now() between ieb.start_time and ieb.end_time)");
+        }
         List<EmployeeInfoDTO> list=employeeMapper.queryEmployeeList(queryWrapper);
 
         return list;

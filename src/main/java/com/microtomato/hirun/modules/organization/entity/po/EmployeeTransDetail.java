@@ -42,6 +42,9 @@ public class EmployeeTransDetail extends BaseEntity {
     @TableField("employee_id")
     private Long employeeId;
 
+    @TableField("trans_type")
+    private String transType;
+
     @TableField("source_org_id")
     private Long sourceOrgId;
 
@@ -95,6 +98,12 @@ public class EmployeeTransDetail extends BaseEntity {
 
     @TableField("home_address")
     private String homeAddress;
+
+    @TableField("start_time")
+    private LocalDateTime startTime;
+
+    @TableField("end_time")
+    private LocalDateTime endTime;
 
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)
     private Long createUserId;

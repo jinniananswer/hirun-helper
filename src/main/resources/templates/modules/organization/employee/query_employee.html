@@ -73,9 +73,24 @@
                                 </div>
                             </div>
                             <div class="layui-inline">
+                                <label class="layui-form-label">异动状态：</label>
+                                <div class="layui-input-block" style="width: 184px">
+                                    <select name="otherStatus" id="otherStatus" >
+                                        <option value="">请选择</option>
+                                        <option value="1">休假</option>
+                                        <option value="2">借调</option>
+                                        <option value="3">调出</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
                                 <label class="layui-form-label">黑名单</label>
                                 <div class="layui-input-block" style="width: 184px">
-                                    <input type="checkbox" name="isBlackList" id="isBlackList" lay-skin="switch" lay-text="是|否">
+                                    <div class="layui-form" lay-filter="isBlackList" style="width: 184px">
+                                        <select id="isBlackList" name="isBlackList">
+
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                             <div class="layui-inline">

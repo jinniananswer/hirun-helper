@@ -10,6 +10,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'select', 'layer', 'form', 
                 height: 500,
                 url: 'api/organization/employee-contract/queryEmployeeContracts?employeeId=' + $("#employee_id").val(),
                 loading: true,
+                defaultToolbar: ['filter'],
                 toolbar: '#toolbar',
                 parseData: function (res) { //res 即为原始返回的数据
                     return {

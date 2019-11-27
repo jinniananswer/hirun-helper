@@ -14,7 +14,7 @@ layui.extend({
             layui.select.init('jobRole', 'JOB_ROLE', null, true, '请选择或搜索岗位');
 
 
-            $("#pendingType option[value='"+$('#pendingTypeValue').val()+"']").prop("selected",true);
+            $("#transType option[value='"+$('#pendingTypeValue').val()+"']").prop("selected",true);
             form.render("select");
 
             laydate.render({
@@ -38,7 +38,7 @@ layui.extend({
                 },
             });
 
-            form.on('select(pendingType)',function (data) {
+            form.on('select(transType)',function (data) {
                 if(data.value==1){
                     $("#end").show();
                     $("#endTime").attr("lay-verify","required");

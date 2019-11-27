@@ -1,6 +1,5 @@
 package com.microtomato.hirun.modules.organization.service.impl;
 
-import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.exception.ErrorKind;
@@ -103,8 +102,7 @@ public class HrPendingDomainServiceImpl implements IHrPendingDomainService {
         hrPending.setContent(content);
         int result = hrPendingDO.add(hrPending);
         //发送消息
-        sendPendingNotice(content, 2, hrPending.getPendingExecuteId(), userContext.getEmployeeId());
-
+        notifyService.sendMessage(hrPending.getPendingExecuteId(),content,userContext.getEmployeeId());
         if (result <= 0) {
             return false;
         }
@@ -148,8 +146,7 @@ public class HrPendingDomainServiceImpl implements IHrPendingDomainService {
                 + employeeService.getEmployeeNameEmployeeId(originalHrPending.getEmployeeId()) + "】的调动申请，已删除，请知悉。删除时间为"
                 + LocalDateTime.now();
 
-        sendPendingNotice(content, 2, originalHrPending.getPendingExecuteId(), originalHrPending.getPendingCreateId());
-
+        notifyService.sendMessage(originalHrPending.getPendingExecuteId(),content,originalHrPending.getPendingCreateId());
         return result;
     }
 
@@ -169,8 +166,7 @@ public class HrPendingDomainServiceImpl implements IHrPendingDomainService {
                 + hrPending.getStartTime() + "至" + hrPending.getEndTime()
                 + "。请到期进行待办确认！";
 
-        sendPendingNotice(content, 2, hrPending.getPendingExecuteId(), userContext.getEmployeeId());
-
+        notifyService.sendMessage(hrPending.getPendingExecuteId(),content,userContext.getEmployeeId());
         return result;
     }
 
@@ -255,10 +251,10 @@ public class HrPendingDomainServiceImpl implements IHrPendingDomainService {
         boolean result = hrPendingService.updateById(hrPending);
 
         //调动状态为调出，则发送消息提醒重签合同
-        if (StringUtils.equals(transDetail.getPendingType(), HrPendingConst.PENDING_TYPE_2)) {
+        if (StringUtils.equals(transDetail.getTransType(), HrPendingConst.PENDING_TYPE_2)) {
             String content = employeeService.getEmployeeNameEmployeeId(transDetail.getEmployeeId()) +
                     "，已确认调出,请签订变更协议！";
-            this.sendPendingNotice(content, 2, userContext.getEmployeeId(), userContext.getEmployeeId());
+            notifyService.sendMessage(userContext.getEmployeeId(),content);
         }
 
         return result;
@@ -295,14 +291,5 @@ public class HrPendingDomainServiceImpl implements IHrPendingDomainService {
         return hrPendingDetailDTO;
     }
 
-    private void sendPendingNotice(String content, Integer type, Long targetId, Long sendId) {
-        Notify notify = new Notify();
-        notify.setContent(content);
-        notify.setNotifyType(type);
-        notify.setTargetId(targetId);
-        notify.setSenderId(sendId);
-        notify.setCreateTime(LocalDateTime.now());
-        notifyService.save(notify);
-    }
 
 }

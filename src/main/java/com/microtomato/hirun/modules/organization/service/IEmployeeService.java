@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeExampleDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeInfoDTO;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeQueryConditionDTO;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public interface IEmployeeService extends IService<Employee> {
 
     Employee queryByIdentityNo(String identityNo);
 
-    IPage<EmployeeInfoDTO> queryEmployeeList4Page(EmployeeInfoDTO employeeInfoDTO, Page<EmployeeInfoDTO> employeePage);
+    IPage<EmployeeInfoDTO> queryEmployeeList4Page(EmployeeQueryConditionDTO employeeInfoDTO, Page<EmployeeQueryConditionDTO> employeePage);
 
     /**
      * 测试（后期删除）
@@ -47,5 +48,5 @@ public interface IEmployeeService extends IService<Employee> {
      * @param employeeInfoDTO
      * @return
      */
-    List<EmployeeInfoDTO> queryEmployeeList(EmployeeInfoDTO employeeInfoDTO);
+    List<EmployeeInfoDTO> queryEmployeeList(EmployeeQueryConditionDTO conditionDTO);
 }

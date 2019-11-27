@@ -1,6 +1,6 @@
 layui.extend({
-    orgTree: 'org'
-}).define(['ajax', 'table', 'element', 'orgTree', 'layer', 'form', 'select', 'redirect'], function (exports) {
+    orgTree: 'org',
+}).define(['ajax', 'table', 'element', 'orgTree', 'layer', 'form', 'select', 'redirect','multiSelect'], function (exports) {
     var $ = layui.$;
     var table = layui.table;
     var layer = layui.layer;
@@ -11,15 +11,14 @@ layui.extend({
             layui.select.init('sex', 'SEX', '', true);
             layui.select.init('employeeStatus', 'EMPLOYEE_STATUS', '', true);
             layui.select.init('type', 'EMPLOYEE_TYPE', '', true);
+            layui.select.init('isBlackList', 'YES_NO', '', true);
 
 
             var ins = table.render({
                 elem: "#employee_table",
                 height: 550,
-                url: 'api/organization/employee/queryEmployeeList4Page',
-                //loading: true,
                 toolbar: '#toolbar',
-                defaultToolbar: [''],
+                defaultToolbar: ['filter'],
                 parseData: function (res) { //res 即为原始返回的数据
                     return {
                         "code": res.code, //解析接口状态
@@ -51,7 +50,7 @@ layui.extend({
                             }
                         },
                         {field: 'jobRoleName', title: '岗位', width: 150, align: 'center'},
-                        {field: 'orgPath', title: '部门',width: 200, align: 'center'},
+                        {field: 'orgPath', title: '部门', align: 'center'},
                         {field: 'companyAge', title: '工龄', width: 80, align: 'center'},
                         {field: 'status', title: '状态', width: 100, align: 'center',fixed: 'right', templet: function (d) {
                                 if (d.employeeStatus == 0) {
@@ -75,6 +74,8 @@ layui.extend({
                     page: {
                         curr: 1
                     },
+                    loading:true,
+                    url: 'api/organization/employee/queryEmployeeList4Page',
                     where: {
                         name: $("input[name='name']").val(),
                         sex: $("select[name='sex']").val(),
@@ -83,6 +84,7 @@ layui.extend({
                         employeeStatus: $("select[name='employeeStatus']").val(),
                         type: $("select[name='type']").val(),
                         isBlackList: $("#isBlackList").val(),
+                        otherStatus:$('#otherStatus').val()
                     }
                 })
             });
@@ -200,7 +202,9 @@ layui.extend({
         },
 
         export: function(){
-            window.location.href = "api/organization/employee/queryEmployeeList4Export";
+            var param='?name='+$("input[name='name']").val()+'&orgSet='+$("input[name='orgSet']").val()+'&sex='+$("select[name='sex']").val()+'&type='+$("select[name='type']").val()+
+            '&mobile='+$("input[name='mobileNo']").val()+'&employeeStatus='+$("select[name='employeeStatus']").val()+'&isBlackList='+$("#isBlackList").val()+'&otherStatus='+$("select[name='otherStatus']").val();
+            window.location.href = "api/organization/employee/queryEmployeeList4Export"+param;
         }
 
     };

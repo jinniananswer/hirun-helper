@@ -1,10 +1,12 @@
 package com.microtomato.hirun.modules.organization.entity.dto;
 
+import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.annotation.write.style.ColumnWidth;
 import com.microtomato.hirun.framework.harbour.excel.convert.LocalDateTimeConvert;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -63,8 +65,10 @@ public class EmployeeInfoDTO {
     @ExcelProperty("员工状态")
     private String employeeStatus;
 
+    @ExcelIgnore
     private Long orgId;
 
+    @ExcelIgnore
     private String orgName;
 
     @ColumnWidth(20)
@@ -77,10 +81,12 @@ public class EmployeeInfoDTO {
     @ExcelProperty("岗位")
     private String jobRoleName;
 
+    @ExcelIgnore
     private String parentEmployeeId;
 
     private String parentEmployeeName;
 
+    @ExcelIgnore
     private String jobLevel;
 
     @ColumnWidth(20)
@@ -91,6 +97,7 @@ public class EmployeeInfoDTO {
     @ExcelProperty("业务折算比例")
     private String discountRate;
 
+    @ExcelIgnore
     private String isMain;
 
     private String isBlackList;
@@ -101,7 +108,9 @@ public class EmployeeInfoDTO {
 
     private String typeName;
 
-    private String orgSet;
-
     private String companyAge;
+
+    @ExcelIgnore
+    private LocalDate jobDate;
+
 }

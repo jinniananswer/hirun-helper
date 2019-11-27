@@ -14,6 +14,7 @@ layui.extend({
                 height: 550,
                 url: 'api/organization/employee-penalty/queryPenaltyList',
                 loading: true,
+                defaultToolbar: ['filter'],
                 toolbar: '#toolbar',
                 parseData: function (res) { //res 即为原始返回的数据
                     return {

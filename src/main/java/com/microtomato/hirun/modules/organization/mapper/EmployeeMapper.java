@@ -54,11 +54,13 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
      * @return
      */
     @Select("select a.name,a.employee_id,a.sex,a.mobile_no ,a.identity_no,a.status employee_status, date_format(a.in_date,'%Y-%m-%d') in_date," +
-            " b.job_role,b.org_id, c.name org_name,a.type from " +
-            " ins_employee a, ins_employee_job_role b, ins_org c \n" +
+            " b.job_role,b.org_id, c.name org_name,a.type,a.job_date from " +
+            " ins_org c, ins_employee a " +
+            " LEFT JOIN ( select * from ins_employee_job_role k where k.job_role_id in(select max(i.job_role_id) from (select * from ins_employee_job_role h order by h.start_date desc) i\n" +
+            " group by i.employee_id)) b on (a.employee_id=b.employee_id) \n" +
             " ${ew.customSqlSegment}"
     )
-    IPage<EmployeeInfoDTO> selectEmployeePage(Page<EmployeeInfoDTO> page, @Param(Constants.WRAPPER) Wrapper wrapper);
+    IPage<EmployeeInfoDTO> selectEmployeePage(Page<EmployeeQueryConditionDTO> page, @Param(Constants.WRAPPER) Wrapper wrapper);
 
     /**
      * 查询员工的下级员工
@@ -76,8 +78,10 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
      * @return
      */
     @Select("select a.name,a.employee_id,a.sex,a.mobile_no ,a.identity_no,a.status employee_status, date_format(a.in_date,'%Y-%m-%d') in_date," +
-            " b.job_role,b.org_id, c.name org_name from " +
-            " ins_employee a, ins_employee_job_role b, ins_org c \n" +
+            " b.job_role,b.org_id, c.name org_name,a.type,a.job_date from " +
+            " ins_org c, ins_employee a " +
+            " LEFT JOIN ( select * from ins_employee_job_role k where k.job_role_id in(select max(i.job_role_id) from (select * from ins_employee_job_role h order by h.start_date desc) i\n" +
+            " group by i.employee_id)) b on (a.employee_id=b.employee_id) \n" +
             " ${ew.customSqlSegment}"
     )
     List<EmployeeInfoDTO> queryEmployeeList(@Param(Constants.WRAPPER) Wrapper wrapper);

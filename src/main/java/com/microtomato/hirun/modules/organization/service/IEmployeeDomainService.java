@@ -2,10 +2,7 @@ package com.microtomato.hirun.modules.organization.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.microtomato.hirun.modules.organization.entity.dto.EmployeeArchiveDTO;
-import com.microtomato.hirun.modules.organization.entity.dto.EmployeeDTO;
-import com.microtomato.hirun.modules.organization.entity.dto.EmployeeDestroyInfoDTO;
-import com.microtomato.hirun.modules.organization.entity.dto.EmployeeInfoDTO;
+import com.microtomato.hirun.modules.organization.entity.dto.*;
 
 import java.util.List;
 
@@ -31,9 +28,9 @@ public interface IEmployeeDomainService {
 
     boolean destroyEmployee(EmployeeDestroyInfoDTO employeeDestroyInfoDTO);
 
-    IPage<EmployeeInfoDTO> queryEmployeeList4Page(EmployeeInfoDTO employeeInfoDTO, Page<EmployeeInfoDTO> page);
+    IPage<EmployeeInfoDTO> queryEmployeeList4Page(EmployeeQueryConditionDTO employeeInfoDTO, Page<EmployeeQueryConditionDTO> page);
 
     EmployeeArchiveDTO loadMyArchive(Long employeeId);
 
-    List<EmployeeInfoDTO> queryEmployeeList(EmployeeInfoDTO employeeInfoDTO);
+    List<EmployeeInfoDTO> queryEmployeeList(EmployeeQueryConditionDTO queryConditionDTO);
 }
