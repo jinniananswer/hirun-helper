@@ -27,11 +27,6 @@ public class NotifyController {
     @PostMapping("/sendAnnounce")
     @RestResult
     public void sendAnnounce(@RequestBody String content) {
-        log.error(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-        log.error(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-        log.error(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-        log.error(content);
-
         content = StringEscapeUtils.unescapeJava(content);
         content = StringUtils.strip(content, "\"");
         log.error(content);

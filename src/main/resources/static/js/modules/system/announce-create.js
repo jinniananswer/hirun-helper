@@ -5,7 +5,7 @@ layui.use(['ajax', 'layer', 'layedit'], function () {
 
     // 构建一个默认的编辑器
     let index = layedit.build('LAY_announce-textarea', {
-        tool: ['strong', 'italic', 'underline', 'del', '|', 'left', 'center', 'right', '|',  'face', 'link', 'unlink'],
+        tool: ['strong', 'italic', 'underline', 'del', '|', 'left', 'center', 'right', '|', 'face', 'link', 'unlink'],
         height: 100
     });
 
@@ -21,6 +21,7 @@ layui.use(['ajax', 'layer', 'layedit'], function () {
                 data: JSON.stringify(content),
                 success: function (obj) {
                     layer.msg("操作成功！");
+                    layedit.setContent(index, "", false);
                 },
                 error: function (obj) {
                     layer.alert("操作失败！");
