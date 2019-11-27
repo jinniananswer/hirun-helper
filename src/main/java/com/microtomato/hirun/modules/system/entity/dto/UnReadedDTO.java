@@ -35,4 +35,9 @@ public class UnReadedDTO {
      * 雇员姓名
      */
     private String name;
+
+    /**
+     * 是否已读
+     */
+    private Boolean readed;
 }

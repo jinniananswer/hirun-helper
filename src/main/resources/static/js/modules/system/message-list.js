@@ -9,7 +9,6 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'form', 'select', 
         init: function () {
 
             element.on('nav(nav-ul)', function (elem) {
-                console.log(elem)
                 layer.msg(elem.text());
             });
 
@@ -30,9 +29,18 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'form', 'select', 
                     {type: 'checkbox'},
                     {field: 'id', title: 'ID', width: 60, align: 'center'},
                     {field: 'content', title: '公告内容', align: 'left'},
-                    {field: 'name', title: '发送者', width: 100, align: 'center'},
-                    {field: 'createTime', title: '时间', width: 180, align: 'center'},
-                    {align: 'center', title: '操作', width: 150, fixed: 'right', toolbar: '#announceBar'}
+                    {field: 'name', title: '发送者', width: 80, align: 'center'},
+                    {field: 'createTime', title: '时间', width: 160, align: 'center'},
+                    {
+                        field: 'readed', title: '状态', width: 80, align: 'center', templet: function (d) {
+                            if (d.readed) {
+                                return '<span class="layui-btn layui-btn-primary layui-btn-xs">已读</span>';
+                            } else {
+                                return '<span class="layui-btn layui-btn-normal layui-btn-xs">未读</span>';
+                            }
+                        }
+                    },
+                    {align: 'center', title: '操作', width: 80, fixed: 'right', toolbar: '#announceBar'}
                 ]]
             });
 
@@ -53,9 +61,18 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'form', 'select', 
                     {type: 'checkbox'},
                     {field: 'id', title: 'ID', width: 60, align: 'center'},
                     {field: 'content', title: '私信内容', align: 'left'},
-                    {field: 'name', title: '发送者', width: 100, align: 'center'},
-                    {field: 'createTime', title: '时间', width: 180, align: 'center'},
-                    {align: 'center', title: '操作', width: 150, fixed: 'right', toolbar: '#messageBar'}
+                    {field: 'name', title: '发送者', width: 80, align: 'center'},
+                    {field: 'createTime', title: '时间', width: 160, align: 'center'},
+                    {
+                        field: 'readed', title: '状态', width: 80, align: 'center', templet: function (d) {
+                            if (d.readed) {
+                                return '<span class="layui-btn layui-btn-primary layui-btn-xs">已读</span>';
+                            } else {
+                                return '<span class="layui-btn layui-btn-normal layui-btn-xs">未读</span>';
+                            }
+                        }
+                    },
+                    {align: 'center', title: '操作', width: 80, fixed: 'right', toolbar: '#messageBar'}
                 ]]
             });
 
@@ -192,9 +209,24 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'form', 'select', 
                     let body = layer.getChildFrame('body', index);
                     body.find('#senderName').html('<h1>来自【' + data.name + '】的' + notifyType + '</h1>');
                     body.find('#createTime').html('<span>' + data.createTime + '</span>');
-                    body.find('#content').html('<div class="layadmin-text">' + data.content +'</div>');
+                    body.find('#content').html('<div class="layadmin-text">' + data.content + '</div>');
                 },
                 yes: function (index, layero) {
+                    $.ajax({
+                        type: "post",
+                        url: "api/system/notify-queue/markReaded",
+                        dataType: "json",
+                        contentType: "application/json",
+                        data: JSON.stringify([data.id]),
+                        success: function (obj) {
+                            layer.msg("操作成功！");
+                            table.reload('announce-table');
+                            table.reload('message-table');
+                        },
+                        error: function (obj) {
+                            layer.alert("操作失败！");
+                        }
+                    });
                     layer.close(index);
                 }
             });

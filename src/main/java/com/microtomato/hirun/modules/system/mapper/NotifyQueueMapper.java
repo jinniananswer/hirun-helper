@@ -20,7 +20,10 @@ import java.util.List;
 @Storage
 public interface NotifyQueueMapper extends BaseMapper<NotifyQueue> {
 
-    @Select("select n.id, n.content, n.sender_id, n.create_time from sys_notify n, sys_notify_queue q where q.is_readed = 0 and n.id = q.notify_id and n.notify_type = #{notifyType} and q.employee_id = #{employeeId}")
+    @Select("select n.id, n.content, n.sender_id, n.create_time, q.is_readed AS readed from sys_notify n, sys_notify_queue q where n.id = q.notify_id and n.notify_type = #{notifyType} and q.employee_id = #{employeeId}")
+    List<UnReadedDTO> queryAll(@Param("notifyType") Integer notifyType, @Param("employeeId") Long employeeId);
+
+    @Select("select n.id, n.content, n.sender_id, n.create_time, q.is_readed AS readed from sys_notify n, sys_notify_queue q where q.is_readed = 0 and n.id = q.notify_id and n.notify_type = #{notifyType} and q.employee_id = #{employeeId}")
     List<UnReadedDTO> queryUnread(@Param("notifyType") Integer notifyType, @Param("employeeId") Long employeeId);
 
 }

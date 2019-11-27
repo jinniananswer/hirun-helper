@@ -127,7 +127,7 @@ public class NotifyQueueServiceImpl extends ServiceImpl<NotifyQueueMapper, Notif
 
     private List<UnReadedDTO> queryUnread(INotifyService.NotifyType notifyType) {
         Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
-        List<UnReadedDTO> unReadedDTOS = notifyQueueMapper.queryUnread(notifyType.value(), employeeId);
+        List<UnReadedDTO> unReadedDTOS = notifyQueueMapper.queryAll(notifyType.value(), employeeId);
 
         Set<Long> ids = new HashSet<>();
         unReadedDTOS.forEach(unReadedDTO -> ids.add(unReadedDTO.getSenderId()));
@@ -169,7 +169,7 @@ public class NotifyQueueServiceImpl extends ServiceImpl<NotifyQueueMapper, Notif
         entity.setReaded(true);
         notifyQueueMapper.update(entity, Wrappers.<NotifyQueue>lambdaUpdate()
             .eq(NotifyQueue::getEmployeeId, employeeId)
-            .in(NotifyQueue::getId, idList)
+            .in(NotifyQueue::getNotifyId, idList)
         );
 
     }
@@ -208,7 +208,7 @@ public class NotifyQueueServiceImpl extends ServiceImpl<NotifyQueueMapper, Notif
         notifyQueueMapper.update(entity,
             Wrappers.<NotifyQueue>lambdaUpdate()
                 .eq(NotifyQueue::getEmployeeId, employeeId)
-                .in(NotifyQueue::getId, set)
+                .in(NotifyQueue::getNotifyId, set)
         );
     }
 
