@@ -9,9 +9,30 @@ import java.time.LocalDateTime;
  * @date 2019-11-26
  */
 @Data
-public class AnnounceDTO {
+public class UnReadedDTO {
+
+    /**
+     * Id
+     */
     private Long id;
+
+    /**
+     * 内容
+     */
     private String content;
+
+    /**
+     * Id
+     */
     private Long senderId;
+
+    /**
+     * 创建时间
+     */
     private LocalDateTime createTime;
+
+    /**
+     * 雇员姓名
+     */
+    private String name;
 }

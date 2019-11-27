@@ -5,7 +5,9 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.WebContextUtils;
-import com.microtomato.hirun.modules.system.entity.dto.AnnounceDTO;
+import com.microtomato.hirun.modules.organization.entity.po.Employee;
+import com.microtomato.hirun.modules.organization.service.IEmployeeService;
+import com.microtomato.hirun.modules.system.entity.dto.UnReadedDTO;
 import com.microtomato.hirun.modules.system.entity.po.Notify;
 import com.microtomato.hirun.modules.system.entity.po.NotifyQueue;
 import com.microtomato.hirun.modules.system.mapper.NotifyQueueMapper;
@@ -16,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
 
 /**
  * <p>
@@ -36,6 +38,10 @@ public class NotifyQueueServiceImpl extends ServiceImpl<NotifyQueueMapper, Notif
     @Autowired
     private INotifyQueueService notifyQueueServiceImpl;
 
+    @Autowired
+    private IEmployeeService employeeServiceImpl;
+
+    @Autowired
     private INotifyService notifyServiceImpl;
 
     /**
@@ -105,13 +111,8 @@ public class NotifyQueueServiceImpl extends ServiceImpl<NotifyQueueMapper, Notif
      * @return 未读消息列表
      */
     @Override
-    public List<NotifyQueue> queryUnread() {
-        Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
-        return notifyQueueMapper.selectList(
-            Wrappers.<NotifyQueue>lambdaQuery()
-                .eq(NotifyQueue::getReaded, false)
-                .eq(NotifyQueue::getEmployeeId, employeeId)
-        );
+    public List<UnReadedDTO> queryUnreadMessage() {
+        return queryUnread(INotifyService.NotifyType.MESSAGE);
     }
 
     /**
@@ -120,9 +121,29 @@ public class NotifyQueueServiceImpl extends ServiceImpl<NotifyQueueMapper, Notif
      * @return
      */
     @Override
-    public List<AnnounceDTO> queryUnreadAnnounce() {
+    public List<UnReadedDTO> queryUnreadAnnounce() {
+        return queryUnread(INotifyService.NotifyType.ANNOUNCE);
+    }
+
+    private List<UnReadedDTO> queryUnread(INotifyService.NotifyType notifyType) {
         Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
-        return notifyQueueMapper.queryUnreadAnnounce(INotifyService.NotifyType.REMIND.value(), employeeId);
+        List<UnReadedDTO> unReadedDTOS = notifyQueueMapper.queryUnread(notifyType.value(), employeeId);
+
+        Set<Long> ids = new HashSet<>();
+        unReadedDTOS.forEach(unReadedDTO -> ids.add(unReadedDTO.getSenderId()));
+
+        if (ids.size() > 0) {
+            List<Employee> list = employeeServiceImpl.list(
+                Wrappers.<Employee>lambdaQuery()
+                    .select(Employee::getEmployeeId, Employee::getName)
+                    .in(Employee::getEmployeeId, ids)
+            );
+
+            Map<Long, String> idNameMap = new HashMap<>(10);
+            list.forEach(employee -> idNameMap.put(employee.getEmployeeId(), employee.getName()));
+            unReadedDTOS.forEach(unreadedDTO -> unreadedDTO.setName(idNameMap.get(unreadedDTO.getSenderId())));
+        }
+        return unReadedDTOS;
     }
 
     /**
@@ -174,12 +195,21 @@ public class NotifyQueueServiceImpl extends ServiceImpl<NotifyQueueMapper, Notif
      * 标记全部已读
      */
     @Override
-    public void markReadedAll() {
+    public void markReadedAll(INotifyService.NotifyType notifyType) {
+
+        List<UnReadedDTO> unReadedDTOS = queryUnread(notifyType);
+        Set<Long> set = new HashSet<>();
+        unReadedDTOS.forEach(unReadedDTO -> set.add(unReadedDTO.getId()));
+
         Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
         NotifyQueue entity = new NotifyQueue();
         entity.setReaded(true);
 
-        notifyQueueMapper.update(entity, Wrappers.<NotifyQueue>lambdaUpdate().eq(NotifyQueue::getEmployeeId, employeeId));
+        notifyQueueMapper.update(entity,
+            Wrappers.<NotifyQueue>lambdaUpdate()
+                .eq(NotifyQueue::getEmployeeId, employeeId)
+                .in(NotifyQueue::getId, set)
+        );
     }
 
 }

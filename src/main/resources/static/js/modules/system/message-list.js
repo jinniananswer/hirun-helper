@@ -16,6 +16,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'form', 'select', 
             let announce = table.render({
                 elem: '#announce-table',
                 toolbar: '#announceToolbar',
+                defaultToolbar: ['filter'],
                 height: 'full-20',
                 url: 'api/system/notify-queue/announce-list',
                 fitColumns: true,
@@ -29,6 +30,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'form', 'select', 
                     {type: 'checkbox'},
                     {field: 'id', title: 'ID', width: 60, align: 'center'},
                     {field: 'content', title: '公告内容', align: 'left'},
+                    {field: 'name', title: '发送者', width: 100, align: 'center'},
                     {field: 'createTime', title: '时间', width: 180, align: 'center'},
                     {align: 'center', title: '操作', width: 150, fixed: 'right', toolbar: '#announceBar'}
                 ]]
@@ -37,6 +39,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'form', 'select', 
             let message = table.render({
                 elem: '#message-table',
                 toolbar: '#messageToolbar',
+                defaultToolbar: ['filter'],
                 height: 'full-20',
                 url: 'api/system/notify-queue/message-list',
                 fitColumns: true,
@@ -50,6 +53,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'form', 'select', 
                     {type: 'checkbox'},
                     {field: 'id', title: 'ID', width: 60, align: 'center'},
                     {field: 'content', title: '私信内容', align: 'left'},
+                    {field: 'name', title: '发送者', width: 100, align: 'center'},
                     {field: 'createTime', title: '时间', width: 180, align: 'center'},
                     {align: 'center', title: '操作', width: 150, fixed: 'right', toolbar: '#messageBar'}
                 ]]
@@ -61,7 +65,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'form', 'select', 
                     layer.msg('查看消息！');
                 }
                 if (obj.event === 'seeDetail') {
-                    messageObj.seeDetail(data);
+                    messageObj.seeDetail(data, '公告');
                 }
             });
             table.on('tool(message-table)', function (obj) {
@@ -70,7 +74,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'form', 'select', 
                     layer.msg('查看消息！');
                 }
                 if (obj.event === 'seeDetail') {
-                    messageObj.seeDetail(data);
+                    messageObj.seeDetail(data, '私信');
                 }
             });
 
@@ -111,7 +115,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'form', 'select', 
                             shade: [0.5, '#fff'],
                             skin: 'layui-layer-admin layui-anim'
                         }, function (index) {
-                            layui.ajax.get('api/system/notify-queue/markReadedAll', '', function (data) {
+                            layui.ajax.get('api/system/notify-queue/markReadedAll/1', '', function (data) {
                                 layer.msg('操作成功！');
                                 table.reload('announce-table');
                             });
@@ -161,7 +165,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'form', 'select', 
                             shade: [0.5, '#fff'],
                             skin: 'layui-layer-admin layui-anim'
                         }, function (index) {
-                            layui.ajax.get('api/system/notify-queue/markReadedAll', '', function (data) {
+                            layui.ajax.get('api/system/notify-queue/markReadedAll/3', '', function (data) {
                                 layer.msg('操作成功！');
                                 table.reload('message-table');
                             });
@@ -175,7 +179,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'form', 'select', 
             });
         },
 
-        seeDetail: function (data) {
+        seeDetail: function (data, notifyType) {
             var index = layer.open({
                 type: 2,
                 title: '查看详情',
@@ -186,7 +190,8 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'form', 'select', 
                 skin: 'layui-layer-molv',
                 success: function (layero, index) {
                     let body = layer.getChildFrame('body', index);
-                    body.find('#createTime').html('<span>' + data.createTime + '</span>')
+                    body.find('#senderName').html('<h1>来自【' + data.name + '】的' + notifyType + '</h1>');
+                    body.find('#createTime').html('<span>' + data.createTime + '</span>');
                     body.find('#content').html('<div class="layadmin-text">' + data.content +'</div>');
                 },
                 yes: function (index, layero) {
