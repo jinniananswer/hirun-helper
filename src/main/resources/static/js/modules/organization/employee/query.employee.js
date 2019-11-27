@@ -30,7 +30,7 @@ layui.extend({
                 cols: [
                     [
                         {type: 'radio', fixed: 'left'},
-                        {field: 'name', title: '姓名', width: 120, fixed: 'left', align: 'center'},
+                        {field: 'name', title: '姓名', width: 120, fixed: 'left', align: 'center',templet:'#templetArchive'},
                         {
                             field: 'sex', title: '性别', width: 80, sort: true, align: 'center', templet: function (d) {
                                 if (d.sex == 1) {
@@ -205,6 +205,10 @@ layui.extend({
             var param='?name='+$("input[name='name']").val()+'&orgSet='+$("input[name='orgSet']").val()+'&sex='+$("select[name='sex']").val()+'&type='+$("select[name='type']").val()+
             '&mobile='+$("input[name='mobileNo']").val()+'&employeeStatus='+$("select[name='employeeStatus']").val()+'&isBlackList='+$("#isBlackList").val()+'&otherStatus='+$("select[name='otherStatus']").val();
             window.location.href = "api/organization/employee/queryEmployeeList4Export"+param;
+        },
+
+        loadEmployeeArchive:function (employeeId,name) {
+            layui.redirect.open('openUrl?url=/modules/organization/employee/my_archive&employeeId='+employeeId, name+'的档案');
         }
 
     };
