@@ -9,17 +9,12 @@ import com.microtomato.hirun.modules.system.entity.dto.UnReadedDTO;
 import com.microtomato.hirun.modules.system.entity.po.Notify;
 import com.microtomato.hirun.modules.system.service.INotifyService;
 import lombok.extern.slf4j.Slf4j;
-import net.sf.cglib.core.Local;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
 
 /**
@@ -37,6 +32,9 @@ public class NotifyController {
 
     @Autowired
     private INotifyService notifyServiceImpl;
+
+    @Autowired
+    private IEmployeeService employeeServiceImpl;
 
     @PostMapping("/sendAnnounce")
     @RestResult
@@ -66,7 +64,7 @@ public class NotifyController {
     @GetMapping("announce-list-all")
     @RestResult
     public List<UnReadedDTO> announceListAll(@RequestParam LocalDateTime startTime, @RequestParam LocalDateTime endTime) {
-        
+
         List<Notify> list = notifyServiceImpl.list(
             Wrappers.<Notify>lambdaQuery()
                 .select(Notify::getId, Notify::getContent, Notify::getSenderId, Notify::getCreateTime)
@@ -95,6 +93,4 @@ public class NotifyController {
         return rtn;
     }
 
-    @Autowired
-    private IEmployeeService employeeServiceImpl;
 }

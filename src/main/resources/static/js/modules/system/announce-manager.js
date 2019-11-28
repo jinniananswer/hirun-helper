@@ -18,8 +18,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layedit', 'laydate', 'util
         type: 'datetime'
     });
 
-    let str = util.timeAgo(new Date(y, M||0, d||10, H||0, m||0, s||0));
-    $('#startTime').val(str);
+    $('#startTime').val(util.toDateString(new Date(new Date() - 1000 * 60 * 60 * 24 * 10), 'yyyy-MM-dd HH:mm:ss'));
     $('#endTime').val(util.toDateString(new Date(), 'yyyy-MM-dd HH:mm:ss'));
 
     let announceObj = {
@@ -34,7 +33,6 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layedit', 'laydate', 'util
                 toolbar: '#announceToolbar',
                 defaultToolbar: ['filter'],
                 height: 'full-20',
-                //url: 'api/system/notify/announce-list-all',
                 fitColumns: true,
                 response: {
                     msgName: 'message',
@@ -47,7 +45,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layedit', 'laydate', 'util
                     {field: 'content', title: '公告内容', align: 'left'},
                     {field: 'name', title: '发送者', width: 80, align: 'center'},
                     {field: 'createTime', title: '时间', width: 160, align: 'center'},
-                    {align: 'center', title: '操作', width: 80, fixed: 'right', toolbar: '#announceBar'}
+                    {fixed: 'right', align: 'center', title: '操作', width: 150, fixed: 'right', toolbar: '#announceBar'}
                 ]],
                 page: false,
                 text: {none: '暂无相关数据，请检查查询条件。'}
@@ -59,6 +57,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layedit', 'laydate', 'util
                         curr: 1
                     },
                     loading: true,
+                    page: false,
                     url: 'api/system/notify/announce-list-all',
                     where: {
                         startTime: $("input[id='startTime']").val(),
@@ -69,11 +68,12 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layedit', 'laydate', 'util
 
             table.on('tool(announce-table)', function (obj) {
                 let data = obj.data;
-                if (obj.event === 'rowClick') {
-                    layer.msg('查看消息！');
-                }
-                if (obj.event === 'seeDetail') {
-                    // announceObj.seeDetail(data, '公告');
+
+                if (obj.event === 'seeDetails') {
+                    announceObj.seeDetails(data);
+                } else if (obj.event === 'deleteAnnounce') {
+                    announceObj.deleteAnnounce([data]);
+                    console.log('deleteAnnounce: ' + data.id);
                 }
             });
 
@@ -122,28 +122,59 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layedit', 'laydate', 'util
                         layer.full(idxEdit);
                         break;
                     case 'deleteAnnounce':
-                        if (data.length <= 0) {
-                            layer.msg('请选中一条数据，再进行操作。');
-                            return;
-                        }
-                        let param = data.map(item => item.id);
-                        $.ajax({
-                            type: "post",
-                            url: "api/system/notify/deleteAnnounce",
-                            dataType: "json",
-                            contentType: "application/json",
-                            data: JSON.stringify(param),
-                            success: function (obj) {
-                                layer.msg("操作成功！");
-                                table.reload('announce-table');
-                            },
-                            error: function (obj) {
-                                layer.alert("操作失败！");
-                            }
-                        });
+                        announceObj.deleteAnnounce(data);
                         break;
                 }
                 ;
+            });
+
+        },
+
+        seeDetails: function(data) {
+            var index = layer.open({
+                type: 2,
+                title: '查看详情',
+                content: 'openUrl?url=/modules/system/message-detail',
+                maxmin: true,
+                btn: ['关闭'],
+                area: ['550px', '700px'],
+                skin: 'layui-layer-molv',
+                success: function (layero, index) {
+                    let body = layer.getChildFrame('body', index);
+                    body.find('#senderName').html('<h1>来自【' + data.name + '】的公告' + '</h1>');
+                    body.find('#createTime').html('<span>' + data.createTime + '</span>');
+                    body.find('#content').html('<div class="layadmin-text">' + data.content + '</div>');
+                },
+                yes: function (index, layero) {
+                    layer.close(index);
+                }
+            });
+            layer.full(index);
+        },
+
+        editAnnounce: function(data) {
+
+        },
+
+        deleteAnnounce: function(data) {
+            if (data.length <= 0) {
+                layer.msg('请选中一条数据，再进行操作。');
+                return;
+            }
+            let param = data.map(item => item.id);
+            $.ajax({
+                type: "post",
+                url: "api/system/notify/deleteAnnounce",
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify(param),
+                success: function (obj) {
+                    layer.msg("操作成功！");
+                    table.reload('announce-table');
+                },
+                error: function (obj) {
+                    layer.alert("操作失败！");
+                }
             });
 
         },

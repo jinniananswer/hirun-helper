@@ -18,7 +18,7 @@
 <body>
 <div class="layui-fluid" id="LAY-app-message">
     <div class="layui-card">
-        <div class="layui-card-header">公告列表</div>
+        <div class="layui-card-header">查询条件</div>
         <div class="layui-form layui-card-header layuiadmin-card-header-auto">
             <div class="layui-form" id="query_form">
                 <div class="layui-form-item">
@@ -47,16 +47,15 @@
 </div>
 
 <script type="text/html" id="announceBar">
-    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="queryAnnounce"><i class="layui-icon layui-icon-read"></i>查看</a>
+    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="seeDetails"><i class="layui-icon layui-icon-read"></i>查看</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="deleteAnnounce"><i
+            class="layui-icon layui-icon-delete"></i>删除</a>
 </script>
 
 <script type="text/html" id="announceToolbar">
     <div class="layui-btn-container">
         <button class="layui-btn layui-btn-sm" lay-event="newAnnounce">
             <i class="layui-icon layui-icon-add-1"></i> 新增
-        </button>
-        <button class="layui-btn layui-btn-sm" lay-event="editAnnounce">
-            <i class="layui-icon layui-icon-edit"></i> 编辑
         </button>
         <button class="layui-btn layui-btn-sm" lay-event="deleteAnnounce">
             <i class="layui-icon layui-icon-delete"></i> 删除

@@ -35,7 +35,7 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyMapper, Notify> impleme
 
     /**
      * 发送公告
-     *
+     * <p>
      * 注: 后台任务由于没有上下文信息，不可调用该函数
      *
      * @param content 公告内容
@@ -94,11 +94,11 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyMapper, Notify> impleme
 
     /**
      * 发送私信
-     *
+     * <p>
      * 注: 后台任务由于没有上下文信息，不可调用该函数
      *
      * @param toEmployeeId 目标用户Id
-     * @param content 私信内容
+     * @param content      私信内容
      */
     @Override
     public void sendMessage(Long toEmployeeId, String content) {
@@ -109,8 +109,8 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyMapper, Notify> impleme
     /**
      * 发送私信
      *
-     * @param toEmployeeId 给谁发私信
-     * @param content 私信内容
+     * @param toEmployeeId   给谁发私信
+     * @param content        私信内容
      * @param fromEmployeeId 谁发的私信
      */
     @Override

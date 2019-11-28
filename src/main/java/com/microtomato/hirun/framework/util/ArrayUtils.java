@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 数组型及LIST数据的工具类，可以判断数组是否为空及数组型数据的简便操作
+ * 数组型及 LIST 数据的工具类，可以判断数组是否为空及数组型数据的简便操作
  *
  * @author jinnian
  * @date 2018/2/20 23:51
@@ -20,10 +20,12 @@ public class ArrayUtils {
      * @return true-非空  false-空
      */
     public static boolean isNotEmpty(Object[] objects) {
-        if (objects == null) {
+
+        if (null == objects) {
             return false;
         }
-        if (objects.length <= 0) {
+
+        if (0 == objects.length) {
             return false;
         }
 
@@ -41,16 +43,16 @@ public class ArrayUtils {
     }
 
     /**
-     * 判断List结构是否为非空
+     * 判断 List 结构是否为非空
      *
      * @param list
      * @return true-非空 false-空
      */
     public static boolean isNotEmpty(List list) {
-        if (list == null) {
+        if (null == list) {
             return false;
         }
-        if (list.size() <= 0) {
+        if (0 == list.size()) {
             return false;
         }
 
@@ -70,16 +72,17 @@ public class ArrayUtils {
     /**
      * 将一个 List 按类型快速转换成另一个类的 List
      *
-     * @auther Steven
-     *
-     * @param list
+     * @param srcObjectList
      * @param target
      * @return
+     * @auther Steven
      */
-    public static List<?> copyPropertiesList(List<?> list, Class target) {
-        List<Object> rtn = new ArrayList();
-        if (list != null) {
-            for (Object srcObject : list) {
+    public static List<?> copyPropertiesList(List<?> srcObjectList, Class target) {
+
+        List<Object> rtn = null;
+        if (null != srcObjectList) {
+            rtn = new ArrayList(srcObjectList.size());
+            for (Object srcObject : srcObjectList) {
                 try {
                     Object dstObject = target.newInstance();
                     BeanUtils.copyProperties(srcObject, dstObject);
@@ -88,9 +91,10 @@ public class ArrayUtils {
                     e.printStackTrace();
                 }
             }
+
         }
+
         return rtn;
     }
-
 
 }
