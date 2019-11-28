@@ -56,8 +56,10 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layedit', 'laydate', 'laye
                     loading: true,
                     url: 'api/system/notify/announce-list-all',
                     where: {
-                        startTime: $("input[name='startTime']").val(),
-                        endTime: $("input[name='endTime']").val()
+                        startTime: $("input[id='startTime']").val(),
+                        endTime: $("input[id='endTime']").val()
+                        // startTime: $('#startTime').val(),
+                        // endTime: $('#endTime').val()
                     }
                 })
             });

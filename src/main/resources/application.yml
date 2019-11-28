@@ -39,6 +39,10 @@ logging:
     org.mybatis.spring.transaction: debug
     com.baomidou.dynamic.datasource: debug
 
+# 生产 Web 这个开关是关闭的，后台 Task 进程会在命令行设置该参数为 true
+scheduling:
+  enabled: true
+
 spring:
   mvc:
     # 所有静态资源访问，路径以 /static/ 为前缀。
