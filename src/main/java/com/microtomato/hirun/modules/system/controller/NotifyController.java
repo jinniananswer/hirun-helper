@@ -8,6 +8,8 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * <p>
  * 消息表 前端控制器
@@ -29,8 +31,13 @@ public class NotifyController {
     public void sendAnnounce(@RequestBody String content) {
         content = StringEscapeUtils.unescapeJava(content);
         content = StringUtils.strip(content, "\"");
-        log.error(content);
         notifyServiceImpl.sendAnnounce(content);
+    }
+
+    @PostMapping("deleteAnnounce")
+    @RestResult
+    public void deleteAnnounce(@RequestBody List<Long> idList) {
+        notifyServiceImpl.deleteAnnounce(idList);
     }
 
     @GetMapping("/sendMessage")

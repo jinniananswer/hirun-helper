@@ -51,6 +51,17 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyMapper, Notify> impleme
     }
 
     /**
+     * 删除公告
+     *
+     * @param idList
+     */
+    @Override
+    public void deleteAnnounce(List<Long> idList) {
+        notifyMapper.deleteBatchIds(idList);
+        notifyQueueServiceImpl.remove(Wrappers.<NotifyQueue>lambdaUpdate().in(NotifyQueue::getNotifyId, idList));
+    }
+
+    /**
      * 查未读公告
      *
      * @return

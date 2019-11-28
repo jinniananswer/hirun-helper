@@ -23,6 +23,13 @@ public interface INotifyService extends IService<Notify> {
     void sendAnnounce(String content);
 
     /**
+     * 删除公告
+     *
+     * @param idList
+     */
+    void deleteAnnounce(List<Long> idList);
+
+    /**
      * 查未读公告
      *
      * @return
