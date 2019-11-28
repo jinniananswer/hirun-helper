@@ -18,6 +18,8 @@ public interface INotifyService extends IService<Notify> {
     /**
      * 发送公告
      *
+     * 注: 后台任务由于没有上下文信息，不可调用该函数
+     *
      * @param content 公告内容
      */
     void sendAnnounce(String content);
@@ -61,6 +63,8 @@ public interface INotifyService extends IService<Notify> {
 
     /**
      * 发送私信
+     *
+     * 注: 后台任务由于没有上下文信息，不可调用该函数
      *
      * @param toEmployeeId 目标雇员Id
      * @param content 私信内容

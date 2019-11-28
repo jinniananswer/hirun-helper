@@ -9,4 +9,5 @@ package com.microtomato.hirun.framework.util;
 public final class Constants {
 	public static final String STATUS_OK = "0";
 	public static final Long DEFAULT_ROLE_ID = 2L;
+	public static final Long DEFAULT_USER_ID = 1L;
 }

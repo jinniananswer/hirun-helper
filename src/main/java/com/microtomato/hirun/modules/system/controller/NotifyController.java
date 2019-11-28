@@ -65,16 +65,8 @@ public class NotifyController {
      */
     @GetMapping("announce-list-all")
     @RestResult
-    public List<UnReadedDTO> announceListAll(@RequestParam(required = false) LocalDateTime startTime, @RequestParam(required = false) LocalDateTime endTime) {
-
-        if (null == startTime) {
-            startTime = LocalDateTime.now().minusDays(10);
-        }
-
-        if (null == endTime) {
-            endTime = LocalDateTime.now();
-        }
-
+    public List<UnReadedDTO> announceListAll(@RequestParam LocalDateTime startTime, @RequestParam LocalDateTime endTime) {
+        
         List<Notify> list = notifyServiceImpl.list(
             Wrappers.<Notify>lambdaQuery()
                 .select(Notify::getId, Notify::getContent, Notify::getSenderId, Notify::getCreateTime)

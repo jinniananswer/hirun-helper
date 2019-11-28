@@ -36,6 +36,8 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyMapper, Notify> impleme
     /**
      * 发送公告
      *
+     * 注: 后台任务由于没有上下文信息，不可调用该函数
+     *
      * @param content 公告内容
      */
     @Override
@@ -93,6 +95,8 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyMapper, Notify> impleme
     /**
      * 发送私信
      *
+     * 注: 后台任务由于没有上下文信息，不可调用该函数
+     *
      * @param toEmployeeId 目标用户Id
      * @param content 私信内容
      */
@@ -111,17 +115,20 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyMapper, Notify> impleme
      */
     @Override
     public void sendMessage(Long toEmployeeId, String content, Long fromEmployeeId) {
+
         Notify notify = new Notify();
         notify.setContent(content);
-        notify.setNotifyType(NotifyType.MESSAGE.value());
+        notify.setNotifyType(INotifyService.NotifyType.MESSAGE.value());
         notify.setTargetId(toEmployeeId);
         notify.setSenderId(fromEmployeeId);
+
         notifyMapper.insert(notify);
 
         NotifyQueue notifyQueue = new NotifyQueue();
         notifyQueue.setReaded(false);
         notifyQueue.setEmployeeId(toEmployeeId);
         notifyQueue.setNotifyId(notify.getId());
+
         notifyQueueServiceImpl.save(notifyQueue);
     }
 

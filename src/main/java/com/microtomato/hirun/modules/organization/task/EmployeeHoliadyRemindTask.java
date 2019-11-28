@@ -42,7 +42,7 @@ public class EmployeeHoliadyRemindTask {
      * 每天凌晨 5:10 开始执行。
      * 查询休假到期数据，进行消息提醒
      */
-    @Scheduled(cron = "0 07 11 * * ?")
+    @Scheduled(cron = "0 47 12 * * ?")
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void scheduled() {
 

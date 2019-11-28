@@ -1,4 +1,4 @@
-layui.extend({}).define(['ajax', 'table', 'element', 'layedit', 'laydate', 'layer', 'form', 'select', 'redirect'], function (exports) {
+layui.extend({}).define(['ajax', 'table', 'element', 'layedit', 'laydate', 'util', 'layer', 'form', 'select', 'redirect'], function (exports) {
     let $ = layui.$;
     let table = layui.table;
     let layedit = layui.layedit;
@@ -6,16 +6,21 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layedit', 'laydate', 'laye
     let form = layui.form;
     let element = layui.element;
     let laydate = layui.laydate;
+    let util = layui.util;
 
     laydate.render({
-        elem: '#startTime'
-        , type: 'datetime'
+        elem: '#startTime',
+        type: 'datetime'
     });
 
     laydate.render({
-        elem: '#endTime'
-        , type: 'datetime'
+        elem: '#endTime',
+        type: 'datetime'
     });
+
+    let str = util.timeAgo(new Date(y, M||0, d||10, H||0, m||0, s||0));
+    $('#startTime').val(str);
+    $('#endTime').val(util.toDateString(new Date(), 'yyyy-MM-dd HH:mm:ss'));
 
     let announceObj = {
         init: function () {
@@ -58,8 +63,6 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layedit', 'laydate', 'laye
                     where: {
                         startTime: $("input[id='startTime']").val(),
                         endTime: $("input[id='endTime']").val()
-                        // startTime: $('#startTime').val(),
-                        // endTime: $('#endTime').val()
                     }
                 })
             });

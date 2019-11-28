@@ -2,6 +2,7 @@ package com.microtomato.hirun.framework.aop;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
+import com.microtomato.hirun.framework.util.Constants;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.stereotype.Component;
@@ -44,8 +45,9 @@ public class AutoSetMetaObjectAdvice implements MetaObjectHandler {
      */
     @Override
     public void insertFill(MetaObject metaObject) {
-        Long userId = WebContextUtils.getUserContext().getUserId();
-        LocalDateTime requestTime = RequestTimeHolder.getRequestTime();
+
+        Long userId = getUserId();
+        LocalDateTime requestTime = getRequestTime();
 
         this.setInsertFieldValByName(CREATE_TIME, requestTime, metaObject);
         this.setInsertFieldValByName(UPDATE_TIME, requestTime, metaObject);
@@ -60,9 +62,28 @@ public class AutoSetMetaObjectAdvice implements MetaObjectHandler {
      */
     @Override
     public void updateFill(MetaObject metaObject) {
-        Long userId = WebContextUtils.getUserContext().getUserId();
-        LocalDateTime requestTime = RequestTimeHolder.getRequestTime();
+        Long userId = getUserId();
+        LocalDateTime requestTime = getRequestTime();
+
         this.setUpdateFieldValByName(UPDATE_TIME, requestTime, metaObject);
         this.setInsertFieldValByName(UPDATE_USER_ID, userId, metaObject);
+    }
+
+    private Long getUserId() {
+        Long userId = null;
+        try {
+            WebContextUtils.getUserContext().getUserId();
+        } catch(Exception e) {
+            userId = Constants.DEFAULT_USER_ID;
+        }
+        return userId;
+    }
+
+    private LocalDateTime getRequestTime() {
+        LocalDateTime requestTime = RequestTimeHolder.getRequestTime();
+        if (null == requestTime) {
+            requestTime = LocalDateTime.now();
+        }
+        return requestTime;
     }
 }
