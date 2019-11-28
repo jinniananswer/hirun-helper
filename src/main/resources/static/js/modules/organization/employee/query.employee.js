@@ -1,6 +1,6 @@
 layui.extend({
     orgTree: 'org',
-}).define(['ajax', 'table', 'element', 'orgTree', 'layer', 'form', 'select', 'redirect','multiSelect'], function (exports) {
+}).define(['ajax', 'table', 'element', 'orgTree', 'layer', 'form', 'select', 'redirect'], function (exports) {
     var $ = layui.$;
     var table = layui.table;
     var layer = layui.layer;
@@ -30,7 +30,7 @@ layui.extend({
                 cols: [
                     [
                         {type: 'radio', fixed: 'left'},
-                        {field: 'name', title: '姓名', width: 120, fixed: 'left', align: 'center'},
+                        {field: 'name', title: '姓名', width: 120, fixed: 'left', align: 'center',templet:'#templetArchive'},
                         {
                             field: 'sex', title: '性别', width: 80, sort: true, align: 'center', templet: function (d) {
                                 if (d.sex == 1) {
@@ -51,7 +51,7 @@ layui.extend({
                         },
                         {field: 'jobRoleName', title: '岗位', width: 150, align: 'center'},
                         {field: 'orgPath', title: '部门', align: 'center'},
-                        {field: 'companyAge', title: '工龄', width: 80, align: 'center'},
+                        {field: 'companyAge', title: '工作年限', width: 80, align: 'center'},
                         {field: 'status', title: '状态', width: 100, align: 'center',fixed: 'right', templet: function (d) {
                                 if (d.employeeStatus == 0) {
                                     return '在职';
@@ -205,6 +205,10 @@ layui.extend({
             var param='?name='+$("input[name='name']").val()+'&orgSet='+$("input[name='orgSet']").val()+'&sex='+$("select[name='sex']").val()+'&type='+$("select[name='type']").val()+
             '&mobile='+$("input[name='mobileNo']").val()+'&employeeStatus='+$("select[name='employeeStatus']").val()+'&isBlackList='+$("#isBlackList").val()+'&otherStatus='+$("select[name='otherStatus']").val();
             window.location.href = "api/organization/employee/queryEmployeeList4Export"+param;
+        },
+
+        loadEmployeeArchive:function (id,name) {
+            layui.redirect.open('openUrl?url=/modules/organization/employee/my_archive&employeeId='+id, name+'的档案');
         }
 
     };

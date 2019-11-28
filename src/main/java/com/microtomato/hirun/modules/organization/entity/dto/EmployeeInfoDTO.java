@@ -17,53 +17,73 @@ import java.time.LocalDateTime;
 @Data
 public class EmployeeInfoDTO {
 
-    @ColumnWidth(20)
-    @ExcelProperty("用户编码")
+    @ExcelIgnore
     private Long employeeId;
 
     @ColumnWidth(20)
-    @ExcelProperty("用户姓名")
+    @ExcelProperty("员工姓名")
     private String name;
 
     @ColumnWidth(20)
-    @ExcelProperty("用户电话")
+    @ExcelProperty("员工类型")
+    private String typeName;
+
+    @ColumnWidth(20)
+    @ExcelProperty("员工电话")
     private String mobileNo;
 
     @ColumnWidth(20)
-    @ExcelProperty("用户证件")
+    @ExcelProperty("员工证件")
     private String identityNo;
 
     @ColumnWidth(20)
-    @ExcelProperty("用户性别")
+    @ExcelProperty("员工性别")
     private String sex;
 
-    private String natives;
+    @ColumnWidth(20)
+    @ExcelProperty("员工状态")
+    private String employeeStatusName;
 
+    @ExcelIgnore
+    private String employeeStatus;
+
+    @ExcelIgnore
     private Integer nativeProv;
 
+    @ExcelIgnore
     private Integer nativeCity;
 
+    @ExcelIgnore
     private Integer nativeRegion;
 
-    private String nativeAddress;
-
-    private String home;
-
+    @ExcelIgnore
     private Integer homeProv;
 
+    @ExcelIgnore
     private Integer homeCity;
 
+    @ExcelIgnore
     private Integer homeRegion;
-
-    private String homeAddress;
 
     @ColumnWidth(20)
     @ExcelProperty(value = "入职时间", converter = LocalDateTimeConvert.class)
     private LocalDateTime inDate;
 
     @ColumnWidth(20)
-    @ExcelProperty("员工状态")
-    private String employeeStatus;
+    @ExcelProperty("户籍地址")
+    private String nativeArea;
+
+    @ColumnWidth(20)
+    @ExcelProperty("详细户籍")
+    private String nativeAddress;
+
+    @ColumnWidth(20)
+    @ExcelProperty("现住址")
+    private String homeArea;
+
+    @ColumnWidth(20)
+    @ExcelProperty("详细住址")
+    private String homeAddress;
 
     @ExcelIgnore
     private Long orgId;
@@ -75,6 +95,7 @@ public class EmployeeInfoDTO {
     @ExcelProperty("部门")
     private String orgPath;
 
+    @ExcelIgnore
     private String jobRole;
 
     @ColumnWidth(20)
@@ -82,16 +103,21 @@ public class EmployeeInfoDTO {
     private String jobRoleName;
 
     @ExcelIgnore
-    private String parentEmployeeId;
+    private Long parentEmployeeId;
 
+    @ColumnWidth(20)
+    @ExcelProperty("上级员工")
     private String parentEmployeeName;
 
     @ExcelIgnore
     private String jobLevel;
 
+    @ExcelIgnore
+    private String jobRoleNature;
+
     @ColumnWidth(20)
     @ExcelProperty("岗位性质")
-    private String jobNature;
+    private String jobRoleNatureName;
 
     @ColumnWidth(20)
     @ExcelProperty("业务折算比例")
@@ -100,17 +126,43 @@ public class EmployeeInfoDTO {
     @ExcelIgnore
     private String isMain;
 
+    @ExcelIgnore
     private String isBlackList;
 
-    @ColumnWidth(20)
-    @ExcelProperty("员工类型")
+    @ExcelIgnore
     private String type;
 
-    private String typeName;
-
+    @ColumnWidth(20)
+    @ExcelProperty("工作年限")
     private String companyAge;
 
     @ExcelIgnore
     private LocalDate jobDate;
+
+    @ExcelIgnore
+    private String educationLevel;
+
+    @ColumnWidth(20)
+    @ExcelProperty("最高学历")
+    private String educationLevelName;
+
+    @ExcelIgnore
+    private String firstEducationLevel;
+
+    @ColumnWidth(20)
+    @ExcelProperty("第一学历")
+    private String firstEducationLevelName;
+
+    @ExcelIgnore
+    private String schoolType;
+
+    @ColumnWidth(20)
+    @ExcelProperty("学校类型")
+    private String schoolTypeName;
+
+    @ColumnWidth(20)
+    @ExcelProperty("技术职称")
+    private String techTitle;
+
 
 }

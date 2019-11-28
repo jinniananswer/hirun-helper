@@ -7,7 +7,7 @@ layui.extend({
     var laydate = layui.laydate;
     var employee = {
         init : function() {
-            layui.ajax.post('api/organization/employee/loadEmployeeArchive', '', function(data){
+            layui.ajax.post('api/organization/employee/loadEmployeeArchive?employeeId='+$('#employeeId').val(), '', function(data){
                 var archive = data.rows;
 
                 var main = document.getElementById("employeeMainInfo").innerHTML;

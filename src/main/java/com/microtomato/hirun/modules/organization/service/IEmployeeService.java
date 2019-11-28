@@ -45,7 +45,7 @@ public interface IEmployeeService extends IService<Employee> {
 
     /**
      *
-     * @param employeeInfoDTO
+     * @param conditionDTO
      * @return
      */
     List<EmployeeInfoDTO> queryEmployeeList(EmployeeQueryConditionDTO conditionDTO);

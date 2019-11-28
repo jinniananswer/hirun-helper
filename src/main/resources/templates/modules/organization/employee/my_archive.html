@@ -48,6 +48,7 @@
                                         <div class="layui-tab-item layui-show">
                                             <br/>
                                             <fieldset class="layui-elem-field">
+                                                <input type="hidden" id="employeeId" name="employeeId" th:value="${param.employeeId}"/>
                                                 <legend>基本信息</legend>
                                                 <div class="layui-field-box" id="employeeBase">
 
@@ -215,12 +216,12 @@
         <div class="caller-contar">
             <div class="caller-item" style="border-bottom:0px">
                 <div class="caller-main caller-fl">
-                    <p class="caller-adds"><i class="layui-icon layui-icon-username"></i><em>是否在公司购买社保：</em><strong>{{d.isSocialSecurityName}}</strong></p>
+                    <p class="caller-adds"><i class="layui-icon layui-icon-username"></i><em>是否在公司购买社保：</em><strong>{{layui.employee.transUndefined(d.isSocialSecurityName)}}</strong></p>
                     {{# if (d.isSocialSecurityName == "是") { }}
-                    <p class="caller-adds"><i class="layui-icon layui-icon-username"></i><em>购买时间：</em><strong>{{d.socialSecurityDate}}</strong></p>
-                    <p class="caller-adds"><i class="layui-icon layui-icon-username"></i><em>购买地：</em><strong>{{d.socialSecurityPlace}}</strong></p>
+                    <p class="caller-adds"><i class="layui-icon layui-icon-username"></i><em>购买时间：</em><strong>{{layui.employee.transUndefined(d.socialSecurityDate)}}</strong></p>
+                    <p class="caller-adds"><i class="layui-icon layui-icon-username"></i><em>购买地：</em><strong>{{layui.employee.transUndefined(d.socialSecurityPlace)}}</strong></p>
                     {{# } else { }}
-                    <p class="caller-adds"><i class="layui-icon layui-icon-username"></i><em>未购买社保原因：</em><strong>{{d.socialSecurityStatusName}}</strong></p>
+                    <p class="caller-adds"><i class="layui-icon layui-icon-username"></i><em>未购买社保原因：</em><strong>{{layui.employee.transUndefined(d.socialSecurityStatusName)}}</strong></p>
                     {{# } }}
                 </div>
             </div>

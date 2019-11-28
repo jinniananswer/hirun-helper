@@ -8,9 +8,9 @@ package com.microtomato.hirun.modules.organization.entity.consts;
 public class HrPendingConst {
 
     //借调
-    public static final String PENDING_TYPE_1 = "1";
+    public static final String PENDING_TYPE_BORROW = "1";
     //调出
-    public static final String PENDING_TYPE_2 = "2";
+    public static final String PENDING_TYPE_TRANS = "2";
     //未处理
     public static final String PENDING_STATUS_1 = "1";
     //已处理
