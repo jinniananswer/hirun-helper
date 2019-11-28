@@ -18,17 +18,36 @@
 <body>
 <div class="layui-fluid" id="LAY-app-message">
     <div class="layui-card">
+        <div class="layui-card-header">公告列表</div>
         <div class="layui-form layui-card-header layuiadmin-card-header-auto">
-
+            <div class="layui-form" id="query_form">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">开始时间</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input" id="startTime" placeholder="yyyy-MM-dd HH:mm:ss">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">结束时间</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input" id="endTime" placeholder="yyyy-MM-dd HH:mm:ss">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <button class="layui-btn" type="button" id="queryAnnounce">查询</button>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="layui-card-body">
-            <table id="announce-table" lay-filter="announce-table"></table>
+            <table lay-even class="layui-hide" id="announce-table" lay-filter="announce-table" lay-size="lg"></table>
         </div>
     </div>
 </div>
 
 <script type="text/html" id="announceBar">
-    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="seeDetail"><i class="layui-icon layui-icon-read"></i>查看</a>
+    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="queryAnnounce"><i class="layui-icon layui-icon-read"></i>查看</a>
 </script>
 
 <script type="text/html" id="announceToolbar">

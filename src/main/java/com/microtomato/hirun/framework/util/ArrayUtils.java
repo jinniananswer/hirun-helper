@@ -1,5 +1,8 @@
 package com.microtomato.hirun.framework.util;
 
+import org.springframework.beans.BeanUtils;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -63,4 +66,31 @@ public class ArrayUtils {
     public static boolean isEmpty(List list) {
         return !isNotEmpty(list);
     }
+
+    /**
+     * 将一个 List 按类型快速转换成另一个类的 List
+     *
+     * @auther Steven
+     *
+     * @param list
+     * @param target
+     * @return
+     */
+    public static List<?> copyPropertiesList(List<?> list, Class target) {
+        List<Object> rtn = new ArrayList();
+        if (list != null) {
+            for (Object srcObject : list) {
+                try {
+                    Object dstObject = target.newInstance();
+                    BeanUtils.copyProperties(srcObject, dstObject);
+                    rtn.add(dstObject);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return rtn;
+    }
+
+
 }

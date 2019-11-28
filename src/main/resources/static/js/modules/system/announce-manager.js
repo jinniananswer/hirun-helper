@@ -1,10 +1,21 @@
-layui.extend({}).define(['ajax', 'table', 'element', 'layedit', 'layer', 'form', 'select', 'redirect'], function (exports) {
+layui.extend({}).define(['ajax', 'table', 'element', 'layedit', 'laydate', 'layer', 'form', 'select', 'redirect'], function (exports) {
     let $ = layui.$;
     let table = layui.table;
     let layedit = layui.layedit;
     let layer = layui.layer;
     let form = layui.form;
     let element = layui.element;
+    let laydate = layui.laydate;
+
+    laydate.render({
+        elem: '#startTime'
+        , type: 'datetime'
+    });
+
+    laydate.render({
+        elem: '#endTime'
+        , type: 'datetime'
+    });
 
     let announceObj = {
         init: function () {
@@ -18,31 +29,37 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layedit', 'layer', 'form',
                 toolbar: '#announceToolbar',
                 defaultToolbar: ['filter'],
                 height: 'full-20',
-                url: 'api/system/notify-queue/announce-list',
+                //url: 'api/system/notify/announce-list-all',
                 fitColumns: true,
                 response: {
                     msgName: 'message',
                     countName: 'total',
                     dataName: 'rows'
                 },
-                page: false,
                 cols: [[
                     {type: 'checkbox'},
                     {field: 'id', title: 'ID', width: 60, align: 'center'},
                     {field: 'content', title: '公告内容', align: 'left'},
                     {field: 'name', title: '发送者', width: 80, align: 'center'},
                     {field: 'createTime', title: '时间', width: 160, align: 'center'},
-                    {
-                        field: 'readed', title: '状态', width: 80, align: 'center', templet: function (d) {
-                            if (d.readed) {
-                                return '<span class="layui-btn layui-btn-primary layui-btn-xs">已读</span>';
-                            } else {
-                                return '<span class="layui-btn layui-btn-normal layui-btn-xs">未读</span>';
-                            }
-                        }
-                    },
                     {align: 'center', title: '操作', width: 80, fixed: 'right', toolbar: '#announceBar'}
-                ]]
+                ]],
+                page: false,
+                text: {none: '暂无相关数据，请检查查询条件。'}
+            });
+
+            $('#queryAnnounce').on('click', function () {
+                table.reload('announce-table', {
+                    page: {
+                        curr: 1
+                    },
+                    loading: true,
+                    url: 'api/system/notify/announce-list-all',
+                    where: {
+                        startTime: $("input[name='startTime']").val(),
+                        endTime: $("input[name='endTime']").val()
+                    }
+                })
             });
 
             table.on('tool(announce-table)', function (obj) {

@@ -115,6 +115,8 @@ public class NotifyQueueServiceImpl extends ServiceImpl<NotifyQueueMapper, Notif
         return queryUnread(INotifyService.NotifyType.MESSAGE);
     }
 
+
+
     /**
      * 查未读公告
      *
