@@ -38,7 +38,7 @@ layui.extend({}).define(['ajax', 'layer'], function (exports) {
                             success: function (layero, index) {
                                 let body = layer.getChildFrame('body', index);
                                 body.find('#senderName').html('<h1>来自【' + data.name + '】的' + data.notifyTypeDesc + '</h1>');
-                                body.find('#createTime').html('<span>' + data.createTimeDesc + '</span>');
+                                body.find('#createTime').html('<span>' + data.createTime + '</span>');
                                 body.find('#content').html('<div class="layadmin-text">' + data.content + '</div>');
                             },
                             yes: function (index, layero) {

@@ -16,7 +16,6 @@ import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -130,7 +129,6 @@ public class ServerWebSocket {
             unReadedDTO.setNotifyTypeDesc("私信");
         }
 
-        unReadedDTO.setCreateTimeDesc(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(unReadedDTO.getCreateTime()));
         return JsonUtils.encode(unReadedDTO);
     }
 
