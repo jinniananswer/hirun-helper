@@ -1,5 +1,6 @@
 package com.microtomato.hirun.modules.system.entity.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -22,6 +23,16 @@ public class UnReadedDTO {
     private String content;
 
     /**
+     * 消息类型（1: 公告 announce，2: 提醒 remind，3：信息 message）
+     */
+    private Integer notifyType;
+
+    /**
+     * 消息类型描述
+     */
+    private String notifyTypeDesc;
+
+    /**
      * Id
      */
     private Long senderId;
@@ -29,7 +40,13 @@ public class UnReadedDTO {
     /**
      * 创建时间
      */
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
+
+    /**
+     * 创建时间字符串形式
+     */
+    private String createTimeDesc;
 
     /**
      * 雇员姓名

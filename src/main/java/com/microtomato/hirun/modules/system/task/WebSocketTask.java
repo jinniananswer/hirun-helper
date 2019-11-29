@@ -28,7 +28,7 @@ public class WebSocketTask {
         List<Notify> list = notifyServiceImpl.list(Wrappers.<Notify>lambdaQuery().in(Notify::getId, 31, 32, 44, 45));
         Notify notify = list.get(RandomUtils.nextInt(0, list.size()));
         log.error("{}", notify.getContent());
-        ServerWebSocket.sendMessage(1L, notify.getContent());
+        ServerWebSocket.sendMessage(1L, notify);
     }
 
 }

@@ -1,15 +1,26 @@
 package com.microtomato.hirun.framework.websocket;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.microtomato.hirun.framework.util.JsonUtils;
+import com.microtomato.hirun.framework.util.SpringContextUtils;
+import com.microtomato.hirun.modules.organization.entity.po.Employee;
+import com.microtomato.hirun.modules.organization.service.IEmployeeService;
+import com.microtomato.hirun.modules.system.entity.dto.UnReadedDTO;
+import com.microtomato.hirun.modules.system.entity.po.Notify;
+import com.microtomato.hirun.modules.system.service.INotifyService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -78,9 +89,12 @@ public class ServerWebSocket {
      * 发送消息
      *
      * @param toId    发给谁
-     * @param message 消息内容
+     * @param notify 消息
      */
-    public static void sendMessage(Long toId, String message) {
+    public static void sendMessage(Long toId, Notify notify) {
+
+        String message = convert(notify);
+
         if (webSocketMap.containsKey(toId)) {
             List<ServerWebSocket> webSockets = webSocketMap.get(toId);
             for (ServerWebSocket webSocket : webSockets) {
@@ -90,15 +104,59 @@ public class ServerWebSocket {
     }
 
     /**
-     * 广播消息
+     * 转换
+     *
+     * @param notify
+     * @return
      */
-    public static void sendMessageBroadcast(String message) {
+    private static String convert(Notify notify) {
+        IEmployeeService employeeServiceImpl = SpringContextUtils.getBean(IEmployeeService.class);
+
+        UnReadedDTO unReadedDTO = new UnReadedDTO();
+        BeanUtils.copyProperties(notify, unReadedDTO);
+        Employee one = employeeServiceImpl.getOne(
+            Wrappers.<Employee>lambdaQuery()
+                .select(Employee::getName)
+                .eq(Employee::getEmployeeId, notify.getSenderId())
+        );
+        unReadedDTO.setName(one.getName());
+
+        Integer notifyType = notify.getNotifyType();
+        if (INotifyService.NotifyType.ANNOUNCE.value() == notifyType) {
+            unReadedDTO.setNotifyTypeDesc("公告");
+        } else if(INotifyService.NotifyType.REMIND.value() == notifyType) {
+            unReadedDTO.setNotifyTypeDesc("提醒");
+        } else if(INotifyService.NotifyType.MESSAGE.value() == notifyType) {
+            unReadedDTO.setNotifyTypeDesc("私信");
+        }
+
+        unReadedDTO.setCreateTimeDesc(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(unReadedDTO.getCreateTime()));
+        return JsonUtils.encode(unReadedDTO);
+    }
+
+    /**
+     * 广播消息
+     *
+     * @param notify 消息
+     */
+    public static void sendMessageBroadcast(Notify notify) {
+        String message = convert(notify);
+
         for (Long id : webSocketMap.keySet()) {
             List<ServerWebSocket> sockets = webSocketMap.get(id);
             for (ServerWebSocket socket : sockets) {
                 socket.sendMessage(message);
             }
         }
+    }
+
+    /**
+     * 获取所有在线 Id 集合
+     *
+     * @return
+     */
+    public static Set<Long> onlineIds() {
+        return webSocketMap.keySet();
     }
 
 }

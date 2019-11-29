@@ -15,14 +15,51 @@ layui.extend({}).define(['ajax', 'layer'], function (exports) {
             }
 
             websocket.onopen = function () {
-                layer.msg('WebSocket 连接成功！');
+                // layer.msg('WebSocket 连接成功！');
             }
 
             websocket.onmessage = function (event) {
-                layer.msg(event.data, {
+                let message = event.data;
+                let data = JSON.parse(message);
+                layer.msg(data.content, {
                     icon: 0,
-                    time: 15000,
-                    offset: 'rb'
+                    time: 10000,
+                    offset: 'rb',
+                    btn: ['查看'],
+                    yes: function () {
+                        let index = layer.open({
+                            type: 2,
+                            title: '查看详情',
+                            content: 'openUrl?url=/modules/system/message-detail',
+                            maxmin: true,
+                            btn: ['我知道了'],
+                            area: ['550px', '700px'],
+                            skin: 'layui-layer-molv',
+                            success: function (layero, index) {
+                                let body = layer.getChildFrame('body', index);
+                                body.find('#senderName').html('<h1>来自【' + data.name + '】的' + data.notifyTypeDesc + '</h1>');
+                                body.find('#createTime').html('<span>' + data.createTimeDesc + '</span>');
+                                body.find('#content').html('<div class="layadmin-text">' + data.content + '</div>');
+                            },
+                            yes: function (index, layero) {
+                                $.ajax({
+                                    type: "post",
+                                    url: "api/system/notify-queue/markReaded",
+                                    dataType: "json",
+                                    contentType: "application/json",
+                                    data: JSON.stringify([data.id]),
+                                    success: function (obj) {
+
+                                    },
+                                    error: function (obj) {
+
+                                    }
+                                });
+                                layer.close(index);
+                            }
+                        });
+                        layer.full(index);
+                    }
                 });
             }
 

@@ -3,6 +3,7 @@ package com.microtomato.hirun.modules.system.service.impl;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.util.WebContextUtils;
+import com.microtomato.hirun.framework.websocket.ServerWebSocket;
 import com.microtomato.hirun.modules.system.entity.po.Notify;
 import com.microtomato.hirun.modules.system.entity.po.NotifyQueue;
 import com.microtomato.hirun.modules.system.mapper.NotifyMapper;
@@ -11,9 +12,12 @@ import com.microtomato.hirun.modules.system.service.INotifyService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -41,6 +45,7 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyMapper, Notify> impleme
      * @param content 公告内容
      */
     @Override
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void sendAnnounce(String content) {
         long employeeId = WebContextUtils.getUserContext().getEmployeeId();
 
@@ -50,6 +55,19 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyMapper, Notify> impleme
         notify.setSenderId(employeeId);
 
         notifyMapper.insert(notify);
+
+        // 实时通知所有在线用户
+        Set<Long> ids = ServerWebSocket.onlineIds();
+        for (Long toEmployeeId : ids) {
+            NotifyQueue notifyQueue = new NotifyQueue();
+            notifyQueue.setReaded(false);
+            notifyQueue.setEmployeeId(toEmployeeId);
+            notifyQueue.setNotifyId(notify.getId());
+            notifyQueueServiceImpl.save(notifyQueue);
+        }
+
+
+        ServerWebSocket.sendMessageBroadcast(notify);
     }
 
     /**
@@ -114,6 +132,7 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyMapper, Notify> impleme
      * @param fromEmployeeId 谁发的私信
      */
     @Override
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void sendMessage(Long toEmployeeId, String content, Long fromEmployeeId) {
 
         Notify notify = new Notify();
@@ -130,6 +149,9 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyMapper, Notify> impleme
         notifyQueue.setNotifyId(notify.getId());
 
         notifyQueueServiceImpl.save(notifyQueue);
+
+        // 实时通知
+        ServerWebSocket.sendMessage(toEmployeeId, notify);
     }
 
     /**
