@@ -69,8 +69,7 @@ public class NotifyController {
             Wrappers.<Notify>lambdaQuery()
                 .select(Notify::getId, Notify::getContent, Notify::getSenderId, Notify::getCreateTime)
                 .eq(Notify::getNotifyType, INotifyService.NotifyType.ANNOUNCE.value())
-                .gt(Notify::getCreateTime, startTime)
-                .lt(Notify::getCreateTime, endTime)
+                .between(Notify::getCreateTime, startTime, endTime)
         );
 
         List<UnReadedDTO> rtn = (List<UnReadedDTO>) ArrayUtils.copyPropertiesList(list, UnReadedDTO.class);
