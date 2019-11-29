@@ -99,7 +99,7 @@ layui.extend({
             var index = layer.open({
                 type: 2,
                 title: '员工调动确认',
-                content: 'openUrl?url=/modules/organization/hr/transorg_pending_confirm',
+                content: 'openUrl?url=modules/organization/hr/transorg_pending_confirm',
                 maxmin: true,
                 btn: ['确定', '取消'],
                 area: ['550px', '700px'],
@@ -157,7 +157,7 @@ layui.extend({
             var index = layer.open({
                 type: 2,
                 title: '员工调动详情',
-                content: 'openUrl?url=/modules/organization/hr/transorg_pending_detail',
+                content: 'openUrl?url=modules/organization/hr/transorg_pending_detail',
                 maxmin: true,
                 area: ['550px', '700px'],
                 skin: 'layui-layer-molv',

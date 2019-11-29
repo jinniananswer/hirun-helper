@@ -93,7 +93,7 @@ layui.extend({
             layer.open({
                 type: 2,
                 title: '休假信息修改',
-                content: 'openUrl?url=/modules/organization/employee/update_employeeholiday',
+                content: 'openUrl?url=modules/organization/employee/update_employeeholiday',
                 maxmin: true,
                 btn: ['确定', '取消'],
                 area: ['550px', '700px'],
@@ -155,7 +155,7 @@ layui.extend({
             layer.open({
                 type: 2,
                 title: '员工休假新增',
-                content: 'openUrl?url=/modules/organization/employee/create_employeeholiday',
+                content: 'openUrl?url=modules/organization/employee/create_employeeholiday',
                 maxmin: true,
                 btn: ['保存', '取消'],
                 area: ['550px', '700px'],

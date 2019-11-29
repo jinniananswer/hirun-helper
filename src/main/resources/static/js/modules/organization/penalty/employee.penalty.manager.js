@@ -81,7 +81,7 @@ layui.extend({
             var index = layer.open({
                 type: 2,
                 title: '新增员工奖惩',
-                content: 'openUrl?url=/modules/organization/penalty/create_employee_penalty',
+                content: 'openUrl?url=modules/organization/penalty/create_employee_penalty',
                 maxmin: true,
                 btn: ['保存', '取消'],
                 skin: 'layui-layer-molv',
@@ -128,7 +128,7 @@ layui.extend({
             var index = layer.open({
                 type: 2,
                 title: '员工奖惩修改',
-                content: 'openUrl?url=/modules/organization/penalty/update_employee_penalty',
+                content: 'openUrl?url=modules/organization/penalty/update_employee_penalty',
                 maxmin: true,
                 btn: ['确定', '取消'],
                 area: ['550px', '700px'],

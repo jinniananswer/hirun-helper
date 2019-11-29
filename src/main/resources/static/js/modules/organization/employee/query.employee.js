@@ -102,7 +102,7 @@ layui.extend({
                 }
 
                 if (event === 'create') {
-                    layui.redirect.open('openUrl?url=/modules/organization/employee/employee_archive&operType=create', '编辑员工资料');
+                    layui.redirect.open('openUrl?url=modules/organization/employee/employee_archive&operType=create', '编辑员工资料');
                 } else if (event === 'remove') {
                     if (data[0].employeeStatus == 1 || data[0].employeeStatus == 3) {
                         layer.msg('员工已为离职状态,不允许做离职操作。');
@@ -145,7 +145,7 @@ layui.extend({
             var index = layer.open({
                 type: 2,
                 title: '员工离职',
-                content: 'openUrl?url=/modules/organization/employee/destroy_employee',
+                content: 'openUrl?url=modules/organization/employee/destroy_employee',
                 maxmin: true,
                 btn: ['确定', '取消'],
                 area: ['550px', '700px'],
@@ -198,7 +198,7 @@ layui.extend({
         },
 
         edit: function (data) {
-            layui.redirect.open('openUrl?url=/modules/organization/employee/employee_archive&operType=edit&employeeId=' + data.employeeId, '编辑员工资料');
+            layui.redirect.open('openUrl?url=modules/organization/employee/employee_archive&operType=edit&employeeId=' + data.employeeId, '编辑员工资料');
         },
 
         export: function(){
@@ -208,7 +208,7 @@ layui.extend({
         },
 
         loadEmployeeArchive:function (id,name) {
-            layui.redirect.open('openUrl?url=/modules/organization/employee/my_archive&employeeId='+id, name+'的档案');
+            layui.redirect.open('openUrl?url=modules/organization/employee/my_archive&employeeId='+id, name+'的档案');
         }
 
     };

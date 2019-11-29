@@ -103,7 +103,7 @@ layui.extend({
              layer.open({
                 type: 2,
                 title: '员工绩效导入',
-                content: 'openUrl?url=/modules/organization/performance/performance_import',
+                content: 'openUrl?url=modules/organization/performance/performance_import',
                 maxmin: true,
                  offset: ['150px', '350px'],
                  area: ['800px', '500px'],
@@ -115,7 +115,7 @@ layui.extend({
             var index = layer.open({
                 type: 2,
                 title: '新增员工绩效',
-                content: 'openUrl?url=/modules/organization/performance/create_employee_performance',
+                content: 'openUrl?url=modules/organization/performance/create_employee_performance',
                 maxmin: true,
                 btn: ['保存', '取消'],
                 skin: 'layui-layer-molv',
@@ -132,7 +132,7 @@ layui.extend({
             var index = layer.open({
                 type: 2,
                 title: '修改员工绩效',
-                content: 'openUrl?url=/modules/organization/performance/update_employee_performance',
+                content: 'openUrl?url=modules/organization/performance/update_employee_performance',
                 maxmin: true,
                 btn: ['确定', '取消'],
                 area: ['550px', '700px'],
