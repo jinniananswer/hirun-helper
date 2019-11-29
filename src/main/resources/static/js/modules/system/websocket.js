@@ -30,7 +30,7 @@ layui.extend({}).define(['ajax', 'layer'], function (exports) {
                         let index = layer.open({
                             type: 2,
                             title: '查看详情',
-                            content: 'openUrl?url=/modules/system/message-detail',
+                            content: 'openUrl?url=modules/system/message-detail',
                             maxmin: true,
                             btn: ['我知道了'],
                             area: ['550px', '700px'],

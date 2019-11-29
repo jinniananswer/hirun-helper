@@ -88,7 +88,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layedit', 'laydate', 'util
                         let index = layer.open({
                             type: 2,
                             title: '编辑新公告',
-                            content: 'openUrl?url=/modules/system/announce-create',
+                            content: 'openUrl?url=modules/system/announce-create',
                             maxmin: true,
                             area: ['550px', '700px'],
                             skin: 'layui-layer-molv',
@@ -107,7 +107,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layedit', 'laydate', 'util
                         let idxEdit = layer.open({
                             type: 2,
                             title: '修改公告',
-                            content: 'openUrl?url=/modules/system/announce-create',
+                            content: 'openUrl?url=modules/system/announce-create',
                             maxmin: true,
                             area: ['550px', '700px'],
                             skin: 'layui-layer-molv',
@@ -134,7 +134,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layedit', 'laydate', 'util
             var index = layer.open({
                 type: 2,
                 title: '查看详情',
-                content: 'openUrl?url=/modules/system/message-detail',
+                content: 'openUrl?url=modules/system/message-detail',
                 maxmin: true,
                 btn: ['关闭'],
                 area: ['550px', '700px'],
