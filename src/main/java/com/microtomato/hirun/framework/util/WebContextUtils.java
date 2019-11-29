@@ -23,6 +23,7 @@ public class WebContextUtils {
         UserContext userContext = null;
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
+
         if (principal instanceof UserContext) {
             userContext = (UserContext) principal;
         } else {

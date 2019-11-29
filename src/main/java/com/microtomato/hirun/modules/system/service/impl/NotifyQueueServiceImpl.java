@@ -69,8 +69,11 @@ public class NotifyQueueServiceImpl extends ServiceImpl<NotifyQueueMapper, Notif
                 .eq(NotifyQueue::getEmployeeId, employeeId)
                 .orderByDesc(NotifyQueue::getCreateTime).last(" limit 1")
         );
-
-        return notifyQueue.getCreateTime();
+        if (null == notifyQueue) {
+            return LocalDateTime.now();
+        } else {
+            return notifyQueue.getCreateTime();
+        }
     }
 
     /**
