@@ -90,17 +90,15 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layedit', 'laydate', 'util
                             title: '编辑新公告',
                             content: 'openUrl?url=modules/system/announce-create',
                             maxmin: true,
-                            area: ['550px', '700px'],
+                            area: ['550px', '400px'],
                             skin: 'layui-layer-molv',
                             success: function (layero, index) {
 
                             },
                             yes: function (index, layero) {
-
                                 layer.close(index);
                             }
                         });
-                        layer.full(index);
                         break;
                     case 'editAnnounce':
 
@@ -109,7 +107,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layedit', 'laydate', 'util
                             title: '修改公告',
                             content: 'openUrl?url=modules/system/announce-create',
                             maxmin: true,
-                            area: ['550px', '700px'],
+                            area: ['550px', '400px'],
                             skin: 'layui-layer-molv',
                             success: function (layero, index) {
                                 layedit.setContent(index, "原始内容", false);
@@ -119,7 +117,6 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layedit', 'laydate', 'util
                                 layer.close(index);
                             }
                         });
-                        layer.full(idxEdit);
                         break;
                     case 'deleteAnnounce':
                         announceObj.deleteAnnounce(data);
@@ -137,7 +134,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layedit', 'laydate', 'util
                 content: 'openUrl?url=modules/system/message-detail',
                 maxmin: true,
                 btn: ['关闭'],
-                area: ['550px', '700px'],
+                area: ['550px', '400px'],
                 skin: 'layui-layer-molv',
                 success: function (layero, index) {
                     let body = layer.getChildFrame('body', index);
@@ -149,7 +146,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layedit', 'laydate', 'util
                     layer.close(index);
                 }
             });
-            layer.full(index);
+
         },
 
         editAnnounce: function(data) {

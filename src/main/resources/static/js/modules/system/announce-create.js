@@ -6,7 +6,7 @@ layui.use(['ajax', 'layer', 'layedit'], function () {
     // 构建一个默认的编辑器
     let index = layedit.build('LAY_announce-textarea', {
         tool: ['strong', 'italic', 'underline', 'del', '|', 'left', 'center', 'right', '|', 'face', 'link', 'unlink'],
-        height: 100
+        height: 180
     });
 
     // 编辑器外部操作

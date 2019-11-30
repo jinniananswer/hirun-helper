@@ -24,7 +24,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'form', 'select', 
                     countName: 'total',
                     dataName: 'rows'
                 },
-                page: true,
+                page: false,
                 cols: [[
                     {type: 'checkbox'},
                     {field: 'id', title: 'ID', width: 60, align: 'center'},
@@ -32,11 +32,11 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'form', 'select', 
                     {field: 'name', title: '发送者', width: 80, align: 'center'},
                     {field: 'createTime', title: '时间', width: 160, align: 'center'},
                     {
-                        field: 'readed', title: '状态', width: 80, align: 'center', templet: function (d) {
+                        field: 'readed', title: '状态', width: 60, align: 'center', templet: function (d) {
                             if (d.readed) {
-                                return '<span class="layui-btn layui-btn-primary layui-btn-xs">已读</span>';
+                                return '<span class="layui-badge-dot layui-bg-gray"></span>';
                             } else {
-                                return '<span class="layui-btn layui-btn-normal layui-btn-xs">未读</span>';
+                                return '<span class="layui-badge-dot"></span>';
                             }
                         }
                     },
@@ -56,7 +56,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'form', 'select', 
                     countName: 'total',
                     dataName: 'rows'
                 },
-                page: true,
+                page: false,
                 cols: [[
                     {type: 'checkbox'},
                     {field: 'id', title: 'ID', width: 60, align: 'center'},
@@ -64,11 +64,11 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'form', 'select', 
                     {field: 'name', title: '发送者', width: 80, align: 'center'},
                     {field: 'createTime', title: '时间', width: 160, align: 'center'},
                     {
-                        field: 'readed', title: '状态', width: 80, align: 'center', templet: function (d) {
+                        field: 'readed', title: '状态', width: 60, align: 'center', templet: function (d) {
                             if (d.readed) {
-                                return '<span class="layui-btn layui-btn-primary layui-btn-xs">已读</span>';
+                                return '<span class="layui-badge-dot layui-bg-gray"></span>';
                             } else {
-                                return '<span class="layui-btn layui-btn-normal layui-btn-xs">未读</span>';
+                                return '<span class="layui-badge-dot"></span>';
                             }
                         }
                     },
@@ -203,7 +203,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'form', 'select', 
                 content: 'openUrl?url=modules/system/message-detail',
                 maxmin: true,
                 btn: ['我知道了'],
-                area: ['550px', '700px'],
+                area: ['550px', '400px'],
                 skin: 'layui-layer-molv',
                 success: function (layero, index) {
                     let body = layer.getChildFrame('body', index);
@@ -230,7 +230,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'form', 'select', 
                     layer.close(index);
                 }
             });
-            layer.full(index);
+
         },
     };
 
