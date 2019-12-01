@@ -54,6 +54,12 @@ public class Menu extends BaseEntity {
     private String menuUrl;
 
     /**
+     * 类型：（P:Pc, M:Mobile）
+     */
+    @TableField("type")
+    private String type;
+
+    /**
      * 菜单域
      */
     @TableField("domain_id")

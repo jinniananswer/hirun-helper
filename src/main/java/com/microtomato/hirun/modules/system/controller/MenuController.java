@@ -16,6 +16,7 @@ import com.microtomato.hirun.modules.user.entity.po.MenuTemp;
 import com.microtomato.hirun.modules.user.service.IMenuTempService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,6 +47,9 @@ public class MenuController {
     @Autowired
     private IMenuTempService menuTempServiceImpl;
 
+    @Value("${mhirun.host-port}")
+    private String mHirunHostPort;
+
     @GetMapping("/list")
     @RestResult
     public List<TreeNode> getMenuTree() {
@@ -63,6 +67,8 @@ public class MenuController {
 
         // 查询所有菜单集合
         Map<Long, Menu> menuMap = menuServiceImpl.listAllMenus();
+
+        convert(menuMap);
 
         // 根据权限进行过滤
         Set<String> menuUrls = new HashSet<>();
@@ -164,6 +170,23 @@ public class MenuController {
             Menu parentMenu = menuMap.get(parentMenuId);
             filteredMenuMap.put(parentMenu.getMenuId(), parentMenu);
             addParentMenus(parentMenu, filteredMenuMap, menuMap);
+        }
+    }
+
+    /**
+     * 老系统菜单通过 Url 参数携带新系统的 SessionId
+     *
+     * @param menuMap
+     */
+    private void convert(Map<Long, Menu> menuMap) {
+        String sid = WebContextUtils.getHttpSession().getId();
+        for (Menu menu : menuMap.values()) {
+            if ("M".equals(menu.getType())) {
+                if (null != menu.getMenuUrl()) {
+                    String menuUrl = mHirunHostPort + menu.getMenuUrl() + "?hirun-sid=" + sid;
+                    menu.setMenuUrl(menuUrl);
+                }
+            }
         }
     }
 }

@@ -2,10 +2,7 @@ package com.microtomato.hirun.modules.user.entity.po;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.microtomato.hirun.framework.data.BaseEntity;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
@@ -23,6 +20,7 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @TableName("ins_user")
 public class User extends BaseEntity {
 
