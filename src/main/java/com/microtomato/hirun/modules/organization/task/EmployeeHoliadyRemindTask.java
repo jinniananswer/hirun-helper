@@ -39,11 +39,10 @@ public class EmployeeHoliadyRemindTask {
     IOrgHrRelService orgHrRelService;
 
     /**
-     * 每天凌晨 5:10 开始执行。
+     * 每天凌晨 00:30 开始执行。
      * 查询休假到期数据，进行消息提醒
      */
-    @Scheduled(cron = "0 47 12 * * ?")
-    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    @Scheduled(cron = "0 30 0 * * ?")
     public void scheduled() {
 
         List<EmployeeHoliday> holidayList = holidayService.list(new QueryWrapper<EmployeeHoliday>().lambda()
@@ -57,7 +56,7 @@ public class EmployeeHoliadyRemindTask {
         for (EmployeeHoliday employeeHoliday : holidayList) {
             int days = TimeUtils.getAbsTimeDiffDay(LocalDateTime.now(), employeeHoliday.getEndTime());
 
-            if (days > 10) {
+            if (days != 10 && days != 0) {
                 continue;
             } else {
                 Employee hrEmployee = orgHrRelService.queryValidRemindEmployeeId("archive_manager", employeeHoliday.getEmployeeId());
@@ -65,13 +64,13 @@ public class EmployeeHoliadyRemindTask {
                     continue;
                 }
                 //发送消息给对应的人资
-                String hrContent = employeeService.getEmployeeNameEmployeeId(hrEmployee.getEmployeeId()) + " 你好。【" +
-                        employeeService.getEmployeeNameEmployeeId(hrEmployee.getEmployeeId()) + "】假期于" + days + "天后到期。";
-                notifyService.sendMessage(hrEmployee.getEmployeeId(), hrContent,1473L);
+                String hrContent = employeeService.getEmployeeNameEmployeeId(hrEmployee.getEmployeeId()) + " 您好。【" +
+                        employeeService.getEmployeeNameEmployeeId(employeeHoliday.getEmployeeId()) + "】假期于" + days + "天后到期。";
+                notifyService.sendMessage(hrEmployee.getEmployeeId(), hrContent, 1473L);
                 //发送消息给休假员工本人
-                String employeeContent = employeeService.getEmployeeNameEmployeeId(hrEmployee.getEmployeeId()) + " 你好。你的" +
+                String employeeContent = employeeService.getEmployeeNameEmployeeId(employeeHoliday.getEmployeeId()) + " 您好。您的" +
                         "假期于【" + days + "】天后到期。调整心态，回归工作！";
-                notifyService.sendMessage(hrEmployee.getEmployeeId(), employeeContent,1473L);
+                notifyService.sendMessage(hrEmployee.getEmployeeId(), employeeContent, 1473L);
 
             }
 
