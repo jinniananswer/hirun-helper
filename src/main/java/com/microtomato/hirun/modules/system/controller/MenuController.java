@@ -178,9 +178,14 @@ public class MenuController {
      *
      * @param menuMap
      */
-    private void convert(Map<Long, Menu> menuMap) {
+    private Map<Long, Menu> convert(Map<Long, Menu> menuMap) {
+        Map<Long, Menu> rtn = new HashMap(256);
+        rtn.putAll(menuMap);
+
         String sid = WebContextUtils.getHttpSession().getId();
-        for (Menu menu : menuMap.values()) {
+        for (Menu menu : rtn.values()) {
+            rtn.put(menu.getMenuId(), menu);
+
             if ("M".equals(menu.getType())) {
                 if (null != menu.getMenuUrl()) {
                     String menuUrl = mHirunHostPort + menu.getMenuUrl() + "?hirun-sid=" + sid;
@@ -188,5 +193,7 @@ public class MenuController {
                 }
             }
         }
+
+        return rtn;
     }
 }
