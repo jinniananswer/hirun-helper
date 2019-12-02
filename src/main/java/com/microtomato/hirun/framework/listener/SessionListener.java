@@ -19,13 +19,14 @@ public class SessionListener implements HttpSessionListener {
     public void sessionCreated(HttpSessionEvent httpSessionEvent) {
         HttpSession session = httpSessionEvent.getSession();
         SessionContext.addSession(session);
+        log.debug("sessionCreated sessionId: {}", session.getId());
     }
 
     @Override
     public void sessionDestroyed(HttpSessionEvent httpSessionEvent) {
         HttpSession session = httpSessionEvent.getSession();
         SessionContext.deleteSession(session);
-        log.debug("sessionDestroyed {}", session);
+        log.debug("sessionDestroyed sessionId: {}", session.getId());
     }
 
 }
