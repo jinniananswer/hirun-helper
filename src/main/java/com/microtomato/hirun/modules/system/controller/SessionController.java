@@ -1,9 +1,8 @@
 package com.microtomato.hirun.modules.system.controller;
 
-import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.data.Result;
-import com.microtomato.hirun.framework.util.Constants;
 import com.microtomato.hirun.framework.listener.SessionContext;
+import com.microtomato.hirun.framework.util.Constants;
 import com.microtomato.hirun.framework.util.ResultUtils;
 import com.microtomato.hirun.modules.user.entity.po.User;
 import lombok.extern.slf4j.Slf4j;
