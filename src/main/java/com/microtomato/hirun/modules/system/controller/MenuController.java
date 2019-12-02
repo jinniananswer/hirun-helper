@@ -181,11 +181,11 @@ public class MenuController {
 
         Map<Long, Menu> rtn = (Map<Long, Menu>) CloneUtils.deepCopy(menuMap);
 
-        String sid = WebContextUtils.getHttpSession().getId();
+        String token = (String) WebContextUtils.getHttpSession().getAttribute("token");
         for (Menu menu : rtn.values()) {
             if ("M".equals(menu.getType())) {
                 if (null != menu.getMenuUrl()) {
-                    String menuUrl = mHirunHostPort + menu.getMenuUrl() + "?hirun-sid=" + sid;
+                    String menuUrl = mHirunHostPort + menu.getMenuUrl() + "?hirun-sid=" + token;
                     menu.setMenuUrl(menuUrl);
                 }
             }

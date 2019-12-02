@@ -31,10 +31,10 @@
             <input type="password" name="password" id="password" class="form-control" placeholder="请输入登陆密码" required  lay-verify="required" value="" />
         </div>
     </div>
-    <div class="forgot">
-        <a href="#">忘记密码</a>
-        <p><input type="checkbox" name="remember-me" value="true" checked="checked" lay-skin="primary"/>Remember Me</p>
-    </div>
+<!--    <div class="forgot">-->
+<!--        <a href="#">忘记密码</a>-->
+<!--        <p><input type="checkbox" name="remember-me" value="true" checked="checked" lay-skin="primary"/>Remember Me</p>-->
+<!--    </div>-->
     <input type="hidden" id="contextPath" name="contextPath" th:value="${#httpServletRequest.getContextPath()}" />
     <button id="lay-submit" type="submit" lay-submit lay-filter="LAY-user-login-submit">登陆</button>
 </div>

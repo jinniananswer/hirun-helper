@@ -76,11 +76,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .successHandler(customAuthenticationSuccessHandler)
             .failureHandler(customAuthenticationFailHandler)
             .and()
-            .rememberMe()
-            // 两周之内登陆过不用重新登陆
-            .tokenValiditySeconds(60 * 60 * 24 * 14)
-            .tokenRepository(persistentTokenRepository())
-            .and()
+//            .rememberMe()
+//            // 两周之内登陆过不用重新登陆
+//            .tokenValiditySeconds(60 * 60 * 24 * 14)
+//            .tokenRepository(persistentTokenRepository())
+//            .and()
             .httpBasic();
 
         // 默认情况下 SpringSecurity 通过设置 X-Frame-Options: DENY 防止网页被 Frame，我们这需要警用该功能。
