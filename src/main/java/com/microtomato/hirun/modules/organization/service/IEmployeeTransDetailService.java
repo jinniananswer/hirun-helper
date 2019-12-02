@@ -1,5 +1,6 @@
 package com.microtomato.hirun.modules.organization.service;
 
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeTransDetailDTO;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeTransDetail;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -27,5 +28,7 @@ public interface IEmployeeTransDetailService extends IService<EmployeeTransDetai
      * @return
      */
     List<EmployeeTransDetail> queryVaildTransDetail(String type);
+
+    boolean confirmReturnDetail(EmployeeTransDetail transDetail);
 
 }

@@ -47,4 +47,9 @@ public interface IHrPendingService extends IService<HrPending> {
      *根据待办执行人ID查询待办
      */
     List<HrPending> queryPendingByExecuteId(Long executId);
+
+    /**
+     *
+     */
+    List<HrPending> queryPendingByEmployeeIdAndType(Long employeeId,String pendingType,String status);
 }

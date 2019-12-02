@@ -63,9 +63,11 @@
 </div>
 
 <script type="text/html" id="operateTmp">
-    {{#  if(d.pendingStatus == '1'){ }}
+    {{#  if(d.pendingStatus == '1' && (d.pendingType=='1'||d.pendingType=='2')){ }}
     <a href="#" class="layui-btn layui-btn-xs" lay-event="operate">接收</a>
     <a href="#" class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delete">删除</a>
+    {{#  } else if(d.pendingStatus == "1" && d.pendingType=='3'){ }}
+    <a href="#" class="layui-btn layui-btn-xs" lay-event="confirmReturn">确认</a>
     {{#  } else if(d.pendingStatus == "2"){ }}
     <a href="#" class="layui-btn layui-btn-normal layui-btn-xs" lay-event="detail">详情</a>
     {{#  } }}
