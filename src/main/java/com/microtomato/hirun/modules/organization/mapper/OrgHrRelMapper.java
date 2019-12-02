@@ -1,9 +1,18 @@
 package com.microtomato.hirun.modules.organization.mapper;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Constants;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.microtomato.hirun.modules.organization.entity.dto.HrPendingInfoDTO;
+import com.microtomato.hirun.modules.organization.entity.dto.OrgHrRelInfoDTO;
+import com.microtomato.hirun.modules.organization.entity.po.HrPending;
 import com.microtomato.hirun.modules.organization.entity.po.OrgHrRel;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.microtomato.hirun.framework.annotation.Storage;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 /**
  * <p>
@@ -16,5 +25,9 @@ import com.microtomato.hirun.framework.annotation.Storage;
 @Storage
 @DS("ins")
 public interface OrgHrRelMapper extends BaseMapper<OrgHrRel> {
+    @Select("select * " + " from ins_org_hr_rel a \n" +
+            " ${ew.customSqlSegment}"
+    )
+    IPage<OrgHrRelInfoDTO> queryOrgHrRelPage(Page<OrgHrRel> page, @Param(Constants.WRAPPER) Wrapper wrapper);
 
 }

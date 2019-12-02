@@ -1,5 +1,8 @@
 package com.microtomato.hirun.modules.organization.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.microtomato.hirun.modules.organization.entity.dto.OrgHrRelInfoDTO;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.entity.po.OrgHrRel;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -21,4 +24,8 @@ public interface IOrgHrRelService extends IService<OrgHrRel> {
     OrgHrRel queryValidQrgHrRel(Long orgId);
 
     Employee queryValidRemindEmployeeId(String employeeType, Long orgId);
+
+    IPage<OrgHrRelInfoDTO> queryOrgHrRelList(Long employeeId, String orgSet, Page<OrgHrRel> page);
+
+    boolean updateOrgHrRel(String id,Long archEmployeeID,Long relationEmployeeId);
 }
