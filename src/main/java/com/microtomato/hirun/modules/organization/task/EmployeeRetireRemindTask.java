@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * 员工休假到期提醒
+ * 员工退休到期提醒
  *
  * @author liuhui
  * @date 2019-11-27

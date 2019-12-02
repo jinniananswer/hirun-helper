@@ -34,6 +34,8 @@ layui.extend({
                                     return '借调';
                                 } else if (d.pendingType == 2) {
                                     return '调出';
+                                }else if (d.pendingType == 3) {
+                                    return '员工借调归还确认';
                                 }
                             }
                         },
@@ -90,6 +92,8 @@ layui.extend({
                     pendingManager.delete(data);
                 } else if (layEvent === 'detail') {
                     pendingManager.detail(data);
+                }else if (layEvent === 'confirmReturn') {
+                    pendingManager.confirmReturn(data);
                 }
             });
 
@@ -167,6 +171,30 @@ layui.extend({
                     body.find('#id').val(data.id);
                     form.render();
                 },
+            });
+            layer.full(index);
+        },
+
+        confirmReturn: function (data) {
+            var index = layer.open({
+                type: 2,
+                title: '员工归还确认',
+                content: 'openUrl?url=modules/organization/hr/transorg_return_confirm',
+                maxmin: true,
+                btn: ['确定', '取消'],
+                area: ['550px', '700px'],
+                skin: 'layui-layer-molv',
+                success: function (layero, index) {
+                    var body = layer.getChildFrame('body', index);
+                    body.find('#name').val(data.employeeName);
+                    body.find('#relPendingId').val(data.id);
+                    form.render();
+                },
+                yes: function (index, layero) {
+                    var body = layer.getChildFrame('body', index);
+                    var submit = body.find("#confirm-submit");
+                    submit.click();
+                }
             });
             layer.full(index);
         },

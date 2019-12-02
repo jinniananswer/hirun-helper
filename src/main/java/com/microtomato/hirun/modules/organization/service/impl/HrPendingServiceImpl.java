@@ -1,7 +1,10 @@
 package com.microtomato.hirun.modules.organization.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.modules.organization.entity.consts.HrPendingConst;
 import com.microtomato.hirun.modules.organization.entity.dto.HrPendingInfoDTO;
@@ -80,6 +83,15 @@ public class HrPendingServiceImpl extends ServiceImpl<HrPendingMapper, HrPending
         queryWrapper.eq("pending_execute_id",executId);
         queryWrapper.eq("pending_status",HrPendingConst.PENDING_STATUS_1);
         return this.hrPendingMapper.selectList(queryWrapper);
+    }
+
+    @Override
+    public List<HrPending> queryPendingByEmployeeIdAndType(Long employeeId, String pendingType, String status) {
+        QueryWrapper queryWrapper=new QueryWrapper();
+        queryWrapper.eq(employeeId!=null,"employee_id",employeeId);
+        queryWrapper.eq(StringUtils.isNotEmpty(pendingType),"pending_type",pendingType);
+        queryWrapper.eq(StringUtils.isNotEmpty(status),"pending_status",status);
+        return  this.hrPendingMapper.selectList(queryWrapper);
     }
 
 
