@@ -33,16 +33,14 @@ public class SessionController {
     public User authentication(@PathVariable String hirunSid) {
 
         HttpSession session = SessionContext.getSession(hirunSid);
-
         if (null == session) {
             throw new IllegalStateException("认证无效！");
         }
 
         SecurityContextImpl context = (SecurityContextImpl) session.getAttribute(Constants.SPRING_SECURITY_CONTEXT);
         UserDetails userDetails = (UserDetails) context.getAuthentication().getPrincipal();
-        log.debug("{} 认证有效！返回登录帐号：{}", hirunSid, userDetails.getUsername());
+        log.info("{} 认证有效！登录帐号：{}", hirunSid, userDetails.getUsername());
         return User.builder().username(userDetails.getUsername()).build();
-
     }
 
 }
