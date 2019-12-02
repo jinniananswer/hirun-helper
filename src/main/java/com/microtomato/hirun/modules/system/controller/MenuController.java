@@ -6,6 +6,7 @@ import com.microtomato.hirun.framework.data.TreeNode;
 import com.microtomato.hirun.framework.security.Role;
 import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.framework.util.CloneUtils;
 import com.microtomato.hirun.framework.util.TreeUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.system.entity.po.Menu;
@@ -66,9 +67,7 @@ public class MenuController {
         }
 
         // 查询所有菜单集合
-        Map<Long, Menu> menuMap = menuServiceImpl.listAllMenus();
-
-        menuMap = convert(menuMap);
+        Map<Long, Menu> menuMap = convert(menuServiceImpl.listAllMenus());
 
         // 根据权限进行过滤
         Set<String> menuUrls = new HashSet<>();
@@ -179,13 +178,11 @@ public class MenuController {
      * @param menuMap
      */
     private Map<Long, Menu> convert(Map<Long, Menu> menuMap) {
-        Map<Long, Menu> rtn = new HashMap(256);
-        rtn.putAll(menuMap);
+
+        Map<Long, Menu> rtn = (Map<Long, Menu>) CloneUtils.deepCopy(menuMap);
 
         String sid = WebContextUtils.getHttpSession().getId();
         for (Menu menu : rtn.values()) {
-            rtn.put(menu.getMenuId(), menu);
-
             if ("M".equals(menu.getType())) {
                 if (null != menu.getMenuUrl()) {
                     String menuUrl = mHirunHostPort + menu.getMenuUrl() + "?hirun-sid=" + sid;
