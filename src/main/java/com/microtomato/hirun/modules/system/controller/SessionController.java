@@ -1,8 +1,10 @@
 package com.microtomato.hirun.modules.system.controller;
 
 import com.microtomato.hirun.framework.annotation.RestResult;
+import com.microtomato.hirun.framework.data.Result;
 import com.microtomato.hirun.framework.util.Constants;
 import com.microtomato.hirun.framework.listener.SessionContext;
+import com.microtomato.hirun.framework.util.ResultUtils;
 import com.microtomato.hirun.modules.user.entity.po.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextImpl;
@@ -28,20 +30,18 @@ import javax.servlet.http.HttpSession;
 @RequestMapping("api/system/session/")
 public class SessionController {
 
-    @RestResult
     @GetMapping("/authentication/{hirunSid}")
-    public User authentication(@PathVariable String hirunSid) {
+    public Result authentication(@PathVariable String hirunSid) {
 
         HttpSession session = SessionContext.getSession(hirunSid);
         if (null == session) {
-            log.info("{} 认证无效！", hirunSid);
-            return null;
+            return ResultUtils.failure(hirunSid + " 认证无效!");
         }
 
         SecurityContextImpl context = (SecurityContextImpl) session.getAttribute(Constants.SPRING_SECURITY_CONTEXT);
         UserDetails userDetails = (UserDetails) context.getAuthentication().getPrincipal();
         log.info("{} 认证有效！登录帐号：{}", hirunSid, userDetails.getUsername());
-        return User.builder().username(userDetails.getUsername()).build();
+        return ResultUtils.success(User.builder().username(userDetails.getUsername()).build());
     }
 
 }
