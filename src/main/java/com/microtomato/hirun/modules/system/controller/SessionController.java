@@ -34,7 +34,7 @@ public class SessionController {
 
         HttpSession session = SessionContext.getSession(hirunSid);
         if (null == session) {
-            throw new IllegalStateException("认证无效！");
+            throw new IllegalStateException("认证无效！" + hirunSid);
         }
 
         SecurityContextImpl context = (SecurityContextImpl) session.getAttribute(Constants.SPRING_SECURITY_CONTEXT);
