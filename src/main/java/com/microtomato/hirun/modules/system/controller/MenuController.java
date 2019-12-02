@@ -68,7 +68,7 @@ public class MenuController {
         // 查询所有菜单集合
         Map<Long, Menu> menuMap = menuServiceImpl.listAllMenus();
 
-        convert(menuMap);
+        menuMap = convert(menuMap);
 
         // 根据权限进行过滤
         Set<String> menuUrls = new HashSet<>();
