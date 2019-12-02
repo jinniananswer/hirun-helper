@@ -113,4 +113,4 @@ mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml
 
 # mobile系统地址
-mhirun.host-port: http://139.129.29.141:8080/
+mhirun.host-port: http://http://47.105.64.145:8080/
