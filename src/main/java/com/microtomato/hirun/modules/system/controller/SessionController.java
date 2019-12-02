@@ -34,7 +34,9 @@ public class SessionController {
 
         HttpSession session = SessionContext.getSession(hirunSid);
         if (null == session) {
-            return ResultUtils.failure(hirunSid + " 认证无效!");
+            String msg = hirunSid + " 认证无效!";
+            log.info(msg);
+            return ResultUtils.failure(msg);
         }
 
         SecurityContextImpl context = (SecurityContextImpl) session.getAttribute(Constants.SPRING_SECURITY_CONTEXT);
