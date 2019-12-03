@@ -173,4 +173,12 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         return list;
     }
 
+    @Override
+    public EmployeeInfoDTO queryEmployeeInfoByEmployeeId(Long employeeId) {
+        if (employeeId==null){
+            return null;
+        }
+        return employeeMapper.queryEmployeeInfoByEmployeeId(employeeId);
+    }
+
 }

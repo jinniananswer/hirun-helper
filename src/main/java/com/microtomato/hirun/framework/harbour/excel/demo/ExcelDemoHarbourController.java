@@ -1,11 +1,16 @@
 package com.microtomato.hirun.framework.harbour.excel.demo;
 
 import com.alibaba.excel.support.ExcelTypeEnum;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.harbour.excel.AbstractExcelHarbour;
+import com.microtomato.hirun.framework.harbour.excel.ExcelConfig;
+import com.microtomato.hirun.modules.system.entity.po.Menu;
+import com.microtomato.hirun.modules.system.service.IMenuService;
 import com.microtomato.hirun.modules.user.entity.po.User;
 import com.microtomato.hirun.modules.user.service.IUserService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -14,9 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Steven
@@ -29,6 +32,27 @@ public class ExcelDemoHarbourController extends AbstractExcelHarbour {
 
     @Autowired
     private IUserService userServiceImpl;
+
+    @Autowired
+    private IMenuService menuServiceImpl;
+
+    @GetMapping("exportByTemplate")
+    public void exportByTemplate(HttpServletResponse response) throws IOException {
+        List<User> userList = userServiceImpl.list(Wrappers.<User>lambdaQuery().select(User::getUserId, User::getUsername).last("limit 100"));
+        List<Menu> menuList = menuServiceImpl.list(Wrappers.<Menu>lambdaQuery().select(Menu::getMenuId, Menu::getTitle, Menu::getMenuUrl));
+        Map<String, Object> fillMap = new HashMap(16);
+        fillMap.put("now", DateFormatUtils.format(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss"));
+        fillMap.put("total", 1001);
+
+        ExcelConfig excelConfig = ExcelConfig.builder()
+            .fileName("Excel导出示例.xlsx")
+            .templateFileName("demo.xlsx")
+            .fillMap(fillMap)
+            .sheet(Arrays.asList(0, 1))
+            .lists(Arrays.asList(userList, menuList))
+            .build();
+        exportExcelByTemplate(response, excelConfig);
+    }
 
     @GetMapping("export")
     public void export(HttpServletResponse response) throws IOException {

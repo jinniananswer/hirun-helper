@@ -32,6 +32,9 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         // Authentication接口封装认证信息
         log.info("Authentication success: {}", authentication.getName());
 
+        String token = TokenContext.associateWithToken(authentication.getName());
+        request.getSession().setAttribute("token", token);
+
         Result result = ResultUtils.success(authentication);
         response.setContentType("application/json;charset=UTF-8");
         response.getWriter().write(objectMapper.writeValueAsString(result));
