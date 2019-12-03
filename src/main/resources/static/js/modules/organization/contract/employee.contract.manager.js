@@ -33,6 +33,8 @@ layui.extend({}).define(['ajax', 'table', 'element', 'select', 'layer', 'form', 
                                     return '培训协议';
                                 } else if (d.contractType == 5) {
                                     return '保密协议';
+                                } else if(d.contractType==11){
+                                    return '返聘协议';
                                 }
                                 ;
                             }

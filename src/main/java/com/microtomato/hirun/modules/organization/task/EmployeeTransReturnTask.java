@@ -53,7 +53,7 @@ public class EmployeeTransReturnTask {
      * 每天 开始执行。
      * 查询当天应该归还的员工数据，然后给该员工原归属分公司人资生成一条待办任务
      */
-    @Scheduled(cron = "0 38 23 * * ?")
+    @Scheduled(cron = "0 14 21 * * ?")
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void scheduled() {
         List<EmployeeTransDetail> transDetailList = transDetailService.queryVaildTransDetail("1");
@@ -64,7 +64,7 @@ public class EmployeeTransReturnTask {
         for (EmployeeTransDetail transDetail : transDetailList) {
             int days = TimeUtils.getAbsTimeDiffDay(LocalDateTime.now(), transDetail.getEndTime());
             //确保低于10天的借调能在最后一天也能生成一条待办任务
-            if (days != 10 && days != 0) {
+            if (days == 10 && days != 0) {
                 continue;
             } else {
                 Long sourceOrgId = transDetail.getSourceOrgId();

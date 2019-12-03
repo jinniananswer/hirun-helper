@@ -36,7 +36,7 @@ public class EmployeeContractServiceImpl extends ServiceImpl<EmployeeContractMap
     public IPage<EmployeeContract> queryEmployeeContracts(Long employeeId, Page<EmployeeContract> page) {
         QueryWrapper<EmployeeContract> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("employee_id", employeeId);
-        queryWrapper.in("contract_type", Arrays.asList(1, 2, 3, 4, 5));
+        queryWrapper.in("contract_type", Arrays.asList(1, 2, 3, 4, 5,11));
         queryWrapper.apply("contract_start_time < contract_end_time ");
         queryWrapper.orderByDesc("create_time");
         IPage<EmployeeContract> iPage = this.contractMapper.selectPage(page, queryWrapper);

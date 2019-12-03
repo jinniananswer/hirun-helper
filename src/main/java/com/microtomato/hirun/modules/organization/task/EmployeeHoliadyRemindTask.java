@@ -2,6 +2,7 @@ package com.microtomato.hirun.modules.organization.task;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.microtomato.hirun.framework.util.TimeUtils;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeInfoDTO;
 import com.microtomato.hirun.modules.organization.entity.po.*;
 import com.microtomato.hirun.modules.organization.service.*;
 import com.microtomato.hirun.modules.system.service.INotifyService;
@@ -9,8 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -42,7 +41,7 @@ public class EmployeeHoliadyRemindTask {
      * 每天凌晨 00:30 开始执行。
      * 查询休假到期数据，进行消息提醒
      */
-    @Scheduled(cron = "0 30 0 * * ?")
+    @Scheduled(cron = "0 15 17 * * ?")
     public void scheduled() {
 
         List<EmployeeHoliday> holidayList = holidayService.list(new QueryWrapper<EmployeeHoliday>().lambda()
@@ -56,10 +55,15 @@ public class EmployeeHoliadyRemindTask {
         for (EmployeeHoliday employeeHoliday : holidayList) {
             int days = TimeUtils.getAbsTimeDiffDay(LocalDateTime.now(), employeeHoliday.getEndTime());
 
-            if (days != 10 && days != 0) {
+            if (days == 10 && days != 0) {
                 continue;
             } else {
-                Employee hrEmployee = orgHrRelService.queryValidRemindEmployeeId("archive_manager", employeeHoliday.getEmployeeId());
+                Long employeeId = employeeHoliday.getEmployeeId();
+                EmployeeInfoDTO infoDTO = employeeService.queryEmployeeInfoByEmployeeId(employeeId);
+                if (infoDTO == null) {
+                    return;
+                }
+                Employee hrEmployee = orgHrRelService.queryValidRemindEmployeeId("archive_manager", infoDTO.getEmployeeId());
                 if (hrEmployee == null) {
                     continue;
                 }
@@ -73,7 +77,6 @@ public class EmployeeHoliadyRemindTask {
                 notifyService.sendMessage(hrEmployee.getEmployeeId(), employeeContent, 1473L);
 
             }
-
 
         }
     }

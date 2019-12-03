@@ -3,6 +3,7 @@ package com.microtomato.hirun.modules.organization.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
+import com.microtomato.hirun.modules.organization.entity.consts.EmployeeConst;
 import com.microtomato.hirun.modules.organization.entity.consts.HrPendingConst;
 import com.microtomato.hirun.modules.organization.entity.domain.EmployeeDO;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
@@ -79,6 +80,7 @@ public class EmployeeTransDetailServiceImpl extends ServiceImpl<EmployeeTransDet
         //新增员工jobRole数据
         employeeJobRole.setStartDate(LocalDateTime.now());
         employeeJobRole.setEndDate(TimeUtils.getForeverTime());
+        employeeJobRole.setIsMain(EmployeeConst.JOB_ROLE_MAIN);
         employeeJobRoleService.save(employeeJobRole);
 
         //更新待办

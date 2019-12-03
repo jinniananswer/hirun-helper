@@ -90,7 +90,7 @@ layui.extend({
         },
 
         edit: function (data) {
-            layer.open({
+            var index=layer.open({
                 type: 2,
                 title: '休假信息修改',
                 content: 'openUrl?url=modules/organization/employee/update_employeeholiday',
@@ -118,6 +118,7 @@ layui.extend({
                     submit.click();
                 }
             });
+            layer.full(index);
         },
 
         delete: function (data) {
@@ -152,7 +153,7 @@ layui.extend({
         },
 
         add :function () {
-            layer.open({
+           var index= layer.open({
                 type: 2,
                 title: '员工休假新增',
                 content: 'openUrl?url=modules/organization/employee/create_employeeholiday',
@@ -174,6 +175,7 @@ layui.extend({
                     submit.click();
                 }
             });
+           layer.full(index);
         },
 
     };
