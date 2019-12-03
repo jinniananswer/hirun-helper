@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import com.microtomato.hirun.framework.util.Constants;
 import com.microtomato.hirun.framework.util.WebContextUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
  * @author Steven
  * @date 2019-04-28
  */
+@Slf4j
 @Component
 public class AutoSetMetaObjectAdvice implements MetaObjectHandler {
 
@@ -66,13 +68,13 @@ public class AutoSetMetaObjectAdvice implements MetaObjectHandler {
         LocalDateTime requestTime = getRequestTime();
 
         this.setUpdateFieldValByName(UPDATE_TIME, requestTime, metaObject);
-        this.setInsertFieldValByName(UPDATE_USER_ID, userId, metaObject);
+        this.setUpdateFieldValByName(UPDATE_USER_ID, userId, metaObject);
     }
 
     private Long getUserId() {
         Long userId = null;
         try {
-            WebContextUtils.getUserContext().getUserId();
+            userId = WebContextUtils.getUserContext().getUserId();
         } catch(Exception e) {
             userId = Constants.DEFAULT_USER_ID;
         }
