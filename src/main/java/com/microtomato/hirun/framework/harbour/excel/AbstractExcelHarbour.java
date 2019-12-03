@@ -1,8 +1,10 @@
 package com.microtomato.hirun.framework.harbour.excel;
 
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.read.listener.ReadListener;
 import com.alibaba.excel.support.ExcelTypeEnum;
+import com.alibaba.excel.write.metadata.WriteSheet;
 import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.metadata.style.WriteFont;
 import com.alibaba.excel.write.style.HorizontalCellStyleStrategy;
@@ -16,14 +18,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Excel 导入导出抽象类，被业务级 Controller 类直接继承
@@ -63,6 +66,46 @@ public abstract class AbstractExcelHarbour {
         contentWriteCellStyle.setHorizontalAlignment(HorizontalAlignment.CENTER);
         contentWriteCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
         return contentWriteCellStyle;
+    }
+
+    /**
+     * 以模板方式导出 Excel
+     *
+     * @param response
+     * @param excelConfig 配置
+     * @throws IOException
+     */
+    protected void exportExcelByTemplate(HttpServletResponse response, ExcelConfig excelConfig) throws IOException {
+
+        String templateFileName = excelConfig.getTemplateFileName();
+        List<Integer> sheet = excelConfig.getSheet();
+        List<List<?>> lists = excelConfig.getLists();
+        Map<String, Object> fillMap = excelConfig.getFillMap();
+
+        File file = ResourceUtils.getFile("classpath:excel-templates/" + templateFileName);
+        String templateAbsolutePath = file.getAbsolutePath();
+        log.error("模板绝对路径：{}", templateAbsolutePath);
+
+        response.setContentType("application/vnd.ms-excel");
+        response.setCharacterEncoding("UTF-8");
+        String fileName = URLEncoder.encode(excelConfig.getFileName(), "UTF-8");
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName);
+
+        ExcelWriter excelWriter = EasyExcel.write(response.getOutputStream()).withTemplate(templateAbsolutePath).build();
+
+        for (int i = 0; i < sheet.size(); i++) {
+            List<?> list = lists.get(i);
+            WriteSheet writeSheet = EasyExcel.writerSheet(sheet.get(i)).build();
+            excelWriter.fill(list, writeSheet);
+
+            if (null != fillMap) {
+                // excelWriter.fill(fillMap, writeSheet);;
+            }
+        }
+
+        // 千万别忘记关闭流
+        excelWriter.finish();
+
     }
 
     /**
