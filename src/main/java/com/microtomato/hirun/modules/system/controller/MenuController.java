@@ -185,7 +185,7 @@ public class MenuController {
         for (Menu menu : rtn.values()) {
             if ("M".equals(menu.getType())) {
                 if (null != menu.getMenuUrl()) {
-                    String menuUrl = mHirunHostPort + menu.getMenuUrl() + "?hirun-sid=" + token;
+                    String menuUrl = mHirunHostPort + menu.getMenuUrl() + "?hirun-token=" + token;
                     menu.setMenuUrl(menuUrl);
                 }
             }
