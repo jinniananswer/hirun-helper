@@ -99,7 +99,7 @@ public abstract class AbstractExcelHarbour {
             excelWriter.fill(list, writeSheet);
 
             if (null != fillMap) {
-                // excelWriter.fill(fillMap, writeSheet);;
+                excelWriter.fill(fillMap, writeSheet);;
             }
         }
 
