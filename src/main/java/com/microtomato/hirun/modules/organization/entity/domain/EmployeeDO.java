@@ -133,6 +133,10 @@ public class EmployeeDO {
             this.addWorkExperience(workExperiences);
         }
 
+        if (ArrayUtils.isNotEmpty(children)) {
+            this.addChildren(children);
+        }
+
         this.employeeHistoryService.createEntry(this.employee.getEmployeeId(), this.employee.getInDate().toLocalDate());
     }
 
