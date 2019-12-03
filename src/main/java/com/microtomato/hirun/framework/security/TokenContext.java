@@ -26,7 +26,7 @@ public class TokenContext {
      */
     private static final Map<String, String> HISTO_TOKEN_MAP = new ConcurrentHashMap<>(1000);
 
-    public static final char TOKEN_SPLIT_CHAR = '^';
+    public static final char TOKEN_SPLIT_CHAR = '_';
     public static final String DATE_FORMAT_PATTERN = "yyyyMMddHHmmss";
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_FORMAT_PATTERN);
