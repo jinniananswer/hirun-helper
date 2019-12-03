@@ -24,7 +24,7 @@ layui.define(['layer', 'jquery'], function(exports){
             if (needLoad == null || typeof(needLoad) == "undefined") {
                 needLoad = true;
             }
-            var successMethod = null;
+            let successMethod = null;
 
             successMethod = function(data) {
                 var code = data.code;
@@ -83,7 +83,27 @@ layui.define(['layer', 'jquery'], function(exports){
                     error: errFunc
                 }
             );
+        },
 
+        getJson : function(url, param, successFunc) {
+            let errFunc = function(data){
+                layer.closeAll('loading');
+                layer.alert('对不起，加载数据文件出错了，赶紧联系管理员吧', {
+                    skin: 'layui-layer-molv'
+                    ,closeBtn: 0
+                });
+            };
+            $.ajax(
+                {
+                    url:url,
+                    data: param,
+                    type: 'GET',
+                    dataType: 'json',
+                    async: true,
+                    success: successFunc,
+                    errror: errFunc
+                }
+            );
         }
     };
     exports('ajax', obj);
