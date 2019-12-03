@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.organization.service;
 
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeePieStatisticDTO;
+import com.microtomato.hirun.modules.organization.entity.dto.StatisticBarDTO;
 
 import java.util.List;
 
@@ -46,4 +47,10 @@ public interface IEmployeeStatisticService {
      * @return
      */
     List<EmployeePieStatisticDTO> countByType();
+
+    /**
+     * 统计一年内入职和离职的人数
+     * @return
+     */
+    StatisticBarDTO countInAndDestroyOneYear();
 }

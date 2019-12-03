@@ -5,6 +5,7 @@ import com.microtomato.hirun.framework.data.PieChart;
 import com.microtomato.hirun.framework.data.PieData;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeePieStatisticDTO;
+import com.microtomato.hirun.modules.organization.entity.dto.StatisticBarDTO;
 import com.microtomato.hirun.modules.organization.service.IEmployeeStatisticService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -141,6 +142,13 @@ public class EmployeeStatisticController {
         pie.setDatas(datas);
 
         return pie;
+    }
+
+    @PostMapping("/countInAndDestroyOneYear")
+    @RestResult
+    public StatisticBarDTO countInAndDestroyOneYear() {
+        StatisticBarDTO bar = this.employeeStatisticService.countInAndDestroyOneYear();
+        return bar;
     }
 
     private List<PieData> getPieData(List<EmployeePieStatisticDTO> pieStatistics) {

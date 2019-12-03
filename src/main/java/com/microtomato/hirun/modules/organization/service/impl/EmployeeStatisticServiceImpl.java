@@ -1,7 +1,10 @@
 package com.microtomato.hirun.modules.organization.service.impl;
 
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeePieStatisticDTO;
+import com.microtomato.hirun.modules.organization.entity.dto.StatisticBarDTO;
+import com.microtomato.hirun.modules.organization.entity.dto.StatisticBarValueDTO;
 import com.microtomato.hirun.modules.organization.mapper.EmployeeMapper;
 import com.microtomato.hirun.modules.organization.service.IEmployeeStatisticService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
@@ -10,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -115,5 +119,42 @@ public class EmployeeStatisticServiceImpl implements IEmployeeStatisticService {
             }
         }
         return typeStatistics;
+    }
+
+    @Override
+    public StatisticBarDTO countInAndDestroyOneYear() {
+        StatisticBarDTO bar = new StatisticBarDTO();
+        bar.setTitle("入职数与离职数对比");
+        bar.setSubtitle("最近12个月");
+        List<String> legend = new ArrayList<>();
+        legend.add("入职数");
+        legend.add("离职数");
+        bar.setLegend(legend);
+
+        List<String> months = new ArrayList<>();
+        for (int i=11;i>=0;i--) {
+            String month = TimeUtils.addMonths(TimeUtils.now(TimeUtils.DATE_FMT_3), TimeUtils.DATE_FMT_3, -i);
+            month = month.substring(0,4) + month.substring(5,7);
+            months.add(month);
+        }
+        bar.setXAxis(months);
+
+        List<StatisticBarValueDTO> values = new ArrayList<>();
+        StatisticBarValueDTO in = new StatisticBarValueDTO();
+        StatisticBarValueDTO destroy = new StatisticBarValueDTO();
+
+        List<Integer> inNums = this.employeeMapper.countInOneYear();
+        List<Integer> destroyNums = this.employeeMapper.countDestroyOneYear();
+        in.setName("入职数");
+        in.setData(inNums);
+
+        destroy.setName("离职数");
+        destroy.setData(destroyNums);
+
+        values.add(in);
+        values.add(destroy);
+
+        bar.setYAxis(values);
+        return bar;
     }
 }

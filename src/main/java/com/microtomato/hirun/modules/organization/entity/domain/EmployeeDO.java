@@ -315,4 +315,21 @@ public class EmployeeDO {
         LocalDate today = LocalDate.now();
         return TimeUtils.getAbsDateDiffYear(jobDate, today);
     }
+
+    /**
+     * 判断今天是否员工生日
+     * @return
+     */
+    public boolean isTodayBirthday() {
+        LocalDate birthday = this.employee.getBirthday();
+        if (birthday == null) {
+            return false;
+        }
+
+        LocalDate now = LocalDate.now();
+        if (birthday.getMonthValue() == now.getMonthValue() && birthday.getDayOfMonth() == now.getDayOfMonth()) {
+            return true;
+        }
+        return false;
+    }
 }

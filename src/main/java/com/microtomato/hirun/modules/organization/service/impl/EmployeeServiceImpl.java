@@ -5,7 +5,10 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.framework.util.SpringContextUtils;
+import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.organization.entity.consts.EmployeeConst;
+import com.microtomato.hirun.modules.organization.entity.domain.EmployeeDO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeExampleDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeInfoDTO;
@@ -19,8 +22,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
+import java.time.Duration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -179,6 +184,19 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
             return null;
         }
         return employeeMapper.queryEmployeeInfoByEmployeeId(employeeId);
+    }
+
+    @Override
+    public Map<String, String> showBirthdayWish(Long employeeId) {
+        EmployeeDO employeeDO = SpringContextUtils.getBean(EmployeeDO.class, employeeId);
+        Map<String, String> result = new HashMap<String, String>();
+        if (employeeDO.isTodayBirthday()) {
+            result.put("name", employeeDO.getEmployee().getName());
+
+            long pastDays = Duration.between(employeeDO.getEmployee().getInDate(), TimeUtils.getCurrentLocalDateTime()).toDays();
+            result.put("day", pastDays+"");
+        }
+        return result;
     }
 
 }

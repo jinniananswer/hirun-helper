@@ -10,6 +10,7 @@ import com.microtomato.hirun.modules.organization.entity.dto.EmployeeQueryCondit
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -57,4 +58,10 @@ public interface IEmployeeService extends IService<Employee> {
      * @return
      */
     EmployeeInfoDTO queryEmployeeInfoByEmployeeId(Long employeeId);
+
+    /**
+     * 显示生日祝福
+     * @return
+     */
+    Map<String, String> showBirthdayWish(Long employeeId);
 }

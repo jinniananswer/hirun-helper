@@ -130,4 +130,12 @@ public class EmployeeController extends AbstractExcelHarbour  {
     public List<Employee> queryChildEmployee4Destroy(Long employeeId) {
         return employeeServiceImpl.findSubordinate(employeeId);
     }
+
+    @GetMapping("/showBirthdayWish")
+    @RestResult
+    public Map<String, String> showBirthdayWish() {
+        UserContext userContext = WebContextUtils.getUserContext();
+        Long employeeId = userContext.getEmployeeId();
+        return employeeServiceImpl.showBirthdayWish(employeeId);
+    }
 }

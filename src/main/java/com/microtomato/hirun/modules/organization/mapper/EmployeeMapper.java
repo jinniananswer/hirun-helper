@@ -162,4 +162,48 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
             " and (now() between b.start_date and b.end_date) \n" +
             " and c.org_id = b.org_id")
     EmployeeInfoDTO queryEmployeeInfoByEmployeeId(Long employeeId);
+
+    /**
+     * 统计一年内员工的入职数
+     * @return
+     */
+    @Select("select ifnull(b.num, 0) value from (\n" +
+            "  SELECT date_format(date_add(now(), INTERVAL 0 MONTH), '%Y%m') AS month\n" +
+            "  UNION SELECT date_format(date_add(now(), INTERVAL -1 MONTH), '%Y%m') AS month\n" +
+            "  UNION SELECT date_format(date_add(now(), INTERVAL -2 MONTH), '%Y%m') AS month\n" +
+            "  UNION SELECT date_format(date_add(now(), INTERVAL -3 MONTH), '%Y%m') AS month\n" +
+            "  UNION SELECT date_format(date_add(now(), INTERVAL -4 MONTH), '%Y%m') AS month\n" +
+            "  UNION SELECT date_format(date_add(now(), INTERVAL -5 MONTH), '%Y%m') AS month\n" +
+            "  UNION SELECT date_format(date_add(now(), INTERVAL -6 MONTH), '%Y%m') AS month\n" +
+            "  UNION SELECT date_format(date_add(now(), INTERVAL -7 MONTH), '%Y%m') AS month\n" +
+            "  UNION SELECT date_format(date_add(now(), INTERVAL -8 MONTH), '%Y%m') AS month\n" +
+            "  UNION SELECT date_format(date_add(now(), INTERVAL -9 MONTH), '%Y%m') AS month\n" +
+            "  UNION SELECT date_format(date_add(now(), INTERVAL -10 MONTH), '%Y%m') AS month\n" +
+            "  UNION SELECT date_format(date_add(now(), INTERVAL -11 MONTH), '%Y%m') AS month\n" +
+            ") a left join (select date_format(in_date, '%Y%m') as indate, count(1) num from ins_employee where in_date >= concat(date_format(date_add(now(), interval -11 month), '%Y-%m'), '-01') group by indate) b\n" +
+            "  on b.indate = a.month\n" +
+            "order by month ")
+    List<Integer> countInOneYear();
+
+    /**
+     * 统计一年内员工的离职数
+     * @return
+     */
+    @Select("select ifnull(b.num, 0) value from (\n" +
+            "  SELECT date_format(date_add(now(), INTERVAL 0 MONTH), '%Y%m') AS month\n" +
+            "  UNION SELECT date_format(date_add(now(), INTERVAL -1 MONTH), '%Y%m') AS month\n" +
+            "  UNION SELECT date_format(date_add(now(), INTERVAL -2 MONTH), '%Y%m') AS month\n" +
+            "  UNION SELECT date_format(date_add(now(), INTERVAL -3 MONTH), '%Y%m') AS month\n" +
+            "  UNION SELECT date_format(date_add(now(), INTERVAL -4 MONTH), '%Y%m') AS month\n" +
+            "  UNION SELECT date_format(date_add(now(), INTERVAL -5 MONTH), '%Y%m') AS month\n" +
+            "  UNION SELECT date_format(date_add(now(), INTERVAL -6 MONTH), '%Y%m') AS month\n" +
+            "  UNION SELECT date_format(date_add(now(), INTERVAL -7 MONTH), '%Y%m') AS month\n" +
+            "  UNION SELECT date_format(date_add(now(), INTERVAL -8 MONTH), '%Y%m') AS month\n" +
+            "  UNION SELECT date_format(date_add(now(), INTERVAL -9 MONTH), '%Y%m') AS month\n" +
+            "  UNION SELECT date_format(date_add(now(), INTERVAL -10 MONTH), '%Y%m') AS month\n" +
+            "  UNION SELECT date_format(date_add(now(), INTERVAL -11 MONTH), '%Y%m') AS month\n" +
+            ") a left join (select date_format(destroy_date, '%Y%m') as destroydate, count(1) num from ins_employee where destroy_date >= concat(date_format(date_add(now(), interval -11 month), '%Y-%m'), '-01') group by destroydate) b\n" +
+            "  on b.destroydate = a.month\n" +
+            "order by month ")
+    List<Integer> countDestroyOneYear();
 }

@@ -206,6 +206,24 @@ public class TimeUtils {
     }
 
     /**
+     * localDate 转 自定义格式string
+     *
+     * @param localDate
+     * @param format        例：yyyy-MM-dd
+     * @return
+     */
+    public static String formatLocalDateToString(LocalDate localDate, String format) {
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+            return localDate.format(formatter);
+
+        } catch (DateTimeParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
      * string 转 LocalDateTime
      *
      * @param dateStr 例："2017-08-11 01:00:00"

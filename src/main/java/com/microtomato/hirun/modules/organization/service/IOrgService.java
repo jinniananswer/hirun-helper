@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.organization.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.microtomato.hirun.modules.organization.entity.dto.AreaOrgNumDTO;
 import com.microtomato.hirun.modules.organization.entity.po.Org;
 
 import java.util.List;
@@ -21,5 +22,7 @@ public interface IOrgService extends IService<Org> {
      * @return 组织列表
      */
     List<Org> listAllOrgs();
+
+    List<AreaOrgNumDTO> countShopNum(String areaType);
 
 }
