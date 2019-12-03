@@ -44,7 +44,7 @@ public class SessionController {
             log.info("{} 认证有效！登录帐号：{}", hirunToken, username);
             return ResultUtils.success(User.builder().username(username).build());
         } else if (IS_AUTHENTICATED_LEN == split.length) {
-            String msg = hirunToken + " 已失效,上次认证时间: " + split[2];
+            String msg = hirunToken + " 已失效,上次认证时间: " + split[1];
             log.info(msg);
             return ResultUtils.failure(msg);
         } else {
