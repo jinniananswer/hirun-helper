@@ -3,6 +3,7 @@ package com.microtomato.hirun.framework.security;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.microtomato.hirun.framework.util.Constants;
+import com.microtomato.hirun.modules.user.entity.consts.UserConst;
 import com.microtomato.hirun.modules.user.entity.po.FuncRole;
 import com.microtomato.hirun.modules.user.entity.po.FuncTemp;
 import com.microtomato.hirun.modules.user.entity.po.User;
@@ -64,6 +65,7 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
             new QueryWrapper<User>().lambda()
                 .select(User::getUserId, User::getUsername, User::getPassword, User::getMobileNo, User::getStatus)
                 .eq(User::getUsername, username)
+                .eq(User::getStatus, UserConst.STATUS_NORMAL)
         );
         if (null == user) {
             // 这里找不到必须抛异常
