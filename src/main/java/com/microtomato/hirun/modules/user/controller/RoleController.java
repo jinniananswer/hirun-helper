@@ -4,21 +4,15 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.util.Constants;
 import com.microtomato.hirun.modules.user.entity.po.Role;
-import net.sf.cglib.core.Local;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.beans.factory.annotation.Autowired;
-import lombok.extern.slf4j.Slf4j;
-
 import com.microtomato.hirun.modules.user.service.IRoleService;
-
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -70,12 +64,6 @@ public class RoleController {
 
         return roleList;
 
-    }
-
-    public static void main(String[] args) {
-        String startEndDate = "2019-12-04 - 2020-01-02";
-        String[] split = StringUtils.splitByWholeSeparator(startEndDate, " - ");
-        System.out.printf("[%s] [%s]", split[0], split[1]);
     }
 
 }

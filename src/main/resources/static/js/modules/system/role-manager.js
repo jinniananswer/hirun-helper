@@ -20,160 +20,20 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layedit', 'laydate', 'laye
                 layer.msg(elem.text());
             });
 
-            // 菜单树
-            tree.render({
-                elem: '#menuTree',
-                data: [{
-                    title: '一级1'
-                    , id: 1
-                    , field: 'name1'
-                    , checked: true
-                    , spread: true
-                    , children: [{
-                        title: '二级1-1 可允许跳转'
-                        , id: 3
-                        , field: 'name11'
-                        , href: 'https://www.layui.com/'
-                        , children: [{
-                            title: '三级1-1-3'
-                            , id: 23
-                            , field: ''
-                            , children: [{
-                                title: '四级1-1-3-1'
-                                , id: 24
-                                , field: ''
-                                , children: [{
-                                    title: '五级1-1-3-1-1'
-                                    , id: 30
-                                    , field: ''
-                                }, {
-                                    title: '五级1-1-3-1-2'
-                                    , id: 31
-                                    , field: ''
-                                }]
-                            }]
-                        }, {
-                            title: '三级1-1-1'
-                            , id: 7
-                            , field: ''
-                            , children: [{
-                                title: '四级1-1-1-1 可允许跳转'
-                                , id: 15
-                                , field: ''
-                                , href: 'https://www.layui.com/doc/'
-                            }]
-                        }, {
-                            title: '三级1-1-2'
-                            , id: 8
-                            , field: ''
-                            , children: [{
-                                title: '四级1-1-2-1'
-                                , id: 32
-                                , field: ''
-                            }]
-                        }]
-                    }, {
-                        title: '二级1-2'
-                        , id: 4
-                        , spread: true
-                        , children: [{
-                            title: '三级1-2-1'
-                            , id: 9
-                            , field: ''
-                            , disabled: true
-                        }, {
-                            title: '三级1-2-2'
-                            , id: 10
-                            , field: ''
-                        }]
-                    }, {
-                        title: '二级1-3'
-                        , id: 20
-                        , field: ''
-                        , children: [{
-                            title: '三级1-3-1'
-                            , id: 21
-                            , field: ''
-                        }, {
-                            title: '三级1-3-2'
-                            , id: 22
-                            , field: ''
-                        }]
-                    }]
-                }, {
-                    title: '一级2'
-                    , id: 2
-                    , field: ''
-                    , spread: true
-                    , children: [{
-                        title: '二级2-1'
-                        , id: 5
-                        , field: ''
-                        , spread: true
-                        , children: [{
-                            title: '三级2-1-1'
-                            , id: 11
-                            , field: ''
-                        }, {
-                            title: '三级2-1-2'
-                            , id: 12
-                            , field: ''
-                        }]
-                    }, {
-                        title: '二级2-2'
-                        , id: 6
-                        , field: ''
-                        , children: [{
-                            title: '三级2-2-1'
-                            , id: 13
-                            , field: ''
-                        }, {
-                            title: '三级2-2-2'
-                            , id: 14
-                            , field: ''
-                            , disabled: true
-                        }]
-                    }]
-                }, {
-                    title: '一级3'
-                    , id: 16
-                    , field: ''
-                    , children: [{
-                        title: '二级3-1'
-                        , id: 17
-                        , field: ''
-                        , fixed: true
-                        , children: [{
-                            title: '三级3-1-1'
-                            , id: 18
-                            , field: ''
-                        }, {
-                            title: '三级3-1-2'
-                            , id: 19
-                            , field: ''
-                        }]
-                    }, {
-                        title: '二级3-2'
-                        , id: 27
-                        , field: ''
-                        , children: [{
-                            title: '三级3-2-1'
-                            , id: 28
-                            , field: ''
-                        }, {
-                            title: '三级3-2-2'
-                            , id: 29
-                            , field: ''
-                        }]
-                    }]
-                }],
-                showCheckbox: true,
-                id: 'demoId1',
-                isJump: true, // 是否允许点击节点时弹出新窗口跳转
-                click: function (obj) {
-                    var data = obj.data;  //获取当前点击的节点数据
-                    layer.msg('状态：' + obj.state + '<br>节点数据：' + JSON.stringify(data));
-                }
+
+            layui.ajax.get('api/system/menu/list-all', '', function (data) {
+                let json = eval(data);
+                let menus = json.rows;
+
+                tree.render({
+                    elem: '#menuTree',
+                    data: menus,
+                    showCheckbox: true,
+                    click: function (obj) {
+                        let data = obj.data;  //获取当前点击的节点数据
+                        layer.msg('状态：' + obj.state + '<br>节点数据：' + JSON.stringify(data));
+                    }
+                });
             });
 
             let announce = table.render({
@@ -181,6 +41,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layedit', 'laydate', 'laye
                 toolbar: '#roleToolbar',
                 defaultToolbar: ['filter'],
                 height: 'full-20',
+                url: 'api/user/role/role-list',
                 fitColumns: true,
                 response: {
                     msgName: 'message',
@@ -188,9 +49,18 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layedit', 'laydate', 'laye
                     dataName: 'rows'
                 },
                 cols: [[
+                    {type: 'radio', fixed: 'left'},
                     {field: 'roleId', title: 'ID', width: 60, align: 'center'},
                     {field: 'roleName', title: '角色名', align: 'center'},
-                    {field: 'status', title: '状态', align: 'left'},
+                    {
+                        field: 'status', title: '状态', align: 'center', templet: function (d) {
+                            if (d.status == '0') {
+                                return '<span class="layui-badge layui-bg-orange">有效</span>';
+                            } else {
+                                return '<span class="layui-badge layui-bg-gray">失效</span>';
+                            }
+                        }
+                    },
                     {field: 'createTime', title: '创建时间', width: 160, align: 'center'},
                     {fixed: 'right', align: 'center', title: '操作', width: 150, fixed: 'right', toolbar: '#roleBar'}
                 ]],

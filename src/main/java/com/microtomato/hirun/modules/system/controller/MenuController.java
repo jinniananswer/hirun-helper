@@ -5,10 +5,8 @@ import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.data.TreeNode;
 import com.microtomato.hirun.framework.security.Role;
 import com.microtomato.hirun.framework.security.UserContext;
-import com.microtomato.hirun.framework.util.ArrayUtils;
-import com.microtomato.hirun.framework.util.CloneUtils;
-import com.microtomato.hirun.framework.util.TreeUtils;
-import com.microtomato.hirun.framework.util.WebContextUtils;
+import com.microtomato.hirun.framework.util.*;
+import com.microtomato.hirun.modules.system.entity.dto.MenuNode;
 import com.microtomato.hirun.modules.system.entity.po.Menu;
 import com.microtomato.hirun.modules.system.entity.po.Page;
 import com.microtomato.hirun.modules.system.service.IMenuService;
@@ -50,6 +48,34 @@ public class MenuController {
 
     @Value("${mhirun.host-port}")
     private String mHirunHostPort;
+
+    @GetMapping("list-all")
+    @RestResult
+    public List<MenuNode> listAll() {
+
+        List<MenuNode> nodes = new ArrayList<>();
+        Map<Long, Menu> longMenuMap = menuServiceImpl.listAllMenus();
+        List<Menu> menus = new ArrayList(longMenuMap.values());
+
+        for (Menu menu : menus) {
+
+            MenuNode node = new MenuNode();
+            node.setId(menu.getMenuId());
+            node.setTitle(menu.getTitle());
+            node.setField("");
+            node.setChecked(false);
+            node.setSpread(false);
+
+            if (null != menu.getParentMenuId()) {
+                node.setPid(menu.getParentMenuId());
+            }
+
+            nodes.add(node);
+        }
+
+        List<MenuNode> tree = MenuTreeUtils.build(nodes);
+        return tree;
+    }
 
     @GetMapping("/list")
     @RestResult

@@ -1,20 +1,17 @@
 package com.microtomato.hirun.framework.util;
 
-import com.microtomato.hirun.framework.data.TreeNode;
 import com.microtomato.hirun.modules.system.entity.dto.MenuNode;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 构造树的工具
+ * 菜單构造树的工具
  *
- * @author jinnian
+ * @author Steven
  * @date 2019-09-08 16:42
  **/
-public class TreeUtils {
-
+public class MenuTreeUtils {
 
     /**
      * 构建通用树结构
@@ -22,15 +19,15 @@ public class TreeUtils {
      * @param nodes
      * @return
      */
-    public static List<TreeNode> build(List<TreeNode> nodes) {
-        List<TreeNode> roots = findRoot(nodes);
+    public static List<MenuNode> build(List<MenuNode> nodes) {
+        List<MenuNode> roots = findRoot(nodes);
 
         if (ArrayUtils.isEmpty(roots)) {
             return null;
         }
 
-        for (TreeNode root : roots) {
-            root.setPath(root.getTitle());
+        for (MenuNode root : roots) {
+            root.setTitle(root.getTitle());
             buildChildren(root, nodes);
         }
 
@@ -43,18 +40,16 @@ public class TreeUtils {
      * @param node
      * @param nodes
      */
-    private static void buildChildren(TreeNode node, List<TreeNode> nodes) {
+    private static void buildChildren(MenuNode node, List<MenuNode> nodes) {
         if (ArrayUtils.isEmpty(nodes)) {
             return;
         }
 
-        List<TreeNode> children = new ArrayList<>();
-        for (TreeNode child : nodes) {
-            if (StringUtils.equals(child.getParentId(), node.getId())) {
+        List<MenuNode> children = new ArrayList<>();
+        for (MenuNode child : nodes) {
+            if (child.getPid() == node.getId()) {
                 children.add(child);
-                String path = node.getPath() + "-" + child.getTitle();
-                child.setPath(path);
-
+                child.setTitle(child.getTitle());
                 buildChildren(child, nodes);
             }
         }
@@ -70,16 +65,16 @@ public class TreeUtils {
      * @param nodes
      * @return
      */
-    public static List<TreeNode> findRoot(List<TreeNode> nodes) {
+    public static List<MenuNode> findRoot(List<MenuNode> nodes) {
         if (ArrayUtils.isEmpty(nodes)) {
             return null;
         }
 
-        List<TreeNode> result = new ArrayList<>();
-        for (TreeNode node : nodes) {
-            String parentId = node.getParentId();
-            if (StringUtils.isEmpty(parentId)) {
-                //找不到上级节点，即默认视为根节点
+        List<MenuNode> result = new ArrayList<>();
+        for (MenuNode node : nodes) {
+            Long parentId = node.getPid();
+            if (null == parentId) {
+                // 找不到上级节点，即默认视为根节点
                 result.add(node);
             }
         }
