@@ -1,10 +1,12 @@
 layui.extend({
     orgTree: 'org',
-}).define(['ajax', 'table', 'element', 'orgTree', 'layer', 'form', 'select', 'redirect'], function (exports) {
+}).define(['ajax', 'table', 'element', 'orgTree', 'layer', 'form', 'select', 'redirect','laydate'], function (exports) {
     var $ = layui.$;
     var table = layui.table;
     var layer = layui.layer;
     var form = layui.form;
+    var laydate = layui.laydate;
+
     var employee = {
         init: function () {
 
@@ -12,7 +14,25 @@ layui.extend({
             layui.select.init('employeeStatus', 'EMPLOYEE_STATUS', '', true);
             layui.select.init('type', 'EMPLOYEE_TYPE', '', true);
             layui.select.init('isBlackList', 'YES_NO', '', true);
+            layui.select.init('jobRole', 'JOB_ROLE', null, true);
+            layui.select.init('jobRoleNature', 'JOB_NATURE',null, true);
+            layui.select.init('discountRate', 'DISCOUNT_RATE',null, true);
 
+            laydate.render({
+                elem: '#inDateEnd',
+            });
+
+            laydate.render({
+                elem: '#inDateStart',
+            });
+
+            laydate.render({
+                elem: '#destroyDateStart',
+            });
+
+            laydate.render({
+                elem: '#destroyDateEnd',
+            });
 
             var ins = table.render({
                 elem: "#employee_table",
@@ -51,7 +71,7 @@ layui.extend({
                         },
                         {field: 'jobRoleName', title: '岗位', width: 150, align: 'center'},
                         {field: 'orgPath', title: '部门', align: 'center'},
-                        {field: 'companyAge', title: '工作年限', width: 80, align: 'center'},
+                        {field: 'companyAge', title: '工作年限', width: 150, align: 'center'},
                         {field: 'status', title: '状态', width: 100, align: 'center',fixed: 'right', templet: function (d) {
                                 if (d.employeeStatus == 0) {
                                     return '在职';
@@ -84,7 +104,18 @@ layui.extend({
                         employeeStatus: $("select[name='employeeStatus']").val(),
                         type: $("select[name='type']").val(),
                         isBlackList: $("#isBlackList").val(),
-                        otherStatus:$('#otherStatus').val()
+                        otherStatus:$('#otherStatus').val(),
+                        jobRole:$("select[name='jobRole']").val(),
+                        jobRoleNature:$("select[name='jobRoleNature']").val(),
+                        discountRate:$("select[name='discountRate']").val(),
+                        jobYearStart:$('#jobYearStart').val(),
+                        jobYearEnd:$('#jobYearEnd').val(),
+                        ageStart:$('#ageStart').val(),
+                        ageEnd:$('#ageEnd').val(),
+                        inDateStart:$('#inDateStart').val(),
+                        inDateEnd:$('#inDateEnd').val(),
+                        destroyDateStart:$('#destroyDateStart').val(),
+                        destroyDateEnd:$('#destroyDateEnd').val(),
                     }
                 })
             });
@@ -209,6 +240,18 @@ layui.extend({
 
         loadEmployeeArchive:function (id,name) {
             layui.redirect.open('openUrl?url=modules/organization/employee/my_archive&employeeId='+id, name+'的档案');
+        },
+
+        moreCondition:function (type) {
+            if(type=='appear'){
+                $("#more").show();
+                $("#conceal").show();
+                $("#appear").hide();
+            }else{
+                $("#more").hide();
+                $("#conceal").hide();
+                $("#appear").show();
+            }
         }
 
     };

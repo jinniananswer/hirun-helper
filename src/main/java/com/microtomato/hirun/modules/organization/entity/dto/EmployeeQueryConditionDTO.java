@@ -2,6 +2,9 @@ package com.microtomato.hirun.modules.organization.entity.dto;
 
 
 import lombok.Data;
+
+import java.time.LocalDate;
+
 /**
  * @program: hirun-helper
  * @description: 员工查询条件数据传输对象
@@ -35,5 +38,27 @@ public class EmployeeQueryConditionDTO {
     private String orgSet;
 
     private String otherStatus;
+
+    private String jobRole;
+
+    private String jobRoleNature;
+
+    private String discountRate;
+
+    private String ageStart;
+
+    private String ageEnd;
+
+    private String jobYearStart;
+
+    private String jobYearEnd;
+
+    private LocalDate inDateEnd;
+
+    private LocalDate inDateStart;
+
+    private LocalDate destroyDateStart;
+
+    private LocalDate destroyDateEnd;
 
 }

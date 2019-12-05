@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.harbour.excel.AbstractExcelHarbour;
+import com.microtomato.hirun.framework.harbour.excel.ExcelConfig;
 import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.organization.entity.dto.*;
@@ -20,9 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -138,4 +137,20 @@ public class EmployeeController extends AbstractExcelHarbour  {
         Long employeeId = userContext.getEmployeeId();
         return employeeServiceImpl.showBirthdayWish(employeeId);
     }
+
+    @GetMapping("/exportEmployeeUnusualInfo")
+    @RestResult
+    public void exportEmployeeUnusualInfo(HttpServletResponse response) throws IOException {
+        Map<String, Object> fillMap = new HashMap(16);
+        List list=new ArrayList();
+        ExcelConfig excelConfig = ExcelConfig.builder()
+                .fileName("2019动态汇总.xlsx")
+                .templateFileName("2019.xlsx")
+                .fillMap(fillMap)
+                .sheet(new ArrayList<>())
+                .lists(new ArrayList<>())
+                .build();
+        exportExcelByTemplate(response, excelConfig);
+    }
+
 }

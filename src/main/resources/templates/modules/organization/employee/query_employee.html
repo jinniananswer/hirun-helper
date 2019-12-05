@@ -15,108 +15,214 @@
 </head>
 <body>
 <div class="layui-fluid">
-            <div class="layui-card">
-                <div class="layui-card-header">员工档案列表</div>
-                <div class="layui-card-body">
-                    <form class="layui-form" id="query_form">
-                        <div class="layui-form-item">
-                            <div class="layui-inline">
-                                <label class="layui-form-label">姓名：</label>
-                                <div class="layui-input-block">
-                                    <input type="text" name="name" id="name" autocomplete="off" class="layui-input"/>
-                                </div>
-                            </div>
-                            <div class="layui-inline">
-                                <label class="layui-form-label">电话号码：</label>
-                                <div class="layui-input-block" style="">
-                                    <input type="text" name="mobileNo" id="mobileNo" autocomplete="off" class="layui-input"
-                                           placeholder=""/>
-                                </div>
-                            </div>
-                            <div class="layui-inline">
-                                <label class="layui-form-label">部门：</label>
-                                <div class="layui-input-block">
-                                    <input type="text" id="orgPath" name="orgPath" onclick="layui.employee.selectOrg();" placeholder="请点击选择部门" autocomplete="off" class="layui-input"/>
-                                    <input type="hidden" id="orgSet" name="orgSet"/>
-                                </div>
-                            </div>
-                            <div class="layui-inline">
-                                <label class="layui-form-label">性别：</label>
-                                <div class="layui-input-block" >
-                                    <div class="layui-form" lay-filter="sex" style="width: 184px">
-                                        <select id="sex" name="sex">
+    <div class="layui-card">
+        <div class="layui-card-header">员工档案列表</div>
+        <div class="layui-card-body">
+            <form class="layui-form" id="query_form">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">姓名</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="name" id="name" autocomplete="off" class="layui-input"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">电话号码</label>
+                        <div class="layui-input-block" style="">
+                            <input type="text" name="mobileNo" id="mobileNo" autocomplete="off" class="layui-input"
+                                   placeholder=""/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">部门</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="orgPath" name="orgPath" onclick="layui.employee.selectOrg();"
+                                   placeholder="请点击选择部门" autocomplete="off" class="layui-input"/>
+                            <input type="hidden" id="orgSet" name="orgSet"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">性别</label>
+                        <div class="layui-input-block">
+                            <div class="layui-form" lay-filter="sex" style="width: 184px">
+                                <select id="sex" name="sex">
 
-                                        </select>
-                                    </div>
-                                </div>
+                                </select>
                             </div>
                         </div>
-                        <div class="layui-form-item">
-                            <div class="layui-inline">
-                                <label class="layui-form-label">状态：</label>
-                                <div class="layui-input-block">
-                                    <div class="layui-form" lay-filter="employeeStatus" style="width: 184px">
-                                        <select id="employeeStatus" name="employeeStatus">
+                    </div>
+                    <div class="layui-inline" style="float: right">
+                        <label class="layui-form-label" id="appear">
+                            <button class="layui-btn layui-btn-xs" style="background:#ea986c" type="button"
+                                    id="showMoreCondition" onclick="layui.employee.moreCondition('appear');"><i
+                                    class="layui-icon layui-icon-down"></i>更多
+                            </button>
+                        </label>
+                        <label class="layui-form-label" style="display: none" id="conceal">
+                            <button class="layui-btn layui-btn-xs" style="background:#ea986c" type="button"
+                                    id="hideMoreCondition" onclick="layui.employee.moreCondition('conceal');"><i
+                                    class="layui-icon layui-icon-up"></i>收起
+                            </button>
+                        </label>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">状态</label>
+                        <div class="layui-input-block">
+                            <div class="layui-form" lay-filter="employeeStatus" style="width: 184px">
+                                <select id="employeeStatus" name="employeeStatus">
 
-                                        </select>
-                                    </div>
-                                </div>
+                                </select>
                             </div>
-                            <div class="layui-inline">
-                                <label class="layui-form-label">员工类型：</label>
-                                <div class="layui-input-block">
-                                    <div class="layui-form" lay-filter="type" style="width: 184px">
-                                        <select id="type" name="type">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">员工类型</label>
+                        <div class="layui-input-block">
+                            <div class="layui-form" lay-filter="type" style="width: 184px">
+                                <select id="type" name="type">
 
-                                        </select>
-                                    </div>
-                                </div>
+                                </select>
                             </div>
-                            <div class="layui-inline">
-                                <label class="layui-form-label">异动状态：</label>
-                                <div class="layui-input-block" style="width: 184px">
-                                    <select name="otherStatus" id="otherStatus" >
-                                        <option value="">请选择</option>
-                                        <option value="1">休假</option>
-                                        <option value="2">借调</option>
-                                        <option value="3">调出</option>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">异动状态</label>
+                        <div class="layui-input-block" style="width: 184px">
+                            <select name="otherStatus" id="otherStatus">
+                                <option value="">请选择</option>
+                                <option value="1">休假</option>
+                                <option value="2">借调</option>
+                                <option value="3">调出</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">永不录用</label>
+                        <div class="layui-input-block" style="width: 184px">
+                            <div class="layui-form" lay-filter="isBlackList" style="width: 184px">
+                                <select id="isBlackList" name="isBlackList">
+
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">
+                            <button class="layui-btn" type="button" id="queryEmployee"><i
+                                    class="layui-icon">&#xe615;</i>查询
+                            </button>
+                        </label>
+
+                    </div>
+                </div>
+                <div id="more" style="display:none">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">岗位</label>
+                            <div class="layui-input-block">
+                                <div class="layui-form" lay-filter="jobRole" style="width: 184px">
+                                    <select id="jobRole" name="jobRole" lay-verify="required" lay-search>
+
                                     </select>
                                 </div>
                             </div>
-                            <div class="layui-inline">
-                                <label class="layui-form-label">黑名单</label>
-                                <div class="layui-input-block" style="width: 184px">
-                                    <div class="layui-form" lay-filter="isBlackList" style="width: 184px">
-                                        <select id="isBlackList" name="isBlackList">
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">岗位性质</label>
+                            <div class="layui-input-block">
+                                <div class="layui-form" lay-filter="jobRoleNature" style="width: 184px">
+                                    <select id="jobRoleNature" name="jobRoleNature" lay-verify="required" lay-filter="jobRoleNature">
 
-                                        </select>
-                                    </div>
+                                    </select>
                                 </div>
                             </div>
-                            <div class="layui-inline">
-                                <label class="layui-form-label"><button class="layui-btn" type="button" id="queryEmployee"><i class="layui-icon">&#xe615;</i>查询</button></label>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">折算比例</label>
+                            <div class="layui-input-block">
+                                <div class="layui-form" lay-filter="discountRate" style="width: 184px">
+                                    <select id="discountRate" name="discountRate" lay-verify="required" lay-filter="discountRate">
 
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                    </form>
-                    <div id="orgTree" style="display:none">
-
+                        <div class="layui-inline">
+                            <label class="layui-form-label">工作年限</label>
+                            <div class="layui-input-inline" style="width: 80px;">
+                                <input type="text" name="jobYearStart" id="jobYearStart"  autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid">-</div>
+                            <div class="layui-input-inline" style="width: 80px;">
+                                <input type="text" name="jobYearEnd" id="jobYearEnd" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
                     </div>
-                    <table lay-even class="layui-hide" id="employee_table" lay-filter="employee_table" lay-size="lg"></table>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">年龄</label>
+                            <div class="layui-input-inline" style="width: 80px;">
+                                <input type="text" name="ageStart" id="ageStart"  autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid">-</div>
+                            <div class="layui-input-inline" style="width: 80px;">
+                                <input type="text" name="ageEnd" id="ageEnd" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">入职时间</label>
+                            <div class="layui-input-inline" style="width: 120px;">
+                                <input type="text" name="inDateStart" id="inDateStart" autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid">-</div>
+                            <div class="layui-input-inline" style="width: 120px;">
+                                <input type="text" name="inDateEnd" id="inDateEnd" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">离职时间</label>
+                                <div class="layui-input-inline" style="width: 120px;">
+                                    <input type="text" name="destroyDateStart" id="destroyDateStart"  autocomplete="off" class="layui-input">
+                                </div>
+                                <div class="layui-form-mid">-</div>
+                                <div class="layui-input-inline" style="width: 120px;">
+                                    <input type="text" name="destroyDateEnd" id="destroyDateEnd" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+            </form>
+            <div id="orgTree" style="display:none">
+
             </div>
+            <table lay-even class="layui-hide" id="employee_table" lay-filter="employee_table" lay-size="lg"></table>
+        </div>
+    </div>
 
 
 </div>
 <script type="text/html" id="toolbar">
     <div class="layui-btn-container">
-        <button class="layui-btn " style="background-color:#9e2d09;"  lay-event="create"><i class="layui-icon">&#xe608;</i>新增</button>
-        <button class="layui-btn layui-btn-normal"  lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</button>
-        <button class="layui-btn layui-btn-danger"  lay-event="remove"><i class="layui-icon layui-icon-delete"></i>离职</button>
-        <button class="layui-btn layui-btn-warm"  lay-event="holiday"><i class="layui-icon layui-icon-log"></i>休假</button>
-        <button class="layui-btn" style="background-color:#13227a;" lay-event="transOrg"><i class="layui-icon">&#x21c4;</i>调动</button>
-        <button class="layui-btn " style="background-color:#e87233;"  lay-event="contract"><i class="layui-icon layui-icon-templeate-1"></i>合同</button>
-        <button class="layui-btn"  lay-event="export"><i class="layui-icon layui-icon-download-circle"></i>导出</button>
+        <button class="layui-btn " style="background-color:#9e2d09;" lay-event="create"><i
+                class="layui-icon">&#xe608;</i>新增
+        </button>
+        <button class="layui-btn layui-btn-normal" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑
+        </button>
+        <button class="layui-btn layui-btn-danger" lay-event="remove"><i class="layui-icon layui-icon-delete"></i>离职
+        </button>
+        <button class="layui-btn layui-btn-warm" lay-event="holiday"><i class="layui-icon layui-icon-log"></i>休假
+        </button>
+        <button class="layui-btn" style="background-color:#13227a;" lay-event="transOrg"><i
+                class="layui-icon">&#x21c4;</i>调动
+        </button>
+        <button class="layui-btn " style="background-color:#e87233;" lay-event="contract"><i
+                class="layui-icon layui-icon-templeate-1"></i>合同
+        </button>
+        <button class="layui-btn" lay-event="export"><i class="layui-icon layui-icon-download-circle"></i>导出</button>
     </div>
 </script>
 
@@ -129,7 +235,7 @@
         {
             employee: "{/}static/js/modules/organization/employee/query.employee"
         }).use('employee', function () {
-            layui.employee.init();
+        layui.employee.init();
     })
 </script>
 </body>
