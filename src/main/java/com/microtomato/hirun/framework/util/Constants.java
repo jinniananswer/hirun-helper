@@ -1,5 +1,7 @@
 package com.microtomato.hirun.framework.util;
 
+import java.time.format.DateTimeFormatter;
+
 /**
  * 通用常量
  *
@@ -11,4 +13,6 @@ public final class Constants {
 	public static final String SPRING_SECURITY_CONTEXT = "SPRING_SECURITY_CONTEXT";
 	public static final Long DEFAULT_ROLE_ID = 2L;
 	public static final Long DEFAULT_USER_ID = 1L;
+
+	public static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 }

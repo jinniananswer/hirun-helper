@@ -1,5 +1,11 @@
 package com.microtomato.hirun.modules.user.controller;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.microtomato.hirun.framework.annotation.RestResult;
+import com.microtomato.hirun.framework.util.Constants;
+import com.microtomato.hirun.modules.user.entity.po.Role;
+import net.sf.cglib.core.Local;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,10 +16,15 @@ import com.microtomato.hirun.modules.user.service.IRoleService;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
 /**
  * <p>
  * 角色表
-(归属组织的角色，职级的角色等) 前端控制器
+ * (归属组织的角色，职级的角色等) 前端控制器
  * </p>
  *
  * @author Steven
@@ -28,5 +39,43 @@ public class RoleController {
     private IRoleService roleServiceImpl;
 
 
+    /**
+     *
+     * startEndDate 格式：2019-12-04 - 2020-01-02
+     *
+     * @param rolename
+     * @param startEndDate
+     * @return
+     */
+    @GetMapping("role-list")
+    @RestResult
+    public List<Role> roleList(String rolename, String startEndDate) {
+
+        LocalDate startDate = null;
+        LocalDate endDate = null;
+
+        if (StringUtils.isNotBlank(startEndDate)) {
+            String[] split = StringUtils.splitByWholeSeparator(startEndDate, " - ");
+            startDate = LocalDate.parse(split[0], Constants.dateTimeFormatter);
+            endDate = LocalDate.parse(split[1], Constants.dateTimeFormatter);
+        }
+
+        List<Role> roleList = roleServiceImpl.list(
+            Wrappers.<Role>lambdaQuery()
+                .select(Role::getRoleId, Role::getRoleName, Role::getRoleType, Role::getStatus, Role::getCreateTime)
+                .between((null != startDate && null != endDate), Role::getCreateTime, startDate, endDate)
+                .like(StringUtils.isNotBlank(rolename), Role::getRoleName, rolename)
+
+        );
+
+        return roleList;
+
+    }
+
+    public static void main(String[] args) {
+        String startEndDate = "2019-12-04 - 2020-01-02";
+        String[] split = StringUtils.splitByWholeSeparator(startEndDate, " - ");
+        System.out.printf("[%s] [%s]", split[0], split[1]);
+    }
 
 }
