@@ -13,6 +13,7 @@ import com.microtomato.hirun.modules.system.service.IMenuService;
 import com.microtomato.hirun.modules.system.service.IPageService;
 import com.microtomato.hirun.modules.user.entity.po.MenuTemp;
 import com.microtomato.hirun.modules.user.service.IMenuTempService;
+import com.microtomato.hirun.modules.user.service.IRoleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,12 +47,19 @@ public class MenuController {
     @Autowired
     private IMenuTempService menuTempServiceImpl;
 
+    @Autowired
+    private IRoleService roleServiceImpl;
+
     @Value("${mhirun.host-port}")
     private String mHirunHostPort;
 
     @GetMapping("list-all")
     @RestResult
-    public List<MenuNode> listAll() {
+    public List<MenuNode> listAll(Long roleId) {
+        Set<Long> menuIds = new HashSet<>();
+        if (null != roleId) {
+            menuIds = roleServiceImpl.queryMenuId(roleId);
+        }
 
         List<MenuNode> nodes = new ArrayList<>();
         Map<Long, Menu> longMenuMap = menuServiceImpl.listAllMenus();
@@ -63,8 +71,8 @@ public class MenuController {
             node.setId(menu.getMenuId());
             node.setTitle(menu.getTitle());
             node.setField("");
-            node.setChecked(false);
-            node.setSpread(false);
+            node.setChecked(menuIds.contains(menu.getMenuId()));
+            node.setSpread(true);
 
             if (null != menu.getParentMenuId()) {
                 node.setPid(menu.getParentMenuId());

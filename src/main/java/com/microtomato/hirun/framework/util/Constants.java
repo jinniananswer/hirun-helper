@@ -14,5 +14,10 @@ public final class Constants {
 	public static final Long DEFAULT_ROLE_ID = 2L;
 	public static final Long DEFAULT_USER_ID = 1L;
 
+	/**
+	 * 超级管理员的角色ID
+	 */
+	public static final Long SUPER_ROLE_ID = 1L;
+
 	public static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 }

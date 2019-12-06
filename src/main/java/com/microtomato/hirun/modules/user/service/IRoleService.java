@@ -1,7 +1,9 @@
 package com.microtomato.hirun.modules.user.service;
 
-import com.microtomato.hirun.modules.user.entity.po.Role;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.microtomato.hirun.modules.user.entity.po.Role;
+
+import java.util.Set;
 
 /**
  * <p>
@@ -14,4 +16,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IRoleService extends IService<Role> {
 
+    /**
+     * 根据角色Id查对应的菜单
+     *
+     * @param roleId 角色
+     * @return 角色对应的菜单集
+     */
+    Set<Long> queryMenuId(Long roleId);
 }

@@ -1,11 +1,11 @@
-layui.extend({}).define(['ajax', 'table', 'element', 'layedit', 'laydate', 'layer', 'tree'], function (exports) {
+layui.extend({}).define(['ajax', 'table', 'element', 'laydate', 'layer', 'tree', 'util'], function (exports) {
     let $ = layui.$;
     let table = layui.table;
-    let layedit = layui.layedit;
     let layer = layui.layer;
     let element = layui.element;
     let laydate = layui.laydate;
     let tree = layui.tree;
+    let util = layui.util;
 
     laydate.render({
         elem: '#start-end-date',
@@ -16,25 +16,54 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layedit', 'laydate', 'laye
     let roleObj = {
         init: function () {
 
+            util.event('lay-event', {
+                updateMenuRole: function () {
+                    let checkedData = tree.getChecked('menuTree'); //获取选中节点的数据
+                    let nodeList = eval(checkedData)
+
+                    let ids = [];
+                    roleObj.getLeaf(nodeList, ids);
+                    let currRoleId = $('#currRoleId').val();
+                    let idsJson = JSON.stringify(ids);
+                    console.log("currRoleId: ", currRoleId);
+                    console.log("ids: ", idsJson);
+
+                    $.ajax({
+                        type: "post",
+                        url: "api/user/menu-role/updateMenuRole/" + currRoleId,
+                        dataType: "json",
+                        contentType: "application/json",
+                        data: idsJson,
+                        success: function (data) {
+                            if (0 == data.code) {
+                                layer.msg("保存成功！");
+                            } else {
+                                layer.alert("保存失败！" + data.message);
+                            }
+                        },
+                        error: function (data) {
+                            layer.alert("保存失败！");
+                        }
+                    });
+
+                },
+
+                setChecked: function () {
+                    tree.setChecked('demoId1', [12, 16]); //勾选指定节点
+                },
+
+                reload: function () {
+                    //重载实例
+                    tree.reload('demoId1', {});
+
+                }
+            });
+
             element.on('nav(nav-ul)', function (elem) {
                 layer.msg(elem.text());
             });
 
-
-            layui.ajax.get('api/system/menu/list-all', '', function (data) {
-                let json = eval(data);
-                let menus = json.rows;
-
-                tree.render({
-                    elem: '#menuTree',
-                    data: menus,
-                    showCheckbox: true,
-                    click: function (obj) {
-                        let data = obj.data;  //获取当前点击的节点数据
-                        layer.msg('状态：' + obj.state + '<br>节点数据：' + JSON.stringify(data));
-                    }
-                });
-            });
+            roleObj.initMenuTree();
 
             let announce = table.render({
                 elem: '#role-table',
@@ -49,7 +78,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layedit', 'laydate', 'laye
                     dataName: 'rows'
                 },
                 cols: [[
-                    {type: 'radio', fixed: 'left'},
+                    {type: 'radio', fixed: 'left', event: 'selectRole'},
                     {field: 'roleId', title: 'ID', width: 60, align: 'center'},
                     {field: 'roleName', title: '角色名', align: 'center'},
                     {
@@ -80,13 +109,31 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layedit', 'laydate', 'laye
                         rolename: $("input[id='rolename']").val(),
                         startEndDate: $("input[id='start-end-date']").val(),
                     }
-                })
+                });
+                roleObj.initMenuTree();
             });
 
             table.on('tool(role-table)', function (obj) {
                 let data = obj.data;
 
-                if (obj.event === 'editRole') {
+                if (obj.event === 'selectRole') {
+                    $('#currRoleId').val(data.roleId);
+                    layui.ajax.get('api/system/menu/list-all?roleId=' + data.roleId, '', function (data) {
+                        let json = eval(data);
+                        let menus = json.rows;
+
+                        tree.render({
+                            elem: '#menuTree',
+                            id: 'menuTree',
+                            data: menus,
+                            showCheckbox: true,
+                            click: function (obj) {
+                                let data = obj.data;  //获取当前点击的节点数据
+                                layer.msg('状态：' + obj.state + '<br>节点数据：' + JSON.stringify(data));
+                            }
+                        });
+                    });
+                } else if (obj.event === 'editRole') {
                     console.log('editRole: ' + data.id);
                     roleObj.editRole(data);
                 } else if (obj.event === 'deleteRole') {
@@ -96,6 +143,9 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layedit', 'laydate', 'laye
             });
 
             table.on('toolbar(role-table)', function (obj) {
+                let checkStatus = table.checkStatus(obj.config.id); // 获取选中行状态
+                let data = checkStatus.data;
+
                 let event = obj.event;
                 if (event === 'newRole') {
                     let index = layer.open({
@@ -118,8 +168,39 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layedit', 'laydate', 'laye
 
         },
 
+        initMenuTree: function () {
+            $('#currRoleId').val("");
+            layui.ajax.get('api/system/menu/list-all', '', function (data) {
+                let json = eval(data);
+                let menus = json.rows;
+
+                tree.render({
+                    elem: '#menuTree',
+                    id: 'menuTree',
+                    data: menus,
+                    showCheckbox: true,
+                    click: function (obj) {
+                        let data = obj.data;  //获取当前点击的节点数据
+                        layer.msg('状态：' + obj.state + '<br>节点数据：' + JSON.stringify(data));
+                    }
+                });
+            });
+        },
+
+        /** 获取叶子节点Id */
+        getLeaf: function (nodeList, ids) {
+            for (let i = 0; i < nodeList.length; i++) {
+                let node = nodeList[i];
+                if (node.children) {
+                    roleObj.getLeaf(node.children, ids);
+                } else {
+                    ids.push(node.id);
+                }
+            }
+        },
+
         editRole: function (data) {
-            var index = layer.open({
+            let index = layer.open({
                 type: 2,
                 title: '查看详情',
                 content: 'openUrl?url=modules/system/message-detail',

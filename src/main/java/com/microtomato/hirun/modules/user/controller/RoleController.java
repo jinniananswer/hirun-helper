@@ -32,7 +32,6 @@ public class RoleController {
     @Autowired
     private IRoleService roleServiceImpl;
 
-
     /**
      *
      * startEndDate 格式：2019-12-04 - 2020-01-02
@@ -54,9 +53,11 @@ public class RoleController {
             endDate = LocalDate.parse(split[1], Constants.dateTimeFormatter);
         }
 
+        // 超级工号不展示
         List<Role> roleList = roleServiceImpl.list(
             Wrappers.<Role>lambdaQuery()
                 .select(Role::getRoleId, Role::getRoleName, Role::getRoleType, Role::getStatus, Role::getCreateTime)
+                .ne(Role::getRoleId, Constants.SUPER_ROLE_ID)
                 .between((null != startDate && null != endDate), Role::getCreateTime, startDate, endDate)
                 .like(StringUtils.isNotBlank(rolename), Role::getRoleName, rolename)
 
