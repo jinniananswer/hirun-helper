@@ -24,6 +24,7 @@ import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import com.microtomato.hirun.modules.user.entity.consts.UserConst;
 import com.microtomato.hirun.modules.user.entity.domain.UserDO;
 import com.microtomato.hirun.modules.user.entity.po.User;
+import com.microtomato.hirun.modules.user.service.IUserRoleService;
 import com.microtomato.hirun.modules.user.service.IUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -64,6 +65,9 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
 
     @Autowired
     private IUserService userService;
+
+    @Autowired
+    private IUserRoleService userRoleService;
 
     @Autowired
     private IEmployeeBlacklistService employeeBlacklistService;
@@ -300,6 +304,9 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
 
             EmployeeDO employeeDO = SpringContextUtils.getBean(EmployeeDO.class, employee);
             employeeDO.newEntry(jobRole, workExperiences, children);
+
+            //分配默认权限
+            this.userRoleService.createRole(userId, jobRole.getOrgId(), jobRole.getJobRole());
         } else {
             EmployeeDO employeeDO = SpringContextUtils.getBean(EmployeeDO.class, employeeDTO.getEmployeeId());
             Employee oldEmployee = employeeDO.getEmployee();
@@ -313,14 +320,17 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             if (StringUtils.equals(EmployeeConst.CREATE_TYPE_REHIRE, createType)) {
                 userDO.modify(employeeDTO.getMobileNo(), UserConst.INIT_PASSWORD, UserConst.STATUS_NORMAL);
                 employeeDO.rehire(employee, jobRole, workExperiences, children);
+                //分配默认权限
+                this.userRoleService.createRole(userId, jobRole.getOrgId(), jobRole.getJobRole());
             } else if (StringUtils.equals(createType, EmployeeConst.CREATE_TYPE_REHELLORING)) {
                 userDO.modify(employeeDTO.getMobileNo(), UserConst.INIT_PASSWORD, UserConst.STATUS_NORMAL);
                 employeeDO.rehelloring(employee, jobRole, workExperiences, children);
+                //分配默认权限
+                this.userRoleService.createRole(userId, jobRole.getOrgId(), jobRole.getJobRole());
             } else {
-                userDO.modify(employeeDTO.getMobileNo(), UserConst.INIT_PASSWORD, null);
+                userDO.modify(employeeDTO.getMobileNo(), null, null);
                 employeeDO.modify(employee, jobRole, workExperiences, children);
             }
-
         }
 
     }
