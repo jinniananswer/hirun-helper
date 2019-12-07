@@ -10,62 +10,17 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree', 'util'], f
     table = $.extend(table, {config: {checkName: 'checked'}});
 
     // 全局变量
-    let currRoleId;
+    let currRoleId = null;
 
     let roleObj = {
         init: function () {
 
+            // 初始化
             roleObj.initMenuTree();
             roleObj.initRoleTable();
             roleObj.initFuncTable();
 
-            util.event('lay-event', {
-                updateMenuRole: function () {
-                    let checkedData = tree.getChecked('menuTree'); //获取选中节点的数据
-                    let nodeList = eval(checkedData)
-
-                    let ids = [];
-                    roleObj.getLeaf(nodeList, ids);
-                    let idsJson = JSON.stringify(ids);
-
-                    $.ajax({
-                        type: "post",
-                        url: "api/user/menu-role/updateMenuRole/" + currRoleId,
-                        dataType: "json",
-                        contentType: "application/json",
-                        data: idsJson,
-                        success: function (data) {
-                            if (0 == data.code) {
-                                layer.msg("保存成功！", {time: 3000, icon: 6});
-                            } else {
-                                layer.alert("保存失败！" + data.message);
-                            }
-                        },
-                        error: function (data) {
-                            layer.alert("保存失败！");
-                        }
-                    });
-                },
-
-            });
-
-            $('#queryRole').on('click', function () {
-                table.reload('role-table', {
-                    page: {
-                        curr: 1
-                    },
-                    loading: true,
-                    page: false,
-                    url: 'api/user/role/role-list',
-                    where: {
-                        rolename: $("input[id='rolename']").val(),
-                        startEndDate: $("input[id='start-end-date']").val(),
-                    }
-                });
-                roleObj.initMenuTree();
-                roleObj.initFuncTable();
-            });
-
+            // 事件绑定
             table.on('tool(role-table)', function (obj) {
                 let data = obj.data;
 
@@ -80,11 +35,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree', 'util'], f
                             elem: '#menuTree',
                             id: 'menuTree',
                             data: menus,
-                            showCheckbox: true,
-                            click: function (obj) {
-                                let data = obj.data;  // 获取当前点击的节点数据
-                                tree.setChecked('menuTree', [data.id]);
-                            }
+                            showCheckbox: true
                         });
                     });
 
@@ -132,17 +83,58 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree', 'util'], f
             });
 
             table.on('toolbar(func-table)', function (obj) {
-                let checkStatus = table.checkStatus(obj.config.id); // 获取选中行状态
-                let data = checkStatus.data;
-                let ids = [];
-                for (let i = 0; i < data.length; i++) {
-                    ids.push(data[i].funcId);
+                let event = obj.event;
+
+                if (event === 'updateFuncRole') {
+                    if (!currRoleId) {
+                        layer.alert('请先选择一个角色，再进行操作！');
+                        return;
+                    }
+
+                    let checkStatus = table.checkStatus(obj.config.id); // 获取选中行状态
+                    let data = checkStatus.data;
+                    let ids = [];
+                    data.map((e) => {
+                        ids.push(e.funcId)
+                    });
+                    let idsJson = JSON.stringify(ids);
+
+                    $.ajax({
+                        type: "post",
+                        url: "api/user/func-role/updateFuncRole/" + currRoleId,
+                        dataType: "json",
+                        contentType: "application/json",
+                        data: idsJson,
+                        success: function (data) {
+                            if (0 == data.code) {
+                                layer.msg("保存成功！", {time: 3000, icon: 6});
+                            } else {
+                                layer.alert("保存失败！" + data.message);
+                            }
+                        },
+                        error: function (data) {
+                            layer.alert("保存失败！");
+                        }
+                    });
                 }
+            });
+
+            $('#updateMenuRole').on('click', function () {
+                if (!currRoleId) {
+                    layer.alert('请先选择一个角色再进行操作！');
+                    return;
+                }
+
+                let checkedData = tree.getChecked('menuTree'); //获取选中节点的数据
+                let nodeList = eval(checkedData)
+
+                let ids = [];
+                roleObj.getLeaf(nodeList, ids);
                 let idsJson = JSON.stringify(ids);
 
                 $.ajax({
                     type: "post",
-                    url: "api/user/func-role/updateFuncRole/" + currRoleId,
+                    url: "api/user/menu-role/updateMenuRole/" + currRoleId,
                     dataType: "json",
                     contentType: "application/json",
                     data: idsJson,
@@ -157,13 +149,29 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree', 'util'], f
                         layer.alert("保存失败！");
                     }
                 });
+            });
 
+            $('#queryRole').on('click', function () {
+                table.reload('role-table', {
+                    page: {
+                        curr: 1
+                    },
+                    loading: true,
+                    page: false,
+                    url: 'api/user/role/role-list',
+                    where: {
+                        rolename: $("input[id='rolename']").val(),
+                        startEndDate: $("input[id='start-end-date']").val(),
+                    }
+                });
+                roleObj.initMenuTree();
+                roleObj.initFuncTable();
             });
 
         },
 
         initMenuTree: function () {
-            currRoleId = "";
+            currRoleId = null;
             layui.ajax.get('api/system/menu/list-all', '', function (data) {
                 let json = eval(data);
                 let menus = json.rows;
@@ -172,11 +180,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree', 'util'], f
                     elem: '#menuTree',
                     id: 'menuTree',
                     data: menus,
-                    showCheckbox: true,
-                    click: function (obj) {
-                        let data = obj.data;  //获取当前点击的节点数据
-                        layer.msg('状态：' + obj.state + '<br>节点数据：' + JSON.stringify(data));
-                    }
+                    showCheckbox: true
                 });
             });
         },
@@ -198,15 +202,6 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree', 'util'], f
                     {type: 'radio', fixed: 'left', event: 'selectRole'},
                     {field: 'roleId', title: 'ID', width: 60, align: 'center'},
                     {field: 'roleName', title: '角色名', align: 'center'},
-                    // {
-                    //     field: 'enabled', title: '状态', align: 'center', templet: function (d) {
-                    //         if (d.enabled == 1) {
-                    //             return '<span class="layui-badge layui-bg-orange">有效</span>';
-                    //         } else {
-                    //             return '<span class="layui-badge layui-bg-gray">失效</span>';
-                    //         }
-                    //     }
-                    // },
                     {fixed: 'right', align: 'center', title: '操作', width: 150, fixed: 'right', toolbar: '#roleBar'}
                 ]],
                 page: false,

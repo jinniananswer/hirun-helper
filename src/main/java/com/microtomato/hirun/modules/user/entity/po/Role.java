@@ -33,28 +33,16 @@ public class Role extends BaseEntity {
     private Long roleId;
 
     /**
-     * 角色类型（'O':组织角色, 'T':职称角色）
-     */
-    @TableField("role_type")
-    private String roleType;
-
-    /**
      * 角色名
      */
     @TableField("role_name")
     private String roleName;
 
     /**
-     * 是否有效(1:有效；0:失效)
+     * 是否有效(1:再用状态；0:失效状态)
      */
     @TableField("enabled")
     private Boolean enabled;
-
-    /**
-     * 失效时间
-     */
-    @TableField("remove_date")
-    private LocalDateTime removeDate;
 
     /**
      * 角色描述
