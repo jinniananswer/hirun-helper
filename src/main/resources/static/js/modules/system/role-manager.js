@@ -11,14 +11,16 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree', 'util'], f
 
     // 全局变量
     let currRoleId = null;
+    let oldMenus = null;
+    let oldFuncs = null;
 
-    let roleObj = {
+    let roleManager = {
         init: function () {
 
             // 初始化
-            roleObj.initMenuTree();
-            roleObj.initRoleTable();
-            roleObj.initFuncTable();
+            roleManager.initMenuTree();
+            roleManager.initRoleTable();
+            roleManager.initFuncTable();
 
             // 事件绑定
             table.on('tool(role-table)', function (obj) {
@@ -37,6 +39,9 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree', 'util'], f
                             data: menus,
                             showCheckbox: true
                         });
+
+                        oldMenus = roleManager.getSelectedMenus();
+
                     });
 
                     // 根据选择的角色，刷新操作权限数据
@@ -51,10 +56,10 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree', 'util'], f
 
                 } else if (obj.event === 'editRole') {
                     console.log('editRole: ' + data.roleId);
-                    roleObj.editRole(data);
+                    roleManager.editRole(data);
                 } else if (obj.event === 'deleteRole') {
                     console.log('deleteRole: ' + data.roleId);
-                    roleObj.deleteRole(data);
+                    roleManager.deleteRole(data);
                 }
             });
 
@@ -119,38 +124,6 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree', 'util'], f
                 }
             });
 
-            $('#updateMenuRole').on('click', function () {
-                if (!currRoleId) {
-                    layer.alert('请先选择一个角色再进行操作！');
-                    return;
-                }
-
-                let checkedData = tree.getChecked('menuTree'); //获取选中节点的数据
-                let nodeList = eval(checkedData)
-
-                let ids = [];
-                roleObj.getLeaf(nodeList, ids);
-                let idsJson = JSON.stringify(ids);
-
-                $.ajax({
-                    type: "post",
-                    url: "api/user/menu-role/updateMenuRole/" + currRoleId,
-                    dataType: "json",
-                    contentType: "application/json",
-                    data: idsJson,
-                    success: function (data) {
-                        if (0 == data.code) {
-                            layer.msg("保存成功！", {time: 3000, icon: 6});
-                        } else {
-                            layer.alert("保存失败！" + data.message);
-                        }
-                    },
-                    error: function (data) {
-                        layer.alert("保存失败！");
-                    }
-                });
-            });
-
             $('#queryRole').on('click', function () {
                 table.reload('role-table', {
                     page: {
@@ -164,14 +137,77 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree', 'util'], f
                         startEndDate: $("input[id='start-end-date']").val(),
                     }
                 });
-                roleObj.initMenuTree();
-                roleObj.initFuncTable();
+                roleManager.initMenuTree();
+                roleManager.initFuncTable();
+            });
+
+            $('#updateMenuRole').on('click', function () {
+                if (!currRoleId) {
+                    layer.alert('请先选择一个角色再进行操作！');
+                    return;
+                }
+
+                let curMenus = roleManager.getSelectedMenus();
+                let revoked = roleManager.menuMinus(oldMenus, curMenus);
+                let granted = roleManager.menuMinus(curMenus, oldMenus);
+
+                let msg1 = "";
+                revoked.map((e) => {
+                    msg1 += "【" + e + "】 "
+                });
+
+                let msg2 = "";
+                granted.map((e) => {
+                    msg2 += "【" + e + "】 "
+                });
+
+                layer.confirm('<fieldset class="layui-elem-field">\n' +
+                    '  <legend>回收菜单</legend>\n' +
+                    '  <div class="layui-field-box">\n' +
+                    msg1 +
+                    '  </div>\n' +
+                    '</fieldset>' +
+                    '<fieldset class="layui-elem-field">\n' +
+                    '  <legend>下放菜单</legend>\n' +
+                    '  <div class="layui-field-box">\n' +
+                    msg2 +
+                    '  </div>\n' +
+                    '</fieldset>', {icon: 3, title: '提示'}, function (index) {
+
+                    let ids = [];
+                    curMenus.map((e) => {
+                        ids.push(e.id)
+                    });
+
+                    let idsJson = JSON.stringify(ids);
+
+                    $.ajax({
+                        type: "post",
+                        url: "api/user/menu-role/updateMenuRole/" + currRoleId,
+                        dataType: "json",
+                        contentType: "application/json",
+                        data: idsJson,
+                        success: function (data) {
+                            if (0 == data.code) {
+                                layer.msg("保存成功！", {time: 3000, icon: 6});
+                            } else {
+                                layer.alert("保存失败！" + data.message);
+                            }
+                        },
+                        error: function (data) {
+                            layer.alert("保存失败！");
+                        }
+                    });
+                });
+
             });
 
         },
 
         initMenuTree: function () {
             currRoleId = null;
+            oldMenus = null;
+            oldFuncs = null;
             layui.ajax.get('api/system/menu/list-all', '', function (data) {
                 let json = eval(data);
                 let menus = json.rows;
@@ -238,11 +274,37 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree', 'util'], f
             for (let i = 0; i < nodeList.length; i++) {
                 let node = nodeList[i];
                 if (node.children) {
-                    roleObj.getLeaf(node.children, ids);
+                    roleManager.getLeaf(node.children, ids);
                 } else {
-                    ids.push(node.id);
+                    ids.push({"id": node.id, "title": node.title});
                 }
             }
+        },
+
+        getSelectedMenus: function () {
+            let checkedData = tree.getChecked('menuTree'); // 获取选中节点的数据
+            let nodeList = eval(checkedData)
+
+            let ids = [];
+            roleManager.getLeaf(nodeList, ids);
+            return ids;
+        },
+
+        menuMinus: function (a, b) {
+            let rtn = [];
+            for (let i = 0; i < a.length; i++) {
+                let j = 0;
+                while (j < b.length) {
+                    if (a[i].id === b[j].id) {
+                        break;
+                    }
+                    j++;
+                }
+                if (j == b.length) {
+                    rtn.push(a[i].title);
+                }
+            }
+            return rtn;
         },
 
         editRole: function (data) {
@@ -268,13 +330,13 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree', 'util'], f
         },
 
         deleteRole: function (data) {
-            layer.confirm('真的要删除角色【' + data.roleName + '】?', {icon: 3, title: '提示'}, function (index) {
+            layer.confirm('真的要删除【' + data.roleName + '】吗?', {icon: 3, title: '提示'}, function (index) {
                 layui.ajax.get('api/user/role/delete-role/' + data.roleId, '', function (data) {
                     if (0 == data.code) {
                         layer.msg("删除成功！", {time: 3000, icon: 6});
-                        roleObj.initRoleTable();
-                        roleObj.initMenuTree();
-                        roleObj.initFuncTable();
+                        roleManager.initRoleTable();
+                        roleManager.initMenuTree();
+                        roleManager.initFuncTable();
                     } else {
                         layer.alert("删除失败！" + data.message);
                     }
@@ -285,5 +347,5 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree', 'util'], f
         },
     };
 
-    exports('roleObj', roleObj);
+    exports('roleManager', roleManager);
 })

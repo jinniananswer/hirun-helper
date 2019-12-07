@@ -19,7 +19,7 @@
             <div class="layui-row layui-col-space15">
                 <div class="layui-col-md12">
                     <div class="layui-card">
-                        <div class="layui-card-header">查询条件</div>
+                        <div class="layui-card-header">角色列表</div>
                         <div class="layui-form layui-card-header layuiadmin-card-header-auto">
                             <div class="layui-form" id="query_form">
                                 <div class="layui-form-item">
@@ -91,9 +91,9 @@
 <script>
     layui.extend(
         {
-            roleObj: "{/}static/js/modules/system/role-manager",
-        }).use(['roleObj'], function () {
-        layui.roleObj.init();
+            roleManager: "{/}static/js/modules/system/role-manager",
+        }).use(['roleManager'], function () {
+        layui.roleManager.init();
     })
 </script>
 </body>
