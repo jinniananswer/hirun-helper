@@ -11,6 +11,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree', 'util'], f
 
     // 全局变量
     let currRoleId = null;
+    let currRoleName = null;
     let oldMenus = null;
     let oldFuncs = null;
 
@@ -28,6 +29,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree', 'util'], f
 
                 if (obj.event === 'selectRole') {
                     currRoleId = data.roleId;
+                    currRoleName = data.roleName;
                     layui.ajax.get('api/system/menu/list-all?roleId=' + data.roleId, '', function (data) {
                         let json = eval(data);
                         let menus = json.rows;
@@ -41,16 +43,19 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree', 'util'], f
                         });
 
                         oldMenus = roleManager.getSelectedMenus();
-
                     });
 
                     // 根据选择的角色，刷新操作权限数据
                     table.reload('func-table', {
+                        id: 'funcTableId',
                         loading: true,
                         page: false,
                         url: 'api/system/func/func-list',
                         where: {
                             roleId: data.roleId,
+                        },
+                        done: function(res, curr, count){
+                            oldFuncs = table.checkStatus('funcTableId').data;
                         }
                     });
 
@@ -97,30 +102,59 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree', 'util'], f
                     }
 
                     let checkStatus = table.checkStatus(obj.config.id); // 获取选中行状态
-                    let data = checkStatus.data;
-                    let ids = [];
-                    data.map((e) => {
-                        ids.push(e.funcId)
-                    });
-                    let idsJson = JSON.stringify(ids);
+                    let curFuncs = checkStatus.data;
+                    let revoked = roleManager.funcMinus(oldFuncs, curFuncs);
+                    let granted = roleManager.funcMinus(curFuncs, oldFuncs);
 
-                    $.ajax({
-                        type: "post",
-                        url: "api/user/func-role/updateFuncRole/" + currRoleId,
-                        dataType: "json",
-                        contentType: "application/json",
-                        data: idsJson,
-                        success: function (data) {
-                            if (0 == data.code) {
-                                layer.msg("保存成功！", {time: 3000, icon: 6});
-                            } else {
-                                layer.alert("保存失败！" + data.message);
-                            }
-                        },
-                        error: function (data) {
-                            layer.alert("保存失败！");
-                        }
+                    let msg1 = "";
+                    revoked.map((e) => {
+                        msg1 += "【" + e + "】</br>"
                     });
+
+                    let msg2 = "";
+                    granted.map((e) => {
+                        msg2 += "【" + e + "】</br>"
+                    });
+
+                    layer.confirm('<fieldset class="layui-elem-field">\n' +
+                        '  <legend>回收操作权限</legend>\n' +
+                        '  <div class="layui-field-box">\n' +
+                        msg1 +
+                        '  </div>\n' +
+                        '</fieldset>' +
+                        '<fieldset class="layui-elem-field">\n' +
+                        '  <legend>下放操作权限</legend>\n' +
+                        '  <div class="layui-field-box">\n' +
+                        msg2 +
+                        '  </div>\n' +
+                        '</fieldset>', {icon: 3, title: '请核对信息，当前角色：' + currRoleName, area:['650px','400px']}, function (index) {
+
+                        let ids = [];
+                        curFuncs.map((e) => {
+                            ids.push(e.funcId)
+                        });
+                        let idsJson = JSON.stringify(ids);
+
+                        $.ajax({
+                            type: "post",
+                            url: "api/user/func-role/updateFuncRole/" + currRoleId,
+                            dataType: "json",
+                            contentType: "application/json",
+                            data: idsJson,
+                            success: function (data) {
+                                if (0 == data.code) {
+                                    layer.msg("保存成功！", {time: 3000, icon: 6});
+                                } else {
+                                    layer.alert("保存失败！" + data.message);
+                                }
+                            },
+                            error: function (data) {
+                                layer.alert("保存失败！");
+                            }
+                        });
+
+                    });
+
                 }
             });
 
@@ -153,12 +187,12 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree', 'util'], f
 
                 let msg1 = "";
                 revoked.map((e) => {
-                    msg1 += "【" + e + "】 "
+                    msg1 += "【" + e + "】</br>"
                 });
 
                 let msg2 = "";
                 granted.map((e) => {
-                    msg2 += "【" + e + "】 "
+                    msg2 += "【" + e + "】</br>"
                 });
 
                 layer.confirm('<fieldset class="layui-elem-field">\n' +
@@ -172,7 +206,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree', 'util'], f
                     '  <div class="layui-field-box">\n' +
                     msg2 +
                     '  </div>\n' +
-                    '</fieldset>', {icon: 3, title: '提示'}, function (index) {
+                    '</fieldset>', {icon: 3, title: '请核对信息，当前角色：' + currRoleName, area:['650px','400px']}, function (index) {
 
                     let ids = [];
                     curMenus.map((e) => {
@@ -206,6 +240,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree', 'util'], f
 
         initMenuTree: function () {
             currRoleId = null;
+            currRoleName = null;
             oldMenus = null;
             oldFuncs = null;
             layui.ajax.get('api/system/menu/list-all', '', function (data) {
@@ -302,6 +337,23 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree', 'util'], f
                 }
                 if (j == b.length) {
                     rtn.push(a[i].title);
+                }
+            }
+            return rtn;
+        },
+
+        funcMinus: function(a, b) {
+            let rtn = [];
+            for (let i = 0; i < a.length; i++) {
+                let j = 0;
+                while (j < b.length) {
+                    if (a[i].funcId === b[j].funcId) {
+                        break;
+                    }
+                    j++;
+                }
+                if (j == b.length) {
+                    rtn.push("权限编码：" + a[i].funcCode + "，权限说明：" + a[i].funcDesc);
                 }
             }
             return rtn;
