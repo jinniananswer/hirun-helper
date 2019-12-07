@@ -37,12 +37,10 @@ public class TokenContext {
             @Override
             public void run() {
                 LocalDateTime oneHourAgo = LocalDateTime.now().minusHours(1);
-                log.info("oneHourAgo: " + oneHourAgo);
                 clean(oneHourAgo, FRESH_TOKEN_MAP);
                 clean(oneHourAgo, HISTO_TOKEN_MAP);
-
             }
-        }, 1000 * 10);
+        }, 1000 * 1800, 1000 * 3600);
     }
 
     /**
