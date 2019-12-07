@@ -2,10 +2,7 @@ package com.microtomato.hirun.modules.user.entity.po;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.microtomato.hirun.framework.data.BaseEntity;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
@@ -19,6 +16,7 @@ import java.time.LocalDateTime;
  * @since 2019-09-22
  */
 @Data
+@Builder
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
 @NoArgsConstructor
@@ -47,10 +45,10 @@ public class Role extends BaseEntity {
     private String roleName;
 
     /**
-     * 是否有效（0:有效）
+     * 是否有效(1:有效；0:失效)
      */
-    @TableField("status")
-    private String status;
+    @TableField("enabled")
+    private Boolean enabled;
 
     /**
      * 失效时间

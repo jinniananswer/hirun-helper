@@ -13,6 +13,8 @@ import com.microtomato.hirun.modules.user.service.IRoleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
@@ -64,6 +66,30 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
         }
 
         return rtn;
+    }
+
+    /**
+     * 逻辑删除角色
+     *
+     * @param roleId 角色Id集合
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    public void deleteRole(Long roleId) {
+        Role role = Role.builder().enabled(false).build();
+        update(role, Wrappers.<Role>lambdaUpdate().eq(Role::getRoleId, roleId));
+    }
+
+    /**
+     * 激活角色
+     *
+     * @param roleId
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    public void activeRole(Long roleId) {
+        Role role = Role.builder().enabled(true).build();
+        update(role, Wrappers.<Role>lambdaUpdate().eq(Role::getRoleId, roleId));
     }
 
 }

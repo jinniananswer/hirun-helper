@@ -2,6 +2,8 @@ package com.microtomato.hirun.modules.user.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.microtomato.hirun.modules.user.entity.po.Role;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 
@@ -23,4 +25,20 @@ public interface IRoleService extends IService<Role> {
      * @return 角色对应的菜单集
      */
     Set<Long> queryMenuId(Long roleId);
+
+    /**
+     * 逻辑删除角色
+     *
+     * @param roleId 角色Id集合
+     */
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    void deleteRole(Long roleId);
+
+    /**
+     * 激活角色
+     *
+     * @param roleId
+     */
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    void activeRole(Long roleId);
 }

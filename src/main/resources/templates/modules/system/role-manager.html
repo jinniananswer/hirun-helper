@@ -15,7 +15,7 @@
 <body>
 <div class="layui-fluid">
     <div class="layui-row layui-col-space15">
-        <div class="layui-col-md8">
+        <div class="layui-col-md6">
             <div class="layui-row layui-col-space15">
                 <div class="layui-col-md12">
                     <div class="layui-card">
@@ -25,9 +25,6 @@
                                 <div class="layui-form-item">
                                     <div class="layui-inline">
                                         <input type="text" id="rolename" required lay-verify="required" placeholder="请输入角色名称搜索" autocomplete="off" class="layui-input">
-                                    </div>
-                                    <div class="layui-inline">
-                                        <input type="text" class="layui-input" id="start-end-date" placeholder="请输入时间范围">
                                     </div>
                                     <div class="layui-inline">
                                         <button class="layui-btn" type="button" id="queryRole">查询</button>
@@ -42,17 +39,29 @@
                 </div>
             </div>
         </div>
-        <div class="layui-col-md4">
+        <div class="layui-col-md6">
             <div class="layui-card">
-                <div class="layui-card-header">菜单分配</div>
-                <div class="layui-card-header">
-                    <div align="right">
-                        <button type="button" class="layui-btn" lay-event="updateMenuRole">保存</button>
-                        <input type="hidden" id="currRoleId" />
+
+                <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+                    <ul class="layui-tab-title">
+                        <li class="layui-this">菜单权限</li>
+                        <li>操作权限</li>
+                    </ul>
+                    <div class="layui-tab-content">
+                        <div class="layui-tab-item layui-show">
+                            <div class="layuiadmin-card-header-auto">
+                                <button type="button" class="layui-btn" lay-event="updateMenuRole">保存</button>
+                            </div>
+                            <div class="layui-card-body">
+                                <div id="menuTree" class="demo-tree-more"></div>
+                            </div>
+                        </div>
+                        <div class="layui-tab-item">
+                            <div class="layui-card-body">
+                                <table id="func-table" lay-filter="func-table"></table>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="layui-card-body">
-                    <div id="menuTree" class="demo-tree-more"></div>
                 </div>
             </div>
         </div>
@@ -70,6 +79,12 @@
         <button class="layui-btn layui-btn-sm" lay-event="newRole">
             <i class="layui-icon layui-icon-add-1"></i> 新增
         </button>
+    </div>
+</script>
+
+<script type="text/html" id="funcToolbar">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="updateFuncRole">保存</button>
     </div>
 </script>
 

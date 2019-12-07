@@ -8,11 +8,8 @@ import com.microtomato.hirun.modules.user.service.IRoleService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -33,38 +30,39 @@ public class RoleController {
     private IRoleService roleServiceImpl;
 
     /**
+     * 根据角色名查询
      *
-     * startEndDate 格式：2019-12-04 - 2020-01-02
-     *
-     * @param rolename
-     * @param startEndDate
+     * @param rolename 角色名
      * @return
      */
     @GetMapping("role-list")
     @RestResult
-    public List<Role> roleList(String rolename, String startEndDate) {
-
-        LocalDate startDate = null;
-        LocalDate endDate = null;
-
-        if (StringUtils.isNotBlank(startEndDate)) {
-            String[] split = StringUtils.splitByWholeSeparator(startEndDate, " - ");
-            startDate = LocalDate.parse(split[0], Constants.dateTimeFormatter);
-            endDate = LocalDate.parse(split[1], Constants.dateTimeFormatter);
-        }
+    public List<Role> roleList(String rolename) {
 
         // 超级工号不展示
         List<Role> roleList = roleServiceImpl.list(
             Wrappers.<Role>lambdaQuery()
-                .select(Role::getRoleId, Role::getRoleName, Role::getRoleType, Role::getStatus, Role::getCreateTime)
+                .select(Role::getRoleId, Role::getRoleName, Role::getRoleType, Role::getEnabled)
                 .ne(Role::getRoleId, Constants.SUPER_ROLE_ID)
-                .between((null != startDate && null != endDate), Role::getCreateTime, startDate, endDate)
+                .eq(Role::getEnabled, true)
                 .like(StringUtils.isNotBlank(rolename), Role::getRoleName, rolename)
 
         );
 
         return roleList;
 
+    }
+
+    @GetMapping("delete-role/{roleId}")
+    @RestResult
+    public void deleteRole(@PathVariable Long roleId) {
+        roleServiceImpl.deleteRole(roleId);
+    }
+
+    @GetMapping("active-role/{roleId}")
+    @RestResult
+    public void activeRole(@PathVariable Long roleId) {
+        roleServiceImpl.activeRole(roleId);
     }
 
 }

@@ -1,14 +1,13 @@
 package com.microtomato.hirun.modules.user.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import com.microtomato.hirun.framework.annotation.RestResult;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import lombok.extern.slf4j.Slf4j;
 
 import com.microtomato.hirun.modules.user.service.IFuncRoleService;
 
-import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
 
 /**
  * <p>
@@ -26,6 +25,10 @@ public class FuncRoleController {
     @Autowired
     private IFuncRoleService funcRoleServiceImpl;
 
-
+    @PostMapping("updateFuncRole/{roleId}")
+    @RestResult
+    public void updateMenuRole(@PathVariable Long roleId, @RequestBody List<Long> funcIds) {
+        funcRoleServiceImpl.updateFuncRole(roleId, funcIds);
+    }
 
 }
