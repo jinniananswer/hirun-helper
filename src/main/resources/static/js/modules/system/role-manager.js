@@ -1,10 +1,8 @@
-layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree', 'util'], function (exports) {
+layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree'], function (exports) {
     let $ = layui.$;
     let table = layui.table;
     let layer = layui.layer;
-    let element = layui.element;
     let tree = layui.tree;
-    let util = layui.util;
 
     // 让表格根据属性 checked 来判断是否勾选 checkbox
     table = $.extend(table, {config: {checkName: 'checked'}});
