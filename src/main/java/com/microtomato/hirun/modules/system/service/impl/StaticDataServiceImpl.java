@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.system.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
@@ -17,7 +18,7 @@ import java.util.List;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author jinnian
@@ -29,6 +30,7 @@ public class StaticDataServiceImpl extends ServiceImpl<StaticDataMapper, StaticD
 
     /**
      * 根据类型获取静态参数表数据
+     *
      * @param codeType
      * @return
      */
@@ -41,7 +43,7 @@ public class StaticDataServiceImpl extends ServiceImpl<StaticDataMapper, StaticD
             return null;
         }
 
-        List<StaticData> result = new ArrayList<StaticData>();
+        List<StaticData> result = new ArrayList<>();
         for (StaticData data : datas) {
             if (StringUtils.equals(codeType, data.getCodeType())) {
                 result.add(data);
@@ -52,12 +54,13 @@ public class StaticDataServiceImpl extends ServiceImpl<StaticDataMapper, StaticD
 
     /**
      * 根据参数类型和参数值翻译参数名称
+     *
      * @param codeType
      * @param codeValue
      * @return
      */
     @Override
-    @Cacheable(value="codename-with-codetype-value")
+    @Cacheable(value = "codename-with-codetype-value")
     public String getCodeName(String codeType, String codeValue) {
         if (StringUtils.isBlank(codeValue)) {
             return "";
@@ -78,13 +81,16 @@ public class StaticDataServiceImpl extends ServiceImpl<StaticDataMapper, StaticD
     }
 
     /**
-     *查询所有的静态参数数据
+     * 查询所有的静态参数数据
+     *
      * @return
      */
     @Override
-    @Cacheable(value="static-data-all")
+    @Cacheable(value = "static-data-all")
     public List<StaticData> getAllDatas() {
-        List<StaticData> datas = this.list(new QueryWrapper<StaticData>().lambda().eq(StaticData::getStatus, "0"));
+        List<StaticData> datas = this.list(
+            Wrappers.<StaticData>lambdaQuery().eq(StaticData::getStatus, "0")
+        );
         return datas;
     }
 }

@@ -46,6 +46,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 
 		List<MenuRole> menuRoleList = menuRoleServiceImpl.list(
 			Wrappers.<MenuRole>lambdaQuery()
+				.select(MenuRole::getMenuId)
 				.eq(MenuRole::getRoleId, role.getId())
 				.eq(MenuRole::getStatus, Constants.STATUS_OK)
 		);
@@ -60,7 +61,9 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 	@Override
 	public List<Long> listMenusForAdmin() {
 		List<Long> myMenuIds = new ArrayList<>(100);
-		List<Menu> menuList = menuServiceImpl.list();
+		List<Menu> menuList = menuServiceImpl.list(
+			Wrappers.<Menu>lambdaQuery().select(Menu::getMenuId)
+		);
 		menuList.forEach(menu -> myMenuIds.add(menu.getMenuId()));
 		return myMenuIds;
 	}

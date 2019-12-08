@@ -67,12 +67,13 @@ public class MenuController {
 
         for (Menu menu : menus) {
 
-            MenuNode node = new MenuNode();
-            node.setId(menu.getMenuId());
-            node.setTitle(menu.getTitle());
-            node.setField("");
-            node.setChecked(menuIds.contains(menu.getMenuId()));
-            node.setSpread(true);
+            MenuNode node = MenuNode.builder()
+                .id(menu.getMenuId())
+                .title(menu.getTitle())
+                .field("")
+                .checked(menuIds.contains(menu.getMenuId()))
+                .spread(true)
+                .build();
 
             if (null != menu.getParentMenuId()) {
                 node.setPid(menu.getParentMenuId());

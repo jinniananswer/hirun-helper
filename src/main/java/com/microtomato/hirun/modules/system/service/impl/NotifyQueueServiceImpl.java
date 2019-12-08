@@ -99,11 +99,14 @@ public class NotifyQueueServiceImpl extends ServiceImpl<NotifyQueueMapper, Notif
         LocalDateTime now = LocalDateTime.now();
 
         for (Notify notify : list) {
-            NotifyQueue notifyQueue = new NotifyQueue();
-            notifyQueue.setNotifyId(notify.getId());
-            notifyQueue.setEmployeeId(employeeId);
-            notifyQueue.setReaded(false);
-            notifyQueue.setCreateTime(now);
+
+            NotifyQueue notifyQueue = NotifyQueue.builder()
+                .notifyId(notify.getId())
+                .employeeId(employeeId)
+                .readed(false)
+                .createTime(now)
+                .build();
+
             notifyQueueServiceImpl.save(notifyQueue);
         }
     }
@@ -169,8 +172,8 @@ public class NotifyQueueServiceImpl extends ServiceImpl<NotifyQueueMapper, Notif
     @Override
     public void markReaded(List<Long> idList) {
         Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
-        NotifyQueue entity = new NotifyQueue();
-        entity.setReaded(true);
+        NotifyQueue entity = NotifyQueue.builder().readed(true).build();
+
         notifyQueueMapper.update(entity,
             Wrappers.<NotifyQueue>lambdaUpdate()
                 .eq(NotifyQueue::getEmployeeId, employeeId)
@@ -187,13 +190,12 @@ public class NotifyQueueServiceImpl extends ServiceImpl<NotifyQueueMapper, Notif
      */
     @Override
     public void markReaded(Long notifyId, Long employeeId) {
-        LambdaQueryWrapper<NotifyQueue> lambdaQueryWrapper = Wrappers.lambdaQuery();
-        lambdaQueryWrapper.eq(NotifyQueue::getNotifyId, notifyId);
-        lambdaQueryWrapper.eq(NotifyQueue::getEmployeeId, employeeId);
-
-        NotifyQueue entity = new NotifyQueue();
-        entity.setReaded(true);
-        notifyQueueMapper.update(entity, lambdaQueryWrapper);
+        NotifyQueue entity = NotifyQueue.builder().readed(true).build();
+        notifyQueueMapper.update(entity,
+            Wrappers.<NotifyQueue>lambdaUpdate()
+                .eq(NotifyQueue::getNotifyId, notifyId)
+                .eq(NotifyQueue::getEmployeeId, employeeId)
+        );
     }
 
     /**

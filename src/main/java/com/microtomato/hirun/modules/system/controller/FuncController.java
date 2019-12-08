@@ -50,12 +50,14 @@ public class FuncController {
 
         List<FuncDTO> funcDTOS = new ArrayList<>();
         for (Func func : funcList) {
-            FuncDTO funcDTO = new FuncDTO();
-            funcDTO.setFuncId(func.getFuncId());
-            funcDTO.setFuncCode(func.getFuncCode());
-            funcDTO.setFuncDesc(func.getFuncDesc());
-            funcDTO.setChecked(funcIds.contains(func.getFuncId()));
 
+            FuncDTO funcDTO = FuncDTO.builder()
+                .funcId(func.getFuncId())
+                .funcCode(func.getFuncCode())
+                .funcDesc(func.getFuncDesc())
+                .checked(funcIds.contains(func.getFuncId()))
+                .build();
+            
             funcDTOS.add(funcDTO);
         }
 

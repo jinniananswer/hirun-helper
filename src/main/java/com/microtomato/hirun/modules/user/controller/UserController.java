@@ -1,6 +1,6 @@
 package com.microtomato.hirun.modules.user.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.WebContextUtils;
@@ -43,9 +43,9 @@ public class UserController {
     @GetMapping("/list")
     @RestResult
     public List<User> list() {
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.last("LIMIT 50");
-        List<User> userList = userServiceImpl.list(queryWrapper);
+        List<User> userList = userServiceImpl.list(
+            Wrappers.<User>lambdaQuery().last("LIMIT 50")
+        );
         log.info(userList.toString());
         return userList;
     }
@@ -58,9 +58,7 @@ public class UserController {
         }
         UserContext userContext = WebContextUtils.getUserContext();
         Long userId = userContext.getUserId();
-
         boolean result = userServiceImpl.changePassword(userId, oldPassword, repassword);
-
         return result;
     }
 

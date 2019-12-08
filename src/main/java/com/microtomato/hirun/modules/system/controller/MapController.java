@@ -23,11 +23,11 @@ import java.util.List;
 public class MapController {
 
     @Autowired
-    private IOrgService orgService;
+    private IOrgService orgServiceImpl;
 
     @RequestMapping("/mapByShopNum")
     @RestResult
     public List<AreaOrgNumDTO> searchEmployee(String areaType) {
-        return this.orgService.countShopNum(areaType);
+        return this.orgServiceImpl.countShopNum(areaType);
     }
 }

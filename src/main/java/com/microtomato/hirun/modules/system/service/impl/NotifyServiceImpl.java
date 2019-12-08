@@ -127,18 +127,20 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyMapper, Notify> impleme
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void sendMessage(Long toEmployeeId, String content, Long fromEmployeeId) {
 
-        Notify notify = new Notify();
-        notify.setContent(content);
-        notify.setNotifyType(INotifyService.NotifyType.MESSAGE.value());
-        notify.setTargetId(toEmployeeId);
-        notify.setSenderId(fromEmployeeId);
+        Notify notify = Notify.builder()
+            .content(content)
+            .notifyType(INotifyService.NotifyType.MESSAGE.value())
+            .targetId(toEmployeeId)
+            .senderId(fromEmployeeId)
+            .build();
 
         notifyMapper.insert(notify);
 
-        NotifyQueue notifyQueue = new NotifyQueue();
-        notifyQueue.setReaded(false);
-        notifyQueue.setEmployeeId(toEmployeeId);
-        notifyQueue.setNotifyId(notify.getId());
+        NotifyQueue notifyQueue = NotifyQueue.builder()
+            .readed(false)
+            .employeeId(toEmployeeId)
+            .notifyId(notify.getId())
+            .build();
 
         notifyQueueServiceImpl.save(notifyQueue);
 

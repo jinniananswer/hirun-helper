@@ -46,7 +46,6 @@ public class RoleController {
                 .ne(Role::getRoleId, Constants.SUPER_ROLE_ID)
                 .eq(Role::getEnabled, true)
                 .like(StringUtils.isNotBlank(rolename), Role::getRoleName, rolename)
-
         );
 
         return roleList;

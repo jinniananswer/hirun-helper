@@ -40,11 +40,11 @@ public class NotifySubscribeServiceImpl extends ServiceImpl<NotifySubscribeMappe
     public List<NotifySubscribe> queryNotifySubscribeByUserId() {
         Long userId = WebContextUtils.getUserContext().getUserId();
 
-        LambdaQueryWrapper<NotifySubscribe> lambdaQueryWrapper = Wrappers.lambdaQuery();
-        lambdaQueryWrapper.eq(NotifySubscribe::getUserId, userId);
-        lambdaQueryWrapper.eq(NotifySubscribe::isEnable, true);
-
-        List<NotifySubscribe> notifySubscribes = notifySubscribeMapper.selectList(lambdaQueryWrapper);
+        List<NotifySubscribe> notifySubscribes = notifySubscribeMapper.selectList(
+            Wrappers.<NotifySubscribe>lambdaQuery()
+                .eq(NotifySubscribe::getUserId, userId)
+                .eq(NotifySubscribe::isEnable, true)
+        );
         return notifySubscribes;
     }
 
@@ -59,12 +59,13 @@ public class NotifySubscribeServiceImpl extends ServiceImpl<NotifySubscribeMappe
     public void addSubscribe(long targetId, TargetType targetType, Action action) {
         Long userId = WebContextUtils.getUserContext().getUserId();
 
-        NotifySubscribe notifySubscribe = new NotifySubscribe();
-        notifySubscribe.setTargetId(targetId);
-        notifySubscribe.setTargetType(targetType.value());
-        notifySubscribe.setAction(action.value());
-        notifySubscribe.setUserId(userId);
-        notifySubscribe.setEnable(true);
+        NotifySubscribe notifySubscribe = NotifySubscribe.builder()
+            .targetId(targetId)
+            .targetType(targetType.value())
+            .action(action.value())
+            .userId(userId)
+            .enable(true)
+            .build();
 
         notifySubscribeMapper.insert(notifySubscribe);
     }

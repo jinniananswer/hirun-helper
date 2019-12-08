@@ -80,7 +80,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     public boolean resetPassword(Long employeeId) {
         Employee employee = employeeMapper.selectById(employeeId);
-        if (employee == null) {
+        if (null == employee) {
             throw new NotFoundException("根据ID找不到员工信息，请确认ID是否正确", ErrorKind.NOT_FOUND.getCode());
         }
         UserDO userDO = SpringContextUtils.getBean(UserDO.class, employee.getUserId());
