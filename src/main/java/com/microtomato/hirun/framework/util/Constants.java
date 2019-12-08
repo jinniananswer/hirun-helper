@@ -11,7 +11,15 @@ import java.time.format.DateTimeFormatter;
 public final class Constants {
 	public static final String STATUS_OK = "0";
 	public static final String SPRING_SECURITY_CONTEXT = "SPRING_SECURITY_CONTEXT";
+
+	/**
+	 * 默认角色Id
+	 */
 	public static final Long DEFAULT_ROLE_ID = 2L;
+
+	/**
+	 * 默认用户Id，主要用于后台任务
+	 */
 	public static final Long DEFAULT_USER_ID = 1L;
 
 	/**

@@ -10,8 +10,8 @@ import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.mapper.EmployeeMapper;
 import com.microtomato.hirun.modules.user.entity.consts.UserConst;
 import com.microtomato.hirun.modules.user.entity.domain.UserDO;
-import com.microtomato.hirun.modules.user.entity.po.User;
 import com.microtomato.hirun.modules.user.entity.dto.UserDTO;
+import com.microtomato.hirun.modules.user.entity.po.User;
 import com.microtomato.hirun.modules.user.mapper.UserMapper;
 import com.microtomato.hirun.modules.user.service.IUserService;
 import lombok.extern.slf4j.Slf4j;
@@ -79,16 +79,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     @Override
     public boolean resetPassword(Long employeeId) {
-        Employee employee=employeeMapper.selectById(employeeId);
+        Employee employee = employeeMapper.selectById(employeeId);
         if (employee == null) {
             throw new NotFoundException("根据ID找不到员工信息，请确认ID是否正确", ErrorKind.NOT_FOUND.getCode());
         }
-        UserDO userDO=SpringContextUtils.getBean(UserDO.class,employee.getUserId());
+        UserDO userDO = SpringContextUtils.getBean(UserDO.class, employee.getUserId());
         return userDO.resetPassword();
     }
 
     /**
      * 校验老密码
+     *
      * @param userId
      * @param originalPassword
      * @return

@@ -1,12 +1,12 @@
 package com.microtomato.hirun.modules.user.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.modules.user.entity.po.MenuRole;
 import com.microtomato.hirun.modules.user.mapper.MenuRoleMapper;
 import com.microtomato.hirun.modules.user.service.IMenuRoleService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 

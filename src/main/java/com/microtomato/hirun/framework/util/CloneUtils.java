@@ -11,22 +11,25 @@ import java.io.*;
 public class CloneUtils {
 
     public static final Object deepCopy(Object from) {
-        Object obj = null;
-        try {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            ObjectOutputStream out = new ObjectOutputStream(bos);
-            out.writeObject(from);
-            out.flush();
-            out.close();
 
-            ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bos.toByteArray()));
-            obj = in.readObject();
+        Object rtn = null;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+        try (ObjectOutputStream oos = new ObjectOutputStream(bos)) {
+            oos.writeObject(from);
+            oos.flush();
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (ClassNotFoundException e2) {
-            e2.printStackTrace();
         }
-        return obj;
+
+        try (ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(bos.toByteArray()))) {
+            rtn = ois.readObject();
+            bos.close();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return rtn;
     }
 
 }
