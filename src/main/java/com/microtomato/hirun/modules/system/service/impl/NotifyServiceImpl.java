@@ -49,23 +49,15 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyMapper, Notify> impleme
     public void sendAnnounce(String content) {
         long employeeId = WebContextUtils.getUserContext().getEmployeeId();
 
-        Notify notify = new Notify();
-        notify.setContent(content);
-        notify.setNotifyType(NotifyType.ANNOUNCE.value());
-        notify.setSenderId(employeeId);
-
+        Notify notify = Notify.builder().content(content).notifyType(NotifyType.ANNOUNCE.value()).senderId(employeeId).build();
         notifyMapper.insert(notify);
 
         // 实时通知所有在线用户
         Set<Long> ids = ServerWebSocket.onlineIds();
         for (Long toEmployeeId : ids) {
-            NotifyQueue notifyQueue = new NotifyQueue();
-            notifyQueue.setReaded(false);
-            notifyQueue.setEmployeeId(toEmployeeId);
-            notifyQueue.setNotifyId(notify.getId());
+            NotifyQueue notifyQueue = NotifyQueue.builder().readed(false).employeeId(toEmployeeId).notifyId(notify.getId()).build();
             notifyQueueServiceImpl.save(notifyQueue);
         }
-
 
         ServerWebSocket.sendMessageBroadcast(notify);
     }

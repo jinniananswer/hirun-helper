@@ -119,7 +119,6 @@ public class NotifyQueueServiceImpl extends ServiceImpl<NotifyQueueMapper, Notif
     }
 
 
-
     /**
      * 查未读公告
      *
@@ -172,9 +171,10 @@ public class NotifyQueueServiceImpl extends ServiceImpl<NotifyQueueMapper, Notif
         Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
         NotifyQueue entity = new NotifyQueue();
         entity.setReaded(true);
-        notifyQueueMapper.update(entity, Wrappers.<NotifyQueue>lambdaUpdate()
-            .eq(NotifyQueue::getEmployeeId, employeeId)
-            .in(NotifyQueue::getNotifyId, idList)
+        notifyQueueMapper.update(entity,
+            Wrappers.<NotifyQueue>lambdaUpdate()
+                .eq(NotifyQueue::getEmployeeId, employeeId)
+                .in(NotifyQueue::getNotifyId, idList)
         );
 
     }

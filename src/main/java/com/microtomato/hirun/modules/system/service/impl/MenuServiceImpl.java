@@ -45,7 +45,9 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 		List<Long> myMenuIds = new ArrayList<>(100);
 
 		List<MenuRole> menuRoleList = menuRoleServiceImpl.list(
-			Wrappers.<MenuRole>lambdaQuery().eq(MenuRole::getRoleId, role.getId()).eq(MenuRole::getStatus, Constants.STATUS_OK)
+			Wrappers.<MenuRole>lambdaQuery()
+				.eq(MenuRole::getRoleId, role.getId())
+				.eq(MenuRole::getStatus, Constants.STATUS_OK)
 		);
 		menuRoleList.forEach(menuRole -> myMenuIds.add(menuRole.getMenuId()));
 
