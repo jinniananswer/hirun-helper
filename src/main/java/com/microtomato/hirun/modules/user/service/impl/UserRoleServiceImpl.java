@@ -44,7 +44,7 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
 
     /**
      * 根据给定的 用户Id、部门Id、以及岗位，创建对应的 ins_user_role 关联数据。
-     *
+     * <p>
      * 由于存在分公司的情况，每个分公司可能有相同的岗位，为了简化配置，支持 orgId 配置成 0 的情况。
      *
      * @param userId    用户Id
@@ -57,25 +57,27 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
     public void createRole(Long userId, Long orgId, String jobRole, LocalDateTime startDate, LocalDateTime endDate) {
 
         RoleMapping one = roleMappingServiceImpl.getOne(
-            Wrappers.<RoleMapping>lambdaQuery().select(RoleMapping::getRoleId)
-                .eq(RoleMapping::getOrgId, orgId).eq(RoleMapping::getJobRole, jobRole).eq(RoleMapping::getEnabled, true)
+            Wrappers.<RoleMapping>lambdaQuery()
+                .select(RoleMapping::getRoleId)
+                .eq(RoleMapping::getOrgId, orgId)
+                .eq(RoleMapping::getJobRole, jobRole)
+                .eq(RoleMapping::getEnabled, true)
         );
-
 
         if (null == one) {
             one = roleMappingServiceImpl.getOne(
-                Wrappers.<RoleMapping>lambdaQuery().select(RoleMapping::getRoleId)
-                    .eq(RoleMapping::getOrgId, 0).eq(RoleMapping::getJobRole, jobRole).eq(RoleMapping::getEnabled, true)
+                Wrappers.<RoleMapping>lambdaQuery()
+                    .select(RoleMapping::getRoleId)
+                    .eq(RoleMapping::getOrgId, 0)
+                    .eq(RoleMapping::getJobRole, jobRole)
+                    .eq(RoleMapping::getEnabled, true)
             );
         }
 
         Assert.notNull(one, String.format("根据 orgId: %s|0, jobRole: %s, 找不到对应的角色！", orgId, jobRole));
         Long roleId = one.getRoleId();
 
-        UserRole userRole = new UserRole();
-        userRole.setRoleId(roleId);
-        userRole.setStartDate(startDate);
-        userRole.setEndDate(endDate);
+        UserRole userRole = UserRole.builder().roleId(roleId).startDate(startDate).endDate(endDate).build();
         this.save(userRole);
     }
 
@@ -110,9 +112,12 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
      */
     @Override
     public void deleteRole(Long userId, Long roleId, LocalDateTime endDatetime) {
-        this.update(Wrappers.<UserRole>lambdaUpdate()
-            .set(UserRole::getEndDate, endDatetime)
-            .eq(UserRole::getUserId, userId).eq(UserRole::getRoleId, roleId));
+        this.update(
+            Wrappers.<UserRole>lambdaUpdate()
+                .set(UserRole::getEndDate, endDatetime)
+                .eq(UserRole::getUserId, userId)
+                .eq(UserRole::getRoleId, roleId)
+        );
     }
 
     /**
@@ -133,8 +138,10 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
      */
     @Override
     public void deleteAllRole(Long userId, LocalDateTime endDatetime) {
-        this.update(Wrappers.<UserRole>lambdaUpdate()
-            .set(UserRole::getEndDate, endDatetime)
-            .eq(UserRole::getUserId, userId));
+        this.update(
+            Wrappers.<UserRole>lambdaUpdate()
+                .set(UserRole::getEndDate, endDatetime)
+                .eq(UserRole::getUserId, userId)
+        );
     }
 }
