@@ -22,27 +22,27 @@ public final class SecurityUtils {
     /**
      * 是否有某个权限
      *
-     * @param funcId 权限编码，对应表 ins_func_role.func_id
+     * @param funcCode 权限编码，对应表 sys_func.func_code
      * @return true: 有权限, false: 无权限
      */
-    public static final boolean hasFuncId(String funcId) {
+    public static final boolean hasFuncId(String funcCode) {
 
         UserContext userContext = WebContextUtils.getUserContext();
         if (userContext.isAdmin()) {
             return true;
         }
 
-        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(funcId);
+        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(funcCode);
         return userContext.getAuthorities().contains(simpleGrantedAuthority);
     }
 
     /**
      * 拥有任意一个权限，即返回 true
      *
-     * @param funcIds
+     * @param funcCodes
      * @return
      */
-    public static final boolean hasAnyFuncId(String... funcIds) {
+    public static final boolean hasAnyFuncId(String... funcCodes) {
 
         UserContext userContext = WebContextUtils.getUserContext();
         if (userContext.isAdmin()) {
@@ -50,8 +50,8 @@ public final class SecurityUtils {
         }
 
         Collection<GrantedAuthority> grantedAuthorities = userContext.getGrantedAuthorities();
-        for (String funcId : funcIds) {
-            SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(funcId);
+        for (String funcCode : funcCodes) {
+            SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(funcCode);
             if (grantedAuthorities.contains(simpleGrantedAuthority)) {
                 return true;
             }
@@ -62,10 +62,10 @@ public final class SecurityUtils {
     /**
      * 拥有列出的所有权限，才返回 true
      *
-     * @param funcIds
+     * @param funcCodes
      * @return
      */
-    public static final boolean hasAllFuncId(String... funcIds) {
+    public static final boolean hasAllFuncId(String... funcCodes) {
 
         UserContext userContext = WebContextUtils.getUserContext();
         if (userContext.isAdmin()) {
@@ -73,8 +73,8 @@ public final class SecurityUtils {
         }
 
         Collection<GrantedAuthority> grantedAuthorities = userContext.getGrantedAuthorities();
-        for (String funcId : funcIds) {
-            SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(funcId);
+        for (String funcCode : funcCodes) {
+            SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(funcCode);
             if (!grantedAuthorities.contains(simpleGrantedAuthority)) {
                 return false;
             }
@@ -85,34 +85,34 @@ public final class SecurityUtils {
     /**
      * 批量判断权限
      *
-     * @param funcIds 权限编码集合，对应表 ins_func_role.func_id
+     * @param funcCodes 权限编码集合，对应表 sys_func.func_code
      * @return
      */
-    public static final Set<String> filter(Collection<String> funcIds) {
+    public static final Set<String> filter(Collection<String> funcCodes) {
 
-        String[] funcIdArray = funcIds.toArray(new String[funcIds.size()]);
-        return filter(funcIdArray);
+        String[] funcCodeArray = funcCodes.toArray(new String[funcCodes.size()]);
+        return filter(funcCodeArray);
     }
 
     /**
      * 批量判断权限
      */
-    public static final Set<String> filter(String... funcIds) {
+    public static final Set<String> filter(String... funcCodes) {
 
         Set<String> rtn = new HashSet<>();
 
         UserContext userContext = WebContextUtils.getUserContext();
         if (userContext.isAdmin()) {
-            rtn.addAll(Arrays.asList(funcIds));
+            rtn.addAll(Arrays.asList(funcCodes));
             return rtn;
         }
 
         Collection<GrantedAuthority> grantedAuthorities = WebContextUtils.getUserContext().getGrantedAuthorities();
 
-        for (String funcId : funcIds) {
-            SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(funcId);
+        for (String funcCode : funcCodes) {
+            SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(funcCode);
             if (grantedAuthorities.contains(simpleGrantedAuthority)) {
-                rtn.add(funcId);
+                rtn.add(funcCode);
             }
         }
 

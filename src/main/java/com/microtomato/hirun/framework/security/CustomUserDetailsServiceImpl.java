@@ -3,6 +3,8 @@ package com.microtomato.hirun.framework.security;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.microtomato.hirun.framework.util.Constants;
+import com.microtomato.hirun.modules.system.entity.po.Func;
+import com.microtomato.hirun.modules.system.service.impl.FuncServiceImpl;
 import com.microtomato.hirun.modules.user.entity.consts.UserConst;
 import com.microtomato.hirun.modules.user.entity.po.FuncRole;
 import com.microtomato.hirun.modules.user.entity.po.FuncTemp;
@@ -47,6 +49,9 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
     private FuncRoleServiceImpl funcRoleServiceImpl;
+
+    @Autowired
+    private FuncServiceImpl funcServiceImpl;
 
     /**
      * 在 Security 中，角色和权限共用 GrantedAuthority 接口，唯一的不同角色就是多了个前缀 "ROLE_"
@@ -98,10 +103,17 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
         );
         funcRoleList.forEach(funcRole -> funcSet.add(funcRole.getFuncId().toString()));
 
+        List<Func> funcList = funcServiceImpl.list(
+            Wrappers.<Func>lambdaQuery()
+                .select(Func::getFuncCode)
+                .eq(Func::getStatus, "0")
+                .in(Func::getFuncId, funcSet)
+        );
+
         // 加载用户权限
         Collection<GrantedAuthority> grantedAuthorities = new HashSet<>();
-        for (String funcId : funcSet) {
-            grantedAuthorities.add(new SimpleGrantedAuthority(funcId));
+        for (Func func : funcList) {
+            grantedAuthorities.add(new SimpleGrantedAuthority(func.getFuncCode()));
         }
 
         List<Role> roleList = new ArrayList<>();
