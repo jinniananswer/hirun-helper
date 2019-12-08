@@ -65,4 +65,10 @@ public class EmployeeQueryConditionDTO {
 
     private LocalDate destroyDateEnd;
 
+    private String companyAgeStart;
+
+    private String companyAgeEnd;
+
+    private String employeeIds;
+
 }

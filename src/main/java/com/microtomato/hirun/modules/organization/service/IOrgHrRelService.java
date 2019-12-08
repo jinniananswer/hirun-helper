@@ -28,4 +28,6 @@ public interface IOrgHrRelService extends IService<OrgHrRel> {
     IPage<OrgHrRelInfoDTO> queryOrgHrRelList(Long employeeId, String orgSet, Page<OrgHrRel> page);
 
     boolean updateOrgHrRel(String id,Long archEmployeeID,Long relationEmployeeId);
+
+    String  getOrgLine(Long employeeId);
 }
