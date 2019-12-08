@@ -71,12 +71,12 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree'], function 
                 let data = checkStatus.data;
 
                 let event = obj.event;
-                if (event === 'newRole') {
+                if (event === 'createRole') {
                     let index = layer.open({
                         type: 2,
                         title: '新角色',
-                        content: 'openUrl?url=modules/system/announce-create',
-                        maxmin: true,
+                        content: 'openUrl?url=modules/system/role-create',
+                        maxmin: false,
                         area: ['550px', '400px'],
                         skin: 'layui-layer-molv',
                         success: function (layero, index) {

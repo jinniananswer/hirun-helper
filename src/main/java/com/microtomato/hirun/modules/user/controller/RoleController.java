@@ -64,4 +64,12 @@ public class RoleController {
         roleServiceImpl.activeRole(roleId);
     }
 
+    @PostMapping("create-role")
+    @RestResult
+    public void createRole(@RequestBody Role role) {
+        log.debug("创建新的角色：{}", role);
+        role.setEnabled(true);
+        roleServiceImpl.createRole(role);
+    }
+
 }

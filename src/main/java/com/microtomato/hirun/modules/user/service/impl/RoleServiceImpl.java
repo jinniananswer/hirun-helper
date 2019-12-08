@@ -92,4 +92,15 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
         update(role, Wrappers.<Role>lambdaUpdate().eq(Role::getRoleId, roleId));
     }
 
+    /**
+     * 新增角色
+     *
+     * @param role
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    public void createRole(Role role) {
+        save(role);
+    }
+
 }
