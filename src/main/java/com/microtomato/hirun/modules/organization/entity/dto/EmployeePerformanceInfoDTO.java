@@ -3,8 +3,7 @@ package com.microtomato.hirun.modules.organization.entity.dto;
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.annotation.write.style.ColumnWidth;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 /**
  * @author liuhui
@@ -12,6 +11,9 @@ import lombok.Data;
  */
 @Data
 @Builder
+@EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
 public class EmployeePerformanceInfoDTO{
 
     @ColumnWidth(20)

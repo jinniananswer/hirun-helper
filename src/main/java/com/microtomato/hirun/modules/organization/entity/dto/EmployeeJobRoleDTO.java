@@ -1,7 +1,6 @@
 package com.microtomato.hirun.modules.organization.entity.dto;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 /**
  * @program: hirun-helper
@@ -11,6 +10,9 @@ import lombok.Data;
  **/
 @Data
 @Builder
+@EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
 public class EmployeeJobRoleDTO {
 
     private Long orgId;

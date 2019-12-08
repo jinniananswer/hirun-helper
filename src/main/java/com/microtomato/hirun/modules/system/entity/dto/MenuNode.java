@@ -1,7 +1,6 @@
 package com.microtomato.hirun.modules.system.entity.dto;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import java.util.List;
 
@@ -11,6 +10,9 @@ import java.util.List;
  */
 @Data
 @Builder
+@EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
 public class MenuNode {
 
     private Long id;

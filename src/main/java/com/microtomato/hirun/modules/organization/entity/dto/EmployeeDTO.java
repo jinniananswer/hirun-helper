@@ -1,7 +1,6 @@
 package com.microtomato.hirun.modules.organization.entity.dto;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,6 +14,9 @@ import java.util.List;
  **/
 @Data
 @Builder
+@EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
 public class EmployeeDTO {
 
     private String createType;

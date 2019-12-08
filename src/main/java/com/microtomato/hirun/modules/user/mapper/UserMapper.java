@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.microtomato.hirun.framework.annotation.Storage;
 import com.microtomato.hirun.modules.user.entity.po.User;
-import com.microtomato.hirun.modules.user.entity.po.dto.UserDTO;
+import com.microtomato.hirun.modules.user.entity.dto.UserDTO;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 

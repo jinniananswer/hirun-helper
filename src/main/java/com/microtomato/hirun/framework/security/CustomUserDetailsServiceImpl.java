@@ -8,7 +8,7 @@ import com.microtomato.hirun.modules.user.entity.po.FuncRole;
 import com.microtomato.hirun.modules.user.entity.po.FuncTemp;
 import com.microtomato.hirun.modules.user.entity.po.User;
 import com.microtomato.hirun.modules.user.entity.po.UserRole;
-import com.microtomato.hirun.modules.user.entity.po.dto.UserDTO;
+import com.microtomato.hirun.modules.user.entity.dto.UserDTO;
 import com.microtomato.hirun.modules.user.service.IFuncTempService;
 import com.microtomato.hirun.modules.user.service.impl.FuncRoleServiceImpl;
 import com.microtomato.hirun.modules.user.service.impl.UserRoleServiceImpl;

@@ -1,8 +1,7 @@
 package com.microtomato.hirun.modules.system.entity.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -12,6 +11,9 @@ import java.time.LocalDateTime;
  */
 @Data
 @Builder
+@EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
 public class UnReadedDTO {
 
     /**

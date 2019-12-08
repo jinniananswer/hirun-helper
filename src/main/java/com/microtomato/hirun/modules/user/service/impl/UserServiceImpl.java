@@ -11,7 +11,7 @@ import com.microtomato.hirun.modules.organization.mapper.EmployeeMapper;
 import com.microtomato.hirun.modules.user.entity.consts.UserConst;
 import com.microtomato.hirun.modules.user.entity.domain.UserDO;
 import com.microtomato.hirun.modules.user.entity.po.User;
-import com.microtomato.hirun.modules.user.entity.po.dto.UserDTO;
+import com.microtomato.hirun.modules.user.entity.dto.UserDTO;
 import com.microtomato.hirun.modules.user.mapper.UserMapper;
 import com.microtomato.hirun.modules.user.service.IUserService;
 import lombok.extern.slf4j.Slf4j;

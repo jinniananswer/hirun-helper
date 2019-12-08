@@ -1,7 +1,6 @@
 package com.microtomato.hirun.modules.system.entity.dto;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 /**
  * @author Steven
@@ -9,6 +8,9 @@ import lombok.Data;
  */
 @Data
 @Builder
+@EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
 public class FuncDTO {
     private Long funcId;
     private String funcCode;

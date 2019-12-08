@@ -1,7 +1,6 @@
-package com.microtomato.hirun.modules.user.entity.po.dto;
+package com.microtomato.hirun.modules.user.entity.dto;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 /**
  * @author Steven
@@ -9,6 +8,9 @@ import lombok.Data;
  */
 @Data
 @Builder
+@EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserDTO {
     private Long orgId;
     private Long employeeId;

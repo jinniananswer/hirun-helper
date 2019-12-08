@@ -2,7 +2,7 @@ package com.microtomato.hirun.modules.user.service;
 
 import com.microtomato.hirun.modules.user.entity.po.User;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.microtomato.hirun.modules.user.entity.po.dto.UserDTO;
+import com.microtomato.hirun.modules.user.entity.dto.UserDTO;
 
 /**
  * <p>
