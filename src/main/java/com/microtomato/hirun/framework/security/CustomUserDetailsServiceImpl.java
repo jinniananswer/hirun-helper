@@ -42,6 +42,9 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
     private UserServiceImpl userServiceImpl;
 
     @Autowired
+    private FuncServiceImpl funcServiceImpl;
+
+    @Autowired
     private IFuncTempService funcTempServiceImpl;
 
     @Autowired
@@ -49,9 +52,6 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
     private FuncRoleServiceImpl funcRoleServiceImpl;
-
-    @Autowired
-    private FuncServiceImpl funcServiceImpl;
 
     /**
      * 在 Security 中，角色和权限共用 GrantedAuthority 接口，唯一的不同角色就是多了个前缀 "ROLE_"
@@ -77,44 +77,22 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
             throw new UsernameNotFoundException("User " + username + " was not found in database!");
         }
 
-        Set<String> funcSet = new HashSet<>();
-
-        // 查用户临时操作权限
-        List<FuncTemp> funcTempList = funcTempServiceImpl.list(
-            new QueryWrapper<FuncTemp>().lambda()
-                .select(FuncTemp::getFuncId)
-                .eq(FuncTemp::getUserId, user.getUserId())
-                .gt(FuncTemp::getExpireDate, LocalDateTime.now())
-        );
-        funcTempList.forEach(funcTemp -> funcSet.add(funcTemp.getFuncId().toString()));
-
         // 查用户角色
         LocalDateTime now = LocalDateTime.now();
-        List<UserRole> userRoles = userRoleServiceImpl.list(new QueryWrapper<UserRole>().lambda().select(UserRole::getRoleId)
-            .eq(UserRole::getUserId, user.getUserId()).lt(UserRole::getStartDate, now).gt(UserRole::getEndDate, now)
+        List<UserRole> userRoles = userRoleServiceImpl.list(
+            Wrappers.<UserRole>lambdaQuery()
+                .select(UserRole::getRoleId)
+                .eq(UserRole::getUserId, user.getUserId())
+                .lt(UserRole::getStartDate, now)
+                .gt(UserRole::getEndDate, now)
         );
 
-        // 查用户角色对应的所有权限
-        List<Long> roleIdList = new ArrayList<>();
-        roleIdList.add(Constants.DEFAULT_ROLE_ID);
-        userRoles.forEach(userRole -> roleIdList.add(userRole.getRoleId()));
-        List<FuncRole> funcRoleList = funcRoleServiceImpl.list(
-            Wrappers.<FuncRole>lambdaQuery().select(FuncRole::getFuncId).in(FuncRole::getRoleId, roleIdList)
-        );
-        funcRoleList.forEach(funcRole -> funcSet.add(funcRole.getFuncId().toString()));
+        // 根据角色查操作权限
+        List<Func> funcList = queryFuncSet(user.getUserId(), userRoles);
 
-        List<Func> funcList = funcServiceImpl.list(
-            Wrappers.<Func>lambdaQuery()
-                .select(Func::getFuncCode)
-                .eq(Func::getStatus, "0")
-                .in(Func::getFuncId, funcSet)
-        );
-
-        // 加载用户权限
+        // 加载操作权限
         Collection<GrantedAuthority> grantedAuthorities = new HashSet<>();
-        for (Func func : funcList) {
-            grantedAuthorities.add(new SimpleGrantedAuthority(func.getFuncCode()));
-        }
+        funcList.forEach(func -> grantedAuthorities.add(new SimpleGrantedAuthority(func.getFuncCode())));
 
         List<Role> roleList = new ArrayList<>();
 
@@ -139,6 +117,47 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
         BeanUtils.copyProperties(user, userContext);
 
         return userContext;
+    }
+
+    /**
+     * 查询操作权限
+     *
+     * @param userId
+     * @param userRoles
+     * @return
+     */
+    private List<Func> queryFuncSet(Long userId, List<UserRole> userRoles) {
+
+        Set<Long> funcIdSet = new HashSet<>();
+
+        // 查用户临时操作权限
+        List<FuncTemp> funcTempList = funcTempServiceImpl.list(
+            Wrappers.<FuncTemp>lambdaQuery()
+                .select(FuncTemp::getFuncId)
+                .eq(FuncTemp::getUserId, userId)
+                .gt(FuncTemp::getExpireDate, LocalDateTime.now())
+        );
+        funcTempList.forEach(funcTemp -> funcIdSet.add(funcTemp.getFuncId()));
+
+        // 查用户角色对应的操作权限
+        List<Long> roleIdList = new ArrayList<>();
+        roleIdList.add(Constants.DEFAULT_ROLE_ID);
+        userRoles.forEach(userRole -> roleIdList.add(userRole.getRoleId()));
+        List<FuncRole> funcRoleList = funcRoleServiceImpl.list(
+            Wrappers.<FuncRole>lambdaQuery()
+                .select(FuncRole::getFuncId)
+                .in(FuncRole::getRoleId, roleIdList)
+        );
+        funcRoleList.forEach(funcRole -> funcIdSet.add(funcRole.getFuncId()));
+
+        List<Func> funcList = funcServiceImpl.list(
+            Wrappers.<Func>lambdaQuery()
+                .select(Func::getFuncCode)
+                .eq(Func::getStatus, "0")
+                .in(Func::getFuncId, funcIdSet)
+        );
+
+        return funcList;
     }
 
 }
