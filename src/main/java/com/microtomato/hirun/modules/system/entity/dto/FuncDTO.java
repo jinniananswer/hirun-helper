@@ -1,5 +1,6 @@
 package com.microtomato.hirun.modules.system.entity.dto;
 
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -7,6 +8,7 @@ import lombok.Data;
  * @date 2019-12-06
  */
 @Data
+@Builder
 public class FuncDTO {
     private Long funcId;
     private String funcCode;

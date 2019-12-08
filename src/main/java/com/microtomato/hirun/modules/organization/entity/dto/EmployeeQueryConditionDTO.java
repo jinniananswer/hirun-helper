@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.organization.entity.dto;
 
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -11,6 +12,7 @@ import java.time.LocalDate;
  * @author: liuhui7
  **/
 @Data
+@Builder
 public class EmployeeQueryConditionDTO {
 
 

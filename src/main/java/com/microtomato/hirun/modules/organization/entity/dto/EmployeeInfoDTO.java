@@ -4,6 +4,7 @@ import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.annotation.write.style.ColumnWidth;
 import com.microtomato.hirun.framework.harbour.excel.convert.LocalDateTimeConvert;
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
  * @author: liuhui7
  **/
 @Data
+@Builder
 public class EmployeeInfoDTO {
 
     @ExcelIgnore

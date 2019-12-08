@@ -1,5 +1,6 @@
 package com.microtomato.hirun.modules.organization.entity.dto;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
  * @create: 2019-12-02 10:50
  **/
 @Data
+@Builder
 public class StatisticBarDTO {
 
     private String title;

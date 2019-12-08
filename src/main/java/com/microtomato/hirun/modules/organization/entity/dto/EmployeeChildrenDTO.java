@@ -1,5 +1,6 @@
 package com.microtomato.hirun.modules.organization.entity.dto;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -11,6 +12,7 @@ import java.time.LocalDate;
  * @create: 2019-11-19 17:41
  **/
 @Data
+@Builder
 public class EmployeeChildrenDTO {
 
     private String name;

@@ -1,5 +1,6 @@
 package com.microtomato.hirun.modules.organization.entity.dto;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -9,6 +10,7 @@ import java.io.Serializable;
  * @author Steven
  */
 @Data
+@Builder
 public class EmployeeExampleDTO implements Serializable {
     private String name;
     private Long employeeId;

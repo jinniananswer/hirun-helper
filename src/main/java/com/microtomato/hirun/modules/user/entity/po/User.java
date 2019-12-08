@@ -16,11 +16,11 @@ import java.time.LocalDateTime;
  * @since 2019-09-05
  */
 @Data
+@Builder
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @TableName("ins_user")
 public class User extends BaseEntity {
 

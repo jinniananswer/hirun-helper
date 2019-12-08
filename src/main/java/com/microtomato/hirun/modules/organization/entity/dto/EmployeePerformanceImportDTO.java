@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.organization.entity.dto;
 
 import com.alibaba.excel.annotation.ExcelProperty;
+import lombok.Builder;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
@@ -10,8 +11,8 @@ import javax.validation.constraints.Pattern;
  * @author liuhui
  * 员工绩效导入传输对象
  */
-
 @Data
+@Builder
 public class EmployeePerformanceImportDTO {
 
     @NotNull(message = "员工编码为必填字段，不能为空")

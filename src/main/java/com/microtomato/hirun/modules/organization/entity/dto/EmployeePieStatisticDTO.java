@@ -1,5 +1,6 @@
 package com.microtomato.hirun.modules.organization.entity.dto;
 
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -9,6 +10,7 @@ import lombok.Data;
  * @create: 2019-11-22 02:28
  **/
 @Data
+@Builder
 public class EmployeePieStatisticDTO {
 
     private String name;

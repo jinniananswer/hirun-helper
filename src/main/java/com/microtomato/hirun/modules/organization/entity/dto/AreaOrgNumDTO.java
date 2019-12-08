@@ -1,5 +1,6 @@
 package com.microtomato.hirun.modules.organization.entity.dto;
 
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -9,6 +10,7 @@ import lombok.Data;
  * @create: 2019-12-01 14:02
  **/
 @Data
+@Builder
 public class AreaOrgNumDTO {
 
     private String id;

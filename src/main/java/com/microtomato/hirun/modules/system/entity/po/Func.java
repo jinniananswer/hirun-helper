@@ -2,11 +2,8 @@ package com.microtomato.hirun.modules.system.entity.po;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.microtomato.hirun.framework.data.BaseEntity;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import lombok.experimental.Accessors;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -19,6 +16,7 @@ import java.time.LocalDateTime;
  * @since 2019-09-22
  */
 @Data
+@Builder
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
 @NoArgsConstructor

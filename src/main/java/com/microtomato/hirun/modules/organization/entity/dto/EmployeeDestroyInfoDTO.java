@@ -1,5 +1,6 @@
 package com.microtomato.hirun.modules.organization.entity.dto;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
  * @author:
  **/
 @Data
+@Builder
 public class EmployeeDestroyInfoDTO {
 
     private Long employeeId;
