@@ -1,6 +1,6 @@
 layui.extend({
     orgTree: 'org',
-}).define(['ajax', 'table', 'element', 'orgTree', 'layer', 'form', 'select', 'redirect','laydate'], function (exports) {
+}).define(['ajax', 'table', 'element', 'orgTree', 'layer', 'form', 'select', 'redirect', 'laydate'], function (exports) {
     var $ = layui.$;
     var table = layui.table;
     var layer = layui.layer;
@@ -15,8 +15,8 @@ layui.extend({
             layui.select.init('type', 'EMPLOYEE_TYPE', '', true);
             layui.select.init('isBlackList', 'YES_NO', '', true);
             layui.select.init('jobRole', 'JOB_ROLE', null, true);
-            layui.select.init('jobRoleNature', 'JOB_NATURE',null, true);
-            layui.select.init('discountRate', 'DISCOUNT_RATE',null, true);
+            layui.select.init('jobRoleNature', 'JOB_NATURE', null, true);
+            layui.select.init('discountRate', 'DISCOUNT_RATE', null, true);
 
             laydate.render({
                 elem: '#inDateEnd',
@@ -50,7 +50,14 @@ layui.extend({
                 cols: [
                     [
                         {type: 'radio', fixed: 'left'},
-                        {field: 'name', title: '姓名', width: 120, fixed: 'left', align: 'center',templet:'#templetArchive'},
+                        {
+                            field: 'name',
+                            title: '姓名',
+                            width: 120,
+                            fixed: 'left',
+                            align: 'center',
+                            templet: '#templetArchive'
+                        },
                         {
                             field: 'sex', title: '性别', width: 80, sort: true, align: 'center', templet: function (d) {
                                 if (d.sex == 1) {
@@ -60,19 +67,36 @@ layui.extend({
                                 }
                             }
                         },
-                        {field: 'typeName', title: '员工类型', width: 120, align: 'center'},
+                        {field: 'typeName', title: '员工类型', width: 120, align: 'center', sort: true},
                         {field: 'identityNo', title: '身份证号码', width: 200, align: 'center'},
                         {field: 'mobileNo', title: '电话号码', width: 150, align: 'center'},
-                        {field: 'inDate', title: '入职时间', align: 'center', width: 120, templet: function (d) {
+                        {field: 'age', title: '年龄', width: 80, align: 'center', sort: true},
+                        {
+                            field: 'inDate',
+                            title: '入职时间',
+                            sort: true,
+                            align: 'center',
+                            width: 120,
+                            templet: function (d) {
                                 if (d.inDate != '') {
                                     return d.inDate.substr(0, 10)
                                 }
                             }
                         },
+                        {field: 'companyAge', title: '司龄', width: 80, sort: true, align: 'center'},
                         {field: 'jobRoleName', title: '岗位', width: 150, align: 'center'},
-                        {field: 'orgPath', title: '部门', align: 'center'},
-                        {field: 'companyAge', title: '工作年限', width: 150, align: 'center'},
-                        {field: 'status', title: '状态', width: 100, align: 'center',fixed: 'right', templet: function (d) {
+                        {field: 'jobRoleNatureName', title: '岗位性质', width: 150, align: 'center'},
+                        {field: 'discountRate', title: '折算比例', width: 150, align: 'center'},
+                        {field: 'parentEmployeeName', title: '上级', width: 100, align: 'center'},
+                        {field: 'orgPath', title: '部门', width: 100, align: 'center'},
+                        {field: 'jobAge', title: '工作年限', width: 120, sort: true, align: 'center'},
+                        {
+                            field: 'status',
+                            title: '状态',
+                            width: 100,
+                            align: 'center',
+                            fixed: 'right',
+                            templet: function (d) {
                                 if (d.employeeStatus == 0) {
                                     return '在职';
                                 } else if (d.employeeStatus == 3) {
@@ -94,7 +118,7 @@ layui.extend({
                     page: {
                         curr: 1
                     },
-                    loading:true,
+                    loading: true,
                     url: 'api/organization/employee/queryEmployeeList4Page',
                     where: {
                         name: $("input[name='name']").val(),
@@ -104,18 +128,21 @@ layui.extend({
                         employeeStatus: $("select[name='employeeStatus']").val(),
                         type: $("select[name='type']").val(),
                         isBlackList: $("#isBlackList").val(),
-                        otherStatus:$('#otherStatus').val(),
-                        jobRole:$("select[name='jobRole']").val(),
-                        jobRoleNature:$("select[name='jobRoleNature']").val(),
-                        discountRate:$("select[name='discountRate']").val(),
-                        jobYearStart:$('#jobYearStart').val(),
-                        jobYearEnd:$('#jobYearEnd').val(),
-                        ageStart:$('#ageStart').val(),
-                        ageEnd:$('#ageEnd').val(),
-                        inDateStart:$('#inDateStart').val(),
-                        inDateEnd:$('#inDateEnd').val(),
-                        destroyDateStart:$('#destroyDateStart').val(),
-                        destroyDateEnd:$('#destroyDateEnd').val(),
+                        otherStatus: $('#otherStatus').val(),
+                        jobRole: $("select[name='jobRole']").val(),
+                        jobRoleNature: $("select[name='jobRoleNature']").val(),
+                        discountRate: $("select[name='discountRate']").val(),
+                        jobYearStart: $('#jobYearStart').val(),
+                        jobYearEnd: $('#jobYearEnd').val(),
+                        ageStart: $('#ageStart').val(),
+                        ageEnd: $('#ageEnd').val(),
+                        inDateStart: $('#inDateStart').val(),
+                        inDateEnd: $('#inDateEnd').val(),
+                        destroyDateStart: $('#destroyDateStart').val(),
+                        destroyDateEnd: $('#destroyDateEnd').val(),
+                        companyAgeStart: $('#companyAgeStart').val(),
+                        companyAgeEnd: $('#companyAgeEnd').val(),
+
                     }
                 })
             });
@@ -127,7 +154,7 @@ layui.extend({
                 var data = checkStatus.data;
                 var event = obj.event;
 
-                if ((event != 'create' && event != 'export') && data.length <= 0) {
+                if ((event != 'create' && event != 'export' && event != 'LAYTABLE_COLS') && data.length <= 0) {
                     layer.msg('请选中一条数据,再进行操作。');
                     return;
                 }
@@ -232,22 +259,27 @@ layui.extend({
             layui.redirect.open('openUrl?url=modules/organization/employee/employee_archive&operType=edit&employeeId=' + data.employeeId, '编辑员工资料');
         },
 
-        export: function(){
-            var param='?name='+$("input[name='name']").val()+'&orgSet='+$("input[name='orgSet']").val()+'&sex='+$("select[name='sex']").val()+'&type='+$("select[name='type']").val()+
-            '&mobile='+$("input[name='mobileNo']").val()+'&employeeStatus='+$("select[name='employeeStatus']").val()+'&isBlackList='+$("#isBlackList").val()+'&otherStatus='+$("select[name='otherStatus']").val();
-            window.location.href = "api/organization/employee/queryEmployeeList4Export"+param;
+        export: function () {
+            var param = '?name=' + $("input[name='name']").val() + '&orgSet=' + $("input[name='orgSet']").val() + '&sex=' + $("select[name='sex']").val() + '&type=' + $("select[name='type']").val() +
+                '&mobile=' + $("input[name='mobileNo']").val() + '&employeeStatus=' + $("select[name='employeeStatus']").val() + '&isBlackList=' + $("#isBlackList").val() + '&otherStatus=' + $("select[name='otherStatus']").val() +
+                '&jobRole=' + $("select[name='jobRole']").val() + '&jobRoleNature=' + $("select[name='jobRoleNature']").val() + '&discountRate=' + $("select[name='discountRate']").val() +
+                '&jobYearStart=' + $("input[name='jobYearStart']").val() + '&jobYearEnd=' + $("input[name='jobYearEnd']").val() + '&ageStart=' + $("input[name='ageStart']").val() + '&ageEnd=' + $("input[name='ageEnd']").val() +
+                '&companyAgeStart=' + $("input[name='companyAgeStart']").val() + '&companyAgeEnd=' + $("input[name='companyAgeEnd']").val() + '&inDateStart=' + $("input[name='inDateStart']").val() + '&inDateEnd=' + $("input[name='inDateEnd']").val() +
+                '&destroyDateStart=' + $("input[name='destroyDateStart']").val() + '&destroyDateEnd=' + $("input[name='destroyDateEnd']").val();
+
+            window.location.href = "api/organization/employee/queryEmployeeList4Export" + param;
         },
 
-        loadEmployeeArchive:function (id,name) {
-            layui.redirect.open('openUrl?url=modules/organization/employee/my_archive&employeeId='+id, name+'的档案');
+        loadEmployeeArchive: function (id, name) {
+            layui.redirect.open('openUrl?url=modules/organization/employee/my_archive&employeeId=' + id, name + '的档案');
         },
 
-        moreCondition:function (type) {
-            if(type=='appear'){
+        moreCondition: function (type) {
+            if (type == 'appear') {
                 $("#more").show();
                 $("#conceal").show();
                 $("#appear").hide();
-            }else{
+            } else {
                 $("#more").hide();
                 $("#conceal").hide();
                 $("#appear").show();

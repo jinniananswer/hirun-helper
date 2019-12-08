@@ -41,6 +41,14 @@ public class EmployeeInfoDTO {
     private String identityNo;
 
     @ColumnWidth(20)
+    @ExcelProperty("生日")
+    private String birthday;
+
+    @ColumnWidth(20)
+    @ExcelProperty("年龄")
+    private String age;
+
+    @ColumnWidth(20)
     @ExcelProperty("员工性别")
     private String sex;
 
@@ -72,6 +80,10 @@ public class EmployeeInfoDTO {
     @ColumnWidth(20)
     @ExcelProperty(value = "入职时间", converter = LocalDateTimeConvert.class)
     private LocalDateTime inDate;
+
+    @ColumnWidth(20)
+    @ExcelProperty("司龄")
+    private String companyAge;
 
     @ColumnWidth(20)
     @ExcelProperty("户籍地址")
@@ -138,7 +150,7 @@ public class EmployeeInfoDTO {
 
     @ColumnWidth(20)
     @ExcelProperty("工作年限")
-    private String companyAge;
+    private String jobAge;
 
     @ExcelIgnore
     private LocalDate jobDate;

@@ -6,10 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.exception.ErrorKind;
 import com.microtomato.hirun.framework.exception.cases.AlreadyExistException;
 import com.microtomato.hirun.framework.security.UserContext;
-import com.microtomato.hirun.framework.util.ArrayUtils;
-import com.microtomato.hirun.framework.util.SpringContextUtils;
-import com.microtomato.hirun.framework.util.TimeUtils;
-import com.microtomato.hirun.framework.util.WebContextUtils;
+import com.microtomato.hirun.framework.util.*;
 import com.microtomato.hirun.modules.organization.entity.consts.EmployeeConst;
 import com.microtomato.hirun.modules.organization.entity.domain.EmployeeBlackListDO;
 import com.microtomato.hirun.modules.organization.entity.domain.EmployeeDO;
@@ -86,6 +83,9 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
 
     @Autowired
     private IHrPendingService hrPendingService;
+
+    @Autowired
+    private IOrgHrRelService orgHrRelService;
 
     @Override
     public List<EmployeeInfoDTO> searchEmployee(String searchText) {
@@ -345,14 +345,14 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public boolean destroyEmployee(EmployeeDestroyInfoDTO employeeDestroyInfoDTO) {
 
-        List<HrPending> hrPendingList=hrPendingService.queryPendingByExecuteId(employeeDestroyInfoDTO.getEmployeeId());
+        List<HrPending> hrPendingList = hrPendingService.queryPendingByExecuteId(employeeDestroyInfoDTO.getEmployeeId());
 
         if (hrPendingList.size() > 0) {
             throw new AlreadyExistException(" 该员工下存在未处理的待办任务，请将待办任务转移之后再办理离职！.", ErrorKind.ALREADY_EXIST.getCode());
         }
 
-        UserContext userContext=WebContextUtils.getUserContext();
-        Long loginUserId=userContext.getUserId();
+        UserContext userContext = WebContextUtils.getUserContext();
+        Long loginUserId = userContext.getUserId();
 
         //注销employee信息
         Employee employee = new Employee();
@@ -362,7 +362,7 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         employeeDO.destroy(employeeDestroyInfoDTO.getDestroyDate());
 
         //根据离职时间终止合同记录
-        employeeContractService.stopEmployeeContract(employeeDestroyInfoDTO.getEmployeeId(),employeeDestroyInfoDTO.getDestroyDate(),loginUserId);
+        employeeContractService.stopEmployeeContract(employeeDestroyInfoDTO.getEmployeeId(), employeeDestroyInfoDTO.getDestroyDate(), loginUserId);
 
         //终止暂停操作员账号
         Employee userEmployee = employeeService.getById(employeeDestroyInfoDTO.getEmployeeId());
@@ -383,7 +383,7 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
 
         //变更直属下级的上级员工
         if (employeeDestroyInfoDTO.getNewParentEmployeeId() != null) {
-            employeeJobRoleService.changeParentEmployee(employeeDestroyInfoDTO.getEmployeeId(), employeeDestroyInfoDTO.getNewParentEmployeeId(),loginUserId);
+            employeeJobRoleService.changeParentEmployee(employeeDestroyInfoDTO.getEmployeeId(), employeeDestroyInfoDTO.getNewParentEmployeeId(), loginUserId);
         }
 
         return true;
@@ -392,23 +392,16 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
     /**
      * 员工档案信息查询
      *
-     * @param employeeInfoDTO
+     * @param conditionDTO
      * @param page
      * @return
      */
     @Override
-    public IPage<EmployeeInfoDTO> queryEmployeeList4Page(EmployeeQueryConditionDTO employeeInfoDTO, Page<EmployeeQueryConditionDTO> page) {
-         //当传入部门为空时判断，根据登录员工的部门计算得到可以查询的部门集合
-        if(StringUtils.isBlank(employeeInfoDTO.getOrgSet())){
-            UserContext userContext= WebContextUtils.getUserContext();
-            Long orgId=userContext.getOrgId();
+    public IPage<EmployeeInfoDTO> queryEmployeeList4Page(EmployeeQueryConditionDTO conditionDTO, Page<EmployeeQueryConditionDTO> page) {
+        //拼装除了界面传过来的筛选条件
+        conditionDTO = this.conditionPlus(conditionDTO);
 
-            OrgDO orgDO=SpringContextUtils.getBean(OrgDO.class,orgId);
-            String orgLine=orgDO.getOrgLine();
-
-            employeeInfoDTO.setOrgSet(orgLine);
-        }
-        IPage<EmployeeInfoDTO> iPage = employeeService.queryEmployeeList4Page(employeeInfoDTO, page);
+        IPage<EmployeeInfoDTO> iPage = employeeService.queryEmployeeList4Page(conditionDTO, page);
         if (iPage == null) {
             return null;
         }
@@ -417,14 +410,8 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, employeeInfoDTOResult.getOrgId());
             employeeInfoDTOResult.setOrgPath(orgDO.getCompanyLinePath());
             employeeInfoDTOResult.setTypeName(this.staticDataService.getCodeName("EMPLOYEE_TYPE", employeeInfoDTOResult.getType()));
-
-            LocalDate jobDate = employeeInfoDTOResult.getJobDate();
-            if (jobDate == null) {
-                employeeInfoDTOResult.setCompanyAge("0");
-            }else{
-                employeeInfoDTOResult.setCompanyAge(TimeUtils.getAbsDateDiffYear(jobDate, LocalDate.now())+"");
-            }
-
+            employeeInfoDTOResult.setJobRoleNatureName(this.staticDataService.getCodeName("JOB_NATURE", employeeInfoDTOResult.getJobRoleNature()));
+            employeeInfoDTOResult.setParentEmployeeName(employeeService.getEmployeeNameEmployeeId(employeeInfoDTOResult.getParentEmployeeId()));
         }
         return iPage;
     }
@@ -472,7 +459,7 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         List<EmployeeChildren> children = this.employeeChildrenService.queryByEmployeeId(employeeId);
         if (ArrayUtils.isNotEmpty(children)) {
             List<EmployeeChildrenDTO> childrenDTO = new ArrayList<>();
-            for (EmployeeChildren child :children) {
+            for (EmployeeChildren child : children) {
                 EmployeeChildrenDTO childDTO = new EmployeeChildrenDTO();
                 BeanUtils.copyProperties(child, childDTO);
                 childDTO.setSexName(this.staticDataService.getCodeName("SEX", child.getSex()));
@@ -504,7 +491,7 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         archive.setIsSocialSecurityName(this.staticDataService.getCodeName("YES_NO", employee.getIsSocialSecurity() + ""));
         archive.setIsSocialSecurityName(this.staticDataService.getCodeName("SOCIAL_SECURITY_STATUS", employee.getSocialSecurityStatus()));
         archive.setStatusName(this.staticDataService.getCodeName("EMPLOYEE_STATUS", employee.getStatus()));
-        archive.setIsSocialSecurityName(this.staticDataService.getCodeName("YES_NO", employee.getIsSocialSecurity()+""));
+        archive.setIsSocialSecurityName(this.staticDataService.getCodeName("YES_NO", employee.getIsSocialSecurity() + ""));
         archive.setSocialSecurityStatusName(this.staticDataService.getCodeName("SOCIAL_SECURITY_STATUS", employee.getSocialSecurityStatus()));
 
         archive.setJobRoleName(this.staticDataService.getCodeName("JOB_ROLE", jobRole.getJobRole()));
@@ -526,16 +513,8 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
 
     @Override
     public List<EmployeeInfoDTO> queryEmployeeList(EmployeeQueryConditionDTO conditionDTO) {
-        //当传入部门为空时判断，根据登录员工的部门计算得到可以查询的部门集合
-        if(StringUtils.isBlank(conditionDTO.getOrgSet())){
-            UserContext userContext= WebContextUtils.getUserContext();
-            Long orgId=userContext.getOrgId();
-
-            OrgDO orgDO=SpringContextUtils.getBean(OrgDO.class,orgId);
-            String orgLine=orgDO.getOrgLine();
-
-            conditionDTO.setOrgSet(orgLine);
-        }
+        //拼装除了界面传过来的筛选条件
+        conditionDTO = this.conditionPlus(conditionDTO);
 
         List<EmployeeInfoDTO> list = employeeService.queryEmployeeList(conditionDTO);
         if (list.size() <= 0) {
@@ -547,12 +526,6 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             employeeInfo.setOrgPath(orgDO.getCompanyLinePath());
             employeeInfo.setSex(this.staticDataService.getCodeName("SEX", employeeInfo.getSex()));
             employeeInfo.setTypeName(this.staticDataService.getCodeName("EMPLOYEE_TYPE", employeeInfo.getType()));
-            LocalDate jobDate = employeeInfo.getJobDate();
-            if (jobDate == null) {
-                employeeInfo.setCompanyAge("0");
-            }else{
-                employeeInfo.setCompanyAge(TimeUtils.getAbsDateDiffYear(jobDate, LocalDate.now())+"");
-            }
             AddressDO addressDO = SpringContextUtils.getBean(AddressDO.class);
             employeeInfo.setNativeArea(addressDO.getFullName(employeeInfo.getNativeRegion()));
             employeeInfo.setHomeArea(addressDO.getFullName(employeeInfo.getHomeRegion()));
@@ -564,5 +537,44 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             employeeInfo.setJobRoleNatureName(this.staticDataService.getCodeName("JOB_NATURE", employeeInfo.getJobRoleNature()));
         }
         return list;
+    }
+
+    /**
+     * 拼装除了界面传过来的筛选条件
+     * 根据员工权限判断是否有all_city或者all_shop的权限
+     * 判断是否存在部门人资的关联关系数据
+     * 根据员工上下级筛选数据
+     *
+     * @param conditionDTO
+     * @return
+     */
+    private EmployeeQueryConditionDTO conditionPlus(EmployeeQueryConditionDTO conditionDTO) {
+        //当传入部门为空时判断，根据登录员工的部门计算得到可以查询的部门集合
+        if (StringUtils.isBlank(conditionDTO.getOrgSet())) {
+            UserContext userContext = WebContextUtils.getUserContext();
+            Long orgId = userContext.getOrgId();
+            Long employeeId = userContext.getEmployeeId();
+            String employeeIds = "";
+            if (SecurityUtils.hasFuncId("ALL_CITY")) {
+                conditionDTO.setOrgSet("");
+            } else if (SecurityUtils.hasFuncId("ALL_SHOP")) {
+                OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+                String orgLine = orgDO.getOrgLine();
+                conditionDTO.setOrgSet(orgLine);
+            } else if (StringUtils.isNotBlank(orgHrRelService.getOrgLine(employeeId))) {
+                conditionDTO.setOrgSet(orgHrRelService.getOrgLine(employeeId));
+            } else {
+                List<Employee> employeeList = employeeService.findSubordinate(employeeId);
+                if (ArrayUtils.isEmpty(employeeList)) {
+                    conditionDTO.setEmployeeIds(employeeId + "");
+                }
+                for (Employee employee : employeeList) {
+                    employeeIds += employee.getEmployeeId() + ",";
+                    conditionDTO.setEmployeeIds(employeeIds + employeeId);
+                }
+
+            }
+        }
+        return conditionDTO;
     }
 }
