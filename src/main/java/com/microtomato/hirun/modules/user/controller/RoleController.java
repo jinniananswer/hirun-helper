@@ -42,7 +42,7 @@ public class RoleController {
         // 超级工号不展示
         List<Role> roleList = roleServiceImpl.list(
             Wrappers.<Role>lambdaQuery()
-                .select(Role::getRoleId, Role::getRoleName, Role::getEnabled)
+                .select(Role::getRoleId, Role::getRoleName, Role::getEnabled, Role::getRemark)
                 .ne(Role::getRoleId, Constants.SUPER_ROLE_ID)
                 .eq(Role::getEnabled, true)
                 .like(StringUtils.isNotBlank(rolename), Role::getRoleName, rolename)
@@ -64,12 +64,20 @@ public class RoleController {
         roleServiceImpl.activeRole(roleId);
     }
 
-    @PostMapping("create-role")
+    @PostMapping("create")
     @RestResult
     public void createRole(@RequestBody Role role) {
         log.debug("创建新的角色：{}", role);
         role.setEnabled(true);
         roleServiceImpl.createRole(role);
+    }
+
+    @PostMapping("edit")
+    @RestResult
+    public void editRole(@RequestBody Role role) {
+        log.debug("修改角色：{}", role);
+        role.setEnabled(true);
+        roleServiceImpl.editRole(role);
     }
 
 }

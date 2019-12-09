@@ -49,4 +49,12 @@ public interface IRoleService extends IService<Role> {
      */
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     void createRole(Role role);
+
+    /**
+     * 修改角色信息
+     *
+     * @param role
+     */
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    void editRole(Role role);
 }

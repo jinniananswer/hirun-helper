@@ -103,4 +103,15 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
         save(role);
     }
 
+    /**
+     * 修改角色信息
+     *
+     * @param role
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    public void editRole(Role role) {
+        updateById(role);
+    }
+
 }

@@ -52,16 +52,14 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree'], function 
                         where: {
                             roleId: data.roleId,
                         },
-                        done: function(res, curr, count){
+                        done: function (res, curr, count) {
                             oldFuncs = table.checkStatus('funcTableId').data;
                         }
                     });
 
                 } else if (obj.event === 'editRole') {
-                    console.log('editRole: ' + data.roleId);
                     roleManager.editRole(data);
                 } else if (obj.event === 'deleteRole') {
-                    console.log('deleteRole: ' + data.roleId);
                     roleManager.deleteRole(data);
                 }
             });
@@ -74,7 +72,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree'], function 
                 if (event === 'createRole') {
                     let index = layer.open({
                         type: 2,
-                        title: '新角色',
+                        title: '新增角色',
                         content: 'openUrl?url=modules/system/role-create',
                         maxmin: false,
                         area: ['550px', '400px'],
@@ -125,7 +123,11 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree'], function 
                         '  <div class="layui-field-box">\n' +
                         msg2 +
                         '  </div>\n' +
-                        '</fieldset>', {icon: 3, title: '请核对信息，当前角色：' + currRoleName, area:['650px','400px']}, function (index) {
+                        '</fieldset>', {
+                        icon: 3,
+                        title: '请核对信息，当前角色：' + currRoleName,
+                        area: ['650px', '400px']
+                    }, function (index) {
 
                         let ids = [];
                         curFuncs.map((e) => {
@@ -204,7 +206,11 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree'], function 
                     '  <div class="layui-field-box">\n' +
                     msg2 +
                     '  </div>\n' +
-                    '</fieldset>', {icon: 3, title: '请核对信息，当前角色：' + currRoleName, area:['650px','400px']}, function (index) {
+                    '</fieldset>', {
+                    icon: 3,
+                    title: '请核对信息，当前角色：' + currRoleName,
+                    area: ['650px', '400px']
+                }, function (index) {
 
                     let ids = [];
                     curMenus.map((e) => {
@@ -271,6 +277,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree'], function 
                     {type: 'radio', fixed: 'left', event: 'selectRole'},
                     {field: 'roleId', title: 'ID', width: 60, align: 'center'},
                     {field: 'roleName', title: '角色名', align: 'center'},
+                    {field: 'remark', title: '备注', hide: true},
                     {fixed: 'right', align: 'center', title: '操作', width: 150, fixed: 'right', toolbar: '#roleBar'}
                 ]],
                 page: false,
@@ -340,7 +347,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree'], function 
             return rtn;
         },
 
-        funcMinus: function(a, b) {
+        funcMinus: function (a, b) {
             let rtn = [];
             for (let i = 0; i < a.length; i++) {
                 let j = 0;
@@ -360,17 +367,16 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree'], function 
         editRole: function (data) {
             let index = layer.open({
                 type: 2,
-                title: '查看详情',
-                content: 'openUrl?url=modules/system/message-detail',
-                maxmin: true,
-                btn: ['关闭'],
-                area: ['550px', '400px'],
+                title: '编辑角色',
+                content: 'openUrl?url=modules/system/role-edit',
+                maxmin: false,
+                area: ['550px', '430px'],
                 skin: 'layui-layer-molv',
                 success: function (layero, index) {
                     let body = layer.getChildFrame('body', index);
-                    body.find('#senderName').html('<h1>来自【' + data.name + '】的公告' + '</h1>');
-                    body.find('#createTime').html('<span>' + data.createTime + '</span>');
-                    body.find('#content').html('<div class="layadmin-text">' + data.content + '</div>');
+                    body.find('#roleId').val(data.roleId);
+                    body.find('#roleName').val(data.roleName);
+                    body.find('#remark').val(data.remark);
                 },
                 yes: function (index, layero) {
                     layer.close(index);

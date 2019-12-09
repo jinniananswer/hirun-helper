@@ -2,15 +2,16 @@ layui.use(['ajax', 'layer', 'element'], function () {
     let $ = layui.$;
     let layer = layui.layer;
 
-    $('#createRoleBtn').on('click', function () {
+    $('#editRoleBtn').on('click', function () {
 
+        let roleId = $('#roleId').val();
         let roleName = $('#roleName').val();
         let remark = $('#remark').val();
-        let content = {"roleName": roleName, "remark": remark};
+        let content = {"roleId": roleId,"roleName": roleName, "remark": remark};
 
         $.ajax({
             type: "post",
-            url: "api/user/role/create",
+            url: "api/user/role/edit",
             dataType: "json",
             contentType: "application/json",
             data: JSON.stringify(content),
