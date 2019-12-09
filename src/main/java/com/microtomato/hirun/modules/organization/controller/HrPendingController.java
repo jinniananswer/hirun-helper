@@ -3,13 +3,19 @@ package com.microtomato.hirun.modules.organization.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
+import com.microtomato.hirun.framework.security.UserContext;
+import com.microtomato.hirun.framework.util.WebContextUtils;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeePieStatisticDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeTransDetailDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.HrPendingInfoDTO;
 import com.microtomato.hirun.modules.organization.entity.po.HrPending;
 import com.microtomato.hirun.modules.organization.service.IHrPendingDomainService;
+import com.microtomato.hirun.modules.organization.service.IHrPendingService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
 
 
 /**
@@ -28,6 +34,8 @@ public class HrPendingController {
 
     @Autowired
     private IHrPendingDomainService hrPendingDomainService;
+    @Autowired
+    private IHrPendingService hrPendingService;
 
     @GetMapping("/queryTransPendingByEmployeeId")
     @RestResult
@@ -94,4 +102,19 @@ public class HrPendingController {
         EmployeeTransDetailDTO hrPendingDetailDTO = hrPendingDomainService.queryPendingDetailById(id);
         return hrPendingDetailDTO;
     }
+
+    /**
+     * 统计待办数据
+     */
+    @PostMapping("/countPending")
+    @RestResult
+    public List<EmployeePieStatisticDTO> countPending(Long employeeId) {
+        if(employeeId==null){
+            UserContext userContext = WebContextUtils.getUserContext();
+            employeeId=userContext.getEmployeeId();
+        }
+        List<EmployeePieStatisticDTO> list = hrPendingService.countPending(employeeId);
+        return list;
+    }
+
 }

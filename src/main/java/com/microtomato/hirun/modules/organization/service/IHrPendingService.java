@@ -2,8 +2,8 @@ package com.microtomato.hirun.modules.organization.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeePieStatisticDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.HrPendingInfoDTO;
-import com.microtomato.hirun.modules.organization.entity.po.EmployeeTransDetail;
 import com.microtomato.hirun.modules.organization.entity.po.HrPending;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -52,4 +52,11 @@ public interface IHrPendingService extends IService<HrPending> {
      *
      */
     List<HrPending> queryPendingByEmployeeIdAndType(Long employeeId,String pendingType,String status);
+
+    /**
+     * 统计未完成待办
+     * @param employeeId
+     * @return
+     */
+    List<EmployeePieStatisticDTO> countPending(Long employeeId);
 }
