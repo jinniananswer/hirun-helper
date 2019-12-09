@@ -219,4 +219,19 @@ public class NotifyQueueServiceImpl extends ServiceImpl<NotifyQueueMapper, Notif
         );
     }
 
+    /**
+     * 有未读消息
+     *
+     * @return
+     */
+    @Override
+    public boolean messageHint() {
+        Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
+        Integer count = notifyQueueMapper.selectCount(
+            Wrappers.<NotifyQueue>lambdaQuery()
+                .eq(NotifyQueue::getReaded, false)
+                .eq(NotifyQueue::getEmployeeId, employeeId));
+        return count > 0 ? true : false;
+    }
+
 }

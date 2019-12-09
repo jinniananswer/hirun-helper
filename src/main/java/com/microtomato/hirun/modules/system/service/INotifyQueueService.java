@@ -83,4 +83,6 @@ public interface INotifyQueueService extends IService<NotifyQueue> {
      * @param notifyType
      */
     void markReadedAll(INotifyService.NotifyType notifyType);
+
+    boolean messageHint();
 }

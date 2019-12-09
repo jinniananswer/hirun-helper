@@ -94,8 +94,15 @@ layui.define(['ajax', 'element', 'laytpl'], function (exports) {
                 layui.element.render('nav', 'layadmin-system-side-menu');
             });
 
+            // 每次登录时，做一次公告入队操作
             layui.ajax.get('api/system/notify-queue/announceEnqueue', '', function (data) {
-                // 每次登录时，做一次公告入队操作
+                layui.ajax.get('api/system/index/messageHint', '', function (rtn) {
+                    if (rtn.hint) { // 有未读消息
+                        $('#messageHint').attr("class","layui-badge-dot");
+                    } else {
+                        $('#messageHint').attr("class","layui-badge-dot layui-bg-gray");
+                    }
+                })
             });
         },
 
