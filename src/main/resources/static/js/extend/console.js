@@ -46,6 +46,7 @@ layui.extend({
               layui.chart.drawBar('LAY-index-dataview', bar);
           });
           this.drawBirthdayWish();
+          this.drawPending();
       },
 
       drawBirthdayWish : function() {
@@ -92,6 +93,30 @@ layui.extend({
                   area: '400px',
                   content: $("#birthdayWish") //这里content是一个普通的String
               });
+          });
+      },
+
+      drawPending : function () {
+          layui.ajax.post('api/organization/hr-pending/countPending','', function(datas){
+              var data = datas.rows;
+              if(data==null || data.length <= 0){
+                  return;
+              }
+              $("#pending").empty();
+
+              var length=data.length;
+              var html = [];
+              for(var i=0;i<length;i++){
+                  var pendingData=data[i];
+                  var pendingType=pendingData.name;
+                  var pendingNum=pendingData.num;
+                  html.push('<li class="layui-col-xs6">');
+                  html.push('<a lay-href="openUrl?url=modules/organization/hr/pending_manager" class="layadmin-backlog-body">');
+                  html.push('<h3>'+pendingType+'</h3>');
+                  html.push('<p><cite>'+pendingNum+'</cite></p>');
+                  html.push('</a></li>');
+              }
+              $("#pending").html(html.join(""));
           });
       }
 

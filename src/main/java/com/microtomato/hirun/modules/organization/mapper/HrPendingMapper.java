@@ -7,10 +7,13 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.Storage;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeePieStatisticDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.HrPendingInfoDTO;
 import com.microtomato.hirun.modules.organization.entity.po.HrPending;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 /**
  * <p>
@@ -46,4 +49,9 @@ public interface HrPendingMapper extends BaseMapper<HrPending> {
             " ${ew.customSqlSegment}"
     )
     IPage<HrPendingInfoDTO> queryTransPendingByEmployeeId(Page<HrPending> page, @Param(Constants.WRAPPER) Wrapper wrapper);
+
+
+    @Select("select pending_type name, count(*) num from ins_hr_pending where pending_status=1 and start_time < now()" +
+            " and end_time > start_time and pending_execute_id=#{employeeId} group by pending_type")
+    List<EmployeePieStatisticDTO> countPending(Long employeeId);
 }
