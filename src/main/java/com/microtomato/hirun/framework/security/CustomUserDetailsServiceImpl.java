@@ -6,11 +6,11 @@ import com.microtomato.hirun.framework.util.Constants;
 import com.microtomato.hirun.modules.system.entity.po.Func;
 import com.microtomato.hirun.modules.system.service.impl.FuncServiceImpl;
 import com.microtomato.hirun.modules.user.entity.consts.UserConst;
+import com.microtomato.hirun.modules.user.entity.dto.UserDTO;
 import com.microtomato.hirun.modules.user.entity.po.FuncRole;
 import com.microtomato.hirun.modules.user.entity.po.FuncTemp;
 import com.microtomato.hirun.modules.user.entity.po.User;
 import com.microtomato.hirun.modules.user.entity.po.UserRole;
-import com.microtomato.hirun.modules.user.entity.dto.UserDTO;
 import com.microtomato.hirun.modules.user.service.IFuncTempService;
 import com.microtomato.hirun.modules.user.service.impl.FuncRoleServiceImpl;
 import com.microtomato.hirun.modules.user.service.impl.UserRoleServiceImpl;
@@ -150,14 +150,18 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
         );
         funcRoleList.forEach(funcRole -> funcIdSet.add(funcRole.getFuncId()));
 
-        List<Func> funcList = funcServiceImpl.list(
-            Wrappers.<Func>lambdaQuery()
-                .select(Func::getFuncCode)
-                .eq(Func::getStatus, "0")
-                .in(Func::getFuncId, funcIdSet)
-        );
+        if (funcIdSet.size() > 0) {
+            List<Func> funcList = funcServiceImpl.list(
+                Wrappers.<Func>lambdaQuery()
+                    .select(Func::getFuncCode)
+                    .eq(Func::getType, "1")
+                    .eq(Func::getStatus, "0")
+                    .in(Func::getFuncId, funcIdSet)
+            );
+            return funcList;
+        }
 
-        return funcList;
+        return new ArrayList<Func>();
     }
 
 }
