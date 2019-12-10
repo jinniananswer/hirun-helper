@@ -1,7 +1,6 @@
 package com.microtomato.hirun.modules.organization.task;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeInfoDTO;
 import com.microtomato.hirun.modules.organization.entity.po.*;
 import com.microtomato.hirun.modules.organization.service.*;
@@ -11,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -41,7 +41,7 @@ public class EmployeeHoliadyRemindTask {
      * 每天凌晨 00:30 开始执行。
      * 查询休假到期数据，进行消息提醒
      */
-    @Scheduled(cron = "0 15 17 * * ?")
+    @Scheduled(cron = "0 30 0 * * ?")
     public void scheduled() {
 
         List<EmployeeHoliday> holidayList = holidayService.list(new QueryWrapper<EmployeeHoliday>().lambda()
@@ -53,7 +53,7 @@ public class EmployeeHoliadyRemindTask {
         }
 
         for (EmployeeHoliday employeeHoliday : holidayList) {
-            int days = TimeUtils.getAbsTimeDiffDay(LocalDateTime.now(), employeeHoliday.getEndTime());
+            long days = Duration.between(LocalDateTime.now(),employeeHoliday.getEndTime()).toDays();
 
             if (days == 10 && days != 0) {
                 continue;
@@ -61,7 +61,7 @@ public class EmployeeHoliadyRemindTask {
                 Long employeeId = employeeHoliday.getEmployeeId();
                 EmployeeInfoDTO infoDTO = employeeService.queryEmployeeInfoByEmployeeId(employeeId);
                 if (infoDTO == null) {
-                    return;
+                    continue;
                 }
                 Employee hrEmployee = orgHrRelService.queryValidRemindEmployeeId("archive_manager", infoDTO.getEmployeeId());
                 if (hrEmployee == null) {

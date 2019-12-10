@@ -1,7 +1,6 @@
 package com.microtomato.hirun.modules.organization.task;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.organization.entity.consts.EmployeeConst;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeInfoDTO;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
@@ -14,11 +13,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * 员工合同到期提醒
+ * 返聘协议到期提醒
  *
  * @author liuhui
  * @date 2019-11-27
@@ -41,10 +42,10 @@ public class EmployeeReHireAgreementRemindTask {
     IEmployeeContractService contractService;
 
     /**
-     * 每天凌晨  开始执行。
+     * 每天凌晨 00：30 开始执行。
      * 查询返聘协议到期前一个月提醒人资续签
      */
-    @Scheduled(cron = "0 49 16 * * ?")
+    @Scheduled(cron = "0 30 0 * * ?")
     public void scheduled() {
 
         List<EmployeeContract> contractList = contractService.list(new QueryWrapper<EmployeeContract>().lambda()
@@ -57,7 +58,8 @@ public class EmployeeReHireAgreementRemindTask {
         }
 
         for (EmployeeContract employeeContract : contractList) {
-            int diffDay = TimeUtils.getAbsTimeDiffDay(employeeContract.getContractEndTime(), LocalDateTime.now());
+            long diffDay = Duration.between(LocalDateTime.now(),employeeContract.getContractEndTime()).toDays();
+
             if (diffDay == 30 && diffDay != 0) {
                 continue;
             } else {
