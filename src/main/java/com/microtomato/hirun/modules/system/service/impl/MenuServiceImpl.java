@@ -96,6 +96,9 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 				.select(Menu::getMenuId)
 				.eq(Menu::getMenuUrl, menuUrl)
 		);
+		if (null == one) {
+			return -1L;
+		}
 		return one.getMenuId();
 	}
 

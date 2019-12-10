@@ -104,6 +104,10 @@ public class MainController {
         Long userId = WebContextUtils.getUserContext().getUserId();
         String menuUrl = OPEN_URL + url;
         Long menuId = menuServiceImpl.getMenuId(menuUrl);
+        if (-1L == menuId) {
+            return;
+        }
+
         MenuClickDTO menuClickDTO = MenuClickDTO.builder().userId(userId).menuId(menuId).clicks(1L).build();
         try {
             BLOCKING_QUEUE.offer(menuClickDTO, 1, TimeUnit.MILLISECONDS);
