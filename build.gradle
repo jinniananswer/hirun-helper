@@ -52,6 +52,7 @@ dependencies {
 
     // 编译期有效，不参与打包
     compileOnly 'org.projectlombok:lombok:1.18.10'
+    testCompileOnly 'org.projectlombok:lombok:1.18.10'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'com.baomidou:mybatis-plus-generator:3.1.0'
