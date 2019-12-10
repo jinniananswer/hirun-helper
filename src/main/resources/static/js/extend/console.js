@@ -56,7 +56,7 @@ layui.extend({
                 let html = [];
                 for (let i = 0; i < rows.length; i++) {
                     html.push("    <li class=\"layui-col-xs3\">\n");
-                    html.push("        <a lay-href=\"" + rows[i].menuUrl + "\">\n");
+                    html.push("        <a lay-href=\"" + rows[i].menuUrl + "\" title=\"" + rows[i].title + "\">\n");
                     html.push("            <i class=\"layui-icon layui-icon-set\"></i>\n");
                     html.push("            <cite>" + rows[i].title + "</cite>\n");
                     html.push("        </a>\n");

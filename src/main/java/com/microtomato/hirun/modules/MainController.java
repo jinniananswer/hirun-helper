@@ -153,21 +153,27 @@ public class MainController {
      */
     private static void saveMenuClickToDatabase() {
 
-        IMenuClickService menuClickServiceImpl = SpringContextUtils.getBean(IMenuClickService.class);
+        try {
+            IMenuClickService menuClickServiceImpl = SpringContextUtils.getBean(IMenuClickService.class);
 
-        Iterator<Long> iterator = LOCAL_MENU_CLICK.keySet().iterator();
-        while (iterator.hasNext()) {
-            Long userId = iterator.next();
-            Map<Long, AtomicLong> menuClickMap = LOCAL_MENU_CLICK.get(userId);
-            for (Long menuId : menuClickMap.keySet()) {
-                Long clicks = menuClickMap.get(menuId).longValue();
-                if (menuClickServiceImpl.updateClicks(userId, menuId, clicks)) {
-                    MenuClick menuClick = MenuClick.builder().userId(userId).menuId(menuId).clicks(clicks).build();
-                    menuClickServiceImpl.save(menuClick);
+            Iterator<Long> iterator = LOCAL_MENU_CLICK.keySet().iterator();
+            while (iterator.hasNext()) {
+                Long userId = iterator.next();
+                Map<Long, AtomicLong> menuClickMap = LOCAL_MENU_CLICK.get(userId);
+                for (Long menuId : menuClickMap.keySet()) {
+                    Long clicks = menuClickMap.get(menuId).longValue();
+
+                    boolean success = menuClickServiceImpl.updateClicks(userId, menuId, clicks);
+                    if (!success) {
+                        MenuClick menuClick = MenuClick.builder().userId(userId).menuId(menuId).clicks(clicks).build();
+                        menuClickServiceImpl.save(menuClick);
+                    }
                 }
+                menuClickMap.clear();
+                iterator.remove();
             }
-            menuClickMap.clear();
-            iterator.remove();
+        } catch (Exception e) {
+            log.error("", e);
         }
 
     }

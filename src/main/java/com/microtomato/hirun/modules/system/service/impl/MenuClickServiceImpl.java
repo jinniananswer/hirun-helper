@@ -35,7 +35,7 @@ public class MenuClickServiceImpl extends ServiceImpl<MenuClickMapper, MenuClick
     @Override
     public boolean updateClicks(Long userId, Long menuId, Long clicks) {
         int i = menuClickMapper.updateClicks(userId, menuId, clicks);
-        return 0 == i ? false : true;
+        return i > 0 ? true : false;
     }
 
     /**
@@ -46,23 +46,7 @@ public class MenuClickServiceImpl extends ServiceImpl<MenuClickMapper, MenuClick
      */
     @Override
     public List<Menu> hostMenus(Long userId) {
-        List<MenuClick> list = list(
-            Wrappers.<MenuClick>lambdaQuery()
-                .select(MenuClick::getMenuId)
-                .eq(MenuClick::getUserId, userId)
-                .orderByDesc(MenuClick::getClicks)
-                .last("LIMIT 8")
-        );
-
-        List<Long> menuIds = list.stream().map(MenuClick::getMenuId).collect(Collectors.toList());
-
-        List<Menu> menuList = menuServiceImpl.list(
-            Wrappers.<Menu>lambdaQuery()
-                .select(Menu::getMenuId, Menu::getTitle, Menu::getMenuUrl)
-                .in(Menu::getMenuId, menuIds)
-        );
-
-        return menuList;
+        return menuClickMapper.hostMenus(userId);
     }
 
 }

@@ -1,10 +1,15 @@
 package com.microtomato.hirun.modules.system.mapper;
 
+import com.microtomato.hirun.modules.system.entity.po.Menu;
 import com.microtomato.hirun.modules.system.entity.po.MenuClick;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.microtomato.hirun.framework.annotation.Storage;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
+import org.springframework.web.bind.annotation.PathVariable;
+
+import java.util.List;
 
 /**
  * <p>
@@ -19,4 +24,7 @@ public interface MenuClickMapper extends BaseMapper<MenuClick> {
 
     @Update("UPDATE sys_menu_click SET clicks = clicks + #{clicks}, update_time = now() WHERE user_id = #{userId} AND menu_id = #{menuId}")
     int updateClicks(@Param("userId") Long userId, @Param("menuId") Long menuId, @Param("clicks") Long clicks);
+
+    @Select("select m.menu_id, m.title, m.menu_url from sys_menu m, sys_menu_click c where m.menu_id = c.menu_id and c.user_id = #{userId} order by c.clicks desc LIMIT 8")
+    List<Menu> hostMenus(@Param("userId") Long userId);
 }
