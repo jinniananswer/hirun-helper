@@ -13,4 +13,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IMenuClickService extends IService<MenuClick> {
 
+    boolean updateClicks(Long userId, Long menuId, Long clicks);
 }

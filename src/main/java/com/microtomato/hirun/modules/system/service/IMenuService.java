@@ -3,6 +3,7 @@ package com.microtomato.hirun.modules.system.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.microtomato.hirun.framework.security.Role;
 import com.microtomato.hirun.modules.system.entity.po.Menu;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,7 @@ public interface IMenuService extends IService<Menu> {
      *
      * @return
      */
+    @Cacheable(value = "all-menus")
     Map<Long, Menu> listAllMenus();
 
     /**
@@ -40,4 +42,12 @@ public interface IMenuService extends IService<Menu> {
      */
     List<Long> listMenusByRole(Role role);
 
+    /**
+     * 根据 menuUrl 查询 menuId
+     *
+     * @param menuUrl 菜单地址
+     * @return 菜单Id
+     */
+    @Cacheable(value = "menu-url-to-id", key = "#menuUrl")
+    Long getMenuId(String menuUrl);
 }

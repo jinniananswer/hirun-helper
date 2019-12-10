@@ -82,4 +82,21 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 		return menuMap;
 	}
 
+	/**
+	 * 根据 menuUrl 查询 menuId
+	 *
+	 * @param menuUrl 菜单地址
+	 * @return 菜单Id
+	 */
+	@Override
+	@Cacheable(value = "menu-url-to-id", key = "#menuUrl")
+	public Long getMenuId(String menuUrl) {
+		Menu one = menuServiceImpl.getOne(
+			Wrappers.<Menu>lambdaQuery()
+				.select(Menu::getMenuId)
+				.eq(Menu::getMenuUrl, menuUrl)
+		);
+		return one.getMenuId();
+	}
+
 }

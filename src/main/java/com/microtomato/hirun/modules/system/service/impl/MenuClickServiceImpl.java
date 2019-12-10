@@ -4,6 +4,8 @@ import com.microtomato.hirun.modules.system.entity.po.MenuClick;
 import com.microtomato.hirun.modules.system.mapper.MenuClickMapper;
 import com.microtomato.hirun.modules.system.service.IMenuClickService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,4 +21,12 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class MenuClickServiceImpl extends ServiceImpl<MenuClickMapper, MenuClick> implements IMenuClickService {
 
+    @Autowired
+    private MenuClickMapper menuClickMapper;
+
+    @Override
+    public boolean updateClicks(Long userId, Long menuId, Long clicks) {
+        int i = menuClickMapper.updateClicks(userId, menuId, clicks);
+        return 0 == i ? false : true;
+    }
 }
