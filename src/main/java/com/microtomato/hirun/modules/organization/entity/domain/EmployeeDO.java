@@ -6,8 +6,8 @@ import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.organization.entity.consts.EmployeeConst;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
-import com.microtomato.hirun.modules.organization.entity.po.EmployeeChildren;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
+import com.microtomato.hirun.modules.organization.entity.po.EmployeeKeyman;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeWorkExperience;
 import com.microtomato.hirun.modules.organization.exception.EmployeeException;
 import com.microtomato.hirun.modules.organization.service.*;
@@ -51,7 +51,7 @@ public class EmployeeDO {
     private IEmployeeHistoryService employeeHistoryService;
 
     @Autowired
-    private IEmployeeChildrenService employeeChildrenService;
+    private IEmployeeKeymanService employeeKeyManService;
 
     /**
      * 默认构造函数
@@ -110,8 +110,11 @@ public class EmployeeDO {
 
     /**
      * 员工新入职
+     * @param jobRole  岗位信息
+     * @param workExperiences  工作经历
+     * @param keyMan  员工关键人信息（子女，联系人）
      */
-    public void newEntry(EmployeeJobRole jobRole, List<EmployeeWorkExperience> workExperiences, List<EmployeeChildren> children) {
+    public void newEntry(EmployeeJobRole jobRole, List<EmployeeWorkExperience> workExperiences, List<EmployeeKeyman> keyMan) {
         if (this.isExists()) {
             //如果证件号码已存在，则不允许做为新入职录入
             throw new EmployeeException(EmployeeException.EmployeeExceptionEnum.IS_EXISTS, "证件号码", this.employee.getName(), this.employee.getMobileNo());
@@ -133,8 +136,8 @@ public class EmployeeDO {
             this.addWorkExperience(workExperiences);
         }
 
-        if (ArrayUtils.isNotEmpty(children)) {
-            this.addChildren(children);
+        if (ArrayUtils.isNotEmpty(keyMan)) {
+            this.addKeymen(keyMan);
         }
 
         this.employeeHistoryService.createEntry(this.employee.getEmployeeId(), this.employee.getInDate().toLocalDate());
@@ -146,7 +149,7 @@ public class EmployeeDO {
      * @param jobRole
      * @param workExperiences
      */
-    public void modify(Employee employee, EmployeeJobRole jobRole, List<EmployeeWorkExperience> workExperiences, List<EmployeeChildren> children) {
+    public void modify(Employee employee, EmployeeJobRole jobRole, List<EmployeeWorkExperience> workExperiences, List<EmployeeKeyman> keyMen) {
         if (!employee.getEmployeeId().equals(this.employee.getEmployeeId())) {
             //员工ID不相等，表示不是修改的同一员工数据
             return;
@@ -167,9 +170,9 @@ public class EmployeeDO {
             this.addWorkExperience(workExperiences);
         }
 
-        if (ArrayUtils.isNotEmpty(children)) {
-            this.deleteChildren();
-            this.addChildren(children);
+        if (ArrayUtils.isNotEmpty(keyMen)) {
+            this.deleteKeyman();
+            this.addKeymen(keyMen);
         }
 
     }
@@ -233,40 +236,40 @@ public class EmployeeDO {
     }
 
     /**
-     * 添加员工子女信息
-     * @param children
+     * 添加员工关键人信息，如子女，紧急联系人等
+     * @param keyMen
      */
-    public void addChildren(List<EmployeeChildren> children) {
-        if (ArrayUtils.isEmpty(children)) {
+    public void addKeymen(List<EmployeeKeyman> keyMen) {
+        if (ArrayUtils.isEmpty(keyMen)) {
             return;
         }
 
-        for (EmployeeChildren child : children) {
-            child.setEmployeeId(this.employee.getEmployeeId());
-            this.employeeChildrenService.save(child);
+        for (EmployeeKeyman keyMan : keyMen) {
+            keyMan.setEmployeeId(this.employee.getEmployeeId());
+            this.employeeKeyManService.save(keyMan);
         }
     }
 
     /**
-     * 删除员工子女信息
+     * 删除员工关键人信息
      */
-    public void deleteChildren() {
-        this.employeeChildrenService.deleteByEmployeeId(this.employee.getEmployeeId());
+    public void deleteKeyman() {
+        this.employeeKeyManService.deleteByEmployeeId(this.employee.getEmployeeId());
     }
 
     /**
      * 员工复职
      */
-    public void rehire(Employee employee, EmployeeJobRole jobRole, List<EmployeeWorkExperience> workExperiences, List<EmployeeChildren> children) {
-        this.modify(employee, jobRole, workExperiences, children);
+    public void rehire(Employee employee, EmployeeJobRole jobRole, List<EmployeeWorkExperience> workExperiences, List<EmployeeKeyman> keyMen) {
+        this.modify(employee, jobRole, workExperiences, keyMen);
         this.employeeHistoryService.createRehire(employee.getEmployeeId(), employee.getInDate().toLocalDate());
     }
 
     /**
      * 返聘
      */
-    public void rehelloring(Employee employee, EmployeeJobRole jobRole, List<EmployeeWorkExperience> workExperiences, List<EmployeeChildren> children) {
-        this.modify(employee, jobRole, workExperiences, children);
+    public void rehelloring(Employee employee, EmployeeJobRole jobRole, List<EmployeeWorkExperience> workExperiences, List<EmployeeKeyman> keyMen) {
+        this.modify(employee, jobRole, workExperiences, keyMen);
         this.employeeHistoryService.createRehelloring(employee.getEmployeeId(), employee.getInDate().toLocalDate());
     }
 

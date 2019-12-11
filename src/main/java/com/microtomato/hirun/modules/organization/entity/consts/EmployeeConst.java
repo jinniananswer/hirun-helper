@@ -128,12 +128,24 @@ public class EmployeeConst {
      * 调出状态
      */
     public static final String EMPLOYEE_TRANS_STATUS="3";
+
     /**
      * 男
      */
     public static final String EMPLOYEE_SEX_MAN="1";
+
     /**
      * 女
-      */
+     */
     public static final String EMPLOYEE_SEX_WOMAN="2";
+
+    /**
+     * 员工关键人类型 - 子女
+     */
+    public static final String KEYMAN_TYPE_CHILD = "1";
+
+    /**
+     * 员工关键人类型 - 联系人
+     */
+    public static final String KEYMAN_TYPE_CONTACT = "2";
 }

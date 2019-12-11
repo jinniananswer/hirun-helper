@@ -70,10 +70,10 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
     private IEmployeeBlacklistService employeeBlacklistService;
 
     @Autowired
-    private IEmployeeHistoryService employeeHistoryService;
+    private IEmployeeKeymanService employeeKeyManService;
 
     @Autowired
-    private IEmployeeChildrenService employeeChildrenService;
+    private IEmployeeHistoryService employeeHistoryService;
 
     @Autowired
     private EmployeeMapper employeeMapper;
@@ -217,15 +217,22 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             employeeDTO.setEmployeeWorkExperiences(workExperienceDTOS);
         }
 
-        List<EmployeeChildren> children = this.employeeChildrenService.queryByEmployeeId(employeeId);
-        if (ArrayUtils.isNotEmpty(children)) {
+        List<EmployeeKeyman> keyMen = this.employeeKeyManService.queryByEmployeeId(employeeId);
+
+        EmployeeContactManDTO contactMan = new EmployeeContactManDTO();
+        if (ArrayUtils.isNotEmpty(keyMen)) {
             List<EmployeeChildrenDTO> childrenDTOS = new ArrayList<>();
-            for (EmployeeChildren child : children) {
-                EmployeeChildrenDTO childDTO = new EmployeeChildrenDTO();
-                BeanUtils.copyProperties(child, childDTO);
-                childrenDTOS.add(childDTO);
+            for (EmployeeKeyman keyMan : keyMen) {
+                if (StringUtils.equals(EmployeeConst.KEYMAN_TYPE_CHILD, keyMan.getType())) {
+                    EmployeeChildrenDTO childDTO = new EmployeeChildrenDTO();
+                    BeanUtils.copyProperties(keyMan, childDTO);
+                    childrenDTOS.add(childDTO);
+                } else if (StringUtils.equals(EmployeeConst.KEYMAN_TYPE_CONTACT, keyMan.getType())) {
+                    BeanUtils.copyProperties(keyMan, contactMan);
+                }
             }
             employeeDTO.setChildren(childrenDTOS);
+            employeeDTO.setContactMan(contactMan);
         }
 
         return employeeDTO;
@@ -282,14 +289,23 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         }
 
         List<EmployeeChildrenDTO> childrenDTOS = employeeDTO.getChildren();
-        List<EmployeeChildren> children = new ArrayList<>();
+        List<EmployeeKeyman> keyMen = new ArrayList<>();
+
+        EmployeeContactManDTO contactManDTO = employeeDTO.getContactMan();
+        if (contactManDTO != null && StringUtils.isNotBlank(contactManDTO.getName())) {
+            EmployeeKeyman keyMan = new EmployeeKeyman();
+            BeanUtils.copyProperties(contactManDTO, keyMan);
+            keyMan.setType(EmployeeConst.KEYMAN_TYPE_CONTACT);
+            keyMen.add(keyMan);
+        }
 
         if (ArrayUtils.isNotEmpty(childrenDTOS)) {
             for (EmployeeChildrenDTO childrenDTO : childrenDTOS) {
                 if (StringUtils.isNotBlank(childrenDTO.getName())) {
-                    EmployeeChildren child = new EmployeeChildren();
-                    BeanUtils.copyProperties(childrenDTO, child);
-                    children.add(child);
+                    EmployeeKeyman keyMan = new EmployeeKeyman();
+                    BeanUtils.copyProperties(childrenDTO, keyMan);
+                    keyMan.setType(EmployeeConst.KEYMAN_TYPE_CHILD);
+                    keyMen.add(keyMan);
                 }
             }
         }
@@ -303,10 +319,10 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             employee.setUserId(userId);
 
             EmployeeDO employeeDO = SpringContextUtils.getBean(EmployeeDO.class, employee);
-            employeeDO.newEntry(jobRole, workExperiences, children);
+            employeeDO.newEntry(jobRole, workExperiences, keyMen);
 
             //分配默认权限
-            this.userRoleService.createRole(userId, jobRole.getOrgId(), jobRole.getJobRole());
+            //this.userRoleService.createRole(userId, jobRole.getOrgId(), jobRole.getJobRole());
         } else {
             EmployeeDO employeeDO = SpringContextUtils.getBean(EmployeeDO.class, employeeDTO.getEmployeeId());
             Employee oldEmployee = employeeDO.getEmployee();
@@ -319,17 +335,17 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             String createType = employeeDTO.getCreateType();
             if (StringUtils.equals(EmployeeConst.CREATE_TYPE_REHIRE, createType)) {
                 userDO.modify(employeeDTO.getMobileNo(), UserConst.INIT_PASSWORD, UserConst.STATUS_NORMAL);
-                employeeDO.rehire(employee, jobRole, workExperiences, children);
+                employeeDO.rehire(employee, jobRole, workExperiences, keyMen);
                 //分配默认权限
                 this.userRoleService.createRole(userId, jobRole.getOrgId(), jobRole.getJobRole());
             } else if (StringUtils.equals(createType, EmployeeConst.CREATE_TYPE_REHELLORING)) {
                 userDO.modify(employeeDTO.getMobileNo(), UserConst.INIT_PASSWORD, UserConst.STATUS_NORMAL);
-                employeeDO.rehelloring(employee, jobRole, workExperiences, children);
+                employeeDO.rehelloring(employee, jobRole, workExperiences, keyMen);
                 //分配默认权限
                 this.userRoleService.createRole(userId, jobRole.getOrgId(), jobRole.getJobRole());
             } else {
                 userDO.modify(employeeDTO.getMobileNo(), null, null);
-                employeeDO.modify(employee, jobRole, workExperiences, children);
+                employeeDO.modify(employee, jobRole, workExperiences, keyMen);
             }
         }
 
@@ -337,7 +353,6 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
 
     /**
      * 员工离职
-     *
      * @param employeeDestroyInfoDTO
      */
     @Override
@@ -456,24 +471,32 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             archive.setWorkExperiences(workExperienceDTOS);
         }
 
-        List<EmployeeChildren> children = this.employeeChildrenService.queryByEmployeeId(employeeId);
-        if (ArrayUtils.isNotEmpty(children)) {
-            List<EmployeeChildrenDTO> childrenDTO = new ArrayList<>();
-            for (EmployeeChildren child : children) {
-                EmployeeChildrenDTO childDTO = new EmployeeChildrenDTO();
-                BeanUtils.copyProperties(child, childDTO);
-                childDTO.setSexName(this.staticDataService.getCodeName("SEX", child.getSex()));
+        List<EmployeeKeyman> keyMen = this.employeeKeyManService.queryByEmployeeId(employeeId);
+        EmployeeContactManDTO contactMan = new EmployeeContactManDTO();
 
-                int age = 0;
-                LocalDate birthday = child.getBirthday();
-                if (birthday != null) {
-                    LocalDate today = LocalDate.now();
-                    age = TimeUtils.getAbsDateDiffYear(birthday, today);
+        if (ArrayUtils.isNotEmpty(keyMen)) {
+            List<EmployeeChildrenDTO> childrenDTO = new ArrayList<>();
+            for (EmployeeKeyman keyMan : keyMen) {
+                if (StringUtils.equals(EmployeeConst.KEYMAN_TYPE_CHILD, keyMan.getType())) {
+                    EmployeeChildrenDTO childDTO = new EmployeeChildrenDTO();
+                    BeanUtils.copyProperties(keyMan, childDTO);
+                    childDTO.setSexName(this.staticDataService.getCodeName("SEX", keyMan.getSex()));
+
+                    int age = 0;
+                    LocalDate birthday = keyMan.getBirthday();
+                    if (birthday != null) {
+                        LocalDate today = LocalDate.now();
+                        age = TimeUtils.getAbsDateDiffYear(birthday, today);
+                    }
+                    childDTO.setAge(age);
+                    childrenDTO.add(childDTO);
+                } else if (StringUtils.equals(EmployeeConst.KEYMAN_TYPE_CONTACT, keyMan.getType())) {
+                    BeanUtils.copyProperties(keyMan, contactMan);
+                    contactMan.setRelTypeName(this.staticDataService.getCodeName("KEYMAN_REL_TYPE", contactMan.getRelType()));
                 }
-                childDTO.setAge(age);
-                childrenDTO.add(childDTO);
             }
             archive.setChildren(childrenDTO);
+            archive.setContactMan(contactMan);
         }
 
         EmployeeDO employeeDO = new EmployeeDO(employee);

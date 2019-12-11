@@ -54,6 +54,7 @@ public class EmployeeArchiveDTO {
     private String parentEmployeeName;
 
     private List<EmployeeWorkExperienceDTO> workExperiences;
+    private EmployeeContactManDTO contactMan;
     private List<EmployeeChildrenDTO> children;
     private List<EmployeeHistoryDTO> histories;
 }

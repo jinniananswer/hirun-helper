@@ -97,6 +97,8 @@ public class EmployeeDTO {
 
     private EmployeeJobRoleDTO employeeJobRole;
 
+    private EmployeeContactManDTO contactMan;
+
     private List<EmployeeWorkExperienceDTO> employeeWorkExperiences;
 
     private List<EmployeeChildrenDTO> children;

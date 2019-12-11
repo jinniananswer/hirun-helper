@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
  * </p>
  *
  * @author jinnian
- * @since 2019-11-19
+ * @since 2019-12-10
  */
 @Data
 @Builder
@@ -22,8 +22,8 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("ins_employee_children")
-public class EmployeeChildren extends BaseEntity {
+@TableName("ins_employee_keyman")
+public class EmployeeKeyman extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -32,6 +32,18 @@ public class EmployeeChildren extends BaseEntity {
 
     @TableField("employee_id")
     private Long employeeId;
+
+    /**
+     * 见静态参数表类型KEYMAN_TYPE
+     */
+    @TableField("type")
+    private String type;
+
+    /**
+     * 见静态参数表类型KEYMAN_REL_TYPE
+     */
+    @TableField("rel_type")
+    private String relType;
 
     @TableField("name")
     private String name;
@@ -44,6 +56,9 @@ public class EmployeeChildren extends BaseEntity {
 
     @TableField("identity_no")
     private String identityNo;
+
+    @TableField("contact_no")
+    private String contactNo;
 
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)
     private Long createUserId;
