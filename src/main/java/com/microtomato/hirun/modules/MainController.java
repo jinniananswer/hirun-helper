@@ -9,7 +9,9 @@ import com.microtomato.hirun.modules.system.service.IMenuService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,6 +48,12 @@ public class MainController {
     @Autowired
     private IMenuService menuServiceImpl;
 
+    /**
+     * 图标仓库地址
+     */
+    @Value("${hirun.icon.store}")
+    private String hirunIconStore;
+
     static {
         Aggregation sender = new Aggregation();
         sender.setDaemon(true);
@@ -53,34 +61,41 @@ public class MainController {
     }
 
     static {
+        /**
+         * 菜单点击量，后台入库守护线程
+         */
         ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(1,
             new BasicThreadFactory.Builder().namingPattern("menuclick-schedule-pool-%d").daemon(true).build());
         executorService.scheduleAtFixedRate(() -> saveMenuClickToDatabase(), 30, 30, TimeUnit.SECONDS);
     }
 
-
     @GetMapping("/")
-    public String index() {
+    public String index(Model model) {
+        setupBaseEnv(model);
         return "index";
     }
 
     @GetMapping("/theme")
-    public String theme() {
+    public String theme(Model model) {
+        setupBaseEnv(model);
         return "theme";
     }
 
     @GetMapping("/login")
-    public String login() {
+    public String login(Model model) {
+        setupBaseEnv(model);
         return "login";
     }
 
     @GetMapping("/console")
-    public String console() {
+    public String console(Model model) {
+        setupBaseEnv(model);
         return "modules/system/console";
     }
 
     @GetMapping("/openUrl")
-    public String openUrl(HttpServletRequest request) {
+    public String openUrl(HttpServletRequest request, Model model) {
+        setupBaseEnv(model);
 
         String url = request.getParameter("url");
         collectMenuClickOnce(url);
@@ -93,6 +108,15 @@ public class MainController {
             return url;
 //            return NO_RIGHT_PAGE;
         }
+    }
+
+    /**
+     * 基础环境设置
+     *
+     * @param model
+     */
+    private void setupBaseEnv(Model model) {
+        model.addAttribute("hirunIconStore", hirunIconStore);
     }
 
     /**
