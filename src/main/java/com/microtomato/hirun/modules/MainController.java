@@ -116,6 +116,10 @@ public class MainController {
      * @param model
      */
     private void setupBaseEnv(Model model) {
+        // 添加今天资源版本号
+        model.addAttribute("version", "20191211");
+
+        // 添加图标扩展库地址
         model.addAttribute("hirunIconStore", hirunIconStore);
     }
 

@@ -5,13 +5,11 @@
     <title>dolphin-admin</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <link rel="stylesheet" href="/static/layui/css/layui.css" th:href="@{static/layui/css/layui.css}" media="all">
-    <link rel="stylesheet" href="/static/css/admin.css" th:href="@{static/css/admin.css}" media="all">
-    <script src="../static/layui/layui.js" th:src="@{static/layui/layui.js}"></script>
-    <script src="../static/js/base.js" th:src="@{static/js/base.js}"></script>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/static/layui/css/layui.css" th:href="@{static/layui/css/layui.css(v=${version})}" media="all">
+    <link rel="stylesheet" href="/static/css/admin.css" th:href="@{static/css/admin.css(v=${version})}" media="all">
+    <script src="../static/layui/layui.js" th:src="@{static/layui/layui.js(v=${version})}"></script>
+    <script src="../static/js/base.js" th:src="@{static/js/base.js(v=${version})}"></script>
 </head>
 <body>
 <div class="layui-fluid">
@@ -152,7 +150,7 @@
                         <div class="layui-inline">
                             <label class="layui-form-label">工作年限</label>
                             <div class="layui-input-inline" style="width: 80px;">
-                                <input type="text" name="jobYearStart" id="jobYearStart"  autocomplete="off" class="layui-input">
+                                <input type="text" name="jobYearStart" id="jobYearStart" autocomplete="off" class="layui-input">
                             </div>
                             <div class="layui-form-mid">-</div>
                             <div class="layui-input-inline" style="width: 80px;">
@@ -164,17 +162,17 @@
                         <div class="layui-inline">
                             <label class="layui-form-label">年龄</label>
                             <div class="layui-input-inline" style="width: 80px;">
-                                <input type="text" name="ageStart" id="ageStart"  autocomplete="off" class="layui-input">
+                                <input type="text" name="ageStart" id="ageStart" autocomplete="off" class="layui-input">
                             </div>
                             <div class="layui-form-mid">-</div>
                             <div class="layui-input-inline" style="width: 80px;">
                                 <input type="text" name="ageEnd" id="ageEnd" autocomplete="off" class="layui-input">
                             </div>
                         </div>
-                        <div class="layui-inline" >
+                        <div class="layui-inline">
                             <label class="layui-form-label">司龄</label>
                             <div class="layui-input-inline" style="width: 80px;">
-                                <input type="text" name="companyAgeStart" id="companyAgeStart"  autocomplete="off" class="layui-input">
+                                <input type="text" name="companyAgeStart" id="companyAgeStart" autocomplete="off" class="layui-input">
                             </div>
                             <div class="layui-form-mid">-</div>
                             <div class="layui-input-inline" style="width: 80px;">
@@ -195,7 +193,7 @@
                             <div class="layui-inline">
                                 <label class="layui-form-label">离职时间</label>
                                 <div class="layui-input-inline" style="width: 80px;">
-                                    <input type="text" name="destroyDateStart" id="destroyDateStart"  autocomplete="off" class="layui-input">
+                                    <input type="text" name="destroyDateStart" id="destroyDateStart" autocomplete="off" class="layui-input">
                                 </div>
                                 <div class="layui-form-mid">-</div>
                                 <div class="layui-input-inline" style="width: 80px;">
