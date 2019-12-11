@@ -61,6 +61,12 @@
                                                 </div>
                                             </fieldset>
                                             <fieldset class="layui-elem-field">
+                                                <legend>联系人信息</legend>
+                                                <div class="layui-field-box" id="employeeContact">
+
+                                                </div>
+                                            </fieldset>
+                                            <fieldset class="layui-elem-field">
                                                 <legend>教育信息</legend>
                                                 <div class="layui-field-box" id="employeeEducation">
 
@@ -264,6 +270,23 @@
     {{# } else { }}
     <li><p>暂无信息</p></li>
     {{# } }}
+</script>
+<script id="employeeContactInfo" type="text/html">
+    <div class="layadmin-caller">
+        <div class="caller-contar">
+            <div class="caller-item" style="border-bottom:0px">
+                <div class="caller-main caller-fl">
+                    {{# if (d.contactMan != null) { }}
+                    <p class="caller-adds"><i class="layui-icon layui-icon-list"></i><em>联系人姓名：</em><strong>{{layui.employee.transUndefined(d.contactMan.name)}}</strong></p>
+                    <p class="caller-adds"><i class="layui-icon layui-icon-list"></i><em>与员工关系：</em><strong>{{layui.employee.transUndefined(d.contactMan.relTypeName)}}</strong></p>
+                    <p class="caller-adds"><i class="layui-icon layui-icon-home"></i><em>联系电话：</em><strong>{{layui.employee.transUndefined(d.contactMan.contactNo)}}</strong></p>
+                    {{# } else { }}
+                    <p>暂无信息</p>
+                    {{# } }}
+                </div>
+            </div>
+        </div>
+    </div>
 </script>
 <script>
     layui.extend(

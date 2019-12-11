@@ -38,7 +38,7 @@
                     <ul class="layui-tab-title">
                         <li class="layui-this" lay-id="1">基本信息</li>
                         <li lay-id="2">岗位信息</li>
-                        <li lay-id="3">社保与子女信息</li>
+                        <li lay-id="3">社保与关键人信息</li>
                         <li lay-id="4">教育信息</li>
                         <li lay-id="5">工作经历</li>
                     </ul>
@@ -227,12 +227,44 @@
                                     </div>
                                 </div>
                             </div>
+                            <fieldset class="layui-elem-field layui-field-title">
+                                <legend style="font-size: 14px">
+                                    紧急联系人信息
+                                </legend>
+                            </fieldset>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">联系人</label>
+                                <div class="layui-input-block">
+                                    <div class="layui-form">
+                                        <input type="text" id="contactManName" name="contactMan.name" placeholder="请输入联系人姓名" autocomplete="off" class="layui-input"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">联系电话</label>
+                                <div class="layui-input-block">
+                                    <div class="layui-form">
+                                        <input type="text" id="contactManContactNo" name="contactMan.contactNo" placeholder="请输入联系人电话" autocomplete="off" class="layui-input"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">关系类型</label>
+                                <div class="layui-input-block">
+                                    <div class="layui-form" lay-filter="contactManRelType">
+                                        <select id="contactManRelType" name="contactMan.relType">
+
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
                             <div id="children_0">
                                 <fieldset class="layui-elem-field layui-field-title">
-                                    <legend>
+                                    <legend style="font-size: 14px">
                                         <div class="layui-btn-group">
                                             <button type="button" class="layui-btn layui-btn-primary layui-btn-sm" onclick="layui.employee.addChildren();"><i class="layui-icon layui-icon-add-1"></i></button>
                                         </div>
+                                        &nbsp;&nbsp;小孩信息
                                     </legend>
                                 </fieldset>
                                 <div class="layui-form-item">
@@ -332,10 +364,11 @@
                             </div>
                             <div id="workExp_0">
                                 <fieldset class="layui-elem-field layui-field-title">
-                                    <legend>
+                                    <legend style="font-size: 14px">
                                         <div class="layui-btn-group">
                                             <button type="button" class="layui-btn layui-btn-primary layui-btn-sm" onclick="layui.employee.addWorkExp();"><i class="layui-icon layui-icon-add-1"></i></button>
                                         </div>
+                                        &nbsp;&nbsp;鸿扬前工作经历
                                     </legend>
                                 </fieldset>
                                 <div class="layui-form-item">
