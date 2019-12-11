@@ -4,11 +4,11 @@ layui.extend({
     selectEmployee: 'employee',
     time : 'time'
 }).define(['ajax', 'select', 'form', 'layer', 'laydate', 'laytpl', 'element', 'orgTree', 'citypicker', 'selectEmployee', 'redirect','time'],function(exports){
-    var $ = layui.$;
-    var form = layui.form;
-    var layer = layui.layer;
-    var laydate = layui.laydate;
-    var employee = {
+    let $ = layui.$;
+    let form = layui.form;
+    let layer = layui.layer;
+    let laydate = layui.laydate;
+    let employee = {
         currentTab : 1,
         workExpIndex : 0,
         childrenIndex : 0,
@@ -30,13 +30,14 @@ layui.extend({
             layui.select.init('firstEducationLevel', 'EDUCATION_LEVEL', '3', false);
             layui.select.init('educationLevel', 'EDUCATION_LEVEL', '3', false);
             layui.select.init('schoolType', 'SCHOOL_TYPE', '1', false);
+            layui.select.init('contactManRelType', 'KEYMAN_REL_TYPE', '6', false);
 
             form.on('select(employeeJobRole.jobRoleNature)', function(data) {
                 layui.employee.calculateDiscountRate();
             });
 
             form.on('select(createTypeFilter)', function(data) {
-                var createType = $("#createType").val();
+                let createType = $("#createType").val();
                 if (createType == "3") {
                     $("#type").val("3");
                     form.render('select', 'type');
@@ -44,7 +45,7 @@ layui.extend({
             });
 
             form.on('select(isSocialSecurityFilter)', function(data) {
-                var isSocialSecurity = $("#isSocialSecurity").val();
+                let isSocialSecurity = $("#isSocialSecurity").val();
                 if (isSocialSecurity == "1") {
                     $("#socialSecurityDateArea").css("display", "");
                     $("#socialSecurityPlaceArea").css("display", "");
@@ -83,12 +84,12 @@ layui.extend({
                 elem : '#inDate',
                 value: new Date(),
                 done : function(value, date, endDate) {
-                    var regularDate = layui.time.addMonth(value, 3);
+                    let regularDate = layui.time.addMonth(value, 3);
                     $("#regularDate").val(regularDate);
                 }
             });
 
-            var regularDate = layui.time.addMonth(layui.time.format(new Date()), 3);
+            let regularDate = layui.time.addMonth(layui.time.format(new Date()), 3);
 
             laydate.render({
                 elem : '#regularDate',
@@ -139,14 +140,14 @@ layui.extend({
                 return false;
             });
 
-            var employeeId = $("#employeeId").val();
+            let employeeId = $("#employeeId").val();
             if (employeeId != '') {
                 this.loadEmployee(employeeId);
             }
         },
 
         verifyMobileNo : function() {
-            var mobileNo = $("#mobileNo").val();
+            let mobileNo = $("#mobileNo").val();
             if (mobileNo.length != 11) {
                 return;
             }
@@ -182,18 +183,18 @@ layui.extend({
         },
 
         analyzeIdentityNo : function() {
-            var identityNo = $("#identityNo").val();
+            let identityNo = $("#identityNo").val();
             if (identityNo == null || identityNo == "" || identityNo.length != 18) {
                 return;
             }
-            var birthday = identityNo.substring(6, 10) + "-" + identityNo.substring(10, 12) + "-" + identityNo.substring(12, 14);
+            let birthday = identityNo.substring(6, 10) + "-" + identityNo.substring(10, 12) + "-" + identityNo.substring(12, 14);
 
             laydate.render({
                 elem: '#birthday',
                 value: birthday
             });
 
-            var sex = parseInt(identityNo.substring(16, 17)) % 2;
+            let sex = parseInt(identityNo.substring(16, 17)) % 2;
             if (sex == 1) {
                 $("#male").prop("checked", "true");
                 form.render("radio");
@@ -206,21 +207,21 @@ layui.extend({
         },
 
         verifyIdentityNo : function() {
-            var identityNo = $("#identityNo").val();
+            let identityNo = $("#identityNo").val();
             if (identityNo.length != 18) {
                 return;
             }
 
-            var createType = $("#createType").val();
-            var employeeId = $("#employeeId").val();
-            var operType = $("#operType").val();
+            let createType = $("#createType").val();
+            let employeeId = $("#employeeId").val();
+            let operType = $("#operType").val();
 
             layui.ajax.post('api/organization/employee/verifyIdentityNo', '&createType='+createType+'&identityNo='+identityNo+"&employeeId="+employeeId+'&operType='+operType, function(data){
-                var employee = data.rows;
+                let employee = data.rows;
                 if (employee == null) {
                     return;
                 }
-                var status = employee.status;
+                let status = employee.status;
 
                 if (operType == "edit") {
                     return;
@@ -234,13 +235,13 @@ layui.extend({
         },
 
         verifyMobileNo : function() {
-            var mobileNo = $("#mobileNo").val();
+            let mobileNo = $("#mobileNo").val();
             if (mobileNo == null || mobileNo.trim().length <= 0) {
                 return;
             }
 
-            var operType = $("#operType").val();
-            var employeeId = $("#employeeId").val();
+            let operType = $("#operType").val();
+            let employeeId = $("#employeeId").val();
             layui.ajax.post('api/organization/employee/verifyMobileNo', '&mobileNo='+mobileNo+'&operType='+operType+'&employeeId='+employeeId, function(data){
 
             });
@@ -264,7 +265,7 @@ layui.extend({
 
         loadEmployee : function(employeeId) {
             layui.ajax.post('api/organization/employee/load', '&employeeId='+employeeId, function(data){
-                var employee = data.rows;
+                let employee = data.rows;
                 layui.employee.refreshEmployee(employee);
                 if (createType == "3") {
                     $("#type").val("3");
@@ -276,8 +277,8 @@ layui.extend({
         refreshEmployee : function(employee) {
 
             form.val('employee_form', employee)
-            var inDate = employee.inDate;
-            var regularDate = employee.regularDate;
+            let inDate = employee.inDate;
+            let regularDate = employee.regularDate;
             if (inDate != null) {
                 $("#inDate").val(inDate.substring(0,10));
             }
@@ -285,7 +286,7 @@ layui.extend({
                 $("#regularDate").val(regularDate);
             }
 
-            var isSocialSecurity = employee.isSocialSecurity;
+            let isSocialSecurity = employee.isSocialSecurity;
             if (isSocialSecurity == "1") {
                 $("#socialSecurityDateArea").css("display", "");
                 $("#socialSecurityPlaceArea").css("display", "");
@@ -302,8 +303,8 @@ layui.extend({
                 $("#socialSecurityStatusArea").css("display", "");
             }
 
-            var native = employee.natives;
-            var home = employee.home;
+            let native = employee.natives;
+            let home = employee.home;
             if (native != null) {
                 this.registerPicker.setValue(native);
             }
@@ -311,64 +312,81 @@ layui.extend({
                 this.homePicker.setValue(home);
             }
 
-            var employeeJobRole = employee.employeeJobRole;
+            let employeeJobRole = employee.employeeJobRole;
 
-            var orgPath = employeeJobRole.orgPath;
+            let orgPath = employeeJobRole.orgPath;
             if (orgPath != null) {
                 $("#orgPath").val(orgPath);
             }
 
-            var orgId = employeeJobRole.orgId;
+            let orgId = employeeJobRole.orgId;
             if (orgId != null) {
                 $(document.getElementById("employeeJobRole.orgId")).val(orgId);
             }
 
-            var jobRole = employeeJobRole.jobRole;
+            let jobRole = employeeJobRole.jobRole;
             if (jobRole != null) {
                 $("#jobRole").val(jobRole);
                 form.render('select', 'jobRole');
             }
 
-            var jobRoleNature = employeeJobRole.jobRoleNature;
+            let jobRoleNature = employeeJobRole.jobRoleNature;
             if (jobRoleNature != null) {
                 $("#jobRoleNature").val(jobRoleNature);
                 form.render('select', 'jobRoleNature');
             }
 
-            var discountRate = employeeJobRole.discountRate;
+            let discountRate = employeeJobRole.discountRate;
             if (discountRate != null) {
                 $(document.getElementById("employeeJobRole.discountRate")).val(discountRate);
             }
 
-            var parentEmployeeName = employeeJobRole.parentEmployeeName;
+            let parentEmployeeName = employeeJobRole.parentEmployeeName;
             if (parentEmployeeName != null) {
                 $("#parentEmployeeName").val(parentEmployeeName);
             }
 
-            var parentEmployeeId = employeeJobRole.parentEmployeeId;
+            let parentEmployeeId = employeeJobRole.parentEmployeeId;
             if (parentEmployeeId != null) {
                 $(document.getElementById("employeeJobRole.parentEmployeeId")).val(parentEmployeeId);
             }
 
 
-            var jobGrade = employeeJobRole.jobGrade;
+            let jobGrade = employeeJobRole.jobGrade;
             if (jobGrade != null) {
                 $(document.getElementById("employeeJobRole.jobGrade")).val(jobGrade);
             }
 
+            let contactMan = employee.contactMan;
+            if (contactMan != null) {
+                let contactManName = contactMan.name;
+                let contactManRelType = contactMan.relType;
+                let contactManContactNo = contactMan.contactNo;
+                if (contactManName != null) {
+                    $("#contactManName").val(contactManName);
+                }
+                if (contactManContactNo != null) {
+                    $("#contactManContactNo").val(contactManContactNo);
+                }
+                if (contactManRelType != null) {
+                    $("#contactManRelType").val(contactManRelType);
+                    form.render('select', 'contactManRelType');
+                }
+            }
+
 
             if (this.workExpIndex > 0) {
-                for (var i=this.workExpIndex; i > 0;i--) {
+                for (let i=this.workExpIndex; i > 0;i--) {
                     $("#workExp_"+i).remove();
                 }
                 this.workExpIndex = 0;
             }
 
-            var employeeWorkExperiences = employee.employeeWorkExperiences;
+            let employeeWorkExperiences = employee.employeeWorkExperiences;
             if (employeeWorkExperiences != null && employeeWorkExperiences.length > 0) {
-                var length = employeeWorkExperiences.length
-                for (var i=0; i<length; i++) {
-                    var employeeWorkExperience = employeeWorkExperiences[i];
+                let length = employeeWorkExperiences.length
+                for (let i=0; i<length; i++) {
+                    let employeeWorkExperience = employeeWorkExperiences[i];
                     if (i > 0) {
                         this.addWorkExp();
                     }
@@ -379,17 +397,17 @@ layui.extend({
             }
 
             if (this.childrenIndex > 0) {
-                for (var i=this.childrenIndex;i>0;i--) {
+                for (let i=this.childrenIndex;i>0;i--) {
                     $("#children_"+i).remove();
                 }
                 this.childrenIndex = 0;
             }
 
-            var children = employee.children;
+            let children = employee.children;
             if (children != null && children.length > 0) {
-                var length = children.length;
-                for (var i=0; i<length; i++) {
-                    var child = children[i];
+                let length = children.length;
+                for (let i=0; i<length; i++) {
+                    let child = children[i];
                     if (i > 0) {
                         this.addChildren();
                     }
@@ -406,13 +424,13 @@ layui.extend({
             if (jobDate.length < 10) {
                 return;
             }
-            var year = layui.time.getYearDiff(jobDate);
+            let year = layui.time.getYearDiff(jobDate);
             $("#jobYear").val(year);
         },
 
         calculateDiscountRate : function(data) {
-            var jobRoleNature = $(document.getElementById("jobRoleNature")).val();
-            var orgId = $(document.getElementById("employeeJobRole.orgId")).val();
+            let jobRoleNature = $(document.getElementById("jobRoleNature")).val();
+            let orgId = $(document.getElementById("employeeJobRole.orgId")).val();
             if (orgId == null || orgId == "") {
                 this.selectOrg();
                 return;
@@ -425,8 +443,8 @@ layui.extend({
 
         addWorkExp : function() {
             this.workExpIndex++;
-            var template = document.getElementById("workExp").innerHTML;
-            var index = this.workExpIndex;
+            let template = document.getElementById("workExp").innerHTML;
+            let index = this.workExpIndex;
             layui.laytpl(template).render(index, function(html){
                 $("#workExp_0").parent().append(html);
                 laydate.render({
@@ -449,8 +467,8 @@ layui.extend({
 
         addChildren : function() {
             this.childrenIndex++;
-            var template = document.getElementById("children").innerHTML;
-            var index = this.childrenIndex;
+            let template = document.getElementById("children").innerHTML;
+            let index = this.childrenIndex;
             layui.laytpl(template).render(index, function(html){
                 $("#children_0").parent().append(html);
                 laydate.render({
