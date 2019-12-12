@@ -43,16 +43,10 @@ logging:
 scheduling:
   enabled: true
 
-# 缓存模式: local、redis；开发环境用 local 模式；生产环境使用 redis 模式
-caching:
-  mode: redis
-
-
-
 spring:
   cache:
     # 指定缓存类型: none(禁用缓存), simple(用于开发), redis（用于生产）
-    type: redis
+    type: simple
   mvc:
     # 所有静态资源访问，路径以 /static/ 为前缀。
     static-path-pattern: /static/**
