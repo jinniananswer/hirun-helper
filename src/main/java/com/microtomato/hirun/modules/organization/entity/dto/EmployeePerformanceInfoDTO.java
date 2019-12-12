@@ -39,12 +39,20 @@ public class EmployeePerformanceInfoDTO implements Serializable {
     private String orgPath;
 
     @ColumnWidth(20)
-    @ExcelProperty(value = "绩效录入年份(必填。填写格式如：2019)" ,index = 4)
-    private String year;
+    @ExcelProperty(value = "岗位性质",index = 4)
+    private String jobRoleNatureName;
 
     @ColumnWidth(20)
-    @ExcelProperty(value = "绩效成绩(必填。请在单元格中填入对应的值 1=下 2=中下 3=中 4=中上 5=上)" ,index = 5)
+    @ExcelProperty(value = "绩效录入年份(必填。填写格式如：2019)" ,index = 5)
+    private String year;
+
+    @ExcelIgnore
     private String performance;
+
+    @ColumnWidth(20)
+    @ExcelProperty(value = "绩效成绩(必填。请在单元格中填入对应的值 纯业务类 1=优秀(A1)，2=优秀(A2)，3=优秀(A3)),4=合格,5=待培养,6=待提升,7=待优化" +
+            "业务支持类员工 8=核心人员,9=骨干人员,10=一般人员,7=待优化,5=待培养", index = 6)
+    private String performanceName;
 
     @ExcelIgnore
     private Long id;
@@ -56,7 +64,12 @@ public class EmployeePerformanceInfoDTO implements Serializable {
     private Long orgId;
 
     @ColumnWidth(20)
-    @ExcelProperty(value = "备注" ,index = 6)
+    @ExcelProperty(value = "备注" ,index = 7)
     private String remark;
+
+    @ExcelIgnore
+    private String jobRoleNature;
+
+
 
 }

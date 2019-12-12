@@ -47,9 +47,9 @@ public class EmployeePerformanceController extends AbstractExcelHarbour {
 
     @GetMapping("employeePerformanceList")
     @RestResult
-    public IPage<EmployeePerformanceInfoDTO> queryEmployeePerformanceList(String name, String orgSet,String year,String performance,Integer page,Integer limit){
+    public IPage<EmployeePerformanceInfoDTO> queryEmployeePerformanceList(String name, String orgSet,String year,String performance,String jobRoleNature,Integer page,Integer limit){
         Page <EmployeePerformanceInfoDTO> dtoPage=new Page<>(page,limit);
-        return employeePerformanceServiceImpl.queryPerformanceList(name,orgSet,year,performance,dtoPage);
+        return employeePerformanceServiceImpl.queryPerformanceList(name,orgSet,year,performance,jobRoleNature,dtoPage);
     }
 
     @PostMapping("addEmployeePerformance")
@@ -66,8 +66,8 @@ public class EmployeePerformanceController extends AbstractExcelHarbour {
 
     @GetMapping("/exportEmployee4ImportPerformance")
     @RestResult
-    public void exportEmployee4ImportPerformance(String name, String orgSet,String year,String performance,HttpServletResponse response) throws IOException {
-        List<EmployeePerformanceInfoDTO> list=employeePerformanceServiceImpl.queryPerformanceList(name,orgSet,year,performance);
+    public void exportEmployee4ImportPerformance(String name, String orgSet,String year,String performance,String jobRoleNature,HttpServletResponse response) throws IOException {
+        List<EmployeePerformanceInfoDTO> list=employeePerformanceServiceImpl.queryPerformanceList(name,orgSet,year,performance,jobRoleNature);
         exportExcel(response, "员工列表", EmployeePerformanceInfoDTO.class, list, ExcelTypeEnum.XLSX);
     }
 

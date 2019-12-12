@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
 <head>
     <meta charset="utf-8">
     <title>dolphin-admin</title>
@@ -150,11 +152,11 @@
                         <div class="layui-inline">
                             <label class="layui-form-label">工作年限</label>
                             <div class="layui-input-inline" style="width: 80px;">
-                                <input type="text" name="jobYearStart" id="jobYearStart" autocomplete="off" class="layui-input">
+                                <input type="text" name="jobYearStart" id="jobYearStart" autocomplete="off" class="layui-input" lay-verify="number">
                             </div>
                             <div class="layui-form-mid">-</div>
                             <div class="layui-input-inline" style="width: 80px;">
-                                <input type="text" name="jobYearEnd" id="jobYearEnd" autocomplete="off" class="layui-input">
+                                <input type="text" name="jobYearEnd" id="jobYearEnd" autocomplete="off" class="layui-input" lay-verify="number">
                             </div>
                         </div>
                     </div>
@@ -162,21 +164,21 @@
                         <div class="layui-inline">
                             <label class="layui-form-label">年龄</label>
                             <div class="layui-input-inline" style="width: 80px;">
-                                <input type="text" name="ageStart" id="ageStart" autocomplete="off" class="layui-input">
+                                <input type="text" name="ageStart" id="ageStart" autocomplete="off" class="layui-input" lay-verify="number">
                             </div>
                             <div class="layui-form-mid">-</div>
                             <div class="layui-input-inline" style="width: 80px;">
-                                <input type="text" name="ageEnd" id="ageEnd" autocomplete="off" class="layui-input">
+                                <input type="text" name="ageEnd" id="ageEnd" autocomplete="off" class="layui-input" lay-verify="number">
                             </div>
                         </div>
                         <div class="layui-inline">
                             <label class="layui-form-label">司龄</label>
                             <div class="layui-input-inline" style="width: 80px;">
-                                <input type="text" name="companyAgeStart" id="companyAgeStart" autocomplete="off" class="layui-input">
+                                <input type="text" name="companyAgeStart" id="companyAgeStart" autocomplete="off" class="layui-input" lay-verify="number">
                             </div>
                             <div class="layui-form-mid">-</div>
                             <div class="layui-input-inline" style="width: 80px;">
-                                <input type="text" name="companyAgeEnd" id="companyAgeEnd" autocomplete="off" class="layui-input">
+                                <input type="text" name="companyAgeEnd" id="companyAgeEnd" autocomplete="off" class="layui-input" lay-verify="number">
                             </div>
                         </div>
                         <div class="layui-inline">
@@ -215,22 +217,13 @@
 </div>
 <script type="text/html" id="toolbar">
     <div class="layui-btn-container">
-        <button class="layui-btn " style="background-color:#9e2d09;" lay-event="create"><i
-                class="layui-icon">&#xe608;</i>新增
-        </button>
-        <button class="layui-btn layui-btn-normal" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑
-        </button>
-        <button class="layui-btn layui-btn-danger" lay-event="remove"><i class="layui-icon layui-icon-delete"></i>离职
-        </button>
-        <button class="layui-btn layui-btn-warm" lay-event="holiday"><i class="layui-icon layui-icon-log"></i>休假
-        </button>
-        <button class="layui-btn" style="background-color:#13227a;" lay-event="transOrg"><i
-                class="layui-icon">&#x21c4;</i>调动
-        </button>
-        <button class="layui-btn " style="background-color:#e87233;" lay-event="contract"><i
-                class="layui-icon layui-icon-templeate-1"></i>合同
-        </button>
-        <button class="layui-btn" lay-event="export"><i class="layui-icon layui-icon-download-circle"></i>导出</button>
+        <button class="layui-btn " style="background-color:#9e2d09;" sec:authorize="hasRole('6')" lay-event="create"><i class="layui-icon">&#xe608;</i>新增</button>
+        <button class="layui-btn layui-btn-normal" lay-event="edit" sec:authorize="hasRole('6')"><i class="layui-icon layui-icon-edit"></i>编辑</button>
+        <button class="layui-btn layui-btn-danger" lay-event="remove" sec:authorize="hasRole('6')"><i class="layui-icon layui-icon-delete"></i>离职</button>
+        <button class="layui-btn layui-btn-warm" lay-event="holiday" sec:authorize="hasRole('6')"><i class="layui-icon layui-icon-log"></i>休假</button>
+        <button class="layui-btn" style="background-color:#13227a;" lay-event="transOrg" sec:authorize="hasRole('6')"><i class="layui-icon">&#x21c4;</i>调动</button>
+        <button class="layui-btn " style="background-color:#e87233;" lay-event="contract" sec:authorize="hasRole('6')"><i class="layui-icon layui-icon-templeate-1"></i>合同</button>
+        <button class="layui-btn" lay-event="export" sec:authorize="hasAuthority('EXPORT_EMPLOYEE')"><i class="layui-icon layui-icon-download-circle"></i>导出</button>
     </div>
 </script>
 
