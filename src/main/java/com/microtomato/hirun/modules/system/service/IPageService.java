@@ -16,6 +16,5 @@ import java.util.Map;
  */
 public interface IPageService extends IService<Page> {
 
-    @Cacheable(value = "all-pages")
     Map<Long, Page> listAllPages();
 }

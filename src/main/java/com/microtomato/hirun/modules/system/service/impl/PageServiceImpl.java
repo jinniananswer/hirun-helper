@@ -25,7 +25,7 @@ import java.util.Map;
 @Service
 public class PageServiceImpl extends ServiceImpl<PageMapper, Page> implements IPageService {
 
-    @Cacheable(value = "all-pages")
+    @Cacheable(value = "page::listAllPages")
     @Override
     public Map<Long, Page> listAllPages() {
 

@@ -5,6 +5,7 @@ import com.microtomato.hirun.modules.user.entity.po.Role;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -17,6 +18,8 @@ import java.util.Set;
  * @since 2019-09-22
  */
 public interface IRoleService extends IService<Role> {
+
+    List<Role> queryRole(String rolename);
 
     /**
      * 根据角色Id查对应的菜单

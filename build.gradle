@@ -28,7 +28,7 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     //implementation 'org.springframework.boot:spring-boot-starter-jta-atomikos'
-    implementation 'org.springframework.boot:spring-boot-devtools'
+    //implementation 'org.springframework.boot:spring-boot-devtools'
 
     // 跟 SSO 相关
     // 跟页面上通过 ${#authentication.name} 获取认证用户名有关

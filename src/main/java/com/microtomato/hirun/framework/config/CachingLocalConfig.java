@@ -15,9 +15,9 @@ import org.springframework.context.annotation.Configuration;
  * @date 2019-05-04
  */
 @Slf4j
-@Configuration
 @EnableCaching
-@ConditionalOnProperty(prefix = "caching", name = "mode", havingValue = "local")
+@Configuration
+@ConditionalOnProperty(prefix = "spring.cache", name = "type", havingValue = "simple")
 public class CachingLocalConfig {
 
     /**

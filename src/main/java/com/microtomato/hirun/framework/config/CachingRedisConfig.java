@@ -27,7 +27,7 @@ import java.time.Duration;
 @Slf4j
 @Configuration
 @EnableCaching
-@ConditionalOnProperty(prefix = "caching", name = "mode", havingValue = "redis")
+@ConditionalOnProperty(prefix = "spring.cache", name = "type", havingValue = "redis")
 public class CachingRedisConfig {
 
     private static final String REDIS_MODE_STANDALONE = "standalone";

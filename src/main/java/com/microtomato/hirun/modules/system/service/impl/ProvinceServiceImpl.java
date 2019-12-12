@@ -30,7 +30,7 @@ public class ProvinceServiceImpl extends ServiceImpl<ProvinceMapper, Province> i
      * @return
      */
     @Override
-    @Cacheable(value="all-provinces")
+    @Cacheable(value="province::getAllDatas")
     public List<Province> getAllDatas() {
         return this.list();
     }
@@ -41,7 +41,7 @@ public class ProvinceServiceImpl extends ServiceImpl<ProvinceMapper, Province> i
      * @return
      */
     @Override
-    @Cacheable(value="province-data")
+    @Cacheable(value="province::getProvince", key = "#provinceId")
     public Province getProvince(Integer provinceId) {
         IProvinceService provinceService = SpringContextUtils.getBean(ProvinceServiceImpl.class);
         List<Province> provinces = provinceService.getAllDatas();

@@ -24,6 +24,8 @@ public interface IUserService extends IService<User> {
      */
     User login(String username, String password);
 
+    User queryUser(String username);
+
     /**
      * 修改员工密码
      *

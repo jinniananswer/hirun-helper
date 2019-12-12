@@ -11,7 +11,9 @@ import com.microtomato.hirun.modules.user.mapper.RoleMapper;
 import com.microtomato.hirun.modules.user.service.IMenuRoleService;
 import com.microtomato.hirun.modules.user.service.IRoleService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +40,23 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
 
     @Autowired
     private IMenuService menuServiceImpl;
+
+    /**
+     *
+     * @param rolename
+     * @return
+     */
+    @Cacheable(value = "role::queryRole")
+    @Override
+    public List<Role> queryRole(String rolename) {
+        return list(
+            Wrappers.<Role>lambdaQuery()
+                .select(Role::getRoleId, Role::getRoleName, Role::getEnabled, Role::getRemark)
+                .ne(Role::getRoleId, Constants.SUPER_ROLE_ID)
+                .eq(Role::getEnabled, true)
+                .like(StringUtils.isNotBlank(rolename), Role::getRoleName, rolename)
+        );
+    }
 
     /**
      * 根据角色Id查对应的菜单

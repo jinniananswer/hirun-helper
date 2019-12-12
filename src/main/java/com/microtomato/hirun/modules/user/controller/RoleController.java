@@ -40,14 +40,7 @@ public class RoleController {
     public List<Role> roleList(String rolename) {
 
         // 超级工号不展示
-        List<Role> roleList = roleServiceImpl.list(
-            Wrappers.<Role>lambdaQuery()
-                .select(Role::getRoleId, Role::getRoleName, Role::getEnabled, Role::getRemark)
-                .ne(Role::getRoleId, Constants.SUPER_ROLE_ID)
-                .eq(Role::getEnabled, true)
-                .like(StringUtils.isNotBlank(rolename), Role::getRoleName, rolename)
-        );
-
+        List<Role> roleList = roleServiceImpl.queryRole(rolename);
         return roleList;
 
     }

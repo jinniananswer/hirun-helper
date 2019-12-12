@@ -47,7 +47,12 @@ scheduling:
 caching:
   mode: redis
 
+
+
 spring:
+  cache:
+    # 指定缓存类型: none(禁用缓存), simple(用于开发), redis（用于生产）
+    type: redis
   mvc:
     # 所有静态资源访问，路径以 /static/ 为前缀。
     static-path-pattern: /static/**
@@ -114,6 +119,7 @@ spring:
       enabled: true
       additional-paths: src/main/java
       exclude: static/**
+
 #  main:
 #    allow-bean-definition-overriding: true
 

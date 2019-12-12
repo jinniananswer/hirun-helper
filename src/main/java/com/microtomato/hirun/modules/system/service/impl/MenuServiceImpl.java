@@ -38,7 +38,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 	@Autowired
 	private IMenuService menuServiceImpl;
 
-	@Cacheable(value = "menuid-with-role", key = "#role.id")
+	@Cacheable(value = "menu::listMenusByRole", key = "#role.id")
 	@Override
 	public List<Long> listMenusByRole(Role role) {
 
@@ -58,6 +58,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 	/**
 	 * 超级管理员默认能看到所有菜单
 	 */
+	@Cacheable(value = "menu::listMenusForAdmin", key = "")
 	@Override
 	public List<Long> listMenusForAdmin() {
 		List<Long> myMenuIds = new ArrayList<>(100);
@@ -68,7 +69,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 		return myMenuIds;
 	}
 
-	@Cacheable(value = "all-menus")
+	@Cacheable(value = "menu::listAllMenus", key = "")
 	@Override
 	public Map<Long, Menu> listAllMenus() {
 
@@ -89,7 +90,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 	 * @return 菜单Id
 	 */
 	@Override
-	@Cacheable(value = "menu-url-to-id", key = "#menuUrl")
+	@Cacheable(value = "menu::getMenuId", key = "#menuUrl")
 	public Long getMenuId(String menuUrl) {
 		Menu one = menuServiceImpl.getOne(
 			Wrappers.<Menu>lambdaQuery()

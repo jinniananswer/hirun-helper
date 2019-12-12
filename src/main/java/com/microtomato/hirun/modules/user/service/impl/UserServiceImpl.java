@@ -50,6 +50,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         return null;
     }
 
+    @Override
+    public User queryUser(String username) {
+        return getOne(
+            new QueryWrapper<User>().lambda()
+                .select(User::getUserId, User::getUsername, User::getPassword, User::getMobileNo, User::getStatus)
+                .eq(User::getUsername, username)
+                .eq(User::getStatus, UserConst.STATUS_NORMAL)
+        );
+    }
+
     /**
      * 变更用户密码
      */

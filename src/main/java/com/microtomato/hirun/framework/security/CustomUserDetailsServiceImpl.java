@@ -1,20 +1,19 @@
 package com.microtomato.hirun.framework.security;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.microtomato.hirun.framework.util.Constants;
 import com.microtomato.hirun.modules.system.entity.po.Func;
-import com.microtomato.hirun.modules.system.service.impl.FuncServiceImpl;
-import com.microtomato.hirun.modules.user.entity.consts.UserConst;
+import com.microtomato.hirun.modules.system.service.IFuncService;
 import com.microtomato.hirun.modules.user.entity.dto.UserDTO;
 import com.microtomato.hirun.modules.user.entity.po.FuncRole;
 import com.microtomato.hirun.modules.user.entity.po.FuncTemp;
 import com.microtomato.hirun.modules.user.entity.po.User;
 import com.microtomato.hirun.modules.user.entity.po.UserRole;
+import com.microtomato.hirun.modules.user.service.IFuncRoleService;
 import com.microtomato.hirun.modules.user.service.IFuncTempService;
-import com.microtomato.hirun.modules.user.service.impl.FuncRoleServiceImpl;
+import com.microtomato.hirun.modules.user.service.IUserRoleService;
+import com.microtomato.hirun.modules.user.service.IUserService;
 import com.microtomato.hirun.modules.user.service.impl.UserRoleServiceImpl;
-import com.microtomato.hirun.modules.user.service.impl.UserServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,19 +38,19 @@ import java.util.*;
 public class CustomUserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
-    private UserServiceImpl userServiceImpl;
+    private IUserService userServiceImpl;
 
     @Autowired
-    private FuncServiceImpl funcServiceImpl;
+    private IFuncService funcServiceImpl;
 
     @Autowired
     private IFuncTempService funcTempServiceImpl;
 
     @Autowired
-    private UserRoleServiceImpl userRoleServiceImpl;
+    private IUserRoleService userRoleServiceImpl;
 
     @Autowired
-    private FuncRoleServiceImpl funcRoleServiceImpl;
+    private IFuncRoleService funcRoleServiceImpl;
 
     /**
      * 在 Security 中，角色和权限共用 GrantedAuthority 接口，唯一的不同角色就是多了个前缀 "ROLE_"
@@ -66,26 +65,14 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
         UserContext userContext = new UserContext();
 
         // 查询用户
-        User user = userServiceImpl.getOne(
-            new QueryWrapper<User>().lambda()
-                .select(User::getUserId, User::getUsername, User::getPassword, User::getMobileNo, User::getStatus)
-                .eq(User::getUsername, username)
-                .eq(User::getStatus, UserConst.STATUS_NORMAL)
-        );
+        User user = userServiceImpl.queryUser(username);
         if (null == user) {
             // 这里找不到必须抛异常
             throw new UsernameNotFoundException("User " + username + " was not found in database!");
         }
 
         // 查用户角色
-        LocalDateTime now = LocalDateTime.now();
-        List<UserRole> userRoles = userRoleServiceImpl.list(
-            Wrappers.<UserRole>lambdaQuery()
-                .select(UserRole::getRoleId)
-                .eq(UserRole::getUserId, user.getUserId())
-                .lt(UserRole::getStartDate, now)
-                .gt(UserRole::getEndDate, now)
-        );
+        List<UserRole> userRoles = userRoleServiceImpl.queryUserRole(user);
 
         // 根据角色查操作权限
         List<Func> funcList = queryFuncSet(user.getUserId(), userRoles);
@@ -131,12 +118,7 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
         Set<Long> funcIdSet = new HashSet<>();
 
         // 查用户临时操作权限
-        List<FuncTemp> funcTempList = funcTempServiceImpl.list(
-            Wrappers.<FuncTemp>lambdaQuery()
-                .select(FuncTemp::getFuncId)
-                .eq(FuncTemp::getUserId, userId)
-                .gt(FuncTemp::getExpireDate, LocalDateTime.now())
-        );
+        List<FuncTemp> funcTempList = funcTempServiceImpl.queryFuncTemp(userId);
         funcTempList.forEach(funcTemp -> funcIdSet.add(funcTemp.getFuncId()));
 
         // 查用户角色对应的操作权限

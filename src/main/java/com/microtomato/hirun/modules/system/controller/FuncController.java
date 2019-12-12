@@ -1,6 +1,5 @@
 package com.microtomato.hirun.modules.system.controller;
 
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.modules.system.entity.dto.FuncDTO;
 import com.microtomato.hirun.modules.system.entity.po.Func;
@@ -42,11 +41,7 @@ public class FuncController {
             funcIds = funcServiceImpl.queryFuncId(roleId);
         }
 
-        List<Func> funcList = funcServiceImpl.list(
-            Wrappers.<Func>lambdaQuery()
-                .select(Func::getFuncId, Func::getFuncCode, Func::getFuncDesc)
-                .eq(Func::getType, "1")
-        );
+        List<Func> funcList = funcServiceImpl.queryFuncList("1");
 
         List<FuncDTO> funcDTOS = new ArrayList<>();
         for (Func func : funcList) {
@@ -57,7 +52,7 @@ public class FuncController {
                 .funcDesc(func.getFuncDesc())
                 .checked(funcIds.contains(func.getFuncId()))
                 .build();
-            
+
             funcDTOS.add(funcDTO);
         }
 

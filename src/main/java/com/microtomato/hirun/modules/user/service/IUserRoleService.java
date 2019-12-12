@@ -1,9 +1,11 @@
 package com.microtomato.hirun.modules.user.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.microtomato.hirun.modules.user.entity.po.User;
 import com.microtomato.hirun.modules.user.entity.po.UserRole;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -14,6 +16,14 @@ import java.time.LocalDateTime;
  * @since 2019-09-22
  */
 public interface IUserRoleService extends IService<UserRole> {
+
+    /**
+     * 根据 User 查 UserRole
+     *
+     * @param user
+     * @return
+     */
+    List<UserRole> queryUserRole(User user);
 
     /**
      * 立即生效，结束时间永久。

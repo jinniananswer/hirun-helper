@@ -1,8 +1,9 @@
 package com.microtomato.hirun.modules.system.service;
 
-import com.microtomato.hirun.modules.system.entity.po.Func;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.microtomato.hirun.modules.system.entity.po.Func;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -22,4 +23,13 @@ public interface IFuncService extends IService<Func> {
      * @return
      */
     Set<Long> queryFuncId(Long roleId);
+
+
+    /**
+     * 查操作权限
+     *
+     * @param type
+     * @return
+     */
+    List<Func> queryFuncList(String type);
 }

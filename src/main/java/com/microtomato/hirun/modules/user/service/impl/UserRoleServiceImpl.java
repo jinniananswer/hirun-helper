@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.user.entity.po.RoleMapping;
+import com.microtomato.hirun.modules.user.entity.po.User;
 import com.microtomato.hirun.modules.user.entity.po.UserRole;
 import com.microtomato.hirun.modules.user.mapper.UserRoleMapper;
 import com.microtomato.hirun.modules.user.service.IRoleMappingService;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -29,6 +31,24 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
 
     @Autowired
     private IRoleMappingService roleMappingServiceImpl;
+
+    /**
+     * 根据 User 查 UserRole
+     *
+     * @param user
+     * @return
+     */
+    @Override
+    public List<UserRole> queryUserRole(User user) {
+        LocalDateTime now = LocalDateTime.now();
+        return list(
+            Wrappers.<UserRole>lambdaQuery()
+                .select(UserRole::getRoleId)
+                .eq(UserRole::getUserId, user.getUserId())
+                .lt(UserRole::getStartDate, now)
+                .gt(UserRole::getEndDate, now)
+        );
+    }
 
     /**
      * 立即生效，结束时间永久。

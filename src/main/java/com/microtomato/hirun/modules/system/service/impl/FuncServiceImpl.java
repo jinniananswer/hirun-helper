@@ -10,6 +10,7 @@ import com.microtomato.hirun.modules.user.entity.po.FuncRole;
 import com.microtomato.hirun.modules.user.service.IFuncRoleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -18,7 +19,7 @@ import java.util.Set;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author Steven
@@ -41,6 +42,7 @@ public class FuncServiceImpl extends ServiceImpl<FuncMapper, Func> implements IF
      * @return
      */
     @Override
+    @Cacheable("func::queryFuncId")
     public Set<Long> queryFuncId(Long roleId) {
         Set<Long> rtn = new HashSet<>();
 
@@ -61,5 +63,13 @@ public class FuncServiceImpl extends ServiceImpl<FuncMapper, Func> implements IF
         }
 
         return rtn;
+    }
+
+    @Override
+    @Cacheable("func::queryFuncList")
+    public List<Func> queryFuncList(String type) {
+        return list(Wrappers.<Func>lambdaQuery()
+            .select(Func::getFuncId, Func::getFuncCode, Func::getFuncDesc)
+            .eq(Func::getType, type));
     }
 }
