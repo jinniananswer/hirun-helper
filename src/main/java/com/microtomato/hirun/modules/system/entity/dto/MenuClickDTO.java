@@ -3,6 +3,8 @@ package com.microtomato.hirun.modules.system.entity.dto;
 import lombok.Builder;
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * 菜单点击次数
  *
@@ -11,7 +13,10 @@ import lombok.Data;
  */
 @Data
 @Builder
-public class MenuClickDTO {
+public class MenuClickDTO implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     /**
      * 用户Id
      */

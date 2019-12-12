@@ -13,6 +13,8 @@ import java.io.Serializable;
 @Data
 public class Result implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     /**
      * 数据行数
      */

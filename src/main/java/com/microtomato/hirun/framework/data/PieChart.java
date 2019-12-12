@@ -2,6 +2,7 @@ package com.microtomato.hirun.framework.data;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +13,9 @@ import java.util.List;
  * @create: 2019-11-21 21:26
  **/
 @Data
-public class PieChart {
+public class PieChart implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private String title;
 

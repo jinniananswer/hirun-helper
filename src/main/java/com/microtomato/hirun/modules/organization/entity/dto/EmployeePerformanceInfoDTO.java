@@ -5,6 +5,8 @@ import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.annotation.write.style.ColumnWidth;
 import lombok.*;
 
+import java.io.Serializable;
+
 /**
  * @author liuhui
  * 员工绩效信息传输对象
@@ -14,7 +16,9 @@ import lombok.*;
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmployeePerformanceInfoDTO{
+public class EmployeePerformanceInfoDTO implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @ColumnWidth(20)
     @ExcelProperty(value = "员工编号",index = 0)

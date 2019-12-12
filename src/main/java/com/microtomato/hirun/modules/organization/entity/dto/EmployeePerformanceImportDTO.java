@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.io.Serializable;
 
 /**
  * @author liuhui
@@ -15,7 +16,9 @@ import javax.validation.constraints.Pattern;
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmployeePerformanceImportDTO {
+public class EmployeePerformanceImportDTO implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @NotNull(message = "员工编码为必填字段，不能为空")
     @ExcelProperty(index = 0)

@@ -2,6 +2,7 @@ package com.microtomato.hirun.framework.data;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -11,7 +12,9 @@ import java.util.List;
  * @create: 2019-09-08 15:32
  **/
 @Data
-public class TreeNode<T> {
+public class TreeNode<T> implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private String id;
 

@@ -2,6 +2,7 @@ package com.microtomato.hirun.modules.system.entity.dto;
 
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -13,7 +14,9 @@ import java.util.List;
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public class MenuNode {
+public class MenuNode implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private Long id;
     private Long pid;

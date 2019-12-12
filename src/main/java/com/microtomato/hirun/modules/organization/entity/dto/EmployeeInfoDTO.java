@@ -6,6 +6,7 @@ import com.alibaba.excel.annotation.write.style.ColumnWidth;
 import com.microtomato.hirun.framework.harbour.excel.convert.LocalDateTimeConvert;
 import lombok.*;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -19,7 +20,9 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmployeeInfoDTO {
+public class EmployeeInfoDTO implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @ExcelIgnore
     private Long employeeId;

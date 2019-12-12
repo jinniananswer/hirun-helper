@@ -2,6 +2,8 @@ package com.microtomato.hirun.modules.organization.entity.dto;
 
 import lombok.*;
 
+import java.io.Serializable;
+
 /**
  * @program: hirun-helper
  * @description: 员工工作岗位数据传输对象
@@ -13,7 +15,9 @@ import lombok.*;
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmployeeJobRoleDTO {
+public class EmployeeJobRoleDTO implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private Long orgId;
 

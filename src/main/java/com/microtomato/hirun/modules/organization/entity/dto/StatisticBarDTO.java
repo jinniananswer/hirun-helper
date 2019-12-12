@@ -2,6 +2,7 @@ package com.microtomato.hirun.modules.organization.entity.dto;
 
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -15,7 +16,9 @@ import java.util.List;
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public class StatisticBarDTO {
+public class StatisticBarDTO implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private String title;
 

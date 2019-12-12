@@ -2,6 +2,7 @@ package com.microtomato.hirun.modules.organization.entity.dto;
 
 import lombok.*;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,7 +18,9 @@ import java.util.List;
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmployeeDTO {
+public class EmployeeDTO implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private String createType;
 
