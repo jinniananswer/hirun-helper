@@ -43,6 +43,10 @@ logging:
 scheduling:
   enabled: true
 
+# 缓存模式: local、redis；开发环境用 local 模式；生产环境使用 redis 模式
+caching:
+  mode: redis
+
 spring:
   mvc:
     # 所有静态资源访问，路径以 /static/ 为前缀。
@@ -81,6 +85,14 @@ spring:
           driver-class-name: com.mysql.cj.jdbc.Driver
           url: jdbc:mysql://39.106.228.124:3306/ins?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=GMT%2B8
 
+  redis:
+    timeout: 1000
+    jedis:
+      pool:
+        max-active: 8
+        max-idle: 8
+        max-wait: -1
+        min-idle: 0
 
   # thymeleaf 模板配置
   thymeleaf:
