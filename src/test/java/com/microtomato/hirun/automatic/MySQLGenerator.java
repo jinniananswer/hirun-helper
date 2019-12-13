@@ -86,7 +86,7 @@ public class MySQLGenerator {
 
         // 自定义需要填充的字段
         List<TableFill> tableFillList = new ArrayList<>();
-        tableFillList.add(new TableFill("create_date", FieldFill.INSERT));
+        tableFillList.add(new TableFill("create_time", FieldFill.INSERT));
         tableFillList.add(new TableFill("create_user_id", FieldFill.INSERT));
         tableFillList.add(new TableFill("update_time", FieldFill.INSERT_UPDATE));
         tableFillList.add(new TableFill("update_user_id", FieldFill.INSERT_UPDATE));
