@@ -3,6 +3,7 @@ package com.microtomato.hirun.modules.system.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.data.TreeNode;
+import com.microtomato.hirun.framework.security.AssetSession;
 import com.microtomato.hirun.framework.security.Role;
 import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.*;
@@ -17,6 +18,8 @@ import com.microtomato.hirun.modules.user.service.IRoleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SetOperations;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -49,6 +52,9 @@ public class MenuController {
 
     @Autowired
     private IRoleService roleServiceImpl;
+
+    @Autowired
+    private AssetSession assetSession;
 
     @Value("${mhirun.host-port}")
     private String mHirunHostPort;
@@ -129,7 +135,7 @@ public class MenuController {
         }
 
         // 将有权访问的菜单 URL 设置到上下文中
-        WebContextUtils.getUserContext().setMenuUrls(menuUrls);
+        assetSession.setMenuUrls(menuUrls);
 
         List<Menu> menus = new ArrayList(filteredMenuMap.values());
         if (ArrayUtils.isEmpty(menus)) {

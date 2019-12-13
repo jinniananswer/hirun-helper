@@ -1,5 +1,6 @@
 package com.microtomato.hirun.modules;
 
+import com.microtomato.hirun.framework.security.AssetSession;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.system.entity.dto.MenuClickDTO;
@@ -18,7 +19,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -44,6 +44,9 @@ public class MainController {
 
     private static final String OPEN_URL = "openUrl?url=";
     private static final String NO_RIGHT_PAGE = "/error/no-right";
+
+    @Autowired
+    private AssetSession assetSession;
 
     @Autowired
     private IMenuService menuServiceImpl;
@@ -101,10 +104,10 @@ public class MainController {
         collectMenuClickOnce(url);
 
         // 添加 URL 校验，防止手工拼菜单地址。
-        Set<String> menuUrls = WebContextUtils.getUserContext().getMenuUrls();
-        if (menuUrls.contains(OPEN_URL + url)) {
+        if (assetSession.hasMenuUrl(OPEN_URL + url)) {
             return url;
         } else {
+            log.warn("{} 访问未授权地址: {}", WebContextUtils.getUserContext().getUsername(), url);
             return url;
 //            return NO_RIGHT_PAGE;
         }

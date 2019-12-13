@@ -43,10 +43,13 @@ logging:
 scheduling:
   enabled: true
 
+production.mode: false
+
+runtime:
+  devmode: dev
+
 spring:
-  cache:
-    # 指定缓存类型: none(禁用缓存), simple(用于开发), redis（用于生产）
-    type: simple
+
   mvc:
     # 所有静态资源访问，路径以 /static/ 为前缀。
     static-path-pattern: /static/**
@@ -83,15 +86,14 @@ spring:
           password: 1q1w1e1r
           driver-class-name: com.mysql.cj.jdbc.Driver
           url: jdbc:mysql://39.106.228.124:3306/ins?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=GMT%2B8
+  cache:
+    # 指定缓存类型: none(禁用缓存), simple(用于开发), redis（用于生产）
+    type: simple
 
   redis:
     timeout: 1000
-    jedis:
-      pool:
-        max-active: 8
-        max-idle: 8
-        max-wait: -1
-        min-idle: 0
+    host: 127.0.0.1
+    port: 6379
 
   # thymeleaf 模板配置
   thymeleaf:
@@ -113,6 +115,15 @@ spring:
       enabled: true
       additional-paths: src/main/java
       exclude: static/**
+
+  #  session:
+  #    store-type: redis
+  #    timeout: 1800
+  #    redis.namespace: hirun-sid
+  session:
+    # session 的存储方式，开发模式（本地）：none，生产模式（分布式缓存）：redis
+    store-type: none
+    timeout: 1800
 
 #  main:
 #    allow-bean-definition-overriding: true
