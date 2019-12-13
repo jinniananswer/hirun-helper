@@ -34,7 +34,7 @@ public interface EmployeePerformanceMapper extends BaseMapper<EmployeePerformanc
      * @return
      */
     @Select("select a.name employee_name,a.employee_id," +
-            " b.job_role,b.org_id, c.name org_name,d.year,d.performance,d.id,d.remark  from " +
+            " b.job_role,b.org_id,b.job_role_nature, c.name org_name,d.year,d.performance,d.id,d.remark  from " +
             "  ins_employee_job_role b, ins_org c , ins_employee a left join ins_employee_performance d " +
             " on (a.employee_id=d.employee_id and d.year=#{year}) \n" +
             " ${ew.customSqlSegment}"
@@ -49,7 +49,7 @@ public interface EmployeePerformanceMapper extends BaseMapper<EmployeePerformanc
      * @return
      */
     @Select("select a.name employee_name,a.employee_id," +
-            " b.job_role,b.org_id, c.name org_name,d.year,d.performance,d.id,d.remark  from " +
+            " b.job_role,b.org_id,b.job_role_nature, c.name org_name,d.year,d.performance,d.id,d.remark  from " +
             "  ins_employee_job_role b, ins_org c , ins_employee a left join ins_employee_performance d " +
             " on (a.employee_id=d.employee_id and d.year=#{year}) \n" +
             " ${ew.customSqlSegment}"

@@ -25,7 +25,7 @@ public interface IEmployeePerformanceService extends IService<EmployeePerformanc
      * @param page
      * @return
      */
-    IPage<EmployeePerformanceInfoDTO> queryPerformanceList(String name, String orgSet,String year,String performance, Page<EmployeePerformanceInfoDTO> page);
+    IPage<EmployeePerformanceInfoDTO> queryPerformanceList(String name, String orgSet,String year,String performance,String jobRoleNature, Page<EmployeePerformanceInfoDTO> page);
 
     /**
      *新增绩效
@@ -56,6 +56,6 @@ public interface IEmployeePerformanceService extends IService<EmployeePerformanc
      * @param performance
      * @return
      */
-    List<EmployeePerformanceInfoDTO> queryPerformanceList(String name, String orgSet,String year,String performance);
+    List<EmployeePerformanceInfoDTO> queryPerformanceList(String name, String orgSet,String year,String performance,String jobRoleNature);
 
 }

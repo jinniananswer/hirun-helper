@@ -25,14 +25,13 @@ public class EmployeePerformanceImportDTO implements Serializable {
     private Long employeeId;
 
     @NotNull(message = "绩效年份为必填字段，不能为空")
-    @ExcelProperty(index = 4)
+    @ExcelProperty(index = 5)
     private String year;
 
-    @ExcelProperty(index = 5)
+    @ExcelProperty(index = 6)
     @NotNull(message = "绩效成绩为必填字段，不能为空")
-    @Pattern(regexp = "[1-5]{1}", message = "绩效的类型值为1-5中的一个类型")
     private String performance;
 
-    @ExcelProperty(index = 6)
+    @ExcelProperty(index = 7)
     private String remark;
 }

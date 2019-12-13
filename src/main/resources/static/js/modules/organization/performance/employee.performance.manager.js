@@ -9,6 +9,8 @@ layui.extend({
         init: function () {
 
             layui.select.init('performance', 'PERFORMANCE_LEVEL', null, true);
+            layui.select.init('jobRoleNature', 'JOB_NATURE', null, true);
+
 
             table.render({
                 elem: "#employee_performance_table",
@@ -30,22 +32,9 @@ layui.extend({
                         {field: 'employeeName', title: '姓名', width: 120, fixed: 'left', align: 'center'},
                         {field: 'jobRoleName', title: '岗位',width: 180, align: 'center'},
                         {field: 'orgPath', title: '部门',width: 300, align: 'center'},
+                        {field: 'jobRoleNatureName', title: '岗位性质',width: 300, align: 'center'},
                         {field: 'year', title: '年份', width: 200, align: 'center'},
-                        {field: 'performance', title: '绩效', width: 150, align: 'center',templet:function (d) {
-                                if(d.performance==='1'){
-                                    return '下';
-                                }else if(d.performance==='2'){
-                                    return '中下';
-                                }else if(d.performance==='3'){
-                                    return '中';
-                                }else if(d.performance==='4'){
-                                    return '中上';
-                                }else if(d.performance==='5'){
-                                    return '上';
-                                }else if(d.performance==null){
-                                    return '';
-                                }
-                        }},
+                        {field: 'performanceName', title: '绩效', width: 150, align: 'center'},
                         {field: 'remark', title: '备注',  align: 'center'},
                         {align: 'center', title: '操作', width: 150, fixed: 'right',toolbar: '#bar'}
                     ]
@@ -67,6 +56,7 @@ layui.extend({
                         orgSet: $("input[name='orgSet']").val(),
                         year: $("select[name='year']").val(),
                         performance: $("select[name='performance']").val(),
+                        jobRoleNature: $("select[name='jobRoleNature']").val(),
                     }
                 })
             });
@@ -163,7 +153,8 @@ layui.extend({
 
 
         export: function(){
-            var param='?name='+$("input[name='name']").val()+'&orgSet='+$("input[name='orgSet']").val()+'&year='+$("select[name='year']").val()+'&performance='+$("select[name='performance']").val();
+            var param='?name='+$("input[name='name']").val()+'&orgSet='+$("input[name='orgSet']").val()+'&year='+$("select[name='year']").val()+'&performance='
+                +$("select[name='performance']").val()+'&jobRoleNature='+$("select[name='jobRoleNature']").val();
             window.location.href = "api/organization/employee-performance/exportEmployee4ImportPerformance"+param;
         },
 
