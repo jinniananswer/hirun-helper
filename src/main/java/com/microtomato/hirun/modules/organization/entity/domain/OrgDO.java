@@ -239,12 +239,12 @@ public class OrgDO {
      *
      * @return
      */
-    public String getOrgLine() {
+    public String getOrgLine(String type) {
         List<Org> orgs = orgService.listAllOrgs();
         if (orgs.size() <= 0) {
             return null;
         }
-        Org orgPO = findParent("2", orgs, this.org.getOrgId());
+        Org orgPO = findParent(type, orgs, this.org.getOrgId());
         String orgLine = buildSubOrg(orgPO.getOrgId(), orgs, orgPO.getOrgId() + "");
         return orgLine;
     }

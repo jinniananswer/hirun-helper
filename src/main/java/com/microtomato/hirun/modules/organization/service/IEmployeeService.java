@@ -43,7 +43,7 @@ public interface IEmployeeService extends IService<Employee> {
      * @param parentEmployeeId
      * @return
      */
-    List<Employee> findSubordinate(Long parentEmployeeId);
+    List<EmployeeInfoDTO> findSubordinate(Long parentEmployeeId);
 
     /**
      *

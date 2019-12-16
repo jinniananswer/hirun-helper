@@ -572,32 +572,38 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
      * @return
      */
     private EmployeeQueryConditionDTO conditionPlus(EmployeeQueryConditionDTO conditionDTO) {
-        //当传入部门为空时判断，根据登录员工的部门计算得到可以查询的部门集合
-        if (StringUtils.isBlank(conditionDTO.getOrgSet())) {
+        //根据登录员工的部门计算得到可以查询的部门集合
             UserContext userContext = WebContextUtils.getUserContext();
             Long orgId = userContext.getOrgId();
             Long employeeId = userContext.getEmployeeId();
             String employeeIds = "";
-            if (SecurityUtils.hasFuncId("ALL_CITY")) {
-                conditionDTO.setOrgSet("");
+            String orgIds = "";
+
+        if (SecurityUtils.hasFuncId("ALL_CITY")) {
+                OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+                String orgLine = orgDO.getOrgLine("0");
+                conditionDTO.setOrgLine(orgLine);
             } else if (SecurityUtils.hasFuncId("ALL_SHOP")) {
                 OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
-                String orgLine = orgDO.getOrgLine();
-                conditionDTO.setOrgSet(orgLine);
+                String orgLine = orgDO.getOrgLine("2");
+                conditionDTO.setOrgLine(orgLine);
             } else if (StringUtils.isNotBlank(orgHrRelService.getOrgLine(employeeId))) {
-                conditionDTO.setOrgSet(orgHrRelService.getOrgLine(employeeId));
+                conditionDTO.setOrgLine(orgHrRelService.getOrgLine(employeeId));
             } else {
-                List<Employee> employeeList = employeeService.findSubordinate(employeeId);
+                List<EmployeeInfoDTO> employeeList = employeeService.findSubordinate(employeeId);
                 if (ArrayUtils.isEmpty(employeeList)) {
                     conditionDTO.setEmployeeIds(employeeId + "");
+                    conditionDTO.setOrgLine(orgId+"");
                 }
-                for (Employee employee : employeeList) {
+                for (EmployeeInfoDTO employee : employeeList) {
                     employeeIds += employee.getEmployeeId() + ",";
-                    conditionDTO.setEmployeeIds(employeeIds + employeeId);
+                    orgIds+=employee.getOrgId()+",";
                 }
+                conditionDTO.setEmployeeIds(employeeIds + employeeId);
+                conditionDTO.setOrgLine(orgIds + orgId);
 
             }
-        }
+
         return conditionDTO;
     }
 }

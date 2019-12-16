@@ -94,8 +94,8 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
     }
 
     @Override
-    public List<Employee> findSubordinate(Long parentEmployeeId) {
-        List<Employee> childEmployees = employeeMapper.queryEmployeeByParentEmployeeId(parentEmployeeId);
+    public List<EmployeeInfoDTO> findSubordinate(Long parentEmployeeId) {
+        List<EmployeeInfoDTO> childEmployees = employeeMapper.queryEmployeeByParentEmployeeId(parentEmployeeId);
         return childEmployees;
     }
 
@@ -166,11 +166,14 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
 
         queryWrapper.apply(StringUtils.isNotBlank(conditionDTO.getEmployeeIds()), "a.employee_id in (" + conditionDTO.getEmployeeIds() + ")");
 
+        queryWrapper.orderByAsc("a.employee_id");
+        //如果为查询调动信息的情况不判断现归属部门
         if (!StringUtils.equals(conditionDTO.getOtherStatus(), EmployeeConst.EMPLOYEE_BORROW_STATUS) &&
                 !StringUtils.equals(conditionDTO.getOtherStatus(), EmployeeConst.EMPLOYEE_TRANS_STATUS)) {
             queryWrapper.apply(StringUtils.isNotBlank(conditionDTO.getOrgSet()), "b.org_id in (" + conditionDTO.getOrgSet() + ")");
+            queryWrapper.apply(StringUtils.isNotBlank(conditionDTO.getOrgLine()), "b.org_id in (" + conditionDTO.getOrgLine() + ")");
         }
-        queryWrapper.orderByAsc("a.employee_id");
+
         //休假
         if (StringUtils.equals(conditionDTO.getOtherStatus(), EmployeeConst.EMPLOYEE_HOLIDAY_STATUS)) {
             queryWrapper.exists("select * from ins_employee_holiday ieh where a.employee_id=ieh.employee_id and (now() between ieh.start_time and ieh.end_time)");
@@ -179,13 +182,13 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         if (StringUtils.equals(conditionDTO.getOtherStatus(), EmployeeConst.EMPLOYEE_BORROW_STATUS)) {
             queryWrapper.exists("select * from ins_employee_trans_detail iep where a.employee_id=iep.employee_id  " +
                     "and iep.trans_type='1' and (now() between iep.start_time and iep.end_time)" +
-                    "and (iep.source_org_id in(" + conditionDTO.getOrgSet() + ") or iep.org_id in (" + conditionDTO.getOrgSet() + "))");
+                    "and (iep.source_org_id in(" + conditionDTO.getOrgLine() + ") or iep.org_id in (" + conditionDTO.getOrgLine() + "))");
         }
         //调出
         if (StringUtils.equals(conditionDTO.getOtherStatus(), EmployeeConst.EMPLOYEE_TRANS_STATUS)) {
             queryWrapper.exists("select * from ins_employee_trans_detail iep where a.employee_id=iep.employee_id  " +
                     "and iep.trans_type='2' and (now() between iep.start_time and iep.end_time)" +
-                    "and (iep.source_org_id in(" + conditionDTO.getOrgSet() + ") or iep.org_id in (" + conditionDTO.getOrgSet() + "))");
+                    "and (iep.source_org_id in(" + conditionDTO.getOrgLine() + ") or iep.org_id in (" +  conditionDTO.getOrgLine() + "))");
         }
         //是黑名单
         if (StringUtils.equals(conditionDTO.getIsBlackList(), EmployeeConst.YES)) {

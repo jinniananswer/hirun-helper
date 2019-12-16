@@ -98,7 +98,7 @@ public class OrgHrRelServiceImpl extends ServiceImpl<OrgHrRelMapper, OrgHrRel> i
             UserContext userContext = WebContextUtils.getUserContext();
             Long orgId = userContext.getOrgId();
             OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
-            orgSet = orgDO.getOrgLine();
+            orgSet = orgDO.getOrgLine("2");
         }
 
         QueryWrapper<OrgHrRel> queryWrapper = new QueryWrapper<>();

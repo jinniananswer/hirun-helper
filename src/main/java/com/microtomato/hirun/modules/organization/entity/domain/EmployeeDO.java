@@ -5,6 +5,7 @@ import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.organization.entity.consts.EmployeeConst;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeInfoDTO;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeKeyman;
@@ -292,8 +293,8 @@ public class EmployeeDO {
      * 获取该员工的所有下级员工
      * @return
      */
-    public List<Employee> findSubordinate() {
-        List<Employee> childEmployees=employeeService.findSubordinate(this.employee.getEmployeeId());
+    public List<EmployeeInfoDTO> findSubordinate() {
+        List<EmployeeInfoDTO> childEmployees=employeeService.findSubordinate(this.employee.getEmployeeId());
         return childEmployees;
     }
 

@@ -126,7 +126,7 @@ public class EmployeeController extends AbstractExcelHarbour  {
 
     @PostMapping("/queryChildEmployee4Destroy")
     @RestResult
-    public List<Employee> queryChildEmployee4Destroy(Long employeeId) {
+    public List<EmployeeInfoDTO> queryChildEmployee4Destroy(Long employeeId) {
         return employeeServiceImpl.findSubordinate(employeeId);
     }
 

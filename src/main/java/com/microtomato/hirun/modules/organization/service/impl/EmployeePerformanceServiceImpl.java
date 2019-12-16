@@ -13,6 +13,7 @@ import com.microtomato.hirun.framework.util.SecurityUtils;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeInfoDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeePerformanceInfoDTO;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeePerformance;
@@ -133,16 +134,16 @@ public class EmployeePerformanceServiceImpl extends ServiceImpl<EmployeePerforma
 
             } else if (SecurityUtils.hasFuncId("ALL_SHOP")) {
                 OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
-                String orgLine = orgDO.getOrgLine();
+                String orgLine = orgDO.getOrgLine("2");
                 queryWrapper.apply("b.org_id in (" + orgLine + ")");
             } else if (StringUtils.isNotBlank(orgHrRelService.getOrgLine(employeeId))) {
                 queryWrapper.apply("b.org_id in (" + orgHrRelService.getOrgLine(employeeId) + ")");
             } else {
-                List<Employee> employeeList = employeeService.findSubordinate(employeeId);
+                List<EmployeeInfoDTO> employeeList = employeeService.findSubordinate(employeeId);
                 if (ArrayUtils.isEmpty(employeeList)) {
                     queryWrapper.eq("a.employee_id",employeeId);
                 }
-                for (Employee employee : employeeList) {
+                for (EmployeeInfoDTO employee : employeeList) {
                     employeeIds += employee.getEmployeeId() + ",";
                     queryWrapper.apply("a.employee_id in ("+employeeIds+")");
                 }

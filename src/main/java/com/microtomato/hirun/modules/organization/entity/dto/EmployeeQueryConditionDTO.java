@@ -73,4 +73,6 @@ public class EmployeeQueryConditionDTO implements Serializable {
 
     private String employeeIds;
 
+    private String orgLine;
+
 }

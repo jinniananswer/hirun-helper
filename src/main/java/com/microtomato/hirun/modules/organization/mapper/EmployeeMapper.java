@@ -67,12 +67,12 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
     /**
      * 查询员工的下级员工
      */
-    @Select("select a.* from ins_employee a, ins_employee_job_role b " +
+    @Select("select a.employee_id,b.org_id from ins_employee a, ins_employee_job_role b " +
             " where a.employee_id=b.employee_id" +
             " and a.status='0'" +
             " and (now() between b.start_date and b.end_date)" +
             " and b.parent_employee_id=#{parentEmployeeId}")
-    List<Employee> queryEmployeeByParentEmployeeId(Long parentEmployeeId);
+    List<EmployeeInfoDTO> queryEmployeeByParentEmployeeId(Long parentEmployeeId);
 
     /**
      * 导出员工档案信息

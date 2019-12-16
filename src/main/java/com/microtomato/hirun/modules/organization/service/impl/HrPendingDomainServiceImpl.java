@@ -13,6 +13,7 @@ import com.microtomato.hirun.modules.organization.entity.consts.HrPendingConst;
 import com.microtomato.hirun.modules.organization.entity.domain.EmployeeDO;
 import com.microtomato.hirun.modules.organization.entity.domain.HrPendingDO;
 import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeInfoDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeTransDetailDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.HrPendingInfoDTO;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
@@ -81,7 +82,7 @@ public class HrPendingDomainServiceImpl implements IHrPendingDomainService {
             throw new AlreadyExistException(" 该员工存在正在生效的借调记录，请处理后再新增.", ErrorKind.ALREADY_EXIST.getCode());
         }
         //判断进行调动申请的员工是否有下属员工
-        List<Employee> childEmployeeList = employeeService.findSubordinate(hrPending.getEmployeeId());
+        List<EmployeeInfoDTO> childEmployeeList = employeeService.findSubordinate(hrPending.getEmployeeId());
         if (childEmployeeList.size() > 0) {
             throw new AlreadyExistException("该员工下存在下属员工，请将下属员工转移之后，再进行调动申请。", ErrorKind.ALREADY_EXIST.getCode());
         }
@@ -200,7 +201,7 @@ public class HrPendingDomainServiceImpl implements IHrPendingDomainService {
     public boolean confirmTransPending(EmployeeTransDetailDTO transDetail) {
         UserContext userContext = WebContextUtils.getUserContext();
 
-        List<Employee> childEmployeeList = employeeService.findSubordinate(transDetail.getEmployeeId());
+        List<EmployeeInfoDTO> childEmployeeList = employeeService.findSubordinate(transDetail.getEmployeeId());
         if (childEmployeeList.size() > 0) {
             throw new AlreadyExistException("该员工下存在下属员工，请将下属员工转移之后，再进行调动申请。", ErrorKind.ALREADY_EXIST.getCode());
         }

@@ -24,7 +24,7 @@ layui.extend({
                 cols: [
                     [
                         {
-                            field: 'holidayType', title: '休假类型', width: 120, sort: true, templet: function (d) {
+                            field: 'holidayType', title: '休假类型', width: 120, align: 'center', sort: true, templet: function (d) {
                                 if (d.holidayType == 1) {
                                     return '产假';
                                 } else if (d.holidayType == 2) {
@@ -35,6 +35,8 @@ layui.extend({
                                     return '丧假';
                                 } else if (d.holidayType == 5) {
                                     return '年假';
+                                }else if (d.holidayType == 6) {
+                                    return '婚假';
                                 }else{
                                     return '未知';
                                 }
@@ -42,13 +44,13 @@ layui.extend({
                             }
                         },
                         {
-                            field: 'startTime', title: '开始时间', width: 200, sort: true
+                            field: 'startTime', title: '开始时间',align: 'center', width: 200, sort: true
                         },
                         {
-                            field: 'endTime', title: '结束时间', width: 200, sort: true
+                            field: 'endTime', title: '结束时间',align: 'center', width: 200, sort: true
                         },
                         {
-                            field: 'isSurrenderInsurance', title: '缴纳请假期间保险', width: 150, templet: function (d) {
+                            field: 'isSurrenderInsurance',align: 'center', title: '缴纳请假期间保险', width: 150, templet: function (d) {
                                 if (d.isSurrenderInsurance == 0) {
                                     return '否';
                                 } else {
@@ -57,9 +59,9 @@ layui.extend({
                                 ;
                             }
                         },
-                        {field: 'createTime', title: '创建时间', width: 200, sort: true},
-                        {field: 'remark', title: '备注', width: 300},
-                        {align: 'center', title: '操作', fixed: 'right', toolbar: '#bar'}
+                        {field: 'createTime', title: '创建时间',align: 'center', width: 200, sort: true},
+                        {field: 'remark', title: '备注',align: 'center', width: 300},
+                        {align: 'center', title: '操作', align: 'center',fixed: 'right', toolbar: '#bar'}
                     ]
                 ],
                 page: true,
