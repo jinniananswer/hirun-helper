@@ -363,7 +363,13 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         List<HrPending> hrPendingList = hrPendingService.queryPendingByExecuteId(employeeDestroyInfoDTO.getEmployeeId());
 
         if (hrPendingList.size() > 0) {
-            throw new AlreadyExistException(" 该员工下存在未处理的待办任务，请将待办任务转移之后再办理离职！.", ErrorKind.ALREADY_EXIST.getCode());
+            throw new AlreadyExistException(" 该员工下存在未处理的待办任务，请将待办任务转移之后再办理离职！", ErrorKind.ALREADY_EXIST.getCode());
+        }
+        //判断离职员工是否为后台任务对应人资提醒人员
+        List<OrgHrRel> orgHrRelList=orgHrRelService.queryOrgHrRelByEmployeeId(employeeDestroyInfoDTO.getEmployeeId());
+
+        if (ArrayUtils.isEmpty(orgHrRelList)) {
+            throw new AlreadyExistException(" 该员工为后台人资提醒人员，请到人资部门关系管理菜单将该员工对应的部门转移到其他员工下，再办理离职！", ErrorKind.ALREADY_EXIST.getCode());
         }
 
         UserContext userContext = WebContextUtils.getUserContext();

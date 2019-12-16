@@ -1,6 +1,5 @@
 package com.microtomato.hirun.modules.organization.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -22,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -52,7 +50,6 @@ public class OrgHrRelServiceImpl extends ServiceImpl<OrgHrRelMapper, OrgHrRel> i
         if (hrRelList.size() > 0) {
             return hrRelList.get(0);
         }
-
         return null;
     }
 
@@ -153,5 +150,13 @@ public class OrgHrRelServiceImpl extends ServiceImpl<OrgHrRelMapper, OrgHrRel> i
             orgLine += orgHrRel.getOrgId() + ",";
         }
         return orgLine.substring(0,orgLine.length()-1);
+    }
+
+    @Override
+    public List<OrgHrRel> queryOrgHrRelByEmployeeId(Long employeeId) {
+        QueryWrapper<OrgHrRel> queryWrapper = new QueryWrapper<>();
+        queryWrapper.apply("now() between start_time and end_time");
+        queryWrapper.apply(employeeId != null, "(archive_manager_employee_id=" + employeeId + " or relation_manager_employee_id=" + employeeId + ")");
+        return this.list(queryWrapper);
     }
 }

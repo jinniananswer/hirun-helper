@@ -7,6 +7,8 @@ import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.entity.po.OrgHrRel;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 /**
  * <p>
  *  服务类
@@ -30,4 +32,6 @@ public interface IOrgHrRelService extends IService<OrgHrRel> {
     boolean updateOrgHrRel(String id,Long archEmployeeID,Long relationEmployeeId);
 
     String  getOrgLine(Long employeeId);
+
+    List<OrgHrRel> queryOrgHrRelByEmployeeId(Long employeeId);
 }
