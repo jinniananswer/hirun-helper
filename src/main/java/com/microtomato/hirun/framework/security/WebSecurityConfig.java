@@ -70,6 +70,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/static/**").permitAll()
             .antMatchers("/api/system/session/authentication/**").permitAll()
             .antMatchers("/login/**").permitAll()
+            .antMatchers("/druid/**").permitAll()
             .anyRequest().authenticated()
             .and()
             .formLogin().loginPage("/login")
