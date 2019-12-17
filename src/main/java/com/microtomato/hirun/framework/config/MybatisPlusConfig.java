@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.extension.plugins.SqlExplainInterceptor;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
 import com.microtomato.hirun.framework.aop.AutoSetMetaObjectAdvice;
 import com.microtomato.hirun.framework.aop.PerformanceInterceptor;
+import com.microtomato.hirun.framework.transaction.DynamicDataSource;
 import com.microtomato.hirun.framework.transaction.SpringManagedMultiTransactionFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.plugin.Interceptor;
@@ -26,7 +27,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Steven
@@ -165,6 +168,16 @@ public class MybatisPlusConfig {
         sqlExplainInterceptor.setSqlParserList(sqlParserList);
         return sqlExplainInterceptor;
     }
+
+//    @Bean
+//    public DynamicDataSource dynamicDataSource() {
+//        DynamicDataSource dynamicDataSource = new DynamicDataSource();
+//        Map<Object, Object> targetDataSource = new HashMap(16);
+//        targetDataSource.put("sys", "sys");
+//        targetDataSource.put("ins", "ins");
+//        dynamicDataSource.setTargetDataSources(targetDataSource);
+//        return dynamicDataSource;
+//    }
 
     /**
      * 性能分析拦截器，用于输出每条 SQL 语句及其执行时间，仅开发、测试环境使用，生产环境不推荐。
