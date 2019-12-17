@@ -177,6 +177,8 @@ public class MybatisPlusConfig {
         performanceInterceptor.setFormat(false);
         // SQL 最长执行时间，超过自动停止运行，单位毫秒
         performanceInterceptor.setMaxTime(5000);
+        // SQL 告警时间，超过在控制台以红色打印，单位毫秒
+        performanceInterceptor.setWarnTime(80);
         return performanceInterceptor;
     }
 

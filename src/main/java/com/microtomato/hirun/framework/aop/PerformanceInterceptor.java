@@ -43,6 +43,11 @@ public class PerformanceInterceptor implements Interceptor {
     @Accessors(chain = true)
     private long maxTime = 0;
 
+    @Setter
+    @Getter
+    @Accessors(chain = true)
+    private long warnTime = 100;
+
     /**
      * SQL 是否格式化
      */
@@ -158,7 +163,12 @@ public class PerformanceInterceptor implements Interceptor {
                 log.debug(formatSql.toString());
             }
         } else {
-            System.err.println(formatSql.toString());
+            if (timing > warnTime) {
+                System.err.println(formatSql.toString());
+            } else {
+                System.out.println(formatSql.toString());
+            }
+
             Assert.isFalse(this.getMaxTime() >= 1 && timing > this.getMaxTime(),
                 " The SQL execution time is too large, please optimize ! ");
         }
