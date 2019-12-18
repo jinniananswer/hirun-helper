@@ -92,6 +92,12 @@
                                             </fieldset>
                                         </div>
                                         <div class="layui-tab-item">
+                                            <div class="layadmin-homepage-pad-ver" id="certificateArea">
+
+                                            </div>
+                                            <div id="trainArea">
+
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -253,6 +259,49 @@
     {{# } else { }}
     <p>暂无信息</p>
     {{# } }}
+</script>
+<script id="trainInfo" type="text/html">
+    {{# if (d != null && d.length > 0) { }}
+    {{#  layui.each(d, function(index, item){ }}
+    <fieldset class="layui-elem-field">
+        <legend>
+            {{layui.employee.transUndefined(item.name)}}
+            {{# if (item.pass == true) { }}
+            <img src="static/img/certificate.png" width="36" height="36">
+            {{# } }}
+        </legend>
+        <div class="layui-field-box">
+            <div class="layadmin-caller">
+                <div class="caller-contar">
+                    <div class="caller-item" style="border-bottom:0px">
+                        <div class="caller-main caller-fl">
+                            <p class="caller-adds"><i class="layui-icon layui-icon-username"></i><em>培训类型：</em><strong>{{layui.employee.transUndefined(item.typeName)}}</strong></p>
+                            <p class="caller-adds"><i class="layui-icon layui-icon-username"></i><em>培训课程列表：</em><strong>{{layui.employee.transUndefined(item.courseName)}}</strong></p>
+                            <p class="caller-adds"><i class="layui-icon layui-icon-username"></i><em>培训时间：</em><strong>{{layui.employee.transUndefined(item.startDate)}}~{{layui.employee.transUndefined(item.endDate)}}</strong></p>
+                            {{# if (item.scores != null && item.scores.length > 0) { }}
+                            {{#  layui.each(item.scores, function(index, score){ }}
+                            {{# if (score.item == null) { }}
+                            <p class="caller-adds"><i class="layui-icon layui-icon-username"></i><em>综合成绩：</em><strong>{{layui.employee.transUndefined(score.score)}}</strong></p>
+                            {{# } else if (score.item == "0") { }}
+                            <p class="caller-adds"><i class="layui-icon layui-icon-username"></i><em>通用成绩：</em><strong>{{layui.employee.transUndefined(score.score)}}</strong></p>
+                            {{# } else if (score.item == "0") { }}
+                            <p class="caller-adds"><i class="layui-icon layui-icon-username"></i><em>专业成绩：</em><strong>{{layui.employee.transUndefined(score.score)}}</strong></p>
+                            {{# } }}
+                            {{#  }); }}
+                            {{# } else { }}
+                            <p class="caller-adds"><i class="layui-icon layui-icon-username"></i><em></em><strong>无培训成绩</strong></p>
+                            {{# } }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+    {{#  }); }}
+    {{# } else { }}
+    <p>暂无培训信息</p>
+    {{# } }}
+
 </script>
 <script id="employeeHistoryInfo" type="text/html">
     {{# if (d.histories != null && d.histories.length > 0) { }}
