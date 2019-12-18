@@ -56,7 +56,6 @@ public class EmployeeStatisticServiceImpl implements IEmployeeStatisticService {
     @Override
     public List<EmployeePieStatisticDTO> countByAge() {
         List<EmployeePieStatisticDTO> ageStatistics = this.employeeMapper.countByAge();
-
         if (ArrayUtils.isNotEmpty(ageStatistics)) {
             for (EmployeePieStatisticDTO ageStatistic : ageStatistics) {
                 ageStatistic.setName(ageStatistic.getName() + ": " + ageStatistic.getNum());
