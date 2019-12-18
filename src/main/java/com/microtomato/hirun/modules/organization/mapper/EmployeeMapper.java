@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.Storage;
 import com.microtomato.hirun.modules.organization.entity.dto.*;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
+import com.microtomato.hirun.modules.organization.entity.po.StatEmployeeQuantityMonth;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
@@ -210,4 +211,13 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
             "  on b.destroydate = a.month\n" +
             "order by month ")
     List<Integer> countDestroyOneYear();
+
+    /**
+     * 按部门统计员工数量
+     * @return
+     */
+    @Select("select b.org_id,count(1) employee_quantity from ins_employee a, ins_employee_job_role b " +
+            " where a.employee_id=b.employee_id " +
+            " and a.status='0' and now() BETWEEN b.start_date and b.end_date group by b.org_id ")
+    List<StatEmployeeQuantityMonth> countEmployeeQuantityByOrgId();
 }

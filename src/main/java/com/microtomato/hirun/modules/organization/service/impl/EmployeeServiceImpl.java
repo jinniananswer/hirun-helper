@@ -14,6 +14,7 @@ import com.microtomato.hirun.modules.organization.entity.dto.EmployeeExampleDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeInfoDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeQueryConditionDTO;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
+import com.microtomato.hirun.modules.organization.entity.po.StatEmployeeQuantityMonth;
 import com.microtomato.hirun.modules.organization.mapper.EmployeeMapper;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import lombok.extern.slf4j.Slf4j;
@@ -131,6 +132,11 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
             result.put("day", pastDays + "");
         }
         return result;
+    }
+
+    @Override
+    public List<StatEmployeeQuantityMonth> countEmployeeQuantityByOrgId() {
+        return employeeMapper.countEmployeeQuantityByOrgId();
     }
 
     /**
