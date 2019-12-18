@@ -8,7 +8,7 @@ import com.microtomato.hirun.framework.harbour.excel.AbstractExcelHarbour;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeePerformanceImportDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeePerformanceInfoDTO;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeePerformance;
-import com.microtomato.hirun.modules.organization.listener.EmployeePerformanceImplortListener;
+import com.microtomato.hirun.modules.organization.listener.EmployeePerformanceImportListener;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +40,7 @@ public class EmployeePerformanceController extends AbstractExcelHarbour {
     @RestResult
     public void importEmployeePerformance(@RequestParam("fileUpload") MultipartFile multipartFile) throws IOException {
         // 调用基类导入函数
-        EmployeePerformanceImplortListener listener=new EmployeePerformanceImplortListener();
+        EmployeePerformanceImportListener listener=new EmployeePerformanceImportListener();
         importExcel(multipartFile, EmployeePerformanceImportDTO.class, listener);
         isImportOk(listener.getErrBatchId());
     }

@@ -17,7 +17,7 @@ import java.util.List;
  * @date 2019-11-20
  */
 @Slf4j
-public class EmployeePerformanceImplortListener extends ExcelEventListener<EmployeePerformanceImportDTO> {
+public class EmployeePerformanceImportListener extends ExcelEventListener<EmployeePerformanceImportDTO> {
 
     private IEmployeePerformanceService performanceService = SpringContextUtils.getBean(IEmployeePerformanceService.class);
 
