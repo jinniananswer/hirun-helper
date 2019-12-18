@@ -32,8 +32,8 @@ public class MySQLGenerator {
      */
     private static String url = "jdbc:mysql://39.106.228.124:3306/sys?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC";
     private static String driver = "com.mysql.cj.jdbc.Driver";
-    private static String schemaName = "sys";
-    private static String username = "sys";
+    private static String schemaName = "ins";
+    private static String username = "ins";
     private static String password = "1q1w1e1r";
 
     private static String parentPackege = "com.microtomato.hirun.modules";
