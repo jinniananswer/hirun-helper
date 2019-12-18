@@ -8,6 +8,7 @@ import com.microtomato.hirun.modules.organization.entity.dto.EmployeeExampleDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeInfoDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeQueryConditionDTO;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
+import com.microtomato.hirun.modules.organization.entity.po.StatEmployeeQuantityMonth;
 
 import java.util.List;
 import java.util.Map;
@@ -64,4 +65,10 @@ public interface IEmployeeService extends IService<Employee> {
      * @return
      */
     Map<String, String> showBirthdayWish(Long employeeId);
+
+    /**
+     * 按部门统计员工数量
+     * @return
+     */
+    List<StatEmployeeQuantityMonth> countEmployeeQuantityByOrgId();
 }
