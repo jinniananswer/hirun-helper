@@ -71,7 +71,7 @@ layui.extend({
                 });
             });
 
-            layui.ajax.post('api/organization/train/loadMyTrains', '', function(data){
+            layui.ajax.post('api/organization/train/loadMyTrains', '&employeeId='+$("#employeeId").val(), function(data){
                 let trains = data.rows;
                 if (trains != null && trains.length > 0) {
                     let certificateArea = $("#certificateArea");
