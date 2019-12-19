@@ -586,23 +586,21 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         Long employeeId = userContext.getEmployeeId();
         String employeeIds = "";
         String orgIds = "";
+        String orgLine = "";
+        OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
 
         if (SecurityUtils.hasFuncId(FuncConst.ALL_ORG)) {
-            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
-            String orgLine = orgDO.getOrgLine(122L);
+            orgLine = orgDO.getOrgLine(122L);
             conditionDTO.setOrgLine(orgLine);
         } else if (SecurityUtils.hasFuncId(FuncConst.ALL_CITY)) {
-            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
-            String orgLine = orgDO.getOrgLine(7L);
+            orgLine = orgDO.getOrgLine(7L);
             conditionDTO.setOrgLine(orgLine);
         } else if (SecurityUtils.hasFuncId(FuncConst.ALL_WOODEN)) {
-            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
-            String orgLine = orgDO.getOrgLine(9L);
+            orgLine = orgDO.getOrgLine(9L);
             conditionDTO.setOrgLine(orgLine);
         } else if (SecurityUtils.hasFuncId(FuncConst.ALL_SHOP)) {
-            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
             Org parentOrg = orgDO.findParent("2", orgService.listAllOrgs(), orgId);
-            String orgLine = orgDO.getOrgLine(parentOrg.getOrgId());
+            orgLine = orgDO.getOrgLine(parentOrg.getOrgId());
             conditionDTO.setOrgLine(orgLine);
         } else if (StringUtils.isNotBlank(orgHrRelService.getOrgLine(employeeId))) {
             conditionDTO.setOrgLine(orgHrRelService.getOrgLine(employeeId));
