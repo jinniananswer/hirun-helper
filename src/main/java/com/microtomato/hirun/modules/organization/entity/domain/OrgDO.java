@@ -140,7 +140,7 @@ public class OrgDO {
      * @param orgId
      * @return
      */
-    private Org findParent(String type, List<Org> orgs, Long orgId) {
+    public Org findParent(String type, List<Org> orgs, Long orgId) {
         Org parent = null;
         for (Org org : orgs) {
             if (orgId.equals(org.getOrgId())) {
@@ -235,17 +235,16 @@ public class OrgDO {
     }
 
     /**
-     * 递归查找所在部门位于某类型的父子线上的所有组织,返回结果为orgId集合
+     * 递归查找某部门下的所有部门集合,返回结果为orgId集合
      *
      * @return
      */
-    public String getOrgLine(String type) {
+    public String getOrgLine(Long orgId) {
         List<Org> orgs = orgService.listAllOrgs();
         if (orgs.size() <= 0) {
             return null;
         }
-        Org orgPO = findParent(type, orgs, this.org.getOrgId());
-        String orgLine = buildSubOrg(orgPO.getOrgId(), orgs, orgPO.getOrgId() + "");
+        String orgLine = buildSubOrg(orgId, orgs, orgId + "");
         return orgLine;
     }
 

@@ -16,6 +16,7 @@ import com.microtomato.hirun.modules.organization.entity.po.*;
 import com.microtomato.hirun.modules.organization.exception.EmployeeException;
 import com.microtomato.hirun.modules.organization.mapper.EmployeeMapper;
 import com.microtomato.hirun.modules.organization.service.*;
+import com.microtomato.hirun.modules.system.entity.consts.FuncConst;
 import com.microtomato.hirun.modules.system.entity.domain.AddressDO;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import com.microtomato.hirun.modules.user.entity.consts.UserConst;
@@ -353,6 +354,7 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
 
     /**
      * 员工离职
+     *
      * @param employeeDestroyInfoDTO
      */
     @Override
@@ -366,7 +368,7 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             throw new AlreadyExistException(" 该员工下存在未处理的待办任务，请将待办任务转移之后再办理离职！", ErrorKind.ALREADY_EXIST.getCode());
         }
         //判断离职员工是否为后台任务对应人资提醒人员
-        List<OrgHrRel> orgHrRelList=orgHrRelService.queryOrgHrRelByEmployeeId(employeeDestroyInfoDTO.getEmployeeId());
+        List<OrgHrRel> orgHrRelList = orgHrRelService.queryOrgHrRelByEmployeeId(employeeDestroyInfoDTO.getEmployeeId());
 
         if (ArrayUtils.isEmpty(orgHrRelList)) {
             throw new AlreadyExistException(" 该员工为后台人资提醒人员，请到人资部门关系管理菜单将该员工对应的部门转移到其他员工下，再办理离职！", ErrorKind.ALREADY_EXIST.getCode());
@@ -570,7 +572,7 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
 
     /**
      * 拼装除了界面传过来的筛选条件
-     * 根据员工权限判断是否有all_city或者all_shop的权限
+     * 根据员工权限判断对应的数据权限
      * 判断是否存在部门人资的关联关系数据
      * 根据员工上下级筛选数据
      *
@@ -579,36 +581,44 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
      */
     private EmployeeQueryConditionDTO conditionPlus(EmployeeQueryConditionDTO conditionDTO) {
         //根据登录员工的部门计算得到可以查询的部门集合
-            UserContext userContext = WebContextUtils.getUserContext();
-            Long orgId = userContext.getOrgId();
-            Long employeeId = userContext.getEmployeeId();
-            String employeeIds = "";
-            String orgIds = "";
+        UserContext userContext = WebContextUtils.getUserContext();
+        Long orgId = userContext.getOrgId();
+        Long employeeId = userContext.getEmployeeId();
+        String employeeIds = "";
+        String orgIds = "";
 
-        if (SecurityUtils.hasFuncId("ALL_CITY")) {
-                OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
-                String orgLine = orgDO.getOrgLine("0");
-                conditionDTO.setOrgLine(orgLine);
-            } else if (SecurityUtils.hasFuncId("ALL_SHOP")) {
-                OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
-                String orgLine = orgDO.getOrgLine("2");
-                conditionDTO.setOrgLine(orgLine);
-            } else if (StringUtils.isNotBlank(orgHrRelService.getOrgLine(employeeId))) {
-                conditionDTO.setOrgLine(orgHrRelService.getOrgLine(employeeId));
-            } else {
-                List<EmployeeInfoDTO> employeeList = employeeService.findSubordinate(employeeId);
-                if (ArrayUtils.isEmpty(employeeList)) {
-                    conditionDTO.setEmployeeIds(employeeId + "");
-                    conditionDTO.setOrgLine(orgId+"");
-                }
-                for (EmployeeInfoDTO employee : employeeList) {
-                    employeeIds += employee.getEmployeeId() + ",";
-                    orgIds+=employee.getOrgId()+",";
-                }
-                conditionDTO.setEmployeeIds(employeeIds + employeeId);
-                conditionDTO.setOrgLine(orgIds + orgId);
-
+        if (SecurityUtils.hasFuncId(FuncConst.ALL_ORG)) {
+            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+            String orgLine = orgDO.getOrgLine(122L);
+            conditionDTO.setOrgLine(orgLine);
+        } else if (SecurityUtils.hasFuncId(FuncConst.ALL_CITY)) {
+            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+            String orgLine = orgDO.getOrgLine(7L);
+            conditionDTO.setOrgLine(orgLine);
+        } else if (SecurityUtils.hasFuncId(FuncConst.ALL_WOODEN)) {
+            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+            String orgLine = orgDO.getOrgLine(9L);
+            conditionDTO.setOrgLine(orgLine);
+        } else if (SecurityUtils.hasFuncId(FuncConst.ALL_SHOP)) {
+            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+            Org parentOrg = orgDO.findParent("2", orgService.listAllOrgs(), orgId);
+            String orgLine = orgDO.getOrgLine(parentOrg.getOrgId());
+            conditionDTO.setOrgLine(orgLine);
+        } else if (StringUtils.isNotBlank(orgHrRelService.getOrgLine(employeeId))) {
+            conditionDTO.setOrgLine(orgHrRelService.getOrgLine(employeeId));
+        } else {
+            List<EmployeeInfoDTO> employeeList = employeeService.findSubordinate(employeeId);
+            if (ArrayUtils.isEmpty(employeeList)) {
+                conditionDTO.setEmployeeIds(employeeId + "");
+                conditionDTO.setOrgLine(orgId + "");
             }
+            for (EmployeeInfoDTO employee : employeeList) {
+                employeeIds += employee.getEmployeeId() + ",";
+                orgIds += employee.getOrgId() + ",";
+            }
+            conditionDTO.setEmployeeIds(employeeIds + employeeId);
+            conditionDTO.setOrgLine(orgIds + orgId);
+        }
 
         return conditionDTO;
     }

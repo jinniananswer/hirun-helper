@@ -15,13 +15,15 @@ import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeInfoDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeePerformanceInfoDTO;
-import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeePerformance;
+import com.microtomato.hirun.modules.organization.entity.po.Org;
 import com.microtomato.hirun.modules.organization.mapper.EmployeePerformanceMapper;
 import com.microtomato.hirun.modules.organization.service.IEmployeePerformanceService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import com.microtomato.hirun.modules.organization.service.IOrgHrRelService;
+import com.microtomato.hirun.modules.organization.service.IOrgService;
+import com.microtomato.hirun.modules.system.entity.consts.FuncConst;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,11 +56,14 @@ public class EmployeePerformanceServiceImpl extends ServiceImpl<EmployeePerforma
     @Autowired
     private IEmployeeService employeeService;
 
-    @Override
-    public IPage<EmployeePerformanceInfoDTO> queryPerformanceList(String name, String orgSet, String year,String performance,String jobRoleNature, Page<EmployeePerformanceInfoDTO> page) {
-        QueryWrapper queryWrapper=bulidQueryCondition(name,orgSet,year,performance,jobRoleNature);
+    @Autowired
+    private IOrgService orgService;
 
-        IPage<EmployeePerformanceInfoDTO> infoDTOIPage = mapper.selectEmployeePerformancePage(page, queryWrapper,year);
+    @Override
+    public IPage<EmployeePerformanceInfoDTO> queryPerformanceList(String name, String orgSet, String year, String performance, String jobRoleNature, Page<EmployeePerformanceInfoDTO> page) {
+        QueryWrapper queryWrapper = bulidQueryCondition(name, orgSet, year, performance, jobRoleNature);
+
+        IPage<EmployeePerformanceInfoDTO> infoDTOIPage = mapper.selectEmployeePerformancePage(page, queryWrapper, year);
 
         if (infoDTOIPage.getRecords().size() <= 0) {
             return infoDTOIPage;
@@ -69,7 +74,7 @@ public class EmployeePerformanceServiceImpl extends ServiceImpl<EmployeePerforma
             dto.setOrgPath(orgDO.getCompanyLinePath());
             dto.setJobRoleName(staticDataService.getCodeName("JOB_ROLE", dto.getJobRole()));
             dto.setJobRoleNatureName(staticDataService.getCodeName("JOB_NATURE", dto.getJobRoleNature()));
-            dto.setPerformanceName(staticDataService.getCodeName("PERFORMANCE_LEVEL",dto.getPerformance()));
+            dto.setPerformanceName(staticDataService.getCodeName("PERFORMANCE_LEVEL", dto.getPerformance()));
         }
 
         return infoDTOIPage;
@@ -87,13 +92,13 @@ public class EmployeePerformanceServiceImpl extends ServiceImpl<EmployeePerforma
 
     @Override
     public boolean updateEmployeePerformance(EmployeePerformance employeePerformance) {
-        if(employeePerformance.getId()==null){
+        if (employeePerformance.getId() == null) {
             this.addEmployeePerformance(employeePerformance);
             return true;
         }
 
-        int result=mapper.updateById(employeePerformance);
-        if(result <=0){
+        int result = mapper.updateById(employeePerformance);
+        if (result <= 0) {
             return false;
         }
         return true;
@@ -107,9 +112,9 @@ public class EmployeePerformanceServiceImpl extends ServiceImpl<EmployeePerforma
     }
 
     @Override
-    public List<EmployeePerformanceInfoDTO> queryPerformanceList(String name, String orgSet, String year,String performance,String jobRoleNature) {
-        QueryWrapper queryWrapper=bulidQueryCondition(name,orgSet,year,performance,jobRoleNature);
-        List<EmployeePerformanceInfoDTO> list=mapper.queryEmployeePerformance(queryWrapper,year);
+    public List<EmployeePerformanceInfoDTO> queryPerformanceList(String name, String orgSet, String year, String performance, String jobRoleNature) {
+        QueryWrapper queryWrapper = bulidQueryCondition(name, orgSet, year, performance, jobRoleNature);
+        List<EmployeePerformanceInfoDTO> list = mapper.queryEmployeePerformance(queryWrapper, year);
         if (list.size() <= 0) {
             return list;
         }
@@ -123,36 +128,45 @@ public class EmployeePerformanceServiceImpl extends ServiceImpl<EmployeePerforma
         return list;
     }
 
-    private QueryWrapper bulidQueryCondition(String name,String orgSet,String year,String performance,String jobRoleNature){
+    private QueryWrapper bulidQueryCondition(String name, String orgSet, String year, String performance, String jobRoleNature) {
         QueryWrapper<EmployeePerformanceInfoDTO> queryWrapper = new QueryWrapper<>();
 
-            UserContext userContext = WebContextUtils.getUserContext();
-            Long orgId = userContext.getOrgId();
-            Long employeeId = userContext.getEmployeeId();
-            String employeeIds = "";
-            if (SecurityUtils.hasFuncId("ALL_CITY")) {
+        UserContext userContext = WebContextUtils.getUserContext();
+        Long orgId = userContext.getOrgId();
+        Long employeeId = userContext.getEmployeeId();
+        String employeeIds = "";
+        if (SecurityUtils.hasFuncId(FuncConst.ALL_ORG)) {
 
-            } else if (SecurityUtils.hasFuncId("ALL_SHOP")) {
-                OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
-                String orgLine = orgDO.getOrgLine("2");
-                queryWrapper.apply("b.org_id in (" + orgLine + ")");
-            } else if (StringUtils.isNotBlank(orgHrRelService.getOrgLine(employeeId))) {
-                queryWrapper.apply("b.org_id in (" + orgHrRelService.getOrgLine(employeeId) + ")");
-            } else {
-                List<EmployeeInfoDTO> employeeList = employeeService.findSubordinate(employeeId);
-                if (ArrayUtils.isEmpty(employeeList)) {
-                    queryWrapper.eq("a.employee_id",employeeId);
-                }
-                for (EmployeeInfoDTO employee : employeeList) {
-                    employeeIds += employee.getEmployeeId() + ",";
-                    queryWrapper.apply("a.employee_id in ("+employeeIds+")");
-                }
-
+        } else if (SecurityUtils.hasFuncId(FuncConst.ALL_CITY)) {
+            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+            String orgLine = orgDO.getOrgLine(7L);
+            queryWrapper.apply("b.org_id in (" + orgLine + ")");
+        } else if (SecurityUtils.hasFuncId(FuncConst.ALL_WOODEN)) {
+            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+            String orgLine = orgDO.getOrgLine(9L);
+            queryWrapper.apply("b.org_id in (" + orgLine + ")");
+        } else if (SecurityUtils.hasFuncId(FuncConst.ALL_SHOP)) {
+            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+            Org parentOrg = orgDO.findParent("2", orgService.listAllOrgs(), orgId);
+            String orgLine = orgDO.getOrgLine(parentOrg.getOrgId());
+            queryWrapper.apply("b.org_id in (" + orgLine + ")");
+        } else if (StringUtils.isNotBlank(orgHrRelService.getOrgLine(employeeId))) {
+            queryWrapper.apply("b.org_id in (" + orgHrRelService.getOrgLine(employeeId) + ")");
+        } else {
+            List<EmployeeInfoDTO> employeeList = employeeService.findSubordinate(employeeId);
+            if (ArrayUtils.isEmpty(employeeList)) {
+                queryWrapper.eq("a.employee_id", employeeId);
+            }
+            for (EmployeeInfoDTO employee : employeeList) {
+                employeeIds += employee.getEmployeeId() + ",";
+                queryWrapper.apply("a.employee_id in (" + employeeIds + ")");
             }
 
-        queryWrapper.apply(StringUtils.isNotEmpty(orgSet),"b.org_id in (" + orgSet + ")");
-        queryWrapper.eq(StringUtils.isNotEmpty(performance),"d.performance",performance);
-        queryWrapper.eq(StringUtils.isNotEmpty(jobRoleNature),"b.job_role_nature",jobRoleNature);
+        }
+
+        queryWrapper.apply(StringUtils.isNotEmpty(orgSet), "b.org_id in (" + orgSet + ")");
+        queryWrapper.eq(StringUtils.isNotEmpty(performance), "d.performance", performance);
+        queryWrapper.eq(StringUtils.isNotEmpty(jobRoleNature), "b.job_role_nature", jobRoleNature);
         queryWrapper.like(StringUtils.isNotEmpty(name), "a.name", name);
         queryWrapper.apply("b.employee_id=a.employee_id AND (now() between b.start_date and b.end_date) AND c.org_id = b.org_id and a.status='0' ");
         queryWrapper.orderByDesc("d.create_time");
