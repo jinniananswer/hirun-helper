@@ -14,9 +14,7 @@ import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * 模板代码生成器
@@ -126,7 +124,9 @@ public class MySQLGenerator {
         InjectionConfig cfg = new InjectionConfig() {
             @Override
             public void initMap() {
-                // to do nothing
+                Map<String, Object> map = new HashMap<>();
+                map.put("DS_NAME", databaseName.toUpperCase());
+                this.setMap(map);
             }
         };
         List<FileOutConfig> focList = new ArrayList<>();
@@ -172,6 +172,7 @@ public class MySQLGenerator {
         templateConfig.setEntity("/automatically/entity.java");
         templateConfig.setMapper("/automatically/mapper.java");
         templateConfig.setXml(null);
+
         autoGenerator.setTemplate(templateConfig);
 
         autoGenerator.setStrategy(strategy);
