@@ -9,7 +9,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -28,11 +27,11 @@ public class CustomAuthenticationFailHandler implements AuthenticationFailureHan
 	private ObjectMapper objectMapper;
 
 	@Override
-	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException {
 
-		log.info("Authentication failure: {}", exception.getMessage());
+		log.info(exception.getMessage());
 
-		Result result = ResultUtils.failure(400001, "用户名或密码不正确！" + exception.getMessage());
+		Result result = ResultUtils.failure(400001, exception.getMessage());
 		response.setContentType("application/json;charset=UTF-8");
 		response.getWriter().write(objectMapper.writeValueAsString(result));
 	}

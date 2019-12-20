@@ -13,7 +13,6 @@ import com.microtomato.hirun.modules.user.service.IFuncRoleService;
 import com.microtomato.hirun.modules.user.service.IFuncTempService;
 import com.microtomato.hirun.modules.user.service.IUserRoleService;
 import com.microtomato.hirun.modules.user.service.IUserService;
-import com.microtomato.hirun.modules.user.service.impl.UserRoleServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -68,7 +66,7 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
         User user = userServiceImpl.queryUser(username);
         if (null == user) {
             // 这里找不到必须抛异常
-            throw new UsernameNotFoundException("User " + username + " was not found in database!");
+            throw new UsernameNotFoundException("用户名不存在：" + username);
         }
 
         // 查用户角色

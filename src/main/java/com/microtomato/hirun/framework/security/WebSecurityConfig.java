@@ -50,9 +50,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
      * @throws Exception
      */
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(customUserDetailsService)
-            .passwordEncoder(customPasswordEncoder);
+    protected void configure(AuthenticationManagerBuilder auth) {
+        auth.authenticationProvider(authenticationProvider());
     }
 
     /**
@@ -86,6 +85,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         // 默认情况下 SpringSecurity 通过设置 X-Frame-Options: DENY 防止网页被 Frame，我们这需要警用该功能。
         http.headers().frameOptions().disable();
+    }
+
+    @Bean
+    public LoginAuthenticationProvider authenticationProvider() {
+        LoginAuthenticationProvider loginAuthenticationProvider = new LoginAuthenticationProvider();
+        // 打开用户名不存在提示信息
+        loginAuthenticationProvider.setHideUserNotFoundExceptions(false);
+        loginAuthenticationProvider.setUserDetailsService(customUserDetailsService);
+        loginAuthenticationProvider.setPasswordEncoder(customPasswordEncoder);
+        return loginAuthenticationProvider;
     }
 
     /**
