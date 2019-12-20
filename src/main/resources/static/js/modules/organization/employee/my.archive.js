@@ -70,6 +70,26 @@ layui.extend({
                     historyArea.innerHTML = html;
                 });
             });
+
+            layui.ajax.post('api/organization/train/loadMyTrains', '&employeeId='+$("#employeeId").val(), function(data){
+                let trains = data.rows;
+                if (trains != null && trains.length > 0) {
+                    let certificateArea = $("#certificateArea");
+                    let html = [];
+                    for (let i=0;i<trains.length;i++) {
+                        let train = trains[i];
+                        if (train.pass == true) {
+                            html.push("<img src=\"static/img/certificate.png\" width=\"36\" height=\"36\">");
+                        }
+                    }
+                    certificateArea.html(html.join(""));
+                }
+                let train = document.getElementById("trainInfo").innerHTML;
+                let trainArea = document.getElementById("trainArea");
+                layui.laytpl(train).render(trains, function(html){
+                    trainArea.innerHTML = html;
+                });
+            });
         },
 
         transUndefined : function(object) {
