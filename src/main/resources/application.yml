@@ -1,13 +1,4 @@
-server:
-  port: 8080
-  servlet.context-path: /hirun
-  servlet:
-    session:
-      timeout: PT1H
-      cookie:
-        name: HIRUN_SID
-
-  # 开启 HTTPS 支持，首先应创建 keystore: keytool -keystore mykeys.jks -genkey -alias tomcat -keyalg RSA
+# 开启 HTTPS 支持，首先应创建 keystore: keytool -keystore mykeys.jks -genkey -alias tomcat -keyalg RSA
 #  ssl:
 #    key-store: classpath:mykeys.jks
 #    key-store-password: spring
@@ -27,65 +18,13 @@ server:
 #      # 访问用户信息的地址
 #      user-info-uri: http://192.168.37.131:8080/user/me
 
-# 日志
-logging:
-  level:
-    root: info
-    com.baomidou.mybatisplus: info
-    com.microtomato.hirun: debug
-    com.microtomato.hirun.framework.filter: info
-    com.microtomato.hirun.framework.interceptor: info
-    com.microtomato.hirun.framework.transaction: debug
-    org.mybatis.spring.transaction: debug
-    com.baomidou.dynamic.datasource: debug
-
-# 生产 Web 这个开关是关闭的，后台 Task 进程会在命令行设置该参数为 true
-scheduling:
-  enabled: true
-
-production.mode: false
-
-runtime:
-  devmode: dev
-
 spring:
-
+  profiles:
+    active: dev
   mvc:
     # 所有静态资源访问，路径以 /static/ 为前缀。
     static-path-pattern: /static/**
-  datasource:
-    dynamic:
-      druid:
-        initial-size: 2
-        max-active: 8
-        min-idle: 2
-        max-wait: -1
-        min-evictable-idle-time-millis: 30000
-        max-evictable-idle-time-millis: 30000
-        time-between-eviction-runs-millis: 0
-        validation-query: select 1
-        validation-query-timeout: -1
-        test-on-borrow: false
-        test-on-return: false
-        test-while-idle: true
-        pool-prepared-statements: true
-        max-open-prepared-statements: 100
-        filters: stat,wall
-        share-prepared-statements: true
-      primary: sys # 默认数据源
-      datasource:
-        sys:
-          type: com.alibaba.druid.pool.DruidDataSource
-          username: sys
-          password: 1q1w1e1r
-          driver-class-name: com.mysql.cj.jdbc.Driver
-          url: jdbc:mysql://39.106.228.124:3306/sys?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=GMT%2B8
-        ins:
-          type: com.alibaba.druid.pool.DruidDataSource
-          username: ins
-          password: 1q1w1e1r
-          driver-class-name: com.mysql.cj.jdbc.Driver
-          url: jdbc:mysql://39.106.228.124:3306/ins?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=GMT%2B8
+
   cache:
     # 指定缓存类型: none(禁用缓存), simple(用于开发), redis（用于生产）
     type: simple
@@ -125,8 +64,23 @@ spring:
     store-type: none
     timeout: 1800
 
+  jta:
+    atomikos:
+      properties:
+        log-base-dir: ../logs
+    transaction-manager-id: tx
+
 #  main:
 #    allow-bean-definition-overriding: true
+
+# 生产 Web 这个开关是关闭的，后台 Task 进程会在命令行设置该参数为 true
+scheduling:
+  enabled: true
+
+production.mode: false
+
+runtime:
+  devmode: dev
 
 rest:
   api:
@@ -134,6 +88,8 @@ rest:
 
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml
+  configuration:
+    default-fetch-size: 512
 
 # mobile系统地址
 mhirun.host-port: http://47.105.64.145:8080/

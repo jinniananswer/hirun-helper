@@ -1,8 +1,9 @@
 package com.microtomato.hirun.modules.organization.mapper;
 
-import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.microtomato.hirun.framework.annotation.Storage;
+import com.microtomato.hirun.framework.mybatis.DataSourceKey;
+import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeWorkExperience;
 import org.springframework.core.annotation.Order;
 
@@ -15,8 +16,8 @@ import org.springframework.core.annotation.Order;
  * @since 2019-10-19
  */
 @Storage
-@DS("ins")
 @Order(-1)
+@DataSource(DataSourceKey.INS)
 public interface EmployeeWorkExperienceMapper extends BaseMapper<EmployeeWorkExperience> {
 
 }

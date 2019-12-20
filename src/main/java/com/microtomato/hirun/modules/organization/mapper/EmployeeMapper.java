@@ -1,13 +1,17 @@
 package com.microtomato.hirun.modules.organization.mapper;
 
-import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.Storage;
-import com.microtomato.hirun.modules.organization.entity.dto.*;
+import com.microtomato.hirun.framework.mybatis.DataSourceKey;
+import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeExampleDTO;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeInfoDTO;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeePieStatisticDTO;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeQueryConditionDTO;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.entity.po.StatEmployeeQuantityMonth;
 import org.apache.ibatis.annotations.Param;
@@ -24,7 +28,7 @@ import java.util.List;
  * @since 2019-09-24
  */
 @Storage
-@DS("ins")
+@DataSource(DataSourceKey.INS)
 public interface EmployeeMapper extends BaseMapper<Employee> {
 
     @Select("select a.employee_id,a.user_id,a.name,a.sex,a.identity_no,a.birthday_type,a.birthday,a.mobile_no,a.home_prov,a.home_city,a.home_region,a.home_address,a.native_prov,a.native_city,a.native_region,a.native_address,a.in_date,a.regular_date,a.destroy_date,a.destroy_way,a.destroy_reason,a.destroy_times,a.job_date,a.work_nature,a.workplace,a.education_level,a.first_education_level,a.major,a.school,a.school_type,a.tech_title,a.certificate_no,a.before_hirun_year,a.status,b.job_role_id,b.employee_id,b.job_role,b.discount_rate,b.is_main,b.job_role_nature,b.org_id,b.parent_employee_id,c.name orgName from ins_employee a, ins_employee_job_role b, ins_org c \n" +

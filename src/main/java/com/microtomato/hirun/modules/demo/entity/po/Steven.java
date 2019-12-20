@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.microtomato.hirun.framework.data.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import lombok.AllArgsConstructor;
@@ -18,9 +20,10 @@ import lombok.NoArgsConstructor;
  * </p>
  *
  * @author Steven
- * @since 2019-10-30
+ * @since 2019-12-19
  */
 @Data
+@Builder
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
 @NoArgsConstructor
@@ -39,7 +42,7 @@ public class Steven extends BaseEntity {
     @TableField("name")
     private String name;
 
-    @TableField("create_time")
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
 

@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.Storage;
+import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
+import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeePieStatisticDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.HrPendingInfoDTO;
 import com.microtomato.hirun.modules.organization.entity.po.HrPending;
@@ -25,6 +27,7 @@ import java.util.List;
  */
 @Storage
 @DS("ins")
+@DataSource(DataSourceKey.INS)
 public interface HrPendingMapper extends BaseMapper<HrPending> {
     /**
      * 查询执行人ID待办信息

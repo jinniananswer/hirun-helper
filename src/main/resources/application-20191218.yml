@@ -1,9 +1,11 @@
 server:
   port: 8080
-  servlet.context-path: /
+  servlet.context-path: /hirun
   servlet:
     session:
       timeout: PT1H
+      cookie:
+        name: HIRUN_SID
 
   # 开启 HTTPS 支持，首先应创建 keystore: keytool -keystore mykeys.jks -genkey -alias tomcat -keyalg RSA
 #  ssl:
@@ -11,18 +13,50 @@ server:
 #    key-store-password: spring
 #    key-password: spring
 
+# 跟单点登陆相关
+#security:
+#  oauth2:
+#    client:
+#      client-id: HirunSystem
+#      client-secret: 12345
+#      # 获取令牌的地址
+#      access-token-uri: http://192.168.37.131:8080/oauth/token
+#      # 授权用户被重定向的地址
+#      user-authorization-uri: http://192.168.37.131:8080/oauth/authorize
+#    resource:
+#      # 访问用户信息的地址
+#      user-info-uri: http://192.168.37.131:8080/user/me
+
 # 日志
 logging:
   level:
     root: info
     com.baomidou.mybatisplus: info
-    com.microtomato: debug
+    com.microtomato.hirun: debug
+    com.microtomato.hirun.framework.filter: info
+    com.microtomato.hirun.framework.interceptor: info
+    com.microtomato.hirun.framework.transaction: debug
+    org.mybatis.spring.transaction: debug
+    com.baomidou.dynamic.datasource: debug
+
+# 生产 Web 这个开关是关闭的，后台 Task 进程会在命令行设置该参数为 true
+scheduling:
+  enabled: true
+
+production.mode: false
+
+runtime:
+  devmode: dev
 
 spring:
+
+  mvc:
+    # 所有静态资源访问，路径以 /static/ 为前缀。
+    static-path-pattern: /static/**
   datasource:
     dynamic:
       druid:
-        initial-size: 0
+        initial-size: 2
         max-active: 8
         min-idle: 2
         max-wait: -1
@@ -52,14 +86,22 @@ spring:
           password: 1q1w1e1r
           driver-class-name: com.mysql.cj.jdbc.Driver
           url: jdbc:mysql://39.106.228.124:3306/ins?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=GMT%2B8
+  cache:
+    # 指定缓存类型: none(禁用缓存), simple(用于开发), redis（用于生产）
+    type: simple
 
+  redis:
+    timeout: 1000
+    host: 127.0.0.1
+    port: 6379
 
   # thymeleaf 模板配置
-  thymeleaf.prefix: classpath:/templates/
-  thymeleaf.suffix: .html
-  thymeleaf.mode: HTML
-  thymeleaf.encoding: UTF-8
-  thymeleaf.cache: false
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+    cache: false # 开发模式下设置为 false，避免改了模板还要重启服务器，线上设置为 true，可以提高性能。
 
   resources.chain.strategy.content.enabled: true
   resources.chain.strategy.content.paths: /**
@@ -74,6 +116,18 @@ spring:
       additional-paths: src/main/java
       exclude: static/**
 
+  #  session:
+  #    store-type: redis
+  #    timeout: 1800
+  #    redis.namespace: hirun-sid
+  session:
+    # session 的存储方式，开发模式（本地）：none，生产模式（分布式缓存）：redis
+    store-type: none
+    timeout: 1800
+
+#  main:
+#    allow-bean-definition-overriding: true
+
 rest:
   api:
     prefix: /api/v1.1
@@ -81,42 +135,8 @@ rest:
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml
 
-framework:
-  cache:
-    memcached:
-      defaultConnect: center1
-      mapping:
-        - name: app-node01-*
-          connect: center1
-        - name: app-node02-*
-          connect: center2
+# mobile系统地址
+mhirun.host-port: http://47.105.64.145:8080/
 
-      dcs:
-        - dcname: center1
-          cluster:
-            - name: ccd
-              address:
-                - master: 10.200.174.151:11201
-                  slave:  10.200.179.151:11211
-                - master: 10.200.174.152:11201
-                  slave:  10.200.179.152:11211
-            - name: shc
-              address:
-                - master: 10.200.174.151:11501
-                  slave:  10.200.179.151:11511
-                - master: 10.200.174.152:11501
-                  slave:  10.200.179.152:11511
-        - dcname: center2
-          cluster:
-            - name: ccd
-              address:
-                - master: 10.200.154.151:11201
-                  slave:  10.200.159.151:11211
-                - master: 10.200.154.152:11201
-                  slave:  10.200.159.152:11211
-            - name: shc
-              address:
-                - master: 10.200.154.151:11501
-                  slave:  10.200.159.151:11511
-                - master: 10.200.154.152:11501
-                  slave:  10.200.159.152:11511
+# 图表仓库位置
+hirun.icon.store: //at.alicdn.com/t/font_1556215_wcl3sp8386.css

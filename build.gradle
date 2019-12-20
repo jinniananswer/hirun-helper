@@ -27,7 +27,7 @@ dependencies {
     implementation 'io.lettuce:lettuce-core:5.2.1.RELEASE'
 
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
-    //implementation 'org.springframework.boot:spring-boot-starter-jta-atomikos'
+    implementation 'org.springframework.boot:spring-boot-starter-jta-atomikos'
     //implementation 'org.springframework.boot:spring-boot-devtools'
 
     // 跟 SSO 相关

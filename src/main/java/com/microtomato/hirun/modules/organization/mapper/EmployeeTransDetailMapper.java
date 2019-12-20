@@ -1,8 +1,9 @@
 package com.microtomato.hirun.modules.organization.mapper;
 
-import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.microtomato.hirun.framework.annotation.Storage;
+import com.microtomato.hirun.framework.mybatis.DataSourceKey;
+import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeTransDetail;
 
 /**
@@ -13,8 +14,8 @@ import com.microtomato.hirun.modules.organization.entity.po.EmployeeTransDetail;
  * @author liuhui
  * @since 2019-10-29
  */
-@DS("ins")
 @Storage
+@DataSource(DataSourceKey.INS)
 public interface EmployeeTransDetailMapper extends BaseMapper<EmployeeTransDetail> {
 
 }

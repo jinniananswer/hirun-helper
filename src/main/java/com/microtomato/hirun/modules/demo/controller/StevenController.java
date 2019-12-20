@@ -1,8 +1,5 @@
 package com.microtomato.hirun.modules.demo.controller;
 
-import com.microtomato.hirun.framework.util.WebContextUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import lombok.extern.slf4j.Slf4j;
@@ -17,14 +14,16 @@ import org.springframework.web.bind.annotation.RestController;
  * </p>
  *
  * @author Steven
- * @since 2019-10-30
+ * @since 2019-12-19
  */
 @RestController
 @Slf4j
-@RequestMapping("/api/demo/steven")
+@RequestMapping("/api/sysdemo/steven")
 public class StevenController {
 
     @Autowired
     private IStevenService stevenServiceImpl;
+
+
 
 }

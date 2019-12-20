@@ -2,6 +2,7 @@ package com.microtomato.hirun.framework.security;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -14,22 +15,20 @@ import org.springframework.security.web.authentication.rememberme.PersistentToke
 
 import javax.sql.DataSource;
 
-//import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso;
-
 /**
  * Web安全配置
  *
  * @author Steven
  * @date 2019-09-08
  */
-//@EnableOAuth2Sso
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @Configuration
 @EnableWebSecurity
 @Slf4j
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
+    @Autowired(required = false)
+    @Qualifier("sysDataSource")
     private DataSource dataSource;
 
     @Autowired
@@ -71,6 +70,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/api/system/session/authentication/**").permitAll()
             .antMatchers("/login/**").permitAll()
             .antMatchers("/druid/**").permitAll()
+            .antMatchers("/api/demo/**").permitAll()
             .anyRequest().authenticated()
             .and()
             .formLogin().loginPage("/login")

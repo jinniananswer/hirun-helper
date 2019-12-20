@@ -1,5 +1,7 @@
 package com.microtomato.hirun.modules.system.mapper;
 
+import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
+import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.modules.system.entity.po.Menu;
 import com.microtomato.hirun.modules.system.entity.po.MenuClick;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -7,7 +9,6 @@ import com.microtomato.hirun.framework.annotation.Storage;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ import java.util.List;
  * @since 2019-12-10
  */
 @Storage
+@DataSource(DataSourceKey.SYS)
 public interface MenuClickMapper extends BaseMapper<MenuClick> {
 
     @Update("UPDATE sys_menu_click SET clicks = clicks + #{clicks}, update_time = now() WHERE user_id = #{userId} AND menu_id = #{menuId}")
