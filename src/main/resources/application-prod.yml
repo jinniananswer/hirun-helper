@@ -35,7 +35,7 @@ spring:
       sys:
         uniqueResourceName: sys
         driverClassName: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://39.106.228.124:3306/sys?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=GMT%2B8
+        url: jdbc:mysql://127.0.0.1:3306/sys?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=GMT%2B8
         user: sys
         password: 1q1w1e1r
         minPoolSize: 20
@@ -48,7 +48,7 @@ spring:
       ins:
         uniqueResourceName: ins
         driverClassName: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://39.106.228.124:3306/ins?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=GMT%2B8
+        url: jdbc:mysql://127.0.0.1:3306/ins?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=GMT%2B8
         user: ins
         password: 1q1w1e1r
         minPoolSize: 20
