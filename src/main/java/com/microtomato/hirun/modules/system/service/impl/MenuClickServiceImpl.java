@@ -1,6 +1,5 @@
 package com.microtomato.hirun.modules.system.service.impl;
 
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.modules.system.entity.po.Menu;
 import com.microtomato.hirun.modules.system.entity.po.MenuClick;
@@ -10,9 +9,10 @@ import com.microtomato.hirun.modules.system.service.IMenuService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -33,6 +33,7 @@ public class MenuClickServiceImpl extends ServiceImpl<MenuClickMapper, MenuClick
     private IMenuService menuServiceImpl;
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public boolean updateClicks(Long userId, Long menuId, Long clicks) {
         int i = menuClickMapper.updateClicks(userId, menuId, clicks);
         return i > 0 ? true : false;
