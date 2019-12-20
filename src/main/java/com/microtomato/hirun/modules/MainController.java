@@ -17,6 +17,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -63,6 +65,11 @@ public class MainController {
      */
     @Value("${hirun.icon.store}")
     private String hirunIconStore;
+
+    /**
+     * 版本号，具体到：日时分。静态资源在客户端只会缓存7天，已满足更新需要。
+     */
+    private String version = DateTimeFormatter.ofPattern("ddHHmm").format(LocalDateTime.now());
 
     static {
         Aggregation sender = new Aggregation();
@@ -126,8 +133,9 @@ public class MainController {
      * @param model
      */
     private void setupBaseEnv(Model model) {
+
         // 添加今天资源版本号
-        model.addAttribute("version", "20191211");
+        model.addAttribute("version", version);
 
         // 添加图标扩展库地址
         model.addAttribute("hirunIconStore", hirunIconStore);
