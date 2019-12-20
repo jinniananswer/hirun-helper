@@ -6,6 +6,7 @@ import com.microtomato.hirun.modules.user.entity.po.FuncRole;
 import com.microtomato.hirun.modules.user.mapper.FuncRoleMapper;
 import com.microtomato.hirun.modules.user.service.IFuncRoleService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -31,6 +32,7 @@ public class FuncRoleServiceImpl extends ServiceImpl<FuncRoleMapper, FuncRole> i
      * @param funcIds 操作权限集
      */
     @Override
+    @CacheEvict(value = "func::queryFuncId", allEntries = true)
     public void updateFuncRole(Long roleId, List<Long> funcIds) {
         remove(Wrappers.<FuncRole>lambdaUpdate().eq(FuncRole::getRoleId, roleId));
 
