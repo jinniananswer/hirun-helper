@@ -8,6 +8,7 @@ import com.microtomato.hirun.modules.system.entity.po.MenuClick;
 import com.microtomato.hirun.modules.system.service.IMenuClickService;
 import com.microtomato.hirun.modules.system.service.IMenuService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,6 +51,12 @@ public class MainController {
 
     @Autowired
     private IMenuService menuServiceImpl;
+
+    /**
+     * 上下文
+     */
+    @Value("${server.servlet.context-path}")
+    private String contextPath;
 
     /**
      * 图标仓库地址
@@ -124,6 +131,9 @@ public class MainController {
 
         // 添加图标扩展库地址
         model.addAttribute("hirunIconStore", hirunIconStore);
+
+        // 添加上下文
+        model.addAttribute("contextPath", StringUtils.stripEnd(contextPath, "/"));
     }
 
     /**

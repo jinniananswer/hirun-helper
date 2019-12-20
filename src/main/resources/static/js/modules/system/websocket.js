@@ -5,7 +5,8 @@ layui.extend({}).define(['ajax', 'layer'], function (exports) {
     let websocketObj = {
         init: function () {
             let employeeId = $("#spanEmployeeId").text();
-            let url = "ws://" + document.location.host + "/hirun/websocket/" + employeeId;
+            let contextPath = $("#spanContextPath").text();
+            let url = "ws://" + document.location.host + contextPath + "/websocket/" + employeeId;
             let websocket = null;
 
             if ('WebSocket' in window) {

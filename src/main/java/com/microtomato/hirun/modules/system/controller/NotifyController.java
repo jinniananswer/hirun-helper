@@ -70,6 +70,7 @@ public class NotifyController {
                 .select(Notify::getId, Notify::getContent, Notify::getSenderId, Notify::getCreateTime)
                 .eq(Notify::getNotifyType, INotifyService.NotifyType.ANNOUNCE.value())
                 .between(Notify::getCreateTime, startTime, endTime)
+                .orderByDesc(Notify::getCreateTime)
         );
 
         List<UnReadedDTO> rtn = (List<UnReadedDTO>) ArrayUtils.copyPropertiesList(list, UnReadedDTO.class);
