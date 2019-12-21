@@ -1,6 +1,5 @@
 package com.microtomato.hirun.framework.transaction;
 
-import com.baomidou.dynamic.datasource.toolkit.DynamicDataSourceContextHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.transaction.Transaction;
 import org.springframework.util.Assert;

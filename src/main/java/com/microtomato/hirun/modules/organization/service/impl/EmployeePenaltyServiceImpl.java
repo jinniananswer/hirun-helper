@@ -1,22 +1,22 @@
 package com.microtomato.hirun.modules.organization.service.impl;
 
-import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.framework.mybatis.DataSourceKey;
+import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
-import com.microtomato.hirun.modules.organization.entity.dto.EmployeeDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeePenaltyDTO;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeePenalty;
 import com.microtomato.hirun.modules.organization.mapper.EmployeePenaltyMapper;
 import com.microtomato.hirun.modules.organization.service.IEmployeePenaltyService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +44,7 @@ public class EmployeePenaltyServiceImpl extends ServiceImpl<EmployeePenaltyMappe
     public static final String PENALTY_STATUS_DELETE = "2";
 
 
-    @DS("ins")
+    @DataSource(DataSourceKey.INS)
     @Override
     public void addEmployeePenalty(EmployeePenalty employeePenalty) {
         employeePenalty.setPenaltyStatus(PENALTY_STATUS_NORMAL);

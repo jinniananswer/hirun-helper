@@ -43,25 +43,7 @@ public class DataSourceAspect {
      */
     @Around("pointCut()")
     public Object doBefore(ProceedingJoinPoint pjp) throws Throwable {
-
-        MethodSignature signature = (MethodSignature) pjp.getSignature();
-        Method method = signature.getMethod();
-
-        DataSource dataSource = AnnotationUtils.findAnnotation(method, DataSource.class);
-        if (null == dataSource) {
-            Class<?> cls = pjp.getTarget().getClass();
-            dataSource = AnnotationUtils.findAnnotation(cls, DataSource.class);
-            log.debug("cls: {}, dataSource: {}", cls, dataSource);
-        } else {
-            log.debug("method: {}, dataSource: {}", method, dataSource);
-        }
-
-        String dsName = dataSource.value();
-        log.debug("当前数据源：{}", dsName);
-        DataSourceContextHolder.setDataSource(dsName);
-        Object o = pjp.proceed();
-        DataSourceContextHolder.clear();
-        return o;
+        return process(pjp);
     }
 
     @Pointcut("execution(* com.microtomato.hirun.modules.*.service.*Impl.*Batch*(..))||execution(* com.baomidou.mybatisplus.extension.service.IService.*Batch*(..)))")
@@ -78,11 +60,24 @@ public class DataSourceAspect {
      */
     @Around("pointCutBatch()")
     public Object doBeforeBatch(ProceedingJoinPoint pjp) throws Throwable {
-        Class<?> cls = pjp.getTarget().getClass();
-        DataSource dataSource = AnnotationUtils.findAnnotation(cls, DataSource.class);
-        log.debug("cls: {}, dataSource: {}", cls, dataSource);
+        return process(pjp);
+    }
+
+    private Object process(ProceedingJoinPoint pjp) throws Throwable {
+        MethodSignature signature = (MethodSignature) pjp.getSignature();
+        Method method = signature.getMethod();
+
+        DataSource dataSource = AnnotationUtils.findAnnotation(method, DataSource.class);
+        if (null == dataSource) {
+            Class<?> cls = pjp.getTarget().getClass();
+            dataSource = AnnotationUtils.findAnnotation(cls, DataSource.class);
+            log.debug("cls: {}, dataSource: {}", cls, dataSource);
+        } else {
+            log.debug("method: {}, dataSource: {}", method, dataSource);
+        }
+
         String dsName = dataSource.value();
-        log.debug("Batch 操作，当前数据源：{}", dsName);
+        log.debug("当前数据源：{}", dsName);
         DataSourceContextHolder.setDataSource(dsName);
         Object o = pjp.proceed();
         DataSourceContextHolder.clear();

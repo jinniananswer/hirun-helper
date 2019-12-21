@@ -1,9 +1,10 @@
 package com.microtomato.hirun.modules.organization.service.impl;
 
-import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.microtomato.hirun.framework.mybatis.DataSourceKey;
+import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 import com.microtomato.hirun.modules.organization.entity.po.StatEmployeeQuantityMonth;
 import com.microtomato.hirun.modules.organization.mapper.StatEmployeeQuantityMonthMapper;
 import com.microtomato.hirun.modules.organization.service.IStatEmployeeQuantityMonthService;
@@ -23,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Service
-@DS("ins")
+@DataSource(DataSourceKey.INS)
 public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmployeeQuantityMonthMapper, StatEmployeeQuantityMonth> implements IStatEmployeeQuantityMonthService {
     @Autowired
     private StatEmployeeQuantityMonthMapper mapper;

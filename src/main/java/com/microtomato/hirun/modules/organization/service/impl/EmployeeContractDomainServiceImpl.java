@@ -1,13 +1,15 @@
 package com.microtomato.hirun.modules.organization.service.impl;
 
-import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.exception.BaseException;
+import com.microtomato.hirun.framework.mybatis.DataSourceKey;
+import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.organization.entity.consts.EmployeeConst;
-import com.microtomato.hirun.modules.organization.entity.po.*;
-import com.microtomato.hirun.modules.organization.service.*;
+import com.microtomato.hirun.modules.organization.entity.po.EmployeeContract;
+import com.microtomato.hirun.modules.organization.service.IEmployeeContractDomainService;
+import com.microtomato.hirun.modules.organization.service.IEmployeeContractService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +34,7 @@ public class EmployeeContractDomainServiceImpl implements IEmployeeContractDomai
 
 
     @Override
-    @DS("ins")
+    @DataSource(DataSourceKey.INS)
     public void createEmployeeContract(EmployeeContract employeeContract) {
         String contractType = employeeContract.getContractType();
         //时间变更协议只允许新增一次
@@ -44,13 +46,13 @@ public class EmployeeContractDomainServiceImpl implements IEmployeeContractDomai
         }
         //如果合同类型为保密协议或者培训协议，在后台提交时设置开始时间和结束时间
         if (StringUtils.equals(EmployeeConst.CONTRACT_TYPE_TRAIN, contractType)
-                || StringUtils.equals(EmployeeConst.CONTRACT_TYPE_SECRET, contractType)) {
+            || StringUtils.equals(EmployeeConst.CONTRACT_TYPE_SECRET, contractType)) {
             employeeContract.setContractStartTime(employeeContract.getContractSignTime());
             employeeContract.setContractEndTime(TimeUtils.stringToLocalDateTime("2099-12-31 23:59:59", "yyyy-MM-dd HH:mm:ss"));
         } else if (StringUtils.equals(EmployeeConst.CONTRACT_TYPE_CHANGE_ROLE, contractType)
-                || StringUtils.equals(EmployeeConst.CONTRACT_TYPE_CHANGE_PLACE, contractType)
-                || StringUtils.equals(EmployeeConst.CONTRACT_TYPE_CHANGE_PROBLATION, contractType)
-                || StringUtils.equals(EmployeeConst.CONTRACT_TYPE_OTHER, contractType)) {
+            || StringUtils.equals(EmployeeConst.CONTRACT_TYPE_CHANGE_PLACE, contractType)
+            || StringUtils.equals(EmployeeConst.CONTRACT_TYPE_CHANGE_PROBLATION, contractType)
+            || StringUtils.equals(EmployeeConst.CONTRACT_TYPE_OTHER, contractType)) {
             //如果变更类型为合同变更设置变更协议的结束时间为当前合同的结束时间，如果未找到则设置时间为2099年
             employeeContract.setContractStartTime(employeeContract.getContractSignTime());
 

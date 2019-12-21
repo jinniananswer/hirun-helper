@@ -24,9 +24,19 @@ public class DemoController {
     @Autowired
     private IDemoService demoServiceImpl;
 
-    @GetMapping("/test")
-    public void test() {
-        demoServiceImpl.testJTA();
+    @GetMapping("/save")
+    public void testSave() {
+        demoServiceImpl.testSave();
+    }
+
+    @GetMapping("update")
+    public void testUpdate() {
+        demoServiceImpl.testUpdate();
+    }
+
+    @GetMapping("saveOrUpdate")
+    public void testSaveOrUpdate() {
+        demoServiceImpl.testSaveOrUpdate();
     }
 
 }

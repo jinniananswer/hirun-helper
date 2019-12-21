@@ -1,10 +1,11 @@
 package com.microtomato.hirun.modules.organization.service.impl;
 
-import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.exception.ErrorKind;
 import com.microtomato.hirun.framework.exception.cases.AlreadyExistException;
+import com.microtomato.hirun.framework.mybatis.DataSourceKey;
+import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.*;
 import com.microtomato.hirun.modules.organization.entity.consts.EmployeeConst;
@@ -263,7 +264,7 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
-    @DS("ins")
+    @DataSource(DataSourceKey.INS)
     public void employeeEntry(EmployeeDTO employeeDTO) {
 
         Employee employee = new Employee();
@@ -358,7 +359,7 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
      * @param employeeDestroyInfoDTO
      */
     @Override
-    @DS("ins")
+    @DataSource(DataSourceKey.INS)
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public boolean destroyEmployee(EmployeeDestroyInfoDTO employeeDestroyInfoDTO) {
 

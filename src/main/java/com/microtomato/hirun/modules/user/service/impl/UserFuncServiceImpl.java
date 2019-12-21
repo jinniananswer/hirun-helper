@@ -1,12 +1,13 @@
 package com.microtomato.hirun.modules.user.service.impl;
 
-import com.baomidou.dynamic.datasource.annotation.DS;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.framework.mybatis.DataSourceKey;
+import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 import com.microtomato.hirun.modules.user.entity.po.UserFunc;
 import com.microtomato.hirun.modules.user.mapper.UserFuncMapper;
 import com.microtomato.hirun.modules.user.service.IUserFuncService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 /**
  * <p>
@@ -18,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Service
-@DS("ins")
+@DataSource(DataSourceKey.INS)
 public class UserFuncServiceImpl extends ServiceImpl<UserFuncMapper, UserFunc> implements IUserFuncService {
 
 }

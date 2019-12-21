@@ -10,5 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 public interface IDemoService {
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    void testJTA();
+    void testSave();
+
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    void testUpdate();
+
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    void testSaveOrUpdate();
 }

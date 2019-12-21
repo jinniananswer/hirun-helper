@@ -13,7 +13,7 @@ import javax.annotation.PostConstruct;
  * @author Steven
  */
 @Slf4j
-@Component
+@Component("globalConfig")
 public class MyGlobalConfig extends GlobalConfig {
 
     private static MySqlSessionTemplate mySqlSessionTemplate;
