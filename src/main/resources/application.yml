@@ -21,6 +21,7 @@
 spring:
   profiles:
     active: dev
+
   mvc:
     # 所有静态资源访问，路径以 /static/ 为前缀。
     static-path-pattern: /static/**
@@ -42,31 +43,27 @@ spring:
     encoding: UTF-8
     cache: false # 开发模式下设置为 false，避免改了模板还要重启服务器，线上设置为 true，可以提高性能。
 
-  resources.cache.period: 604800
-  resources.chain.cache: true
-  resources.chain.enabled: true
-  resources.chain.compressed: true
-  resources.chain.strategy.content.enabled: true
-  resources.chain.strategy.content.paths: /**
+  resources:
+    cache:
+      period: 604800
+    chain:
+      cache: true
+      enabled: true
+      strategy:
+        content:
+          paths: /**
+          enabled: true
 
-  jackson.date-format: yyyy-MM-dd HH:mm:ss
-  jackson.time-zone: Asia/Shanghai
-  jackson.default-property-inclusion: non_null
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+    default-property-inclusion: non_null
 
   devtools:
     restart:
       enabled: true
       additional-paths: src/main/java
       exclude: static/**
-
-  #  session:
-  #    store-type: redis
-  #    timeout: 1800
-  #    redis.namespace: hirun-sid
-  session:
-    # session 的存储方式，开发模式（本地）：none，生产模式（分布式缓存）：redis
-    store-type: none
-    timeout: 1800
 
   jta:
     atomikos:
@@ -77,23 +74,16 @@ spring:
 #  main:
 #    allow-bean-definition-overriding: true
 
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  configuration:
+    default-fetch-size: 512
+
 # 生产 Web 这个开关是关闭的，后台 Task 进程会在命令行设置该参数为 true
 scheduling:
   enabled: true
 
 production.mode: false
-
-runtime:
-  devmode: dev
-
-rest:
-  api:
-    prefix: /api/v1.1
-
-mybatis-plus:
-  mapper-locations: classpath*:/mapper/**/*.xml
-  configuration:
-    default-fetch-size: 512
 
 # mobile系统地址
 mhirun.host-port: http://47.105.64.145:8080/

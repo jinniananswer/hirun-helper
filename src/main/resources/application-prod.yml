@@ -1,6 +1,6 @@
 server:
   port: 8080
-  servlet.context-path: /hirun
+  servlet.context-path: /
   servlet:
     session:
       timeout: PT1H
@@ -17,19 +17,12 @@ logging:
     com.microtomato.hirun: info
 
 # 生产 Web 这个开关是关闭的，后台 Task 进程会在命令行设置该参数为 true
-scheduling:
-  enabled: true
+scheduling.enabled: true
 
+# 是否为生产模式
 production.mode: true
 
-runtime:
-  devmode: dev
-
 spring:
-
-  mvc:
-    # 所有静态资源访问，路径以 /static/ 为前缀。
-    static-path-pattern: /static/**
   datasource:
     atomikos:
       sys:
@@ -69,50 +62,16 @@ spring:
 
   # thymeleaf 模板配置
   thymeleaf:
-    prefix: classpath:/templates/
-    suffix: .html
-    mode: HTML
-    encoding: UTF-8
     cache: true # 开发模式下设置为 false，避免改了模板还要重启服务器，线上设置为 true，可以提高性能。
 
-  resources.chain.strategy.content.enabled: true
-  resources.chain.strategy.content.paths: /**
-
-  jackson.date-format: yyyy-MM-dd HH:mm:ss
-  jackson.time-zone: Asia/Shanghai
-  jackson.default-property-inclusion: non_null
-
-  devtools:
-    restart:
-      enabled: true
-      additional-paths: src/main/java
-      exclude: static/**
+  resources:
+    chain:
+      strategy:
+        content:
+          enabled: true
+          paths: /**
 
   session:
     # session 的存储方式，开发模式（本地）：none，生产模式（分布式缓存）：redis
     store-type: redis
     timeout: 1800
-
-  jta:
-    atomikos:
-      properties:
-        log-base-dir: ../logs
-    transaction-manager-id: tx
-
-#  main:
-#    allow-bean-definition-overriding: true
-
-rest:
-  api:
-    prefix: /api/v1.1
-
-mybatis-plus:
-  mapper-locations: classpath*:/mapper/**/*.xml
-  configuration:
-    default-fetch-size: 512
-
-# mobile系统地址
-mhirun.host-port: http://47.105.64.145:8080/
-
-# 图表仓库位置
-hirun.icon.store: //at.alicdn.com/t/font_1556215_wcl3sp8386.css
