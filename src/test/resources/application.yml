@@ -81,7 +81,7 @@ mybatis-plus:
 
 jasypt:
   encryptor:
-    password: microtomato.hirun
+    password: microtomato.secretkey.prod
 
 # 生产 Web 这个开关是关闭的，后台 Task 进程会在命令行设置该参数为 true
 scheduling:
