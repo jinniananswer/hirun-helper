@@ -1,12 +1,12 @@
 package com.microtomato.hirun.modules.system.service.impl;
 
-import com.alibaba.druid.util.StringUtils;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.modules.system.entity.po.Province;
 import com.microtomato.hirun.modules.system.mapper.ProvinceMapper;
 import com.microtomato.hirun.modules.system.service.IProvinceService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;

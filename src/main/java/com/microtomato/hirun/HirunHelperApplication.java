@@ -1,6 +1,5 @@
 package com.microtomato.hirun;
 
-import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure;
 import com.baomidou.mybatisplus.autoconfigure.MybatisPlusAutoConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,7 +12,7 @@ import org.springframework.boot.web.servlet.ServletComponentScan;
  * @author Steven
  */
 @ServletComponentScan
-@SpringBootApplication(exclude = {DruidDataSourceAutoConfigure.class, MybatisPlusAutoConfiguration.class})
+@SpringBootApplication(exclude = {MybatisPlusAutoConfiguration.class})
 public class HirunHelperApplication {
 
     public static void main(String[] args) {

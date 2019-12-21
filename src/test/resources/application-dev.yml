@@ -1,6 +1,6 @@
 server:
   port: 8080
-  servlet.context-path: /
+  servlet.context-path: /hirun
   servlet:
     session:
       timeout: PT1H
@@ -11,16 +11,19 @@ server:
 logging:
   level:
     root: info
-    com.atomikos.jdbc.nonxa.AtomikosThreadLocalConnection: info
-    com.baomidou.dynamic.datasource: info
+    com.atomikos.jdbc.nonxa.AtomikosThreadLocalConnection: debug
+    com.baomidou.dynamic.datasource: debug
     com.baomidou.mybatisplus: info
-    com.microtomato.hirun: info
+    com.microtomato.hirun: debug
+    com.microtomato.hirun.framework.filter: info
+    com.microtomato.hirun.framework.interceptor: info
+    com.microtomato.hirun.framework.transaction: debug
 
 # 生产 Web 这个开关是关闭的，后台 Task 进程会在命令行设置该参数为 true
 scheduling.enabled: true
 
 # 是否为生产模式
-production.mode: true
+production.mode: false
 
 spring:
   datasource:
@@ -28,11 +31,11 @@ spring:
       sys:
         uniqueResourceName: sys
         driverClassName: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://127.0.0.1:3306/sys?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=GMT%2B8
+        url: jdbc:mysql://39.106.228.124:3306/sys?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=GMT%2B8
         user: sys
-        password: ENC(KySjU4ZXyABXJqK54ETCYeeeFAdYonPh)
-        minPoolSize: 20
-        maxPoolSize: 50
+        password: 1q1w1e1r
+        minPoolSize: 2
+        maxPoolSize: 10
         maxIdleTime: 60
         maxLifetime: 1200
         maintenanceInterval: 60
@@ -41,11 +44,11 @@ spring:
       ins:
         uniqueResourceName: ins
         driverClassName: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://127.0.0.1:3306/ins?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=GMT%2B8
+        url: jdbc:mysql://39.106.228.124:3306/ins?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=GMT%2B8
         user: ins
-        password: ENC(hdAkANYd7mGCFBmOwy86SrWgeTVDB5le)
-        minPoolSize: 20
-        maxPoolSize: 50
+        password: 1q1w1e1r
+        minPoolSize: 2
+        maxPoolSize: 10
         maxIdleTime: 60
         maxLifetime: 1200
         maintenanceInterval: 60
@@ -53,7 +56,7 @@ spring:
 
   cache:
     # 指定缓存类型: none(禁用缓存), simple(用于开发), redis（用于生产）
-    type: redis
+    type: simple
 
   redis:
     timeout: 1000
@@ -62,16 +65,15 @@ spring:
 
   # thymeleaf 模板配置
   thymeleaf:
-    cache: true # 开发模式下设置为 false，避免改了模板还要重启服务器，线上设置为 true，可以提高性能。
+    cache: false # 开发模式下设置为 false，避免改了模板还要重启服务器，线上设置为 true，可以提高性能。
 
-  resources:
-    chain:
-      strategy:
-        content:
-          enabled: true
-          paths: /**
+  devtools:
+    restart:
+      enabled: true
+      additional-paths: src/main/java
+      exclude: static/**
 
   session:
     # session 的存储方式，开发模式（本地）：none，生产模式（分布式缓存）：redis
-    store-type: redis
+    store-type: none
     timeout: 1800

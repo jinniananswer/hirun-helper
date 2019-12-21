@@ -110,7 +110,7 @@ public class MyBatisPlusConfig {
 
         // 重写了 GlobalConfig 的 MyGlobalConfig 注入到 sqlSessionFactory 使其生效
         MyGlobalConfig globalConfig = new MyGlobalConfig();
-        globalConfig.setBanner(true);
+        globalConfig.setBanner(false);
         globalConfig.setMetaObjectHandler(autoSetMetaObjectAdvice);
 
         sqlSessionFactory.setGlobalConfig(globalConfig);

@@ -13,7 +13,7 @@ import javax.annotation.PostConstruct;
  * @author Steven
  */
 @Slf4j
-@Component("globalConfig")
+@Component
 public class MyGlobalConfig extends GlobalConfig {
 
     private static MySqlSessionTemplate mySqlSessionTemplate;
@@ -28,7 +28,7 @@ public class MyGlobalConfig extends GlobalConfig {
 
     @Override
     public SqlSessionFactory getSqlSessionFactory() {
-        return mySqlSessionTemplate.getSqlSessionFactory();
+        return MyGlobalConfig.mySqlSessionTemplate.getSqlSessionFactory();
     }
 
 }
