@@ -220,8 +220,10 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
      * 按部门统计员工数量
      * @return
      */
-    @Select("select b.org_id,count(1) employee_quantity from ins_employee a, ins_employee_job_role b " +
-            " where a.employee_id=b.employee_id " +
-            " and a.status='0' and now() BETWEEN b.start_date and b.end_date group by b.org_id ")
+    @Select("select d.org_id,IFNULL(c.employee_quantity,0) employee_quantity from ins_org d " +
+            " LEFT JOIN (select b.org_id,count(1) employee_quantity from ins_employee a, ins_employee_job_role b " +
+            " where a.employee_id=b.employee_id" +
+            " and a.status='0' and now() BETWEEN b.start_date and b.end_date group by b.org_id) c " +
+            " on d.org_id=c.org_id")
     List<StatEmployeeQuantityMonth> countEmployeeQuantityByOrgId();
 }
