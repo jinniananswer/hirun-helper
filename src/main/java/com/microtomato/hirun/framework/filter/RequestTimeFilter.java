@@ -22,9 +22,9 @@ import java.util.Set;
  */
 @Slf4j
 @Order(1)
-@WebFilter(filterName = "localDateTimeFilter", urlPatterns = "/*", initParams = {
-    @WebInitParam(name = "exclusions", value = "/static/,/druid/,/favicon.ico")
-})
+//@WebFilter(filterName = "localDateTimeFilter", urlPatterns = "/*", initParams = {
+//    @WebInitParam(name = "exclusions", value = "/static/,/druid/,/favicon.ico")
+//})
 public class RequestTimeFilter implements Filter {
 
     public static final String PARAM_NAME_EXCLUSIONS = "exclusions";

@@ -3,7 +3,6 @@ package com.microtomato.hirun;
 import com.baomidou.mybatisplus.autoconfigure.MybatisPlusAutoConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.servlet.ServletComponentScan;
 
 /**
  * 注解 ServletComponentScan 用于扫描过滤器 Filter 并自动装配，Filter 类需标注 @WebFilter 注解。
@@ -11,7 +10,7 @@ import org.springframework.boot.web.servlet.ServletComponentScan;
  *
  * @author Steven
  */
-@ServletComponentScan
+//@ServletComponentScan
 @SpringBootApplication(exclude = {MybatisPlusAutoConfiguration.class})
 public class HirunHelperApplication {
 

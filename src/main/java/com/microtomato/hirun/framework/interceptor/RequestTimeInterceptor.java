@@ -6,6 +6,8 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 /**
  * 拦截器，请求处理完后（从 Controller 返回后），清楚 ThreadLocal 里的 localDateTime，避免内存泄漏。
@@ -16,15 +18,23 @@ import javax.servlet.http.HttpServletResponse;
 @Slf4j
 public class RequestTimeInterceptor extends HandlerInterceptorAdapter {
 
+    private static final ZoneId SHANGHAI_ZONE_ID = ZoneId.of("Asia/Shanghai");
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        LocalDateTime now = LocalDateTime.now();
+        RequestTimeHolder.addRequestTime(now);
         return true;
     }
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+        LocalDateTime startTime = RequestTimeHolder.getRequestTime();
+        // 计算请求耗时
+        long start = startTime.atZone(SHANGHAI_ZONE_ID).toInstant().toEpochMilli();
+        long cost = System.currentTimeMillis() - start;
+        log.info("cost: {} ms, uri: {}", cost, request.getRequestURI());
         RequestTimeHolder.remove();
-        log.debug("remove localDateTime from localThread, " + request.getRequestURI());
     }
 
 }
