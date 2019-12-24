@@ -90,7 +90,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layedit', 'laydate', 'util
                             title: '编辑新公告',
                             content: 'openUrl?url=modules/system/announce-create',
                             maxmin: true,
-                            area: ['550px', '400px'],
+                            //area: ['600px', '450px'],
                             skin: 'layui-layer-molv',
                             success: function (layero, index) {
 
@@ -99,6 +99,8 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layedit', 'laydate', 'util
                                 layer.close(index);
                             }
                         });
+
+                        layer.full(index);
                         break;
                     case 'editAnnounce':
 
