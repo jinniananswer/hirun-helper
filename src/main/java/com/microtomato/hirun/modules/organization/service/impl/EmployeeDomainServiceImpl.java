@@ -342,18 +342,18 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
                 userDO.modify(employeeDTO.getMobileNo(), UserConst.INIT_PASSWORD, UserConst.STATUS_NORMAL);
                 employeeDO.rehire(employee, jobRole, workExperiences, keyMen);
                 //分配默认权限
-                //this.userRoleService.createRole(userId, jobRole.getOrgId(), jobRole.getJobRole());
+                this.userRoleService.createRole(userId, jobRole.getOrgId(), jobRole.getJobRole());
             } else if (StringUtils.equals(createType, EmployeeConst.CREATE_TYPE_REHELLORING)) {
                 userDO.modify(employeeDTO.getMobileNo(), UserConst.INIT_PASSWORD, UserConst.STATUS_NORMAL);
                 employeeDO.rehelloring(employee, jobRole, workExperiences, keyMen);
                 //分配默认权限
-               // this.userRoleService.createRole(userId, jobRole.getOrgId(), jobRole.getJobRole());
+                this.userRoleService.createRole(userId, jobRole.getOrgId(), jobRole.getJobRole());
             } else {
                 userDO.modify(employeeDTO.getMobileNo(), null, null);
                 employeeDO.modify(employee, jobRole, workExperiences, keyMen);
             }
             //新增部门异动记录
-            transitionService.addEmployeeEntryTransition(employeeDTO.getEmployeeJobRole().getOrgId(),employeeDTO.getEmployeeId(),LocalDate.now());
+            transitionService.addEmployeeEntryTransition(employeeDTO.getEmployeeJobRole().getOrgId(), employeeDTO.getEmployeeId(), LocalDate.now());
 
         }
 
@@ -384,7 +384,7 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
 
         UserContext userContext = WebContextUtils.getUserContext();
         Long loginUserId = userContext.getUserId();
-        EmployeeInfoDTO infoDTO=employeeService.queryEmployeeInfoByEmployeeId(employeeDestroyInfoDTO.getEmployeeId());
+        EmployeeInfoDTO infoDTO = employeeService.queryEmployeeInfoByEmployeeId(employeeDestroyInfoDTO.getEmployeeId());
 
         //注销employee信息
         Employee employee = new Employee();
@@ -418,8 +418,9 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             employeeJobRoleService.changeParentEmployee(employeeDestroyInfoDTO.getEmployeeId(), employeeDestroyInfoDTO.getNewParentEmployeeId(), loginUserId);
         }
         //新增离职员工异动报表记录
-        transitionService.addEmployeeDestroyTransition(infoDTO.getOrgId(),infoDTO.getEmployeeId(),employeeDestroyInfoDTO.getDestroyDate().toLocalDate());
-
+        transitionService.addEmployeeDestroyTransition(infoDTO.getOrgId(), infoDTO.getEmployeeId(), employeeDestroyInfoDTO.getDestroyDate().toLocalDate());
+        //新增员工在鸿扬的工作经历信息
+        employeeHistoryService.createDestroy(employeeDestroyInfoDTO.getEmployeeId(), employeeDestroyInfoDTO.getDestroyDate().toLocalDate(), employeeDestroyInfoDTO.getDestroyWay());
         return true;
     }
 

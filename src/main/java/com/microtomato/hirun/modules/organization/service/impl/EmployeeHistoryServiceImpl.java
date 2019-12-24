@@ -8,6 +8,7 @@ import com.microtomato.hirun.modules.organization.entity.po.EmployeeHistory;
 import com.microtomato.hirun.modules.organization.mapper.EmployeeHistoryMapper;
 import com.microtomato.hirun.modules.organization.service.IEmployeeHistoryService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -15,7 +16,7 @@ import java.util.List;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author jinnian
@@ -27,8 +28,8 @@ public class EmployeeHistoryServiceImpl extends ServiceImpl<EmployeeHistoryMappe
 
     /**
      * 创建员工在鸿扬入职的历史数据
+     *
      * @param employeeId
-
      */
     @Override
     public void createEntry(Long employeeId, LocalDate eventDate) {
@@ -42,6 +43,7 @@ public class EmployeeHistoryServiceImpl extends ServiceImpl<EmployeeHistoryMappe
 
     /**
      * 创建员工复职的历史数据
+     *
      * @param employeeId
      * @param eventDate
      */
@@ -57,6 +59,7 @@ public class EmployeeHistoryServiceImpl extends ServiceImpl<EmployeeHistoryMappe
 
     /**
      * 创建员工退休返聘的历史数据
+     *
      * @param employeeId
      * @param eventDate
      */
@@ -72,6 +75,7 @@ public class EmployeeHistoryServiceImpl extends ServiceImpl<EmployeeHistoryMappe
 
     /**
      * 查询员工历史信息
+     *
      * @param employeeId
      * @return
      */
@@ -81,7 +85,47 @@ public class EmployeeHistoryServiceImpl extends ServiceImpl<EmployeeHistoryMappe
     }
 
     /**
+     * 创建员工调动历史信息
+     *
+     * @param employeeId
+     * @param eventDate
+     */
+    @Override
+    public void createTrans(Long employeeId, LocalDate eventDate, String content, String type) {
+        EmployeeHistory history = new EmployeeHistory();
+        this.processStandardData(employeeId, eventDate, history);
+        if (StringUtils.equals(type, "1")) {
+            history.setEventType(EmployeeConst.HISTORY_EVENT_BORROW);
+        } else {
+            history.setEventType(EmployeeConst.HISTORY_EVENT_TRANS);
+        }
+        history.setEventContent(content);
+        this.save(history);
+    }
+
+    /**
+     * 创建离职历史信息
+     *
+     * @param employeeId
+     * @param eventDate
+     * @param destroyType
+     */
+    @Override
+    public void createDestroy(Long employeeId, LocalDate eventDate, String destroyType) {
+        EmployeeHistory history = new EmployeeHistory();
+        this.processStandardData(employeeId, eventDate, history);
+        history.setEventType(EmployeeConst.HISTORY_EVENT_DESTROY);
+        if (StringUtils.equals(destroyType, "5")) {
+            history.setEventContent("光荣退休");
+        } else {
+            history.setEventContent("离开鸿扬大家庭");
+        }
+        this.save(history);
+    }
+
+    /**
      * 处理公用数据
+     *
      * @param employeeId
      * @param eventDate
      * @param history

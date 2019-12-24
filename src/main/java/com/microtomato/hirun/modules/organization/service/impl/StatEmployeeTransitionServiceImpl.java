@@ -80,9 +80,9 @@ public class StatEmployeeTransitionServiceImpl extends ServiceImpl<StatEmployeeT
             this.mapper.insert(statEmployeeTransitionNew);
         } else {
             statEmployeeTransitionRecord.setEmployeeEntryQuantity(statEmployeeTransitionRecord.getEmployeeEntryQuantity() + 1);
-            if(StringUtils.isEmpty(statEmployeeTransitionRecord.getEntryEmployeeId())){
-                statEmployeeTransitionRecord.setEntryEmployeeId(employeeId+"");
-            }else{
+            if (StringUtils.isEmpty(statEmployeeTransitionRecord.getEntryEmployeeId())) {
+                statEmployeeTransitionRecord.setEntryEmployeeId(employeeId + "");
+            } else {
                 statEmployeeTransitionRecord.setEntryEmployeeId(statEmployeeTransitionRecord.getEntryEmployeeId() + "," + employeeId);
             }
             this.mapper.updateById(statEmployeeTransitionRecord);
@@ -99,9 +99,9 @@ public class StatEmployeeTransitionServiceImpl extends ServiceImpl<StatEmployeeT
             this.mapper.insert(statEmployeeTransitionNew);
         } else {
             statEmployeeTransitionRecord.setEmployeeHolidayQuantity(statEmployeeTransitionRecord.getEmployeeHolidayQuantity() + 1);
-            if(StringUtils.isEmpty(statEmployeeTransitionRecord.getHolidayEmployeeId())){
-                statEmployeeTransitionRecord.setHolidayEmployeeId(employeeId+"");
-            }else{
+            if (StringUtils.isEmpty(statEmployeeTransitionRecord.getHolidayEmployeeId())) {
+                statEmployeeTransitionRecord.setHolidayEmployeeId(employeeId + "");
+            } else {
                 statEmployeeTransitionRecord.setHolidayEmployeeId(statEmployeeTransitionRecord.getHolidayEmployeeId() + "," + employeeId);
             }
             this.mapper.updateById(statEmployeeTransitionRecord);
@@ -121,7 +121,11 @@ public class StatEmployeeTransitionServiceImpl extends ServiceImpl<StatEmployeeT
             this.mapper.insert(transInTransition);
         } else {
             transInTransitionRecord.setEmployeeTransInQuantity(transInTransitionRecord.getEmployeeTransInQuantity() + 1);
-            transInTransitionRecord.setTransInEmployeeId(transInTransitionRecord.getTransInEmployeeId() + "," + employeeId);
+            if (StringUtils.isEmpty(transInTransitionRecord.getTransInEmployeeId())) {
+                transInTransitionRecord.setTransInEmployeeId(employeeId + "");
+            } else {
+                transInTransitionRecord.setTransInEmployeeId(transInTransitionRecord.getTransInEmployeeId() + "," + employeeId);
+            }
             this.mapper.updateById(transInTransitionRecord);
         }
         //处理转出部门的数据
@@ -132,7 +136,11 @@ public class StatEmployeeTransitionServiceImpl extends ServiceImpl<StatEmployeeT
             this.mapper.insert(transOutTransition);
         } else {
             transOutTransitionRecord.setEmployeeTransOutQuantity(transOutTransitionRecord.getEmployeeTransOutQuantity() + 1);
-            transOutTransitionRecord.setTransOutEmployeeId(transOutTransitionRecord.getTransInEmployeeId() + "," + employeeId);
+            if (StringUtils.isEmpty(transOutTransitionRecord.getTransOutEmployeeId())) {
+                transOutTransitionRecord.setTransOutEmployeeId(employeeId + "");
+            } else {
+                transOutTransitionRecord.setTransOutEmployeeId(transOutTransitionRecord.getTransOutEmployeeId() + "," + employeeId);
+            }
             this.mapper.updateById(transOutTransitionRecord);
         }
     }
@@ -150,7 +158,12 @@ public class StatEmployeeTransitionServiceImpl extends ServiceImpl<StatEmployeeT
             this.mapper.insert(borrowInTransition);
         } else {
             borrowInTransitionRecord.setEmployeeBorrowInQuantity(borrowInTransitionRecord.getEmployeeBorrowInQuantity() + 1);
-            borrowInTransitionRecord.setBorrowInEmployeeId(borrowInTransitionRecord.getBorrowInEmployeeId() + "," + employeeId);
+            if (StringUtils.isEmpty(borrowInTransitionRecord.getBorrowInEmployeeId())) {
+                borrowInTransitionRecord.setBorrowInEmployeeId(employeeId + "");
+            } else {
+                borrowInTransitionRecord.setBorrowInEmployeeId(borrowInTransitionRecord.getBorrowInEmployeeId() + "," + employeeId);
+            }
+
             this.mapper.updateById(borrowInTransitionRecord);
         }
         //处理转出部门的数据
@@ -161,7 +174,11 @@ public class StatEmployeeTransitionServiceImpl extends ServiceImpl<StatEmployeeT
             this.mapper.insert(borrowOutTransition);
         } else {
             borrowOutTransitionRecord.setEmployeeBorrowOutQuantity(borrowOutTransitionRecord.getEmployeeBorrowOutQuantity() + 1);
-            borrowOutTransitionRecord.setBorrowOutEmployeeId(borrowOutTransitionRecord.getEmployeeBorrowOutQuantity() + "," + employeeId);
+            if (StringUtils.isEmpty(borrowOutTransitionRecord.getBorrowOutEmployeeId())) {
+                borrowOutTransitionRecord.setBorrowOutEmployeeId(employeeId + "");
+            } else {
+                borrowOutTransitionRecord.setBorrowOutEmployeeId(borrowOutTransitionRecord.getBorrowOutEmployeeId() + "," + employeeId);
+            }
             this.mapper.updateById(borrowOutTransitionRecord);
         }
     }
@@ -177,9 +194,9 @@ public class StatEmployeeTransitionServiceImpl extends ServiceImpl<StatEmployeeT
             this.mapper.insert(statEmployeeTransitionNew);
         } else {
             statEmployeeTransitionRecord.setEmployeeDestroyQuantity(statEmployeeTransitionRecord.getEmployeeDestroyQuantity() + 1);
-            if(StringUtils.isEmpty(statEmployeeTransitionRecord.getDestroyEmployeeId())){
-                statEmployeeTransitionRecord.setDestroyEmployeeId(employeeId+"");
-            }else{
+            if (StringUtils.isEmpty(statEmployeeTransitionRecord.getDestroyEmployeeId())) {
+                statEmployeeTransitionRecord.setDestroyEmployeeId(employeeId + "");
+            } else {
                 statEmployeeTransitionRecord.setDestroyEmployeeId(statEmployeeTransitionRecord.getDestroyEmployeeId() + "," + employeeId);
             }
             this.mapper.updateById(statEmployeeTransitionRecord);
@@ -217,8 +234,8 @@ public class StatEmployeeTransitionServiceImpl extends ServiceImpl<StatEmployeeT
         String orgLine = orgDO.getOrgLine(orgId);
 
         List<StatEmployeeTransition> statEmployeeTransitionList = this.mapper.selectList(new QueryWrapper<StatEmployeeTransition>().lambda()
-                .eq(StringUtils.isNotEmpty(year),StatEmployeeTransition::getYear, year)
-                .eq(StringUtils.isNotEmpty(month),StatEmployeeTransition::getMonth, month)
+                .eq(StringUtils.isNotEmpty(year), StatEmployeeTransition::getYear, year)
+                .eq(StringUtils.isNotEmpty(month), StatEmployeeTransition::getMonth, month)
                 .in(StatEmployeeTransition::getOrgId, Arrays.asList(orgLine.split(","))));
 
         if (ArrayUtils.isEmpty(statEmployeeTransitionList)) {
@@ -235,7 +252,7 @@ public class StatEmployeeTransitionServiceImpl extends ServiceImpl<StatEmployeeT
             dto.setDestroyEmployeeName(transEmployeeName(employeeTransition.getDestroyEmployeeId()));
             dto.setHolidayEmployeeName(transEmployeeName(employeeTransition.getHolidayEmployeeId()));
             dto.setTransInEmployeeName(transEmployeeName(employeeTransition.getTransInEmployeeId()));
-            dto.setTransOutEmployeeName(transEmployeeName(employeeTransition.getTransInEmployeeId()));
+            dto.setTransOutEmployeeName(transEmployeeName(employeeTransition.getTransOutEmployeeId()));
             dto.setBorrowInEmployeeName(transEmployeeName(employeeTransition.getBorrowInEmployeeId()));
             dto.setBorrowOutEmployeeName(transEmployeeName(employeeTransition.getBorrowOutEmployeeId()));
             resultList.add(dto);

@@ -18,35 +18,41 @@ layui.extend({
                 height: 550,
                 loading: false,
                 toolbar: '#toolbar',
-                totalRow:true,
+                totalRow: true,
                 parseData: function (res) { //res 即为原始返回的数据
                     return {
                         "code": res.code, //解析接口状态
                         "msg": res.message, //解析提示文本
                         "count": res.rows.total, //解析数据长度
-                        "data": res.rows.records //解析数据列表
+                        "data": res.rows //解析数据列表
                     };
                 },
                 cols: [
                     [
-                        {field: 'orgId', title: '部门', width: 120, fixed: 'left', align: 'center'},
-                        {field: 'year', title: '年份',width: 180, align: 'center'},
-                        {field: 'month', title: '月份',width: 300, align: 'center'},
-                        {field: 'employeeQuantity', title: '员工数量',width: 300, align: 'center',totalRow:true},
+                        {field: 'orgName', title: '部门', width: 324, fixed: 'left', align: 'center'},
+                        {field: 'janurayCount', title: '1月', width: 89, align: 'center'},
+                        {field: 'februaryCount', title: '2月', width: 89, align: 'center'},
+                        {field: 'marchCount', title: '3月', width: 89, align: 'center'},
+                        {field: 'aprilCount', title: '4月', width: 89, align: 'center'},
+                        {field: 'mayCount', title: '5月', width: 89, align: 'center'},
+                        {field: 'juneCount', title: '6月', width: 89, align: 'center'},
+                        {field: 'julyCount', title: '7月', width: 89, align: 'center'},
+                        {field: 'augustCount', title: '8月', width: 89, align: 'center'},
+                        {field: 'septemberCount', title: '9月', width: 89, align: 'center'},
+                        {field: 'octoberCount', title: '10月', width: 89, align: 'center'},
+                        {field: 'novemberCount', title: '11月', width: 89, align: 'center'},
+                        {field: 'decemberCount', title: '12月', width: 89, align: 'center'},
                     ]
                 ],
-                page: true,
+                page: false,
                 text: {none: '暂无相关数据，请检查查询条件。'},
             });
 
 
             $('#queryEmployee').on('click', function () {
                 table.reload('employee_quantity_table', {
-                    page: {
-                        curr: 1
-                    },
-                    loading:true,
-                    url :'api/organization/stat-employee-quantity-month/queryEmployeeQuantityStat',
+                    loading: true,
+                    url: 'api/organization/stat-employee-quantity-month/queryEmployeeQuantityStat',
                     where: {
                         year: $("input[name='year']").val(),
                         orgId: $("input[name='orgId']").val(),
