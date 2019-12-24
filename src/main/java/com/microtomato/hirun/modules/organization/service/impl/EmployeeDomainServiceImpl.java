@@ -89,6 +89,9 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
     @Autowired
     private IOrgHrRelService orgHrRelService;
 
+    @Autowired
+    private IStatEmployeeTransitionService transitionService;
+
     @Override
     public List<EmployeeInfoDTO> searchEmployee(String searchText) {
         List<EmployeeInfoDTO> employees = employeeMapper.searchByNameMobileNo(searchText);
@@ -349,7 +352,11 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
                 userDO.modify(employeeDTO.getMobileNo(), null, null);
                 employeeDO.modify(employee, jobRole, workExperiences, keyMen);
             }
+            //新增部门异动记录
+            transitionService.addEmployeeEntryTransition(employeeDTO.getEmployeeJobRole().getOrgId(), employeeDTO.getEmployeeId(), LocalDate.now());
+
         }
+
 
     }
 
@@ -371,12 +378,13 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         //判断离职员工是否为后台任务对应人资提醒人员
         List<OrgHrRel> orgHrRelList = orgHrRelService.queryOrgHrRelByEmployeeId(employeeDestroyInfoDTO.getEmployeeId());
 
-        if (ArrayUtils.isEmpty(orgHrRelList)) {
+        if (ArrayUtils.isNotEmpty(orgHrRelList)) {
             throw new AlreadyExistException(" 该员工为后台人资提醒人员，请到人资部门关系管理菜单将该员工对应的部门转移到其他员工下，再办理离职！", ErrorKind.ALREADY_EXIST.getCode());
         }
 
         UserContext userContext = WebContextUtils.getUserContext();
         Long loginUserId = userContext.getUserId();
+        EmployeeInfoDTO infoDTO = employeeService.queryEmployeeInfoByEmployeeId(employeeDestroyInfoDTO.getEmployeeId());
 
         //注销employee信息
         Employee employee = new Employee();
@@ -409,7 +417,10 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         if (employeeDestroyInfoDTO.getNewParentEmployeeId() != null) {
             employeeJobRoleService.changeParentEmployee(employeeDestroyInfoDTO.getEmployeeId(), employeeDestroyInfoDTO.getNewParentEmployeeId(), loginUserId);
         }
-
+        //新增离职员工异动报表记录
+        transitionService.addEmployeeDestroyTransition(infoDTO.getOrgId(), infoDTO.getEmployeeId(), employeeDestroyInfoDTO.getDestroyDate().toLocalDate());
+        //新增员工在鸿扬的工作经历信息
+        employeeHistoryService.createDestroy(employeeDestroyInfoDTO.getEmployeeId(), employeeDestroyInfoDTO.getDestroyDate().toLocalDate(), employeeDestroyInfoDTO.getDestroyWay());
         return true;
     }
 

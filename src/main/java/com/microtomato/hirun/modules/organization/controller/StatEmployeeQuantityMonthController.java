@@ -1,9 +1,7 @@
 package com.microtomato.hirun.modules.organization.controller;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
-import com.microtomato.hirun.modules.organization.entity.po.StatEmployeeQuantityMonth;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeQuantityStatDTO;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import com.microtomato.hirun.modules.organization.service.IStatEmployeeQuantityMonthService;
 
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -31,9 +32,8 @@ public class StatEmployeeQuantityMonthController {
 
     @GetMapping("/queryEmployeeQuantityStat")
     @RestResult
-    public IPage<StatEmployeeQuantityMonth> queryEmployeeQuantityStat(String year,String orgId,Integer page,Integer limit){
-        Page<StatEmployeeQuantityMonth> statPage = new Page<>(page, limit);
-        return statEmployeeQuantityMonthServiceImpl.queryEmployeeQuantityStat(year,orgId,statPage);
+    public List<EmployeeQuantityStatDTO> queryEmployeeQuantityStat(String year, Long orgId){
+        return statEmployeeQuantityMonthServiceImpl.queryEmployeeQuantityStat(year,orgId);
     }
 
 }

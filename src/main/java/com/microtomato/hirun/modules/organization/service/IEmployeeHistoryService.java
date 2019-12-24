@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * <p>
- *  服务类
+ * 服务类
  * </p>
  *
  * @author jinnian
@@ -23,4 +23,8 @@ public interface IEmployeeHistoryService extends IService<EmployeeHistory> {
     void createRehelloring(Long employeeId, LocalDate eventDate);
 
     List<EmployeeHistory> queryHistories(Long employeeId);
+
+    void createTrans(Long employeeId, LocalDate eventDate, String content, String type);
+
+    void createDestroy(Long employeeId, LocalDate eventDate, String type);
 }
