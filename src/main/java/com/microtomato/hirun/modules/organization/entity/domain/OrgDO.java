@@ -62,10 +62,6 @@ public class OrgDO {
         this.org = this.findSelf(orgId);
     }
 
-    public Org getOrg() {
-        return this.org;
-    }
-
     /**
      * 获取当前组织
      * @return
