@@ -196,7 +196,7 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyMapper, Notify> impleme
 
         // 根据给出的组织ID，遍历找出所有的子孙组织ID
         Map<String, TreeNode> nodeMap = new HashMap<>(512);
-        List<TreeNode> treeNodeList = orgServiceImpl.listWithTree();
+        List<TreeNode> treeNodeList = orgServiceImpl.listOrgTree();
         orgServiceImpl.buildMap(treeNodeList, nodeMap);
 
         Set<Long> orgIds = new HashSet<>();

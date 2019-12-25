@@ -37,7 +37,7 @@ public interface IOrgService extends IService<Org> {
      */
     Org queryByOrgId(Long orgId);
 
-    List<TreeNode> listWithTree();
+    List<TreeNode> listOrgTree();
 
     void buildMap(List<TreeNode> nodeList, Map<String, TreeNode> nodeMap);
 

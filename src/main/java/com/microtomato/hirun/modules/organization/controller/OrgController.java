@@ -28,7 +28,7 @@ public class OrgController {
     @GetMapping("/listWithTree")
     @RestResult
     public List<TreeNode> listWithTree() {
-        return orgServiceImpl.listWithTree();
+        return orgServiceImpl.listOrgTree();
     }
 
     /**

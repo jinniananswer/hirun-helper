@@ -76,6 +76,17 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
     @Override
     public List<Org> listOrgsSecurity() {
         List<Org> allOrgs = this.listAllOrgs();
+        log.debug("-------------------all_org--------------------"+SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_ORG));
+        log.debug("-------------------SECURITY_ALL_BU--------------------"+SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_BU));
+        log.debug("-------------------SECURITY_ALL_SUB_COMPANY--------------------"+SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_SUB_COMPANY));
+        log.debug("-------------------SECURITY_ALL_SHOP--------------------"+SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_SHOP));
+        log.debug("-------------------SECURITY_SELF_BU--------------------"+SecurityUtils.hasFuncId(OrgConst.SECURITY_SELF_BU));
+        log.debug("-------------------SECURITY_SELF_SHOP--------------------"+SecurityUtils.hasFuncId(OrgConst.SECURITY_SELF_SHOP));
+        log.debug("-------------------SECURITY_ALL_COMANY_SHOP--------------------"+SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_COMANY_SHOP));
+        log.debug("-------------------SECURITY_SELF_SHOP--------------------"+SecurityUtils.hasFuncId(OrgConst.SECURITY_SELF_SHOP));
+        log.debug("-------------------SECURITY_SELF_SUB_COMPANY--------------------"+SecurityUtils.hasFuncId(OrgConst.SECURITY_SELF_SUB_COMPANY));
+
+
         if (SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_ORG)) {
             return allOrgs;
         } else if (SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_BU)) {
@@ -112,11 +123,12 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
             } else if (SecurityUtils.hasFuncId(OrgConst.SECURITY_SELF_SUB_COMPANY) || SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_COMANY_SHOP)) {
                 belong = orgDO.getBelongCompany();
 
-                if (SecurityUtils.hasFuncId(OrgConst.SECURITY_SELF_SUB_COMPANY) && belong != null) {
+                if (SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_COMANY_SHOP) && belong != null) {
                     //有查分公司下所有门店的权限
                     List<Org> children = this.findChildren(belong, allOrgs);
                     List<Org> shops = this.listByType(OrgConst.TYPE_SHOP, children);
                     temps.addAll(shops);
+                    return this.findChildren(temps, allOrgs);
                 }
 
             } else if (SecurityUtils.hasFuncId(OrgConst.SECURITY_SELF_SHOP)) {
@@ -149,7 +161,7 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
     @Override
     public Org queryByOrgId(Long orgId) {
         List<Org> orgs = this.listAllOrgs();
-        if (ArrayUtils.isNotEmpty(orgs)) {
+        if (ArrayUtils.isEmpty(orgs)) {
             return null;
         }
 
@@ -244,9 +256,8 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
     }
 
     @Override
-    @Cacheable(value = "listWithTree")
-    public List<TreeNode> listWithTree() {
-        List<Org> orgs = listAllOrgs();
+    public List<TreeNode> listOrgTree() {
+        List<Org> orgs = this.listOrgsSecurity();
 
         if (ArrayUtils.isEmpty(orgs)) {
             return null;
