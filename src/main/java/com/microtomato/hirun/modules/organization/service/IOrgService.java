@@ -23,6 +23,23 @@ public interface IOrgService extends IService<Org> {
      */
     List<Org> listAllOrgs();
 
+    /**
+     * 根据员工权限获取组织数据
+     * @return
+     */
+    List<Org> listOrgsSecurity();
+
+    /**
+     * 根据部门ID查找部门
+     * @return
+     */
+    Org queryByOrgId(Long orgId);
+
+    /**
+     * 统计店铺数量
+     * @param areaType
+     * @return
+     */
     List<AreaOrgNumDTO> countShopNum(String areaType);
 
 }

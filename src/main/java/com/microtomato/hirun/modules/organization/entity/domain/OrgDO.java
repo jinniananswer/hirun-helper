@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.organization.entity.domain;
 
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.framework.util.SecurityUtils;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.modules.organization.entity.po.Org;
 import com.microtomato.hirun.modules.organization.service.IOrgService;
@@ -62,6 +63,14 @@ public class OrgDO {
     }
 
     /**
+     * 获取当前组织
+     * @return
+     */
+    public Org getOrg() {
+        return this.org;
+    }
+
+    /**
      * 根据当前组织机构ID获取归属的公司
      *
      * @return
@@ -85,6 +94,53 @@ public class OrgDO {
             return null;
         }
         return this.findParent("4", orgs, this.org.getOrgId());
+    }
+
+    /**
+     * 根据当前组织机构ID获取归属的事业部
+     * @return
+     */
+    public Org getBelongBU() {
+        List<Org> orgs = orgService.listAllOrgs();
+        if (ArrayUtils.isEmpty(orgs)) {
+            return null;
+        }
+        return this.findParent("1", orgs, this.org.getOrgId());
+    }
+
+    /**
+     * 获取集团公司
+     * @return
+     */
+    public Org getRoot() {
+        List<Org> orgs = orgService.listAllOrgs();
+        if (ArrayUtils.isEmpty(orgs)) {
+            return null;
+        }
+
+        return this.findParent("0", orgs, this.org.getOrgId());
+    }
+
+    /**
+     * 根据权限获取当前归属组织的顶层机构（店铺、分公司、事业部、或者集团公司)
+     * @return
+     */
+    public Org getSelfTop() {
+        boolean hasAllOrg = SecurityUtils.hasFuncId("ALL_ORG");
+        if (hasAllOrg) {
+            return this.getRoot();
+        } else {
+            Org topOrg = this.getBelongShop();
+            if (topOrg.getParentOrgId() == null) {
+                //走到根节点，表示没找到
+                topOrg = this.getBelongCompany();
+                if (topOrg.getParentOrgId() == null) {
+                    topOrg = this.getBelongBU();
+                }
+            }
+
+            return topOrg;
+        }
     }
 
     /**
@@ -202,17 +258,7 @@ public class OrgDO {
      */
     private Org findSelf(Long orgId) {
         IOrgService service = SpringContextUtils.getBean(OrgServiceImpl.class);
-        List<Org> orgs = service.listAllOrgs();
-        if (ArrayUtils.isEmpty(orgs)) {
-            return null;
-        }
-
-        for (Org org : orgs) {
-            if (orgId.equals(org.getOrgId())) {
-                return org;
-            }
-        }
-        return null;
+        return service.queryByOrgId(orgId);
     }
 
     /**
@@ -248,6 +294,13 @@ public class OrgDO {
         return orgLine;
     }
 
+    /**
+     * 递归构造子部门的整条线的数据
+     * @param rootOrgId
+     * @param orgs
+     * @param orgLine
+     * @return
+     */
     private String buildSubOrg(Long rootOrgId, List<Org> orgs, String orgLine) {
         if (ArrayUtils.isEmpty(orgs)) {
             return orgLine;
