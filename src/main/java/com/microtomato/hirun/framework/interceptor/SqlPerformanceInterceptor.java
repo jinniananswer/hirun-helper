@@ -1,4 +1,4 @@
-package com.microtomato.hirun.framework.aop;
+package com.microtomato.hirun.framework.interceptor;
 
 import com.baomidou.mybatisplus.core.toolkit.*;
 import lombok.Getter;
@@ -29,7 +29,7 @@ import java.util.*;
     @Signature(type = StatementHandler.class, method = "update", args = {Statement.class}),
     @Signature(type = StatementHandler.class, method = "batch", args = {Statement.class})
 })
-public class PerformanceInterceptor implements Interceptor {
+public class SqlPerformanceInterceptor implements Interceptor {
 
     private static final String DruidPooledPreparedStatement = "com.alibaba.druid.pool.DruidPooledPreparedStatement";
     private static final String T4CPreparedStatement = "oracle.jdbc.driver.T4CPreparedStatement";

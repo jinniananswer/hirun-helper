@@ -1,13 +1,12 @@
 package com.microtomato.hirun.modules.system.task;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.microtomato.hirun.framework.websocket.ServerWebSocket;
+import com.microtomato.hirun.framework.web.socket.ServerWebSocket;
 import com.microtomato.hirun.modules.system.entity.po.Notify;
 import com.microtomato.hirun.modules.system.service.INotifyService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

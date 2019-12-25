@@ -10,7 +10,7 @@ import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.SqlExplainInterceptor;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
 import com.microtomato.hirun.framework.aop.AutoSetMetaObjectAdvice;
-import com.microtomato.hirun.framework.aop.PerformanceInterceptor;
+import com.microtomato.hirun.framework.interceptor.SqlPerformanceInterceptor;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.MyGlobalConfig;
 import com.microtomato.hirun.framework.mybatis.MySqlSessionTemplate;
@@ -55,7 +55,7 @@ public class MyBatisPlusConfig {
     private SqlExplainInterceptor sqlExplainInterceptor;
 
     @Autowired(required = false)
-    private PerformanceInterceptor performanceInterceptor;
+    private SqlPerformanceInterceptor sqlPerformanceInterceptor;
 
     @Autowired
     private AutoSetMetaObjectAdvice autoSetMetaObjectAdvice;
@@ -138,8 +138,8 @@ public class MyBatisPlusConfig {
             interceptors.add(sqlExplainInterceptor);
         }
 
-        if (null != performanceInterceptor) {
-            interceptors.add(performanceInterceptor);
+        if (null != sqlPerformanceInterceptor) {
+            interceptors.add(sqlPerformanceInterceptor);
         }
 
         for (Interceptor interceptor : interceptors) {
@@ -190,15 +190,15 @@ public class MyBatisPlusConfig {
      */
     @Bean
     @Profile({"dev", "test"})
-    public PerformanceInterceptor performanceInterceptor() {
-        PerformanceInterceptor performanceInterceptor = new PerformanceInterceptor();
+    public SqlPerformanceInterceptor performanceInterceptor() {
+        SqlPerformanceInterceptor sqlPerformanceInterceptor = new SqlPerformanceInterceptor();
         // SQL 格式化开关
-        performanceInterceptor.setFormat(false);
+        sqlPerformanceInterceptor.setFormat(false);
         // SQL 最长执行时间，超过自动停止运行，单位毫秒
-        performanceInterceptor.setMaxTime(5000);
+        sqlPerformanceInterceptor.setMaxTime(5000);
         // SQL 告警时间，超过在控制台以红色打印，单位毫秒
-        performanceInterceptor.setWarnTime(80);
-        return performanceInterceptor;
+        sqlPerformanceInterceptor.setWarnTime(80);
+        return sqlPerformanceInterceptor;
     }
 
 }

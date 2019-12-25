@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.data.TreeNode;
 import com.microtomato.hirun.framework.util.WebContextUtils;
-import com.microtomato.hirun.framework.websocket.ServerWebSocket;
+import com.microtomato.hirun.framework.web.socket.ServerWebSocket;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
 import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;

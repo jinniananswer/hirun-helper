@@ -10,13 +10,15 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 /**
- * 拦截器，请求处理完后（从 Controller 返回后），清楚 ThreadLocal 里的 localDateTime，避免内存泄漏。
+ * Web请求性能拦截器
+ *
+ * 请求处理完后（从 Controller 返回后），清除 ThreadLocal 里的 localDateTime，避免内存泄漏。
  *
  * @author Steven
  * @date 2019-10-22
  */
 @Slf4j
-public class RequestTimeInterceptor extends HandlerInterceptorAdapter {
+public class WebPerformanceInterceptor extends HandlerInterceptorAdapter {
 
     private static final ZoneId SHANGHAI_ZONE_ID = ZoneId.of("Asia/Shanghai");
 

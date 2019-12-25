@@ -1,4 +1,4 @@
-package com.microtomato.hirun.framework.websocket;
+package com.microtomato.hirun.framework.web.socket;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.microtomato.hirun.framework.util.JsonUtils;
