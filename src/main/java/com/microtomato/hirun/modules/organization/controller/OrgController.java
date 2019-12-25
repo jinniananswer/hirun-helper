@@ -2,9 +2,6 @@ package com.microtomato.hirun.modules.organization.controller;
 
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.data.TreeNode;
-import com.microtomato.hirun.framework.util.ArrayUtils;
-import com.microtomato.hirun.framework.util.TreeUtils;
-import com.microtomato.hirun.modules.organization.entity.po.Org;
 import com.microtomato.hirun.modules.organization.service.IOrgService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,20 +46,22 @@ public class OrgController {
         Map<String, TreeNode> nodeMap = new HashMap<>(512);
         orgServiceImpl.buildMap(nodeList, nodeMap);
 
-        TreeSet<String> idSet = new TreeSet<>();
+        // 用来遍历的
+        TreeSet<String> idSet1 = new TreeSet<>();
+        // 用来判断的
         TreeSet<String> idSet2 = new TreeSet<>();
-        idSet.addAll(ids);
+        idSet1.addAll(ids);
         idSet2.addAll(ids);
 
-        while (idSet.size() > 0) {
-            String id = idSet.first();
+        while (idSet1.size() > 0) {
+            String id = idSet1.first();
             TreeNode treeNode = nodeMap.get(id);
             if (isAllChildrenExist(treeNode, idSet2)) {
                 // 所有子孙节点都在
                 rtn.add(id);
-                removeAllChildrenExist(treeNode.getChildren(), idSet, rtn);
+                removeAllChildrenExist(treeNode.getChildren(), idSet1, rtn);
             }
-            idSet.remove(id);
+            idSet1.remove(id);
         }
 
         return new ArrayList<>(rtn);

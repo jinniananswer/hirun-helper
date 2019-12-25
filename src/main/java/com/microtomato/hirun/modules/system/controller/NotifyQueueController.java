@@ -26,9 +26,6 @@ public class NotifyQueueController {
     @Autowired
     private INotifyQueueService notifyQueueServiceImpl;
 
-    @Autowired
-    private INotifyService notifyServiceImpl;
-
     /**
      * 获取公告列表
      *
