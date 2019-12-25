@@ -1,4 +1,4 @@
-package com.microtomato.hirun.framework.websocket;
+package com.microtomato.hirun.framework.web.socket;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.microtomato.hirun.framework.util.JsonUtils;
@@ -123,8 +123,8 @@ public class ServerWebSocket {
         Integer notifyType = notify.getNotifyType();
         if (INotifyService.NotifyType.ANNOUNCE.value() == notifyType) {
             unReadedDTO.setNotifyTypeDesc("公告");
-        } else if(INotifyService.NotifyType.REMIND.value() == notifyType) {
-            unReadedDTO.setNotifyTypeDesc("提醒");
+        } else if(INotifyService.NotifyType.NOTICE.value() == notifyType) {
+            unReadedDTO.setNotifyTypeDesc("通知");
         } else if(INotifyService.NotifyType.MESSAGE.value() == notifyType) {
             unReadedDTO.setNotifyTypeDesc("私信");
         }

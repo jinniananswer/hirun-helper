@@ -54,6 +54,9 @@ public class EmployeeDO {
     @Autowired
     private IEmployeeKeymanService employeeKeyManService;
 
+    @Autowired
+    private IStatEmployeeTransitionService transitionService;
+
     /**
      * 默认构造函数
      */
@@ -142,6 +145,8 @@ public class EmployeeDO {
         }
 
         this.employeeHistoryService.createEntry(this.employee.getEmployeeId(), this.employee.getInDate().toLocalDate());
+        //新增部门异动记录
+        this.transitionService.addEmployeeEntryTransition(jobRole.getOrgId(),this.employee.getEmployeeId(),this.employee.getInDate().toLocalDate());
     }
 
     /**

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>dolphin-admin</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/static/layui/css/layui.css" th:href="@{static/layui/css/layui.css(v=${version})}" media="all">
+    <link rel="stylesheet" href="/static/css/admin.css" th:href="@{static/css/admin.css(v=${version})}" media="all">
+    <script src="../static/layui/layui.js" th:src="@{static/layui/layui.js(v=${version})}"></script>
+    <script src="../static/js/base.js" th:src="@{static/js/base.js(v=${version})}"></script>
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-header">员工异动报表</div>
+        <div class="layui-card-body">
+            <form class="layui-form" id="query_form">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">部门：</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="orgPath" name="orgPath"
+                                   onclick="layui.employeeTransitionStat.selectOrg();" placeholder="请点击选择部门"
+                                   autocomplete="off" class="layui-input"/>
+                            <input type="hidden" id="orgId" name="orgId"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">时间:</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="queryTime" name="queryTime" lay-verify="required" readonly autocomplete="off" class="layui-input"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">
+                            <button class="layui-btn" type="button" id="queryEmployee"><i
+                                    class="layui-icon">&#xe615;</i>查询
+                            </button>
+                        </label>
+                    </div>
+
+                </div>
+            </form>
+            <div id="orgTree" style="display:none">
+
+            </div>
+            <table lay-even class="layui-hide" id="employee_transition_table" lay-filter="employee_transition_table" lay-size="lg"></table>
+        </div>
+    </div>
+</div>
+<script type="text/html" id="toolbar">
+    <div class="layui-btn-container"></div>
+</script>
+<script>
+    layui.extend(
+        {
+            employeeTransitionStat: "{/}static/js/modules/organization/report/employee.transition.stat"
+        }).use('employeeTransitionStat', function () {
+        layui.employeeTransitionStat.init();
+    })
+</script>
+</body>
+</html>

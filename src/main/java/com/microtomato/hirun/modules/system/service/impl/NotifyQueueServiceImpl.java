@@ -1,8 +1,9 @@
 package com.microtomato.hirun.modules.system.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.framework.mybatis.DataSourceKey;
+import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
@@ -30,6 +31,7 @@ import java.util.*;
  */
 @Slf4j
 @Service
+@DataSource(DataSourceKey.SYS)
 public class NotifyQueueServiceImpl extends ServiceImpl<NotifyQueueMapper, NotifyQueue> implements INotifyQueueService {
 
     @Autowired
@@ -130,6 +132,16 @@ public class NotifyQueueServiceImpl extends ServiceImpl<NotifyQueueMapper, Notif
     @Override
     public List<UnReadedDTO> queryUnreadAnnounce() {
         return queryUnread(INotifyService.NotifyType.ANNOUNCE);
+    }
+
+    /**
+     * 查未读通知
+     *
+     * @return
+     */
+    @Override
+    public List<UnReadedDTO> queryUnreadNotice() {
+        return queryUnread(INotifyService.NotifyType.NOTICE);
     }
 
     private List<UnReadedDTO> queryUnread(INotifyService.NotifyType notifyType) {

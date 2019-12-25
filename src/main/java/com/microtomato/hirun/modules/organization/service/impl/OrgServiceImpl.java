@@ -3,12 +3,14 @@ package com.microtomato.hirun.modules.organization.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.security.UserContext;
+import com.microtomato.hirun.framework.data.TreeNode;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.SecurityUtils;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.organization.entity.consts.OrgConst;
 import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
+import com.microtomato.hirun.framework.util.TreeUtils;
 import com.microtomato.hirun.modules.organization.entity.dto.AreaOrgNumDTO;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeOrgRel;
@@ -27,6 +29,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -240,6 +243,44 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
         return children;
     }
 
+    @Override
+    @Cacheable(value = "listWithTree")
+    public List<TreeNode> listWithTree() {
+        List<Org> orgs = listAllOrgs();
+
+        if (ArrayUtils.isEmpty(orgs)) {
+            return null;
+        }
+
+        List<TreeNode> nodes = new ArrayList<>();
+        for (Org org : orgs) {
+            TreeNode node = new TreeNode();
+            node.setId(org.getOrgId() + "");
+            node.setTitle(org.getName());
+
+            if (org.getParentOrgId() != null) {
+                node.setParentId(org.getParentOrgId() + "");
+            } else {
+                node.setSpread(true);
+            }
+            node.setNode(org);
+            nodes.add(node);
+        }
+        List<TreeNode> tree = TreeUtils.build(nodes);
+        return tree;
+    }
+
+    @Override
+    public void buildMap(List<TreeNode> nodeList, Map<String, TreeNode> nodeMap) {
+        for (TreeNode treeNode : nodeList) {
+            String id = treeNode.getId();
+            nodeMap.put(id, treeNode);
+            if (null != treeNode.getChildren() && treeNode.getChildren().size() > 0) {
+                List<TreeNode> childNodeList = treeNode.getChildren();
+                buildMap(childNodeList, nodeMap);
+            }
+        }
+    }
 
     /**
      * 统计门店数量

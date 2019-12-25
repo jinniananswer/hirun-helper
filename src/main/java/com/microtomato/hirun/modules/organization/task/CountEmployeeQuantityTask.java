@@ -21,7 +21,7 @@ import java.util.List;
  */
 @Slf4j
 @Component
-public class CountEmployeeqQuantityTask {
+public class CountEmployeeQuantityTask {
 
 
     @Autowired
@@ -34,7 +34,7 @@ public class CountEmployeeqQuantityTask {
     /**
      * 每月第一天 00:30 开始执行。
      */
-    @Scheduled(cron = "0 32 18 * * ?")
+    @Scheduled(cron = "0 30 0 1 * ?")
     public void scheduled() {
         List<StatEmployeeQuantityMonth> statEmployeeQuantityMonthList = employeeService.countEmployeeQuantityByOrgId();
         if (ArrayUtils.isEmpty(statEmployeeQuantityMonthList)) {

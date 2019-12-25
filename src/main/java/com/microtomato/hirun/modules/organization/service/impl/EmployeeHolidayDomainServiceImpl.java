@@ -3,12 +3,14 @@ package com.microtomato.hirun.modules.organization.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.modules.organization.entity.domain.EmployeeHolidayDO;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeInfoDTO;
 import com.microtomato.hirun.modules.organization.entity.po.*;
 import com.microtomato.hirun.modules.organization.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -26,6 +28,12 @@ public class EmployeeHolidayDomainServiceImpl implements IEmployeeHolidayDomainS
     @Autowired
     private EmployeeHolidayDO employeeHolidayDO;
 
+    @Autowired
+    private IStatEmployeeTransitionService transitionService;
+
+    @Autowired
+    IEmployeeService employeeService;
+
     @Override
     public IPage<EmployeeHoliday> selectEmployeeHolidayList(Long employeeId, Page<EmployeeHoliday> employeeHolidayPage) {
         IPage<EmployeeHoliday> iPage = employeeHolidayService.selectEmployeeHolidayList(employeeId, employeeHolidayPage);
@@ -33,23 +41,31 @@ public class EmployeeHolidayDomainServiceImpl implements IEmployeeHolidayDomainS
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public boolean addEmployeeHoliday(EmployeeHoliday employeeHoliday) {
+        boolean result = false;
         Integer newResult = employeeHolidayDO.add(employeeHoliday);
-        if (newResult != null || newResult!=0 ) {
-            return true;
+        if (newResult != null || newResult != 0) {
+            result = true;
         }
-        return false;
+        EmployeeInfoDTO infoDTO = employeeService.queryEmployeeInfoByEmployeeId(employeeHoliday.getEmployeeId());
+        //新增一条休假记录，则新增一条异动信息
+        if (infoDTO != null) {
+            transitionService.addEmployeeHolidayTransition(infoDTO.getOrgId(), infoDTO.getEmployeeId(), employeeHoliday.getStartTime().toLocalDate());
+        }
+        return result;
     }
 
     /**
      * 更新休假记录
+     *
      * @param employeeHoliday
      * @return
      */
     @Override
     public boolean updateEmployeeHoliday(EmployeeHoliday employeeHoliday) {
-        Integer updateResult =employeeHolidayDO.modify(employeeHoliday);
-        if (updateResult != null || updateResult!=0 ) {
+        Integer updateResult = employeeHolidayDO.modify(employeeHoliday);
+        if (updateResult != null || updateResult != 0) {
             return true;
         }
         return false;
@@ -59,8 +75,8 @@ public class EmployeeHolidayDomainServiceImpl implements IEmployeeHolidayDomainS
     @Override
     public boolean deleteEmployeeHoliday(EmployeeHoliday employeeHoliday) {
         employeeHoliday.setEndTime(employeeHoliday.getStartTime());
-        Integer deleteResult=employeeHolidayDO.delete(employeeHoliday);
-        if (deleteResult != null || deleteResult!=0 ) {
+        Integer deleteResult = employeeHolidayDO.delete(employeeHoliday);
+        if (deleteResult != null || deleteResult != 0) {
             return true;
         }
         return false;

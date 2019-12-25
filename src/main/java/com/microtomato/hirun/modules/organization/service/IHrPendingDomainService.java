@@ -43,10 +43,6 @@ public interface IHrPendingDomainService {
      */
     IPage<HrPendingInfoDTO> queryPendingByExecuteId(HrPending hrPending, Page<HrPending> pendingPage);
 
-    /**
-     * 确定员工调动待办
-     */
-    boolean confirmTransPending(EmployeeTransDetailDTO employeeTransDetailDTO);
 
     /**
      * 查询待办详情

@@ -72,6 +72,14 @@ public interface INotifyService extends IService<Notify> {
     void sendMessage(Long toEmployeeId, String content);
 
     /**
+     * 发送通知
+     *
+     * @param orglist 通知的部门
+     * @param content 通知的内容
+     */
+    void sendNotice(List<String> orglist, String content);
+
+    /**
      * 发送私信
      *
      * @param toEmployeeId 给谁发私信
@@ -88,8 +96,8 @@ public interface INotifyService extends IService<Notify> {
         // 公告
         ANNOUNCE(1),
 
-        // 提醒
-        REMIND(2),
+        // 通知
+        NOTICE(2),
 
         // 私信
         MESSAGE(3);

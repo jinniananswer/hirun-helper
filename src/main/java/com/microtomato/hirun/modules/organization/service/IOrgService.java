@@ -1,10 +1,12 @@
 package com.microtomato.hirun.modules.organization.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.microtomato.hirun.framework.data.TreeNode;
 import com.microtomato.hirun.modules.organization.entity.dto.AreaOrgNumDTO;
 import com.microtomato.hirun.modules.organization.entity.po.Org;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -34,6 +36,10 @@ public interface IOrgService extends IService<Org> {
      * @return
      */
     Org queryByOrgId(Long orgId);
+
+    List<TreeNode> listWithTree();
+
+    void buildMap(List<TreeNode> nodeList, Map<String, TreeNode> nodeMap);
 
     /**
      * 统计店铺数量

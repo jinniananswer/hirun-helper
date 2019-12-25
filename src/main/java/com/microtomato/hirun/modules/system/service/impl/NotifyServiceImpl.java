@@ -2,8 +2,13 @@ package com.microtomato.hirun.modules.system.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.framework.data.TreeNode;
 import com.microtomato.hirun.framework.util.WebContextUtils;
-import com.microtomato.hirun.framework.websocket.ServerWebSocket;
+import com.microtomato.hirun.framework.web.socket.ServerWebSocket;
+import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
+import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
+import com.microtomato.hirun.modules.organization.service.IEmployeeService;
+import com.microtomato.hirun.modules.organization.service.IOrgService;
 import com.microtomato.hirun.modules.system.entity.po.Notify;
 import com.microtomato.hirun.modules.system.entity.po.NotifyQueue;
 import com.microtomato.hirun.modules.system.mapper.NotifyMapper;
@@ -16,8 +21,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * <p>
@@ -36,6 +40,15 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyMapper, Notify> impleme
 
     @Autowired
     private INotifyQueueService notifyQueueServiceImpl;
+
+    @Autowired
+    private IOrgService orgServiceImpl;
+
+    @Autowired
+    private IEmployeeJobRoleService employeeJobRoleService;
+
+    @Autowired
+    private IEmployeeService employeeService;
 
     /**
      * 发送公告
@@ -175,6 +188,70 @@ public class NotifyServiceImpl extends ServiceImpl<NotifyMapper, Notify> impleme
                 .gt(Notify::getCreateTime, latest)
         );
         return messageList;
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public void sendNotice(List<String> orglist, String content) {
+
+        // 根据给出的组织ID，遍历找出所有的子孙组织ID
+        Map<String, TreeNode> nodeMap = new HashMap<>(512);
+        List<TreeNode> treeNodeList = orgServiceImpl.listWithTree();
+        orgServiceImpl.buildMap(treeNodeList, nodeMap);
+
+        Set<Long> orgIds = new HashSet<>();
+        for (String orgId : orglist) {
+            TreeNode treeNode = nodeMap.get(orgId);
+            findAllChildren(treeNode, orgIds);
+        }
+
+        log.debug("orgIds: {}", orgIds);
+
+        // 插入通知内容
+        long employeeId = WebContextUtils.getUserContext().getEmployeeId();
+        Notify notify = Notify.builder()
+            .content(content)
+            .notifyType(NotifyType.NOTICE.value())
+            .senderId(employeeId)
+            .build();
+
+        save(notify);
+        Long notifyId = notify.getId();
+
+        LocalDateTime now = LocalDateTime.now();
+        // 插入用户队列。
+
+        List<EmployeeJobRole> employeeJobRoles = employeeJobRoleService.list(Wrappers.<EmployeeJobRole>lambdaQuery()
+            .select(EmployeeJobRole::getEmployeeId)
+            .in(EmployeeJobRole::getOrgId, orgIds)
+            .lt(EmployeeJobRole::getStartDate, now)
+            .gt(EmployeeJobRole::getEndDate, now)
+        );
+
+        List<NotifyQueue> notifyQueueList = new ArrayList<>();
+        for (EmployeeJobRole employeeJobRole : employeeJobRoles) {
+            Long toEmployeeId = employeeJobRole.getEmployeeId();
+            NotifyQueue notifyQueue = NotifyQueue.builder().notifyId(notifyId).employeeId(toEmployeeId).readed(false).build();
+            notifyQueueList.add(notifyQueue);
+        }
+
+        if (notifyQueueList.size() > 0) {
+            log.debug("通知队列入表数量: {}", notifyQueueList.size());
+            notifyQueueServiceImpl.saveBatch(notifyQueueList, 200);
+        }
+
+        // 实时通知所有在线用户
+        ServerWebSocket.sendMessageBroadcast(notify);
+    }
+
+    private void findAllChildren(TreeNode treeNode, Set<Long> orgIds) {
+        orgIds.add(Long.parseLong(treeNode.getId()));
+        List<TreeNode> children = treeNode.getChildren();
+        if (null != children && children.size() > 0) {
+            for (TreeNode node : children) {
+                findAllChildren(node, orgIds);
+            }
+        }
     }
 
 }

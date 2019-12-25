@@ -62,6 +62,10 @@ public class OrgDO {
         this.org = this.findSelf(orgId);
     }
 
+    public Org getOrg() {
+        return this.org;
+    }
+
     /**
      * 获取当前组织
      * @return
@@ -314,5 +318,15 @@ public class OrgDO {
             }
         }
         return orgLine;
+    }
+
+    /**
+     * 根据当前组织机构ID获取父级组织Id
+     *
+     * @return
+     */
+    public Long getParentOrgId() {
+
+        return this.org.getParentOrgId();
     }
 }

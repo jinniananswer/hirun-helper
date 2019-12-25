@@ -9,6 +9,7 @@ import com.microtomato.hirun.modules.organization.entity.dto.EmployeePieStatisti
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeTransDetailDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.HrPendingInfoDTO;
 import com.microtomato.hirun.modules.organization.entity.po.HrPending;
+import com.microtomato.hirun.modules.organization.service.IEmployeeTransDetailService;
 import com.microtomato.hirun.modules.organization.service.IHrPendingDomainService;
 import com.microtomato.hirun.modules.organization.service.IHrPendingService;
 import org.springframework.web.bind.annotation.*;
@@ -34,8 +35,12 @@ public class HrPendingController {
 
     @Autowired
     private IHrPendingDomainService hrPendingDomainService;
+
     @Autowired
     private IHrPendingService hrPendingService;
+
+    @Autowired
+    private IEmployeeTransDetailService transDetailService;
 
     @GetMapping("/queryTransPendingByEmployeeId")
     @RestResult
@@ -89,7 +94,7 @@ public class HrPendingController {
     @PostMapping("/confirmTransPending")
     @RestResult
     public boolean confirmTransPending(EmployeeTransDetailDTO employeeTransInfo) {
-        hrPendingDomainService.confirmTransPending(employeeTransInfo);
+        transDetailService.confirmTransPending(employeeTransInfo);
         return true;
     }
 

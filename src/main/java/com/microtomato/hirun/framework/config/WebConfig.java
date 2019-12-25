@@ -1,6 +1,6 @@
 package com.microtomato.hirun.framework.config;
 
-import com.microtomato.hirun.framework.interceptor.RequestTimeInterceptor;
+import com.microtomato.hirun.framework.interceptor.WebPerformanceInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -20,7 +20,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         // 请求级时间一致性拦截器
-        registry.addInterceptor(new RequestTimeInterceptor()).addPathPatterns("/**").excludePathPatterns("/static/**", "/druid/**", "/favicon.ico");
+        registry.addInterceptor(new WebPerformanceInterceptor()).addPathPatterns("/**").excludePathPatterns("/static/**", "/druid/**", "/favicon.ico");
     }
 
 }

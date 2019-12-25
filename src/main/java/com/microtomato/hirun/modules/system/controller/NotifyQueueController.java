@@ -26,9 +26,6 @@ public class NotifyQueueController {
     @Autowired
     private INotifyQueueService notifyQueueServiceImpl;
 
-    @Autowired
-    private INotifyService notifyServiceImpl;
-
     /**
      * 获取公告列表
      *
@@ -38,6 +35,13 @@ public class NotifyQueueController {
     @RestResult
     public List<UnReadedDTO> announceList() {
         List<UnReadedDTO> unreadedDTOS = notifyQueueServiceImpl.queryUnreadAnnounce();
+        return unreadedDTOS;
+    }
+
+    @GetMapping("notice-list")
+    @RestResult
+    public List<UnReadedDTO> noticeList() {
+        List<UnReadedDTO> unreadedDTOS = notifyQueueServiceImpl.queryUnreadNotice();
         return unreadedDTOS;
     }
 

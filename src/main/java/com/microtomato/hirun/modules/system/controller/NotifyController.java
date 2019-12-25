@@ -5,9 +5,11 @@ import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
+import com.microtomato.hirun.modules.system.entity.consts.OrgConst;
 import com.microtomato.hirun.modules.system.entity.dto.UnReadedDTO;
 import com.microtomato.hirun.modules.system.entity.po.Notify;
 import com.microtomato.hirun.modules.system.service.INotifyService;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -36,12 +38,26 @@ public class NotifyController {
     @Autowired
     private IEmployeeService employeeServiceImpl;
 
+    @Data
+    private static class AnnounceData {
+        private List<String> orgs;
+        private String content;
+    }
+
     @PostMapping("/sendAnnounce")
     @RestResult
-    public void sendAnnounce(@RequestBody String content) {
-        content = StringEscapeUtils.unescapeJava(content);
+    public void sendAnnounce(@RequestBody AnnounceData announceData) {
+
+        String content = StringEscapeUtils.unescapeJava(announceData.getContent());
         content = StringUtils.strip(content, "\"");
-        notifyServiceImpl.sendAnnounce(content);
+
+        List<String> orgs = announceData.getOrgs();
+        if (0 == orgs.size() || orgs.contains(OrgConst.ROOT_ORG)) {
+            notifyServiceImpl.sendAnnounce(content);
+        } else {
+            notifyServiceImpl.sendNotice(orgs, content);
+        }
+
     }
 
     @PostMapping("deleteAnnounce")

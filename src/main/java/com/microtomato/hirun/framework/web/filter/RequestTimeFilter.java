@@ -1,4 +1,4 @@
-package com.microtomato.hirun.framework.filter;
+package com.microtomato.hirun.framework.web.filter;
 
 import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import lombok.extern.slf4j.Slf4j;

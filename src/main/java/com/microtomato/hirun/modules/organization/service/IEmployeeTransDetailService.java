@@ -29,6 +29,16 @@ public interface IEmployeeTransDetailService extends IService<EmployeeTransDetai
      */
     List<EmployeeTransDetail> queryVaildTransDetail(String type);
 
+    /**
+     * 员工借调归还确认
+     * @param transDetail
+     * @return
+     */
     boolean confirmReturnDetail(EmployeeTransDetail transDetail);
+
+    /**
+     * 确定员工调动待办
+     */
+    boolean confirmTransPending(EmployeeTransDetailDTO employeeTransDetailDTO);
 
 }
