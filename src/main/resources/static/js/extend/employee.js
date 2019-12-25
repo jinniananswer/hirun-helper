@@ -1,6 +1,4 @@
-layui.extend({
-    index: "{/}static/js/index"
-}).define(['ajax', 'tree', 'layer', 'index'], function(exports){
+layui.define(['ajax', 'tree', 'layer'], function(exports){
     var $ = layui.$;
     var obj = {
         afterFunc : null,
@@ -37,7 +35,7 @@ layui.extend({
 
         open : function(employeeDivId, needConfirmBtn, valueControlId, displayControlId, afterFunc) {
             if (needConfirmBtn) {
-                layui.admin.popup({
+                layui.layer.open({
                     title: '请选择员工',
                     area: ['40%', '60%'],
                     content: $("#"+employeeDivId),
@@ -45,14 +43,30 @@ layui.extend({
                     btn: ['确定'],
                     yes: function(index, layero) {
 
+                    },
+                    success: function(layero, index){
+                        let elemClose = $('<i class="layui-icon" close>&#x1006;</i>');
+                        layero.append(elemClose);
+                        elemClose.on('click', function(){
+                            layer.close(index);
+                        });
+                        typeof success === 'function' && success.apply(this, arguments);
                     }
                 });
             } else {
-                layui.admin.popup({
+                layui.layer.open({
                     title: '请选择员工',
                     area: ['40%', '60%'],
                     content: $("#"+employeeDivId),
-                    skin: 'layui-layer-admin'
+                    skin: 'layui-layer-admin',
+                    success: function(layero, index){
+                        let elemClose = $('<i class="layui-icon" close>&#x1006;</i>');
+                        layero.append(elemClose);
+                        elemClose.on('click', function(){
+                            layer.close(index);
+                        });
+                        typeof success === 'function' && success.apply(this, arguments);
+                    }
                 });
             }
 

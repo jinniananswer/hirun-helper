@@ -1,7 +1,10 @@
 layui.define(['ajax', 'tree', 'layer'], function(exports){
     let $ = layui.$;
     let obj = {
-        init : function(treeDivId, valueControlId, displayControlId, showCheckbox) {
+        init : function(treeDivId, valueControlId, displayControlId, showCheckbox, onlyLeaf) {
+            if (onlyLeaf == null || typeof(onlyLeaf) == "undefined") {
+                onlyLeaf = true;
+            }
             let content = $("#"+treeDivId).html();
             if (content == null || content.trim() == '' || typeof(content) == "undefined" || content.trim().length == 0) {
                 layui.ajax.get('api/organization/org/listWithTree', '', function (data) {
@@ -16,8 +19,13 @@ layui.define(['ajax', 'tree', 'layer'], function(exports){
                             }
                             $(document.getElementById(valueControlId)).val(obj.data.id);
                             $(document.getElementById(displayControlId)).val(obj.data.path);
+                            $(document.getElementById(displayControlId)).trigger("propertychange");
                             let children = obj.data.children;
-                            if (children == null || typeof(children) == "undefined" || children.length <= 0) {
+                            if (onlyLeaf) {
+                                if (children == null || typeof(children) == "undefined" || children.length <= 0) {
+                                    layer.closeAll('page');
+                                }
+                            } else {
                                 layer.closeAll('page');
                             }
                         }
@@ -36,23 +44,43 @@ layui.define(['ajax', 'tree', 'layer'], function(exports){
 
         open : function(treeDivId, needConfirmBtn, valueControlId, displayControlId) {
             if (needConfirmBtn) {
-                layui.admin.popup({
+                layui.layer.open({
                     title: '请选择部门',
                     area: ['40%', '60%'],
                     content: $("#"+treeDivId),
                     skin: 'layui-layer-admin',
+                    shadeClose: true,
+                    closeBtn: false,
                     btn: ['确定'],
                     yes: function(index, layero) {
                         layui.orgTree.confirm(treeDivId, valueControlId, displayControlId);
+                    },
+                    success: function(layero, index){
+                        var elemClose = $('<i class="layui-icon" close>&#x1006;</i>');
+                        layero.append(elemClose);
+                        elemClose.on('click', function(){
+                            layer.close(index);
+                        });
+                        typeof success === 'function' && success.apply(this, arguments);
                     }
                 });
             } else {
-                layui.admin.popup({
+                layui.layer.open({
                     type: 1,
                     title: '请选择部门',
                     area: ['40%', '60%'],
                     content: $("#"+treeDivId),
-                    skin: 'layui-layer-admin'
+                    skin: 'layui-layer-admin',
+                    shadeClose: true,
+                    closeBtn: false,
+                    success: function(layero, index){
+                        var elemClose = $('<i class="layui-icon" close>&#x1006;</i>');
+                        layero.append(elemClose);
+                        elemClose.on('click', function(){
+                            layer.close(index);
+                        });
+                        typeof success === 'function' && success.apply(this, arguments);
+                    }
                 });
             }
 

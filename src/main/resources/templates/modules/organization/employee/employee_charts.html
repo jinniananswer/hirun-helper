@@ -14,6 +14,17 @@
 </head>
 <body>
 <div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+            <div class="layui-form-item">
+                <label class="layui-form-label">选择部门</label>
+                <div class="layui-input-block">
+                    <input type="text" id="orgPath" name="orgPath"  onPropertyChange="layui.charts.init();" onclick="layui.orgTree.init('orgTree', 'orgId', 'orgPath', false, false);" placeholder="请点击选择部门" autocomplete="off" class="layui-input"/>
+                    <input type="hidden" id="orgId" name="orgId" onPropertyChange="layui.charts.init();"/>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="layui-row layui-col-space15">
         <div class="layui-col-md6">
             <div class="layui-card">
@@ -68,6 +79,9 @@
             </div>
         </div>
     </div>
+</div>
+<div id="orgTree" style="display:none">
+
 </div>
 <script>
     layui.extend(
