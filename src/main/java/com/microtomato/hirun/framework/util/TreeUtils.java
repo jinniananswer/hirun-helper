@@ -1,7 +1,6 @@
 package com.microtomato.hirun.framework.util;
 
 import com.microtomato.hirun.framework.data.TreeNode;
-import com.microtomato.hirun.modules.system.entity.dto.MenuNode;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -77,13 +76,32 @@ public class TreeUtils {
 
         List<TreeNode> result = new ArrayList<>();
         for (TreeNode node : nodes) {
-            String parentId = node.getParentId();
-            if (StringUtils.isEmpty(parentId)) {
-                //找不到上级节点，即默认视为根节点
+            TreeNode root = findParent(node, nodes);
+            if (root == null) {
+                //没有找到，则加入根节点
                 result.add(node);
             }
         }
 
         return result;
+    }
+
+    /**
+     * 查找上级节点，
+     * @param leaf 叶子节点
+     * @param nodes
+     * @return
+     */
+    public static TreeNode findParent(TreeNode leaf, List<TreeNode> nodes) {
+        if (StringUtils.isBlank(leaf.getParentId())) {
+            return null;
+        }
+        for (TreeNode node : nodes) {
+            if (StringUtils.equals(leaf.getParentId(), node.getId())) {
+                return node;
+            }
+        }
+
+        return null;
     }
 }
