@@ -87,7 +87,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layedit', 'laydate', 'util
                     case 'newAnnounce':
                         let index = layer.open({
                             type: 2,
-                            title: '编辑新公告',
+                            title: '公告',
                             content: 'openUrl?url=modules/system/announce-create',
                             maxmin: true,
                             //area: ['600px', '450px'],

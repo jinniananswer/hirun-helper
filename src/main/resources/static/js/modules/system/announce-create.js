@@ -10,16 +10,43 @@ layui.use(['ajax', 'layer', 'layedit', 'tag'], function () {
         height: 180
     });
 
+    // 定时
+    setInterval(function () {
+        let index = parent.layer.getFrameIndex(window.name);
+        if ($("#orgCarts").children().length > 0) {
+            $("#orgCarts").children().each(function () {
+                if ("122" == $(this).attr("lay-id")) {
+                    parent.layer.title("公告", index);
+                    return;
+                }
+            });
+            parent.layer.title("通知", index);
+        } else {
+            parent.layer.title("公告", index);
+        }
+    }, 5000);
+
     // 编辑器外部操作
     let active = {
         createAnnounce: function () {
+
+            let orgs = [];
+            $("#orgCarts").children().each(function () {
+                orgs.push($(this).attr("lay-id"));
+            });
+
             let content = layedit.getContent(index); // 获取编辑器内容
+
+            let data = new Object();
+            data.orgs = orgs;
+            data.content = content;
+
             $.ajax({
                 type: "post",
                 url: "api/system/notify/sendAnnounce",
                 dataType: "json",
                 contentType: "application/json",
-                data: JSON.stringify(content),
+                data: JSON.stringify(data),
                 success: function (obj) {
                     layer.msg("操作成功！");
                     layedit.setContent(index, "", false);
@@ -47,7 +74,7 @@ layui.use(['ajax', 'layer', 'layedit', 'tag'], function () {
                     let rawIds = ids.map(function (org) {
                         return org.id;
                     });
-                    alert("rawIds: " + JSON.stringify(rawIds));
+
                     $.ajax({
                         type: "post",
                         url: "api/organization/org/filter",
@@ -57,13 +84,14 @@ layui.use(['ajax', 'layer', 'layedit', 'tag'], function () {
                         success: function (data) {
                             if (0 == data.code) {
                                 data = data.rows;
-                                console.log("服务端过滤后: " + JSON.stringify(data));
+
                                 for (let i = 0; i < ids.length; i++) {
                                     if (data.indexOf(ids[i].id) > -1) {
                                         tag.delete('orgCarts', ids[i].id);
                                         tag.add('orgCarts', {text: ids[i].title, id: ids[i].id});
                                     }
                                 }
+
                             }
                         },
                         error: function (obj) {
@@ -71,14 +99,6 @@ layui.use(['ajax', 'layer', 'layedit', 'tag'], function () {
                         }
                     });
 
-
-                    // alert(o);
-                    // let body = layer.getChildFrame('body', index);
-                    // let iframeWin = window[layero.find('iframe')[0]['name']];
-                    // let checkedData = iframeWin.tree.getChecked('#orgTree');
-                    // alert(checkedData);
-                    // let ids = iframeWin.orgSelectManager.getSelectedOrgs();
-                    // console.log("ids: " + ids);
                     layer.close(index);
                 },
                 no: function (index, layero) {

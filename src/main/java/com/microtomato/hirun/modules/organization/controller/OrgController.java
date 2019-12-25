@@ -31,28 +31,7 @@ public class OrgController {
     @GetMapping("/listWithTree")
     @RestResult
     public List<TreeNode> listWithTree() {
-        List<Org> orgs = orgServiceImpl.listAllOrgs();
-
-        if (ArrayUtils.isEmpty(orgs)) {
-            return null;
-        }
-
-        List<TreeNode> nodes = new ArrayList<>();
-        for (Org org : orgs) {
-            TreeNode node = new TreeNode();
-            node.setId(org.getOrgId() + "");
-            node.setTitle(org.getName());
-
-            if (org.getParentOrgId() != null) {
-                node.setParentId(org.getParentOrgId() + "");
-            } else {
-                node.setSpread(true);
-            }
-            node.setNode(org);
-            nodes.add(node);
-        }
-        List<TreeNode> tree = TreeUtils.build(nodes);
-        return tree;
+        return orgServiceImpl.listWithTree();
     }
 
     /**
@@ -68,7 +47,7 @@ public class OrgController {
         Set<String> rtn = new HashSet<>();
         List<TreeNode> nodeList = listWithTree();
         Map<String, TreeNode> nodeMap = new HashMap<>(512);
-        buildMap(nodeList, nodeMap);
+        orgServiceImpl.buildMap(nodeList, nodeMap);
 
         TreeSet<String> idSet = new TreeSet<>();
         TreeSet<String> idSet2 = new TreeSet<>();
@@ -129,15 +108,6 @@ public class OrgController {
         }
     }
 
-    private void buildMap(List<TreeNode> nodeList, Map<String, TreeNode> nodeMap) {
-        for (TreeNode treeNode : nodeList) {
-            String id = treeNode.getId();
-            nodeMap.put(id, treeNode);
-            if (null != treeNode.getChildren() && treeNode.getChildren().size() > 0) {
-                List<TreeNode> childNodeList = treeNode.getChildren();
-                buildMap(childNodeList, nodeMap);
-            }
-        }
-    }
+
 
 }

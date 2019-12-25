@@ -41,6 +41,13 @@ public class NotifyQueueController {
         return unreadedDTOS;
     }
 
+    @GetMapping("notice-list")
+    @RestResult
+    public List<UnReadedDTO> noticeList() {
+        List<UnReadedDTO> unreadedDTOS = notifyQueueServiceImpl.queryUnreadNotice();
+        return unreadedDTOS;
+    }
+
     /**
      * 获取私信列表
      *

@@ -44,6 +44,38 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'form', 'select', 
                 ]]
             });
 
+            let notice = table.render({
+                elem: '#notice-table',
+                toolbar: '#noticeToolbar',
+                defaultToolbar: ['filter'],
+                height: 'full-20',
+                url: 'api/system/notify-queue/notice-list',
+                fitColumns: true,
+                response: {
+                    msgName: 'message',
+                    countName: 'total',
+                    dataName: 'rows'
+                },
+                page: false,
+                cols: [[
+                    {type: 'checkbox'},
+                    {field: 'id', title: 'ID', width: 60, align: 'center'},
+                    {field: 'content', title: '通知内容', align: 'left'},
+                    {field: 'name', title: '发送者', width: 80, align: 'center'},
+                    {field: 'createTime', title: '时间', width: 160, align: 'center'},
+                    {
+                        field: 'readed', title: '状态', width: 60, align: 'center', templet: function (d) {
+                            if (d.readed) {
+                                return '<span class="layui-badge-dot layui-bg-gray"></span>';
+                            } else {
+                                return '<span class="layui-badge-dot"></span>';
+                            }
+                        }
+                    },
+                    {align: 'center', title: '操作', width: 80, fixed: 'right', toolbar: '#announceBar'}
+                ]]
+            });
+
             let message = table.render({
                 elem: '#message-table',
                 toolbar: '#messageToolbar',
@@ -83,6 +115,15 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'form', 'select', 
                 }
                 if (obj.event === 'seeDetail') {
                     messageObj.seeDetail(data, '公告');
+                }
+            });
+            table.on('tool(notice-table)', function (obj) {
+                let data = obj.data;
+                if (obj.event === 'rowClick') {
+                    layer.msg('查看消息！');
+                }
+                if (obj.event === 'seeDetail') {
+                    messageObj.seeDetail(data, '通知');
                 }
             });
             table.on('tool(message-table)', function (obj) {
@@ -135,6 +176,56 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'form', 'select', 
                             layui.ajax.get('api/system/notify-queue/markReadedAll/1', '', function (data) {
                                 layer.msg('操作成功！');
                                 table.reload('announce-table');
+                            });
+                        }, function () {
+
+                        });
+
+                        break;
+                }
+                ;
+            });
+
+            table.on('toolbar(notice-table)', function (obj) {
+                let checkStatus = table.checkStatus(obj.config.id); // 获取选中行状态
+                let data = checkStatus.data;
+                let event = obj.event;
+
+                switch (event) {
+                    case 'markReaded':
+                        if (data.length <= 0) {
+                            layer.msg('请选中一条数据，再进行操作。');
+                            return;
+                        }
+                        let param = data.map(item => item.id);
+                        $.ajax({
+                            type: "post",
+                            url: "api/system/notify-queue/markReaded",
+                            dataType: "json",
+                            contentType: "application/json",
+                            data: JSON.stringify(param),
+                            success: function (obj) {
+                                layer.msg("操作成功！");
+                                table.reload('notice-table');
+                            },
+                            error: function (obj) {
+                                layer.alert("操作失败！");
+                            }
+                        });
+                        break;
+                    case 'markReadedAll':
+
+                        layer.confirm('要全部标记已读？', {
+                            btn: ['Yes', 'No'],
+                            closeBtn: 0,
+                            icon: 6,
+                            title: '提示信息',
+                            shade: [0.5, '#fff'],
+                            skin: 'layui-layer-admin layui-anim'
+                        }, function (index) {
+                            layui.ajax.get('api/system/notify-queue/markReadedAll/1', '', function (data) {
+                                layer.msg('操作成功！');
+                                table.reload('notice-table');
                             });
                         }, function () {
 
@@ -221,6 +312,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'form', 'select', 
                         success: function (obj) {
                             layer.msg("操作成功！");
                             table.reload('announce-table');
+                            table.reload('notice-table');
                             table.reload('message-table');
                         },
                         error: function (obj) {

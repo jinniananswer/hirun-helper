@@ -56,6 +56,13 @@ public interface INotifyQueueService extends IService<NotifyQueue> {
     List<UnReadedDTO> queryUnreadAnnounce();
 
     /**
+     * 查未读通知
+     *
+     * @return
+     */
+    List<UnReadedDTO> queryUnreadNotice();
+
+    /**
      * 标记消息已读
      *
      * @param notifyId 消息Id

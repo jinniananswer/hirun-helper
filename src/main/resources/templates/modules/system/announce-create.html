@@ -11,25 +11,25 @@
     <link rel="stylesheet" href="../../../static/css/tag.css" th:href="@{static/css/tag.css(v=${version})}" media="all">
     <script src="../../../static/layui/layui.js" th:src="@{static/layui/layui.js(v=${version})}"></script>
     <script src="../../../static/js/base.js" th:src="@{static/js/base.js(v=${version})}"></script>
-<!--    <script src="../../../static/layui/lay/modules/tag.js" th:src="@{static/js/extend/tag.js(v=${version})}"></script>-->
     <script src="../../../static/js/modules/system/announce-create.js" th:src="@{static/js/modules/system/announce-create.js(v=${version})}"></script>
 </head>
 <body>
 <div style="padding: 20px; background-color: #F2F2F2;">
     <div class="layui-row layui-col-space15">
-        <div class="layui-col-md6">
+        <div class="layui-col-md12">
             <div class="layui-card">
-                <div class="layui-card-header">选定的组织</div>
+                <div class="layui-card-header">接收部门<span style="color: #dc143c; ">（不选择任何部门的情况下，默认全员发送）</span></div>
                 <div class="layui-card-body">
                     <div id="orgCarts" class="layui-btn-container tag" lay-filter="orgCarts" lay-allowclose="true">
                     </div>
                 </div>
                 <div class="layui-card-body">
-                    <button class="layui-btn site-demo-layedit" data-type="orgAdd">添加</button>
+                    <button class="layui-btn site-demo-layedit" data-type="orgAdd">添加部门</button>
                     <button class="layui-btn site-demo-layedit" data-type="orgDeleteAll">全部删除</button>
                 </div>
             </div>
         </div>
+        <!--
         <div class="layui-col-md6">
             <div class="layui-card">
                 <div class="layui-card-header">选定的个人</div>
@@ -46,6 +46,7 @@
                 </div>
             </div>
         </div>
+        -->
         <div class="layui-col-md12">
             <div class="layui-card">
                 <div class="layui-card-body">
@@ -53,7 +54,7 @@
                 </div>
                 <div class="layui-card-body">
                     <div class="site-demo-button" style="margin-top: 20px;" align="right">
-                        <button id="createBtn" class="layui-btn site-demo-layedit" data-type="createAnnounce">发布新公告</button>
+                        <button id="createBtn" class="layui-btn site-demo-layedit" data-type="createAnnounce">发布</button>
                     </div>
                 </div>
             </div>
