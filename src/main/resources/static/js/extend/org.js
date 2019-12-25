@@ -1,8 +1,8 @@
 layui.define(['ajax', 'tree', 'layer'], function(exports){
-    var $ = layui.$;
-    var obj = {
+    let $ = layui.$;
+    let obj = {
         init : function(treeDivId, valueControlId, displayControlId, showCheckbox) {
-            var content = $("#"+treeDivId).html();
+            let content = $("#"+treeDivId).html();
             if (content == null || content.trim() == '' || typeof(content) == "undefined" || content.trim().length == 0) {
                 layui.ajax.get('api/organization/org/listWithTree', '', function (data) {
                     layui.tree.render({
@@ -16,7 +16,7 @@ layui.define(['ajax', 'tree', 'layer'], function(exports){
                             }
                             $(document.getElementById(valueControlId)).val(obj.data.id);
                             $(document.getElementById(displayControlId)).val(obj.data.path);
-                            var children = obj.data.children;
+                            let children = obj.data.children;
                             if (children == null || typeof(children) == "undefined" || children.length <= 0) {
                                 layer.closeAll('page');
                             }
@@ -36,8 +36,7 @@ layui.define(['ajax', 'tree', 'layer'], function(exports){
 
         open : function(treeDivId, needConfirmBtn, valueControlId, displayControlId) {
             if (needConfirmBtn) {
-                layer.open({
-                    type: 1,
+                layui.admin.popup({
                     title: '请选择部门',
                     area: ['40%', '60%'],
                     content: $("#"+treeDivId),
@@ -48,7 +47,7 @@ layui.define(['ajax', 'tree', 'layer'], function(exports){
                     }
                 });
             } else {
-                layer.open({
+                layui.admin.popup({
                     type: 1,
                     title: '请选择部门',
                     area: ['40%', '60%'],
@@ -60,21 +59,21 @@ layui.define(['ajax', 'tree', 'layer'], function(exports){
         },
 
         confirm : function(treeDivId, valueControlId, displayControlId) {
-            var checkData = layui.tree.getChecked("orgTree_"+treeDivId);
+            let checkData = layui.tree.getChecked("orgTree_"+treeDivId);
             if (checkData == null || checkData == '') {
                 return;
             }
 
-            var root = checkData[0];
-            var value = '';
-            var text = '';
+            let root = checkData[0];
+            let value = '';
+            let text = '';
 
-            var allData = this.recursionChild(root);
+            let allData = this.recursionChild(root);
 
-            var idTexts = allData.split(",");
-            var length = idTexts.length;
-            for (var i=0; i<length; i++) {
-                var idText = idTexts[i].split("$");
+            let idTexts = allData.split(",");
+            let length = idTexts.length;
+            for (let i=0; i<length; i++) {
+                let idText = idTexts[i].split("$");
                 value += idText[0] + ",";
                 text += idText[1] + ",";
             }
@@ -85,14 +84,14 @@ layui.define(['ajax', 'tree', 'layer'], function(exports){
         },
 
         recursionChild : function(node) {
-            var result = '';
-            var children = node.children;
+            let result = '';
+            let children = node.children;
 
             if (children == null || children.length <= 0) {
                 return node.id + "$" + node.title;
             } else {
-                var length = children.length;
-                for (var i=0; i<length; i++) {
+                let length = children.length;
+                for (let i=0; i<length; i++) {
                     result += this.recursionChild(children[i]) + ",";
                 }
                 return result.substring(0, result.length - 1);
