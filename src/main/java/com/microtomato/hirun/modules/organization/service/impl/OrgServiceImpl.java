@@ -76,16 +76,6 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
     @Override
     public List<Org> listOrgsSecurity() {
         List<Org> allOrgs = this.listAllOrgs();
-        log.debug("-------------------all_org--------------------"+SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_ORG));
-        log.debug("-------------------SECURITY_ALL_BU--------------------"+SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_BU));
-        log.debug("-------------------SECURITY_ALL_SUB_COMPANY--------------------"+SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_SUB_COMPANY));
-        log.debug("-------------------SECURITY_ALL_SHOP--------------------"+SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_SHOP));
-        log.debug("-------------------SECURITY_SELF_BU--------------------"+SecurityUtils.hasFuncId(OrgConst.SECURITY_SELF_BU));
-        log.debug("-------------------SECURITY_SELF_SHOP--------------------"+SecurityUtils.hasFuncId(OrgConst.SECURITY_SELF_SHOP));
-        log.debug("-------------------SECURITY_ALL_COMANY_SHOP--------------------"+SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_COMANY_SHOP));
-        log.debug("-------------------SECURITY_SELF_SHOP--------------------"+SecurityUtils.hasFuncId(OrgConst.SECURITY_SELF_SHOP));
-        log.debug("-------------------SECURITY_SELF_SUB_COMPANY--------------------"+SecurityUtils.hasFuncId(OrgConst.SECURITY_SELF_SUB_COMPANY));
-
 
         if (SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_ORG)) {
             return allOrgs;
