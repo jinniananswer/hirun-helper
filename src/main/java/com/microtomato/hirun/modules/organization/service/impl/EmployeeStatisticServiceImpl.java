@@ -1,10 +1,13 @@
 package com.microtomato.hirun.modules.organization.service.impl;
 
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
+import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeePieStatisticDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.StatisticBarDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.StatisticBarValueDTO;
+import com.microtomato.hirun.modules.organization.entity.po.Org;
 import com.microtomato.hirun.modules.organization.mapper.EmployeeMapper;
 import com.microtomato.hirun.modules.organization.service.IEmployeeStatisticService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
@@ -37,8 +40,14 @@ public class EmployeeStatisticServiceImpl implements IEmployeeStatisticService {
      * @return
      */
     @Override
-    public List<EmployeePieStatisticDTO> countBySex() {
-        List<EmployeePieStatisticDTO> sexStatistics = this.employeeMapper.countBySex();
+    public List<EmployeePieStatisticDTO> countBySex(Long orgId) {
+        OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class);
+        if (orgId == null) {
+            Org root = orgDO.getRoot();
+            orgId = root.getOrgId();
+        }
+        String orgIds = orgDO.getOrgLine(orgId);
+        List<EmployeePieStatisticDTO> sexStatistics = this.employeeMapper.countBySex(orgIds);
 
         if (ArrayUtils.isNotEmpty(sexStatistics)) {
             for (EmployeePieStatisticDTO sexStatistic : sexStatistics) {
@@ -54,8 +63,14 @@ public class EmployeeStatisticServiceImpl implements IEmployeeStatisticService {
      * @return
      */
     @Override
-    public List<EmployeePieStatisticDTO> countByAge() {
-        List<EmployeePieStatisticDTO> ageStatistics = this.employeeMapper.countByAge();
+    public List<EmployeePieStatisticDTO> countByAge(Long orgId) {
+        OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class);
+        if (orgId == null) {
+            Org root = orgDO.getRoot();
+            orgId = root.getOrgId();
+        }
+        String orgIds = orgDO.getOrgLine(orgId);
+        List<EmployeePieStatisticDTO> ageStatistics = this.employeeMapper.countByAge(orgIds);
         if (ArrayUtils.isNotEmpty(ageStatistics)) {
             for (EmployeePieStatisticDTO ageStatistic : ageStatistics) {
                 ageStatistic.setName(ageStatistic.getName() + ": " + ageStatistic.getNum());
@@ -65,8 +80,14 @@ public class EmployeeStatisticServiceImpl implements IEmployeeStatisticService {
     }
 
     @Override
-    public List<EmployeePieStatisticDTO> countByJobRoleNature() {
-        List<EmployeePieStatisticDTO> jobRoleNatureStatistics = this.employeeMapper.countByJobRoleNature();
+    public List<EmployeePieStatisticDTO> countByJobRoleNature(Long orgId) {
+        OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class);
+        if (orgId == null) {
+            Org root = orgDO.getRoot();
+            orgId = root.getOrgId();
+        }
+        String orgIds = orgDO.getOrgLine(orgId);
+        List<EmployeePieStatisticDTO> jobRoleNatureStatistics = this.employeeMapper.countByJobRoleNature(orgIds);
 
         if (ArrayUtils.isNotEmpty(jobRoleNatureStatistics)) {
             for (EmployeePieStatisticDTO jobRoleNatureStatistic : jobRoleNatureStatistics) {
@@ -81,8 +102,14 @@ public class EmployeeStatisticServiceImpl implements IEmployeeStatisticService {
     }
 
     @Override
-    public List<EmployeePieStatisticDTO> countByCompanyAge() {
-        List<EmployeePieStatisticDTO> ageStatistics = this.employeeMapper.countByCompanyAge();
+    public List<EmployeePieStatisticDTO> countByCompanyAge(Long orgId) {
+        OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class);
+        if (orgId == null) {
+            Org root = orgDO.getRoot();
+            orgId = root.getOrgId();
+        }
+        String orgIds = orgDO.getOrgLine(orgId);
+        List<EmployeePieStatisticDTO> ageStatistics = this.employeeMapper.countByCompanyAge(orgIds);
 
         if (ArrayUtils.isNotEmpty(ageStatistics)) {
             for (EmployeePieStatisticDTO ageStatistic : ageStatistics) {
@@ -93,8 +120,14 @@ public class EmployeeStatisticServiceImpl implements IEmployeeStatisticService {
     }
 
     @Override
-    public List<EmployeePieStatisticDTO> countByEducationLevel() {
-        List<EmployeePieStatisticDTO> educationLevelStatistics = this.employeeMapper.countByEducationLevel();
+    public List<EmployeePieStatisticDTO> countByEducationLevel(Long orgId) {
+        OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class);
+        if (orgId == null) {
+            Org root = orgDO.getRoot();
+            orgId = root.getOrgId();
+        }
+        String orgIds = orgDO.getOrgLine(orgId);
+        List<EmployeePieStatisticDTO> educationLevelStatistics = this.employeeMapper.countByEducationLevel(orgIds);
 
         if (ArrayUtils.isNotEmpty(educationLevelStatistics)) {
             for (EmployeePieStatisticDTO educationLevelStatistic : educationLevelStatistics) {
@@ -109,8 +142,14 @@ public class EmployeeStatisticServiceImpl implements IEmployeeStatisticService {
     }
 
     @Override
-    public List<EmployeePieStatisticDTO> countByType() {
-        List<EmployeePieStatisticDTO> typeStatistics = this.employeeMapper.countByType();
+    public List<EmployeePieStatisticDTO> countByType(Long orgId) {
+        OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class);
+        if (orgId == null) {
+            Org root = orgDO.getRoot();
+            orgId = root.getOrgId();
+        }
+        String orgIds = orgDO.getOrgLine(orgId);
+        List<EmployeePieStatisticDTO> typeStatistics = this.employeeMapper.countByType(orgIds);
 
         if (ArrayUtils.isNotEmpty(typeStatistics)) {
             for (EmployeePieStatisticDTO typeStatistic : typeStatistics) {

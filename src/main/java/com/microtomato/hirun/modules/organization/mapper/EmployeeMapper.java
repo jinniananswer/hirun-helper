@@ -100,8 +100,8 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
      * 按性别统计员工信息
      * @return
      */
-    @Select("select sex name, count(1) num from ins_employee where status = '0' group by sex ")
-    List<EmployeePieStatisticDTO> countBySex();
+    @Select("select sex name, count(1) num from ins_employee a, ins_employee_job_role b where b.employee_id = a.employee_id and a.status = '0' and (now() between b.start_date and b.end_date) and b.org_id in (${orgId}) group by sex ")
+    List<EmployeePieStatisticDTO> countBySex(@Param("orgId")String orgId);
 
     /**
      * 按年龄段统计员工信息
@@ -115,49 +115,49 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
             "            when TIMESTAMPDIFF(YEAR,birthday,NOW()) between 51 and 60 then '51-60' " +
             "            when TIMESTAMPDIFF(YEAR,birthday,NOW()) > 60 then '60+' " +
             "       end as age " +
-            "from ins_employee " +
-            "where birthday is not null and status = '0') temp_employee " +
+            "from ins_employee a, ins_employee_job_role b " +
+            "where b.employee_id = a.employee_id and a.status = '0' and (now() between b.start_date and b.end_date) and b.org_id in (${orgId}) and birthday is not null) temp_employee " +
             "group by age " +
             "order by age asc")
-    List<EmployeePieStatisticDTO> countByAge();
+    List<EmployeePieStatisticDTO> countByAge(@Param("orgId")String orgId);
 
     /**
      * 按岗位性质统计员工信息
      * @return
      */
-    @Select("select b.job_role_nature name, count(1) num from ins_employee a, ins_employee_job_role b where b.employee_id = a.employee_id and a.status = '0' and now() between b.start_date and b.end_date group by b.job_role_nature ")
-    List<EmployeePieStatisticDTO> countByJobRoleNature();
+    @Select("select b.job_role_nature name, count(1) num from ins_employee a, ins_employee_job_role b where b.employee_id = a.employee_id and a.status = '0' and (now() between b.start_date and b.end_date) and b.org_id in (${orgId}) group by b.job_role_nature ")
+    List<EmployeePieStatisticDTO> countByJobRoleNature(@Param("orgId")String orgId);
 
     /**
      * 按司龄统计员工信息
      * @return
      */
     @Select("select company_age name, count(*) num from (" +
-            "select case when TIMESTAMPDIFF(YEAR,in_date,NOW()) between 0 and 1 then '小于1年' " +
+            "select case when TIMESTAMPDIFF(YEAR,in_date,NOW()) between 0 and 0.9 then '小于1年' " +
             "            when TIMESTAMPDIFF(YEAR,in_date,NOW()) between 1 and 3 then '1-3年' " +
             "            when TIMESTAMPDIFF(YEAR,in_date,NOW()) between 3.1 and 5 then '3-5年' " +
             "            when TIMESTAMPDIFF(YEAR,in_date,NOW()) between 5.1 and 10 then '5-10年' " +
             "            when TIMESTAMPDIFF(YEAR,in_date,NOW()) > 10 then '10年+' " +
             "       end as company_age " +
-            "from ins_employee " +
-            "where in_date is not null and status = '0') temp_employee " +
+            "from ins_employee a, ins_employee_job_role b " +
+            "where b.employee_id = a.employee_id and (now() between b.start_date and end_date) and a.in_date is not null and a.status = '0' and b.org_id in (${orgId}) ) temp_employee " +
             "group by company_age " +
             "order by company_age asc")
-    List<EmployeePieStatisticDTO> countByCompanyAge();
+    List<EmployeePieStatisticDTO> countByCompanyAge(@Param("orgId")String orgId);
 
     /**
      * 按最高学历统计员工信息
      * @return
      */
-    @Select("select education_level name, count(1) num from ins_employee where status = '0' group by education_level ")
-    List<EmployeePieStatisticDTO> countByEducationLevel();
+    @Select("select education_level name, count(1) num from ins_employee a, ins_employee_job_role b where b.employee_id = a.employee_id and (now() between b.start_date and b.end_date) and b.org_id in (${orgId}) and a.status = '0' group by education_level ")
+    List<EmployeePieStatisticDTO> countByEducationLevel(@Param("orgId")String orgId);
 
     /**
      * 按员工在职类型统计员工信息
      * @return
      */
-    @Select("select type name, count(1) num from ins_employee where status = '0' group by type ")
-    List<EmployeePieStatisticDTO> countByType();
+    @Select("select type name, count(1) num from ins_employee a, ins_employee_job_role b where b.employee_id = a.employee_id and (now() between b.start_date and b.end_date) and b.org_id in (${orgId}) and a.status = '0' group by type ")
+    List<EmployeePieStatisticDTO> countByType(@Param("orgId")String orgId);
 
     /**
      * 根据员工id查询员工有效信息

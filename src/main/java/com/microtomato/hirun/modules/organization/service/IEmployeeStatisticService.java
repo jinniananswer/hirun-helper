@@ -16,37 +16,37 @@ public interface IEmployeeStatisticService {
      * 按性别统计员工数量
      * @return
      */
-    List<EmployeePieStatisticDTO> countBySex();
+    List<EmployeePieStatisticDTO> countBySex(Long orgId);
 
     /**
      * 按年龄段统计员工数量
      * @return
      */
-    List<EmployeePieStatisticDTO> countByAge();
+    List<EmployeePieStatisticDTO> countByAge(Long orgId);
 
     /**
      * 按岗位性质统计员工数量
      * @return
      */
-    List<EmployeePieStatisticDTO> countByJobRoleNature();
+    List<EmployeePieStatisticDTO> countByJobRoleNature(Long orgId);
 
     /**
      * 按司龄统计员工数量
      * @return
      */
-    List<EmployeePieStatisticDTO> countByCompanyAge();
+    List<EmployeePieStatisticDTO> countByCompanyAge(Long orgId);
 
     /**
      * 按最高学历统计员工数量
      * @return
      */
-    List<EmployeePieStatisticDTO> countByEducationLevel();
+    List<EmployeePieStatisticDTO> countByEducationLevel(Long orgId);
 
     /**
      * 按在职类型统计员工数量
      * @return
      */
-    List<EmployeePieStatisticDTO> countByType();
+    List<EmployeePieStatisticDTO> countByType(Long orgId);
 
     /**
      * 统计一年内入职和离职的人数

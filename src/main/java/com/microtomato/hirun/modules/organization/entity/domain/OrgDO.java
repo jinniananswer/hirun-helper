@@ -118,7 +118,12 @@ public class OrgDO {
             return null;
         }
 
-        return this.findParent("0", orgs, this.org.getOrgId());
+        for (Org org : orgs) {
+            if (org.getParentOrgId() == null) {
+                return org;
+            }
+        }
+        return null;
     }
 
     /**
@@ -292,6 +297,23 @@ public class OrgDO {
         }
         String orgLine = buildSubOrg(orgId, orgs, orgId + "");
         return orgLine;
+    }
+
+    /**
+     * 获取其下所有的组织机构
+     * @param hasSelf
+     * @return
+     */
+    public List<Org> getChildren(boolean hasSelf) {
+        List<Org> children = this.orgService.findChildren(this.org);
+
+        if (children == null) {
+            children = new ArrayList<>();
+        }
+        if (hasSelf) {
+            children.add(this.org);
+        }
+        return null;
     }
 
     /**

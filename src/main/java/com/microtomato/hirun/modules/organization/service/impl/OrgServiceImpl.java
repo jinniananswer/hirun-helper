@@ -255,6 +255,20 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
         return children;
     }
 
+    /**
+     * 查询某组织下的所有组织
+     * @param parent
+     * @return
+     */
+    @Override
+    public List<Org> findChildren(Org parent) {
+        List<Org> allOrgs = this.listAllOrgs();
+        if (ArrayUtils.isEmpty(allOrgs)) {
+            return null;
+        }
+        return findChildren(parent, allOrgs);
+    }
+
     @Override
     public List<TreeNode> listOrgTree() {
         List<Org> orgs = this.listOrgsSecurity();

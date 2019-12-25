@@ -32,8 +32,8 @@ public class EmployeeStatisticController {
 
     @PostMapping("/countBySex")
     @RestResult
-    public PieChart countBySex() {
-        List<EmployeePieStatisticDTO> sexStatistics = this.employeeStatisticService.countBySex();
+    public PieChart countBySex(Long orgId) {
+        List<EmployeePieStatisticDTO> sexStatistics = this.employeeStatisticService.countBySex(orgId);
 
         if (ArrayUtils.isEmpty(sexStatistics)) {
             return null;
@@ -51,8 +51,8 @@ public class EmployeeStatisticController {
 
     @PostMapping("/countByAge")
     @RestResult
-    public PieChart countByAge() {
-        List<EmployeePieStatisticDTO> ageStatistics = this.employeeStatisticService.countByAge();
+    public PieChart countByAge(Long orgId) {
+        List<EmployeePieStatisticDTO> ageStatistics = this.employeeStatisticService.countByAge(orgId);
 
         if (ArrayUtils.isEmpty(ageStatistics)) {
             return null;
@@ -70,8 +70,8 @@ public class EmployeeStatisticController {
 
     @PostMapping("/countByJobRoleNature")
     @RestResult
-    public PieChart countByJobRoleNature() {
-        List<EmployeePieStatisticDTO> jobRoleNatureStatistics = this.employeeStatisticService.countByJobRoleNature();
+    public PieChart countByJobRoleNature(Long orgId) {
+        List<EmployeePieStatisticDTO> jobRoleNatureStatistics = this.employeeStatisticService.countByJobRoleNature(orgId);
 
         if (ArrayUtils.isEmpty(jobRoleNatureStatistics)) {
             return null;
@@ -89,8 +89,8 @@ public class EmployeeStatisticController {
 
     @PostMapping("/countByCompanyAge")
     @RestResult
-    public PieChart countByCompanyAge() {
-        List<EmployeePieStatisticDTO> companyAgeStatistics = this.employeeStatisticService.countByCompanyAge();
+    public PieChart countByCompanyAge(Long orgId) {
+        List<EmployeePieStatisticDTO> companyAgeStatistics = this.employeeStatisticService.countByCompanyAge(orgId);
 
         if (ArrayUtils.isEmpty(companyAgeStatistics)) {
             return null;
@@ -108,8 +108,8 @@ public class EmployeeStatisticController {
 
     @PostMapping("/countByEducationLevel")
     @RestResult
-    public PieChart countByEducationLevel() {
-        List<EmployeePieStatisticDTO> educationLevelStatistics = this.employeeStatisticService.countByEducationLevel();
+    public PieChart countByEducationLevel(Long orgId) {
+        List<EmployeePieStatisticDTO> educationLevelStatistics = this.employeeStatisticService.countByEducationLevel(orgId);
 
         if (ArrayUtils.isEmpty(educationLevelStatistics)) {
             return null;
@@ -127,8 +127,8 @@ public class EmployeeStatisticController {
 
     @PostMapping("/countByType")
     @RestResult
-    public PieChart countByType() {
-        List<EmployeePieStatisticDTO> typeStatistics = this.employeeStatisticService.countByType();
+    public PieChart countByType(Long orgId) {
+        List<EmployeePieStatisticDTO> typeStatistics = this.employeeStatisticService.countByType(orgId);
 
         if (ArrayUtils.isEmpty(typeStatistics)) {
             return null;
