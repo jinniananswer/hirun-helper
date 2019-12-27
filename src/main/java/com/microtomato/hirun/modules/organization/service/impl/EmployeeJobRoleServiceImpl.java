@@ -8,10 +8,12 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.organization.entity.consts.EmployeeConst;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeOrgGroupByDTO;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
 import com.microtomato.hirun.modules.organization.mapper.EmployeeJobRoleMapper;
 import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -28,6 +30,9 @@ import java.util.List;
 @Slf4j
 @Service
 public class EmployeeJobRoleServiceImpl extends ServiceImpl<EmployeeJobRoleMapper, EmployeeJobRole> implements IEmployeeJobRoleService {
+
+    @Autowired
+    private EmployeeJobRoleMapper employeeJobRoleMapper;
 
     /**
      * 根据员工ID获取员工基本信息
@@ -86,5 +91,10 @@ public class EmployeeJobRoleServiceImpl extends ServiceImpl<EmployeeJobRoleMappe
         employeeJobRole.setUpdateTime(LocalDateTime.now());
 
         return this.update(employeeJobRole,updateWrapper);
+    }
+
+    @Override
+    public List<EmployeeOrgGroupByDTO> countGroupByOrgId() {
+        return employeeJobRoleMapper.countGroupByOrgId();
     }
 }

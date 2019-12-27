@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.organization.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.data.TreeNode;
@@ -65,7 +66,12 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
     @Override
     @Cacheable(value = "all-org")
     public List<Org> listAllOrgs() {
-        List<Org> orgs = this.list(new QueryWrapper<Org>().lambda().eq(Org::getStatus, "0"));
+        List<Org> orgs = this.list(
+            Wrappers.<Org>lambdaQuery()
+                .select(Org::getOrgId, Org::getParentOrgId, Org::getName, Org::getType, Org::getEnterpriseId, Org::getCity, Org::getStatus)
+                .eq(Org::getStatus, "0")
+
+        );
         return orgs;
     }
 
