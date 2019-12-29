@@ -3,10 +3,7 @@ package com.microtomato.hirun.modules.organization.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.microtomato.hirun.modules.organization.entity.dto.EmployeeDTO;
-import com.microtomato.hirun.modules.organization.entity.dto.EmployeeExampleDTO;
-import com.microtomato.hirun.modules.organization.entity.dto.EmployeeInfoDTO;
-import com.microtomato.hirun.modules.organization.entity.dto.EmployeeQueryConditionDTO;
+import com.microtomato.hirun.modules.organization.entity.dto.*;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.entity.po.StatEmployeeQuantityMonth;
 
@@ -70,5 +67,5 @@ public interface IEmployeeService extends IService<Employee> {
      * 按部门统计员工数量
      * @return
      */
-    List<StatEmployeeQuantityMonth> countEmployeeQuantityByOrgId();
+    List<EmployeeQuantityStatDTO> countEmployeeQuantityByOrgId();
 }

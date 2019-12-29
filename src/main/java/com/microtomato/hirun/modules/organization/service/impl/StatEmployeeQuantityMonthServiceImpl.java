@@ -2,24 +2,19 @@ package com.microtomato.hirun.modules.organization.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.microtomato.hirun.framework.data.TreeNode;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
-import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.ArrayUtils;
-import com.microtomato.hirun.framework.util.SecurityUtils;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
-import com.microtomato.hirun.framework.util.WebContextUtils;
+import com.microtomato.hirun.framework.util.TreeUtils;
 import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeQuantityStatDTO;
-import com.microtomato.hirun.modules.organization.entity.po.Org;
 import com.microtomato.hirun.modules.organization.entity.po.StatEmployeeQuantityMonth;
 import com.microtomato.hirun.modules.organization.mapper.StatEmployeeQuantityMonthMapper;
 import com.microtomato.hirun.modules.organization.service.IOrgService;
 import com.microtomato.hirun.modules.organization.service.IStatEmployeeQuantityMonthService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.microtomato.hirun.modules.system.entity.consts.FuncConst;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -54,10 +49,30 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
      * @return
      */
     @Override
-    public StatEmployeeQuantityMonth queryCountRecord(String year, String month, Long orgId) {
-        StatEmployeeQuantityMonth statEmployeeQuantityMonth = this.mapper.selectOne(new QueryWrapper<StatEmployeeQuantityMonth>().lambda()
-                .eq(StatEmployeeQuantityMonth::getYear, year)
-                .eq(StatEmployeeQuantityMonth::getOrgId, orgId).eq(StatEmployeeQuantityMonth::getMonth, month));
+    public StatEmployeeQuantityMonth queryCountRecord(String year, String month, Long orgId, String jobRole, String jobRoleNature, String orgNature) {
+        LambdaQueryWrapper<StatEmployeeQuantityMonth> queryWrapper = new QueryWrapper<StatEmployeeQuantityMonth>().lambda();
+        if (StringUtils.isEmpty(jobRole)) {
+            queryWrapper.isNull(StatEmployeeQuantityMonth::getJobRole);
+        } else {
+            queryWrapper.eq(StatEmployeeQuantityMonth::getJobRole, jobRole);
+        }
+
+        if (StringUtils.isEmpty(jobRoleNature)) {
+            queryWrapper.apply("(job_role_nature is null or job_role_nature='')");
+        } else {
+            queryWrapper.eq(StatEmployeeQuantityMonth::getJobRoleNature, jobRoleNature);
+        }
+
+        if (StringUtils.isEmpty(orgNature)) {
+            queryWrapper.apply("(org_nature is null or org_nature='')");
+        } else {
+            queryWrapper.eq(StatEmployeeQuantityMonth::getOrgNature, orgNature);
+        }
+
+        queryWrapper.eq(StatEmployeeQuantityMonth::getYear, year);
+        queryWrapper.eq(StatEmployeeQuantityMonth::getOrgId, orgId);
+        queryWrapper.eq(StatEmployeeQuantityMonth::getMonth, month);
+        StatEmployeeQuantityMonth statEmployeeQuantityMonth = this.mapper.selectOne(queryWrapper);
         return statEmployeeQuantityMonth;
     }
 
@@ -75,48 +90,32 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
             Calendar date = Calendar.getInstance();
             year = String.valueOf(date.get(Calendar.YEAR));
         }
-        UserContext userContext = WebContextUtils.getUserContext();
-        Long userOrgId = userContext.getOrgId();
-        OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, userOrgId);
 
-
+        //选择部门为空，则根据权限计算默认可查询的部门数据
+        String orgLine = "";
         if (orgId == null) {
-            if (SecurityUtils.hasFuncId(FuncConst.ALL_ORG)) {
-                orgId = 122L;
-            } else if (SecurityUtils.hasFuncId(FuncConst.ALL_CITY)) {
-                orgId = 7L;
-            } else if (SecurityUtils.hasFuncId(FuncConst.ALL_WOODEN)) {
-                orgId = 9L;
-            } else if (SecurityUtils.hasFuncId(FuncConst.ALL_SHOP)) {
-                Org parentOrg = orgDO.findParent("2", orgService.listAllOrgs(), userOrgId);
-                orgId = parentOrg.getOrgId();
-            } else {
-                orgId = userOrgId;
-            }
+            orgLine = orgService.listOrgSecurityLine();
+        } else {
+            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+            orgLine = orgDO.getOrgLine(orgId);
         }
 
-        String orgLine = orgDO.getOrgLine(orgId);
-
-        LambdaQueryWrapper queryWrapper = Wrappers.<StatEmployeeQuantityMonth>lambdaQuery()
-                .eq(StatEmployeeQuantityMonth::getYear, year)
-                .in(StatEmployeeQuantityMonth::getOrgId, Arrays.asList(orgLine.split(",")));
-
-        List<StatEmployeeQuantityMonth> recordList = this.mapper.selectList(queryWrapper);
+        List<EmployeeQuantityStatDTO> recordList = this.mapper.countByOrgId(year, orgLine);
 
         if (ArrayUtils.isEmpty(recordList)) {
             return new ArrayList<>();
         }
         //将查询结果按部门归类
-        Map<Long, List<StatEmployeeQuantityMonth>> classifyMap = new HashMap<>();
+        Map<Long, List<EmployeeQuantityStatDTO>> classifyMap = new HashMap<>();
         for (int i = 0; i < recordList.size(); i++) {
-            StatEmployeeQuantityMonth record = recordList.get(i);
+            EmployeeQuantityStatDTO record = recordList.get(i);
 
             if (!classifyMap.containsKey(record.getOrgId())) {
-                List<StatEmployeeQuantityMonth> classifyList = new ArrayList<>();
+                List<EmployeeQuantityStatDTO> classifyList = new ArrayList<>();
                 classifyList.add(record);
                 classifyMap.put(record.getOrgId(), classifyList);
             } else {
-                List<StatEmployeeQuantityMonth> tempList = classifyMap.get(record.getOrgId());
+                List<EmployeeQuantityStatDTO> tempList = classifyMap.get(record.getOrgId());
                 tempList.add(record);
             }
         }
@@ -125,86 +124,124 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
         List<Map<String, String>> resultList = new ArrayList<>();
         //取每个部门的集合，将竖表变成横表
         for (Long key : keys) {
-            List<StatEmployeeQuantityMonth> statEmployeeQuantityMonths = classifyMap.get(key);
+            List<EmployeeQuantityStatDTO> statEmployeeQuantityMonths = classifyMap.get(key);
 
             Map<String, String> resultMap = new HashMap<>();
-            OrgDO resultOrgDo = SpringContextUtils.getBean(OrgDO.class, key);
-            resultMap.put("orgName", resultOrgDo.getCompanyLinePath());
-            resultMap.put("orgId", key + "");
-            resultMap.put("parentOrgId", resultOrgDo.getParentOrgId() + "");
-
-
             for (int i = 0; i < statEmployeeQuantityMonths.size(); i++) {
-                StatEmployeeQuantityMonth statEmployeeQuantityMonth = statEmployeeQuantityMonths.get(i);
-                resultMap.put("count_" + statEmployeeQuantityMonth.getMonth(), statEmployeeQuantityMonth.getEmployeeQuantity() + "");
+                EmployeeQuantityStatDTO statEmployeeQuantityMonth = statEmployeeQuantityMonths.get(i);
+                resultMap.put("count_" + statEmployeeQuantityMonth.getMonth(), statEmployeeQuantityMonth.getEmployeeSum() + "");
+                resultMap.put("orgName", statEmployeeQuantityMonth.getOrgName());
+                resultMap.put("orgId", key + "");
+                resultMap.put("parentOrgId", statEmployeeQuantityMonth.getParentOrgId() + "");
             }
             resultList.add(resultMap);
         }
-        List<EmployeeQuantityStatDTO> list = getTreeList(resultList);
-        return list;
+        List<EmployeeQuantityStatDTO> list = turnToEntityList(resultList);
+        List<TreeNode> treeNodeList = this.getTreeList(list);
+        List<EmployeeQuantityStatDTO> lastList=new ArrayList<>();
+        last(treeNodeList,lastList);
+        Collections.reverse(lastList);
+        return lastList;
     }
 
+    /**
+     * 将Map结构转换成dto
+     *
+     * @param list
+     * @return
+     */
+    private List<EmployeeQuantityStatDTO> turnToEntityList(List<Map<String, String>> list) {
+        if (ArrayUtils.isEmpty(list)) {
+            return null;
+        }
+        List<EmployeeQuantityStatDTO> employeeQuantityStatDTOList = new ArrayList<>();
+        for (Map<String, String> employeeStat : list) {
+            EmployeeQuantityStatDTO employeeQuantityStatDTO = new EmployeeQuantityStatDTO();
+            employeeQuantityStatDTO = mapToDTO(employeeStat, employeeQuantityStatDTO);
+            employeeQuantityStatDTOList.add(employeeQuantityStatDTO);
+        }
+        return employeeQuantityStatDTOList;
+    }
 
-    private List<EmployeeQuantityStatDTO> getTreeList(List<Map<String, String>> list) {
+    /**
+     * 构造一颗树
+     *
+     * @param list
+     * @return
+     */
+    private List<TreeNode> getTreeList(List<EmployeeQuantityStatDTO> list) {
         if (ArrayUtils.isEmpty(list)) {
             return new ArrayList<>();
         }
-        List<EmployeeQuantityStatDTO> nodes = new ArrayList<>();
+        List<TreeNode> nodes = new ArrayList<>();
 
-        for (Map<String, String> employeeStat : list) {
-            EmployeeQuantityStatDTO node = new EmployeeQuantityStatDTO();
-            node = mapToDTO(employeeStat, node);
+        for (EmployeeQuantityStatDTO dto : list) {
+            TreeNode node = new TreeNode();
+            node.setId(dto.getOrgId() + "");
 
-            if (node.getParentOrgId() == null) {
+            if (dto.getParentOrgId() != null) {
+                node.setParentId(dto.getParentOrgId() + "");
+            } else {
                 node.setSpread(true);
             }
-            node.setNode(node);
+            node.setNode(dto);
             nodes.add(node);
         }
 
-        List<EmployeeQuantityStatDTO> tree = buildTree(nodes);
-
+        List<TreeNode> tree = TreeUtils.build(nodes);
         return tree;
     }
 
-    private void buildChildren(EmployeeQuantityStatDTO root, List<EmployeeQuantityStatDTO> nodes) {
-        List<EmployeeQuantityStatDTO> children = new ArrayList<>();
-
-        for (EmployeeQuantityStatDTO dto : nodes) {
-            if (dto.getParentOrgId() == null) {
-                continue;
-            }
-            if (dto.getParentOrgId().equals(root.getOrgId())) {
-                children.add(dto);
-                buildChildren(dto, nodes);
-            }
+    public void last(List<TreeNode> nodeList, List<EmployeeQuantityStatDTO> list) {
+        if (ArrayUtils.isEmpty(nodeList)) {
+            return;
         }
+        for (TreeNode treeNode : nodeList) {
+            EmployeeQuantityStatDTO dto = (EmployeeQuantityStatDTO) treeNode.getNode();
 
-        if (ArrayUtils.isNotEmpty(children)) {
-            root.setStatDTOS(children);
+            if(ArrayUtils.isEmpty(treeNode.getChildren()) ){
+                list.add(dto);
+            }else{
+                sumCount(treeNode, dto);
+                list.add(dto);
+                List<TreeNode> childNodeList = treeNode.getChildren();
+                last(childNodeList, list);
+            }
         }
     }
 
-    private List<EmployeeQuantityStatDTO> buildTree(List<EmployeeQuantityStatDTO> list) {
-        List<EmployeeQuantityStatDTO> roots = findRoot(list);
-        if (ArrayUtils.isEmpty(roots)) {
-            return new ArrayList<>();
+    private void sumCount(TreeNode treeNode, EmployeeQuantityStatDTO employeeQuantityStatDTO) {
+        if (treeNode == null) {
+            return;
         }
-        for (EmployeeQuantityStatDTO rootDto : roots) {
-            buildChildren(rootDto, list);
-        }
-        return roots;
-    }
+        EmployeeQuantityStatDTO dto = (EmployeeQuantityStatDTO) treeNode.getNode();
 
-    private List<EmployeeQuantityStatDTO> findRoot(List<EmployeeQuantityStatDTO> list) {
-        List<EmployeeQuantityStatDTO> roots = new ArrayList<>();
-        for (EmployeeQuantityStatDTO dto : list) {
-            if (dto.getParentOrgId() == null) {
-                roots.add(dto);
+        employeeQuantityStatDTO = getCount(employeeQuantityStatDTO, dto);
+
+        if (null != treeNode.getChildren() && treeNode.getChildren().size() > 0) {
+            List<TreeNode> childNodeList = treeNode.getChildren();
+            for (TreeNode childNode : childNodeList) {
+                sumCount(childNode, employeeQuantityStatDTO);
             }
         }
-        return roots;
     }
+
+    private EmployeeQuantityStatDTO getCount(EmployeeQuantityStatDTO parentDTO, EmployeeQuantityStatDTO childDTO) {
+        parentDTO.setFebruaryCount(parentDTO.getFebruaryCount() + childDTO.getFebruaryCount());
+        parentDTO.setJanurayCount(parentDTO.getJanurayCount() + childDTO.getFebruaryCount());
+        parentDTO.setMarchCount(parentDTO.getMayCount() + childDTO.getMarchCount());
+        parentDTO.setAprilCount(parentDTO.getAprilCount() + childDTO.getAprilCount());
+        parentDTO.setMayCount(parentDTO.getMayCount() + childDTO.getMayCount());
+        parentDTO.setJuneCount(parentDTO.getJuneCount() + childDTO.getJuneCount());
+        parentDTO.setJulyCount(parentDTO.getJulyCount() + childDTO.getJulyCount());
+        parentDTO.setAugustCount(parentDTO.getAugustCount() + childDTO.getAugustCount());
+        parentDTO.setSeptemberCount(parentDTO.getSeptemberCount() + childDTO.getSeptemberCount());
+        parentDTO.setOctoberCount(parentDTO.getOctoberCount() + childDTO.getOctoberCount());
+        parentDTO.setDecemberCount(parentDTO.getDecemberCount() + childDTO.getDecemberCount());
+        parentDTO.setNovemberCount(parentDTO.getNovemberCount() + childDTO.getNovemberCount());
+        return parentDTO;
+    }
+
 
     private EmployeeQuantityStatDTO mapToDTO(Map<String, String> map, EmployeeQuantityStatDTO employeeQuantityStatDTO) {
         if (StringUtils.isEmpty(map.get("count_1"))) {
@@ -276,4 +313,6 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
         }
         return employeeQuantityStatDTO;
     }
+
+
 }

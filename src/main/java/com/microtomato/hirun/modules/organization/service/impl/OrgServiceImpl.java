@@ -34,7 +34,7 @@ import java.util.Map;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author jinnian
@@ -61,6 +61,7 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
 
     /**
      * 列出所有有效组织数据，有缓存
+     *
      * @return
      */
     @Override
@@ -77,6 +78,7 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
 
     /**
      * 根据员工权限列出能看到的部门
+     *
      * @return
      */
     @Override
@@ -171,6 +173,7 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
 
     /**
      * 按组织类型列出所有符合条件的组织
+     *
      * @param type 组织类型
      * @return
      */
@@ -191,7 +194,8 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
 
     /**
      * 按组织类型在指定的组织链上列出所有符合条件的组织
-     * @param type 组织类型
+     *
+     * @param type     组织类型
      * @param orgLines 指定的组织链
      * @return
      */
@@ -211,8 +215,9 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
 
     /**
      * 根据传入的列表集合找到所有其下的子组织机构(包含父组织机构本身)
+     *
      * @param parents 父组织机构列表
-     * @param orgs 源组织机构列表
+     * @param orgs    源组织机构列表
      * @return
      */
     public List<Org> findChildren(List<Org> parents, List<Org> orgs) {
@@ -233,8 +238,9 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
 
     /**
      * 根据传入的列表集合找到所有其下的子组织机构（不包含父组织结构本身）
+     *
      * @param parent 父组织机构
-     * @param orgs 源组织机构列表
+     * @param orgs   源组织机构列表
      * @return
      */
     public List<Org> findChildren(Org parent, List<Org> orgs) {
@@ -253,6 +259,7 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
 
     /**
      * 查询某组织下的所有组织
+     *
      * @param parent
      * @return
      */
@@ -305,6 +312,7 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
 
     /**
      * 统计门店数量
+     *
      * @param areaType
      * @return
      */
@@ -333,4 +341,17 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
         return orgNums;
     }
 
+    @Override
+    public String listOrgSecurityLine() {
+        List<Org> orgs = this.listOrgsSecurity();
+        if (ArrayUtils.isEmpty(orgs)) {
+            return "";
+        }
+        String orgLine = "";
+
+        for (Org org : orgs) {
+            orgLine += org.getOrgId() + ",";
+        }
+        return orgLine.substring(0, orgLine.length() - 1);
+    }
 }
