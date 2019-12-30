@@ -34,6 +34,11 @@ public interface IEmployeeService extends IService<Employee> {
      */
     String getEmployeeNameEmployeeId(Long employeeId);
 
+    /**
+     *
+     * @param userId
+     * @return
+     */
     Employee queryByUserId(Long userId);
 
     /**
@@ -68,4 +73,11 @@ public interface IEmployeeService extends IService<Employee> {
      * @return
      */
     List<EmployeeQuantityStatDTO> countEmployeeQuantityByOrgId();
+
+    /**
+     * 根据父级递归查找所有下级员工
+     * @param parentEmployeeId
+     * @return
+     */
+    List<EmployeeInfoDTO> recursiveAllSubordinates(String parentEmployeeId);
 }

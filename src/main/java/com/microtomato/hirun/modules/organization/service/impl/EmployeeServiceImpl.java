@@ -11,7 +11,6 @@ import com.microtomato.hirun.modules.organization.entity.consts.EmployeeConst;
 import com.microtomato.hirun.modules.organization.entity.domain.EmployeeDO;
 import com.microtomato.hirun.modules.organization.entity.dto.*;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
-import com.microtomato.hirun.modules.organization.entity.po.StatEmployeeQuantityMonth;
 import com.microtomato.hirun.modules.organization.mapper.EmployeeMapper;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +20,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +54,7 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
      * 查询员工档案分页数据
      */
     public IPage<EmployeeInfoDTO> queryEmployeeList4Page(EmployeeQueryConditionDTO conditionDTO, Page<EmployeeQueryConditionDTO> employeePage) {
-        QueryWrapper<EmployeeQueryConditionDTO> queryWrapper=this.buildQuyerCondition(conditionDTO);
+        QueryWrapper<EmployeeQueryConditionDTO> queryWrapper = this.buildQuyerCondition(conditionDTO);
         IPage<EmployeeInfoDTO> iPage = employeeMapper.selectEmployeePage(employeePage, queryWrapper);
 
         return iPage;
@@ -98,7 +98,6 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
     }
 
     /**
-     *
      * @param conditionDTO
      * @return
      */
@@ -134,6 +133,38 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
     @Override
     public List<EmployeeQuantityStatDTO> countEmployeeQuantityByOrgId() {
         return employeeMapper.countEmployeeQuantityByOrgId();
+    }
+
+    /**
+     * 递归查找所有下级员工
+     *
+     * @param parentEmployeeId
+     * @return
+     */
+    @Override
+    public List<EmployeeInfoDTO> recursiveAllSubordinates(String parentEmployeeId) {
+        List<EmployeeInfoDTO> subordinates = this.employeeMapper.queryEmployeeByParentEmployeeIds(parentEmployeeId);
+
+        if (ArrayUtils.isEmpty(subordinates)) {
+            return subordinates;
+        }
+
+        List<EmployeeInfoDTO> resultList = new ArrayList<>();
+        resultList.addAll(subordinates);
+
+        String recursiveParentEmployeeIds = "";
+        for (EmployeeInfoDTO employee : subordinates) {
+            recursiveParentEmployeeIds += employee.getEmployeeId() + ",";
+        }
+        recursiveParentEmployeeIds = recursiveParentEmployeeIds.substring(0, recursiveParentEmployeeIds.length() - 1);
+
+        if (StringUtils.isNotEmpty(recursiveParentEmployeeIds)) {
+            List<EmployeeInfoDTO> tmpSubordinates = recursiveAllSubordinates(recursiveParentEmployeeIds);
+            if (ArrayUtils.isNotEmpty(tmpSubordinates)) {
+                resultList.addAll(tmpSubordinates);
+            }
+        }
+        return resultList;
     }
 
     /**
@@ -190,7 +221,7 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         if (StringUtils.equals(conditionDTO.getOtherStatus(), EmployeeConst.EMPLOYEE_TRANS_STATUS)) {
             queryWrapper.exists("select * from ins_employee_trans_detail iep where a.employee_id=iep.employee_id  " +
                     "and iep.trans_type='2' and (now() between iep.start_time and iep.end_time)" +
-                    "and (iep.source_org_id in(" + conditionDTO.getOrgLine() + ") or iep.org_id in (" +  conditionDTO.getOrgLine() + "))");
+                    "and (iep.source_org_id in(" + conditionDTO.getOrgLine() + ") or iep.org_id in (" + conditionDTO.getOrgLine() + "))");
         }
         //是黑名单
         if (StringUtils.equals(conditionDTO.getIsBlackList(), EmployeeConst.YES)) {

@@ -217,14 +217,34 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
      * 按部门统计员工数量
      * @return
      */
-    @Select("select y.org_id,x.job_role,x.job_role_nature,IFNULL(x.employee_sum,0) as employee_sum,inMonths,x.nature as org_nature from ins_org y LEFT JOIN  " +
-            " (select k.org_id,k.job_role,k.job_role_nature,k.nature,k.inMonths,count(*) as employee_sum from ( " +
-            " select case when TIMESTAMPDIFF(MONTH,in_date,NOW()) between 0 and 9 then 'l' " +
-            "             when TIMESTAMPDIFF(MONTH,in_date,NOW()) > 9  then 'm' " +
-            " end as inMonths,b.org_id,b.job_role,b.job_role_nature,a.nature "+
-            " from ins_employee c, ins_org a ,ins_employee_job_role b "+
-            " where b.employee_id=c.employee_id and b.org_id=a.org_id and now() BETWEEN b.start_date and b.end_date and c.`status`='0' and a.`status`='0' ) k"+
-            " GROUP BY k.org_id , k.job_role,k.job_role_nature,k.nature,k.inMonths) x on (x.org_id=y.org_id)")
-
+    @Select("SELECT y.org_id,x.job_role,x.job_role_nature,y.nature as org_nature,IFNULL(x.job_grade,0) as job_grade ,IFNULL(x.less_month_num,0) as less_month_num,IFNULL(x.more_month_num,0) as more_month_num,IFNULL(x.employee_sum,0) as employee_sum,y.city,y.type  " +
+            " (select k.org_id,k.job_role,k.job_role_nature,k.nature,sum(less_num) as less_month_num,sum(more_num) as more_month_num,SUM(employee_num) as employee_sum,k.job_grade from ( " +
+            " select case when TIMESTAMPDIFF(MONTH,in_date,NOW()) between 0 and 9 and exists(select 1 from ins_employee_job_role c where c.employee_id = b.employee_id and now() between c.start_date and c.end_date group by c.employee_id having count(1) > 1) then '0.5' " +
+            "             when TIMESTAMPDIFF(MONTH,in_date,NOW()) between 0 and 9 and exists(select 1 from ins_employee_job_role c where c.employee_id = b.employee_id and now() between c.start_date and c.end_date group by c.employee_id having count(1) <= 1) then '1' " +
+            "             else '0' "+
+            " end as less_num, "+
+            "        case when  TIMESTAMPDIFF(MONTH,in_date,NOW()) > 9 and exists(select 1 from ins_employee_job_role c where c.employee_id = b.employee_id and now() between c.start_date and c.end_date group by c.employee_id having count(1) > 1) then '0.5' "+
+            "             when  TIMESTAMPDIFF(MONTH,in_date,NOW()) > 9 and exists(select 1 from ins_employee_job_role c where c.employee_id = b.employee_id and now() between c.start_date and c.end_date group by c.employee_id having count(1) <= 1) then '1' " +
+            "              else '0' "+
+            " end as more_num," +
+            "        case when exists(select 1 from ins_employee_job_role c where c.employee_id = b.employee_id and now() between c.start_date and c.end_date group by c.employee_id having count(1) > 1) then '0.5' else '1' " +
+            " end as employee_num," +
+            " b.org_id,b.job_role,b.job_role_nature,a.nature,b.job_grade " +
+            " from ins_employee c, ins_org a ,ins_employee_job_role b " +
+            " where b.employee_id=c.employee_id and b.org_id=a.org_id and now() BETWEEN b.start_date and b.end_date and c.`status`='0' and a.`status`='0' ) k" +
+            " GROUP BY k.org_id , k.job_role,k.job_role_nature,k.nature,k.job_grade) x " +
+            " on (x.org_id=y.org_id)"
+            )
     List<EmployeeQuantityStatDTO> countEmployeeQuantityByOrgId();
+
+
+    /**
+     * 查询员工的下级员工
+     */
+    @Select("select a.employee_id,b.org_id from ins_employee a, ins_employee_job_role b " +
+            " where a.employee_id=b.employee_id" +
+            " and a.status='0'" +
+            " and (now() between b.start_date and b.end_date)" +
+            " and b.parent_employee_id in (#{parentEmployeeId})")
+    List<EmployeeInfoDTO> queryEmployeeByParentEmployeeIds(String parentEmployeeIds);
 }
