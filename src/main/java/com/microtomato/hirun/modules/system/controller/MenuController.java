@@ -16,10 +16,9 @@ import com.microtomato.hirun.modules.user.entity.po.MenuTemp;
 import com.microtomato.hirun.modules.user.service.IMenuTempService;
 import com.microtomato.hirun.modules.user.service.IRoleService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.SetOperations;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -142,7 +141,7 @@ public class MenuController {
             return null;
         }
 
-        // 构建菜单结构树
+        // 把有权限的节点的所有上游节点都带着
         List<TreeNode> nodes = new ArrayList<>();
         for (Menu menu : menus) {
             TreeNode node = new TreeNode();
@@ -154,8 +153,48 @@ public class MenuController {
             nodes.add(node);
         }
 
-        List<TreeNode> tree = TreeUtils.build(nodes);
+        // 剔除没有叶子节点的分支
+        List<TreeNode> treeNodeList = removeBranchNodeWithoutLeafNode(nodes, menuMap);
+        log.info("treeNodeList: {}", treeNodeList);
+
+        // 构建菜单树
+        List<TreeNode> tree = TreeUtils.build(treeNodeList);
         return tree;
+    }
+
+    /**
+     * 第一步：遍历所有叶子节点
+     * 第二步：将叶子节点的所有上游节点都放进返回结果集。
+     *
+     * @param nodes
+     * @return
+     */
+    private List<TreeNode> removeBranchNodeWithoutLeafNode(List<TreeNode> nodes, Map<Long, Menu> menuMap) {
+
+        Map<Long, Menu> map = new HashMap<>(128);
+
+        for (TreeNode node : nodes) {
+            Menu menu = (Menu) node.getNode();
+
+            // 叶子节点
+            if (StringUtils.isNotBlank(menu.getMenuUrl()) && ArrayUtils.isEmpty(node.getChildren())) {
+                map.put(menu.getMenuId(), menu);
+                addParentMenus(menu, map, menuMap);
+            }
+        }
+
+        List<TreeNode> rtn = new ArrayList<>();
+        for (Menu menu : map.values()) {
+            TreeNode node = new TreeNode();
+            node.setId(menu.getMenuId() + "");
+            if (null != menu.getParentMenuId()) {
+                node.setParentId(menu.getParentMenuId() + "");
+            }
+            node.setNode(menu);
+            rtn.add(node);
+        }
+
+        return rtn;
     }
 
     /**
