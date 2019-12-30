@@ -1,17 +1,12 @@
 package com.microtomato.hirun.modules.organization.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.data.TreeNode;
-import com.microtomato.hirun.framework.util.ArrayUtils;
-import com.microtomato.hirun.framework.util.SecurityUtils;
-import com.microtomato.hirun.framework.util.SpringContextUtils;
-import com.microtomato.hirun.framework.util.WebContextUtils;
+import com.microtomato.hirun.framework.security.UserContext;
+import com.microtomato.hirun.framework.util.*;
 import com.microtomato.hirun.modules.organization.entity.consts.OrgConst;
 import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
-import com.microtomato.hirun.framework.util.TreeUtils;
 import com.microtomato.hirun.modules.organization.entity.dto.AreaOrgNumDTO;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeOrgRel;
@@ -99,7 +94,7 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
                 return null;
             }
             return this.findChildren(companys, allOrgs);
-        } else if (SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_SHOP)) {
+        } else if (SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_COMANY_SHOP)) {
             List<Org> shops = this.listByType(OrgConst.TYPE_SHOP);
             if (ArrayUtils.isEmpty(shops)) {
                 return null;
@@ -118,10 +113,10 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
             Org belong = null;
             if (SecurityUtils.hasFuncId(OrgConst.SECURITY_SELF_BU)) {
                 belong = orgDO.getBelongBU();
-            } else if (SecurityUtils.hasFuncId(OrgConst.SECURITY_SELF_SUB_COMPANY) || SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_COMANY_SHOP)) {
+            } else if (SecurityUtils.hasFuncId(OrgConst.SECURITY_SELF_SUB_COMPANY) || SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_SHOP)) {
                 belong = orgDO.getBelongCompany();
 
-                if (SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_COMANY_SHOP) && belong != null) {
+                if (SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_SHOP) && belong != null) {
                     //有查分公司下所有门店的权限
                     List<Org> children = this.findChildren(belong, allOrgs);
                     List<Org> shops = this.listByType(OrgConst.TYPE_SHOP, children);
