@@ -44,7 +44,7 @@ layui.extend({
         },
 
         selectRelationEmployee : function() {
-            layui.selectEmployee.init('employeeListKK', 'employeeSearch', 'relationManagerEmployeeId', 'relationManagerEmployeeName', false);
+            layui.selectEmployee.init('employeeListRelation', 'employeeSearchRelation', 'relationManagerEmployeeId', 'relationManagerEmployeeName', false);
         },
 
 

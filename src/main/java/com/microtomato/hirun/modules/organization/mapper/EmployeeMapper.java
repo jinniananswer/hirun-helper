@@ -8,10 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.Storage;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
-import com.microtomato.hirun.modules.organization.entity.dto.EmployeeExampleDTO;
-import com.microtomato.hirun.modules.organization.entity.dto.EmployeeInfoDTO;
-import com.microtomato.hirun.modules.organization.entity.dto.EmployeePieStatisticDTO;
-import com.microtomato.hirun.modules.organization.entity.dto.EmployeeQueryConditionDTO;
+import com.microtomato.hirun.modules.organization.entity.dto.*;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.entity.po.StatEmployeeQuantityMonth;
 import org.apache.ibatis.annotations.Param;
@@ -220,10 +217,14 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
      * 按部门统计员工数量
      * @return
      */
-    @Select("select d.org_id,IFNULL(c.employee_quantity,0) employee_quantity from ins_org d " +
-            " LEFT JOIN (select b.org_id,count(1) employee_quantity from ins_employee a, ins_employee_job_role b " +
-            " where a.employee_id=b.employee_id" +
-            " and a.status='0' and now() BETWEEN b.start_date and b.end_date group by b.org_id) c " +
-            " on d.org_id=c.org_id")
-    List<StatEmployeeQuantityMonth> countEmployeeQuantityByOrgId();
+    @Select("select y.org_id,x.job_role,x.job_role_nature,IFNULL(x.employee_sum,0) as employee_sum,inMonths,x.nature as org_nature from ins_org y LEFT JOIN  " +
+            " (select k.org_id,k.job_role,k.job_role_nature,k.nature,k.inMonths,count(*) as employee_sum from ( " +
+            " select case when TIMESTAMPDIFF(MONTH,in_date,NOW()) between 0 and 9 then 'l' " +
+            "             when TIMESTAMPDIFF(MONTH,in_date,NOW()) > 9  then 'm' " +
+            " end as inMonths,b.org_id,b.job_role,b.job_role_nature,a.nature "+
+            " from ins_employee c, ins_org a ,ins_employee_job_role b "+
+            " where b.employee_id=c.employee_id and b.org_id=a.org_id and now() BETWEEN b.start_date and b.end_date and c.`status`='0' and a.`status`='0' ) k"+
+            " GROUP BY k.org_id , k.job_role,k.job_role_nature,k.nature,k.inMonths) x on (x.org_id=y.org_id)")
+
+    List<EmployeeQuantityStatDTO> countEmployeeQuantityByOrgId();
 }

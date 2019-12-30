@@ -50,4 +50,6 @@ public interface IOrgService extends IService<Org> {
      */
     List<AreaOrgNumDTO> countShopNum(String areaType);
 
+    String listOrgSecurityLine();
+
 }

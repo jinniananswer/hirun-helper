@@ -78,7 +78,8 @@ layui.extend({
         },
 
         selectOrg : function() {
-            layui.orgTree.init('orgTree', 'orgSet', 'orgPath', true);
+            layui.orgTree.init('orgTree', 'orgSet', 'orgPath', true,true);
+
         },
 
         update: function (data) {

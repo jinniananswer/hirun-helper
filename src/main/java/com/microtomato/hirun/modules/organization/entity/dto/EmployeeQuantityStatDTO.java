@@ -16,7 +16,7 @@ import java.util.List;
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmployeeQuantityStatDTO<T> implements Serializable {
+public class EmployeeQuantityStatDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -26,7 +26,7 @@ public class EmployeeQuantityStatDTO<T> implements Serializable {
 
     private String year;
 
-    private Integer employeeQuantity;
+    private Integer employeeSum;
 
     private String month;
 
@@ -56,9 +56,11 @@ public class EmployeeQuantityStatDTO<T> implements Serializable {
 
     private Long parentOrgId;
 
-    T node;
+    private String inMonths;
 
-    List<EmployeeQuantityStatDTO>  statDTOS;
+    private String orgNature;
 
-    private Boolean spread;
+    private String jobRole;
+
+    private String jobRoleNature;
 }

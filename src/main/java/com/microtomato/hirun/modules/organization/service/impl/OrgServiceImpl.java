@@ -1,17 +1,12 @@
 package com.microtomato.hirun.modules.organization.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.data.TreeNode;
-import com.microtomato.hirun.framework.util.ArrayUtils;
-import com.microtomato.hirun.framework.util.SecurityUtils;
-import com.microtomato.hirun.framework.util.SpringContextUtils;
-import com.microtomato.hirun.framework.util.WebContextUtils;
+import com.microtomato.hirun.framework.security.UserContext;
+import com.microtomato.hirun.framework.util.*;
 import com.microtomato.hirun.modules.organization.entity.consts.OrgConst;
 import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
-import com.microtomato.hirun.framework.util.TreeUtils;
 import com.microtomato.hirun.modules.organization.entity.dto.AreaOrgNumDTO;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeOrgRel;
@@ -34,7 +29,7 @@ import java.util.Map;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author jinnian
@@ -61,6 +56,7 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
 
     /**
      * 列出所有有效组织数据，有缓存
+     *
      * @return
      */
     @Override
@@ -77,6 +73,7 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
 
     /**
      * 根据员工权限列出能看到的部门
+     *
      * @return
      */
     @Override
@@ -97,7 +94,7 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
                 return null;
             }
             return this.findChildren(companys, allOrgs);
-        } else if (SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_SHOP)) {
+        } else if (SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_COMANY_SHOP)) {
             List<Org> shops = this.listByType(OrgConst.TYPE_SHOP);
             if (ArrayUtils.isEmpty(shops)) {
                 return null;
@@ -116,10 +113,10 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
             Org belong = null;
             if (SecurityUtils.hasFuncId(OrgConst.SECURITY_SELF_BU)) {
                 belong = orgDO.getBelongBU();
-            } else if (SecurityUtils.hasFuncId(OrgConst.SECURITY_SELF_SUB_COMPANY) || SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_COMANY_SHOP)) {
+            } else if (SecurityUtils.hasFuncId(OrgConst.SECURITY_SELF_SUB_COMPANY) || SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_SHOP)) {
                 belong = orgDO.getBelongCompany();
 
-                if (SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_COMANY_SHOP) && belong != null) {
+                if (SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_SHOP) && belong != null) {
                     //有查分公司下所有门店的权限
                     List<Org> children = this.findChildren(belong, allOrgs);
                     List<Org> shops = this.listByType(OrgConst.TYPE_SHOP, children);
@@ -171,6 +168,7 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
 
     /**
      * 按组织类型列出所有符合条件的组织
+     *
      * @param type 组织类型
      * @return
      */
@@ -191,7 +189,8 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
 
     /**
      * 按组织类型在指定的组织链上列出所有符合条件的组织
-     * @param type 组织类型
+     *
+     * @param type     组织类型
      * @param orgLines 指定的组织链
      * @return
      */
@@ -211,8 +210,9 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
 
     /**
      * 根据传入的列表集合找到所有其下的子组织机构(包含父组织机构本身)
+     *
      * @param parents 父组织机构列表
-     * @param orgs 源组织机构列表
+     * @param orgs    源组织机构列表
      * @return
      */
     public List<Org> findChildren(List<Org> parents, List<Org> orgs) {
@@ -233,8 +233,9 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
 
     /**
      * 根据传入的列表集合找到所有其下的子组织机构（不包含父组织结构本身）
+     *
      * @param parent 父组织机构
-     * @param orgs 源组织机构列表
+     * @param orgs   源组织机构列表
      * @return
      */
     public List<Org> findChildren(Org parent, List<Org> orgs) {
@@ -253,6 +254,7 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
 
     /**
      * 查询某组织下的所有组织
+     *
      * @param parent
      * @return
      */
@@ -305,6 +307,7 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
 
     /**
      * 统计门店数量
+     *
      * @param areaType
      * @return
      */
@@ -333,4 +336,17 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
         return orgNums;
     }
 
+    @Override
+    public String listOrgSecurityLine() {
+        List<Org> orgs = this.listOrgsSecurity();
+        if (ArrayUtils.isEmpty(orgs)) {
+            return "";
+        }
+        String orgLine = "";
+
+        for (Org org : orgs) {
+            orgLine += org.getOrgId() + ",";
+        }
+        return orgLine.substring(0, orgLine.length() - 1);
+    }
 }

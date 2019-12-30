@@ -9,6 +9,7 @@ import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.*;
 import com.microtomato.hirun.modules.organization.entity.consts.EmployeeConst;
+import com.microtomato.hirun.modules.organization.entity.consts.OrgConst;
 import com.microtomato.hirun.modules.organization.entity.domain.EmployeeBlackListDO;
 import com.microtomato.hirun.modules.organization.entity.domain.EmployeeDO;
 import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
@@ -597,26 +598,25 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         Long orgId = userContext.getOrgId();
         Long employeeId = userContext.getEmployeeId();
         String employeeIds = "";
-        String orgIds = "";
         String orgLine = "";
-        OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
 
-        if (SecurityUtils.hasFuncId(FuncConst.ALL_ORG)) {
-            orgLine = orgDO.getOrgLine(122L);
-            conditionDTO.setOrgLine(orgLine);
-        } else if (SecurityUtils.hasFuncId(FuncConst.ALL_CITY)) {
-            orgLine = orgDO.getOrgLine(7L);
-            conditionDTO.setOrgLine(orgLine);
-        } else if (SecurityUtils.hasFuncId(FuncConst.ALL_WOODEN)) {
-            orgLine = orgDO.getOrgLine(9L);
-            conditionDTO.setOrgLine(orgLine);
-        } else if (SecurityUtils.hasFuncId(FuncConst.ALL_SHOP)) {
-            Org parentOrg = orgDO.findParent("2", orgService.listAllOrgs(), orgId);
-            orgLine = orgDO.getOrgLine(parentOrg.getOrgId());
-            conditionDTO.setOrgLine(orgLine);
-        } else if (StringUtils.isNotBlank(orgHrRelService.getOrgLine(employeeId))) {
-            conditionDTO.setOrgLine(orgHrRelService.getOrgLine(employeeId));
+        if (null==conditionDTO.getOrgId()) {
+            orgLine = orgService.listOrgSecurityLine();
         } else {
+            OrgDO conditionOrgDO = SpringContextUtils.getBean(OrgDO.class, conditionDTO.getOrgId());
+            orgLine = conditionOrgDO.getOrgLine(conditionDTO.getOrgId());
+        }
+
+        if(!SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_ORG)
+                &&!SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_BU)
+                &&!SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_SUB_COMPANY)
+                &&!SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_SHOP)
+                &&!SecurityUtils.hasFuncId(OrgConst.SECURITY_SELF_SHOP)
+                &&!SecurityUtils.hasFuncId(OrgConst.SECURITY_SELF_BU)
+                &&!SecurityUtils.hasFuncId(OrgConst.SECURITY_SELF_SUB_COMPANY)
+                &&!SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_COMANY_SHOP)
+                &&!StringUtils.isNotBlank(orgHrRelService.getOrgLine(employeeId))){
+
             List<EmployeeInfoDTO> employeeList = employeeService.findSubordinate(employeeId);
             if (ArrayUtils.isEmpty(employeeList)) {
                 conditionDTO.setEmployeeIds(employeeId + "");
@@ -624,12 +624,12 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             }
             for (EmployeeInfoDTO employee : employeeList) {
                 employeeIds += employee.getEmployeeId() + ",";
-                orgIds += employee.getOrgId() + ",";
             }
-            conditionDTO.setEmployeeIds(employeeIds + employeeId);
-            conditionDTO.setOrgLine(orgIds + orgId);
+            conditionDTO.setOrgLine("");
+            conditionDTO.setEmployeeIds(employeeIds);
+        }else{
+            conditionDTO.setOrgLine(orgLine);
         }
-
         return conditionDTO;
     }
 }

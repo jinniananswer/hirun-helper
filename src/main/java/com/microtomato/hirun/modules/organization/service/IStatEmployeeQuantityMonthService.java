@@ -24,7 +24,7 @@ public interface IStatEmployeeQuantityMonthService extends IService<StatEmployee
      * @param orgId
      * @return
      */
-    StatEmployeeQuantityMonth queryCountRecord(String year, String month, Long orgId);
+    StatEmployeeQuantityMonth queryCountRecord(String year, String month, Long orgId,String jobRole,String jobRoleNature,String orgNature);
 
     /**
      * 查询部门在职人员数记录

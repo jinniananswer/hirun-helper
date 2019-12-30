@@ -16,7 +16,6 @@ layui.extend({
             layui.select.init('isBlackList', 'YES_NO', '', true);
             layui.select.init('jobRole', 'JOB_ROLE', null, true);
             layui.select.init('jobRoleNature', 'JOB_NATURE', null, true);
-            layui.select.init('discountRate', 'DISCOUNT_RATE', null, true);
 
             laydate.render({
                 elem: '#inDateEnd',
@@ -123,7 +122,7 @@ layui.extend({
                     where: {
                         name: $("input[name='name']").val(),
                         sex: $("select[name='sex']").val(),
-                        orgSet: $("input[name='orgSet']").val(),
+                        orgId: $("input[name='orgId']").val(),
                         mobileNo: $("input[name='mobileNo']").val(),
                         employeeStatus: $("select[name='employeeStatus']").val(),
                         type: $("select[name='type']").val(),
@@ -142,7 +141,6 @@ layui.extend({
                         destroyDateEnd: $('#destroyDateEnd').val(),
                         companyAgeStart: $('#companyAgeStart').val(),
                         companyAgeEnd: $('#companyAgeEnd').val(),
-
                     }
                 })
             });
@@ -252,7 +250,7 @@ layui.extend({
         },
 
         selectOrg: function () {
-            layui.orgTree.init('orgTree', 'orgSet', 'orgPath', true);
+            layui.orgTree.init('orgTree', 'orgId', 'orgPath', false,false);
         },
 
         edit: function (data) {
@@ -260,7 +258,7 @@ layui.extend({
         },
 
         export: function () {
-            var param = '?name=' + $("input[name='name']").val() + '&orgSet=' + $("input[name='orgSet']").val() + '&sex=' + $("select[name='sex']").val() + '&type=' + $("select[name='type']").val() +
+            var param = '?name=' + $("input[name='name']").val() + '&orgId=' + $("input[name='orgId']").val() + '&sex=' + $("select[name='sex']").val() + '&type=' + $("select[name='type']").val() +
                 '&mobile=' + $("input[name='mobileNo']").val() + '&employeeStatus=' + $("select[name='employeeStatus']").val() + '&isBlackList=' + $("#isBlackList").val() + '&otherStatus=' + $("select[name='otherStatus']").val() +
                 '&jobRole=' + $("select[name='jobRole']").val() + '&jobRoleNature=' + $("select[name='jobRoleNature']").val() + '&discountRate=' + $("select[name='discountRate']").val() +
                 '&jobYearStart=' + $("input[name='jobYearStart']").val() + '&jobYearEnd=' + $("input[name='jobYearEnd']").val() + '&ageStart=' + $("input[name='ageStart']").val() + '&ageEnd=' + $("input[name='ageEnd']").val() +
