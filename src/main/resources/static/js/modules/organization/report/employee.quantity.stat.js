@@ -29,7 +29,10 @@ layui.extend({
                 },
                 cols: [
                     [
-                        {field: 'orgName', title: '部门', width: 324, fixed: 'left', align: 'center'},
+                        {field: 'orgName', title: '部门',rowspan:2, width: 324, fixed: 'left', align: 'center'},
+                        {field: 'janurayCount', title: '年份',colspan: 12, align: 'center'},
+                    ],
+                    [
                         {field: 'janurayCount', title: '1月', width: 89, align: 'center'},
                         {field: 'februaryCount', title: '2月', width: 89, align: 'center'},
                         {field: 'marchCount', title: '3月', width: 89, align: 'center'},
@@ -64,7 +67,7 @@ layui.extend({
         },
 
         selectOrg: function () {
-            layui.orgTree.init('orgTree', 'orgId', 'orgPath', false);
+            layui.orgTree.init('orgTree', 'orgId', 'orgPath', false,false);
         },
 
 

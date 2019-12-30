@@ -2,8 +2,12 @@ package com.microtomato.hirun.modules.organization.controller;
 
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.data.TreeNode;
+import com.microtomato.hirun.framework.util.TreeUtils;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeOrgGroupByDTO;
+import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
 import com.microtomato.hirun.modules.organization.service.IOrgService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +28,9 @@ public class OrgController {
 
     @Autowired
     private IOrgService orgServiceImpl;
+
+    @Autowired
+    private IEmployeeJobRoleService employeeJobRoleService;
 
     @GetMapping("/listWithTree")
     @RestResult
@@ -67,6 +74,46 @@ public class OrgController {
         return new ArrayList<>(rtn);
     }
 
+    @GetMapping("/listWithBag")
+    @RestResult
+    public List<TreeNode> listWithBag() {
+        List<TreeNode> nodeList = orgServiceImpl.listOrgTree();
+        Map<String, TreeNode> nodeMap = new HashMap<>(512);
+        orgServiceImpl.buildMap(nodeList, nodeMap);
+
+        List<EmployeeOrgGroupByDTO> employeeOrgGroupByDTOS = employeeJobRoleService.countGroupByOrgId();
+        for (EmployeeOrgGroupByDTO employeeOrgGroupByDTO : employeeOrgGroupByDTOS) {
+            String orgId = employeeOrgGroupByDTO.getOrgId().toString();
+            Long count = employeeOrgGroupByDTO.getCount();
+            TreeUtils.addBag(orgId, count, nodeMap);
+        }
+
+        display(nodeList, 0);
+
+        return nodeList;
+    }
+
+    private void display(List<TreeNode> nodeList, int level) {
+
+        if (null == nodeList) {
+            return;
+        }
+
+        String prefix1 = StringUtils.repeat("    ", level - 1);
+        for (TreeNode treeNode : nodeList) {
+            String prefix2 = "";
+            if (0 != level) {
+                prefix2 = prefix1 + "    ";
+            } else {
+                prefix2 = prefix1;
+            }
+
+            System.out.printf("%s %s:%s -> (%d)\n", prefix2, treeNode.getTitle(), treeNode.getId(), treeNode.getBag().get());
+            display(treeNode.getChildren(), level + 1);
+        }
+
+    }
+
     /**
      * 是否所有的子节点都在集合里
      *
@@ -106,7 +153,6 @@ public class OrgController {
             }
         }
     }
-
 
 
 }

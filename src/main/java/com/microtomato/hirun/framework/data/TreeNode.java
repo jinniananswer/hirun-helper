@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @program: hirun-helper
@@ -28,5 +29,15 @@ public class TreeNode<T> implements Serializable {
 
     private String path;
 
-    List<TreeNode> children;
+    /**
+     * 子节点
+     */
+    private List<TreeNode> children;
+
+    /**
+     * 当前节点携带的值
+     */
+    private AtomicLong bag = new AtomicLong(0L);
+
+
 }

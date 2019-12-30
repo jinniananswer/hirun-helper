@@ -1,10 +1,12 @@
 package com.microtomato.hirun.framework.util;
 
 import com.microtomato.hirun.framework.data.TreeNode;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 构造树的工具
@@ -12,6 +14,7 @@ import java.util.List;
  * @author jinnian
  * @date 2019-09-08 16:42
  **/
+@Slf4j
 public class TreeUtils {
 
 
@@ -88,7 +91,8 @@ public class TreeUtils {
 
     /**
      * 查找上级节点，
-     * @param leaf 叶子节点
+     *
+     * @param leaf  叶子节点
      * @param nodes
      * @return
      */
@@ -103,5 +107,18 @@ public class TreeUtils {
         }
 
         return null;
+    }
+
+    public static void addBag(String id, Long bag, Map<String, TreeNode> nodeMap) {
+        if (null != id) {
+            TreeNode treeNode = nodeMap.get(id);
+            if (null == treeNode) {
+                return;
+            }
+            //log.info("{} 当前员工数: {}, 添加员工数: {}", treeNode.getTitle(), treeNode.getBag().get(), bag);
+            treeNode.getBag().addAndGet(bag);
+            addBag(treeNode.getParentId(), bag, nodeMap);
+
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.organization.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeOrgGroupByDTO;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
 
 import java.util.List;
@@ -22,4 +23,6 @@ public interface IEmployeeJobRoleService extends IService<EmployeeJobRole> {
     EmployeeJobRole queryLast(Long employeeId);
 
     boolean changeParentEmployee(Long oldParentEmployeeId,Long newParentEmployeeId,Long userId);
+
+    List<EmployeeOrgGroupByDTO> countGroupByOrgId();
 }

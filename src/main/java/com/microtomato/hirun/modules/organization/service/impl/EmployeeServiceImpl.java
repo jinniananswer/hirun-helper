@@ -9,10 +9,7 @@ import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.organization.entity.consts.EmployeeConst;
 import com.microtomato.hirun.modules.organization.entity.domain.EmployeeDO;
-import com.microtomato.hirun.modules.organization.entity.dto.EmployeeDTO;
-import com.microtomato.hirun.modules.organization.entity.dto.EmployeeExampleDTO;
-import com.microtomato.hirun.modules.organization.entity.dto.EmployeeInfoDTO;
-import com.microtomato.hirun.modules.organization.entity.dto.EmployeeQueryConditionDTO;
+import com.microtomato.hirun.modules.organization.entity.dto.*;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.entity.po.StatEmployeeQuantityMonth;
 import com.microtomato.hirun.modules.organization.mapper.EmployeeMapper;
@@ -135,7 +132,7 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
     }
 
     @Override
-    public List<StatEmployeeQuantityMonth> countEmployeeQuantityByOrgId() {
+    public List<EmployeeQuantityStatDTO> countEmployeeQuantityByOrgId() {
         return employeeMapper.countEmployeeQuantityByOrgId();
     }
 
@@ -176,7 +173,6 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         //如果为查询调动信息的情况不判断现归属部门
         if (!StringUtils.equals(conditionDTO.getOtherStatus(), EmployeeConst.EMPLOYEE_BORROW_STATUS) &&
                 !StringUtils.equals(conditionDTO.getOtherStatus(), EmployeeConst.EMPLOYEE_TRANS_STATUS)) {
-            queryWrapper.apply(StringUtils.isNotBlank(conditionDTO.getOrgSet()), "b.org_id in (" + conditionDTO.getOrgSet() + ")");
             queryWrapper.apply(StringUtils.isNotBlank(conditionDTO.getOrgLine()), "b.org_id in (" + conditionDTO.getOrgLine() + ")");
         }
 
