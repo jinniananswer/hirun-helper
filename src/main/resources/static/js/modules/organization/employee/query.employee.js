@@ -16,7 +16,6 @@ layui.extend({
             layui.select.init('isBlackList', 'YES_NO', '', true);
             layui.select.init('jobRole', 'JOB_ROLE', null, true);
             layui.select.init('jobRoleNature', 'JOB_NATURE', null, true);
-            layui.select.init('discountRate', 'DISCOUNT_RATE', null, true);
 
             laydate.render({
                 elem: '#inDateEnd',
@@ -142,7 +141,6 @@ layui.extend({
                         destroyDateEnd: $('#destroyDateEnd').val(),
                         companyAgeStart: $('#companyAgeStart').val(),
                         companyAgeEnd: $('#companyAgeEnd').val(),
-
                     }
                 })
             });
