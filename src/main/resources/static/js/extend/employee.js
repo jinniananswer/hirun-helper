@@ -1,17 +1,16 @@
 layui.define(['ajax', 'tree', 'layer'], function(exports){
-    var $ = layui.$;
-    var obj = {
+    let $ = layui.$;
+    let obj = {
         afterFunc : null,
         init : function(employeeDivId, searchTextId, valueControlId, displayControlId, showCheckbox, func) {
-            var employeeDiv = $("#"+employeeDivId);
-            var content = employeeDiv.html();
-
-            if (func != null) {
+            let employeeDiv = $("#"+employeeDivId);
+            let content = employeeDiv.html();
+            if (func != null && typeof(func) != "undefined") {
                 this.afterFunc = func;
             }
 
             if (content == null || content.trim() == '' || typeof(content) == "undefined" || content.trim().length == 0) {
-                var html = [];
+                let html = [];
                 html.push("<div class=\"layadmin-caller\">");
                 html.push("<div class=\"layui-form caller-seach\">");
                 html.push("<input type=\"text\" name=\""+searchTextId+"\" id=\""+searchTextId+"\" required=\"\" lay-verify=\"required\" placeholder=\"请输入员工姓名或者员工手机号码\" autocomplete=\"off\" class=\"layui-input\"/>");
@@ -43,54 +42,37 @@ layui.define(['ajax', 'tree', 'layer'], function(exports){
                     btn: ['确定'],
                     yes: function(index, layero) {
 
-                    },
-                    success: function(layero, index){
-                        let elemClose = $('<i class="layui-icon" close>&#x1006;</i>');
-                        layero.append(elemClose);
-                        elemClose.on('click', function(){
-                            layer.close(index);
-                        });
-                        typeof success === 'function' && success.apply(this, arguments);
                     }
                 });
             } else {
-                layui.layer.open({
+                this.popup({
                     title: '请选择员工',
                     area: ['40%', '60%'],
-                    content: $("#"+employeeDivId),
-                    skin: 'layui-layer-admin',
-                    success: function(layero, index){
-                        let elemClose = $('<i class="layui-icon" close>&#x1006;</i>');
-                        layero.append(elemClose);
-                        elemClose.on('click', function(){
-                            layer.close(index);
-                        });
-                        typeof success === 'function' && success.apply(this, arguments);
-                    }
+                    content: $("#"+employeeDivId)
                 });
             }
 
         },
 
         search : function(searchTextId, valueControlId, displayControlId) {
-            var searchText = $("#"+searchTextId).val();
+            let searchText = $("#"+searchTextId).val();
             if (searchText == null || searchText.trim().length <= 0) {
                 return;
             }
 
             layui.ajax.get('api/organization/employee/searchEmployee', 'searchText='+searchText, function (data) {
-                var employees = data.rows;
+                let employees = data.rows;
                 $("#"+searchTextId+"_items").empty();
                 if (employees == null || employees.length <= 0) {
                     return;
                 }
 
-                var length = employees.length;
-                var html = [];
-                for (var i=0;i<length;i++) {
-                    var employee = employees[i];
+                let length = employees.length;
+                let html = [];
+                for (let i=0;i<length;i++) {
+                    let employee = employees[i];
                     html.push("<div class=\"caller-item\" style='cursor:pointer' onclick='layui.selectEmployee.back(\""+employee.employeeId+"\",\""+employee.name+"\",\""+valueControlId+"\",\""+displayControlId+"\")'>");
-                    var sex = employee.sex;
+                    let sex = employee.sex;
                     if (sex == "1") {
                         html.push("<img src=\"static/img/male.jpg\" alt=\"\" class=\"caller-img caller-fl\">");
                     } else {
@@ -114,6 +96,33 @@ layui.define(['ajax', 'tree', 'layer'], function(exports){
 
                 //parent.layer.closeAll('loading');
             });
+        },
+
+        popup : function(options) {
+            let success = options.success;
+            let skin = options.skin;
+
+            delete options.success;
+            delete options.skin;
+
+            return layui.layer.open(layui.$.extend({
+                type: 1
+                ,title: '提示'
+                ,content: ''
+                ,id: 'LAY-system-view-popup'
+                ,skin: 'layui-layer-admin' + (skin ? ' ' + skin : '')
+                ,shadeClose: true
+                ,closeBtn: false
+                ,success: function(layero, index){
+                    var elemClose = $('<i class="layui-icon" close>&#x1006;</i>');
+                    layero.append(elemClose);
+                    elemClose.on('click', function(){
+                        layer.close(index);
+                    });
+                    typeof success === 'function' && success.apply(this, arguments);
+                }
+            }, options));
+
         },
 
         back : function(employeeId, name, valueControlId, displayControlId) {

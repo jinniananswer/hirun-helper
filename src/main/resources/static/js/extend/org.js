@@ -44,46 +44,49 @@ layui.define(['ajax', 'tree', 'layer'], function(exports){
 
         open : function(treeDivId, needConfirmBtn, valueControlId, displayControlId) {
             if (needConfirmBtn) {
-                layui.layer.open({
+                this.popup({
                     title: '请选择部门',
                     area: ['40%', '60%'],
                     content: $("#"+treeDivId),
-                    skin: 'layui-layer-admin',
-                    shadeClose: true,
-                    closeBtn: false,
                     btn: ['确定'],
                     yes: function(index, layero) {
                         layui.orgTree.confirm(treeDivId, valueControlId, displayControlId);
-                    },
-                    success: function(layero, index){
-                        var elemClose = $('<i class="layui-icon" close>&#x1006;</i>');
-                        layero.append(elemClose);
-                        elemClose.on('click', function(){
-                            layer.close(index);
-                        });
-                        typeof success === 'function' && success.apply(this, arguments);
                     }
                 });
             } else {
-                layui.layer.open({
-                    type: 1,
+                this.popup({
                     title: '请选择部门',
                     area: ['40%', '60%'],
-                    content: $("#"+treeDivId),
-                    skin: 'layui-layer-admin',
-                    shadeClose: true,
-                    closeBtn: false,
-                    success: function(layero, index){
-                        var elemClose = $('<i class="layui-icon" close>&#x1006;</i>');
-                        layero.append(elemClose);
-                        elemClose.on('click', function(){
-                            layer.close(index);
-                        });
-                        typeof success === 'function' && success.apply(this, arguments);
-                    }
+                    content: $("#"+treeDivId)
                 });
             }
 
+        },
+
+        popup : function(options) {
+            let success = options.success;
+            let skin = options.skin;
+
+            delete options.success;
+            delete options.skin;
+
+            return layui.layer.open(layui.$.extend({
+                type: 1
+                ,title: '提示'
+                ,content: ''
+                ,id: 'LAY-system-view-popup'
+                ,skin: 'layui-layer-admin' + (skin ? ' ' + skin : '')
+                ,shadeClose: true
+                ,closeBtn: false
+                ,success: function(layero, index){
+                    var elemClose = $('<i class="layui-icon" close>&#x1006;</i>');
+                    layero.append(elemClose);
+                    elemClose.on('click', function(){
+                        layer.close(index);
+                    });
+                    typeof success === 'function' && success.apply(this, arguments);
+                }
+            }, options));
         },
 
         confirm : function(treeDivId, valueControlId, displayControlId) {
