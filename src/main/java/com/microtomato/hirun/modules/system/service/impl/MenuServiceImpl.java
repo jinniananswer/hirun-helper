@@ -57,13 +57,16 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 
 	/**
 	 * 超级管理员默认能看到所有菜单
+	 * 注： BSS只查类型为 P 和 H 的菜单。
 	 */
 	@Cacheable(value = "menu::listMenusForAdmin", key = "")
 	@Override
 	public List<Long> listMenusForAdmin() {
 		List<Long> myMenuIds = new ArrayList<>(100);
 		List<Menu> menuList = menuServiceImpl.list(
-			Wrappers.<Menu>lambdaQuery().select(Menu::getMenuId)
+			Wrappers.<Menu>lambdaQuery()
+				.select(Menu::getMenuId)
+				.in(Menu::getType, "P", "H")
 		);
 		menuList.forEach(menu -> myMenuIds.add(menu.getMenuId()));
 		return myMenuIds;
@@ -73,7 +76,10 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 	@Override
 	public Map<Long, Menu> listAllMenus() {
 
-		List<Menu> menuList = this.list();
+		List<Menu> menuList = this.list(
+			Wrappers.<Menu>lambdaQuery()
+			.in(Menu::getType, "P", "H")
+		);
 
 		// 转换成 menuid 为 key 的 Map
 		Map<Long, Menu> menuMap = new HashMap<>(menuList.size());
