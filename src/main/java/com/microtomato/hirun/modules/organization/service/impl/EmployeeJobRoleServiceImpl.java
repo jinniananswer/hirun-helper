@@ -68,6 +68,7 @@ public class EmployeeJobRoleServiceImpl extends ServiceImpl<EmployeeJobRoleMappe
     public EmployeeJobRole queryLast(Long employeeId) {
         LambdaQueryWrapper<EmployeeJobRole> wrapper = Wrappers.lambdaQuery();
         wrapper.eq(EmployeeJobRole::getEmployeeId, employeeId);
+        wrapper.eq(EmployeeJobRole::getIsMain, EmployeeConst.JOB_ROLE_MAIN);
         wrapper.orderByDesc(EmployeeJobRole::getStartDate);
 
         List<EmployeeJobRole> jobRoles = this.list(wrapper);

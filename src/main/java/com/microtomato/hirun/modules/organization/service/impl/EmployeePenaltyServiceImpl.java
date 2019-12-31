@@ -54,7 +54,7 @@ public class EmployeePenaltyServiceImpl extends ServiceImpl<EmployeePenaltyMappe
     @Override
     public IPage<EmployeePenaltyDTO> queryPenaltyList(EmployeePenaltyDTO employeePenaltyDTO, Page<EmployeePenaltyDTO> page) {
         QueryWrapper<EmployeePenaltyDTO> queryWrapper = new QueryWrapper<>();
-        queryWrapper.apply("b.employee_id=a.employee_id AND (now() between b.start_date and b.end_date) AND c.org_id = b.org_id and a.employee_id=d.employee_id and d.penalty_status='1'");
+        queryWrapper.apply("b.employee_id=a.employee_id AND (now() between b.start_date and b.end_date) and b.is_main='1' AND c.org_id = b.org_id and a.employee_id=d.employee_id and d.penalty_status='1'");
         queryWrapper.like(StringUtils.isNotEmpty(employeePenaltyDTO.getEmployeeName()), "a.name", employeePenaltyDTO.getEmployeeName());
         queryWrapper.eq(StringUtils.isNotEmpty(employeePenaltyDTO.getPenaltyType()), "d.penalty_type", employeePenaltyDTO.getPenaltyType());
         queryWrapper.orderByDesc("d.create_time");

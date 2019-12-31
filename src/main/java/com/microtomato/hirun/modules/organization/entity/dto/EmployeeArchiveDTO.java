@@ -51,6 +51,7 @@ public class EmployeeArchiveDTO implements Serializable {
     private String socialSecurityStatusName;
     private String statusName;
     private String jobRoleName;
+    private String jobGradeName;
     private String jobRoleNatureName;
     private String discountRate;
     private String orgPath;

@@ -22,7 +22,7 @@ import java.util.List;
 @DataSource(DataSourceKey.INS)
 public interface EmployeeJobRoleMapper extends BaseMapper<EmployeeJobRole> {
 
-    @Select("SELECT org_id, count(1) AS count FROM ins_employee_job_role WHERE now() > start_date and now() < end_date and org_id IS NOT NULL GROUP BY org_id")
+    @Select("SELECT org_id, count(1) AS count FROM ins_employee_job_role WHERE is_main='1' and now() > start_date and now() < end_date and org_id IS NOT NULL GROUP BY org_id")
     public List<EmployeeOrgGroupByDTO> countGroupByOrgId();
 
 }
