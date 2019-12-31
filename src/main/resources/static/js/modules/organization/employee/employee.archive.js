@@ -31,6 +31,7 @@ layui.extend({
             layui.select.init('educationLevel', 'EDUCATION_LEVEL', '3', false);
             layui.select.init('schoolType', 'SCHOOL_TYPE', '1', false);
             layui.select.init('contactManRelType', 'KEYMAN_REL_TYPE', '6', false);
+            layui.select.init('jobGrade', 'JOB_GRADE', null, true);
 
             form.on('select(employeeJobRole.jobRoleNature)', function(data) {
                 layui.employee.calculateDiscountRate();
@@ -60,6 +61,15 @@ layui.extend({
                     $("#socialSecurityPlaceArea").css("display", "none");
                     $("#socialSecurityPlace").val("");
                     $("#socialSecurityStatusArea").css("display", "");
+                }
+            });
+
+            form.on('select(jobRoleFilter)', function(data) {
+                let jobRole = $("#jobRole").val();
+                if (jobRole == '42') {
+                    $("#jobGradeDiv").css("display", "");
+                } else {
+                    $("#jobGradeDiv").css("display", "none");
                 }
             });
 
@@ -156,11 +166,11 @@ layui.extend({
         },
 
         selectOrg : function() {
-            layui.orgTree.init('orgTree', 'employeeJobRole.orgId', 'orgPath', false);
+            layui.orgTree.init('orgTree', 'employeeJobRole.orgId', 'orgPath', false, true);
         },
 
         selectParentEmployee : function() {
-            layui.selectEmployee.init('parentEmployeeList', 'employeeSearch', 'employeeJobRole.parentEmployeeId', 'parentEmployeeName', false);
+            layui.selectEmployee.init('parentEmployeeList', 'employeeSearch', 'employeeJobRole.parentEmployeeId', 'parentEmployeeName', false, null);
         },
 
         previous : function() {
