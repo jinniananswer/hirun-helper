@@ -94,10 +94,10 @@
                                 </div>
                             </div>
                             <div class="layui-form-item">
-                                <label class="layui-form-label layui-required">生日类型</label>
+                                <label class="layui-form-label">生日类型</label>
                                 <div class="layui-input-block">
                                     <div class="layui-form" lay-filter="birthdayType">
-                                        <select id="birthdayType" name="birthdayType" lay-verify="required">
+                                        <select id="birthdayType" name="birthdayType">
 
                                         </select>
                                     </div>
@@ -118,7 +118,7 @@
                             <div class="layui-form-item">
                                 <label class="layui-form-label">详细户籍</label>
                                 <div class="layui-input-block">
-                                    <input type="text" name="nativeAddress" required  lay-verify="required" placeholder="请输入详细户籍地址" autocomplete="off" class="layui-input"/>
+                                    <input type="text" name="nativeAddress" placeholder="请输入详细户籍地址" autocomplete="off" class="layui-input"/>
                                 </div>
                             </div>
                             <div class="layui-form-item">
@@ -130,7 +130,7 @@
                             <div class="layui-form-item">
                                 <label class="layui-form-label">详细住址</label>
                                 <div class="layui-input-block">
-                                    <input type="text" name="homeAddress" required lay-verify="required" placeholder="请输入家庭住址" autocomplete="off" class="layui-input"/>
+                                    <input type="text" name="homeAddress" placeholder="请输入家庭住址" autocomplete="off" class="layui-input"/>
                                 </div>
                             </div>
                         </div>
@@ -148,9 +148,9 @@
                                 </div>
                             </div>
                             <div class="layui-form-item">
-                                <label class="layui-form-label">归属部门</label>
+                                <label class="layui-form-label layui-required">归属部门</label>
                                 <div class="layui-input-block">
-                                    <input type="text" id="orgPath" name="orgPath" onclick="layui.employee.selectOrg();" onPropertyChange="layui.employee.calculateDiscountRate();" placeholder="请点击选择部门" autocomplete="off" class="layui-input"/>
+                                    <input type="text" id="orgPath" name="orgPath" required  lay-verify="required" onclick="layui.employee.selectOrg();" onPropertyChange="layui.employee.calculateDiscountRate();" placeholder="请点击选择部门" autocomplete="off" class="layui-input"/>
                                     <input type="hidden" id="employeeJobRole.orgId" name="employeeJobRole.orgId"/>
                                 </div>
                             </div>
@@ -175,10 +175,10 @@
                                 </div>
                             </div>
                             <div class="layui-form-item">
-                                <label class="layui-form-label layui-required">岗位性质</label>
+                                <label class="layui-form-label">岗位性质</label>
                                 <div class="layui-input-block">
                                     <div class="layui-form" lay-filter="jobRoleNature">
-                                        <select id="jobRoleNature" name="employeeJobRole.jobRoleNature" lay-verify="required" lay-filter="employeeJobRole.jobRoleNature" onchange="layui.employee.calculateDiscountRate();">
+                                        <select id="jobRoleNature" name="employeeJobRole.jobRoleNature" lay-filter="employeeJobRole.jobRoleNature" onchange="layui.employee.calculateDiscountRate();">
 
                                         </select>
                                     </div>
@@ -282,7 +282,7 @@
                                         <label class="layui-form-label">小孩性别</label>
                                         <div class="layui-input-inline">
                                             <div class="layui-form" lay-filter="childrenSex_0">
-                                                <select id="childrenSex_0" name="children[0].sex" lay-verify="required" lay-filter="childrenSexFilter_0">
+                                                <select id="childrenSex_0" name="children[0].sex" lay-filter="childrenSexFilter_0">
 
                                                 </select>
                                             </div>
@@ -471,7 +471,7 @@
                     <label class="layui-form-label">小孩性别</label>
                     <div class="layui-input-inline">
                         <div class="layui-form" lay-filter="childrenSex_{{d}}">
-                            <select id="childrenSex_{{d}}" name="children[{{d}}].sex" lay-verify="required" lay-filter="childrenSexFilter_{{d}}">
+                            <select id="childrenSex_{{d}}" name="children[{{d}}].sex" lay-filter="childrenSexFilter_{{d}}">
 
                             </select>
                         </div>
