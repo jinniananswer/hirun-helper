@@ -76,7 +76,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     public UserDTO queryRelatInfoByUserId(Long userId) {
         QueryWrapper<UserDTO> queryWrapper = new QueryWrapper<>();
-        queryWrapper.apply("a.user_id = b.user_id AND b.employee_id = c.employee_id and c.start_date > NOW() AND c.end_date > NOW() and c.is_main='1' ");
+        queryWrapper.apply("a.user_id = b.user_id AND b.employee_id = c.employee_id and c.start_date < NOW() AND c.end_date > NOW() and c.is_main='1' ");
         queryWrapper.eq("a.user_id", userId);
         return userMapper.queryRelatInfoByUserId(queryWrapper);
     }
