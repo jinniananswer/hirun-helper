@@ -617,7 +617,7 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
                 &&!SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_COMANY_SHOP)
                 &&!StringUtils.isNotBlank(orgHrRelService.getOrgLine(employeeId))){
 
-            List<EmployeeInfoDTO> employeeList = employeeService.findSubordinate(employeeId);
+            List<EmployeeInfoDTO> employeeList = employeeService.recursiveAllSubordinates(employeeId+"");
             if (ArrayUtils.isEmpty(employeeList)) {
                 conditionDTO.setEmployeeIds(employeeId + "");
                 conditionDTO.setOrgLine(orgId + "");
@@ -626,7 +626,7 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
                 employeeIds += employee.getEmployeeId() + ",";
             }
             conditionDTO.setOrgLine("");
-            conditionDTO.setEmployeeIds(employeeIds);
+            conditionDTO.setEmployeeIds(employeeIds+employeeId);
         }else{
             conditionDTO.setOrgLine(orgLine);
         }
