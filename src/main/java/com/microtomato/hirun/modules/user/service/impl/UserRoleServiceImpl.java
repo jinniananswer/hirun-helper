@@ -94,11 +94,16 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
             );
         }
 
-        Assert.notNull(one, String.format("根据 orgId: %s|0, jobRole: %s, 找不到对应的角色！", orgId, jobRole));
-        Long roleId = one.getRoleId();
+        if (null == one) {
+            log.info("根据 orgId: {}|0, jobRole: {}, 找不到对应的角色！", orgId, jobRole);
+            // 如果找不到对应的角色信息，直接返回，不阻断新建客户资料流程。
+            return;
+        }
 
+        Long roleId = one.getRoleId();
         UserRole userRole = UserRole.builder().roleId(roleId).startDate(startDate).endDate(endDate).build();
         this.save(userRole);
+
     }
 
     /**
