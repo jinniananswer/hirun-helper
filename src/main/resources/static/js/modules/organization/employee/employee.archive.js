@@ -340,6 +340,12 @@ layui.extend({
                 form.render('select', 'jobRole');
             }
 
+            let jobGrade = employeeJobRole.jobGrade;
+            if (jobRole != null) {
+                $("#jobGrade").val(jobGrade);
+                form.render('select', 'jobGrade');
+            }
+
             let jobRoleNature = employeeJobRole.jobRoleNature;
             if (jobRoleNature != null) {
                 $("#jobRoleNature").val(jobRoleNature);
@@ -359,12 +365,6 @@ layui.extend({
             let parentEmployeeId = employeeJobRole.parentEmployeeId;
             if (parentEmployeeId != null) {
                 $(document.getElementById("employeeJobRole.parentEmployeeId")).val(parentEmployeeId);
-            }
-
-
-            let jobGrade = employeeJobRole.jobGrade;
-            if (jobGrade != null) {
-                $(document.getElementById("employeeJobRole.jobGrade")).val(jobGrade);
             }
 
             let contactMan = employee.contactMan;
