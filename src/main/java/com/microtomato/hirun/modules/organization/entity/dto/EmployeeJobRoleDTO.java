@@ -29,6 +29,10 @@ public class EmployeeJobRoleDTO implements Serializable {
 
     private String jobRoleName;
 
+    private String jobGrade;
+
+    private String jobGradeName;
+
     private String discountRate;
 
     private String jobRoleNature;
@@ -36,9 +40,5 @@ public class EmployeeJobRoleDTO implements Serializable {
     private Long parentEmployeeId;
 
     private String parentEmployeeName;
-
-    private String jobLevel;
-
-    private String jobGrade;
 
 }

@@ -18,7 +18,6 @@ import com.microtomato.hirun.modules.organization.entity.po.*;
 import com.microtomato.hirun.modules.organization.exception.EmployeeException;
 import com.microtomato.hirun.modules.organization.mapper.EmployeeMapper;
 import com.microtomato.hirun.modules.organization.service.*;
-import com.microtomato.hirun.modules.system.entity.consts.FuncConst;
 import com.microtomato.hirun.modules.system.entity.domain.AddressDO;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import com.microtomato.hirun.modules.user.entity.consts.UserConst;
@@ -539,6 +538,7 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         archive.setSocialSecurityStatusName(this.staticDataService.getCodeName("SOCIAL_SECURITY_STATUS", employee.getSocialSecurityStatus()));
 
         archive.setJobRoleName(this.staticDataService.getCodeName("JOB_ROLE", jobRole.getJobRole()));
+        archive.setJobGradeName(this.staticDataService.getCodeName("JOB_GRADE", jobRole.getJobGrade()));
 
         Long parentEmployeeId = jobRole.getParentEmployeeId();
         if (parentEmployeeId != null) {

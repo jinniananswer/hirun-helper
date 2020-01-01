@@ -168,7 +168,7 @@ public class EmployeePerformanceServiceImpl extends ServiceImpl<EmployeePerforma
         queryWrapper.eq(StringUtils.isNotEmpty(performance), "d.performance", performance);
         queryWrapper.eq(StringUtils.isNotEmpty(jobRoleNature), "b.job_role_nature", jobRoleNature);
         queryWrapper.like(StringUtils.isNotEmpty(name), "a.name", name);
-        queryWrapper.apply("b.employee_id=a.employee_id AND (now() between b.start_date and b.end_date) AND c.org_id = b.org_id and a.status='0' ");
+        queryWrapper.apply("b.employee_id=a.employee_id and b.is_main='1' AND (now() between b.start_date and b.end_date) and b.is_main = '1' AND c.org_id = b.org_id and a.status='0' ");
         queryWrapper.orderByDesc("d.create_time");
         queryWrapper.orderByDesc("b.org_id");
         return queryWrapper;

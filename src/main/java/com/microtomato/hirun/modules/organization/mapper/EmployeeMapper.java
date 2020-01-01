@@ -10,7 +10,6 @@ import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 import com.microtomato.hirun.modules.organization.entity.dto.*;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
-import com.microtomato.hirun.modules.organization.entity.po.StatEmployeeQuantityMonth;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
@@ -33,6 +32,7 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
             " and a.status = '0' \n" +
             " and b.employee_id = a.employee_id\n" +
             " and (now() between b.start_date and b.end_date) \n" +
+            " and b.is_main = '1' \n" +
             " and c.org_id = b.org_id")
     List<EmployeeInfoDTO> searchByNameMobileNo(String text);
 
@@ -58,7 +58,7 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
     @Select("select a.name,a.employee_id,a.sex,a.mobile_no ,a.identity_no,a.status employee_status, date_format(a.in_date,'%Y-%m-%d') in_date," +
             " b.job_role,b.org_id, c.name org_name,a.type,a.job_date,b.parent_employee_id,b.job_role_nature,x.age, x.company_age,a.birthday,x.job_age,b.discount_rate from " +
             " ins_org c, ins_employee a " +
-            " LEFT JOIN ( select * from ins_employee_job_role k where k.job_role_id in(select max(i.job_role_id) from (select * from ins_employee_job_role h order by h.start_date desc) i\n" +
+            " LEFT JOIN ( select * from ins_employee_job_role k where k.job_role_id in(select max(i.job_role_id) from (select * from ins_employee_job_role h where is_main= '1' order by h.start_date desc) i\n" +
             " group by i.employee_id)) b on (a.employee_id=b.employee_id) " +
             " LEFT JOIN (SELECT y.employee_id,TIMESTAMPDIFF(YEAR,y.birthday,NOW()) as age,TIMESTAMPDIFF(YEAR,y.in_date,NOW()) as company_age, TIMESTAMPDIFF(YEAR,y.job_date,NOW()) as job_age from ins_employee y ) x\n" +
             " on (a.employee_id=x.employee_id)" +
@@ -85,7 +85,7 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
             " b.job_role,b.org_id, c.name org_name,a.type,a.job_date,b.discount_rate,a.education_level,a.first_education_level,a.school_type," +
             " a.tech_title,a.native_prov,a.native_city,a.native_region,a.native_address,a.home_prov,a.home_city,a.home_region,a.home_address,b.parent_employee_id,b.job_role_nature,x.age, x.company_age,a.birthday,x.job_age from " +
             " ins_org c, ins_employee a " +
-            " LEFT JOIN ( select * from ins_employee_job_role k where k.job_role_id in(select max(i.job_role_id) from (select * from ins_employee_job_role h order by h.start_date desc) i\n" +
+            " LEFT JOIN ( select * from ins_employee_job_role k where k.job_role_id in(select max(i.job_role_id) from (select * from ins_employee_job_role h where is_main='1' order by h.start_date desc) i\n" +
             " group by i.employee_id)) b on (a.employee_id=b.employee_id) " +
             " LEFT JOIN (SELECT y.employee_id,TIMESTAMPDIFF(YEAR,y.birthday,NOW()) as age,TIMESTAMPDIFF(YEAR,y.in_date,NOW()) as company_age, TIMESTAMPDIFF(YEAR,y.job_date,NOW()) as job_age from ins_employee y ) x\n" +
             " on (a.employee_id=x.employee_id)\n" +
@@ -97,7 +97,7 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
      * 按性别统计员工信息
      * @return
      */
-    @Select("select sex name, count(1) num from ins_employee a, ins_employee_job_role b where b.employee_id = a.employee_id and a.status = '0' and (now() between b.start_date and b.end_date) and b.org_id in (${orgId}) group by sex ")
+    @Select("select sex name, count(1) num from ins_employee a, ins_employee_job_role b where b.employee_id = a.employee_id and a.status = '0' and (now() between b.start_date and b.end_date) and b.is_main = '1' and b.org_id in (${orgId}) group by sex ")
     List<EmployeePieStatisticDTO> countBySex(@Param("orgId")String orgId);
 
     /**
@@ -113,7 +113,7 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
             "            when TIMESTAMPDIFF(YEAR,birthday,NOW()) > 60 then '60+' " +
             "       end as age " +
             "from ins_employee a, ins_employee_job_role b " +
-            "where b.employee_id = a.employee_id and a.status = '0' and (now() between b.start_date and b.end_date) and b.org_id in (${orgId}) and birthday is not null) temp_employee " +
+            "where b.employee_id = a.employee_id and a.status = '0' and (now() between b.start_date and b.end_date) and is_main='1' and b.org_id in (${orgId}) and birthday is not null) temp_employee " +
             "group by age " +
             "order by age asc")
     List<EmployeePieStatisticDTO> countByAge(@Param("orgId")String orgId);
@@ -122,7 +122,7 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
      * 按岗位性质统计员工信息
      * @return
      */
-    @Select("select b.job_role_nature name, count(1) num from ins_employee a, ins_employee_job_role b where b.employee_id = a.employee_id and a.status = '0' and (now() between b.start_date and b.end_date) and b.org_id in (${orgId}) group by b.job_role_nature ")
+    @Select("select b.job_role_nature name, count(1) num from ins_employee a, ins_employee_job_role b where b.employee_id = a.employee_id and a.status = '0' and (now() between b.start_date and b.end_date) and b.is_main='1' and b.org_id in (${orgId}) group by b.job_role_nature ")
     List<EmployeePieStatisticDTO> countByJobRoleNature(@Param("orgId")String orgId);
 
     /**
@@ -137,7 +137,7 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
             "            when TIMESTAMPDIFF(YEAR,in_date,NOW()) > 10 then '10年+' " +
             "       end as company_age " +
             "from ins_employee a, ins_employee_job_role b " +
-            "where b.employee_id = a.employee_id and (now() between b.start_date and end_date) and a.in_date is not null and a.status = '0' and b.org_id in (${orgId}) ) temp_employee " +
+            "where b.employee_id = a.employee_id and (now() between b.start_date and end_date) and a.in_date is not null and a.status = '0' and b.is_main='1' and b.org_id in (${orgId}) ) temp_employee " +
             "group by company_age " +
             "order by company_age asc")
     List<EmployeePieStatisticDTO> countByCompanyAge(@Param("orgId")String orgId);
@@ -146,14 +146,14 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
      * 按最高学历统计员工信息
      * @return
      */
-    @Select("select education_level name, count(1) num from ins_employee a, ins_employee_job_role b where b.employee_id = a.employee_id and (now() between b.start_date and b.end_date) and b.org_id in (${orgId}) and a.status = '0' group by education_level ")
+    @Select("select education_level name, count(1) num from ins_employee a, ins_employee_job_role b where b.employee_id = a.employee_id and (now() between b.start_date and b.end_date) and b.is_main='1' and b.org_id in (${orgId}) and a.status = '0' group by education_level ")
     List<EmployeePieStatisticDTO> countByEducationLevel(@Param("orgId")String orgId);
 
     /**
      * 按员工在职类型统计员工信息
      * @return
      */
-    @Select("select type name, count(1) num from ins_employee a, ins_employee_job_role b where b.employee_id = a.employee_id and (now() between b.start_date and b.end_date) and b.org_id in (${orgId}) and a.status = '0' group by type ")
+    @Select("select type name, count(1) num from ins_employee a, ins_employee_job_role b where b.employee_id = a.employee_id and (now() between b.start_date and b.end_date) and b.is_main='1' and b.org_id in (${orgId}) and a.status = '0' group by type ")
     List<EmployeePieStatisticDTO> countByType(@Param("orgId")String orgId);
 
     /**
@@ -166,6 +166,7 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
             " and a.status = '0' \n" +
             " and b.employee_id = a.employee_id\n" +
             " and (now() between b.start_date and b.end_date) \n" +
+            " and b.is_main = '1' \n" +
             " and c.org_id = b.org_id")
     EmployeeInfoDTO queryEmployeeInfoByEmployeeId(Long employeeId);
 

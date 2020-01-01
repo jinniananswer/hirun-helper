@@ -129,9 +129,6 @@ public class EmployeeInfoDTO implements Serializable {
     private String parentEmployeeName;
 
     @ExcelIgnore
-    private String jobLevel;
-
-    @ExcelIgnore
     private String jobRoleNature;
 
     @ColumnWidth(20)

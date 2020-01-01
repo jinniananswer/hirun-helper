@@ -35,6 +35,9 @@ public class EmployeeJobRole extends BaseEntity {
     @TableField("job_role")
     private String jobRole;
 
+    @TableField("job_grade")
+    private String jobGrade;
+
     @TableField("job_role_nature")
     private String jobRoleNature;
 
