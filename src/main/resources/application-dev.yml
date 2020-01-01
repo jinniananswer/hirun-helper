@@ -35,11 +35,10 @@ spring:
         user: sys
         password: 1q1w1e1r
         minPoolSize: 2
-        maxPoolSize: 10
+        maxPoolSize: 5
         maxIdleTime: 60
         maxLifetime: 1200
         maintenanceInterval: 60
-        testQuery: SELECT 1
 
       ins:
         uniqueResourceName: ins
@@ -48,11 +47,10 @@ spring:
         user: ins
         password: 1q1w1e1r
         minPoolSize: 2
-        maxPoolSize: 10
+        maxPoolSize: 5
         maxIdleTime: 60
         maxLifetime: 1200
         maintenanceInterval: 60
-        testQuery: SELECT 1
 
   cache:
     # 指定缓存类型: none(禁用缓存), simple(用于开发), redis（用于生产）

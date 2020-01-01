@@ -21,7 +21,6 @@
 spring:
   profiles:
     active: dev
-
   mvc:
     # 所有静态资源访问，路径以 /static/ 为前缀。
     static-path-pattern: /static/**
