@@ -7,8 +7,10 @@ import com.microtomato.hirun.modules.organization.entity.consts.EmployeeConst;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeHistory;
 import com.microtomato.hirun.modules.organization.mapper.EmployeeHistoryMapper;
 import com.microtomato.hirun.modules.organization.service.IEmployeeHistoryService;
+import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -25,6 +27,9 @@ import java.util.List;
 @Slf4j
 @Service
 public class EmployeeHistoryServiceImpl extends ServiceImpl<EmployeeHistoryMapper, EmployeeHistory> implements IEmployeeHistoryService {
+
+    @Autowired
+    private IStaticDataService staticDataService;
 
     /**
      * 创建员工在鸿扬入职的历史数据
@@ -71,6 +76,22 @@ public class EmployeeHistoryServiceImpl extends ServiceImpl<EmployeeHistoryMappe
         history.setEventContent("回到鸿扬大家庭发挥余热的第一天");
 
         this.save(history);
+    }
+
+    @Override
+    public void createChangeJobRole(Long employeeId, String newJobRole, LocalDate eventDate) {
+        EmployeeHistory history = new EmployeeHistory();
+        this.processStandardData(employeeId, eventDate, history);
+        history.setEventType(EmployeeConst.HISTORY_EVENT_CHANGE_JOB_ROLE);
+        history.setEventContent("岗位变动，新岗位："+staticDataService.getCodeName("JOB_ROLE", newJobRole));
+    }
+
+    @Override
+    public void createChangeJobGrade(Long employeeId, String newJobGrade, LocalDate eventDate) {
+        EmployeeHistory history = new EmployeeHistory();
+        this.processStandardData(employeeId, eventDate, history);
+        history.setEventType(EmployeeConst.HISTORY_EVENT_CHANGE_JOB_ROLE);
+        history.setEventContent("职级变动，新职级："+staticDataService.getCodeName("JOB_GRADE", newJobGrade));
     }
 
     /**
