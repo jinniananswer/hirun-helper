@@ -31,7 +31,7 @@ spring:
         driverClassName: com.mysql.cj.jdbc.Driver
         url: jdbc:mysql://39.106.228.124:3306/sys?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=GMT%2B8
         user: sys
-        password: 1q1w1e1r
+        password: ENC(kOszr+P7A1igBzGeAY/bpx0ZLffsMGc/)
         minPoolSize: 2
         maxPoolSize: 5
         maxIdleTime: 60
@@ -43,7 +43,7 @@ spring:
         driverClassName: com.mysql.cj.jdbc.Driver
         url: jdbc:mysql://39.106.228.124:3306/ins?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=GMT%2B8
         user: ins
-        password: 1q1w1e1r
+        password: ENC(iLNwZcUXiXjVM2TOiymyEwsRUeZMnFKY)
         minPoolSize: 2
         maxPoolSize: 5
         maxIdleTime: 60

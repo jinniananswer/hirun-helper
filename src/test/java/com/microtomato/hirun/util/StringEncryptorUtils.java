@@ -23,11 +23,11 @@ public class StringEncryptorUtils {
     @Test
     public void encryptor() {
 
-        String[] raws = {"别了", "哥们", "大家混口饭吃不容易"};
+        String[] raws = {"莫咯", "我们哈是撮汤锅子滴！"};
 
         for (String raw : raws) {
             String enc = encryptor.encrypt(raw);
-            System.out.printf("明文: %s, 密文: %s，解密后明文: %s\n", raw, enc, encryptor.decrypt(enc));
+            System.out.printf("明文: %s, 密文: ENC(%s)，解密后明文: %s\n", raw, enc, encryptor.decrypt(enc));
         }
 
     }

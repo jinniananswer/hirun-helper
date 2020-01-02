@@ -1,6 +1,7 @@
 package com.microtomato.hirun.framework.mybatis.service;
 
 import com.atomikos.jdbc.nonxa.AtomikosNonXADataSourceBean;
+import com.baomidou.mybatisplus.core.toolkit.IOUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -19,12 +20,12 @@ import java.sql.Statement;
  */
 @Slf4j
 @Service
-public class PoolMonitorService implements ApplicationContextAware {
+public class DataSourceMonitorServiceImpl implements ApplicationContextAware {
 
     static {
-        PoolMonitorService.Check sender = new PoolMonitorService.Check();
-        sender.setDaemon(true);
-        sender.start();
+        Checker checker = new Checker();
+        checker.setDaemon(true);
+        checker.start();
     }
 
     private static ApplicationContext ctx;
@@ -34,21 +35,18 @@ public class PoolMonitorService implements ApplicationContextAware {
         ctx = applicationContext;
     }
 
-    private static class Check extends Thread {
-        private Check() {
-        }
+    private static class Checker extends Thread {
 
         @Override
         public void run() {
             while (true) {
                 try {
+                    Thread.sleep(60000);
                     AtomikosNonXADataSourceBean sysDataSource = (AtomikosNonXADataSourceBean) ctx.getBean("sysDataSource");
                     AtomikosNonXADataSourceBean insDataSource = (AtomikosNonXADataSourceBean) ctx.getBean("insDataSource");
 
                     keepAlive(sysDataSource);
                     keepAlive(insDataSource);
-
-                    Thread.sleep(60000);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -56,23 +54,19 @@ public class PoolMonitorService implements ApplicationContextAware {
         }
 
         private void keepAlive(AtomikosNonXADataSourceBean ds) {
-            int maxPoolSize = ds.getMaxPoolSize();
-
-            for (int i = 0; i < maxPoolSize; i++) {
+            int poolAvailableSize = ds.poolAvailableSize();
+            for (int i = 0; i < poolAvailableSize; i++) {
                 Connection conn = null;
+                Statement statement = null;
                 try {
                     conn = ds.getConnection();
-                    Statement statement = conn.createStatement();
+                    statement = conn.createStatement();
                     statement.executeQuery("SELECT 1");
-                    statement.close();
                 } catch (SQLException e) {
                     e.printStackTrace();
                 } finally {
-                    try {
-                        conn.close();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
+                    IOUtils.closeQuietly(statement);
+                    IOUtils.closeQuietly(conn);
                 }
             }
         }
