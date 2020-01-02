@@ -81,6 +81,12 @@ public class Menu extends BaseEntity {
     @TableField("ico_url")
     private String icoUrl;
 
+    /**
+     * 菜单字符图标
+     */
+    @TableField("iconfont")
+    private String iconfont;
+
     @TableField("is_common_use")
     private String isCommonUse;
 

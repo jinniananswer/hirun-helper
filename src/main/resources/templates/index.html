@@ -143,8 +143,8 @@
     {{#  layui.each(d, function(index, item){ }}
     <li class="layui-nav-item" id="menu_{{ item.node.menuId }}">
         <a href="javascript:;">
-            {{#  if(item.node.icoUrl  != null){ }}
-                <i class="layui-icon {{ item.node.icoUrl }}"></i>
+            {{#  if(item.node.iconfont  != null){ }}
+                <i class="layui-icon {{ item.node.iconfont }}"></i>
             {{# } }}
             <cite>{{ item.node.title }}</cite>
         </a>
@@ -157,16 +157,16 @@
         <dd id="menu_{{ item.node.menuId }}">
             {{#  if(item.node.menuUrl == null){ }}
                 <a>
-                    {{#  if(item.node.icoUrl  != null){ }}
-                    <i class="layui-icon {{ item.node.icoUrl }}"></i>
+                    {{#  if(item.node.iconfont  != null){ }}
+                    <i class="layui-icon {{ item.node.iconfont }}"></i>
                     {{# } }}
                     <cite>{{ item.node.title }}</cite>
                 </a>
             {{# } }}
             {{#  if(item.node.menuUrl  != null){ }}
                 <a lay-href={{ item.node.menuUrl }}>
-                    {{#  if(item.node.icoUrl  != null){ }}
-                    <i class="layui-icon {{ item.node.icoUrl }}"></i>
+                    {{#  if(item.node.iconfont  != null){ }}
+                    <i class="layui-icon {{ item.node.iconfont }}"></i>
                     {{# } }}
                     <cite>{{ item.node.title }}</cite>
                 </a>
