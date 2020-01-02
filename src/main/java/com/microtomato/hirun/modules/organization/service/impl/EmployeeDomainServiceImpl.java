@@ -129,7 +129,7 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             throw new EmployeeException(EmployeeException.EmployeeExceptionEnum.CREATE_TYPE_ERROR);
         }
 
-        if ((StringUtils.equals(EmployeeConst.CREATE_TYPE_NEW_ENTRY, createType) && StringUtils.equals(operType, EmployeeConst.OPER_TYPE_CREATE))) {
+        if ((StringUtils.equals(EmployeeConst.CREATE_TYPE_NEW_ENTRY, createType) && StringUtils.equals(operType, EmployeeConst.OPER_TYPE_CREATE)) && StringUtils.equals(EmployeeConst.STATUS_NORMAL, employee.getStatus())) {
             //创建员工时如果存在证件号码相同的员工，则报错
             throw new EmployeeException(EmployeeException.EmployeeExceptionEnum.IS_EXISTS, "证件号码", employee.getName(), employee.getMobileNo());
         } else if (StringUtils.equals(operType, EmployeeConst.OPER_TYPE_EDIT) && employeeId != null && !employeeId.equals(employee.getEmployeeId())) {
@@ -350,6 +350,14 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
                 this.userRoleService.createRole(userId, jobRole.getOrgId(), jobRole.getJobRole());
             } else {
                 userDO.modify(employeeDTO.getMobileNo(), null, null);
+
+                EmployeeJobRole oldJobRole = this.employeeJobRoleService.queryLast(employeeDTO.getEmployeeId());
+                if (oldJobRole != null && !StringUtils.equals(oldJobRole.getJobRole(), jobRole.getJobRole())) {
+                    this.employeeHistoryService.createChangeJobRole(employeeDTO.getEmployeeId(), jobRole.getJobRole(), null);
+                }
+                if (oldJobRole != null && !StringUtils.equals(oldJobRole.getJobGrade(), jobRole.getJobGrade())) {
+                    this.employeeHistoryService.createChangeJobGrade(employeeDTO.getEmployeeId(), jobRole.getJobGrade(), null);
+                }
                 employeeDO.modify(employee, jobRole, workExperiences, keyMen);
             }
             //新增部门异动记录

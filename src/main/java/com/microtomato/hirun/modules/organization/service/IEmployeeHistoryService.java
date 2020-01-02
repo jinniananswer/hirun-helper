@@ -22,6 +22,10 @@ public interface IEmployeeHistoryService extends IService<EmployeeHistory> {
 
     void createRehelloring(Long employeeId, LocalDate eventDate);
 
+    void createChangeJobRole(Long employeeId, String newJobRole, LocalDate eventDate);
+
+    void createChangeJobGrade(Long employeeId, String newJobGrade, LocalDate eventDate);
+
     List<EmployeeHistory> queryHistories(Long employeeId);
 
     void createTrans(Long employeeId, LocalDate eventDate, String content, String type);

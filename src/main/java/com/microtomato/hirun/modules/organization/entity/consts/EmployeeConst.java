@@ -52,6 +52,16 @@ public class EmployeeConst {
     //借调
     public static final String HISTORY_EVENT_BORROW = "6";
 
+    /**
+     * 岗位变动
+     */
+    public static final String HISTORY_EVENT_CHANGE_JOB_ROLE = "7";
+
+    /**
+     * 职级变动
+     */
+    public static final String HISTORY_EVENT_CHANGE_JOB_GRADE = "8";
+
     //离职方式-退休
     public static final String DESTORY_WAY_RETIRE = "5";
 
