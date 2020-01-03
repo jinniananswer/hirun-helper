@@ -32,7 +32,6 @@ public class MySQLGenerator {
     private static String driver = "com.mysql.cj.jdbc.Driver";
     private static String schemaName = "sys";
     private static String username = "sys";
-    private static String password = "1q1w1e1r";
 
     private static String parentPackege = "com.microtomato.hirun.modules";
 
@@ -67,6 +66,7 @@ public class MySQLGenerator {
         System.out.println("数据源: " + schemaName);
         String moduleName = scanner("请输入本次构建的模块名");
         String databaseName = scanner("请输入本次构建连接的数据库");
+        String password = scanner("请输入数据库密码");
         String author = scanner("请输入开发者名字");
         switchDatabase(databaseName);
         String[] tables = scanner("请输入本次构建的表名(多个表明用英文逗号隔开)").split(",");
