@@ -38,6 +38,12 @@ public class Org extends BaseEntity {
     @TableField("type")
     private String type;
 
+    @TableField("nature")
+    private String nature;
+
+    @TableField("company_nature")
+    private String companyNature;
+
     @TableField("contact_no")
     private Long contactNo;
 
