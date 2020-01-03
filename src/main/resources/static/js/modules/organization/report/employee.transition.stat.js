@@ -10,7 +10,8 @@ layui.extend({
 
             laydate.render({
                 elem: '#queryTime',
-                type: 'month'
+                type: 'month',
+                value: new Date()
             });
 
             table.render({
@@ -30,21 +31,20 @@ layui.extend({
                 cols: [
                     [
                         {field: 'orgName', title: '部门', width: 324, fixed: 'left', align: 'center',totalRowText:'合计: '},
-                        {field: 'year', title: '年份', width: 89, fixed: 'left', align: 'center',sort:true},
-                        {field: 'month', title: '月份', width: 89, fixed: 'left', align: 'center',sort:true},
-                        {field: 'employeeEntryQuantity', title: '入职人数', width: 110, align: 'center',totalRow:true,sort:true},
+                        {field: 'jobRoleName', title: '岗位名称', width: 110, fixed: 'left', align: 'center'},
+                        {field: 'employee_entry_quantity', title: '入职人数', width: 110, align: 'center',totalRow:true,sort:true},
                         {field: 'entryEmployeeName', title: '入职员工', width: 110, align: 'center'},
-                        {field: 'employeeDestroyQuantity', title: '离职人数', width: 110, align: 'center',totalRow:true,sort:true},
+                        {field: 'employee_destroy_quantity', title: '离职人数', width: 110, align: 'center',totalRow:true,sort:true},
                         {field: 'destroyEmployeeName', title: '离职员工', width: 110, align: 'center'},
-                        {field: 'employeeHolidayQuantity', title: '休假人数', width: 110, align: 'center',totalRow:true,sort:true},
+                        {field: 'employee_holiday_quantity', title: '休假人数', width: 110, align: 'center',totalRow:true,sort:true},
                         {field: 'holidayEmployeeName', title: '休假员工', width: 110, align: 'center'},
-                        {field: 'employeeTransOutQuantity', title: '调出人数', width: 110, align: 'center',totalRow:true,sort:true},
+                        {field: 'employee_trans_out_quantity', title: '调出人数', width: 110, align: 'center',totalRow:true,sort:true},
                         {field: 'transOutEmployeeName', title: '调出员工', width: 110, align: 'center'},
-                        {field: 'employeeTransInQuantity', title: '调入人数', width: 110, align: 'center',totalRow:true,sort:true},
+                        {field: 'employee_trans_in_quantity', title: '调入人数', width: 110, align: 'center',totalRow:true,sort:true},
                         {field: 'transInEmployeeName', title: '调入员工', width: 110, align: 'center'},
-                        {field: 'employeeBorrowInQuantity', title: '借调(入)人数', width: 110, align: 'center',totalRow:true,sort:true},
+                        {field: 'employee_borrow_in_quantity', title: '借调(入)人数', width: 110, align: 'center',totalRow:true,sort:true},
                         {field: 'borrowInEmployeeName', title: '借调员工', width: 110, align: 'center'},
-                        {field: 'employeeBorrowOutQuantity', title: '借调(出)人数', width: 110, align: 'center',totalRow:true,sort:true},
+                        {field: 'employee_borrow_out_quantity', title: '借调(出)人数', width: 110, align: 'center',totalRow:true,sort:true},
                         {field: 'borrowOutEmployeeName', title: '借调员工', width: 110, align: 'center'},
                     ]
                 ],
@@ -68,7 +68,7 @@ layui.extend({
         },
 
         selectOrg: function () {
-            layui.orgTree.init('orgTree', 'orgId', 'orgPath', false);
+            layui.orgTree.init('orgTree', 'orgId', 'orgPath', false,false);
         },
 
 

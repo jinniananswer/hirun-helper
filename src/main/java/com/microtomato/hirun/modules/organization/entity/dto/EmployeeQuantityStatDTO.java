@@ -26,33 +26,43 @@ public class EmployeeQuantityStatDTO implements Serializable {
 
     private String year;
 
-    private Integer employeeSum;
+    private Float employeeNum;
+
+    private Float lessMonthNum;
+
+    private Float moreMonthNum;
+
+    private String orgType;
+
+    private String city;
+
+    private String jobGrade;
 
     private String month;
 
-    private Integer janurayCount;
+    private Float janurayCount;
 
-    private Integer februaryCount;
+    private Float februaryCount;
 
-    private Integer marchCount;
+    private Float marchCount;
 
-    private Integer aprilCount;
+    private Float aprilCount;
 
-    private Integer mayCount;
+    private Float mayCount;
 
-    private Integer juneCount;
+    private Float juneCount;
 
-    private Integer julyCount;
+    private Float julyCount;
 
-    private Integer augustCount;
+    private Float augustCount;
 
-    private Integer septemberCount;
+    private Float septemberCount;
 
-    private Integer octoberCount;
+    private Float octoberCount;
 
-    private Integer novemberCount;
+    private Float novemberCount;
 
-    private Integer decemberCount;
+    private Float decemberCount;
 
     private Long parentOrgId;
 

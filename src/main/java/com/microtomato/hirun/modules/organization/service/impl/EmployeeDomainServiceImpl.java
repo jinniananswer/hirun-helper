@@ -383,6 +383,8 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         if (hrPendingList.size() > 0) {
             throw new AlreadyExistException(" 该员工下存在未处理的待办任务，请将待办任务转移之后再办理离职！", ErrorKind.ALREADY_EXIST.getCode());
         }
+
+        EmployeeJobRole employeeJobRole=employeeJobRoleService.queryValidMain(employeeDestroyInfoDTO.getEmployeeId());
         //判断离职员工是否为后台任务对应人资提醒人员
         List<OrgHrRel> orgHrRelList = orgHrRelService.queryOrgHrRelByEmployeeId(employeeDestroyInfoDTO.getEmployeeId());
 
@@ -426,7 +428,14 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             employeeJobRoleService.changeParentEmployee(employeeDestroyInfoDTO.getEmployeeId(), employeeDestroyInfoDTO.getNewParentEmployeeId(), loginUserId);
         }
         //新增离职员工异动报表记录
-        transitionService.addEmployeeDestroyTransition(infoDTO.getOrgId(), infoDTO.getEmployeeId(), employeeDestroyInfoDTO.getDestroyDate().toLocalDate());
+        EmployeeTransitonDTO dto=new EmployeeTransitonDTO();
+        dto.setEmployeeId(employeeJobRole.getEmployeeId());
+        dto.setOrgId(employeeJobRole.getOrgId());
+        dto.setJobRole(employeeJobRole.getJobRole());
+        dto.setJobRoleNature(employeeJobRole.getJobRoleNature());
+        dto.setJobGrade(employeeJobRole.getJobGrade());
+        dto.setHappenDate(employeeDestroyInfoDTO.getDestroyDate().toLocalDate());
+        transitionService.addEmployeeDestroyTransition(dto);
         //新增员工在鸿扬的工作经历信息
         employeeHistoryService.createDestroy(employeeDestroyInfoDTO.getEmployeeId(), employeeDestroyInfoDTO.getDestroyDate().toLocalDate(), employeeDestroyInfoDTO.getDestroyWay());
         return true;

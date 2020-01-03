@@ -41,8 +41,8 @@ public class StatEmployeeQuantityMonth extends BaseEntity {
     @TableField("month")
     private String month;
 
-    @TableField("employee_sum")
-    private Integer employeeSum;
+    @TableField("employee_num")
+    private Float employeeNum;
 
     @TableField("job_role")
     private String jobRole;
@@ -55,9 +55,18 @@ public class StatEmployeeQuantityMonth extends BaseEntity {
     private String orgNature;
 
 
-    @TableField("less_month_quantity")
-    private Integer lessMonthQuantity;
+    @TableField("less_month_num")
+    private Float lessMonthNum;
 
-    @TableField("more_month_quantity")
-    private Integer moreMonthQuantity;
+    @TableField("more_month_num")
+    private Float moreMonthNum;
+
+    @TableField("org_type")
+    private String orgType;
+
+    @TableField("city")
+    private String city;
+
+    @TableField("job_grade")
+    private String jobGrade;
 }

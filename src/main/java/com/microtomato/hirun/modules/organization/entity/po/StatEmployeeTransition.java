@@ -46,11 +46,29 @@ public class StatEmployeeTransition extends BaseEntity {
     @TableField("month")
     private String month;
 
-    @TableField("orgId")
+    @TableField("org_id")
     private Long orgId;
 
+    @TableField("org_nature")
+    private String orgNature;
+
+    @TableField("job_role")
+    private String jobRole;
+
+    @TableField("job_role_nature")
+    private String jobRoleNature;
+
+    @TableField("org_city")
+    private String orgCity;
+
+    @TableField("org_type")
+    private String orgType;
+
+    @TableField("job_grade")
+    private String jobGrade;
+
     @TableField("employee_entry_quantity")
-    private Integer employeeEntryQuantity;
+    private Float employeeEntryQuantity;
 
     /**
      * 新入职员工id集合
@@ -59,7 +77,7 @@ public class StatEmployeeTransition extends BaseEntity {
     private String entryEmployeeId;
 
     @TableField("employee_destroy_quantity")
-    private Integer employeeDestroyQuantity;
+    private Float employeeDestroyQuantity;
 
     /**
      * 离职employee_id集合
@@ -68,7 +86,7 @@ public class StatEmployeeTransition extends BaseEntity {
     private String destroyEmployeeId;
 
     @TableField("employee_holiday_quantity")
-    private Integer employeeHolidayQuantity;
+    private Float employeeHolidayQuantity;
 
     /**
      * 休假员工集合
@@ -80,7 +98,7 @@ public class StatEmployeeTransition extends BaseEntity {
      * 员工调动-转入
      */
     @TableField("employee_trans_in_quantity")
-    private Integer employeeTransInQuantity;
+    private Float employeeTransInQuantity;
 
     /**
      * 员工转入id集合
@@ -92,7 +110,7 @@ public class StatEmployeeTransition extends BaseEntity {
      * 员工调动（转出）
      */
     @TableField("employee_trans_out_quantity")
-    private Integer employeeTransOutQuantity;
+    private Float employeeTransOutQuantity;
 
     /**
      * 员工转出id集合
@@ -104,7 +122,7 @@ public class StatEmployeeTransition extends BaseEntity {
      * 员工借调转入
      */
     @TableField("employee_borrow_in_quantity")
-    private Integer employeeBorrowInQuantity;
+    private Float employeeBorrowInQuantity;
 
     /**
      * 员工借入id集合
@@ -116,7 +134,7 @@ public class StatEmployeeTransition extends BaseEntity {
      * 员工借调转出
      */
     @TableField("employee_borrow_out_quantity")
-    private Integer employeeBorrowOutQuantity;
+    private Float employeeBorrowOutQuantity;
 
     /**
      * 员工借出id集合
