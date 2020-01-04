@@ -1,8 +1,10 @@
 package com.microtomato.hirun.modules.organization.service.impl;
 
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.framework.util.SecurityUtils;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
+import com.microtomato.hirun.modules.organization.entity.consts.OrgConst;
 import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeePieStatisticDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.StatisticBarDTO;
@@ -136,7 +138,8 @@ public class EmployeeStatisticServiceImpl implements IEmployeeStatisticService {
     @Override
     public StatisticBarDTO countInAndDestroyOneYear() {
         StatisticBarDTO bar = new StatisticBarDTO();
-        bar.setTitle("入职数与离职数对比");
+        String chartTitle = this.getChartOrgTitle(null);
+        bar.setTitle(chartTitle + "入职数与离职数对比");
         bar.setSubtitle("最近12个月");
         List<String> legend = new ArrayList<>();
         legend.add("入职数");
@@ -185,5 +188,26 @@ public class EmployeeStatisticServiceImpl implements IEmployeeStatisticService {
         }
 
         return orgIds;
+    }
+
+    @Override
+    public String getChartOrgTitle(Long orgId) {
+        if (orgId == null) {
+            List<Org> orgs = this.orgService.listOrgsSecurity();
+            if (SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_ORG)) {
+                return "鸿扬家居";
+            } else if (SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_BU)) {
+                return "所有事业部";
+            } else if (SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_SUB_COMPANY)) {
+                return "所有分公司";
+            } else if (SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_COMANY_SHOP)) {
+                return "所有门店";
+            } else {
+                orgId = orgs.get(0).getOrgId();
+            }
+        }
+
+        OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+        return orgDO.getCompanyLinePath();
     }
 }

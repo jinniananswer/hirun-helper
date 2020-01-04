@@ -40,7 +40,8 @@ public class EmployeeStatisticController {
         }
 
         PieChart pie = new PieChart();
-        pie.setTitle("员工数量分布（按性别）");
+        String chartTitle = this.employeeStatisticService.getChartOrgTitle(orgId);
+        pie.setTitle(chartTitle + "员工数量分布（按性别）");
         pie.setItemTitle("性别");
 
         List<PieData> datas = this.getPieData(sexStatistics);
@@ -59,7 +60,8 @@ public class EmployeeStatisticController {
         }
 
         PieChart pie = new PieChart();
-        pie.setTitle("员工数量分布（按年龄段）");
+        String chartTitle = this.employeeStatisticService.getChartOrgTitle(orgId);
+        pie.setTitle(chartTitle + "员工数量分布（按年龄段）");
         pie.setItemTitle("年龄段");
 
         List<PieData> datas = this.getPieData(ageStatistics);
@@ -78,7 +80,8 @@ public class EmployeeStatisticController {
         }
 
         PieChart pie = new PieChart();
-        pie.setTitle("员工数量分布（按岗位性质）");
+        String chartTitle = this.employeeStatisticService.getChartOrgTitle(orgId);
+        pie.setTitle(chartTitle + "员工数量分布（按岗位性质）");
         pie.setItemTitle("岗位性质");
 
         List<PieData> datas = this.getPieData(jobRoleNatureStatistics);
@@ -97,7 +100,8 @@ public class EmployeeStatisticController {
         }
 
         PieChart pie = new PieChart();
-        pie.setTitle("员工数量分布（按司龄）");
+        String chartTitle = this.employeeStatisticService.getChartOrgTitle(orgId);
+        pie.setTitle(chartTitle + "员工数量分布（按司龄）");
         pie.setItemTitle("司龄");
 
         List<PieData> datas = this.getPieData(companyAgeStatistics);
@@ -116,7 +120,8 @@ public class EmployeeStatisticController {
         }
 
         PieChart pie = new PieChart();
-        pie.setTitle("员工数量分布（按学历）");
+        String chartTitle = this.employeeStatisticService.getChartOrgTitle(orgId);
+        pie.setTitle(chartTitle + "员工数量分布（按学历）");
         pie.setItemTitle("学历");
 
         List<PieData> datas = this.getPieData(educationLevelStatistics);
@@ -135,7 +140,8 @@ public class EmployeeStatisticController {
         }
 
         PieChart pie = new PieChart();
-        pie.setTitle("员工数量分布（按类型）");
+        String chartTitle = this.employeeStatisticService.getChartOrgTitle(orgId);
+        pie.setTitle(chartTitle + "员工数量分布（按类型）");
         pie.setItemTitle("类型");
 
         List<PieData> datas = this.getPieData(typeStatistics);
