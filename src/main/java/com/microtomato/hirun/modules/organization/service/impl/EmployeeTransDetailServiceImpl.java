@@ -13,14 +13,13 @@ import com.microtomato.hirun.modules.organization.entity.domain.EmployeeDO;
 import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeInfoDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeTransDetailDTO;
-import com.microtomato.hirun.modules.organization.entity.po.Employee;
-import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
-import com.microtomato.hirun.modules.organization.entity.po.EmployeeTransDetail;
-import com.microtomato.hirun.modules.organization.entity.po.HrPending;
+import com.microtomato.hirun.modules.organization.entity.po.*;
 import com.microtomato.hirun.modules.organization.mapper.EmployeeTransDetailMapper;
 import com.microtomato.hirun.modules.organization.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.modules.system.service.INotifyService;
+import com.microtomato.hirun.modules.user.service.IUserRoleService;
+import com.microtomato.hirun.modules.user.service.IUserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +64,15 @@ public class EmployeeTransDetailServiceImpl extends ServiceImpl<EmployeeTransDet
     @Autowired
     private IEmployeeHistoryService historyService;
 
+    @Autowired
+    private IUserRoleService userRoleService;
+
+    @Autowired
+    IUserService userService;
+
+    @Autowired
+    IOrgService orgService;
+
     @Override
     public EmployeeTransDetail queryPendingDetailById(Long id) {
         QueryWrapper<EmployeeTransDetail> queryWrapper = new QueryWrapper<>();
@@ -100,6 +108,13 @@ public class EmployeeTransDetailServiceImpl extends ServiceImpl<EmployeeTransDet
         employeeJobRole.setEndDate(TimeUtils.getForeverTime());
         employeeJobRole.setIsMain(EmployeeConst.JOB_ROLE_MAIN);
         employeeJobRoleService.save(employeeJobRole);
+
+        //分配默认权限
+        Org org = this.orgService.queryByOrgId(transDetail.getOrgId());
+        Employee originalEmployee = employeeService.getById(transDetail.getEmployeeId());
+
+        this.userRoleService.switchRole(originalEmployee.getUserId(),transDetail.getOrgId(),
+                transDetail.getJobRole(),org.getNature());
 
         //更新待办
         HrPending hrPending = new HrPending();
@@ -176,6 +191,12 @@ public class EmployeeTransDetailServiceImpl extends ServiceImpl<EmployeeTransDet
         //更新待办数据
         hrPending.setPendingStatus(HrPendingConst.PENDING_STATUS_2);
         boolean result = hrPendingService.updateById(hrPending);
+
+        //分配默认权限
+        Org org = this.orgService.queryByOrgId(transDetail.getOrgId());
+
+        this.userRoleService.switchRole(originalEmployee.getUserId(),transDetail.getOrgId(),
+                transDetail.getJobRole(),org.getNature());
 
         //新增部门异动信息
         if (StringUtils.equals(transDetail.getTransType(), "1")) {
