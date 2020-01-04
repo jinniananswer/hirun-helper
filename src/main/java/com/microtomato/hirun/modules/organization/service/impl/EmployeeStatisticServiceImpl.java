@@ -183,6 +183,7 @@ public class EmployeeStatisticServiceImpl implements IEmployeeStatisticService {
         } else {
             orgIds = orgDO.getOrgLine(orgId);
         }
+
         return orgIds;
     }
 }

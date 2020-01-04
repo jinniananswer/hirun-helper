@@ -315,6 +315,9 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             }
         }
 
+        Long orgId = jobRole.getOrgId();
+        Org org = this.orgService.queryByOrgId(orgId);
+
         if (employeeDTO.getEmployeeId() == null) {
             //没有employeeId，表示是新入职操作
 
@@ -327,7 +330,7 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             employeeDO.newEntry(jobRole, workExperiences, keyMen);
 
             //分配默认权限
-            //this.userRoleService.createRole(userId, jobRole.getOrgId(), jobRole.getJobRole());
+            this.userRoleService.createRole(userId, jobRole.getOrgId(), jobRole.getJobRole(), org.getNature());
         } else {
             EmployeeDO employeeDO = SpringContextUtils.getBean(EmployeeDO.class, employeeDTO.getEmployeeId());
             Employee oldEmployee = employeeDO.getEmployee();
@@ -342,12 +345,12 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
                 userDO.modify(employeeDTO.getMobileNo(), UserConst.INIT_PASSWORD, UserConst.STATUS_NORMAL);
                 employeeDO.rehire(employee, jobRole, workExperiences, keyMen);
                 //分配默认权限
-                this.userRoleService.createRole(userId, jobRole.getOrgId(), jobRole.getJobRole());
+                this.userRoleService.createRole(userId, jobRole.getOrgId(), jobRole.getJobRole(), org.getNature());
             } else if (StringUtils.equals(createType, EmployeeConst.CREATE_TYPE_REHELLORING)) {
                 userDO.modify(employeeDTO.getMobileNo(), UserConst.INIT_PASSWORD, UserConst.STATUS_NORMAL);
                 employeeDO.rehelloring(employee, jobRole, workExperiences, keyMen);
                 //分配默认权限
-                this.userRoleService.createRole(userId, jobRole.getOrgId(), jobRole.getJobRole());
+                this.userRoleService.createRole(userId, jobRole.getOrgId(), org.getNature(), jobRole.getJobRole());
             } else {
                 userDO.modify(employeeDTO.getMobileNo(), null, null);
 
@@ -355,8 +358,12 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
                 if (oldJobRole != null && !StringUtils.equals(oldJobRole.getJobRole(), jobRole.getJobRole())) {
                     this.employeeHistoryService.createChangeJobRole(employeeDTO.getEmployeeId(), jobRole.getJobRole(), null);
                 }
-                if (oldJobRole != null && !StringUtils.equals(oldJobRole.getJobGrade(), jobRole.getJobGrade())) {
+                if (oldJobRole != null && StringUtils.isNotBlank(jobRole.getJobGrade()) && !StringUtils.equals(oldJobRole.getJobGrade(), jobRole.getJobGrade())) {
                     this.employeeHistoryService.createChangeJobGrade(employeeDTO.getEmployeeId(), jobRole.getJobGrade(), null);
+                }
+
+                if (!StringUtils.equals(jobRole.getJobRole(), oldJobRole.getJobRole()) || !jobRole.getOrgId().equals(oldJobRole.getOrgId())) {
+                    this.userRoleService.switchRole(userId, jobRole.getOrgId(), jobRole.getJobRole(), org.getNature());
                 }
                 employeeDO.modify(employee, jobRole, workExperiences, keyMen);
             }

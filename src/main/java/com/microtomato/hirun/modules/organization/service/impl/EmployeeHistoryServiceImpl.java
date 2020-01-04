@@ -84,6 +84,7 @@ public class EmployeeHistoryServiceImpl extends ServiceImpl<EmployeeHistoryMappe
         this.processStandardData(employeeId, eventDate, history);
         history.setEventType(EmployeeConst.HISTORY_EVENT_CHANGE_JOB_ROLE);
         history.setEventContent("岗位变动，新岗位："+staticDataService.getCodeName("JOB_ROLE", newJobRole));
+        this.save(history);
     }
 
     @Override
@@ -92,6 +93,7 @@ public class EmployeeHistoryServiceImpl extends ServiceImpl<EmployeeHistoryMappe
         this.processStandardData(employeeId, eventDate, history);
         history.setEventType(EmployeeConst.HISTORY_EVENT_CHANGE_JOB_ROLE);
         history.setEventContent("职级变动，新职级："+staticDataService.getCodeName("JOB_GRADE", newJobGrade));
+        this.save(history);
     }
 
     /**
