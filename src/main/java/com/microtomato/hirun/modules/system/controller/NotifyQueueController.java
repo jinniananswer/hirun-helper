@@ -79,4 +79,16 @@ public class NotifyQueueController {
         notifyQueueServiceImpl.announceEnqueue();
     }
 
+    /**
+     * 首页 console 查看未读消息，不分类型
+     *
+     * @return
+     */
+    @GetMapping("query-unread-all")
+    @RestResult
+    public List<UnReadedDTO> queryUnreadAll() {
+        List<UnReadedDTO> unReadedDTOS = notifyQueueServiceImpl.queryUnreadAll();
+        return unReadedDTOS;
+    }
+
 }

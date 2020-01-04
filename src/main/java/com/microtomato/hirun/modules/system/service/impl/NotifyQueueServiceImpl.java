@@ -21,6 +21,9 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import static com.microtomato.hirun.modules.system.service.INotifyService.*;
+import static com.microtomato.hirun.modules.system.service.INotifyService.NotifyType.ANNOUNCE;
+
 /**
  * <p>
  * 用户消息队列 服务实现类
@@ -120,7 +123,7 @@ public class NotifyQueueServiceImpl extends ServiceImpl<NotifyQueueMapper, Notif
      */
     @Override
     public List<UnReadedDTO> queryUnreadMessage() {
-        return queryUnread(INotifyService.NotifyType.MESSAGE);
+        return queryUnread(NotifyType.MESSAGE);
     }
 
 
@@ -131,7 +134,7 @@ public class NotifyQueueServiceImpl extends ServiceImpl<NotifyQueueMapper, Notif
      */
     @Override
     public List<UnReadedDTO> queryUnreadAnnounce() {
-        return queryUnread(INotifyService.NotifyType.ANNOUNCE);
+        return queryUnread(NotifyType.ANNOUNCE);
     }
 
     /**
@@ -141,10 +144,47 @@ public class NotifyQueueServiceImpl extends ServiceImpl<NotifyQueueMapper, Notif
      */
     @Override
     public List<UnReadedDTO> queryUnreadNotice() {
-        return queryUnread(INotifyService.NotifyType.NOTICE);
+        return queryUnread(NotifyType.NOTICE);
     }
 
-    private List<UnReadedDTO> queryUnread(INotifyService.NotifyType notifyType) {
+    /**
+     * 查未读（公告 + 通知 + 私信）
+     *
+     * @return
+     */
+    @Override
+    public List<UnReadedDTO> queryUnreadAll() {
+        Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
+        List<UnReadedDTO> unReadedDTOS = notifyQueueMapper.queryUnreadAll(employeeId);
+        Set<Long> ids = new HashSet<>();
+        unReadedDTOS.forEach(unReadedDTO -> ids.add(unReadedDTO.getSenderId()));
+
+        if (ids.size() > 0) {
+            List<Employee> list = employeeServiceImpl.list(
+                Wrappers.<Employee>lambdaQuery()
+                    .select(Employee::getEmployeeId, Employee::getName)
+                    .in(Employee::getEmployeeId, ids)
+            );
+
+            Map<Long, String> idNameMap = new HashMap<>(10);
+            list.forEach(employee -> idNameMap.put(employee.getEmployeeId(), employee.getName()));
+            unReadedDTOS.forEach(unreadedDTO -> unreadedDTO.setName(idNameMap.get(unreadedDTO.getSenderId())));
+            for (UnReadedDTO unReadedDTO : unReadedDTOS) {
+                Integer notifyType = unReadedDTO.getNotifyType();
+                if (ANNOUNCE.value() == notifyType) {
+                    unReadedDTO.setNotifyTypeDesc("公告");
+                } else if (NotifyType.NOTICE.value() == notifyType) {
+                    unReadedDTO.setNotifyTypeDesc("通知");
+                } else if (NotifyType.MESSAGE.value() == notifyType) {
+                    unReadedDTO.setNotifyTypeDesc("私信");
+                }
+
+            }
+        }
+        return unReadedDTOS;
+    }
+
+    private List<UnReadedDTO> queryUnread(NotifyType notifyType) {
         Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
         List<UnReadedDTO> unReadedDTOS = notifyQueueMapper.queryAll(notifyType.value(), employeeId);
 
@@ -214,7 +254,7 @@ public class NotifyQueueServiceImpl extends ServiceImpl<NotifyQueueMapper, Notif
      * 标记全部已读
      */
     @Override
-    public void markReadedAll(INotifyService.NotifyType notifyType) {
+    public void markReadedAll(NotifyType notifyType) {
 
         List<UnReadedDTO> unReadedDTOS = queryUnread(notifyType);
         Set<Long> set = new HashSet<>();

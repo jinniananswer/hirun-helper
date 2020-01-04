@@ -2,7 +2,7 @@ layui.extend({
     setter: 'config', //配置模块
     admin: 'admin', //核心模块
     view: 'view' //视图渲染模块
-}).define(['ajax', 'map', 'carousel', 'echarts', 'setter', 'admin', 'chart', 'layer'], function (exports) {
+}).define(['ajax', 'map', 'carousel', 'echarts', 'setter', 'admin', 'chart', 'layer', 'table'], function (exports) {
     /*
       下面通过 layui.use 分段加载不同的模块，实现不同区域的同时渲染，从而保证视图的快速呈现
     */
@@ -11,6 +11,7 @@ layui.extend({
     let carousel = layui.carousel;
     let echarts = layui.echarts;
     let setter = layui.setter;
+    let table = layui.table;
 
     //区块轮播切换
     layui.use(['admin', 'carousel'], function () {
@@ -47,6 +48,83 @@ layui.extend({
             this.drawBirthdayWish();
             this.drawPending();
             this.drawHotMenus();
+            this.drawMessage();
+        },
+
+        /** 公告/通知/私信 */
+        drawMessage: function () {
+
+            let messageTable = table.render({
+                elem: '#message-table',
+                url: 'api/system/notify-queue/query-unread-all',
+                fitColumns: true,
+                text: {none: '无未读信息'},
+                // cellMinWidth: 70,
+                response: {
+                    msgName: 'message',
+                    countName: 'total',
+                    dataName: 'rows'
+                },
+                page: false,
+                cols: [[
+                    {
+                        field: 'readed', title: '类型', width: 70, align: 'center', templet: function (d) {
+                            if (d.notifyType === 1) {
+                                return '<span class="layui-badge layui-bg-orange">公告</span>';
+                            } else if (d.notifyType === 2) {
+                                return '<span class="layui-badge layui-bg-green">通知</span>';
+                            } else if (d.notifyType === 3) {
+                                return '<span class="layui-badge layui-bg-blue">私信</span>';
+                            } else {
+                                return '';
+                            }
+                        }
+                    },
+                    {field: 'content', title: '内容', align: 'left'},
+                ]],
+                done: function () {
+                    // $('th').hide();
+                }
+            });
+            //监听行单击事件（双击事件为：rowDouble）
+            table.on('row(message-table)', function(obj) {
+                let data = obj.data;
+                let index = layer.open({
+                    type: 2,
+                    title: '查看详情',
+                    content: 'openUrl?url=modules/system/message-detail',
+                    maxmin: true,
+                    btn: ['我知道了'],
+                    area: ['550px', '400px'],
+                    skin: 'layui-layer-molv',
+                    success: function (layero, index) {
+                        let body = layer.getChildFrame('body', index);
+                        body.find('#senderName').html('<h1>来自【' + data.name + '】的' + data.notifyTypeDesc + '</h1>');
+                        body.find('#createTime').html('<span>' + data.createTime + '</span>');
+                        body.find('#content').html('<div class="layadmin-text">' + data.content + '</div>');
+                    },
+                    yes: function (index, layero) {
+                        $.ajax({
+                            type: "post",
+                            url: "api/system/notify-queue/markReaded",
+                            dataType: "json",
+                            contentType: "application/json",
+                            data: JSON.stringify([data.id]),
+                            success: function (obj) {
+                                layer.msg("操作成功！");
+                                table.reload('message-table');
+                            },
+                            error: function (obj) {
+                                layer.alert("操作失败！");
+                            }
+                        });
+                        layer.close(index);
+                    }
+                });
+
+                //标注选中样式
+                obj.tr.addClass('layui-table-click').siblings().removeClass('layui-table-click');
+            });
         },
 
         /** 常用菜单 */
