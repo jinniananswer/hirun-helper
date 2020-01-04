@@ -146,7 +146,7 @@ public class EmployeeDO {
 
         this.employeeHistoryService.createEntry(this.employee.getEmployeeId(), this.employee.getInDate().toLocalDate());
         //新增部门异动记录
-        //this.transitionService.addEmployeeEntryTransition(jobRole.getOrgId(),this.employee.getEmployeeId(),this.employee.getInDate().toLocalDate());
+        this.transitionService.addEmployeeEntryTransition(jobRole.getOrgId(),this.employee.getEmployeeId(),this.employee.getInDate().toLocalDate());
     }
 
     /**

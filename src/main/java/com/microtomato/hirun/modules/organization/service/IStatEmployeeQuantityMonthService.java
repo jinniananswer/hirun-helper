@@ -24,7 +24,7 @@ public interface IStatEmployeeQuantityMonthService extends IService<StatEmployee
      * @param orgId
      * @return
      */
-    StatEmployeeQuantityMonth queryCountRecord(String year, String month, Long orgId,String jobRole,String jobRoleNature,String orgNature);
+    StatEmployeeQuantityMonth queryCountRecord(String year, String month, Long orgId,String jobRole,String jobRoleNature,String orgNature,String jobGrade);
 
     /**
      * 查询部门在职人员数记录
@@ -33,4 +33,33 @@ public interface IStatEmployeeQuantityMonthService extends IService<StatEmployee
      * @return
      */
     List<EmployeeQuantityStatDTO> queryEmployeeQuantityStat(String year, Long orgId);
+
+    /**
+     * 查询员工异动信息汇总
+     * @param time
+     * @param orgId
+     * @return
+     */
+    List<Map<String,String>> queryEmployeeTrendsStat(String time,Long orgId,String orgNature);
+
+    /**
+     *家装分公司四大业务类人员汇总情况
+     * @param time
+     * @return
+     */
+    List<Map<String,String>> queryEmployeeCompanyStat(String time,String orgNature,String jobRole);
+
+    /**
+     *按照部门性质，岗位出四大业务类人员人数趋势
+     * @param time
+     * @return
+     */
+    List<Map<String,String>> busiCountByOrgNatureAndJobRole(String time,Long orgId,String orgNature);
+
+    /**
+     *四大业务类人员与部门所有员工异动人数趋势
+     * @param time
+     * @return
+     */
+    List<Map<String,String>> busiAndAllCountTrend(String time,Long orgId);
 }

@@ -14,7 +14,7 @@
 <body>
 <div class="layui-fluid">
     <div class="layui-card">
-        <div class="layui-card-header">员工异动详情</div>
+        <div class="layui-card-header">员工动态汇总表</div>
         <div class="layui-card-body">
             <form class="layui-form" id="query_form">
                 <div class="layui-form-item">
@@ -22,7 +22,7 @@
                         <label class="layui-form-label">部门：</label>
                         <div class="layui-input-block">
                             <input type="text" id="orgPath" name="orgPath"
-                                   onclick="layui.employeeTransitionStat.selectOrg();" placeholder="请点击选择部门"
+                                   onclick="layui.companyEmployeeTrendsStat.selectOrg();" placeholder="请点击选择部门"
                                    autocomplete="off" class="layui-input"/>
                             <input type="hidden" id="orgId" name="orgId"/>
                         </div>
@@ -56,9 +56,9 @@
 <script>
     layui.extend(
         {
-            employeeTransitionStat: "{/}static/js/modules/organization/report/employee.transition.stat"
-        }).use('employeeTransitionStat', function () {
-        layui.employeeTransitionStat.init();
+            companyEmployeeTrendsStat: "{/}static/js/modules/organization/report/company.employee.trends.stat"
+        }).use('companyEmployeeTrendsStat', function () {
+        layui.companyEmployeeTrendsStat.init();
     })
 </script>
 </body>

@@ -1,11 +1,12 @@
 package com.microtomato.hirun.modules.organization.service;
 
-import com.microtomato.hirun.modules.organization.entity.dto.EmployeeTransitionStatDTO;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeTransitonDTO;
 import com.microtomato.hirun.modules.organization.entity.po.StatEmployeeTransition;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -16,14 +17,6 @@ import java.util.List;
  * @since 2019-12-22
  */
 public interface IStatEmployeeTransitionService extends IService<StatEmployeeTransition> {
-    /**
-     * 查询异动信息记录
-     *
-     * @param orgId
-     * @param localDate
-     * @return
-     */
-    StatEmployeeTransition queryTransitionRecord(Long orgId, LocalDate localDate);
 
     /**
      * 新增员工入职异动
@@ -50,7 +43,7 @@ public interface IStatEmployeeTransitionService extends IService<StatEmployeeTra
      * @param employeeId
      * @param transDate
      */
-    void addEmployeeTransTransition(Long inOrgId, Long outOrgId, Long employeeId, LocalDate transDate);
+    void addEmployeeTransTransition(Long inOrgId, Long outOrgId, Long employeeId, LocalDate transDate,String oldJobRole,String oldJobRoleNature);
 
     /**
      * 新增员工借调异动
@@ -60,16 +53,14 @@ public interface IStatEmployeeTransitionService extends IService<StatEmployeeTra
      * @param employeeId
      * @param borrowDate
      */
-    void addEmployeeBorrowTransition(Long inOrgId, Long outOrgId, Long employeeId, LocalDate borrowDate);
+    void addEmployeeBorrowTransition(Long inOrgId, Long outOrgId, Long employeeId, LocalDate borrowDate,String oldJobRole,String oldJobRoleNature);
 
     /**
      * 新增员工销户异动
      *
-     * @param orgId
-     * @param employeeId
-     * @param destroyDate
+     * @param dto
      */
-    void addEmployeeDestroyTransition(Long orgId, Long employeeId, LocalDate destroyDate);
+    void addEmployeeDestroyTransition(EmployeeTransitonDTO dto);
 
     /**
      * 查询异动list
@@ -78,5 +69,5 @@ public interface IStatEmployeeTransitionService extends IService<StatEmployeeTra
      * @param queryTime
      * @return
      */
-    List<EmployeeTransitionStatDTO> queryTransitionList(Long orgId, String queryTime);
+    List<Map<String,String>> queryTransitionList(Long orgId, String queryTime);
 }

@@ -14,17 +14,28 @@
 <body>
 <div class="layui-fluid">
     <div class="layui-card">
-        <div class="layui-card-header">员工异动详情</div>
+        <div class="layui-card-header">四大业务类员工汇总表</div>
         <div class="layui-card-body">
             <form class="layui-form" id="query_form">
                 <div class="layui-form-item">
                     <div class="layui-inline">
-                        <label class="layui-form-label">部门：</label>
+                        <label class="layui-form-label layui-required">部门</label>
                         <div class="layui-input-block">
-                            <input type="text" id="orgPath" name="orgPath"
-                                   onclick="layui.employeeTransitionStat.selectOrg();" placeholder="请点击选择部门"
-                                   autocomplete="off" class="layui-input"/>
-                            <input type="hidden" id="orgId" name="orgId"/>
+                            <div class="layui-form" lay-filter="orgNature">
+                                <select id="orgNature" name="orgNature">
+
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">岗位</label>
+                        <div class="layui-input-block">
+                            <div class="layui-form" lay-filter="jobRole" style="width: 206px">
+                                <select id="jobRole" name="jobRole" lay-search>
+
+                                </select>
+                            </div>
                         </div>
                     </div>
                     <div class="layui-inline">
@@ -56,9 +67,9 @@
 <script>
     layui.extend(
         {
-            employeeTransitionStat: "{/}static/js/modules/organization/report/employee.transition.stat"
-        }).use('employeeTransitionStat', function () {
-        layui.employeeTransitionStat.init();
+            employeeCompanyStat: "{/}static/js/modules/organization/report/employee.company.stat"
+        }).use('employeeCompanyStat', function () {
+        layui.employeeCompanyStat.init();
     })
 </script>
 </body>

@@ -3,30 +3,27 @@ package com.microtomato.hirun.modules.organization.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.ArrayUtils;
-import com.microtomato.hirun.framework.util.SecurityUtils;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
-import com.microtomato.hirun.modules.organization.entity.dto.EmployeeTransitionStatDTO;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeTransitonDTO;
+import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
 import com.microtomato.hirun.modules.organization.entity.po.Org;
 import com.microtomato.hirun.modules.organization.entity.po.StatEmployeeTransition;
 import com.microtomato.hirun.modules.organization.mapper.StatEmployeeTransitionMapper;
+import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import com.microtomato.hirun.modules.organization.service.IOrgService;
 import com.microtomato.hirun.modules.organization.service.IStatEmployeeTransitionService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.microtomato.hirun.modules.system.entity.consts.FuncConst;
+import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
+import java.util.*;
 
 /**
  * <p>
@@ -49,34 +46,33 @@ public class StatEmployeeTransitionServiceImpl extends ServiceImpl<StatEmployeeT
     @Autowired
     private IOrgService orgService;
 
-    @Override
-    public StatEmployeeTransition queryTransitionRecord(Long orgId, LocalDate localDate) {
-        String year = "";
-        String month = "";
-        if (localDate == null) {
-            year = getYear();
-            month = getMonth();
-        } else {
-            year = localDate.getYear() + "";
-            month = localDate.getMonthValue() + "";
-        }
+    @Autowired
+    private IEmployeeJobRoleService jobRoleService;
+
+    @Autowired
+    private IStaticDataService staticDataService;
+
+    public StatEmployeeTransition queryTransitionRecord(StatEmployeeTransition employeeTransition) {
+
 
         StatEmployeeTransition statEmployeeTransition = this.mapper.selectOne(new QueryWrapper<StatEmployeeTransition>().lambda()
-                .eq(StatEmployeeTransition::getYear, year)
-                .eq(StatEmployeeTransition::getOrgId, orgId)
-                .eq(StatEmployeeTransition::getMonth, month));
+                .eq(StatEmployeeTransition::getYear, employeeTransition.getYear())
+                .eq(StatEmployeeTransition::getOrgId, employeeTransition.getOrgId())
+                .eq(StatEmployeeTransition::getMonth, employeeTransition.getMonth())
+                .eq(StatEmployeeTransition::getJobRole, employeeTransition.getJobRole())
+                .eq(StatEmployeeTransition::getOrgNature, employeeTransition.getOrgNature())
+                .eq(StatEmployeeTransition::getJobGrade, employeeTransition.getJobGrade())
+                .eq(StatEmployeeTransition::getJobRoleNature, employeeTransition.getJobRoleNature()));
         return statEmployeeTransition;
-
-
     }
 
     @Override
     public void addEmployeeEntryTransition(Long orgId, Long employeeId, LocalDate inDate) {
-        StatEmployeeTransition statEmployeeTransitionNew = buildTransition(orgId, inDate);
-        StatEmployeeTransition statEmployeeTransitionRecord = queryTransitionRecord(orgId, inDate);
+        StatEmployeeTransition statEmployeeTransitionNew = buildTransition(orgId, inDate, employeeId);
+        StatEmployeeTransition statEmployeeTransitionRecord = queryTransitionRecord(statEmployeeTransitionNew);
         if (statEmployeeTransitionRecord == null) {
             statEmployeeTransitionNew.setEntryEmployeeId(employeeId + "");
-            statEmployeeTransitionNew.setEmployeeEntryQuantity(1);
+            statEmployeeTransitionNew.setEmployeeEntryQuantity(1f);
             this.mapper.insert(statEmployeeTransitionNew);
         } else {
             statEmployeeTransitionRecord.setEmployeeEntryQuantity(statEmployeeTransitionRecord.getEmployeeEntryQuantity() + 1);
@@ -91,11 +87,11 @@ public class StatEmployeeTransitionServiceImpl extends ServiceImpl<StatEmployeeT
 
     @Override
     public void addEmployeeHolidayTransition(Long orgId, Long employeeId, LocalDate holidayDate) {
-        StatEmployeeTransition statEmployeeTransitionNew = buildTransition(orgId, holidayDate);
-        StatEmployeeTransition statEmployeeTransitionRecord = queryTransitionRecord(orgId, holidayDate);
+        StatEmployeeTransition statEmployeeTransitionNew = buildTransition(orgId, holidayDate, employeeId);
+        StatEmployeeTransition statEmployeeTransitionRecord = queryTransitionRecord(statEmployeeTransitionNew);
         if (statEmployeeTransitionRecord == null) {
             statEmployeeTransitionNew.setHolidayEmployeeId(employeeId + "");
-            statEmployeeTransitionNew.setEmployeeHolidayQuantity(1);
+            statEmployeeTransitionNew.setEmployeeHolidayQuantity(1f);
             this.mapper.insert(statEmployeeTransitionNew);
         } else {
             statEmployeeTransitionRecord.setEmployeeHolidayQuantity(statEmployeeTransitionRecord.getEmployeeHolidayQuantity() + 1);
@@ -109,15 +105,19 @@ public class StatEmployeeTransitionServiceImpl extends ServiceImpl<StatEmployeeT
     }
 
     @Override
-    public void addEmployeeTransTransition(Long inOrgId, Long outOrgId, Long employeeId, LocalDate transDate) {
-        StatEmployeeTransition transInTransition = buildTransition(inOrgId, transDate);
-        StatEmployeeTransition transOutTransition = buildTransition(outOrgId, transDate);
+    public void addEmployeeTransTransition(Long inOrgId, Long outOrgId, Long employeeId, LocalDate transDate,String oldJobRole,String oldJobRoleNature) {
+        StatEmployeeTransition transInTransition = buildTransition(inOrgId, transDate, employeeId);
+        StatEmployeeTransition transOutTransition = buildTransition(outOrgId, transDate, employeeId);
+
+        //这个地方需特殊处理jobRole,jobRoleNature,因为在借调之后数据已在数据中更新
+        transOutTransition.setJobRole(oldJobRole);
+        transOutTransition.setJobRoleNature(oldJobRoleNature);
 
         //处理转入部门的数据
-        StatEmployeeTransition transInTransitionRecord = queryTransitionRecord(inOrgId, transDate);
+        StatEmployeeTransition transInTransitionRecord = queryTransitionRecord(transInTransition);
         if (transInTransitionRecord == null) {
             transInTransition.setTransInEmployeeId(employeeId + "");
-            transInTransition.setEmployeeTransInQuantity(1);
+            transInTransition.setEmployeeTransInQuantity(1f);
             this.mapper.insert(transInTransition);
         } else {
             transInTransitionRecord.setEmployeeTransInQuantity(transInTransitionRecord.getEmployeeTransInQuantity() + 1);
@@ -129,10 +129,10 @@ public class StatEmployeeTransitionServiceImpl extends ServiceImpl<StatEmployeeT
             this.mapper.updateById(transInTransitionRecord);
         }
         //处理转出部门的数据
-        StatEmployeeTransition transOutTransitionRecord = queryTransitionRecord(outOrgId, transDate);
+        StatEmployeeTransition transOutTransitionRecord = queryTransitionRecord(transOutTransition);
         if (transOutTransitionRecord == null) {
             transOutTransition.setTransOutEmployeeId(employeeId + "");
-            transOutTransition.setEmployeeTransOutQuantity(1);
+            transOutTransition.setEmployeeTransOutQuantity(1f);
             this.mapper.insert(transOutTransition);
         } else {
             transOutTransitionRecord.setEmployeeTransOutQuantity(transOutTransitionRecord.getEmployeeTransOutQuantity() + 1);
@@ -146,15 +146,18 @@ public class StatEmployeeTransitionServiceImpl extends ServiceImpl<StatEmployeeT
     }
 
     @Override
-    public void addEmployeeBorrowTransition(Long inOrgId, Long outOrgId, Long employeeId, LocalDate borrowDate) {
-        StatEmployeeTransition borrowInTransition = buildTransition(inOrgId, borrowDate);
-        StatEmployeeTransition borrowOutTransition = buildTransition(outOrgId, borrowDate);
+    public void addEmployeeBorrowTransition(Long inOrgId, Long outOrgId, Long employeeId, LocalDate borrowDate,String oldJobRole,String oldJobRoleNature) {
+        StatEmployeeTransition borrowInTransition = buildTransition(inOrgId, borrowDate, employeeId);
+        StatEmployeeTransition borrowOutTransition = buildTransition(outOrgId, borrowDate, employeeId);
+        //这个地方需特殊处理jobRole,jobRoleNature,因为在借调之后数据已在数据中更新
+        borrowOutTransition.setJobRole(oldJobRole);
+        borrowOutTransition.setJobRoleNature(oldJobRoleNature);
 
         //处理转入部门的数据
-        StatEmployeeTransition borrowInTransitionRecord = queryTransitionRecord(inOrgId, borrowDate);
+        StatEmployeeTransition borrowInTransitionRecord = queryTransitionRecord(borrowInTransition);
         if (borrowInTransitionRecord == null) {
             borrowInTransition.setBorrowInEmployeeId(employeeId + "");
-            borrowInTransition.setEmployeeBorrowInQuantity(1);
+            borrowInTransition.setEmployeeBorrowInQuantity(1f);
             this.mapper.insert(borrowInTransition);
         } else {
             borrowInTransitionRecord.setEmployeeBorrowInQuantity(borrowInTransitionRecord.getEmployeeBorrowInQuantity() + 1);
@@ -167,10 +170,10 @@ public class StatEmployeeTransitionServiceImpl extends ServiceImpl<StatEmployeeT
             this.mapper.updateById(borrowInTransitionRecord);
         }
         //处理转出部门的数据
-        StatEmployeeTransition borrowOutTransitionRecord = queryTransitionRecord(outOrgId, borrowDate);
+        StatEmployeeTransition borrowOutTransitionRecord = queryTransitionRecord(borrowOutTransition);
         if (borrowOutTransitionRecord == null) {
             borrowOutTransition.setBorrowOutEmployeeId(employeeId + "");
-            borrowOutTransition.setEmployeeBorrowOutQuantity(1);
+            borrowOutTransition.setEmployeeBorrowOutQuantity(1f);
             this.mapper.insert(borrowOutTransition);
         } else {
             borrowOutTransitionRecord.setEmployeeBorrowOutQuantity(borrowOutTransitionRecord.getEmployeeBorrowOutQuantity() + 1);
@@ -184,80 +187,76 @@ public class StatEmployeeTransitionServiceImpl extends ServiceImpl<StatEmployeeT
     }
 
     @Override
-    public void addEmployeeDestroyTransition(Long orgId, Long employeeId, LocalDate destroyDate) {
-        StatEmployeeTransition statEmployeeTransitionNew = buildTransition(orgId, destroyDate);
+    public void addEmployeeDestroyTransition(EmployeeTransitonDTO dto) {
+        StatEmployeeTransition statEmployeeTransition = buildTransition(dto.getOrgId(), dto.getHappenDate(), dto.getEmployeeId());
+        statEmployeeTransition.setJobRole(dto.getJobRole());
+        statEmployeeTransition.setJobRoleNature(dto.getJobRoleNature());
+        if (StringUtils.isEmpty(dto.getJobGrade())) {
+            statEmployeeTransition.setJobGrade("0");
+        } else {
+            statEmployeeTransition.setJobGrade(dto.getJobGrade());
+        }
 
-        StatEmployeeTransition statEmployeeTransitionRecord = queryTransitionRecord(orgId, destroyDate);
+        StatEmployeeTransition statEmployeeTransitionRecord = queryTransitionRecord(statEmployeeTransition);
         if (statEmployeeTransitionRecord == null) {
-            statEmployeeTransitionNew.setDestroyEmployeeId(employeeId + "");
-            statEmployeeTransitionNew.setEmployeeDestroyQuantity(1);
-            this.mapper.insert(statEmployeeTransitionNew);
+            statEmployeeTransition.setDestroyEmployeeId(dto.getEmployeeId() + "");
+            statEmployeeTransition.setEmployeeDestroyQuantity(1f);
+            this.mapper.insert(statEmployeeTransition);
         } else {
             statEmployeeTransitionRecord.setEmployeeDestroyQuantity(statEmployeeTransitionRecord.getEmployeeDestroyQuantity() + 1);
             if (StringUtils.isEmpty(statEmployeeTransitionRecord.getDestroyEmployeeId())) {
-                statEmployeeTransitionRecord.setDestroyEmployeeId(employeeId + "");
+                statEmployeeTransitionRecord.setDestroyEmployeeId(dto.getEmployeeId() + "");
             } else {
-                statEmployeeTransitionRecord.setDestroyEmployeeId(statEmployeeTransitionRecord.getDestroyEmployeeId() + "," + employeeId);
+                statEmployeeTransitionRecord.setDestroyEmployeeId(statEmployeeTransitionRecord.getDestroyEmployeeId() + "," + dto.getEmployeeId());
             }
             this.mapper.updateById(statEmployeeTransitionRecord);
         }
     }
 
     @Override
-    public List<EmployeeTransitionStatDTO> queryTransitionList(Long orgId, String queryTime) {
+    public List<Map<String,String>> queryTransitionList(Long orgId, String queryTime) {
         String year = "";
         String month = "";
         if (StringUtils.isNotEmpty(queryTime)) {
             year = queryTime.split("-")[0];
             month = queryTime.split("-")[1];
+        }else{
+            Calendar date = Calendar.getInstance();
+            year = String.valueOf(date.get(Calendar.YEAR));
+            month = String.valueOf(date.get(Calendar.MONTH) + 1);
         }
 
         UserContext userContext = WebContextUtils.getUserContext();
         Long userOrgId = userContext.getOrgId();
         OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, userOrgId);
+        String orgLine="";
 
-        if (orgId == null) {
-            if (SecurityUtils.hasFuncId(FuncConst.ALL_ORG)) {
-                orgId = 122L;
-            } else if (SecurityUtils.hasFuncId(FuncConst.ALL_CITY)) {
-                orgId = 7L;
-            } else if (SecurityUtils.hasFuncId(FuncConst.ALL_WOODEN)) {
-                orgId = 9L;
-            } else if (SecurityUtils.hasFuncId(FuncConst.ALL_SHOP)) {
-                Org parentOrg = orgDO.findParent("2", orgService.listAllOrgs(), userOrgId);
-                orgId = parentOrg.getOrgId();
-            } else {
-                orgId = userOrgId;
-            }
+        if (null == orgId) {
+            orgLine = orgService.listOrgSecurityLine();
+        } else {
+            OrgDO orgDo = SpringContextUtils.getBean(OrgDO.class, orgId);
+            orgLine = orgDo.getOrgLine(orgId);
         }
 
-        String orgLine = orgDO.getOrgLine(orgId);
-
-        List<StatEmployeeTransition> statEmployeeTransitionList = this.mapper.selectList(new QueryWrapper<StatEmployeeTransition>().lambda()
-                .eq(StringUtils.isNotEmpty(year), StatEmployeeTransition::getYear, year)
-                .eq(StringUtils.isNotEmpty(month), StatEmployeeTransition::getMonth, month)
-                .in(StatEmployeeTransition::getOrgId, Arrays.asList(orgLine.split(","))));
+        List<Map<String,String>> statEmployeeTransitionList = this.mapper.employeeTransitionDetail(year,month,orgLine);
 
         if (ArrayUtils.isEmpty(statEmployeeTransitionList)) {
             return new ArrayList<>();
         }
 
-        List<EmployeeTransitionStatDTO> resultList = new ArrayList<>();
-        for (StatEmployeeTransition employeeTransition : statEmployeeTransitionList) {
-            EmployeeTransitionStatDTO dto = new EmployeeTransitionStatDTO();
-            BeanUtils.copyProperties(employeeTransition, dto);
-            OrgDO orgDo = SpringContextUtils.getBean(OrgDO.class, employeeTransition.getOrgId());
-            dto.setOrgName(orgDo.getCompanyLinePath());
-            dto.setEntryEmployeeName(transEmployeeName(employeeTransition.getEntryEmployeeId()));
-            dto.setDestroyEmployeeName(transEmployeeName(employeeTransition.getDestroyEmployeeId()));
-            dto.setHolidayEmployeeName(transEmployeeName(employeeTransition.getHolidayEmployeeId()));
-            dto.setTransInEmployeeName(transEmployeeName(employeeTransition.getTransInEmployeeId()));
-            dto.setTransOutEmployeeName(transEmployeeName(employeeTransition.getTransOutEmployeeId()));
-            dto.setBorrowInEmployeeName(transEmployeeName(employeeTransition.getBorrowInEmployeeId()));
-            dto.setBorrowOutEmployeeName(transEmployeeName(employeeTransition.getBorrowOutEmployeeId()));
-            resultList.add(dto);
+        for (Map<String,String> employeeTransition : statEmployeeTransitionList) {
+            OrgDO orgDo = SpringContextUtils.getBean(OrgDO.class, employeeTransition.get("org_id"));
+            employeeTransition.put("orgName",orgDo.getCompanyLinePath());
+            employeeTransition.put("jobRoleName",staticDataService.getCodeName("JOB_ROLE",employeeTransition.get("job_role")));
+            employeeTransition.put("destroyEmployeeName",this.transEmployeeName(employeeTransition.get("destroy_employee_ids")));
+            employeeTransition.put("holidayEmployeeName",this.transEmployeeName(employeeTransition.get("holiday_employee_ids")));
+            employeeTransition.put("entryEmployeeName",this.transEmployeeName(employeeTransition.get("entry_employee_ids")));
+            employeeTransition.put("transInEmployeeName",this.transEmployeeName(employeeTransition.get("trans_in_employee_ids")));
+            employeeTransition.put("transOutEmployeeName",this.transEmployeeName(employeeTransition.get("trans_out_employee_ids")));
+            employeeTransition.put("borrowInEmployeeName",this.transEmployeeName(employeeTransition.get("borrow_in_employee_ids")));
+            employeeTransition.put("borrowOutEmployeeName",this.transEmployeeName(employeeTransition.get("borrow_out_employee_ids")));
         }
-        return resultList;
+        return statEmployeeTransitionList;
     }
 
     /**
@@ -278,7 +277,7 @@ public class StatEmployeeTransitionServiceImpl extends ServiceImpl<StatEmployeeT
         return month;
     }
 
-    public StatEmployeeTransition buildTransition(Long orgId, LocalDate localDate) {
+    public StatEmployeeTransition buildTransition(Long orgId, LocalDate localDate, Long employeeId) {
 
         String year = "";
         String month = "";
@@ -290,17 +289,45 @@ public class StatEmployeeTransitionServiceImpl extends ServiceImpl<StatEmployeeT
             month = localDate.getMonthValue() + "";
         }
 
+        Org org = orgService.getById(orgId);
+
         StatEmployeeTransition statEmployeeTransition = new StatEmployeeTransition();
         statEmployeeTransition.setOrgId(orgId);
         statEmployeeTransition.setYear(year);
         statEmployeeTransition.setMonth(month);
-        statEmployeeTransition.setEmployeeEntryQuantity(0);
-        statEmployeeTransition.setEmployeeDestroyQuantity(0);
-        statEmployeeTransition.setEmployeeHolidayQuantity(0);
-        statEmployeeTransition.setEmployeeTransInQuantity(0);
-        statEmployeeTransition.setEmployeeTransOutQuantity(0);
-        statEmployeeTransition.setEmployeeBorrowInQuantity(0);
-        statEmployeeTransition.setEmployeeBorrowOutQuantity(0);
+        if (StringUtils.isEmpty(org.getNature())) {
+            statEmployeeTransition.setOrgNature("0");
+        } else {
+            statEmployeeTransition.setOrgNature(org.getNature());
+        }
+        statEmployeeTransition.setOrgType(org.getType());
+        statEmployeeTransition.setOrgCity(org.getCity());
+
+        EmployeeJobRole employeeJobRole = jobRoleService.queryValidMain(employeeId);
+        if (employeeJobRole == null) {
+            return statEmployeeTransition;
+        }
+
+        statEmployeeTransition.setJobRole(employeeJobRole.getJobRole());
+
+        if (StringUtils.isEmpty(employeeJobRole.getJobRoleNature())) {
+            statEmployeeTransition.setJobRoleNature("0");
+        } else {
+            statEmployeeTransition.setJobRoleNature(employeeJobRole.getJobRoleNature());
+        }
+
+        if (StringUtils.isEmpty(employeeJobRole.getJobGrade())) {
+            statEmployeeTransition.setJobGrade("0");
+        } else {
+            statEmployeeTransition.setJobGrade(employeeJobRole.getJobGrade());
+        }
+        statEmployeeTransition.setEmployeeEntryQuantity(0f);
+        statEmployeeTransition.setEmployeeDestroyQuantity(0f);
+        statEmployeeTransition.setEmployeeHolidayQuantity(0f);
+        statEmployeeTransition.setEmployeeTransInQuantity(0f);
+        statEmployeeTransition.setEmployeeTransOutQuantity(0f);
+        statEmployeeTransition.setEmployeeBorrowInQuantity(0f);
+        statEmployeeTransition.setEmployeeBorrowOutQuantity(0f);
         return statEmployeeTransition;
     }
 

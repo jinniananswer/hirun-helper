@@ -14,7 +14,7 @@
 <body>
 <div class="layui-fluid">
     <div class="layui-card">
-        <div class="layui-card-header">员工异动详情</div>
+        <div class="layui-card-header">四大业务类人员人数趋势</div>
         <div class="layui-card-body">
             <form class="layui-form" id="query_form">
                 <div class="layui-form-item">
@@ -22,9 +22,19 @@
                         <label class="layui-form-label">部门：</label>
                         <div class="layui-input-block">
                             <input type="text" id="orgPath" name="orgPath"
-                                   onclick="layui.employeeTransitionStat.selectOrg();" placeholder="请点击选择部门"
+                                   onclick="layui.busiEmployeeTrendsStat.selectOrg();" placeholder="请点击选择部门"
                                    autocomplete="off" class="layui-input"/>
                             <input type="hidden" id="orgId" name="orgId"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label layui-required">业务线</label>
+                        <div class="layui-input-block">
+                            <div class="layui-form" lay-filter="orgNature">
+                                <select id="orgNature" name="orgNature">
+
+                                </select>
+                            </div>
                         </div>
                     </div>
                     <div class="layui-inline">
@@ -56,9 +66,9 @@
 <script>
     layui.extend(
         {
-            employeeTransitionStat: "{/}static/js/modules/organization/report/employee.transition.stat"
-        }).use('employeeTransitionStat', function () {
-        layui.employeeTransitionStat.init();
+            busiEmployeeTrendsStat: "{/}static/js/modules/organization/report/busi.employee.trends.stat"
+        }).use('busiEmployeeTrendsStat', function () {
+        layui.busiEmployeeTrendsStat.init();
     })
 </script>
 </body>
