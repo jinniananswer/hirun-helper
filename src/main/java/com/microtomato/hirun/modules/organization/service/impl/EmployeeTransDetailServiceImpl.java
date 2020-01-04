@@ -110,7 +110,7 @@ public class EmployeeTransDetailServiceImpl extends ServiceImpl<EmployeeTransDet
         employeeJobRoleService.save(employeeJobRole);
 
         //分配默认权限
-        Org org = this.orgService.queryByOrgId(transDetail.getOrgId());
+        Org org = this.orgService.getById(transDetail.getOrgId());
         Employee originalEmployee = employeeService.getById(transDetail.getEmployeeId());
 
         this.userRoleService.switchRole(originalEmployee.getUserId(),transDetail.getOrgId(),
@@ -193,7 +193,7 @@ public class EmployeeTransDetailServiceImpl extends ServiceImpl<EmployeeTransDet
         boolean result = hrPendingService.updateById(hrPending);
 
         //分配默认权限
-        Org org = this.orgService.queryByOrgId(transDetail.getOrgId());
+        Org org = this.orgService.getById(transDetail.getOrgId());
 
         this.userRoleService.switchRole(originalEmployee.getUserId(),transDetail.getOrgId(),
                 transDetail.getJobRole(),org.getNature());
