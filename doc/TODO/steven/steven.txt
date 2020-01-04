@@ -4,6 +4,8 @@ TODO：
     > 消息系统，频繁登录会有卡死现象。
     > 员工角色管理
     > 角色权限管理
+    > 后台任务要配置到表里面
+    > selectMap, String -> Object，这边需要 String -> String
 
   已完成:
     > Excel 导入导出。[OK]

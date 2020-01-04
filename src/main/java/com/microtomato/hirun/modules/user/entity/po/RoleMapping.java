@@ -37,6 +37,12 @@ public class RoleMapping extends BaseEntity {
     private Long orgId;
 
     /**
+     * 部门性质，见 bs_static_data[org_nature]
+     */
+    @TableField("org_nature")
+    private String orgNature;
+
+    /**
      *  code_value, select * from sys_static_data t where t.code_type="JOB_ROLE"
      */
     @TableField("job_role")
