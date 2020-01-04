@@ -22,4 +22,5 @@ public interface IFuncTempService extends IService<FuncTemp> {
      * @return
      */
     List<FuncTemp> queryFuncTemp(Long userId);
+
 }
