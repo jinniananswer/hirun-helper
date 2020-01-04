@@ -187,10 +187,10 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
             "  UNION SELECT date_format(date_add(now(), INTERVAL -9 MONTH), '%Y%m') AS month\n" +
             "  UNION SELECT date_format(date_add(now(), INTERVAL -10 MONTH), '%Y%m') AS month\n" +
             "  UNION SELECT date_format(date_add(now(), INTERVAL -11 MONTH), '%Y%m') AS month\n" +
-            ") a left join (select date_format(in_date, '%Y%m') as indate, count(1) num from ins_employee where in_date >= concat(date_format(date_add(now(), interval -11 month), '%Y-%m'), '-01') group by indate) b\n" +
+            ") a left join (select date_format(a.in_date, '%Y%m') as indate, count(1) num from ins_employee a, ins_employee_job_role b where b.employee_id = a.employee_id and b.is_main = '1' and b.start_date = (select max(start_date) from ins_employee_job_role c where c.employee_id = a.employee_id and c.is_main = '1') and b.org_id in (${orgId}) and a.in_date >= concat(date_format(date_add(now(), interval -11 month), '%Y-%m'), '-01') group by indate) b\n" +
             "  on b.indate = a.month\n" +
             "order by month ")
-    List<Integer> countInOneYear();
+    List<Integer> countInOneYear(@Param("orgId")String orgId);
 
     /**
      * 统计一年内员工的离职数
@@ -209,10 +209,10 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
             "  UNION SELECT date_format(date_add(now(), INTERVAL -9 MONTH), '%Y%m') AS month\n" +
             "  UNION SELECT date_format(date_add(now(), INTERVAL -10 MONTH), '%Y%m') AS month\n" +
             "  UNION SELECT date_format(date_add(now(), INTERVAL -11 MONTH), '%Y%m') AS month\n" +
-            ") a left join (select date_format(destroy_date, '%Y%m') as destroydate, count(1) num from ins_employee where destroy_date >= concat(date_format(date_add(now(), interval -11 month), '%Y-%m'), '-01') group by destroydate) b\n" +
+            ") a left join (select date_format(a.destroy_date, '%Y%m') as destroydate, count(1) num from ins_employee a, ins_employee_job_role b where b.employee_id = a.employee_id and b.is_main = '1' and b.start_date = (select max(start_date) from ins_employee_job_role c where c.employee_id = a.employee_id and c.is_main = '1') and b.org_id in (${orgId}) and a.destroy_date >= concat(date_format(date_add(now(), interval -11 month), '%Y-%m'), '-01') group by destroydate) b\n" +
             "  on b.destroydate = a.month\n" +
             "order by month ")
-    List<Integer> countDestroyOneYear();
+    List<Integer> countDestroyOneYear(@Param("orgId")String orgId);
 
     /**
      * 按部门统计员工数量

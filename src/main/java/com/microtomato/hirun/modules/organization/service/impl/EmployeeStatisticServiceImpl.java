@@ -10,6 +10,7 @@ import com.microtomato.hirun.modules.organization.entity.dto.StatisticBarValueDT
 import com.microtomato.hirun.modules.organization.entity.po.Org;
 import com.microtomato.hirun.modules.organization.mapper.EmployeeMapper;
 import com.microtomato.hirun.modules.organization.service.IEmployeeStatisticService;
+import com.microtomato.hirun.modules.organization.service.IOrgService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -35,18 +36,16 @@ public class EmployeeStatisticServiceImpl implements IEmployeeStatisticService {
     @Autowired
     private IStaticDataService staticDataService;
 
+    @Autowired
+    private IOrgService orgService;
+
     /**
      * 按性别统计员工数量
      * @return
      */
     @Override
     public List<EmployeePieStatisticDTO> countBySex(Long orgId) {
-        OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class);
-        if (orgId == null) {
-            Org root = orgDO.getRoot();
-            orgId = root.getOrgId();
-        }
-        String orgIds = orgDO.getOrgLine(orgId);
+        String orgIds = this.getSecurityOrgIds(orgId);
         List<EmployeePieStatisticDTO> sexStatistics = this.employeeMapper.countBySex(orgIds);
 
         if (ArrayUtils.isNotEmpty(sexStatistics)) {
@@ -64,12 +63,7 @@ public class EmployeeStatisticServiceImpl implements IEmployeeStatisticService {
      */
     @Override
     public List<EmployeePieStatisticDTO> countByAge(Long orgId) {
-        OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class);
-        if (orgId == null) {
-            Org root = orgDO.getRoot();
-            orgId = root.getOrgId();
-        }
-        String orgIds = orgDO.getOrgLine(orgId);
+        String orgIds = this.getSecurityOrgIds(orgId);
         List<EmployeePieStatisticDTO> ageStatistics = this.employeeMapper.countByAge(orgIds);
         if (ArrayUtils.isNotEmpty(ageStatistics)) {
             for (EmployeePieStatisticDTO ageStatistic : ageStatistics) {
@@ -81,12 +75,7 @@ public class EmployeeStatisticServiceImpl implements IEmployeeStatisticService {
 
     @Override
     public List<EmployeePieStatisticDTO> countByJobRoleNature(Long orgId) {
-        OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class);
-        if (orgId == null) {
-            Org root = orgDO.getRoot();
-            orgId = root.getOrgId();
-        }
-        String orgIds = orgDO.getOrgLine(orgId);
+        String orgIds = this.getSecurityOrgIds(orgId);
         List<EmployeePieStatisticDTO> jobRoleNatureStatistics = this.employeeMapper.countByJobRoleNature(orgIds);
 
         if (ArrayUtils.isNotEmpty(jobRoleNatureStatistics)) {
@@ -103,12 +92,7 @@ public class EmployeeStatisticServiceImpl implements IEmployeeStatisticService {
 
     @Override
     public List<EmployeePieStatisticDTO> countByCompanyAge(Long orgId) {
-        OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class);
-        if (orgId == null) {
-            Org root = orgDO.getRoot();
-            orgId = root.getOrgId();
-        }
-        String orgIds = orgDO.getOrgLine(orgId);
+        String orgIds = this.getSecurityOrgIds(orgId);
         List<EmployeePieStatisticDTO> ageStatistics = this.employeeMapper.countByCompanyAge(orgIds);
 
         if (ArrayUtils.isNotEmpty(ageStatistics)) {
@@ -121,12 +105,7 @@ public class EmployeeStatisticServiceImpl implements IEmployeeStatisticService {
 
     @Override
     public List<EmployeePieStatisticDTO> countByEducationLevel(Long orgId) {
-        OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class);
-        if (orgId == null) {
-            Org root = orgDO.getRoot();
-            orgId = root.getOrgId();
-        }
-        String orgIds = orgDO.getOrgLine(orgId);
+        String orgIds = this.getSecurityOrgIds(orgId);
         List<EmployeePieStatisticDTO> educationLevelStatistics = this.employeeMapper.countByEducationLevel(orgIds);
 
         if (ArrayUtils.isNotEmpty(educationLevelStatistics)) {
@@ -143,12 +122,7 @@ public class EmployeeStatisticServiceImpl implements IEmployeeStatisticService {
 
     @Override
     public List<EmployeePieStatisticDTO> countByType(Long orgId) {
-        OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class);
-        if (orgId == null) {
-            Org root = orgDO.getRoot();
-            orgId = root.getOrgId();
-        }
-        String orgIds = orgDO.getOrgLine(orgId);
+        String orgIds = this.getSecurityOrgIds(orgId);
         List<EmployeePieStatisticDTO> typeStatistics = this.employeeMapper.countByType(orgIds);
 
         if (ArrayUtils.isNotEmpty(typeStatistics)) {
@@ -181,8 +155,9 @@ public class EmployeeStatisticServiceImpl implements IEmployeeStatisticService {
         StatisticBarValueDTO in = new StatisticBarValueDTO();
         StatisticBarValueDTO destroy = new StatisticBarValueDTO();
 
-        List<Integer> inNums = this.employeeMapper.countInOneYear();
-        List<Integer> destroyNums = this.employeeMapper.countDestroyOneYear();
+        String orgIds = this.getSecurityOrgIds(null);
+        List<Integer> inNums = this.employeeMapper.countInOneYear(orgIds);
+        List<Integer> destroyNums = this.employeeMapper.countDestroyOneYear(orgIds);
         in.setName("入职数");
         in.setData(inNums);
 
@@ -194,5 +169,20 @@ public class EmployeeStatisticServiceImpl implements IEmployeeStatisticService {
 
         bar.setYAxis(values);
         return bar;
+    }
+
+    private String getSecurityOrgIds(Long orgId) {
+        OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class);
+        String orgIds = "";
+        if (orgId == null) {
+            List<Org> securityOrgs = this.orgService.listOrgsSecurity();
+            for (Org org : securityOrgs) {
+                orgIds += org.getOrgId() + ",";
+            }
+            orgIds = orgIds.substring(0, orgIds.length() - 1);
+        } else {
+            orgIds = orgDO.getOrgLine(orgId);
+        }
+        return orgIds;
     }
 }
