@@ -63,11 +63,15 @@ spring:
     cache: true # 开发模式下设置为 false，避免改了模板还要重启服务器，线上设置为 true，可以提高性能。
 
   resources:
+    cache:
+      period: 604800
     chain:
+      cache: true
+      enabled: true
       strategy:
         content:
-          enabled: true
           paths: /**
+          enabled: true
 
   session:
     # session 的存储方式，开发模式（本地）：none，生产模式（分布式缓存）：redis

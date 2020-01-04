@@ -43,10 +43,8 @@ spring:
     cache: false # 开发模式下设置为 false，避免改了模板还要重启服务器，线上设置为 true，可以提高性能。
 
   resources:
-    cache:
-      period: 604800
     chain:
-      cache: true
+      cache: false
       enabled: true
       strategy:
         content:

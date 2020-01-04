@@ -73,52 +73,27 @@
 
         <div class="layui-col-md4">
             <div class="layui-card">
+
+<!--                <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">-->
+<!--                    <ul class="layui-tab-title">-->
+<!--                        <li class="layui-this">公告</li>-->
+<!--                        <li>通知</li>-->
+<!--                        <li>私信</li>-->
+<!--                    </ul>-->
+<!--                    <div class="layui-tab-content" style="height: 100px;">-->
+<!--                        <div class="layui-tab-item layui-show">内容不一样是要有，因为你可以监听tab事件（阅读下文档就是了）</div>-->
+<!--                        <div class="layui-tab-item">内容2</div>-->
+<!--                        <div class="layui-tab-item">内容3</div>-->
+<!--                    </div>-->
+<!--                </div>-->
+
+
                 <div class="layui-card-header">通知列表</div>
-                <div class="layui-card-body layui-text">
-                    <table class="layui-table">
-                        <colgroup>
-                            <col width="100">
-                            <col>
-                        </colgroup>
-                        <tbody>
-                        <tr>
-                            <td>2019.12.01</td>
-                            <td>
-                                月落乌啼霜满天，江枫渔火对愁眠.
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>2019.11.30</td>
-                            <td>
-                                独怜幽草涧边生，上有黄鹂深树鸣。[阴险]
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>2019.11.29</td>
-                            <td>
-                                南朝四百八十寺，多少楼台烟雨中。
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>2019.11.28</td>
-                            <td>
-                                已是悬崖百丈冰，犹有花枝俏
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>2019.11.27</td>
-                            <td>泉眼无声惜细流，树阴照水爱晴柔</td>
-                        </tr>
-                        <tr>
-                            <td>2019.11.26</td>
-                            <td style="padding-bottom: 0;">
-                                通知信息
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
+                <div class="layui-card-body layui-text" >
+                    <table id="message-table" lay-filter="message-table"></table>
                 </div>
             </div>
+
 
             <div class="layui-card">
                 <div class="layui-card-body" style="height:398px;background: url('static/img/linebg.jpg') no-repeat;background-size: cover">
