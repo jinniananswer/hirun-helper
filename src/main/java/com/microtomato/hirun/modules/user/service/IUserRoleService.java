@@ -32,7 +32,7 @@ public interface IUserRoleService extends IService<UserRole> {
      * @param orgId   部门Id，对应 ins_org.org_id
      * @param jobRole 岗位编码，对应 code_value, select * from sys_static_data t where t.code_type='JOB_ROLE';
      */
-    void createRole(Long userId, Long orgId, String jobRole);
+    void createRole(Long userId, Long orgId, String jobRole, String orgNature);
 
     /**
      * 根据给定的 用户Id、部门Id、以及岗位，创建对应的 ins_user_role 关联数据。
@@ -42,10 +42,21 @@ public interface IUserRoleService extends IService<UserRole> {
      * @param userId    用户Id
      * @param orgId     部门Id，对应 ins_org.org_id
      * @param jobRole   岗位编码，对应 code_value, select * from sys_static_data t where t.code_type='JOB_ROLE';
+     * @param orgNature 部门行政
      * @param startDate 生效时间
      * @param endDate   失效时间
      */
-    void createRole(Long userId, Long orgId, String jobRole, LocalDateTime startDate, LocalDateTime endDate);
+    void createRole(Long userId, Long orgId, String jobRole, String orgNature, LocalDateTime startDate, LocalDateTime endDate);
+
+    /**
+     * 角色变更，立即终止所有老的角色，并重新创建一个新的角色
+     *
+     * @param userId 用户Id
+     * @param orgId  原部门Id
+     * @param jobRole 岗位
+     * @param orgNature 部门性质
+     */
+    void switchRole(Long userId, Long orgId, String jobRole, String orgNature);
 
     /**
      * 根据 userId, roleId 立即终止其对应的角色

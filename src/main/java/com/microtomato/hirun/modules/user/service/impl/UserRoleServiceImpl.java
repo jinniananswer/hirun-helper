@@ -12,7 +12,6 @@ import com.microtomato.hirun.modules.user.service.IUserRoleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -58,8 +57,8 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
      * @param jobRole 岗位编码，对应 code_value, select * from sys_static_data t where t.code_type='JOB_ROLE';
      */
     @Override
-    public void createRole(Long userId, Long orgId, String jobRole) {
-        createRole(userId, orgId, jobRole, LocalDateTime.now(), TimeUtils.getForeverTime());
+    public void createRole(Long userId, Long orgId, String jobRole, String orgNature) {
+        createRole(userId, orgId, jobRole, orgNature, LocalDateTime.now(), TimeUtils.getForeverTime());
     }
 
     /**
@@ -70,29 +69,21 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
      * @param userId    用户Id
      * @param orgId     部门Id，对应 ins_org.org_id
      * @param jobRole   岗位编码，对应 code_value, select * from sys_static_data t where t.code_type='JOB_ROLE';
+     * @param orgNature 部门性质
      * @param startDate 生效时间
      * @param endDate   失效时间
      */
     @Override
-    public void createRole(Long userId, Long orgId, String jobRole, LocalDateTime startDate, LocalDateTime endDate) {
+    public void createRole(Long userId, Long orgId, String jobRole, String orgNature, LocalDateTime startDate, LocalDateTime endDate) {
 
         RoleMapping one = roleMappingServiceImpl.getOne(
             Wrappers.<RoleMapping>lambdaQuery()
                 .select(RoleMapping::getRoleId)
-                .eq(RoleMapping::getOrgId, orgId)
                 .eq(RoleMapping::getJobRole, jobRole)
+                .and(v -> v.eq(RoleMapping::getOrgId, orgId).or().eq(RoleMapping::getOrgId, 0))
+                .and(v -> v.eq(RoleMapping::getOrgNature, orgNature).or().isNull(RoleMapping::getOrgNature))
                 .eq(RoleMapping::getEnabled, true)
         );
-
-        if (null == one) {
-            one = roleMappingServiceImpl.getOne(
-                Wrappers.<RoleMapping>lambdaQuery()
-                    .select(RoleMapping::getRoleId)
-                    .eq(RoleMapping::getOrgId, 0)
-                    .eq(RoleMapping::getJobRole, jobRole)
-                    .eq(RoleMapping::getEnabled, true)
-            );
-        }
 
         if (null == one) {
             log.info("根据 orgId: {}|0, jobRole: {}, 找不到对应的角色！", orgId, jobRole);
@@ -111,10 +102,13 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
      *
      * @param userId 用户Id
      * @param orgId  原部门Id
+     * @param jobRole 岗位
+     * @param orgNature 部门性质
      */
-    public void switchRole(Long userId, Long orgId, String jobRole) {
+    @Override
+    public void switchRole(Long userId, Long orgId, String jobRole, String orgNature) {
         deleteAllRole(userId);
-        createRole(userId, orgId, jobRole);
+        createRole(userId, orgId, jobRole, orgNature);
     }
 
     /**
