@@ -92,7 +92,7 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
         }
 
         Long roleId = one.getRoleId();
-        UserRole userRole = UserRole.builder().roleId(roleId).startDate(startDate).endDate(endDate).build();
+        UserRole userRole = UserRole.builder().userId(userId).roleId(roleId).startDate(startDate).endDate(endDate).build();
         this.save(userRole);
 
     }
