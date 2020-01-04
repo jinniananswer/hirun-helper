@@ -53,4 +53,11 @@ public interface IEmployeeStatisticService {
      * @return
      */
     StatisticBarDTO countInAndDestroyOneYear();
+
+    /**
+     * 获取按部门统计时的部门标题
+     * @param orgId
+     * @return
+     */
+    String getChartOrgTitle(Long orgId);
 }
