@@ -201,11 +201,13 @@ public class EmployeeTransDetailServiceImpl extends ServiceImpl<EmployeeTransDet
         //新增部门异动信息
         if (StringUtils.equals(transDetail.getTransType(), "1")) {
             transitionService.addEmployeeBorrowTransition(transDetail.getOrgId(), validEmployeeJobRole.getOrgId(), transDetail.getEmployeeId(),
-                    transDetail.getStartTime().toLocalDate(),validEmployeeJobRole.getJobRole(),validEmployeeJobRole.getJobRoleNature());
+                    transDetail.getStartTime().toLocalDate(),validEmployeeJobRole.getJobRole(),
+                    validEmployeeJobRole.getJobRoleNature(),validEmployeeJobRole.getJobGrade());
         }
         if (StringUtils.equals(transDetail.getTransType(), "2")) {
             transitionService.addEmployeeTransTransition(transDetail.getOrgId(), validEmployeeJobRole.getOrgId(), transDetail.getEmployeeId(),
-                    transDetail.getStartTime().toLocalDate(),validEmployeeJobRole.getJobRole(),validEmployeeJobRole.getJobRoleNature());
+                    transDetail.getStartTime().toLocalDate(),validEmployeeJobRole.getJobRole(),validEmployeeJobRole.getJobRoleNature(),
+                    validEmployeeJobRole.getJobGrade());
         }
 
         //新增鸿扬经历信息

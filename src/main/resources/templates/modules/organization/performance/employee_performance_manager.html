@@ -55,12 +55,9 @@
                         </div>
                     </div>
                     <div class="layui-inline">
-                        <label class="layui-form-label">年份：</label>
-                        <div class="layui-input-block" style="width: 184px">
-                            <select name="year" lay-verify="year">
-                                <option value="2019" selected>2019年</option>
-                                <option value="2018">2018年</option>
-                            </select>
+                        <label class="layui-form-label">年份</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="year" name="year" lay-verify="required" readonly autocomplete="off" class="layui-input"/>
                         </div>
                     </div>
                     <div class="layui-inline">
@@ -82,14 +79,14 @@
 </div>
 <script type="text/html" id="toolbar">
     <div class="layui-btn-container">
-        <button class="layui-btn" style="background-color:#9e2d09;" sec:authorize="hasRole('7')" lay-event="crateEmployeePerformance" id="crateEmployeePerformance"><i class="layui-icon">&#xe608;</i>新增绩效</button>
-        <button class="layui-btn" style="background-color:#13227a;" sec:authorize="hasRole('7')" lay-event="export"><i class="layui-icon layui-icon-download-circle"></i>模板下载</button>
-        <button class="layui-btn" style="background-color:#e87233;" sec:authorize="hasRole('7')" lay-event="importEmployeePerformance" id="importEmployeePerformance"><i class="layui-icon">&#xe67c;</i>绩效导入</button>
+        <button class="layui-btn" style="background-color:#9e2d09;" sec:authorize="hasAuthority('EMPLOYEE_PERFORMANCE_ADD')" lay-event="crateEmployeePerformance" id="crateEmployeePerformance"><i class="layui-icon">&#xe608;</i>新增绩效</button>
+        <button class="layui-btn" style="background-color:#13227a;" sec:authorize="hasAuthority('EMPLOYEE_PERFORMANCE_EXPORT')" lay-event="export"><i class="layui-icon layui-icon-download-circle"></i>模板下载</button>
+        <button class="layui-btn" style="background-color:#e87233;" sec:authorize="hasAuthority('EMPLOYEE_PERFORMANCE_IMPORT')" lay-event="importEmployeePerformance" id="importEmployeePerformance"><i class="layui-icon">&#xe67c;</i>绩效导入</button>
     </div>
 </script>
 
 <script type="text/html" id="bar">
-    <a class="layui-btn layui-btn-warm layui-btn-xs" sec:authorize="hasRole('7')" lay-event="edit">修改</a>
+    <a class="layui-btn layui-btn-warm layui-btn-xs" sec:authorize="hasAuthority('EMPLOYEE_PERFORMANCE_EDIT')" lay-event="edit">修改</a>
 </script>
 
 <script>

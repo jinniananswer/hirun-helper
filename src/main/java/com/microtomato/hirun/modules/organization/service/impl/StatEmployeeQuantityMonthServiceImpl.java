@@ -2,6 +2,7 @@ package com.microtomato.hirun.modules.organization.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.microtomato.hirun.framework.data.TreeNode;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
@@ -20,6 +21,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.modules.system.entity.po.StaticData;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
@@ -49,6 +51,10 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
 
     @Autowired
     IEmployeeService employeeService;
+
+    @Autowired
+    private IStatEmployeeQuantityMonthService statEmployeeQuantityMonthService;
+
 
     /**
      * 查询部门在某年某月的在职人员数
@@ -375,7 +381,7 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
         //将查询结果按照部门性质分类
         LinkedHashMap<String, List<Map<String, String>>> tempMap = new LinkedHashMap<>();
         for (Map<String, String> trndsMap : trndsList) {
-            if (StringUtils.isEmpty(trndsMap.get("job_role"))) {
+            if (StringUtils.isEmpty(trndsMap.get("job_role"))||StringUtils.equals(trndsMap.get("job_role"),"9999")) {
                 continue;
             }
             if (!tempMap.containsKey(trndsMap.get("org_nature"))) {
@@ -456,7 +462,7 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
         LinkedHashMap<String, List<Map<String, String>>> tempMap = new LinkedHashMap<>();
         for (Map<String, String> companyMap : companyCountList) {
 
-            if (StringUtils.isEmpty(companyMap.get("job_role"))) {
+            if (StringUtils.isEmpty(companyMap.get("job_role"))||StringUtils.equals(companyMap.get("job_role"),"9999")) {
                 continue;
             }
 
@@ -575,7 +581,7 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
 
         LinkedHashMap<String, List<Map<String, String>>> tempMap = new LinkedHashMap<>();
         for (Map<String, String> companyMap : busiCountList) {
-            if(StringUtils.isEmpty(companyMap.get("job_role"))){
+            if(StringUtils.isEmpty(companyMap.get("job_role")) ||StringUtils.equals(companyMap.get("job_role"),"9999")){
                 continue;
             }
             if (!tempMap.containsKey(companyMap.get("org_nature") + companyMap.get("job_role"))) {
@@ -639,7 +645,8 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
         //将查询结果按部门归类
         LinkedHashMap<String, List<Map<String, String>>> classifyMap = new LinkedHashMap<>();
         for (int i = 0; i < busiAndAllCountTrendList.size(); i++) {
-            if(StringUtils.isEmpty(busiAndAllCountTrendList.get(i).get("job_role"))){
+            if(StringUtils.isEmpty(busiAndAllCountTrendList.get(i).get("job_role"))
+                    ||StringUtils.equals(busiAndAllCountTrendList.get(i).get("job_role"),"9999")){
                 continue;
             }
             Map<String, String> record = busiAndAllCountTrendList.get(i);
@@ -737,4 +744,46 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
         return employeeNames.substring(0, employeeNames.length() - 1);
     }
 
+    /**
+     * 重新加载统计数据
+     */
+    @Override
+    public void reloadCount() {
+        List<EmployeeQuantityStatDTO> dtoList = employeeService.countEmployeeQuantityByOrgId();
+        if (ArrayUtils.isEmpty(dtoList)) {
+            return;
+        }
+
+        Calendar date = Calendar.getInstance();
+        String year = String.valueOf(date.get(Calendar.YEAR));
+        String month = String.valueOf(date.get(Calendar.MONTH) + 1);
+
+        List<StatEmployeeQuantityMonth> addList = new ArrayList<>();
+        //删除原有记录
+        this.mapper.delete(Wrappers.<StatEmployeeQuantityMonth>lambdaQuery().eq(StatEmployeeQuantityMonth::getMonth, month)
+                .eq(StatEmployeeQuantityMonth::getYear, year));
+        //重新新增
+        for (EmployeeQuantityStatDTO dto : dtoList) {
+
+            StatEmployeeQuantityMonth statEmployeeQuantityMonth = new StatEmployeeQuantityMonth();
+            BeanUtils.copyProperties(dto, statEmployeeQuantityMonth);
+            if (com.baomidou.mybatisplus.core.toolkit.StringUtils.isEmpty(dto.getJobGrade())) {
+                statEmployeeQuantityMonth.setJobGrade("0");
+            }
+            if (com.baomidou.mybatisplus.core.toolkit.StringUtils.isEmpty(dto.getJobRole())) {
+                statEmployeeQuantityMonth.setJobRole("9999");
+            }
+            if (com.baomidou.mybatisplus.core.toolkit.StringUtils.isEmpty(dto.getJobRoleNature())) {
+                statEmployeeQuantityMonth.setJobRoleNature("0");
+            }
+            statEmployeeQuantityMonth.setYear(year);
+            statEmployeeQuantityMonth.setMonth(month);
+            addList.add(statEmployeeQuantityMonth);
+
+        }
+        if (ArrayUtils.isNotEmpty(addList)) {
+            statEmployeeQuantityMonthService.saveBatch(addList);
+        }
+
+    }
 }

@@ -1,26 +1,30 @@
 package com.microtomato.hirun.modules.organization.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeQuantityStatDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeTransitonDTO;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
 import com.microtomato.hirun.modules.organization.entity.po.Org;
+import com.microtomato.hirun.modules.organization.entity.po.StatEmployeeQuantityMonth;
 import com.microtomato.hirun.modules.organization.entity.po.StatEmployeeTransition;
+import com.microtomato.hirun.modules.organization.mapper.StatEmployeeQuantityMonthMapper;
 import com.microtomato.hirun.modules.organization.mapper.StatEmployeeTransitionMapper;
-import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
-import com.microtomato.hirun.modules.organization.service.IEmployeeService;
-import com.microtomato.hirun.modules.organization.service.IOrgService;
-import com.microtomato.hirun.modules.organization.service.IStatEmployeeTransitionService;
+import com.microtomato.hirun.modules.organization.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -52,6 +56,7 @@ public class StatEmployeeTransitionServiceImpl extends ServiceImpl<StatEmployeeT
     @Autowired
     private IStaticDataService staticDataService;
 
+
     public StatEmployeeTransition queryTransitionRecord(StatEmployeeTransition employeeTransition) {
 
 
@@ -67,6 +72,7 @@ public class StatEmployeeTransitionServiceImpl extends ServiceImpl<StatEmployeeT
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void addEmployeeEntryTransition(Long orgId, Long employeeId, LocalDate inDate) {
         StatEmployeeTransition statEmployeeTransitionNew = buildTransition(orgId, inDate, employeeId);
         StatEmployeeTransition statEmployeeTransitionRecord = queryTransitionRecord(statEmployeeTransitionNew);
@@ -86,6 +92,7 @@ public class StatEmployeeTransitionServiceImpl extends ServiceImpl<StatEmployeeT
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void addEmployeeHolidayTransition(Long orgId, Long employeeId, LocalDate holidayDate) {
         StatEmployeeTransition statEmployeeTransitionNew = buildTransition(orgId, holidayDate, employeeId);
         StatEmployeeTransition statEmployeeTransitionRecord = queryTransitionRecord(statEmployeeTransitionNew);
@@ -102,16 +109,31 @@ public class StatEmployeeTransitionServiceImpl extends ServiceImpl<StatEmployeeT
             }
             this.mapper.updateById(statEmployeeTransitionRecord);
         }
+
     }
 
     @Override
-    public void addEmployeeTransTransition(Long inOrgId, Long outOrgId, Long employeeId, LocalDate transDate,String oldJobRole,String oldJobRoleNature) {
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    public void addEmployeeTransTransition(Long inOrgId, Long outOrgId, Long employeeId, LocalDate transDate,String oldJobRole,String oldJobRoleNature,String oldJobGrade) {
         StatEmployeeTransition transInTransition = buildTransition(inOrgId, transDate, employeeId);
         StatEmployeeTransition transOutTransition = buildTransition(outOrgId, transDate, employeeId);
 
         //这个地方需特殊处理jobRole,jobRoleNature,因为在借调之后数据已在数据中更新
-        transOutTransition.setJobRole(oldJobRole);
-        transOutTransition.setJobRoleNature(oldJobRoleNature);
+        if(StringUtils.isEmpty(oldJobRole)){
+            transOutTransition.setJobRole("9999");
+        }else{
+            transOutTransition.setJobRole(oldJobRole);
+        }
+        if(StringUtils.isEmpty(oldJobRoleNature)){
+            transOutTransition.setJobRoleNature("0");
+        }else{
+            transOutTransition.setJobRoleNature(oldJobRoleNature);
+        }
+        if(StringUtils.isEmpty(oldJobGrade)){
+            transOutTransition.setJobGrade("0");
+        }else{
+            transOutTransition.setJobGrade(oldJobGrade);
+        }
 
         //处理转入部门的数据
         StatEmployeeTransition transInTransitionRecord = queryTransitionRecord(transInTransition);
@@ -143,15 +165,35 @@ public class StatEmployeeTransitionServiceImpl extends ServiceImpl<StatEmployeeT
             }
             this.mapper.updateById(transOutTransitionRecord);
         }
+
     }
 
     @Override
-    public void addEmployeeBorrowTransition(Long inOrgId, Long outOrgId, Long employeeId, LocalDate borrowDate,String oldJobRole,String oldJobRoleNature) {
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    public void addEmployeeBorrowTransition(Long inOrgId, Long outOrgId, Long employeeId, LocalDate borrowDate,String oldJobRole,String oldJobRoleNature,String oldJobGrade) {
         StatEmployeeTransition borrowInTransition = buildTransition(inOrgId, borrowDate, employeeId);
         StatEmployeeTransition borrowOutTransition = buildTransition(outOrgId, borrowDate, employeeId);
         //这个地方需特殊处理jobRole,jobRoleNature,因为在借调之后数据已在数据中更新
-        borrowOutTransition.setJobRole(oldJobRole);
-        borrowOutTransition.setJobRoleNature(oldJobRoleNature);
+        if(StringUtils.isEmpty(oldJobRole)){
+            borrowOutTransition.setJobRole("9999");
+        }else{
+            borrowOutTransition.setJobRole(oldJobRole);
+
+        }
+
+        if(StringUtils.isEmpty(oldJobRoleNature)){
+            borrowOutTransition.setJobRoleNature("0");
+
+        }else {
+            borrowOutTransition.setJobRoleNature(oldJobRoleNature);
+        }
+
+        if(StringUtils.isEmpty(oldJobGrade)){
+            borrowOutTransition.setJobGrade("0");
+
+        }else {
+            borrowOutTransition.setJobGrade(oldJobGrade);
+        }
 
         //处理转入部门的数据
         StatEmployeeTransition borrowInTransitionRecord = queryTransitionRecord(borrowInTransition);
@@ -184,13 +226,24 @@ public class StatEmployeeTransitionServiceImpl extends ServiceImpl<StatEmployeeT
             }
             this.mapper.updateById(borrowOutTransitionRecord);
         }
+
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void addEmployeeDestroyTransition(EmployeeTransitonDTO dto) {
         StatEmployeeTransition statEmployeeTransition = buildTransition(dto.getOrgId(), dto.getHappenDate(), dto.getEmployeeId());
-        statEmployeeTransition.setJobRole(dto.getJobRole());
-        statEmployeeTransition.setJobRoleNature(dto.getJobRoleNature());
+
+        if(StringUtils.isEmpty(dto.getJobRole())){
+            statEmployeeTransition.setJobRole("9999");
+        }else {
+            statEmployeeTransition.setJobRole(dto.getJobRole());
+        }
+        if(StringUtils.isEmpty(dto.getJobRoleNature())){
+            statEmployeeTransition.setJobRoleNature("0");
+        }else {
+            statEmployeeTransition.setJobRoleNature(dto.getJobRoleNature());
+        }
         if (StringUtils.isEmpty(dto.getJobGrade())) {
             statEmployeeTransition.setJobGrade("0");
         } else {
@@ -308,7 +361,12 @@ public class StatEmployeeTransitionServiceImpl extends ServiceImpl<StatEmployeeT
             return statEmployeeTransition;
         }
 
-        statEmployeeTransition.setJobRole(employeeJobRole.getJobRole());
+
+        if(StringUtils.isEmpty(employeeJobRole.getJobRole())){
+            statEmployeeTransition.setJobRole("9999");
+        }else{
+            statEmployeeTransition.setJobRole(employeeJobRole.getJobRole());
+        }
 
         if (StringUtils.isEmpty(employeeJobRole.getJobRoleNature())) {
             statEmployeeTransition.setJobRoleNature("0");
@@ -349,4 +407,6 @@ public class StatEmployeeTransitionServiceImpl extends ServiceImpl<StatEmployeeT
         return employeeNames.substring(0, employeeNames.length() - 1);
     }
 
-}
+
+
+    }

@@ -1,5 +1,6 @@
 package com.microtomato.hirun.modules.organization.task;
 
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeQuantityStatDTO;
@@ -41,7 +42,7 @@ public class CountEmployeeQuantityTask {
     /**
      * 每月第一天 00:30 开始执行。
      */
-    @Scheduled(cron = "0 05 0 * * ?")
+    @Scheduled(cron = "0 15 17 * * ?")
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void scheduled() {
         List<EmployeeQuantityStatDTO> dtoList = employeeService.countEmployeeQuantityByOrgId();
@@ -62,6 +63,15 @@ public class CountEmployeeQuantityTask {
 
             StatEmployeeQuantityMonth statEmployeeQuantityMonth = new StatEmployeeQuantityMonth();
             BeanUtils.copyProperties(dto, statEmployeeQuantityMonth);
+            if(StringUtils.isEmpty(dto.getJobGrade())){
+                statEmployeeQuantityMonth.setJobGrade("0");
+            }
+            if(StringUtils.isEmpty(dto.getJobRole())){
+                statEmployeeQuantityMonth.setJobRole("9999");
+            }
+            if(StringUtils.isEmpty(dto.getJobRoleNature())){
+                statEmployeeQuantityMonth.setJobRoleNature("0");
+            }
             statEmployeeQuantityMonth.setYear(year);
             statEmployeeQuantityMonth.setMonth(month);
             addList.add(statEmployeeQuantityMonth);

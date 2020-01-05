@@ -55,7 +55,7 @@ public interface StatEmployeeQuantityMonthMapper extends BaseMapper<StatEmployee
             "IFNULL(SUM(b.employee_borrow_out_quantity),0) as employee_borrow_out_quantity,group_concat(b.borrow_out_employee_id) as borrow_out_employee_ids " +
             "from stat_employee_quantity_month a LEFT JOIN stat_employee_transition b " +
             "on (a.`year`=b.`year` and a.`month`=b.`month` and a.org_id=b.org_id " +
-            " and a.job_role=b.job_role and a.org_nature=b.org_nature) " +
+            " and a.job_role=b.job_role and a.org_nature=b.org_nature and a.job_role_nature=b.job_role_nature and a.job_grade=b.job_grade) " +
             " where a.org_nature in (${orgNature}) and a.org_id in (${orgId}) and a.year=${year} and a.month=${month} " +
             " GROUP BY a.org_nature,a.job_role ")
     List<Map<String, String>> countByOrgNatureAndJobRole(@Param("year") String year, @Param("month") String month, @Param("orgId") String orgId,@Param("orgNature") String orgNature);
@@ -83,7 +83,7 @@ public interface StatEmployeeQuantityMonthMapper extends BaseMapper<StatEmployee
     @Select("select a.org_nature,a.`month`,a.job_role,SUM(a.employee_num) as employee_num,IFNULL(b.employee_entry_quantity,0) as employee_entry_quantity ,IFNULL(b.employee_destroy_quantity,0) as employee_destroy_quantity " +
             "from stat_employee_quantity_month a " +
             "LEFT JOIN stat_employee_transition b " +
-            "on (a.job_role=b.job_role and a.org_nature=b.org_nature and a.`month`=b.`month`) " +
+            "on (a.job_role=b.job_role and a.org_nature=b.org_nature and a.`month`=b.`month` and a.job_role_nature=b.job_role_nature and a.job_grade=b.job_grade) " +
             "where a.org_id in (${orgId}) and a.year=${year} and a.org_nature in (${orgNature}) " +
             "group by a.org_nature,a.job_role,a.`month`")
     List<Map<String, String>> busiCountByOrgNatureAndJobRole(@Param("year") String year, @Param("orgNature") String orgNature, @Param("orgId") String orgId);

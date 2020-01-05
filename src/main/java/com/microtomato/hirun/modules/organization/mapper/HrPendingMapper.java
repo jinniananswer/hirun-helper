@@ -52,7 +52,12 @@ public interface HrPendingMapper extends BaseMapper<HrPending> {
     IPage<HrPendingInfoDTO> queryTransPendingByEmployeeId(Page<HrPending> page, @Param(Constants.WRAPPER) Wrapper wrapper);
 
 
-    @Select("select pending_type name, count(*) num from ins_hr_pending where pending_status=1 and start_time < now()" +
-            " and end_time > start_time and pending_execute_id=#{employeeId} group by pending_type")
+    @Select("select d.type as name,IFNULL(j.num,0) as num from \n" +
+            "(select 1 as type from dual " +
+            "union select 2 as type from DUAL " +
+            "union select 3 as type from DUAL) d LEFT JOIN ( " +
+            "select f.pending_type,count(*) as num from ins_hr_pending f where f.pending_status=1 and f.start_time < now() " +
+            "and end_time > start_time and pending_execute_id=#{employeeId} group by f.pending_type ) j " +
+            "on (j.pending_type=d.type) order by d.type ")
     List<EmployeePieStatisticDTO> countPending(Long employeeId);
 }

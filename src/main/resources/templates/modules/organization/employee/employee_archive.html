@@ -106,7 +106,7 @@
                             <div class="layui-form-item">
                                 <label class="layui-form-label layui-required">生日</label>
                                 <div class="layui-input-block">
-                                    <input type="text" id="birthday" name="birthday" required  lay-verify="required" placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input"/>
+                                    <input type="text" id="birthday" name="birthday" required  lay-verify="required" readonly="true" placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input"/>
                                 </div>
                             </div>
                             <div class="layui-form-item">
@@ -164,7 +164,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="layui-form-item" id="jobGradeDiv" style="display:none">
+                            <div class="layui-form-item" id="jobGradeDiv">
                                 <label class="layui-form-label">岗位等级</label>
                                 <div class="layui-input-block">
                                     <div class="layui-form" lay-filter="jobGrade">
@@ -379,13 +379,13 @@
                                     <div class="layui-inline">
                                         <label class="layui-form-label">开始时间</label>
                                         <div class="layui-input-inline">
-                                            <input type="text" id="workStartDate_0" name="employeeWorkExperiences[0].startDate" placeholder="入职前工作经历时间" autocomplete="off" class="layui-input"/>
+                                            <input type="text" id="workStartDate_0" name="employeeWorkExperiences[0].startDate" readonly="true" placeholder="入职前工作经历时间" autocomplete="off" class="layui-input"/>
                                         </div>
                                     </div>
                                     <div class="layui-inline">
                                         <label class="layui-form-label">结束时间</label>
                                         <div class="layui-input-inline">
-                                            <input type="text" id="workEndDate_0" name="employeeWorkExperiences[0].endDate" placeholder="入职前工作经历时间" autocomplete="off" class="layui-input"/>
+                                            <input type="text" id="workEndDate_0" name="employeeWorkExperiences[0].endDate" readonly="true"  placeholder="入职前工作经历时间" autocomplete="off" class="layui-input"/>
                                         </div>
                                     </div>
                                 </div>
@@ -432,13 +432,13 @@
                 <div class="layui-inline">
                     <label class="layui-form-label">开始时间</label>
                     <div class="layui-input-inline">
-                        <input type="text" id="workStartDate_{{d}}" name="employeeWorkExperiences[{{d}}].startDate" placeholder="入职前工作经历时间" autocomplete="off" class="layui-input"/>
+                        <input type="text" id="workStartDate_{{d}}" name="employeeWorkExperiences[{{d}}].startDate" readonly="true"  placeholder="入职前工作经历时间" autocomplete="off" class="layui-input"/>
                     </div>
                 </div>
                 <div class="layui-inline">
                     <label class="layui-form-label">结束时间</label>
                     <div class="layui-input-inline">
-                        <input type="text" id="workEndDate_{{d}}" name="employeeWorkExperiences[{{d}}].endDate" placeholder="入职前工作经历时间" autocomplete="off" class="layui-input"/>
+                        <input type="text" id="workEndDate_{{d}}" name="employeeWorkExperiences[{{d}}].endDate" readonly="true"  placeholder="入职前工作经历时间" autocomplete="off" class="layui-input"/>
                     </div>
                 </div>
             </div>

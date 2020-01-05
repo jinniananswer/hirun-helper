@@ -10,7 +10,8 @@ layui.extend({
 
             laydate.render({
                 elem: '#year',
-                type: 'year'
+                type: 'year',
+                value:new Date()
             });
 
             table.render({
@@ -62,6 +63,9 @@ layui.extend({
                 })
             });
 
+            $('#reloadCount').on('click', function () {
+                layui.ajax.post('api/organization/stat-employee-quantity-month/reloadCount','', function(data){});
+            });
 
         },
 

@@ -62,4 +62,9 @@ public interface IStatEmployeeQuantityMonthService extends IService<StatEmployee
      * @return
      */
     List<Map<String,String>> busiAndAllCountTrend(String time,Long orgId);
+
+    /**
+     * 重新加载在岗人数数据
+     */
+    void reloadCount();
 }
