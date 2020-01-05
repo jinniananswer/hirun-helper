@@ -22,20 +22,20 @@
                 <div class="layui-form-item">
                     <div class="layui-inline">
                         <label class="layui-form-label">姓名</label>
-                        <div class="layui-input-block">
+                        <div class="layui-input-inline">
                             <input type="text" name="name" id="name" autocomplete="off" class="layui-input"/>
                         </div>
                     </div>
                     <div class="layui-inline">
                         <label class="layui-form-label">电话号码</label>
-                        <div class="layui-input-block" style="">
+                        <div class="layui-input-inline" style="">
                             <input type="text" name="mobileNo" id="mobileNo" autocomplete="off" class="layui-input"
                                    placeholder=""/>
                         </div>
                     </div>
                     <div class="layui-inline">
                         <label class="layui-form-label">部门</label>
-                        <div class="layui-input-block">
+                        <div class="layui-input-inline">
                             <input type="text" id="orgPath" name="orgPath" onclick="layui.employee.selectOrg();"
                                    placeholder="请点击选择部门" autocomplete="off" class="layui-input"/>
                             <input type="hidden" id="orgId" name="orgId"/>
@@ -43,8 +43,8 @@
                     </div>
                     <div class="layui-inline">
                         <label class="layui-form-label">性别</label>
-                        <div class="layui-input-block">
-                            <div class="layui-form" lay-filter="sex" style="width: 176px">
+                        <div class="layui-input-inline">
+                            <div class="layui-form" lay-filter="sex">
                                 <select id="sex" name="sex">
 
                                 </select>
@@ -55,8 +55,8 @@
                 <div class="layui-form-item">
                     <div class="layui-inline">
                         <label class="layui-form-label">状态</label>
-                        <div class="layui-input-block">
-                            <div class="layui-form" lay-filter="employeeStatus" style="width: 176px">
+                        <div class="layui-input-inline">
+                            <div class="layui-form" lay-filter="employeeStatus">
                                 <select id="employeeStatus" name="employeeStatus">
 
                                 </select>
@@ -65,8 +65,8 @@
                     </div>
                     <div class="layui-inline">
                         <label class="layui-form-label">员工类型</label>
-                        <div class="layui-input-block">
-                            <div class="layui-form" lay-filter="type" style="width: 176px">
+                        <div class="layui-input-inline">
+                            <div class="layui-form" lay-filter="type">
                                 <select id="type" name="type">
 
                                 </select>
@@ -75,8 +75,8 @@
                     </div>
                     <div class="layui-inline">
                         <label class="layui-form-label">岗位</label>
-                        <div class="layui-input-block">
-                            <div class="layui-form" lay-filter="jobRole" style="width: 176px">
+                        <div class="layui-input-inline">
+                            <div class="layui-form" lay-filter="jobRole">
                                 <select id="jobRole" name="jobRole" lay-verify="required" lay-search>
 
                                 </select>
@@ -85,8 +85,8 @@
                     </div>
                     <div class="layui-inline">
                         <label class="layui-form-label">岗位性质</label>
-                        <div class="layui-input-block">
-                            <div class="layui-form" lay-filter="jobRoleNature" style="width: 176px">
+                        <div class="layui-input-inline">
+                            <div class="layui-form" lay-filter="jobRoleNature">
                                 <select id="jobRoleNature" name="jobRoleNature" lay-verify="required" lay-filter="jobRoleNature">
 
                                 </select>
@@ -98,7 +98,7 @@
                     <div class="layui-form-item">
                         <div class="layui-inline">
                             <label class="layui-form-label">异动状态</label>
-                            <div class="layui-input-block" style="width: 176px">
+                            <div class="layui-input-inline">
                                 <select name="otherStatus" id="otherStatus">
                                     <option value="">请选择</option>
                                     <option value="1">休假</option>
@@ -109,8 +109,8 @@
                         </div>
                         <div class="layui-inline">
                             <label class="layui-form-label">永不录用</label>
-                            <div class="layui-input-block" style="width: 176px">
-                                <div class="layui-form" lay-filter="isBlackList" style="width: 176px">
+                            <div class="layui-input-inline">
+                                <div class="layui-form" lay-filter="isBlackList">
                                     <select id="isBlackList" name="isBlackList">
 
                                     </select>
@@ -119,7 +119,7 @@
                         </div>
                         <div class="layui-inline">
                             <label class="layui-form-label">折算比例</label>
-                            <div class="layui-input-block" style="width: 176px">
+                            <div class="layui-input-inline">
                                 <select name="discountRate" id="discountRate">
                                     <option value="">请选择</option>
                                     <option value="0">0</option>
@@ -130,11 +130,11 @@
                         </div>
                         <div class="layui-inline">
                             <label class="layui-form-label">工作年限</label>
-                            <div class="layui-input-inline" style="width: 80px;">
+                            <div class="layui-input-inline" style="width: 82px;">
                                 <input type="text" name="jobYearStart" id="jobYearStart" autocomplete="off" class="layui-input" lay-verify="number">
                             </div>
                             <div class="layui-form-mid">-</div>
-                            <div class="layui-input-inline" style="width: 80px;">
+                            <div class="layui-input-inline" style="width: 82px;">
                                 <input type="text" name="jobYearEnd" id="jobYearEnd" autocomplete="off" class="layui-input" lay-verify="number">
                             </div>
                         </div>
@@ -142,42 +142,42 @@
                     <div class="layui-form-item">
                         <div class="layui-inline">
                             <label class="layui-form-label">年龄</label>
-                            <div class="layui-input-inline" style="width: 80px;">
+                            <div class="layui-input-inline" style="width: 82px;">
                                 <input type="text" name="ageStart" id="ageStart" autocomplete="off" class="layui-input" lay-verify="number">
                             </div>
                             <div class="layui-form-mid">-</div>
-                            <div class="layui-input-inline" style="width: 80px;">
+                            <div class="layui-input-inline" style="width: 82px;">
                                 <input type="text" name="ageEnd" id="ageEnd" autocomplete="off" class="layui-input" lay-verify="number">
                             </div>
                         </div>
                         <div class="layui-inline">
                             <label class="layui-form-label">司龄</label>
-                            <div class="layui-input-inline" style="width: 80px;">
+                            <div class="layui-input-inline" style="width: 82px;">
                                 <input type="text" name="companyAgeStart" id="companyAgeStart" autocomplete="off" class="layui-input" lay-verify="number">
                             </div>
                             <div class="layui-form-mid">-</div>
-                            <div class="layui-input-inline" style="width: 80px;">
+                            <div class="layui-input-inline" style="width: 82px;">
                                 <input type="text" name="companyAgeEnd" id="companyAgeEnd" autocomplete="off" class="layui-input" lay-verify="number">
                             </div>
                         </div>
                         <div class="layui-inline">
                             <label class="layui-form-label">入职时间</label>
-                            <div class="layui-input-inline" style="width: 80px;">
+                            <div class="layui-input-inline" style="width: 82px;">
                                 <input type="text" name="inDateStart" id="inDateStart" autocomplete="off" class="layui-input">
                             </div>
                             <div class="layui-form-mid">-</div>
-                            <div class="layui-input-inline" style="width: 80px;">
+                            <div class="layui-input-inline" style="width: 82px;">
                                 <input type="text" name="inDateEnd" id="inDateEnd" autocomplete="off" class="layui-input">
                             </div>
                         </div>
                         <div class="layui-inline">
                             <div class="layui-inline">
                                 <label class="layui-form-label">离职时间</label>
-                                <div class="layui-input-inline" style="width: 80px;">
+                                <div class="layui-input-inline" style="width: 82px;">
                                     <input type="text" name="destroyDateStart" id="destroyDateStart" autocomplete="off" class="layui-input">
                                 </div>
                                 <div class="layui-form-mid">-</div>
-                                <div class="layui-input-inline" style="width: 80px;">
+                                <div class="layui-input-inline" style="width: 82px;">
                                     <input type="text" name="destroyDateEnd" id="destroyDateEnd" autocomplete="off" class="layui-input">
                                 </div>
                             </div>
