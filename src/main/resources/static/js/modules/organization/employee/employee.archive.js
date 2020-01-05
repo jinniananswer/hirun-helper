@@ -64,15 +64,6 @@ layui.extend({
                 }
             });
 
-            form.on('select(jobRoleFilter)', function(data) {
-                let jobRole = $("#jobRole").val();
-                if (jobRole == '42') {
-                    $("#jobGradeDiv").css("display", "");
-                } else {
-                    $("#jobGradeDiv").css("display", "none");
-                }
-            });
-
             layui.element.on('tab(employeeTab)', function(data){
                 layui.employee.currentTab = data.index + 1;
                 if (layui.employee.currentTab <= 1) {
@@ -114,13 +105,11 @@ layui.extend({
             });
 
             laydate.render({
-                elem: '#workStartDate_0',
-                type: 'month'
+                elem: '#workStartDate_0'
             });
 
             laydate.render({
-                elem: '#workEndDate_0',
-                type: 'month'
+                elem: '#workEndDate_0'
             });
 
             laydate.render({
@@ -459,14 +448,12 @@ layui.extend({
                 $("#workExp_0").parent().append(html);
                 laydate.render({
                     elem: '#workStartDate_'+index,
-                    value: $("#workStartDate_"+index).val(),
-                    type: 'month'
+                    value: $("#workStartDate_"+index).val()
                 });
 
                 laydate.render({
                     elem: '#workEndDate_'+index,
-                    value: $("#workEndDate_"+index).val(),
-                    type: 'month'
+                    value: $("#workEndDate_"+index).val()
                 });
             });
         },
