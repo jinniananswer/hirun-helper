@@ -263,7 +263,7 @@ public class MenuController {
 
         String token = (String) WebContextUtils.getHttpSession().getAttribute("token");
         for (Menu menu : rtn.values()) {
-            if ("M".equals(menu.getType())) {
+            if ("H".equals(menu.getType())) {
                 if (null != menu.getMenuUrl()) {
                     String menuUrl = mHirunHostPort + menu.getMenuUrl() + "?hirun-token=" + token;
                     menu.setMenuUrl(menuUrl);
