@@ -27,6 +27,6 @@ public interface MenuClickMapper extends BaseMapper<MenuClick> {
     @Update("UPDATE sys_menu_click SET clicks = clicks + #{clicks}, update_time = now() WHERE user_id = #{userId} AND menu_id = #{menuId}")
     int updateClicks(@Param("userId") Long userId, @Param("menuId") Long menuId, @Param("clicks") Long clicks);
 
-    @Select("select m.menu_id, m.title, m.menu_url, m.iconfont from sys_menu m, sys_menu_click c where m.menu_id = c.menu_id and c.user_id = #{userId} order by c.clicks desc LIMIT 8")
+    @Select("select m.menu_id, m.title, m.menu_url, m.iconfont from sys_menu m, sys_menu_click c where m.menu_id = c.menu_id and c.user_id = #{userId} order by c.clicks desc")
     List<Menu> hostMenus(@Param("userId") Long userId);
 }
