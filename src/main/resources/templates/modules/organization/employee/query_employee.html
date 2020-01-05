@@ -223,8 +223,8 @@
         <button class="layui-btn layui-btn-normal" lay-event="edit" sec:authorize="hasAuthority('EMPLOYEE_EDIT')"><i class="layui-icon layui-icon-edit"></i>编辑</button>
         <button class="layui-btn layui-btn-danger" lay-event="remove" sec:authorize="hasAuthority('EMPLOYEE_DESTORY')"><i class="layui-icon layui-icon-delete"></i>离职</button>
         <button class="layui-btn layui-btn-warm" lay-event="holiday" sec:authorize="hasAuthority('EMPLOYEE_HOLIDAY')"><i class="layui-icon layui-icon-log"></i>休假</button>
-        <button class="layui-btn" style="background-color:#13227a;" sec:authorize="hasAuthority('EMPLOYEE_TRANS')"><i class="layui-icon">&#x21c4;</i>调动</button>
-        <button class="layui-btn " style="background-color:#e87233;" sec:authorize="hasAuthority('EMPLOYEE_CONTRACT')"><i class="layui-icon layui-icon-templeate-1"></i>合同</button>
+        <button class="layui-btn" style="background-color:#13227a;" lay-event="transOrg" sec:authorize="hasAuthority('EMPLOYEE_TRANS')"><i class="layui-icon">&#x21c4;</i>调动</button>
+        <button class="layui-btn " style="background-color:#e87233;" lay-event="contract" sec:authorize="hasAuthority('EMPLOYEE_CONTRACT')"><i class="layui-icon layui-icon-templeate-1"></i>合同</button>
         <button class="layui-btn" lay-event="export" sec:authorize="hasAuthority('EXPORT_EMPLOYEE')"><i class="layui-icon layui-icon-download-circle"></i>导出</button>
     </div>
 </script>
