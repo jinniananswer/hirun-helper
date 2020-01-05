@@ -207,7 +207,11 @@ layui.extend({
                     var pendingData = data[i];
                     var pendingType = pendingData.name;
                     var pendingNum = pendingData.num;
-                    html.push('<li class="layui-col-xs6">');
+                    if(i==2){
+                        html.push('<li class="layui-col-xs12">');
+                    }else{
+                        html.push('<li class="layui-col-xs6">');
+                    }
                     html.push('<a lay-href="openUrl?url=modules/organization/hr/pending_manager" class="layadmin-backlog-body">');
                     html.push('<h3>' + pendingType + '</h3>');
                     html.push('<p><cite>' + pendingNum + '</cite></p>');
