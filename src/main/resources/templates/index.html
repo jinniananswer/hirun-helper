@@ -74,18 +74,11 @@
                         <span id="spanContextPath" style="display: none" th:text="${contextPath}"></span>
                     </a>
                     <dl class="layui-nav-child">
-                        <dd><a lay-href="set/user/info.html">基本资料</a></dd>
+                        <dd><a lay-href="openUrl?url=modules/organization/employee/my_archive">基本资料</a></dd>
                         <dd><a lay-href="openUrl?url=modules/system/change_password">修改密码</a></dd>
                         <hr>
                         <dd layadmin-event="logout" style="text-align: center;"><a href="logout">退出</a></dd>
                     </dl>
-                </li>
-
-                <li class="layui-nav-item layui-hide-xs" lay-unselect>
-                    <a href="javascript:;" layadmin-event="about"><i class="layui-icon layui-icon-more-vertical"></i></a>
-                </li>
-                <li class="layui-nav-item layui-show-xs-inline-block layui-hide-sm" lay-unselect>
-                    <a href="javascript:;" layadmin-event="more"><i class="layui-icon layui-icon-more-vertical"></i></a>
                 </li>
             </ul>
         </div>
@@ -94,7 +87,7 @@
         <div class="layui-side layui-side-menu">
             <div class="layui-side-scroll">
                 <div class="layui-logo" lay-href="home/console.html">
-                    <span>tomato-admin</span>
+                    <span>HI-RUN</span>
                 </div>
 
                 <ul class="layui-nav layui-nav-tree" lay-shrink="all" id="layadmin-system-side-menu" lay-filter="layadmin-system-side-menu">
