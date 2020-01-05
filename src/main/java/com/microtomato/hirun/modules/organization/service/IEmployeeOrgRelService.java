@@ -16,4 +16,6 @@ import java.util.List;
 public interface IEmployeeOrgRelService extends IService<EmployeeOrgRel> {
 
     List<EmployeeOrgRel> queryRelByEmployeeId(Long employeeId);
+
+    void updateEmployeeOrgRel(String orgIds,String type);
 }

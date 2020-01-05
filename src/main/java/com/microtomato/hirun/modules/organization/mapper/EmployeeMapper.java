@@ -218,7 +218,7 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
      * 按部门统计员工数量
      * @return
      */
-    @Select("SELECT y.org_id,x.job_role,x.job_role_nature,IFNULL(y.nature,0) as org_nature,IFNULL(x.job_grade,0) as job_grade ,IFNULL(x.less_month_num,0) as less_month_num,IFNULL(x.more_month_num,0) as more_month_num,IFNULL(x.employee_sum,0) as employee_num,y.city,y.type as org_type  " +
+    @Select("SELECT y.org_id,IFNULL(x.job_role,9999) as job_role,IFNULL(x.job_role_nature,0) as job_role_nature,IFNULL(y.nature,0) as org_nature,IFNULL(x.job_grade,0) as job_grade ,IFNULL(x.less_month_num,0) as less_month_num,IFNULL(x.more_month_num,0) as more_month_num,IFNULL(x.employee_sum,0) as employee_num,y.city,y.type as org_type  " +
             " from ins_org y LEFT JOIN" +
             " (select k.org_id,k.job_role,k.job_role_nature,k.nature,sum(less_num) as less_month_num,sum(more_num) as more_month_num,SUM(employee_num) as employee_sum,k.job_grade from ( " +
             " select case when TIMESTAMPDIFF(MONTH,in_date,NOW()) between 0 and 9 and exists(select 1 from ins_employee_job_role c where c.employee_id = b.employee_id and now() between c.start_date and c.end_date group by c.employee_id having count(1) > 1) then '0.5' " +

@@ -3,6 +3,7 @@ package com.microtomato.hirun.modules.organization.controller;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeQuantityStatDTO;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import lombok.extern.slf4j.Slf4j;
@@ -58,5 +59,11 @@ public class StatEmployeeQuantityMonthController {
     @RestResult
     public List<Map<String,String>> busiAndAllCountTrend(String queryTime,Long orgId){
         return statEmployeeQuantityMonthServiceImpl.busiAndAllCountTrend(queryTime,orgId);
+    }
+
+    @PostMapping("/reloadCount")
+    @RestResult
+    public void reloadCount(){
+        statEmployeeQuantityMonthServiceImpl.reloadCount();
     }
 }
