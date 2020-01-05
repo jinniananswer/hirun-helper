@@ -217,22 +217,8 @@ public class MenuController {
      */
     private Set<Long> listMenusForNormal(UserContext userContext) {
         Set<Long> rtn = new HashSet<>(100);
-        log.debug("username: {}, 查询临时菜单权限 + 角色对应的菜单权限", userContext.getUsername());
-        List<MenuTemp> menuTempList = menuTempServiceImpl.list(
-            new QueryWrapper<MenuTemp>().lambda()
-                .select(MenuTemp::getMenuId)
-                .eq(MenuTemp::getUserId, userContext.getUserId())
-                .gt(MenuTemp::getExpireDate, LocalDateTime.now())
-        );
-        menuTempList.forEach(menuTemp -> rtn.add(menuTemp.getMenuId()));
-
-        // 查询归属角色下有权访问的菜单ID
-        List<Role> roles = userContext.getRoles();
-        for (Role role : roles) {
-            List<Long> menuids = menuServiceImpl.listMenusByRole(role);
-            rtn.addAll(menuids);
-        }
-
+        List<Long> menuids = menuServiceImpl.listMenusForNormal(userContext);
+        rtn.addAll(menuids);
         return rtn;
     }
 

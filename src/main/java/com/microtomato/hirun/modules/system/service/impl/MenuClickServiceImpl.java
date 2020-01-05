@@ -1,6 +1,8 @@
 package com.microtomato.hirun.modules.system.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.framework.security.UserContext;
+import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.system.entity.po.Menu;
 import com.microtomato.hirun.modules.system.entity.po.MenuClick;
 import com.microtomato.hirun.modules.system.mapper.MenuClickMapper;
@@ -12,7 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.*;
 
 /**
  * <p>
@@ -39,6 +41,9 @@ public class MenuClickServiceImpl extends ServiceImpl<MenuClickMapper, MenuClick
         return i > 0 ? true : false;
     }
 
+    @Autowired
+    private IMenuService menuService;
+
     /**
      * 查热点菜单
      *
@@ -47,7 +52,31 @@ public class MenuClickServiceImpl extends ServiceImpl<MenuClickMapper, MenuClick
      */
     @Override
     public List<Menu> hostMenus(Long userId) {
-        return menuClickMapper.hostMenus(userId);
+        List<Menu> menus = menuClickMapper.hostMenus(userId);
+        filter(menus);
+        return menus;
+    }
+
+    private void filter(List<Menu> menus) {
+        UserContext userContext = WebContextUtils.getUserContext();
+        List<Long> menuIdList = null;
+        if (userContext.isAdmin()) {
+            menuIdList = menuServiceImpl.listMenusForAdmin();
+        } else {
+            menuIdList = menuServiceImpl.listMenusForNormal(userContext);
+        }
+
+        Set<Long> set = new HashSet();
+        set.addAll(menuIdList);
+
+        Iterator<Menu> iter = menus.iterator();
+        while(iter.hasNext()) {
+            Menu menu = iter.next();
+            if (!set.contains(menu.getMenuId())) {
+                iter.remove();
+            }
+        }
+
     }
 
 }

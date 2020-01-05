@@ -2,11 +2,13 @@ package com.microtomato.hirun.modules.system.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.microtomato.hirun.framework.security.Role;
+import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.modules.system.entity.po.Menu;
 import org.springframework.cache.annotation.Cacheable;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * <p>
@@ -25,6 +27,14 @@ public interface IMenuService extends IService<Menu> {
      * @return
      */
     List<Long> listMenusForAdmin();
+
+    /**
+     * 普通员工登录所能看到的菜单
+     *
+     * @param userContext
+     * @return
+     */
+    List<Long> listMenusForNormal(UserContext userContext);
 
     /**
      * 获取菜单集合

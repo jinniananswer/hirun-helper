@@ -1,23 +1,25 @@
 package com.microtomato.hirun.modules.system.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.security.Role;
+import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.Constants;
 import com.microtomato.hirun.modules.system.entity.po.Menu;
 import com.microtomato.hirun.modules.system.mapper.MenuMapper;
 import com.microtomato.hirun.modules.system.service.IMenuService;
 import com.microtomato.hirun.modules.user.entity.po.MenuRole;
+import com.microtomato.hirun.modules.user.entity.po.MenuTemp;
 import com.microtomato.hirun.modules.user.service.IMenuRoleService;
+import com.microtomato.hirun.modules.user.service.IMenuTempService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.util.*;
 
 /**
  * <p>
@@ -37,6 +39,9 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 
 	@Autowired
 	private IMenuService menuServiceImpl;
+
+	@Autowired
+	private IMenuTempService menuTempServiceImpl;
 
 	@Cacheable(value = "menu::listMenusByRole", key = "#role.id")
 	@Override
@@ -70,6 +75,31 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 		);
 		menuList.forEach(menu -> myMenuIds.add(menu.getMenuId()));
 		return myMenuIds;
+	}
+
+	@Cacheable(value = "menu::listMenusForNormal", key = "")
+	@Override
+	public List<Long> listMenusForNormal(UserContext userContext) {
+		Set<Long> menuIdSet = new HashSet<>(100);
+		log.debug("username: {}, 查询临时菜单权限 + 角色对应的菜单权限", userContext.getUsername());
+		List<MenuTemp> menuTempList = menuTempServiceImpl.list(
+			new QueryWrapper<MenuTemp>().lambda()
+				.select(MenuTemp::getMenuId)
+				.eq(MenuTemp::getUserId, userContext.getUserId())
+				.gt(MenuTemp::getExpireDate, LocalDateTime.now())
+		);
+		menuTempList.forEach(menuTemp -> menuIdSet.add(menuTemp.getMenuId()));
+
+		// 查询归属角色下有权访问的菜单ID
+		List<Role> roles = userContext.getRoles();
+		for (Role role : roles) {
+			List<Long> menuids = menuServiceImpl.listMenusByRole(role);
+			menuIdSet.addAll(menuids);
+		}
+
+		List<Long> rtn = new ArrayList<>();
+		rtn.addAll(menuIdSet);
+		return rtn;
 	}
 
 	@Cacheable(value = "menu::listAllMenus", key = "")
