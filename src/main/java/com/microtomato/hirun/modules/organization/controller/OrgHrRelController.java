@@ -29,7 +29,7 @@ public class OrgHrRelController {
 
     @GetMapping("/queryOrgHrRelList")
     @RestResult
-    public IPage<OrgHrRelInfoDTO> queryOrgHrRelList(Long employeeId, String orgSet, Integer page, Integer limit) {
+    public IPage<OrgHrRelInfoDTO> queryOrgHrRelList(Long employeeId, Long orgSet, Integer page, Integer limit) {
         Page<OrgHrRel> orgHrRelPage = new Page<OrgHrRel>(page, limit);
         return orgHrRelServiceImpl.queryOrgHrRelList(employeeId,orgSet,orgHrRelPage);
     }

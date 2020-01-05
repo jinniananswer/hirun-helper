@@ -27,7 +27,7 @@ public interface IOrgHrRelService extends IService<OrgHrRel> {
 
     Employee queryValidRemindEmployeeId(String employeeType, Long orgId);
 
-    IPage<OrgHrRelInfoDTO> queryOrgHrRelList(Long employeeId, String orgSet, Page<OrgHrRel> page);
+    IPage<OrgHrRelInfoDTO> queryOrgHrRelList(Long employeeId, Long orgSet, Page<OrgHrRel> page);
 
     boolean updateOrgHrRel(String id,Long archEmployeeID,Long relationEmployeeId);
 

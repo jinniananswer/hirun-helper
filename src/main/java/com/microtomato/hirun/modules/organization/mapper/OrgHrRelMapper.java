@@ -24,7 +24,7 @@ import org.apache.ibatis.annotations.Select;
 @Storage
 @DataSource(DataSourceKey.INS)
 public interface OrgHrRelMapper extends BaseMapper<OrgHrRel> {
-    @Select("select * " + " from ins_org_hr_rel a \n" +
+    @Select("select * from ins_org_hr_rel a \n" +
             " ${ew.customSqlSegment}"
     )
     IPage<OrgHrRelInfoDTO> queryOrgHrRelPage(Page<OrgHrRel> page, @Param(Constants.WRAPPER) Wrapper wrapper);
