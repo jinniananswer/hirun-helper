@@ -1,12 +1,20 @@
 layui.extend({
     orgTree: 'org'
-}).define(['ajax', 'table', 'element', 'orgTree', 'layer', 'form', 'select'], function (exports) {
+}).define(['ajax', 'table', 'element', 'orgTree', 'layer', 'form', 'select','laydate'], function (exports) {
     var $ = layui.$;
     var table = layui.table;
     var layer = layui.layer;
     var form = layui.form;
+    var laydate = layui.laydate;
+
     var employeePerformanceManager = {
         init: function () {
+
+            laydate.render({
+                elem: '#year',
+                type: 'year',
+                value:new Date()
+            });
 
             layui.select.init('performance', 'PERFORMANCE_LEVEL', null, true);
             layui.select.init('jobRoleNature', 'JOB_NATURE', null, true);
@@ -54,7 +62,7 @@ layui.extend({
                     where: {
                         name: $("input[name='name']").val(),
                         orgSet: $("input[name='orgSet']").val(),
-                        year: $("select[name='year']").val(),
+                        year: $("input[name='year']").val(),
                         performance: $("select[name='performance']").val(),
                         jobRoleNature: $("select[name='jobRoleNature']").val(),
                     }
@@ -153,7 +161,7 @@ layui.extend({
 
 
         export: function(){
-            var param='?name='+$("input[name='name']").val()+'&orgSet='+$("input[name='orgSet']").val()+'&year='+$("select[name='year']").val()+'&performance='
+            var param='?name='+$("input[name='name']").val()+'&orgSet='+$("input[name='orgSet']").val()+'&year='+$("input[name='year']").val()+'&performance='
                 +$("select[name='performance']").val()+'&jobRoleNature='+$("select[name='jobRoleNature']").val();
             window.location.href = "api/organization/employee-performance/exportEmployee4ImportPerformance"+param;
         },

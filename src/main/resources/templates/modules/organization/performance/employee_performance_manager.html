@@ -55,12 +55,9 @@
                         </div>
                     </div>
                     <div class="layui-inline">
-                        <label class="layui-form-label">年份：</label>
-                        <div class="layui-input-block" style="width: 184px">
-                            <select name="year" lay-verify="year">
-                                <option value="2019" selected>2019年</option>
-                                <option value="2018">2018年</option>
-                            </select>
+                        <label class="layui-form-label">年份</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="year" name="year" lay-verify="required" readonly autocomplete="off" class="layui-input"/>
                         </div>
                     </div>
                     <div class="layui-inline">

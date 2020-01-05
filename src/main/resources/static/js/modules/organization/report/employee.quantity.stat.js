@@ -10,7 +10,8 @@ layui.extend({
 
             laydate.render({
                 elem: '#year',
-                type: 'year'
+                type: 'year',
+                value:new Date()
             });
 
             table.render({
