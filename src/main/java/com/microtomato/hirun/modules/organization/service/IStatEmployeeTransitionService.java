@@ -43,7 +43,7 @@ public interface IStatEmployeeTransitionService extends IService<StatEmployeeTra
      * @param employeeId
      * @param transDate
      */
-    void addEmployeeTransTransition(Long inOrgId, Long outOrgId, Long employeeId, LocalDate transDate,String oldJobRole,String oldJobRoleNature);
+    void addEmployeeTransTransition(Long inOrgId, Long outOrgId, Long employeeId, LocalDate transDate,String oldJobRole,String oldJobRoleNature,String oldJobGrade);
 
     /**
      * 新增员工借调异动
@@ -53,7 +53,7 @@ public interface IStatEmployeeTransitionService extends IService<StatEmployeeTra
      * @param employeeId
      * @param borrowDate
      */
-    void addEmployeeBorrowTransition(Long inOrgId, Long outOrgId, Long employeeId, LocalDate borrowDate,String oldJobRole,String oldJobRoleNature);
+    void addEmployeeBorrowTransition(Long inOrgId, Long outOrgId, Long employeeId, LocalDate borrowDate,String oldJobRole,String oldJobRoleNature,String oldJobGrade);
 
     /**
      * 新增员工销户异动
