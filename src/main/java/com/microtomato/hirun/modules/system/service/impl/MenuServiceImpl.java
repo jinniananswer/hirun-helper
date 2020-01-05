@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.security.Role;
 import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.Constants;
+import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.system.entity.po.Menu;
 import com.microtomato.hirun.modules.system.mapper.MenuMapper;
 import com.microtomato.hirun.modules.system.service.IMenuService;
@@ -43,7 +44,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 	@Autowired
 	private IMenuTempService menuTempServiceImpl;
 
-	@Cacheable(value = "menu::listMenusByRole", key = "#role.id")
+	//@Cacheable(value = "menu::listMenusByRole", key = "#role.id")
 	@Override
 	public List<Long> listMenusByRole(Role role) {
 
@@ -64,45 +65,43 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 	 * 超级管理员默认能看到所有菜单
 	 * 注： BSS只查类型为 P 和 H 的菜单。
 	 */
-	@Cacheable(value = "menu::listMenusForAdmin", key = "")
+	//@Cacheable(value = "menu::listMenusForAdmin", key = "")
 	@Override
-	public List<Long> listMenusForAdmin() {
-		List<Long> myMenuIds = new ArrayList<>(100);
+	public Set<Long> listMenusForAdmin() {
+		Set<Long> rtn = new HashSet<>();
 		List<Menu> menuList = menuServiceImpl.list(
 			Wrappers.<Menu>lambdaQuery()
 				.select(Menu::getMenuId)
 				.in(Menu::getType, "P", "H")
 		);
-		menuList.forEach(menu -> myMenuIds.add(menu.getMenuId()));
-		return myMenuIds;
+		menuList.forEach(menu -> rtn.add(menu.getMenuId()));
+		return rtn;
 	}
 
-	@Cacheable(value = "menu::listMenusForNormal", key = "")
+	//@Cacheable(value = "menu::listMenusForNormal", key = "")
 	@Override
-	public List<Long> listMenusForNormal(UserContext userContext) {
-		Set<Long> menuIdSet = new HashSet<>(100);
-		log.debug("username: {}, 查询临时菜单权限 + 角色对应的菜单权限", userContext.getUsername());
+	public Set<Long> listMenusForNormal() {
+		UserContext userContext = WebContextUtils.getUserContext();
+		Set<Long> rtn = new HashSet<>(100);
 		List<MenuTemp> menuTempList = menuTempServiceImpl.list(
 			new QueryWrapper<MenuTemp>().lambda()
 				.select(MenuTemp::getMenuId)
 				.eq(MenuTemp::getUserId, userContext.getUserId())
 				.gt(MenuTemp::getExpireDate, LocalDateTime.now())
 		);
-		menuTempList.forEach(menuTemp -> menuIdSet.add(menuTemp.getMenuId()));
+		menuTempList.forEach(menuTemp -> rtn.add(menuTemp.getMenuId()));
 
 		// 查询归属角色下有权访问的菜单ID
 		List<Role> roles = userContext.getRoles();
 		for (Role role : roles) {
 			List<Long> menuids = menuServiceImpl.listMenusByRole(role);
-			menuIdSet.addAll(menuids);
+			rtn.addAll(menuids);
 		}
 
-		List<Long> rtn = new ArrayList<>();
-		rtn.addAll(menuIdSet);
 		return rtn;
 	}
 
-	@Cacheable(value = "menu::listAllMenus", key = "")
+	//@Cacheable(value = "menu::listAllMenus", key = "")
 	@Override
 	public Map<Long, Menu> listAllMenus() {
 
@@ -126,7 +125,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 	 * @return 菜单Id
 	 */
 	@Override
-	@Cacheable(value = "menu::getMenuId", key = "#menuUrl")
+	//@Cacheable(value = "menu::getMenuId", key = "#menuUrl")
 	public Long getMenuId(String menuUrl) {
 		Menu one = menuServiceImpl.getOne(
 			Wrappers.<Menu>lambdaQuery()

@@ -26,22 +26,21 @@ public interface IMenuService extends IService<Menu> {
      *
      * @return
      */
-    List<Long> listMenusForAdmin();
+    Set<Long> listMenusForAdmin();
 
     /**
      * 普通员工登录所能看到的菜单
      *
-     * @param userContext
      * @return
      */
-    List<Long> listMenusForNormal(UserContext userContext);
+    Set<Long> listMenusForNormal();
 
     /**
      * 获取菜单集合
      *
      * @return
      */
-    @Cacheable(value = "all-menus")
+    //@Cacheable(value = "all-menus")
     Map<Long, Menu> listAllMenus();
 
     /**
@@ -58,6 +57,6 @@ public interface IMenuService extends IService<Menu> {
      * @param menuUrl 菜单地址
      * @return 菜单Id
      */
-    @Cacheable(value = "menu-url-to-id", key = "#menuUrl")
+    //@Cacheable(value = "menu-url-to-id", key = "#menuUrl")
     Long getMenuId(String menuUrl);
 }

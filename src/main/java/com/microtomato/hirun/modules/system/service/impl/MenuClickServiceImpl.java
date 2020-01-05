@@ -14,7 +14,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -41,9 +44,6 @@ public class MenuClickServiceImpl extends ServiceImpl<MenuClickMapper, MenuClick
         return i > 0 ? true : false;
     }
 
-    @Autowired
-    private IMenuService menuService;
-
     /**
      * 查热点菜单
      *
@@ -53,30 +53,38 @@ public class MenuClickServiceImpl extends ServiceImpl<MenuClickMapper, MenuClick
     @Override
     public List<Menu> hostMenus(Long userId) {
         List<Menu> menus = menuClickMapper.hostMenus(userId);
-        filter(menus);
-        return menus;
+        return filter(menus);
     }
 
-    private void filter(List<Menu> menus) {
+    /**
+     * 快捷菜单权限过滤
+     *
+     * @param menus
+     */
+    private List<Menu> filter(List<Menu> menus) {
+        List<Menu> rtn = new ArrayList<>();
+
         UserContext userContext = WebContextUtils.getUserContext();
-        List<Long> menuIdList = null;
+        Set<Long> menuIdSet = null;
         if (userContext.isAdmin()) {
-            menuIdList = menuServiceImpl.listMenusForAdmin();
+            menuIdSet = menuServiceImpl.listMenusForAdmin();
         } else {
-            menuIdList = menuServiceImpl.listMenusForNormal(userContext);
+            menuIdSet = menuServiceImpl.listMenusForNormal();
         }
 
-        Set<Long> set = new HashSet();
-        set.addAll(menuIdList);
-
         Iterator<Menu> iter = menus.iterator();
-        while(iter.hasNext()) {
+        while (iter.hasNext()) {
             Menu menu = iter.next();
-            if (!set.contains(menu.getMenuId())) {
-                iter.remove();
+            if (menuIdSet.contains(menu.getMenuId())) {
+                rtn.add(menu);
+                if (rtn.size() == 8) {
+                    // 只展示 8 条数据
+                    break;
+                }
             }
         }
 
+        return rtn;
     }
 
 }
