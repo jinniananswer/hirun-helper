@@ -64,7 +64,8 @@ layui.extend({
                             layer.msg('请选中一条数据，再进行操作。');
                             return;
                         }
-                        let param = data.map(item => item.id);
+                        let param = data.map(item => item.orgId);
+                        console.log(param);
                         orgHrRelManager.update(param);
                         break;
                 }
@@ -78,7 +79,7 @@ layui.extend({
         },
 
         selectOrg : function() {
-            layui.orgTree.init('orgTree', 'orgSet', 'orgPath', true,true);
+            layui.orgTree.init('orgTree', 'orgSet', 'orgPath', false,false);
 
         },
 
