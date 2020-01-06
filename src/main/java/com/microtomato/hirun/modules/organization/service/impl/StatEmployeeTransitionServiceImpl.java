@@ -356,7 +356,7 @@ public class StatEmployeeTransitionServiceImpl extends ServiceImpl<StatEmployeeT
         statEmployeeTransition.setOrgType(org.getType());
         statEmployeeTransition.setOrgCity(org.getCity());
 
-        EmployeeJobRole employeeJobRole = jobRoleService.queryValidMain(employeeId);
+        EmployeeJobRole employeeJobRole = jobRoleService.queryLast(employeeId);
         if (employeeJobRole == null) {
             return statEmployeeTransition;
         }
