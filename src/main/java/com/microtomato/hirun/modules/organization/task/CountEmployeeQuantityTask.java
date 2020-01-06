@@ -42,7 +42,7 @@ public class CountEmployeeQuantityTask {
     /**
      * 每月第一天 00:30 开始执行。
      */
-    @Scheduled(cron = "0 15 17 * * ?")
+    @Scheduled(cron = "0 45 0 * * ?")
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void scheduled() {
         List<EmployeeQuantityStatDTO> dtoList = employeeService.countEmployeeQuantityByOrgId();
