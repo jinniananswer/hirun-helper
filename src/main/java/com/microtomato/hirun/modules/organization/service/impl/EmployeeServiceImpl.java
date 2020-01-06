@@ -225,11 +225,11 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         }
         //是黑名单
         if (StringUtils.equals(conditionDTO.getIsBlackList(), EmployeeConst.YES)) {
-            queryWrapper.exists("select * from ins_employee_blacklist ieb where a.employee_id=ieb.employee_id  and (now() between ieb.start_time and ieb.end_time)");
+            queryWrapper.exists("select * from ins_employee_blacklist ieb where a.identity_no=ieb.identity_no  and (now() between ieb.start_time and ieb.end_time)");
         }
         //不是黑名单
         if (StringUtils.equals(conditionDTO.getIsBlackList(), EmployeeConst.NO)) {
-            queryWrapper.notExists("select * from ins_employee_blacklist ieb where a.employee_id=ieb.employee_id  and (now() between ieb.start_time and ieb.end_time)");
+            queryWrapper.notExists("select * from ins_employee_blacklist ieb where a.identity_no=ieb.identity_no  and (now() between ieb.start_time and ieb.end_time)");
         }
         return queryWrapper;
     }
