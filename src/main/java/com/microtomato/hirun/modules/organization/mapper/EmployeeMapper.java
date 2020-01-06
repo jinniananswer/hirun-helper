@@ -106,10 +106,10 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
      */
     @Select("select age name, count(*) num from (" +
             "select case when TIMESTAMPDIFF(YEAR,birthday,NOW()) between 0 and 20 then '0-20' " +
-            "            when TIMESTAMPDIFF(YEAR,birthday,NOW()) between 21 and 30 then '21-30' " +
-            "            when TIMESTAMPDIFF(YEAR,birthday,NOW()) between 31 and 40 then '31-40' " +
-            "            when TIMESTAMPDIFF(YEAR,birthday,NOW()) between 41 and 50 then '41-50' " +
-            "            when TIMESTAMPDIFF(YEAR,birthday,NOW()) between 51 and 60 then '51-60' " +
+            "            when TIMESTAMPDIFF(YEAR,birthday,NOW()) between 20.01 and 30 then '21-30' " +
+            "            when TIMESTAMPDIFF(YEAR,birthday,NOW()) between 30.01 and 40 then '31-40' " +
+            "            when TIMESTAMPDIFF(YEAR,birthday,NOW()) between 40.01 and 50 then '41-50' " +
+            "            when TIMESTAMPDIFF(YEAR,birthday,NOW()) between 50.01 and 60 then '51-60' " +
             "            when TIMESTAMPDIFF(YEAR,birthday,NOW()) > 60 then '60+' " +
             "       end as age " +
             "from ins_employee a, ins_employee_job_role b " +
