@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.organization.entity.consts.EmployeeConst;
@@ -41,7 +42,7 @@ public class EmployeeJobRoleServiceImpl extends ServiceImpl<EmployeeJobRoleMappe
      */
     @Override
     public EmployeeJobRole queryValidMain(Long employeeId) {
-        LocalDateTime now = TimeUtils.getCurrentLocalDateTime();
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
         List<EmployeeJobRole> jobRoles = this.list(new QueryWrapper<EmployeeJobRole>().lambda().eq(EmployeeJobRole::getEmployeeId, employeeId).eq(EmployeeJobRole::getIsMain, EmployeeConst.JOB_ROLE_MAIN).le(EmployeeJobRole::getStartDate, now).ge(EmployeeJobRole::getEndDate, now));
         if (ArrayUtils.isEmpty(jobRoles)) {
             return null;
