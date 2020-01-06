@@ -111,7 +111,7 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
             "            when TIMESTAMPDIFF(YEAR,birthday,NOW()) between 40.01 and 50 then '41-50' " +
             "            when TIMESTAMPDIFF(YEAR,birthday,NOW()) between 50.01 and 60 then '51-60' " +
             "            when TIMESTAMPDIFF(YEAR,birthday,NOW()) > 60 then '60+' " +
-            "            else then '无年龄信息' " +
+            "            else '无年龄信息' " +
             "       end as age " +
             "from ins_employee a, ins_employee_job_role b " +
             "where b.employee_id = a.employee_id and a.status = '0' and (now() between b.start_date and b.end_date) and is_main='1' and b.org_id in (${orgId}) and birthday is not null) temp_employee " +
