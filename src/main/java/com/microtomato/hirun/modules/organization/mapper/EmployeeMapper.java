@@ -135,6 +135,7 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
             "            when TIMESTAMPDIFF(YEAR,in_date,NOW()) between 3.1 and 5 then '3-5年' " +
             "            when TIMESTAMPDIFF(YEAR,in_date,NOW()) between 5.1 and 10 then '5-10年' " +
             "            when TIMESTAMPDIFF(YEAR,in_date,NOW()) > 10 then '10年+' " +
+            "            else '无年龄信息' " +
             "       end as company_age " +
             "from ins_employee a, ins_employee_job_role b " +
             "where b.employee_id = a.employee_id and (now() between b.start_date and end_date) and a.in_date is not null and a.status = '0' and b.is_main='1' and b.org_id in (${orgId}) ) temp_employee " +
