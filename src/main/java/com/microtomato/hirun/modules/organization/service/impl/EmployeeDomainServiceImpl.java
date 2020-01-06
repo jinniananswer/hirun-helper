@@ -344,11 +344,15 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             if (StringUtils.equals(EmployeeConst.CREATE_TYPE_REHIRE, createType)) {
                 userDO.modify(employeeDTO.getMobileNo(), UserConst.INIT_PASSWORD, UserConst.STATUS_NORMAL);
                 employeeDO.rehire(employee, jobRole, workExperiences, keyMen);
+                //新增部门异动记录
+                transitionService.addEmployeeEntryTransition(employeeDTO.getEmployeeJobRole().getOrgId(), employeeDTO.getEmployeeId(), LocalDate.now());
                 //分配默认权限
                 this.userRoleService.createRole(userId, jobRole.getOrgId(), jobRole.getJobRole(), org.getNature());
             } else if (StringUtils.equals(createType, EmployeeConst.CREATE_TYPE_REHELLORING)) {
                 userDO.modify(employeeDTO.getMobileNo(), UserConst.INIT_PASSWORD, UserConst.STATUS_NORMAL);
                 employeeDO.rehelloring(employee, jobRole, workExperiences, keyMen);
+                //新增部门异动记录
+                transitionService.addEmployeeEntryTransition(employeeDTO.getEmployeeJobRole().getOrgId(), employeeDTO.getEmployeeId(), LocalDate.now());
                 //分配默认权限
                 this.userRoleService.createRole(userId, jobRole.getOrgId(), org.getNature(), jobRole.getJobRole());
             } else {
@@ -367,8 +371,6 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
                 }
                 employeeDO.modify(employee, jobRole, workExperiences, keyMen);
             }
-            //新增部门异动记录
-            transitionService.addEmployeeEntryTransition(employeeDTO.getEmployeeJobRole().getOrgId(), employeeDTO.getEmployeeId(), LocalDate.now());
 
         }
 
