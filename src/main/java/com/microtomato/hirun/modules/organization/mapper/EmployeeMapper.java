@@ -114,7 +114,7 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
             "            else '无年龄信息' " +
             "       end as age " +
             "from ins_employee a, ins_employee_job_role b " +
-            "where b.employee_id = a.employee_id and a.status = '0' and (now() between b.start_date and b.end_date) and is_main='1' and b.org_id in (${orgId}) and birthday is not null) temp_employee " +
+            "where b.employee_id = a.employee_id and a.status = '0' and (now() between b.start_date and b.end_date) and is_main='1' and b.org_id in (${orgId})) temp_employee " +
             "group by age " +
             "order by age asc")
     List<EmployeePieStatisticDTO> countByAge(@Param("orgId")String orgId);
