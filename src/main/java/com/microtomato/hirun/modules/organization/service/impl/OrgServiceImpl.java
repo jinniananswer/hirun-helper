@@ -115,14 +115,14 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
                 belong = orgDO.getBelongBU();
             } else if (SecurityUtils.hasFuncId(OrgConst.SECURITY_SELF_SUB_COMPANY) || SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_SHOP)) {
                 belong = orgDO.getBelongCompany();
-
-                if (SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_SHOP) && belong != null) {
-                    //有查分公司下所有门店的权限
-                    List<Org> children = this.findChildren(belong, allOrgs);
-                    List<Org> shops = this.listByType(OrgConst.TYPE_SHOP, children);
-                    temps.addAll(shops);
-                    return this.findChildren(temps, allOrgs);
-                }
+//
+//                if (SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_SHOP) && belong != null) {
+//                    //有查分公司下所有门店的权限
+//                    List<Org> children = this.findChildren(belong, allOrgs);
+//                    List<Org> shops = this.listByType(OrgConst.TYPE_SHOP, children);
+//                    temps.addAll(shops);
+//                    return this.findChildren(temps, allOrgs);
+//                }
 
             } else if (SecurityUtils.hasFuncId(OrgConst.SECURITY_SELF_SHOP)) {
                 belong = orgDO.getBelongShop();
