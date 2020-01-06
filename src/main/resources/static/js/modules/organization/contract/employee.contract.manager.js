@@ -28,7 +28,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'select', 'layer', 'form', 
                                 } else if (d.contractType == 2) {
                                     return '第二份合同';
                                 } else if (d.contractType == 3) {
-                                    return '第三方合同';
+                                    return '第三份合同';
                                 } else if (d.contractType == 4) {
                                     return '培训协议';
                                 } else if (d.contractType == 5) {
