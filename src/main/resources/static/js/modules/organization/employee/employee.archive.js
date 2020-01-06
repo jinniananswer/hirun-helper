@@ -27,8 +27,8 @@ layui.extend({
             layui.select.init('jobRole', 'JOB_ROLE', null, true, '请选择或搜索岗位');
             layui.select.init('isSocialSecurity', 'YES_NO', '1', false);
             layui.select.init('socialSecurityStatus', 'SOCIAL_SECURITY_STATUS', '1', true);
-            layui.select.init('firstEducationLevel', 'EDUCATION_LEVEL', '3', false);
-            layui.select.init('educationLevel', 'EDUCATION_LEVEL', '3', false);
+            layui.select.init('firstEducationLevel', 'EDUCATION_LEVEL', '1', false);
+            layui.select.init('educationLevel', 'EDUCATION_LEVEL', '1', false);
             layui.select.init('schoolType', 'SCHOOL_TYPE', '1', false);
             layui.select.init('contactManRelType', 'KEYMAN_REL_TYPE', '6', false);
             layui.select.init('jobGrade', 'JOB_GRADE', null, true);
