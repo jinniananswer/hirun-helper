@@ -12,7 +12,7 @@ public class EmployeeConst {
 
     public static final String CREATE_TYPE_REHIRE = "2";
 
-    public static final String CREATE_TYPE_REHELLORING = "2";
+    public static final String CREATE_TYPE_REHELLORING = "3";
 
     public static final String OPER_TYPE_CREATE = "create";
 
