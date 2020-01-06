@@ -642,13 +642,9 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
             return new ArrayList<>();
         }
 
-        //将查询结果按部门归类
+/*        //将查询结果按部门归类
         LinkedHashMap<String, List<Map<String, String>>> classifyMap = new LinkedHashMap<>();
         for (int i = 0; i < busiAndAllCountTrendList.size(); i++) {
-            if(StringUtils.isEmpty(busiAndAllCountTrendList.get(i).get("job_role"))
-                    ||StringUtils.equals(busiAndAllCountTrendList.get(i).get("job_role"),"9999")){
-                continue;
-            }
             Map<String, String> record = busiAndAllCountTrendList.get(i);
             if (!classifyMap.containsKey(String.valueOf(record.get("org_id")))) {
                 List<Map<String, String>> classifyList = new ArrayList<>();
@@ -681,48 +677,59 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
                 resultMap.put("busi_employee_entry_" + busiAndAllCountTrend.get("month"), busiAndAllCountTrend.get("busi_employee_entry_quantity"));
             }
             resultList.add(resultMap);
-        }
+        }*/
 
         List<Org> shopOrgList = orgService.list(new QueryWrapper<Org>().lambda().eq(Org::getType, "4").eq(Org::getStatus, "0"));
 
-        Map<Long, Map<String, String>> shopMap = new HashMap<>();
+        List<Map<String, String>> shopList = new ArrayList<>();
         for (Org org : shopOrgList) {
-            for (int i = 0; i < resultList.size(); i++) {
-                Map<String, String> resultRecord = resultList.get(i);
-                if (!shopMap.containsKey(org.getOrgId())) {
-                    shopMap.put(org.getOrgId(), resultRecord);
+
+            LinkedHashMap<String,String> shopMap=new LinkedHashMap<>();
+            shopMap.put("org_name", org.getName());
+
+            for (int i = 0; i < busiAndAllCountTrendList.size(); i++) {
+                Map<String, String> resultRecord = busiAndAllCountTrendList.get(i);
+                if (StringUtils.equals(org.getOrgId() + "", resultRecord.get("parent_org_id"))) {
+                    if (shopMap.get("all_employee_entry_" + resultRecord.get("month")) == null) {
+                        shopMap.put("all_employee_entry_" + resultRecord.get("month"), resultRecord.get("all_employee_entry_quantity"));
+                    } else {
+                        float shopCount = Float.parseFloat(shopMap.get("all_employee_entry_" + resultRecord.get("month")));
+                        float recordCount = Float.parseFloat(resultRecord.get("all_employee_entry_quantity"));
+                        shopMap.put("all_employee_entry_" + resultRecord.get("month"), shopCount + recordCount + "");
+                    }
+                    if (shopMap.get("all_employee_destroy_" + resultRecord.get("month")) == null) {
+                        shopMap.put("all_employee_destroy_" + resultRecord.get("month"), resultRecord.get("all_employee_destroy_quantity"));
+                    } else {
+                        float shopCount = Float.parseFloat(shopMap.get("all_employee_destroy_" + resultRecord.get("month")));
+                        float recordCount = Float.parseFloat(resultRecord.get("all_employee_destroy_quantity"));
+                        shopMap.put("all_employee_destroy_" + resultRecord.get("month"), shopCount + recordCount + "");
+                    }
+
+                    if (shopMap.get("busi_employee_entry_" + resultRecord.get("month")) == null) {
+                        shopMap.put("busi_employee_entry_" + resultRecord.get("month"), resultRecord.get("busi_employee_entry_quantity"));
+                    } else {
+                        float shopCount = Float.parseFloat(shopMap.get("busi_employee_entry_" + resultRecord.get("month")));
+                        float recordCount = Float.parseFloat(resultRecord.get("busi_employee_entry_quantity"));
+                        shopMap.put("busi_employee_entry_" + resultRecord.get("month"), shopCount + recordCount + "");
+                    }
+
+                    if (shopMap.get("busi_employee_destroy_" + resultRecord.get("month")) == null) {
+                        shopMap.put("busi_employee_destroy_" + resultRecord.get("month"), resultRecord.get("busi_employee_destroy_quantity"));
+                    } else {
+                        float shopCount = Float.parseFloat(shopMap.get("busi_employee_destroy_" + resultRecord.get("month")));
+                        float recordCount = Float.parseFloat(resultRecord.get("busi_employee_destroy_quantity"));
+                        shopMap.put("busi_employee_destroy_" + resultRecord.get("month"), shopCount + recordCount + "");
+                    }
                 } else {
-                    if (StringUtils.isEmpty(resultRecord.get("parent_org_id"))) {
-                        continue;
-                    }
-                    if (org.getOrgId().equals(Long.parseLong(resultRecord.get("parent_org_id")))) {
-                        Map<String, String> tempRecod = shopMap.get(org.getOrgId());
-                        if (tempRecod.get("all_employee_entry_1") == null) {
-                            tempRecod.put("all_employee_entry_1", "0");
-                        }
-                        if (resultRecord.get("all_employee_entry_1") == null) {
-                            resultRecord.put("all_employee_entry_1", "0");
-                        }
-                        tempRecod.put("all_employee_entry_1", Long.parseLong(tempRecod.get("all_employee_entry_1")) + Long.parseLong(resultRecord.get("all_employee_entry_1")) + "");
-                        if (tempRecod.get("all_employee_entry_2") == null) {
-                            tempRecod.put("all_employee_entry_2", "0");
-                        }
-                        if (resultRecord.get("all_employee_entry_2") == null) {
-                            resultRecord.put("all_employee_entry_2", "0");
-                        }
-                        tempRecod.put("all_employee_entry_2", Integer.parseInt(tempRecod.get("all_employee_entry_2")) + Integer.parseInt(resultRecord.get("all_employee_entry_2")) + "");
-                        tempRecod.put("org_name", org.getName());
-                    }
+                    continue;
                 }
             }
+            shopList.add(shopMap);
+
         }
 
-        Set<Long> shopKeys = shopMap.keySet();
-        List<Map<String, String>> lastList = new ArrayList<>();
-        for (Long shopKey : shopKeys) {
-            lastList.add(shopMap.get(shopKey));
-        }
-        return lastList;
+
+        return shopList;
     }
 
 

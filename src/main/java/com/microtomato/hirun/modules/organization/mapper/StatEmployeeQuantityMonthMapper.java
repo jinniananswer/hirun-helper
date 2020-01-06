@@ -95,14 +95,17 @@ public interface StatEmployeeQuantityMonthMapper extends BaseMapper<StatEmployee
      * @param orgId
      * @return
      */
-    @Select("select CAST(x.org_id AS char) as org_id,CAST(x.parent_org_id AS char) as parent_org_id,x.month,CAST(x.all_employee_entry_quantity AS char) as all_employee_entry_quantity,CAST(x.all_employee_destroy_quantity AS char) as all_employee_destroy_quantity,ifnull(y.busi_employee_entry_quantity,0) as busi_employee_entry_quantity, ifnull(y.busi_employee_destroy_quantity,0) as busi_employee_destroy_quantity from\n " +
+    @Select("select CAST(x.org_id AS char) as org_id,CAST(x.parent_org_id AS char) as parent_org_id,x.month,CAST(x.all_employee_entry_quantity AS char) as all_employee_entry_quantity," +
+            "CAST(x.all_employee_destroy_quantity AS char) as all_employee_destroy_quantity," +
+            "CAST(y.busi_employee_entry_quantity AS char) as busi_employee_entry_quantity, " +
+            "CAST(y.busi_employee_destroy_quantity AS char) as busi_employee_destroy_quantity from\n " +
             "(select a.org_id ,a.parent_org_id,b.`month`,IFNULL(SUM(b.employee_entry_quantity),0) as all_employee_entry_quantity ,IFNULL(SUM(b.employee_destroy_quantity),0) as all_employee_destroy_quantity\n " +
-            "from ins_org a LEFT JOIN stat_employee_transition b on (a.org_id=b.org_id and b.`year`=${year})" +
+            "from ins_org a , stat_employee_transition b where (a.org_id=b.org_id and b.`year`=${year})" +
             "GROUP BY a.org_id,b.`month`,a.parent_org_id) x " +
             "LEFT JOIN " +
             "(select c.org_id,c.parent_org_id,d.`month`,IFNULL(SUM(d.employee_entry_quantity),0) as busi_employee_entry_quantity ,IFNULL(SUM(d.employee_destroy_quantity),0) as busi_employee_destroy_quantity " +
-            "from ins_org c LEFT JOIN stat_employee_transition d " +
-            "on (c.org_id=d.org_id and d.`year`='2020' and d.org_nature in ('2','3','4','5','6','7')) " +
+            "from ins_org c , stat_employee_transition d " +
+            "where (c.org_id=d.org_id and d.`year`=${year} and d.org_nature in ('2','3','4','5','6','7')) " +
             "GROUP BY c.org_id,d.`month`,c.parent_org_id) y " +
             " on (x.org_id=y.org_id and x.month=y.month) " +
             " where x.org_id in (${orgId}) ")
