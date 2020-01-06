@@ -132,17 +132,23 @@ layui.extend({
             layui.ajax.get('api/system/menu-click/hostMenus', '', function (data) {
                 let rows = data.rows;
                 let html = [];
-                for (let i = 0; i < rows.length; i++) {
-                    html.push("    <li class=\"layui-col-xs3\">\n");
-                    html.push("        <a lay-href=\"" + rows[i].menuUrl + "\" title=\"" + rows[i].title + "\">\n");
-                    html.push("            <i class=\"layui-icon " + rows[i].iconfont +"\"></i>\n");
-                    html.push("            <cite>" + rows[i].title + "</cite>\n");
-                    html.push("        </a>\n");
-                    html.push("    </li>\n");
+                if (rows.length == 0) {
+                    html.push("<i class=\"layui-icon layui-icon-release\"></i>\n");
+                    html.push("温馨提示：</br>随着您的使用，系统会自动采集最常用的菜单展示于此。");
+                    $("#hostMenusPage0").empty();
+                    $("#hostMenusPage0").html(html.join(""));
+                } else {
+                    for (let i = 0; i < rows.length; i++) {
+                        html.push("    <li class=\"layui-col-xs3\">\n");
+                        html.push("        <a lay-href=\"" + rows[i].menuUrl + "\" title=\"" + rows[i].title + "\">\n");
+                        html.push("            <i class=\"layui-icon " + rows[i].iconfont + "\"></i>\n");
+                        html.push("            <cite>" + rows[i].title + "</cite>\n");
+                        html.push("        </a>\n");
+                        html.push("    </li>\n");
+                    }
+                    $("#hostMenusPage1").empty();
+                    $("#hostMenusPage1").html(html.join(""));
                 }
-
-                $("#hostMenusPage1").empty();
-                $("#hostMenusPage1").html(html.join(""));
             });
         },
 
