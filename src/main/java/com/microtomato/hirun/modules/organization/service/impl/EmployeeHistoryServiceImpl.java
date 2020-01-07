@@ -5,8 +5,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import com.microtomato.hirun.modules.organization.entity.consts.EmployeeConst;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeHistory;
+import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
+import com.microtomato.hirun.modules.organization.entity.po.Org;
 import com.microtomato.hirun.modules.organization.mapper.EmployeeHistoryMapper;
 import com.microtomato.hirun.modules.organization.service.IEmployeeHistoryService;
+import com.microtomato.hirun.modules.organization.service.IOrgService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +33,9 @@ public class EmployeeHistoryServiceImpl extends ServiceImpl<EmployeeHistoryMappe
 
     @Autowired
     private IStaticDataService staticDataService;
+
+    @Autowired
+    private IOrgService orgService;
 
     /**
      * 创建员工在鸿扬入职的历史数据
@@ -79,11 +85,12 @@ public class EmployeeHistoryServiceImpl extends ServiceImpl<EmployeeHistoryMappe
     }
 
     @Override
-    public void createChangeJobRole(Long employeeId, String newJobRole, LocalDate eventDate) {
+    public void createChangeJobRole(Long employeeId, EmployeeJobRole newJobRole, LocalDate eventDate) {
         EmployeeHistory history = new EmployeeHistory();
         this.processStandardData(employeeId, eventDate, history);
         history.setEventType(EmployeeConst.HISTORY_EVENT_CHANGE_JOB_ROLE);
-        history.setEventContent("岗位变动，新岗位："+staticDataService.getCodeName("JOB_ROLE", newJobRole));
+        Org org = this.orgService.queryByOrgId(newJobRole.getOrgId());
+        history.setEventContent("岗位变动，部门："+org.getName()+"，岗位："+staticDataService.getCodeName("JOB_ROLE", newJobRole.getJobRole()) + ",职级："+staticDataService.getCodeName("JOB_GRADE", newJobRole.getJobGrade()));
         this.save(history);
     }
 

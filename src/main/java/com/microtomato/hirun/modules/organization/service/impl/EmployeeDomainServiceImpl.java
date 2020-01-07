@@ -359,11 +359,8 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
                 userDO.modify(employeeDTO.getMobileNo(), null, null);
 
                 EmployeeJobRole oldJobRole = this.employeeJobRoleService.queryLast(employeeDTO.getEmployeeId());
-                if (oldJobRole != null && !StringUtils.equals(oldJobRole.getJobRole(), jobRole.getJobRole())) {
-                    this.employeeHistoryService.createChangeJobRole(employeeDTO.getEmployeeId(), jobRole.getJobRole(), null);
-                }
-                if (oldJobRole != null && StringUtils.isNotBlank(jobRole.getJobGrade()) && !StringUtils.equals(oldJobRole.getJobGrade(), jobRole.getJobGrade())) {
-                    this.employeeHistoryService.createChangeJobGrade(employeeDTO.getEmployeeId(), jobRole.getJobGrade(), null);
+                if (oldJobRole != null && (!StringUtils.equals(oldJobRole.getJobRole(), jobRole.getJobRole()) || !jobRole.getOrgId().equals(oldJobRole.getOrgId()) || !StringUtils.equals(oldJobRole.getJobGrade(), jobRole.getJobGrade()))) {
+                    this.employeeHistoryService.createChangeJobRole(employeeDTO.getEmployeeId(), jobRole, null);
                 }
 
                 if (!StringUtils.equals(jobRole.getJobRole(), oldJobRole.getJobRole()) || !jobRole.getOrgId().equals(oldJobRole.getOrgId())) {

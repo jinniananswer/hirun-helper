@@ -2,6 +2,7 @@ package com.microtomato.hirun.modules.organization.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeHistory;
+import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -22,7 +23,7 @@ public interface IEmployeeHistoryService extends IService<EmployeeHistory> {
 
     void createRehelloring(Long employeeId, LocalDate eventDate);
 
-    void createChangeJobRole(Long employeeId, String newJobRole, LocalDate eventDate);
+    void createChangeJobRole(Long employeeId, EmployeeJobRole newJobRole, LocalDate eventDate);
 
     void createChangeJobGrade(Long employeeId, String newJobGrade, LocalDate eventDate);
 
