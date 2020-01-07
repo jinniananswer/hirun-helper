@@ -38,17 +38,17 @@
             </ul>
             <ul class="layui-nav layui-layout-right" lay-filter="layadmin-layout-right">
 
-<!--                <li class="layui-nav-item" lay-unselect>-->
-<!--                    <a lay-href="openUrl?url=/websocket" lay-text="WebSocket测试">-->
-<!--                        <i class="layui-icon layui-icon-theme"></i>-->
-<!--                    </a>-->
-<!--                </li>-->
+                <!--                <li class="layui-nav-item" lay-unselect>-->
+                <!--                    <a lay-href="openUrl?url=/websocket" lay-text="WebSocket测试">-->
+                <!--                        <i class="layui-icon layui-icon-theme"></i>-->
+                <!--                    </a>-->
+                <!--                </li>-->
 
-<!--                <li class="layui-nav-item" lay-unselect>-->
-<!--                    <a lay-href="openUrl?url=modules/demo/harbour/import" lay-text="通用测试">-->
-<!--                        <i class="layui-icon layui-icon-theme"></i>-->
-<!--                    </a>-->
-<!--                </li>-->
+                <!--                <li class="layui-nav-item" lay-unselect>-->
+                <!--                    <a lay-href="openUrl?url=modules/demo/harbour/import" lay-text="通用测试">-->
+                <!--                        <i class="layui-icon layui-icon-theme"></i>-->
+                <!--                    </a>-->
+                <!--                </li>-->
 
                 <li class="layui-nav-item" lay-unselect>
                     <a lay-href="openUrl?url=modules/system/message-list.html" layadmin-event="message" lay-text="消息中心">
@@ -86,12 +86,10 @@
         <!-- 侧边菜单 -->
         <div class="layui-side layui-side-menu">
             <div class="layui-side-scroll">
-                <div class="layui-icon-rate">
+                <div class="layui-logo layui-icon layui-icon-diamond" lay-href="home/console.html">
                     <span>HI-RUN</span>
                 </div>
-
                 <ul class="layui-nav layui-nav-tree" lay-shrink="all" id="layadmin-system-side-menu" lay-filter="layadmin-system-side-menu">
-
                 </ul>
             </div>
         </div>
@@ -136,8 +134,8 @@
     {{#  layui.each(d, function(index, item){ }}
     <li class="layui-nav-item" id="menu_{{ item.node.menuId }}">
         <a href="javascript:;">
-            {{#  if(item.node.iconfont  != null){ }}
-                <i class="layui-icon {{ item.node.iconfont }}"></i>
+            {{# if(item.node.iconfont != null){ }}
+            <i class="layui-icon {{ item.node.iconfont }}"></i>
             {{# } }}
             <cite>{{ item.node.title }}</cite>
         </a>
@@ -146,36 +144,36 @@
 </script>
 <script id="menuChild" type="text/html">
     <dl class="layui-nav-child">
-    {{#  layui.each(d, function(index, item){ }}
+        {{# layui.each(d, function(index, item){ }}
         <dd id="menu_{{ item.node.menuId }}">
-            {{#  if(item.node.menuUrl == null){ }}
-                <a>
-                    {{#  if(item.node.iconfont  != null){ }}
-                    <i class="layui-icon {{ item.node.iconfont }}"></i>
-                    {{# } }}
-                    <cite>{{ item.node.title }}</cite>
-                </a>
+            {{# if(item.node.menuUrl == null){ }}
+            <a>
+                {{# if(item.node.iconfont != null){ }}
+                <i class="layui-icon {{ item.node.iconfont }}"></i>
+                {{# } }}
+                <cite>{{ item.node.title }}</cite>
+            </a>
             {{# } }}
-            {{#  if(item.node.menuUrl  != null){ }}
-                <a lay-href={{ item.node.menuUrl }}>
-                    {{#  if(item.node.iconfont  != null){ }}
-                    <i class="layui-icon {{ item.node.iconfont }}"></i>
-                    {{# } }}
-                    <cite>{{ item.node.title }}</cite>
-                </a>
+            {{# if(item.node.menuUrl != null){ }}
+            <a lay-href={{ item.node.menuUrl }}>
+                {{# if(item.node.iconfont != null){ }}
+                <i class="layui-icon {{ item.node.iconfont }}"></i>
+                {{# } }}
+                <cite>{{ item.node.title }}</cite>
+            </a>
             {{# } }}
         </dd>
 
-    {{#  }); }}
+        {{# }); }}
     </dl>
 </script>
 <script>
     layui.extend(
         {
-            index : "{/}static/js/index",
+            index: "{/}static/js/index",
             websocketObj: "{/}static/js/modules/system/websocket",
         }
-    ).use(['index', 'websocketObj'],function(args){
+    ).use(['index', 'websocketObj'], function (args) {
         layui.index.loadMenus();
         layui.websocketObj.init();
     });
