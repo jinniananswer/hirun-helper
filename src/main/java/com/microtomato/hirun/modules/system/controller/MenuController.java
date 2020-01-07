@@ -151,7 +151,6 @@ public class MenuController {
 
         // 剔除没有叶子节点的分支
         List<TreeNode> treeNodeList = removeBranchNodeWithoutLeafNode(nodes, menuMap);
-        log.info("treeNodeList: {}", treeNodeList);
 
         // 构建菜单树
         List<TreeNode> tree = TreeUtils.build(treeNodeList);
