@@ -60,7 +60,7 @@ public class EmployeeReHireAgreementRemindTask {
         for (EmployeeContract employeeContract : contractList) {
             long diffDay = Duration.between(LocalDateTime.now(),employeeContract.getContractEndTime()).toDays();
 
-            if (diffDay == 30 && diffDay != 0) {
+            if (diffDay != 30 && diffDay != 0) {
                 continue;
             } else {
                 Long employeeId = employeeContract.getEmployeeId();
