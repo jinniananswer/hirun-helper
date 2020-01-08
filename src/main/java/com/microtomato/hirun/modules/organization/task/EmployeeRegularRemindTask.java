@@ -68,7 +68,7 @@ public class EmployeeRegularRemindTask {
             }
             long diffDay = Duration.between(LocalDateTime.now(),employee.getRegularDate()).toDays();
 
-            if (diffDay != 7 && diffDay != 0) {
+            if (diffDay != 7 || diffDay != 0) {
                 continue;
             } else {
 

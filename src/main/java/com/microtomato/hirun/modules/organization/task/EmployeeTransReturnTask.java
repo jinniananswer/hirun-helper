@@ -66,7 +66,7 @@ public class EmployeeTransReturnTask {
             long days = Duration.between(LocalDateTime.now(),transDetail.getEndTime()).toDays();
 
             //确保低于10天的借调能在最后一天也能生成一条待办任务
-            if (days != 10 && days != 0) {
+            if (days != 10 || days != 0) {
                 continue;
             } else {
                 Long sourceOrgId = transDetail.getSourceOrgId();

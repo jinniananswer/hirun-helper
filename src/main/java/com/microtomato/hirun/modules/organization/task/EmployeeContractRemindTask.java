@@ -69,7 +69,7 @@ public class EmployeeContractRemindTask {
             if (contracts.size() <= 0) {
                 //没有时间变更协议就看合同是否快到期，如果合同如果快到期则提醒签订合同变更协议
                 long diffDay = Duration.between(LocalDateTime.now(), employeeContract.getContractEndTime()).toDays();
-                if (diffDay != 40 && diffDay != 0) {
+                if (diffDay != 40 || diffDay != 0) {
                     continue;
                 } else {
                     Long employeeId = employeeContract.getEmployeeId();
