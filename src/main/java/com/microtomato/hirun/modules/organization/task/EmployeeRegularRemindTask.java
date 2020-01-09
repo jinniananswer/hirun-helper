@@ -45,7 +45,7 @@ public class EmployeeRegularRemindTask {
     /**
      * 查询员工数据，到期前7天进行员工转正以及新员工未签合同提醒
      */
-    @Scheduled(cron = "0 30 0 * * ?")
+    @Scheduled(cron = "0 35 0 * * ?")
     public void scheduled() {
 
         List<Employee> employeeList = employeeService.list(new QueryWrapper<Employee>().lambda()
@@ -68,7 +68,7 @@ public class EmployeeRegularRemindTask {
             }
             long diffDay = Duration.between(LocalDateTime.now(),employee.getRegularDate()).toDays();
 
-            if (diffDay != 7 && diffDay != 0) {
+            if (diffDay != 7 || diffDay != 0) {
                 continue;
             } else {
 
@@ -101,7 +101,7 @@ public class EmployeeRegularRemindTask {
                 continue;
             }
             //判断新员工入职时间与系统上线时间，在系统上线之前的数据不再提醒，因为后续需要判断是否已签订第一份合同，而老数据可能没有第一份合同
-            if(TimeUtils.compareTwoTime(employee.getInDate(),TimeUtils.stringToLocalDateTime("2019-12-01 00:00:00","yyyy-MM-dd HH:mm:ss"))<0){
+            if(TimeUtils.compareTwoTime(employee.getInDate(),TimeUtils.stringToLocalDateTime("2020-01-01 00:00:00","yyyy-MM-dd HH:mm:ss"))<0){
                 continue;
             }
             //判断是否已经签订了第一份合同

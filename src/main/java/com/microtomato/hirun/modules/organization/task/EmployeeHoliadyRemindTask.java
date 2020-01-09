@@ -55,7 +55,7 @@ public class EmployeeHoliadyRemindTask {
         for (EmployeeHoliday employeeHoliday : holidayList) {
             long days = Duration.between(LocalDateTime.now(),employeeHoliday.getEndTime()).toDays();
 
-            if (days == 10 && days != 0) {
+            if (days != 10 || days != 0) {
                 continue;
             } else {
                 Long employeeId = employeeHoliday.getEmployeeId();
