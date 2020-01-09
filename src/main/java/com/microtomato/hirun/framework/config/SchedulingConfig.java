@@ -1,40 +1,45 @@
 package com.microtomato.hirun.framework.config;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Role;
-import org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor;
-import org.springframework.scheduling.config.TaskManagementConfigUtils;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.SchedulingConfigurer;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.scheduling.config.ScheduledTaskRegistrar;
+
+import java.util.concurrent.Executor;
 
 /**
- * 后台任务 和 前端应用 应分开部署:<p>
- * 前端应用不启用 任务调度
- * 后台任务需启用 任务调度
- * <p>
- * 启用 任务调度 的方法两种任选其一：
- * 1. 配置文件里添加 scheduling.enabled: true
- * 2. 启动命令行添加 --scheduling.enabled=true
+ * 后台任务配置文件
  *
  * @author Steven
- * @date 2020-01-09
+ * @date 2019-11-15
  */
 @Slf4j
 @Configuration
-@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-public class SchedulingConfig {
+@EnableScheduling
+public class SchedulingConfig implements SchedulingConfigurer {
 
-    @ConditionalOnProperty(prefix = "scheduling", name = "enabled", havingValue = "true")
-    @Bean(name = TaskManagementConfigUtils.SCHEDULED_ANNOTATION_PROCESSOR_BEAN_NAME)
-    @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-    public ScheduledAnnotationBeanPostProcessor scheduledAnnotationProcessor() {
-        log.info("==== 激活了后台任务");
-        log.info("==== 激活了后台任务");
-        log.info("==== 激活了后台任务");
-        return new ScheduledAnnotationBeanPostProcessor();
+    @Override
+    public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
+        taskRegistrar.setScheduler(taskScheduler());
+    }
+
+    /**
+     * 实现接口 SchedulingConfigurer，是为了引入线程池，提高延时任务的并发处理能力
+     *
+     * @return
+     */
+    @Bean
+    public Executor taskScheduler() {
+        ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
+        taskScheduler.setPoolSize(20);
+        taskScheduler.setWaitForTasksToCompleteOnShutdown(true);
+        taskScheduler.setThreadNamePrefix("Task-scheduling-pool:");
+        taskScheduler.setRemoveOnCancelPolicy(true);
+        taskScheduler.setErrorHandler(t -> log.error("Error occurs", t));
+        return taskScheduler;
     }
 
 }
