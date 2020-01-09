@@ -1,0 +1,4 @@
+倒换表接口以及数据:
+
+mysqldump -h localhost -uroot -p ins ins_user > ins_user.sql
+source /home/rds/ins_user.sql

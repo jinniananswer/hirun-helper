@@ -48,12 +48,15 @@ public class DemoController {
     }
 
     @GetMapping("testInsertAndSelect")
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void testInsertAndSelect() {
         FuncTemp funcTemp = FuncTemp.builder().funcId(1L).createTime(LocalDateTime.now()).createUserId(1L).expireDate(LocalDateTime.now().plusDays(20)).userId(1L).build();
         log.error("插入前 PO 对象: {}", funcTemp);
         funcTempService.save(funcTemp);
+
+        log.error("插入后 PO 对象: {}", funcTemp);
         FuncTemp one = funcTempService.getOne(Wrappers.<FuncTemp>lambdaQuery().eq(FuncTemp::getId, funcTemp.getId()));
+
         log.error("从表里查出的 PO 对象: {}", one);
     }
 
