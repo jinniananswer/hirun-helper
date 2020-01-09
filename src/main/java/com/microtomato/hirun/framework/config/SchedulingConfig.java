@@ -2,8 +2,10 @@ package com.microtomato.hirun.framework.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.annotation.*;
-import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Role;
 import org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor;
 import org.springframework.scheduling.config.TaskManagementConfigUtils;
 
@@ -21,24 +23,14 @@ import org.springframework.scheduling.config.TaskManagementConfigUtils;
  */
 @Slf4j
 @Configuration
-public class SchedulerConfig {
+@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+public class SchedulingConfig {
 
-    @Conditional(SchedulerCondition.class)
+    @Conditional(SchedulingCondition.class)
     @Bean(name = TaskManagementConfigUtils.SCHEDULED_ANNOTATION_PROCESSOR_BEAN_NAME)
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     public ScheduledAnnotationBeanPostProcessor scheduledAnnotationProcessor() {
         return new ScheduledAnnotationBeanPostProcessor();
-    }
-
-    static class SchedulerCondition implements Condition {
-
-        @Override
-        public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-            String enabled = context.getEnvironment().getProperty("scheduling.enabled");
-            log.info("是否开启任务调度: {}", enabled);
-            return Boolean.valueOf(enabled);
-        }
-
     }
 
 }
