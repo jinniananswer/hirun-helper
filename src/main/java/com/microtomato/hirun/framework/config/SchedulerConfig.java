@@ -1,5 +1,6 @@
 package com.microtomato.hirun.framework.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.*;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -18,6 +19,7 @@ import org.springframework.scheduling.config.TaskManagementConfigUtils;
  * @author Steven
  * @date 2020-01-09
  */
+@Slf4j
 @Configuration
 public class SchedulerConfig {
 
@@ -29,9 +31,12 @@ public class SchedulerConfig {
     }
 
     static class SchedulerCondition implements Condition {
+
         @Override
         public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-            return Boolean.valueOf(context.getEnvironment().getProperty("scheduling.enabled"));
+            String enabled = context.getEnvironment().getProperty("scheduling.enabled");
+            log.info("是否开启任务调度: {}", enabled);
+            return Boolean.valueOf(enabled);
         }
 
     }
