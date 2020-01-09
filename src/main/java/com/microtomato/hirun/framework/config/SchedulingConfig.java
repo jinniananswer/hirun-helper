@@ -2,6 +2,7 @@ package com.microtomato.hirun.framework.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -26,10 +27,13 @@ import org.springframework.scheduling.config.TaskManagementConfigUtils;
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 public class SchedulingConfig {
 
-    @Conditional(SchedulingCondition.class)
+    @ConditionalOnProperty(prefix = "scheduling", name = "enabled", havingValue = "true")
     @Bean(name = TaskManagementConfigUtils.SCHEDULED_ANNOTATION_PROCESSOR_BEAN_NAME)
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     public ScheduledAnnotationBeanPostProcessor scheduledAnnotationProcessor() {
+        log.info("==== 激活了后台任务");
+        log.info("==== 激活了后台任务");
+        log.info("==== 激活了后台任务");
         return new ScheduledAnnotationBeanPostProcessor();
     }
 
