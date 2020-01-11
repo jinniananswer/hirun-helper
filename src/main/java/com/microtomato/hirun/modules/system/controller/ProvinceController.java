@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
  *  前端控制器
  * </p>
  * </p>
- * @author jinnian
+ * @author JINNIAN
  * @since 2019-11-17
  */
 @RestController
