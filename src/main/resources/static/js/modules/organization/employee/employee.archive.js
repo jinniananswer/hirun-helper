@@ -282,7 +282,7 @@ layui.extend({
                 $("#inDate").val(inDate.substring(0,10));
             }
             if (regularDate != null) {
-                $("#regularDate").val(regularDate);
+                $("#regularDate").val(regularDate.substring(0,10));
             }
 
             let isSocialSecurity = employee.isSocialSecurity;
