@@ -311,6 +311,12 @@ layui.extend({
                 this.homePicker.setValue(home);
             }
 
+            let educationLevel = employee.educationLevel;
+            if (educationLevel != null) {
+                $("#educationLevel").val(educationLevel);
+                form.render('select', 'educationLevel');
+            }
+
             let employeeJobRole = employee.employeeJobRole;
 
             let orgPath = employeeJobRole.orgPath;
