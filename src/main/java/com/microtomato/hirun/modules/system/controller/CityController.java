@@ -22,6 +22,4 @@ public class CityController {
     @Autowired
     private ICityService cityServiceImpl;
 
-
-
 }
