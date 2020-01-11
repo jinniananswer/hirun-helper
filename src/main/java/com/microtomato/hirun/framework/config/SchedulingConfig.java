@@ -1,7 +1,6 @@
 package com.microtomato.hirun.framework.config;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -12,13 +11,7 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import java.util.concurrent.Executor;
 
 /**
- * 后台任务 和 前端应用 应分开部署:<p>
- * 前端应用不启用 @EnableScheduling
- * 后台任务需启用 @EnableScheduling
- * <p>
- * 启用 @EnableScheduling 的方法两种任选其一：
- * 1. 配置文件里添加 scheduling.enabled: true
- * 2. 启动命令行添加 --scheduling.enabled=true
+ * 后台任务配置文件
  *
  * @author Steven
  * @date 2019-11-15
@@ -26,7 +19,6 @@ import java.util.concurrent.Executor;
 @Slf4j
 @Configuration
 @EnableScheduling
-@ConditionalOnProperty(prefix = "scheduling", name = "enabled", havingValue = "true")
 public class SchedulingConfig implements SchedulingConfigurer {
 
     @Override
