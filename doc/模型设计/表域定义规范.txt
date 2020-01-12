@@ -1,0 +1,7 @@
+订单域:    order_${xxx}
+客户域:    cust_${xxx}
+供应域:    sc_${xxx}
+产品域:    prod_${xxx}
+系统参数:  sys_${xxx}
+业务参数:  biz_${xxx}
+日志域:    log_${xxx} 记录全局轨迹日志。
