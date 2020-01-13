@@ -35,8 +35,14 @@ public class Steven extends BaseEntity {
 
     /**
      * Id
+     *
+     * 走 ID 自增
+     * @TableId(value = "id", type = IdType.AUTO)
+     *
+     * 走雪花算法生成全局唯一的 ID
+     * @TableId(value = "id", type = IdType.ID_WORKER)
      */
-    @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.ID_WORKER)
     private Long id;
 
     @TableField("name")

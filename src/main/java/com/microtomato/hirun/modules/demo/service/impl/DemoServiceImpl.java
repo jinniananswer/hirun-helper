@@ -38,6 +38,7 @@ public class DemoServiceImpl implements IDemoService {
             stevenList.add(Steven.builder().name(RandomStringUtils.random(8, "ABCDEFGH")).build());
         }
         stevenServiceImpl.saveBatch(stevenList);
+
         for (int i = 0; i < 2; i++) {
             zhoulinList.add(Zhoulin.builder().name(RandomStringUtils.random(8, "1234567890")).build());
         }
