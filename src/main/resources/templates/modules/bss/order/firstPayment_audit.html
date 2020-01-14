@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>dolphin-admin</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="../../../../static/layui/css/layui.css"
+          th:href="@{static/layui/css/layui.css(v=${version})}"
+          media="all">
+    <link rel="stylesheet" href="../../../../static/css/admin.css" th:href="@{static/css/admin.css(v=${version})}"
+          media="all">
+    <script src="../../../../static/layui/layui.js" th:src="@{static/layui/layui.js(v=${version})}"></script>
+    <script src="../../../../static/js/base.js" th:src="@{static/js/base.js(v=${version})}"></script>
+</head>
+
+<style>
+    .layui-form-label {
+        width: 200px;
+    }
+
+    .layui-form-label.layui-required:before {
+        content: "*";
+        color: #FF5722;
+    }
+
+    .layui-input-block {
+        margin-left: 95px;
+    }
+
+    .layui-card-body {
+        margin: 0px
+    }
+</style>
+
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <form class="layui-form" id="create_preparation">
+                <div class="layui-form-item">
+                    <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="save" style="float: right">保存
+                    </button>
+                </div>
+                <fieldset class="layui-elem-field">
+                    <legend>施工合同信息</legend>
+                    <div class="layui-field-box">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label layui-required">合同编号</label>
+                                <div class="layui-inline">
+                                    <input type="text"  name="contractsigningTime" required
+                                           lay-verify="required" placeholder="2020-1-4" autocomplete="off"
+                                           class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">合同总金额（单位元）</label>
+                                <div class="layui-inline">
+                                    <input type="text"  name="totalContract" autocomplete="off"
+                                           placeholder="1" class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">基础装修总金额（单位元）</label>
+                                <div class="layui-inline">
+                                    <input type="text"  name="totalContract" autocomplete="off"
+                                           placeholder="1" class="layui-input"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">税金（单位元）</label>
+                                <div class="layui-inline">
+                                    <input type="text"  name="totalContract" autocomplete="off"
+                                           placeholder="0" class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">木制品总金额（单位元）</label>
+                                <div class="layui-inline">
+                                    <input type="text"  name="totalContract" autocomplete="off"
+                                           placeholder="0" class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">门总金额（单位元）</label>
+                                <div class="layui-inline">
+                                    <input type="text"  name="totalContract" autocomplete="off"
+                                           placeholder="0" class="layui-input"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">家具总金额（单位元）</label>
+                                <div class="layui-inline">
+                                    <input type="text"  name="contractdesignFee" onclick=""
+                                           placeholder="0" autocomplete="off" class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">已收设计费（单位元）</label>
+                                <div class="layui-inline">
+                                    <input type="text"  name="designTheme" onclick=""
+                                           placeholder="1" autocomplete="off" class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">返设计费（单位元）</label>
+                                <div class="layui-inline">
+                                    <input type="text"  name="assistant" onclick=""
+                                           placeholder="0" autocomplete="off" class="layui-input"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">现金优惠（单位元）</label>
+                                <div class="layui-inline">
+                                    <input type="text" name="contractdesignFee" onclick=""
+                                           placeholder="0" autocomplete="off" class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">财务店名</label>
+                                <div class="layui-inline">
+                                    <input type="text"  name="designTheme" onclick=""
+                                           placeholder="邵阳总店" autocomplete="off" class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label layui-required">签订合同时间</label>
+                                <div class="layui-inline">
+                                    <input type="text"  name="contractsigningTime" required
+                                           lay-verify="required" placeholder="2020-1-4" autocomplete="off"
+                                           class="layui-input"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label layui-required">合同开始时间</label>
+                                <div class="layui-inline">
+                                    <input type="text"  name="contractsigningTime" required
+                                           lay-verify="required" placeholder="2020-1-4" autocomplete="off"
+                                           class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label layui-required">合同结束时间</label>
+                                <div class="layui-inline">
+                                    <input type="text"  name="contractsigningTime" required
+                                           lay-verify="required" placeholder="2020-3-4" autocomplete="off"
+                                           class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label layui-required">合同2期款时间</label>
+                                <div class="layui-inline">
+                                    <input type="text" id="contractsigningTime" name="contractsigningTime" required
+                                           lay-verify="required" placeholder="2020-2-4" autocomplete="off"
+                                           class="layui-input"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label layui-required">享受活动</label>
+                                <div class="layui-inline">
+                                    <input type="text"  name="contractsigningTime" required
+                                           lay-verify="required" placeholder="" autocomplete="off"
+                                           class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label layui-required">优惠项目</label>
+                                <div class="layui-inline">
+                                    <input type="text"  name="contractsigningTime" required
+                                           lay-verify="required" placeholder="" autocomplete="off"
+                                           class="layui-input"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset class="layui-elem-field">
+                    <legend>首付款信息</legend>
+                    <div class="layui-field-box">
+                        <fieldset class="layui-elem-field layui-field-title">
+                            <legend style="font-size: 14px">
+                                基础装修
+                            </legend>
+                        </fieldset>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label layui-required">应收工程首付款（单位元）</label>
+                                <div class="layui-inline">
+                                    <input type="text"  name="contractsigningTime" required
+                                           lay-verify="required" placeholder="1" autocomplete="off"
+                                           class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">已收工程首付款（单位元）</label>
+                                <div class="layui-inline">
+                                    <input type="text"  name="totalContract" autocomplete="off"
+                                           placeholder="1" class="layui-input"/>
+                                </div>
+                            </div>
+                        </div>
+                        <fieldset class="layui-elem-field layui-field-title">
+                            <legend style="font-size: 14px">
+                                主材产品
+                            </legend>
+                        </fieldset>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">已收主材（单位元）</label>
+                                <div class="layui-inline">
+                                    <input type="text" id="totalContract" name="totalContract" autocomplete="off"
+                                           placeholder="0" class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">已收橱柜（单位元）</label>
+                                <div class="layui-inline">
+                                    <input type="text"  name="totalContract" autocomplete="off"
+                                           placeholder="0" class="layui-input"/>
+                                </div>
+                            </div>
+                        </div>
+                        <fieldset class="layui-elem-field layui-field-title">
+                            <legend style="font-size: 14px">
+                                审核基本信息
+                            </legend>
+                        </fieldset>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">核实时间</label>
+                                <div class="layui-inline">
+                                    <input type="text" name="contractdesignFee" onclick=""
+                                           placeholder="2020-1-4" autocomplete="off" class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">经办人</label>
+                                <div class="layui-inline">
+                                    <input type="text" id="designTheme" name="designTheme" onclick=""
+                                           placeholder="财务1" autocomplete="off" class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">客户代表</label>
+                                <div class="layui-inline">
+                                    <input type="text" id="assistant" name="assistant" onclick=""
+                                           placeholder="客户代表1" autocomplete="off" class="layui-input"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">首付款状态</label>
+                                <div class="layui-inline">
+                                    <input type="text" id="contractdesignFee" name="contractdesignFee" onclick=""
+                                           placeholder="已付完" autocomplete="off" class="layui-input"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
