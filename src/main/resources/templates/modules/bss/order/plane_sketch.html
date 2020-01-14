@@ -42,7 +42,7 @@
                                 <label class="layui-form-label">客户编码</label>
                                 <div class="layui-input-inline">
                                     <input type="text" name="custNo" id="custNo" autocomplete="off" class="layui-input"
-                                           style="font-weight: bold ;color: red " readonly disabled/>
+                                           style="font-weight: bold ;color: red " readonly disabled value="2012223232"/>
                                 </div>
                             </div>
                             <div class="layui-inline">
@@ -50,14 +50,14 @@
                                 <div class="layui-input-inline" style="">
                                     <input type="text" name="custName" id="custName" autocomplete="off"
                                            class="layui-input" lay-verify="required"
-                                           placeholder="请输入客户姓名"/>
+                                           placeholder="请输入客户姓名" value="鸿助手测试100" disabled/>
                                 </div>
                             </div>
                             <div class="layui-inline">
                                 <label class="layui-form-label layui-required">客户电话</label>
                                 <div class="layui-input-inline">
                                     <input type="text" name="mobile" id="mobile" autocomplete="off" class="layui-input" lay-verify="required|phone"
-                                           placeholder=""/>
+                                           placeholder="" value="13723885094" disabled/>
                                 </div>
                             </div>
                         </div>
@@ -67,7 +67,7 @@
                                 <div class="layui-input-inline">
                                     <input type="text" name="housePlace" id="housePlace" autocomplete="off"
                                            class="layui-input" lay-verify="required"
-                                           placeholder="请选择装修地点"/>
+                                           placeholder="请选择装修地点" value="长沙市岳麓区保利西海岸" disabled/>
                                 </div>
                             </div>
                             <div class="layui-inline">
@@ -75,7 +75,7 @@
                                 <div class="layui-input-inline">
                                     <input type="text" name="gg" id="gg" autocomplete="off"
                                            class="layui-input" lay-verify="required"
-                                           placeholder="请选择装修地点"/>
+                                           placeholder="请选择装修地点" value="A3栋" disabled/>
                                 </div>
                             </div>
                             <div class="layui-inline">
@@ -83,7 +83,7 @@
                                 <div class="layui-input-inline">
                                     <input type="text" name="kk" id="kk" autocomplete="off"
                                            class="layui-input" lay-verify="required"
-                                           placeholder="请选择装修地点"/>
+                                           placeholder="请选择装修地点" value="1803" disabled/>
                                 </div>
                             </div>
                         </div>
@@ -91,22 +91,24 @@
                             <div class="layui-inline">
                                 <label class="layui-form-label layui-required">房屋类型</label>
                                 <div class="layui-input-inline">
-                                    <div class="layui-form" lay-filter="houseMode">
-                                        <select id="houseMode" name="houseMode">
-
-                                        </select>
-                                    </div>
+                                    <select name="kind" id="kind" lay-verify="required">
+                                        <option value="">请选择</option>
+                                        <option value="0" selected>3房</option>
+                                    </select>
                                 </div>
                             </div>
                             <div class="layui-inline">
                                 <label class="layui-form-label layui-required">房屋面积</label>
                                 <div class="layui-input-inline">
-                                    <input type="text" name="houseArea" id="houseArea" autocomplete="off" lay-verify="required|verifyTypeValue" class="layui-input" lay-verType="tips" placeholder=""/>
+                                    <input type="text" name="houseArea" id="houseArea" autocomplete="off" lay-verify="required|verifyTypeValue"
+                                           class="layui-input" lay-verType="tips"
+                                           placeholder="" value="112.22" disabled/>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </fieldset>
+
 
                 <fieldset class="layui-elem-field">
                     <legend>平面出图信息</legend>
@@ -167,7 +169,7 @@
                             <div class="layui-inline">
                                 <label class="layui-form-label">合同设计费</label>
                                 <div class="layui-input-inline">
-                                    <input type="text" name="hetongshejifei" id="hetongshejifei" value="10000" autocomplete="off" class="layui-input" />
+                                    <input type="text" name="hetongshejifei" id="hetongshejifei" value="10000" autocomplete="off" class="layui-input"/>
                                 </div>
                             </div>
                             <div class="layui-inline">

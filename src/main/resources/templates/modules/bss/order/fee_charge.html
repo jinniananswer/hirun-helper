@@ -40,9 +40,18 @@
     <div class="layui-card">
         <div class="layui-card-body">
             <form class="layui-form" id="create_preparation">
-                <div class="layui-form-item">
-                    <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="save" style="float: right">保存
+                <div class="layui-form-item" style="float: right">
+                    <div class="layui-inline">
+                    <button class="layui-btn layui-btn" lay-submit="" lay-filter="save" >保存
                     </button>
+                    </div>
+                    <div class="layui-inline">
+                        <button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="save"  >客户资料
+                        </button>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
                 </div>
                 <fieldset class="layui-elem-field">
                     <legend>设计合同信息</legend>
@@ -324,6 +333,7 @@
                                        class="layui-input"/>
                             </div>
                         </div>
+                        <table lay-even class="layui-hide" id="employee_table" lay-filter="employee_table" lay-size="lg"></table>
                     </div>
                 </fieldset>
             </form>
