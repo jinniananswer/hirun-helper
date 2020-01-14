@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>分配工程任务（工程文员）</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="../../../../static/layui/css/layui.css" th:href="@{static/layui/css/layui.css(v=${version})}" media="all">
+    <link rel="stylesheet" href="../../../../static/css/admin.css" th:href="@{static/css/admin.css(v=${version})}" media="all">
+    <link rel="stylesheet" href="../../../../static/css/template.css" th:href="@{static/css/template.css(v=${version})}" media="all">
+    <script src="../../../../static/layui/layui.js" th:src="@{static/layui/layui.js(v=${version})}"></script>
+    <script src="../../../../static/js/base.js" th:src="@{static/js/base.js(v=${version})}"></script>
+</head>
+<style>
+    .layui-form-label.layui-required:before {
+        content: "*";
+        color: #FF5722;
+    }
+</style>
+<body>
+<div class="layui-row">
+    <div class="layui-col-md12">
+        <div class="layui-card">
+            <div class="layui-card-header">首期工人工资
+                <button class="layui-btn" lay-submit lay-filter="submit">保存</button>
+                <button class="layui-btn" lay-submit lay-filter="submit">关闭</button>
+                <button class="layui-btn" lay-submit lay-filter="submit">新建材料下单</button>
+            </div>
+            <div class="layui-card-body">
+                <div class="layui-form layui-card-header layuiadmin-card-header-auto">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label layui-required">水电工资</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="measureDate" lay-verify="required|date" placeholder="yyyy-MM-dd"
+                                       value="1" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">水电备注</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="measureDate" lay-verify="required|date" placeholder="yyyy-MM-dd"
+                                       value="测试" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label layui-required">木工工资</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="measureDate" lay-verify="required|date" placeholder="yyyy-MM-dd"
+                                       value="1" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">木工备注</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="measureDate" lay-verify="required|date" placeholder="yyyy-MM-dd"
+                                       value="测试" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label layui-required">泥工工资</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="measureDate" lay-verify="required|date" placeholder="yyyy-MM-dd"
+                                       value="1" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">镶钻备注</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="measureDate" lay-verify="required|date" placeholder="yyyy-MM-dd"
+                                       value="测试" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label layui-required">油工工资</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="measureDate" lay-verify="required|date" placeholder="yyyy-MM-dd"
+                                       value="1" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">涂裱备注</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="measureDate" lay-verify="required|date" placeholder="yyyy-MM-dd"
+                                       value="测试" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label layui-required">敲墙工工资</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="measureDate" lay-verify="required|date" placeholder="yyyy-MM-dd"
+                                       value="1" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">敲墙备注</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="measureDate" lay-verify="required|date" placeholder="yyyy-MM-dd"
+                                       value="测试" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+<script>
+    layui.extend({
+        assignProjectTask : '{/}static/js/modules/bss/order/assign.project.task'
+    }).use('assign.project.task', function(args) {
+        layui.assignProjectTask.init();
+    });
+</script>
+</html>
