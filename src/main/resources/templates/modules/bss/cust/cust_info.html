@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>dolphin-admin</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/static/layui/css/layui.css" th:href="@{static/layui/css/layui.css(v=${version})}" media="all">
+    <link rel="stylesheet" href="/static/css/admin.css" th:href="@{static/css/admin.css(v=${version})}" media="all">
+    <link rel="stylesheet" href="/static/css/template.css" th:href="@{static/css/template.css(v=${version})}" media="all">
+    <link rel="stylesheet" href="/static/js/extend/city-picker/city-picker.css" th:href="@{static/js/extend/city-picker/city-picker.css(v=${version})}" media="all" />
+    <script src="../static/js/extend/city-picker/city-picker.data.js" th:src="@{static/js/extend/city-picker/city-picker.data.js(v=${version})}"></script>
+    <script src="../static/layui/layui.js" th:src="@{static/layui/layui.js(v=${version})}"></script>
+    <script src="../static/js/base.js" th:src="@{static/js/base.js(v=${version})}"></script>
+    <style>
+        .layui-form-label{
+            width: 65px;
+        }
+        .layui-form-label.layui-required:before{
+            content:"*";
+            color:#FF5722;
+        }
+        .layui-input-block {
+            margin-left: 95px;
+        }
+        .layui-card-body {
+            margin: 0px
+        }
+
+    </style>
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md6">
+            <div class="layui-card">
+                <div class="layui-card-header">客户信息</div>
+                <div class="layui-card-body">
+                    <div class="layui-row">
+                        <div class="layui-col-md6">
+                            <div class="layadmin-caller">
+                                <div class="caller-contar">
+                                    <div class="caller-item" style="border-bottom:0px">
+                                        <div class="caller-main caller-fl">
+                                            <p class="caller-adds"><i class="layui-icon layui-icon-username"></i>姓名：<strong>鸿助手测试100</strong></p>
+                                            <p class="caller-adds"><i class="layui-icon layui-icon-rate-solid"></i>年龄：<strong>35岁</strong></p>
+                                            <p class="caller-adds"><i class="layui-icon layui-icon-release"></i>学历：<strong>大学本科</strong></p>
+                                            <p class="caller-adds"><i class="layui-icon layui-icon-group"></i>家庭人口：<strong>3</strong></p>
+                                            <p class="caller-adds"><i class="layui-icon layui-icon-date"></i>希望入住：<strong>2020-05-31前</strong></p>
+                                            <p class="caller-adds"><i class="layui-icon layui-icon-date"></i>客户行业：<strong>国家公务人员</strong></p>
+                                            <p class="caller-adds"><i class="layui-icon layui-icon-home"></i>所属楼盘：<strong>保利西海岸一期</strong></p>
+                                            <p class="caller-adds"><i class="layui-icon layui-icon-layouts"></i>户型：<strong>复式</strong></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-col-md6">
+                            <div class="layadmin-caller">
+                                <div class="caller-contar">
+                                    <div class="caller-item" style="border-bottom:0px">
+                                        <div class="caller-main caller-fl">
+                                            <p class="caller-adds"><i class="layui-icon layui-icon-username"></i>性别：<strong>男</strong></p>
+                                            <p class="caller-adds"><i class="layui-icon layui-icon-cellphone"></i>联系电话：<strong>13723885094</strong></p>
+                                            <p class="caller-adds"><i class="layui-icon layui-icon-cellphone"></i>职业：<strong>软件设计师</strong></p>
+                                            <p class="caller-adds"><i class="layui-icon layui-icon-rmb"></i>年收入：<strong>20-50万</strong></p>
+                                            <p class="caller-adds"><i class="layui-icon layui-icon-star"></i>喜好：<strong>电影、旅游</strong></p>
+                                            <p class="caller-adds"><i class="layui-icon layui-icon-rmb"></i>装修预算：<strong>30万</strong></p>
+                                            <p class="caller-adds"><i class="layui-icon layui-icon-location"></i>详细地址：<strong>长沙市岳麓区保利西海岸A3栋1803</strong></p>
+                                            <p class="caller-adds"><i class="layui-icon layui-icon-layer"></i>建筑面积：<strong>180平米</strong></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md6">
+            <div class="layui-card">
+                <div class="layui-card-header">客户需求信息</div>
+                <div class="layui-card-body">
+                    <div class="layui-row">
+                        <div class="layui-col-md6">
+                            <div class="layadmin-caller">
+                                <div class="caller-contar">
+                                    <div class="caller-item" style="border-bottom:0px">
+                                        <div class="caller-main caller-fl">
+                                            <p class="caller-adds"><i class="layui-icon layui-icon-star"></i>风格蓝图一：<strong>挪威森林</strong></p>
+                                            <p class="caller-adds"><i class="layui-icon layui-icon-star-fill"></i>功能蓝图一：<strong>点击查看</strong></p>
+                                            <p class="caller-adds"><i class="layui-icon layui-icon-star-fill"></i><strong></strong></p>
+                                            <p class="caller-adds"><i class="layui-icon layui-icon-star-fill"></i><strong></strong></p>
+                                            <p class="caller-adds"><i class="layui-icon layui-icon-star"></i>风格蓝图三：<strong>写意木构</strong></p>
+                                            <p class="caller-adds"><i class="layui-icon layui-icon-star-fill"></i>功能蓝图三（A)：<strong>点击查看</strong></p>
+                                            <p class="caller-adds"><i class="layui-icon layui-icon-star-fill"></i>功能蓝图三（B)：<strong>点击查看</strong></p>
+                                            <p class="caller-adds"><i class="layui-icon layui-icon-star-fill"></i>功能蓝图三（C)：<strong>点击查看</strong></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-col-md6">
+                            <div class="layadmin-caller">
+                                <div class="caller-contar">
+                                    <div class="caller-item" style="border-bottom:0px">
+                                        <div class="caller-main caller-fl">
+                                            <p class="caller-adds"><i class="layui-icon layui-icon-star"></i>风格蓝图二：<strong>写意木构</strong></p>
+                                            <p class="caller-adds"><i class="layui-icon layui-icon-star-fill"></i>功能蓝图二（A)：<strong>点击查看</strong></p>
+                                            <p class="caller-adds"><i class="layui-icon layui-icon-star-fill"></i>功能蓝图二（B)：<strong>点击查看</strong></p>
+                                            <p class="caller-adds"><i class="layui-icon layui-icon-star-fill"></i>功能蓝图二（C)：<strong>点击查看</strong></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br/>
+    <div class="row">
+        <div class="layui-card">
+            <div class="layui-card-header">工程人员信息</div>
+            <div class="layui-card-body">
+                <div class="layui-row">
+                    <div class="layui-col-md3">
+                        <div class="layadmin-caller">
+                            <div class="caller-contar">
+                                <div class="caller-item" style="border-bottom:0px">
+                                    <div class="caller-main caller-fl">
+                                        <p class="caller-adds"><i class="layui-icon layui-icon-location"></i>店面：<strong>长沙鸿扬-袁家岭店</strong></p>
+                                        <p class="caller-adds"><i class="layui-icon layui-icon-username"></i>工程主管：<strong>工程主管1</strong></p>
+                                        <p class="caller-adds"><i class="layui-icon layui-icon-username"></i>木工：<strong>木工1</strong></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md3">
+                        <div class="layadmin-caller">
+                            <div class="caller-contar">
+                                <div class="caller-item" style="border-bottom:0px">
+                                    <div class="caller-main caller-fl">
+                                        <p class="caller-adds"><i class="layui-icon layui-icon-username"></i>客户代表：<strong>客户代表1</strong></p>
+                                        <p class="caller-adds"><i class="layui-icon layui-icon-username"></i>项目经理：<strong>项目经理1</strong></p>
+                                        <p class="caller-adds"><i class="layui-icon layui-icon-username"></i>油漆工：<strong>油漆工1</strong></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md3">
+                        <div class="layadmin-caller">
+                            <div class="caller-contar">
+                                <div class="caller-item" style="border-bottom:0px">
+                                    <div class="caller-main caller-fl">
+                                        <p class="caller-adds"><i class="layui-icon layui-icon-username"></i>设计师：<strong>设计师1</strong></p>
+                                        <p class="caller-adds"><i class="layui-icon layui-icon-username"></i>水电工：<strong>水电工1</strong></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md3">
+                        <div class="layadmin-caller">
+                            <div class="caller-contar">
+                                <div class="caller-item" style="border-bottom:0px">
+                                    <div class="caller-main caller-fl">
+                                        <p class="caller-adds"><i class="layui-icon layui-icon-username"></i>橱柜设计师：<strong>橱柜设计师1</strong></p>
+                                        <p class="caller-adds"><i class="layui-icon layui-icon-username"></i>泥工：<strong>泥工1</strong></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

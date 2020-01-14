@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>dolphin-admin</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="../../../../static/layui/css/layui.css" th:href="@{static/layui/css/layui.css(v=${version})}" media="all">
+    <link rel="stylesheet" href="../../../../static/css/admin.css" th:href="@{static/css/admin.css(v=${version})}" media="all">
+    <script src="../../../static/layui/layui.js" th:src="@{static/layui/layui.js(v=${version})}"></script>
+    <script src="../../../static/js/base.js" th:src="@{static/js/base.js(v=${version})}"></script>
+</head>
+
+<style>
+    .layui-form-label {
+        width: 65px;
+    }
+
+    .layui-form-label.layui-required:before {
+        content: "*";
+        color: #FF5722;
+    }
+
+    .layui-input-block {
+        margin-left: 95px;
+    }
+
+    .layui-card-body {
+        margin: 0px
+    }
+</style>
+
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <form class="layui-form" id="create_preparation">
+                <div class="layui-form-item">
+                    <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="save" style="float: right">保存</button>
+                </div>
+                <fieldset class="layui-elem-field">
+                    <legend>客户信息</legend>
+                    <div class="layui-field-box">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">客户编码</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="custNo" id="custNo" autocomplete="off" class="layui-input"
+                                           style="font-weight: bold ;color: red " readonly disabled/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label layui-required">客户姓名</label>
+                                <div class="layui-input-inline" style="">
+                                    <input type="text" name="custName" id="custName" autocomplete="off"
+                                           class="layui-input" lay-verify="required"
+                                           placeholder="请输入客户姓名"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label layui-required">客户电话</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="housePlace" id="housePlace" autocomplete="off"
+                                           class="layui-input" lay-verify="required"
+                                           placeholder="请选择装修地点"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label layui-required">客户年龄</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="mobile" id="mobile" autocomplete="off" class="layui-input" lay-verify="required|phone"
+                                           placeholder=""/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label layui-required">客户学历</label>
+                                <div class="layui-input-inline">
+                                    <select name="edu" id="edu" lay-verify="required">
+                                        <option value="">请选择部门</option>
+                                        <option value="1">小学</option>
+                                        <option value="2">初中</option>
+                                        <option value="2">高中</option>
+                                        <option value="2">大学</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label layui-required">客户职业</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="" id="" autocomplete="off" class="layui-input" lay-verify="required|phone"
+                                           placeholder=""/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label layui-required">房屋类型</label>
+                                <div class="layui-input-inline">
+                                    <div class="layui-form" lay-filter="houseMode">
+                                        <select id="houseMode" name="houseMode">
+
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label layui-required">房屋面积</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="houseArea" id="houseArea" autocomplete="off" lay-verify="required|verifyTypeValue"
+                                           class="layui-input" lay-verType="tips"
+                                           placeholder=""/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label layui-required">人口状况</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="people" id="people" autocomplete="off" lay-verify="required|verifyTypeValue"
+                                           class="layui-input" lay-verType="tips"
+                                           placeholder=""/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label layui-required">直接出平面</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="pingmian" id="pingmian" autocomplete="off" lay-verify="required|verifyTypeValue"
+                                           class="layui-input" lay-verType="tips"
+                                           placeholder=""/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label layui-required">希望入住</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="hope" id="hope" autocomplete="off" lay-verify="required|verifyTypeValue"
+                                           class="layui-input" lay-verType="tips"
+                                           placeholder=""/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label layui-required">家庭收入</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="shouru" id="shouru" autocomplete="off" lay-verify="required|verifyTypeValue"
+                                           class="layui-input" lay-verType="tips"
+                                           placeholder=""/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label layui-required">店名</label>
+                                <div class="layui-input-inline">
+                                    <select name="depart" id="depart" lay-verify="required">
+                                        <option value="">请选择部门</option>
+                                        <option value="1">芙蓉店</option>
+                                        <option value="2">袁家岭</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label layui-required">设计师</label>
+                                <div class="layui-input-inline">
+                                    <select name="des" id="des" lay-verify="required">
+                                        <option value="">请选择部门</option>
+                                        <option value="1">设计师1</option>
+                                        <option value="2">设计师2</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label layui-required">客户代表</label>
+                                <div class="layui-input-inline">
+                                    <select name="custservice" id="custservice" lay-verify="required">
+                                        <option value="">请选择部门</option>
+                                        <option value="1">客户代表1</option>
+                                        <option value="2">客户代表2</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label layui-required">装修地点</label>
+                                <div class="layui-input-inline">
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="gg" id="gg" autocomplete="off"
+                                               class="layui-input" lay-verify="required"
+                                               placeholder="请选择装修地点"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label layui-required">栋号</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="gg" id="gg" autocomplete="off"
+                                           class="layui-input" lay-verify="required"
+                                           placeholder="请选择装修地点"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label layui-required">房号</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="kk" id="kk" autocomplete="off"
+                                           class="layui-input" lay-verify="required"
+                                           placeholder="请选择装修地点"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset class="layui-elem-field">
+                    <legend>客户来源</legend>
+                    <div class="layui-field-box">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">客户类型</label>
+                                <div class="layui-input-inline">
+                                    <select name="discountRate" id="discountRate" lay-verify="required">
+                                        <option value="">请选择</option>
+                                        <option value="0">上门咨询</option>
+                                        <option value="0.5">活动客户</option>
+                                        <option value="1">其他</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">活动类型</label>
+                                <div class="layui-input-inline">
+                                    <select name="huodong" id="huodong" lay-verify="required">
+                                        <option value="">请选择</option>
+                                        <option value="0">房交会</option>
+                                        <option value="0.5">业主见面会</option>
+                                        <option value="1">其他</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">活动时间</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="huodongtime" id="huodongtime" autocomplete="off"
+                                           class="layui-input" lay-verify="required"
+                                           placeholder="活动时间"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label layui-required">电话咨询时间</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="enter" id="enter" autocomplete="off" class="layui-input"
+                                           placeholder=""/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item layui-form-text">
+                            <label class="layui-form-label">其他备注</label>
+                            <div class="layui-input-block">
+                                <textarea name="text" placeholder="请输入内容" class="layui-textarea"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <fieldset class="layui-elem-field">
+                    <legend>信息来源与流程介绍</legend>
+                    <div class="layui-field-box">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">信息来源</label>
+                            <div class="layui-input-inline">
+                                <select name="xinxilaiy" id="xinxilaiy" lay-verify="required">
+                                    <option value="">请选择</option>
+                                    <option value="0">报纸</option>
+                                    <option value="0.5">电视媒体</option>
+                                    <option value="1">熟人</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item layui-form-text">
+                            <label class="layui-form-label">服务流程介绍</label>
+                            <div class="layui-input-block">
+                                <textarea name="text" placeholder="请输入内容" class="layui-textarea"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <fieldset class="layui-elem-field">
+                    <legend>客户意向</legend>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">设计师作品</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="sjszp" id="sjszp" autocomplete="off" class="layui-input"
+                                       placeholder=""/>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">木制作品</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="mzzp" id="mzzp" autocomplete="off" class="layui-input"
+                                       placeholder=""/>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">去过公司</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="qggs" id="qggs" autocomplete="off" class="layui-input"
+                                       placeholder=""/>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">其他木制品牌</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="qtmzpp" id="qtmzpp" autocomplete="off" class="layui-input"
+                                       placeholder=""/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item layui-form-text">
+                        <label class="layui-form-label">投资意向</label>
+                        <div class="layui-input-block">
+                            <textarea name="text" placeholder="请输入内容" class="layui-textarea"></textarea>
+                        </div>
+                    </div>
+                    <div class="layui-form-item layui-form-text">
+                        <label class="layui-form-label">备注</label>
+                        <div class="layui-input-block">
+                            <textarea name="text" placeholder="请输入内容" class="layui-textarea"></textarea>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    layui.extend(
+        {
+            createPreparation: "{/}static/js/modules/bss/cust/create.customer"
+        }).use('createPreparation', function () {
+        layui.createPreparation.init();
+    })
+</script>
+</body>
+</html>

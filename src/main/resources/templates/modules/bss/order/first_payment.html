@@ -67,7 +67,7 @@
                                 <label class="layui-form-label">合同设计费（单位元）</label>
                                 <div class="layui-inline">
                                     <input type="text" id="contractdesignFee" name="contractdesignFee" onclick=""
-                                           placeholder="" autocomplete="off" class="layui-input"/>
+                                           placeholder="1" autocomplete="off" class="layui-input"/>
                                 </div>
                             </div>
                         </div>
@@ -110,7 +110,7 @@
                                 <label class="layui-form-label">合同总金额（单位元）</label>
                                 <div class="layui-inline">
                                     <input type="text" id="totalContract" name="totalContract" autocomplete="off"
-                                           placeholder="0" class="layui-input"/>
+                                           placeholder="1" class="layui-input"/>
                                 </div>
                             </div>
 
@@ -235,7 +235,7 @@
                             <div class="layui-inline">
                                 <label class="layui-form-label">现金（单位元）</label>
                                 <div class="layui-inline">
-                                    <input type="text" name="cash" placeholder="1.00" autocomplete="off"
+                                    <input type="text" name="cash" placeholder="0.00" autocomplete="off"
                                            class="layui-input"/>
                                 </div>
                             </div>
@@ -320,7 +320,7 @@
                         <div class="layui-form-item">
                             <label class="layui-form-label">收款摘要</label>
                             <div class="layui-input-block">
-                                <input type="text" name="collectionSummary" placeholder="" autocomplete="off"
+                                <input type="text" name="collectionSummary" placeholder="测试" autocomplete="off"
                                        class="layui-input"/>
                             </div>
                         </div>
@@ -331,14 +331,6 @@
     </div>
 </div>
 
-<script>
-    layui.extend(
-        {
-            charge: "{/}static/js/modules/bss/order/fee_charge"
-        }
-    ).use('charge', function (args) {
-        layui.charge.init();
-    });
-</script>
+
 </body>
 </html>
