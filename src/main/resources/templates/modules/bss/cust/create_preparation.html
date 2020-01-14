@@ -59,7 +59,16 @@
                                 </div>
                             </div>
                             <div class="layui-inline">
-                                <label class="layui-form-label layui-required">装饰地点</label>
+                                <label class="layui-form-label layui-required">客户电话</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="mobile" id="mobile" autocomplete="off" class="layui-input" lay-verify="required|phone"
+                                           placeholder=""/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label layui-required">装修地点</label>
                                 <div class="layui-input-inline">
                                     <input type="text" name="housePlace" id="housePlace" autocomplete="off"
                                            class="layui-input" lay-verify="required"
@@ -67,9 +76,19 @@
                                 </div>
                             </div>
                             <div class="layui-inline">
+                                <label class="layui-form-label layui-required">栋号</label>
                                 <div class="layui-input-inline">
-                                    <input type="text" name="xx" id="xx" autocomplete="off" class="layui-input"
-                                           placeholder=""/>
+                                    <input type="text" name="gg" id="gg" autocomplete="off"
+                                           class="layui-input" lay-verify="required"
+                                           placeholder="请选择装修地点"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label layui-required">房号</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="kk" id="kk" autocomplete="off"
+                                           class="layui-input" lay-verify="required"
+                                           placeholder="请选择装修地点"/>
                                 </div>
                             </div>
                         </div>
@@ -89,13 +108,6 @@
                                 <div class="layui-input-inline">
                                     <input type="text" name="houseArea" id="houseArea" autocomplete="off" lay-verify="required|verifyTypeValue"
                                            class="layui-input" lay-verType="tips"
-                                           placeholder=""/>
-                                </div>
-                            </div>
-                            <div class="layui-inline">
-                                <label class="layui-form-label layui-required">客户电话</label>
-                                <div class="layui-input-inline">
-                                    <input type="text" name="mobile" id="mobile" autocomplete="off" class="layui-input" lay-verify="required|phone"
                                            placeholder=""/>
                                 </div>
                             </div>
@@ -135,6 +147,8 @@
                                            placeholder="" lay-verify="required"/>
                                 </div>
                             </div>
+                        </div>
+                        <div class="layui-form-item">
                             <div class="layui-inline">
                                 <label class="layui-form-label layui-required">录入人</label>
                                 <div class="layui-input-inline">
@@ -142,8 +156,6 @@
                                            placeholder="" readonly value="测试三"/>
                                 </div>
                             </div>
-                        </div>
-                        <div class="layui-form-item">
                             <div class="layui-inline">
                                 <label class="layui-form-label">客户属性</label>
                                 <div class="layui-input-inline">
@@ -164,6 +176,8 @@
                                            placeholder="" disabled/>
                                 </div>
                             </div>
+                        </div>
+                        <div class="layui-form-item">
                             <div class="layui-inline">
                                 <label class="layui-form-label">客户姓名</label>
                                 <div class="layui-input-inline">
