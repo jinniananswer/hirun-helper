@@ -40,9 +40,18 @@
     <div class="layui-card">
         <div class="layui-card-body">
             <form class="layui-form" id="create_preparation">
+                <div class="layui-form-item" style="float: right">
+                    <div class="layui-inline">
+                        <button class="layui-btn layui-btn" lay-submit="" lay-filter="save" >保存
+                        </button>
+                    </div>
+                    <div class="layui-inline">
+                        <button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="save"  >客户资料
+                        </button>
+                    </div>
+                </div>
+
                 <div class="layui-form-item">
-                    <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="save" style="float: right">保存
-                    </button>
                 </div>
                 <fieldset class="layui-elem-field">
                     <legend>施工合同信息</legend>
@@ -437,12 +446,21 @@
                                 </div>
                             </div>
                         </div>
+                        <table lay-even class="layui-hide" id="employee_table" lay-filter="employee_table" lay-size="lg"></table>
                     </div>
                 </fieldset>
             </form>
         </div>
     </div>
 </div>
-
+<script>
+    layui.extend(
+        {
+            charge: "{/}static/js/modules/bss/order/fee_charge"
+        }
+    ).use('charge', function (args) {
+        layui.charge.init();
+    });
+</script>
 </body>
 </html>
