@@ -32,7 +32,7 @@ public interface IStatEmployeeQuantityMonthService extends IService<StatEmployee
      * @param orgId
      * @return
      */
-    List<EmployeeQuantityStatDTO> queryEmployeeQuantityStat(String year, Long orgId);
+    List<EmployeeQuantityStatDTO> queryEmployeeQuantityStat(String year, String orgId);
 
     /**
      * 查询员工异动信息汇总

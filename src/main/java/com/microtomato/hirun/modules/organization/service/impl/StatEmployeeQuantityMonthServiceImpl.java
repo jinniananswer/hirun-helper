@@ -106,7 +106,7 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
      * @return
      */
     @Override
-    public List<EmployeeQuantityStatDTO> queryEmployeeQuantityStat(String year, Long orgId) {
+    public List<EmployeeQuantityStatDTO> queryEmployeeQuantityStat(String year, String orgId) {
         //如果前台选择的年份为空，则默认设置为当前年份
         if (StringUtils.isEmpty(year)) {
             Calendar date = Calendar.getInstance();
@@ -115,11 +115,11 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
 
         //选择部门为空，则根据权限计算默认可查询的部门数据
         String orgLine = "";
-        if (orgId == null) {
+        if (StringUtils.isEmpty(orgId)) {
             orgLine = orgService.listOrgSecurityLine();
         } else {
-            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
-            orgLine = orgDO.getOrgLine(orgId);
+            //OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+            orgLine = orgId;
         }
 
         List<EmployeeQuantityStatDTO> recordList = this.mapper.countByOrgId(year, orgLine);

@@ -33,7 +33,7 @@ public class StatEmployeeQuantityMonthController {
 
     @GetMapping("/queryEmployeeQuantityStat")
     @RestResult
-    public List<EmployeeQuantityStatDTO> queryEmployeeQuantityStat(String year, Long orgId){
+    public List<EmployeeQuantityStatDTO> queryEmployeeQuantityStat(String year, String orgId){
         return statEmployeeQuantityMonthServiceImpl.queryEmployeeQuantityStat(year,orgId);
     }
 
