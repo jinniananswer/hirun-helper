@@ -18,6 +18,45 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree', 'form'], f
     let roleGrantManager = {
 
         init: function () {
+
+            $(document).on('click', '#grantRoleBtn', function () {
+                let userIds = roleGrantManager.selectUserIds();
+                let roleIds = roleGrantManager.selectRoleIds();
+
+                alert('给员工：' + JSON.stringify(userIds) + ', 分配角色：' + JSON.stringify(roleIds));
+
+                $.ajax({
+                    type: "post",
+                    url: "api/user/user-role/grantRole",
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: {
+                        userIds: userIds,
+                        roleIds: roleIds
+                    },
+                    success: function (data) {
+                        if (0 == data.code) {
+                            layer.msg("保存成功！", {time: 3000, icon: 6});
+                        } else {
+                            layer.alert("保存失败！" + data.message);
+                        }
+                    },
+                    error: function (data) {
+                        layer.alert("保存失败！");
+                    }
+                });
+
+
+            });
+
+            $(document).on('click', '#revokeRoleBtn', function () {
+                let userIds = roleGrantManager.selectUserIds();
+                let roleIds = roleGrantManager.selectRoleIds();
+
+                alert('给员工：' + JSON.stringify(userIds) + ', 回收角色：' + JSON.stringify(roleIds));
+
+            });
+
             $('body').on('click', '.del', function () {
                 let userId = $(this).closest('tr').find('td:eq(0)').text();
                 selectedEmployeeIds.delete(userId);
@@ -195,6 +234,28 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree', 'form'], f
                 form.render('select');
             });
 
+        },
+
+        selectUserIds: function() {
+            let userIds = [];
+            $('#employee-table tr').each(function () {
+                let userId = $(this).find('td').eq(0).text();
+                if (userId != "ID") {
+                    userIds.push(parseInt(userId));
+                }
+            });
+            return userIds;
+        },
+
+        selectRoleIds: function() {
+            let roleIds = [];
+            $('#role-table tr').each(function () {
+                let roleId = $(this).find('td').eq(0).text();
+                if (roleId != "ID") {
+                    roleIds.push(parseInt(roleId));
+                }
+            });
+            return roleIds;
         },
 
     };

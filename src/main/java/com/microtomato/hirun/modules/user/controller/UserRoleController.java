@@ -8,9 +8,7 @@ import com.microtomato.hirun.modules.user.service.IRoleService;
 import com.microtomato.hirun.modules.user.service.IUserRoleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -34,6 +32,23 @@ public class UserRoleController {
 
     @Autowired
     private IRoleService roleService;
+
+    @PostMapping("grantRole")
+    @RestResult
+    public void grantRole(@RequestParam(value = "userIds[]") List<Long> userIds, @RequestParam(value = "roleIds[]")  List<Long> roleIds) {
+        log.debug("========= 角色分配 =========");
+        log.debug("userIds: {}", userIds);
+        log.debug("roleIds: {}", roleIds);
+    }
+
+    @PostMapping("revokeRole")
+    @RestResult
+    public void revokeRole(@RequestParam(value = "userIds") List<Long> userIds, @RequestParam(value = "roleIds")  List<Long> roleIds) {
+        log.debug("========= 角色回收 =========");
+        log.debug("userIds: {}", userIds);
+        log.debug("roleIds: {}", roleIds);
+    }
+
 
     @GetMapping("listRole")
     @RestResult
