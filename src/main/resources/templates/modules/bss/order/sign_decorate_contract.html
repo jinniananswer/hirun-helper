@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
-    <title></title>
+    <title>签订装修合同</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
@@ -30,6 +30,7 @@
     }
 </style>
 <body>
+
 <div class="layui-fluid">
     <div class="layui-card">
         <div class="layui-card-body">
@@ -167,7 +168,7 @@
                             <div class="layui-inline">
                                 <label class="layui-form-label">合同设计费</label>
                                 <div class="layui-input-inline">
-                                    <input type="text" name="hetongshejifei" id="hetongshejifei" value="10000" autocomplete="off" class="layui-input" />
+                                    <input type="text" name="hetongshejifei" id="hetongshejifei" value="10000" autocomplete="off" class="layui-input"/>
                                 </div>
                             </div>
                             <div class="layui-inline">
@@ -210,7 +211,7 @@
                     </div>
                 </fieldset>
                 <fieldset class="layui-elem-field">
-                    <legend>客户回访信息</legend>
+                    <legend>客户预算信息</legend>
                     <div class="layui-field-box">
                         <table class="layui-table">
                             <colgroup>
@@ -220,39 +221,215 @@
                             </colgroup>
                             <thead>
                             <tr>
-                                <th>回访对象</th>
-                                <th>回访原因</th>
-                                <th>回访类型</th>
-                                <th>回访人</th>
-                                <th>回访时间</th>
-                                <th>回访内容</th>
+                                <th>客户编号</th>
+                                <th>客户姓名</th>
+                                <th>创建时间</th>
+                                <th>预算合同总造价</th>
+                                <th>状态</th>
+                                <th>预算期数</th>
+                                <th>表头名称</th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr>
-                                <th>金念</th>
-                                <th>客户维系</th>
-                                <th>客户维系</th>
-                                <th>刘慧</th>
-                                <th>2016-11-28</th>
-                                <th>于千万人之中遇见你所遇见的人，于千万年之中，时间的无涯的荒野里…</th>
+                                <th>KH20191231009</th>
+                                <th>鸿助手测试100</th>
+                                <th>2019-12-31 11:12:13</th>
+                                <th>1000000</th>
+                                <th></th>
+                                <th>首期</th>
+                                <th></th>
                             </tr>
                             </tbody>
                         </table>
                     </div>
                 </fieldset>
-
+                <fieldset class="layui-elem-field">
+                    <legend>合同信息</legend>
+                    <div class="layui-field-box">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">签订合同时间</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input" id="signDate" value="2020-01-03">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">合同开始时间</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input" id="startDate" value="2020-01-03">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">合同结束时间</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input" id="endDate" value="2020-01-03">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">合同二期款时间</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input" id="signDate" value="2020-01-03">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">业务级别</label>
+                                <div class="layui-input-inline">
+                                    <select name="zhulishejishi" id="zhulishejishi">
+                                        <option value="1"></option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">环保检测机构</label>
+                                <div class="layui-input-inline">
+                                    <select name="zhulishejishi" id="zhulishejishi">
+                                        <option value="1"></option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">合同总金额</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input" id="hetongzongjiner" value="0">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">基础装修总金额</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input" id="jichuzhuangxiuzongjiner" value="0">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">门总金额</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input" id="menzongjiner" value="0">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">家具总金额</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input" id="hetongzongjiner" value="0">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">享受活动</label>
+                                <div class="layui-input-inline">
+                                    <select name="xiangshouhuodong" id="xiangshouhuodong" lay-verify="required">
+                                        <option value=""></option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">已收设计费</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input" id="menzongjiner" value="0">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">返设计费</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input" id="hetongzongjiner" value="0">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">税金</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input" id="jichuzhuangxiuzongjiner" value="0">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">现金优惠</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input" id="menzongjiner" value="0">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">优惠项目</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input" id="hetongzongjiner" value="">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <div class="layui-input-inline">
+                                    <button class="layui-btn" lay-submit="" lay-filter="component-form-demo1">优惠项目录入</button>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <div class="layui-input-inline">
+                                    <button class="layui-btn" lay-submit="" lay-filter="component-form-demo1">拍摄合同附件</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <fieldset class="layui-elem-field">
+                    <legend>首付款信息</legend>
+                    <div class="layui-field-box">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">应收工程首付款</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input" id="hetongzongjiner" value="0">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">已收工程首付款</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input" id="hetongzongjiner" value="0">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">已收主材</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input" id="hetongzongjiner" value="0">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">已收橱柜</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input" id="hetongzongjiner" value="0">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">核实时间</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input" id="test-laydate-start" placeholder="开始日期" value="2019-12-31">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">客户代表</label>
+                                <div class="layui-input-inline">
+                                    <select name="kehudaibiao" id="kehudaibiao" lay-verify="required">
+                                        <option value="1">金念</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
             </form>
         </div>
     </div>
 </div>
-
 <script>
     layui.extend(
         {
-            planeSketch: "{/}static/js/modules/bss/order/plane.sketch"
-        }).use('planeSketch', function () {
-        layui.planeSketch.init();
+            signDecorateContract: "{/}static/js/modules/bss/order/sign.decorate.contract"
+        }).use('signDecorateContract', function () {
+        layui.signDecorateContract.init();
     })
 </script>
 </body>
