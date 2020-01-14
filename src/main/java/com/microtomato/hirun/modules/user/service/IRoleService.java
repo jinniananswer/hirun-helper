@@ -19,6 +19,19 @@ import java.util.Set;
  */
 public interface IRoleService extends IService<Role> {
 
+    /**
+     * 加载所有角色数据
+     *
+     * @return
+     */
+    List<Role> loadRole();
+
+    /**
+     * 根据角色名查角色信息
+     *
+     * @param rolename
+     * @return
+     */
     List<Role> queryRole(String rolename);
 
     /**

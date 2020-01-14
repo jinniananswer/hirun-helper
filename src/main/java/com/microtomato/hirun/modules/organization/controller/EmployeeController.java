@@ -55,6 +55,17 @@ public class EmployeeController extends AbstractExcelHarbour  {
         return employeeDomainServiceImpl.searchEmployee(searchText);
     }
 
+    /**
+     * 前端加载所有员工数据
+     *
+     * @return
+     */
+    @GetMapping("/loadEmployee")
+    @RestResult
+    public List<Employee> loadEmployee() {
+        return employeeServiceImpl.loadEmployee();
+    }
+
     @RequestMapping("/verifyIdentityNo")
     @RestResult
     public EmployeeDTO verifyIdentityNo(String createType, String identityNo, Long employeeId, String operType) {

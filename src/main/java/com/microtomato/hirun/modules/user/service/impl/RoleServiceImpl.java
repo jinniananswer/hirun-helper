@@ -41,6 +41,14 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
     @Autowired
     private IMenuService menuServiceImpl;
 
+    @Override
+    public List<Role> loadRole() {
+        return list(
+            Wrappers.<Role>lambdaQuery()
+            .select(Role::getRoleId, Role::getRoleName)
+        );
+    }
+
     /**
      *
      * @param rolename
