@@ -220,7 +220,7 @@
                                 <label class="layui-form-label">客户类型</label>
                                 <div class="layui-input-inline">
                                     <select name="discountRate" id="discountRate" lay-verify="required">
-                                        <option value="">请选择申报人</option>
+                                        <option value="">请选择</option>
                                         <option value="0">上门咨询</option>
                                         <option value="0.5">活动客户</option>
                                         <option value="1">其他</option>
@@ -228,62 +228,36 @@
                                 </div>
                             </div>
                             <div class="layui-inline">
-                                <label class="layui-form-label layui-required">报备时间</label>
+                                <label class="layui-form-label">活动类型</label>
                                 <div class="layui-input-inline">
-                                    <input type="text" name="preparTime" id="preparTime" autocomplete="off" class="layui-input"
-                                           placeholder="" lay-verify="required"/>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="layui-form-item">
-                            <div class="layui-inline">
-                                <label class="layui-form-label layui-required">录入人</label>
-                                <div class="layui-input-inline">
-                                    <input type="text" name="enter" id="enter" autocomplete="off" class="layui-input"
-                                           placeholder="" readonly value="测试三"/>
-                                </div>
-                            </div>
-                            <div class="layui-inline">
-                                <label class="layui-form-label">客户属性</label>
-                                <div class="layui-input-inline">
-                                    <select name="custType" id="custType" lay-filter="custType">
+                                    <select name="huodong" id="huodong" lay-verify="required">
                                         <option value="">请选择</option>
-                                        <option value="1">朋友</option>
-                                        <option value="2">老客户介绍</option>
-                                        <option value="3">工地营销</option>
-                                        <option value="4">责任楼盘</option>
-                                        <option value="5">非责任楼盘</option>
+                                        <option value="0">房交会</option>
+                                        <option value="0.5">业主见面会</option>
+                                        <option value="1">其他</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="layui-inline">
-                                <label class="layui-form-label">客户地址</label>
+                                <label class="layui-form-label">活动时间</label>
                                 <div class="layui-input-inline">
-                                    <input type="text" name="oldPlace" id="oldPlace" autocomplete="off" class="layui-input"
-                                           placeholder="" disabled/>
+                                    <input type="text" name="huodongtime" id="huodongtime" autocomplete="off"
+                                           class="layui-input" lay-verify="required"
+                                           placeholder="活动时间"/>
                                 </div>
                             </div>
                         </div>
                         <div class="layui-form-item">
                             <div class="layui-inline">
-                                <label class="layui-form-label">客户姓名</label>
+                                <label class="layui-form-label layui-required">电话咨询时间</label>
                                 <div class="layui-input-inline">
-                                    <input type="text" name="oldCustName" id="oldCustName" autocomplete="off"
-                                           class="layui-input" disabled
-                                           placeholder=""/>
-                                </div>
-                            </div>
-                            <div class="layui-inline">
-                                <label class="layui-form-label">客户电话</label>
-                                <div class="layui-input-inline">
-                                    <input type="text" name="oldCustMobile" id="oldCustMobile" autocomplete="off"
-                                           class="layui-input" disabled
+                                    <input type="text" name="enter" id="enter" autocomplete="off" class="layui-input"
                                            placeholder=""/>
                                 </div>
                             </div>
                         </div>
                         <div class="layui-form-item layui-form-text">
-                            <label class="layui-form-label">备注</label>
+                            <label class="layui-form-label">其他备注</label>
                             <div class="layui-input-block">
                                 <textarea name="text" placeholder="请输入内容" class="layui-textarea"></textarea>
                             </div>
@@ -291,30 +265,21 @@
                     </div>
                 </fieldset>
                 <fieldset class="layui-elem-field">
-                    <legend>报备裁定</legend>
+                    <legend>信息来源与流程介绍</legend>
                     <div class="layui-field-box">
                         <div class="layui-form-item">
-                            <div class="layui-inline">
-                                <label class="layui-form-label"></label>
-                                <div class="layui-input-inline">
-                                    <input type="checkbox" name="like1[write]" lay-skin="primary" title="裁定为无效报备" checked="">
-                                </div>
-                            </div>
-                            <div class="layui-inline">
-                                <label class="layui-form-label layui-required">裁定人</label>
-                                <div class="layui-input-inline">
-                                    <input type="text" name="aa" id="aa" autocomplete="off" class="layui-input"/>
-                                </div>
-                            </div>
-                            <div class="layui-inline">
-                                <label class="layui-form-label layui-required">裁定时间</label>
-                                <div class="layui-input-inline">
-                                    <input type="text" name="bb" id="bb" autocomplete="off" class="layui-input"/>
-                                </div>
+                            <label class="layui-form-label">信息来源</label>
+                            <div class="layui-input-inline">
+                                <select name="xinxilaiy" id="xinxilaiy" lay-verify="required">
+                                    <option value="">请选择</option>
+                                    <option value="0">报纸</option>
+                                    <option value="0.5">电视媒体</option>
+                                    <option value="1">熟人</option>
+                                </select>
                             </div>
                         </div>
                         <div class="layui-form-item layui-form-text">
-                            <label class="layui-form-label">主管备注</label>
+                            <label class="layui-form-label">服务流程介绍</label>
                             <div class="layui-input-block">
                                 <textarea name="text" placeholder="请输入内容" class="layui-textarea"></textarea>
                             </div>
@@ -322,9 +287,51 @@
                     </div>
                 </fieldset>
                 <fieldset class="layui-elem-field">
-                    <legend>历史报备</legend>
-                    <div class="layui-field-box">
-                        <table lay-even class="layui-hide" id="employee_table" lay-filter="employee_table" lay-size="lg"></table>
+                    <legend>客户意向</legend>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">设计师作品</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="sjszp" id="sjszp" autocomplete="off" class="layui-input"
+                                       placeholder=""/>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">木制作品</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="mzzp" id="mzzp" autocomplete="off" class="layui-input"
+                                       placeholder=""/>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">去过公司</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="qggs" id="qggs" autocomplete="off" class="layui-input"
+                                       placeholder=""/>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">其他木制品牌</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="qtmzpp" id="qtmzpp" autocomplete="off" class="layui-input"
+                                       placeholder=""/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item layui-form-text">
+                        <label class="layui-form-label">投资意向</label>
+                        <div class="layui-input-block">
+                            <textarea name="text" placeholder="请输入内容" class="layui-textarea"></textarea>
+                        </div>
+                    </div>
+                    <div class="layui-form-item layui-form-text">
+                        <label class="layui-form-label">备注</label>
+                        <div class="layui-input-block">
+                            <textarea name="text" placeholder="请输入内容" class="layui-textarea"></textarea>
+                        </div>
                     </div>
                 </fieldset>
             </form>
