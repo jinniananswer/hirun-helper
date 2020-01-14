@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>dolphin-admin</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="../../../../static/layui/css/layui.css"
+          th:href="@{static/layui/css/layui.css(v=${version})}"
+          media="all">
+    <link rel="stylesheet" href="../../../../static/css/admin.css" th:href="@{static/css/admin.css(v=${version})}"
+          media="all">
+    <script src="../../../../static/layui/layui.js" th:src="@{static/layui/layui.js(v=${version})}"></script>
+    <script src="../../../../static/js/base.js" th:src="@{static/js/base.js(v=${version})}"></script>
+</head>
+
+<style>
+    .layui-form-label {
+        width: 160px;
+    }
+
+    .layui-form-label.layui-required:before {
+        content: "*";
+        color: #FF5722;
+    }
+
+    .layui-input-block {
+        margin-left: 95px;
+    }
+
+    .layui-card-body {
+        margin: 0px
+    }
+</style>
+
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <form class="layui-form" id="create_preparation">
+                <div class="layui-form-item">
+                    <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="save" style="float: right">保存
+                    </button>
+                </div>
+                <fieldset class="layui-elem-field">
+                    <legend>设计合同信息</legend>
+                    <div class="layui-field-box">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label layui-required">已收量房费（单位元）</label>
+                                <div class="layui-inline">
+                                    <input type="text" id="roomchargeFee" name="roomchargeFee" placeholder="" value="0"
+                                           autocomplete="off" class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label layui-required">已收设计定金（单位元）</label>
+                                <div class="layui-inline">
+                                    <input type="text" id="designDeposit" name="designDeposit" onclick=""
+                                           placeholder="" autocomplete="off" class="layui-input"/>
+
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">合同设计费（单位元）</label>
+                                <div class="layui-inline">
+                                    <input type="text" id="contractdesignFee" name="contractdesignFee" onclick=""
+                                           placeholder="" autocomplete="off" class="layui-input"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label layui-required">合同签订时间</label>
+                                <div class="layui-inline">
+                                    <input type="text" id="contractsigningTime" name="contractsigningTime" required
+                                           lay-verify="required" placeholder="2020-1-4" autocomplete="off"
+                                           class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label layui-required">合同终止时间</label>
+                                <div class="layui-inline">
+                                    <input type="text" id="contractendTime" name="contractendTime" required
+                                           lay-verify="required" placeholder="2020-3-4" autocomplete="off"
+                                           class="layui-input"/>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </fieldset>
+                <fieldset class="layui-elem-field">
+                    <legend>工程合同信息</legend>
+                    <div class="layui-field-box">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">合同编号</label>
+                                <div class="layui-inline">
+                                    <div class="layui-form" lay-filter="isSocialSecurity">
+                                        <input type="text" name="contracttNo" id="contracttNo" required
+                                               lay-verify="required" placeholder="" autocomplete="off"
+                                               class="layui-input"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">合同总金额（单位元）</label>
+                                <div class="layui-inline">
+                                    <input type="text" id="totalContract" name="totalContract" autocomplete="off"
+                                           placeholder="0" class="layui-input"/>
+                                </div>
+                            </div>
+
+                            <div class="layui-inline">
+                                <label class="layui-form-label">已收首付款（单位元）</label>
+                                <div class="layui-inline">
+                                    <input type="text" id="firstPayment" name="firstPayment" placeholder="0"
+                                           autocomplete="off" class="layui-input"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">已收二期款（单位元）</label>
+                                <div class="layui-inline">
+                                    <div class="layui-form" lay-filter="socialSecurityStatus">
+                                        <input type="text" id="secondPayment" name="secondPayment" placeholder="0"
+                                               autocomplete="off" class="layui-input"/>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="layui-inline">
+                                <label class="layui-form-label">已收主材款（单位元）</label>
+                                <div class="layui-inline">
+                                    <div class="layui-form" lay-filter="socialSecurityStatus">
+                                        <input type="text" id="materialPayment" name="materialPayment" placeholder="0"
+                                               autocomplete="off" class="layui-input"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">已收橱柜款（单位元）</label>
+                                <div class="layui-inline">
+                                    <div class="layui-form">
+                                        <input type="text" id="cabinetPayment" name="cabinetPayment" placeholder="0"
+                                               autocomplete="off" class="layui-input"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">现金优惠（单位元）</label>
+                                <div class="layui-inline">
+                                    <div class="layui-form">
+                                        <input type="text" id="cashDiscount" name="cashDiscount" placeholder="0"
+                                               autocomplete="off" class="layui-input"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">优惠项目</label>
+                                <div class="layui-inline">
+                                    <div class="layui-form" lay-filter="contactManRelType">
+                                        <input type="text" id="preferentialItems" name="preferentialItems"
+                                               placeholder=""
+                                               autocomplete="off" class="layui-input"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <fieldset class="layui-elem-field">
+                    <legend>收据信息</legend>
+                    <div class="layui-field-box">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">收据编号</label>
+                                <div class="layui-inline">
+                                    <div class="layui-form" lay-filter="firstEducationLevel">
+                                        <input type="text" id="receiptNo" name="receiptNo" placeholder="SY2020010401"
+                                               autocomplete="off"
+                                               class="layui-input"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">收款日期</label>
+                                <div class="layui-inline">
+                                    <input type="text" id="collectionDate" name="collectionDate" required
+                                           lay-verify="required" placeholder="2020-1-4" autocomplete="off"
+                                           class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">收款人</label>
+                                <div class="layui-inline">
+                                    <div class="layui-form" lay-filter="schoolType">
+                                        <input type="text" id="Payee" name="Payee" placeholder="财务1" autocomplete="off"
+                                               class="layui-input"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">财务员</label>
+                                <div class="layui-inline">
+                                    <input type="text" id="treasurer" name="treasurer" placeholder="财务1" autocomplete="off"
+                                           class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">收款金额（单位元）</label>
+                                <div class="layui-inline">
+                                    <input type="text" id="amountCollected" name="amountCollected" placeholder="1"
+                                           autocomplete="off" class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">大写金额</label>
+                                <div class="layui-inline">
+                                    <input type="text" id="capitalizationAmount" name="capitalizationAmount"
+                                           placeholder="壹元整"
+                                           autocomplete="off" class="layui-input"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">现金（单位元）</label>
+                                <div class="layui-inline">
+                                    <input type="text" name="cash" placeholder="1.00" autocomplete="off"
+                                           class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">兴业刷卡（单位元）</label>
+                                <div class="layui-inline">
+                                    <input type="text" name="xyCreditcard" placeholder="0.00" autocomplete="off"
+                                           class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">浦发刷卡（单位元）</label>
+                                <div class="layui-inline">
+                                    <input type="text" name="pfCreditcard" placeholder="0.00" autocomplete="off"
+                                           class="layui-input"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">建行基本户（单位元）</label>
+                                <div class="layui-inline">
+                                    <input type="text" name="CCBbasic" placeholder="0.00" autocomplete="off"
+                                           class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">建行3797（单位元）</label>
+                                <div class="layui-inline">
+                                    <input type="text" name="CCB3797" placeholder="0.00" autocomplete="off"
+                                           class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">工行3301（单位元）</label>
+                                <div class="layui-inline">
+                                    <input type="text" name="ICBC3301" placeholder="0.00" autocomplete="off"
+                                           class="layui-input"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">工行分期（单位元）</label>
+                                <div class="layui-inline">
+                                    <input type="text" name="ICBCstages" placeholder="0.00" autocomplete="off"
+                                           class="layui-input"/>
+                                </div>
+                            </div>
+
+                            <div class="layui-inline">
+                                <label class="layui-form-label">农行分期（单位元）</label>
+                                <div class="layui-inline">
+                                    <input type="text" name="ABCstages" placeholder="0.00" autocomplete="off"
+                                           class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">袁备用金（单位元）</label>
+                                <div class="layui-inline">
+                                    <input type="text" name="yuanReservefund" placeholder="0.00" autocomplete="off"
+                                           class="layui-input"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">芙备用金（单位元）</label>
+                                <div class="layui-inline">
+                                    <input type="text" name="fuReservefund" placeholder="0.00" autocomplete="off"
+                                           class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">河西备用金（单位元）</label>
+                                <div class="layui-inline">
+                                    <input type="text" name="hxReservefund" placeholder="0.00" autocomplete="off"
+                                           class="layui-input"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">收款摘要</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="collectionSummary" placeholder="" autocomplete="off"
+                                       class="layui-input"/>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    layui.extend(
+        {
+            charge: "{/}static/js/modules/bss/order/fee_charge"
+        }
+    ).use('charge', function (args) {
+        layui.charge.init();
+    });
+</script>
+</body>
+</html>
