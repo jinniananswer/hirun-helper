@@ -26,10 +26,75 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree', 'form'], f
             });
 
             $('body').on('click', '.del', function () {
-                let userId = $(this).closest('tr').find('td:eq(0)').text();
-                selectedRoleIds.delete(userId);
+                let roleId = $(this).closest('tr').find('td:eq(0)').text();
+                selectedRoleIds.delete(roleId);
                 // 删除当前按钮所在的tr
                 $(this).closest('tr').remove();
+            });
+
+            $('body').on('click', '.seeGrantedRoles', function () {
+                let userId = $(this).closest('tr').find('td:eq(0)').text();
+                let employeeName = $(this).closest('tr').find('td:eq(1)').text();
+                layui.ajax.get('api/user/user-role/listRole', 'userId=' + userId, function (data) {
+                    let roles = data.rows;
+                    let index = layer.open({
+                        type: 0,
+                        id: 'Layer',
+                        title: '已分配给【' + employeeName + '】的角色',
+                        area: ['500px', '450px'],
+                        shade: 0,
+                        anim: -1,
+                        content: '<div class="table"></div>',
+                        btn: ['我知道了'],
+                        skin: 'layui-layer-molv',
+                        success: function (layero, index) {
+                            let colsList = [[
+                                {field: 'roleId', title: 'ID', width: 80, align: 'center'},
+                                {field: 'roleName', title: '角色名'}
+                            ]];
+                            let datas = [];
+                            for (let i = 0; i < roles.length; i++) {
+                                datas.push({
+                                    roleId: roles[i].roleId,
+                                    roleName: roles[i].roleName,
+                                });
+                            }
+
+                            table.render({
+                                elem: layero.find('.table'),
+                                id: 'Message',
+                                data: datas,
+                                cols: colsList,
+                                limit: 8,
+                                page: false,
+                            });
+                        },
+                        yes: function (index, layero) {
+                            layer.close(index);
+                        }
+                    });
+                });
+
+            });
+
+            $('body').on('click', '.seeDetails', function () {
+                let roleId = $(this).closest('tr').find('td:eq(0)').text();
+
+                let index = layer.open({
+                    type: 2,
+                    title: '角色权限',
+                    content: 'openUrl?url=modules/system/role_detail',
+                    maxmin: false,
+                    skin: 'layui-layer-molv',
+                    success: function (layero, index) {
+                        let body = layer.getChildFrame('body', index);
+                        body.find('#roleId').val(roleId);
+                    },
+                    yes: function (index, layero) {
+                        layer.close(index);
+                    }
+                });
+                layer.full(index);
             });
 
             form.on('select(employeeOptions)', function (data) {
@@ -51,9 +116,12 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree', 'form'], f
                 let html =
                     '<tr>' +
                     '  <td style="display:none">' + data.value + '</td>' +
-                    '  <td>' + employeeName + '</td>' +
-                    '  <td>' + employeeMobileNo + '</td>' +
-                    '  <td> <a class="layui-btn layui-btn-danger layui-btn-xs del"><i class="layui-icon layui-icon-delete"></i>删除</a> </td>' +
+                    '  <td align="center">' + employeeName + '</td>' +
+                    '  <td align="center">' + employeeMobileNo + '</td>' +
+                    '  <td align="center"> ' +
+                    '    <a class="layui-btn layui-btn-danger layui-btn-xs del"><i class="layui-icon layui-icon-delete"></i>删除</a> ' +
+                    '    <a class="layui-btn layui-btn-normal layui-btn-xs seeGrantedRoles"><i class="layui-icon layui-icon-read"></i>查看</a>' +
+                    '  </td>' +
                     '</tr>';
 
                 //添加到表格最后
@@ -77,9 +145,12 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree', 'form'], f
 
                 let html =
                     '<tr>' +
-                    '  <td>' + data.value + '</td>' +
-                    '  <td>' + roleName + '</td>' +
-                    '  <td> <a class="layui-btn layui-btn-danger layui-btn-xs del"><i class="layui-icon layui-icon-delete"></i>删除</a> </td>' +
+                    '  <td align="center">' + data.value + '</td>' +
+                    '  <td align="center">' + roleName + '</td>' +
+                    '  <td align="center"> ' +
+                    '    <a class="layui-btn layui-btn-danger layui-btn-xs del"><i class="layui-icon layui-icon-delete"></i>删除</a> ' +
+                    '    <a class="layui-btn layui-btn-normal layui-btn-xs seeDetails"><i class="layui-icon layui-icon-read"></i>查看</a>' +
+                    '  </td>' +
                     '</tr>';
 
                 // 添加到表格最后
