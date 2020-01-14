@@ -32,6 +32,60 @@ layui.extend({
                 elem: '#collectionDate'
             });
 
+            let ins = table.render({
+                elem: "#employee_table",
+                height: 200,
+                toolbar: '#toolbar',
+                defaultToolbar: [''],
+                loading:false,
+                cols: [
+                    [
+                        {field: 'name', title: '款项', fixed: 'left', align: 'center',},
+                        {field: 'sex', title: '期数', align: 'center'},
+                        {field: 'typeName', title: '品牌', align: 'center'},
+                        {field: 'identityNo', title: '店名', align: 'center'},
+                        {field: 'mobileNo', title: '是否交齐',  align: 'center'},
+                        {field: 'age', title: '金额', align: 'center'},
+                        {field: 'time', title: '收取时间', align: 'center'},
+                        {field: 'i', title: '设计师',  align: 'center'},
+                        {field: 'e', title: '设计师级别', align: 'center'},
+                        {field: 'r', title: '橱柜设计师', align: 'center'},
+                        {field: 't', title: '客户代表',  align: 'center'},
+                        {field: 'aige', title: '项目经理', align: 'center'},
+                    ]
+
+                ],
+                page: false,
+                data:[{
+                    "name": "设计款"
+                    ,"sex": ""
+                    ,"typeName": "设计款"
+                    ,"identityNo": "邵阳店"
+                    ,"mobileNo": "是"
+                    ,"age": "1"
+                    ,"time": "2020/01/02 12:12:34"
+                    ,"i": "设计师1"
+                    ,"e": ""
+                    ,"r": "橱柜设计师1"
+                    ,"t": "客户代表"
+                    ,"aige": ""
+                },{
+                    "name": "工程款"
+                    ,"sex": "首期"
+                    ,"typeName": ""
+                    ,"identityNo": "邵阳店"
+                    ,"mobileNo": "是"
+                    ,"age": "1"
+                    ,"time": "2020/01/02 12:12:34"
+                    ,"i": "设计师1"
+                    ,"e": ""
+                    ,"r": "橱柜设计师1"
+                    ,"t": "客户代表"
+                    ,"aige": ""
+                }],
+                text: {none: '暂无相关数据，请检查查询条件。'},
+            });
+
         },
         initRoleTable: function () {
             table.render({
