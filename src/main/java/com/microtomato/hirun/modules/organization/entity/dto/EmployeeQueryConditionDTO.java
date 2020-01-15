@@ -41,7 +41,7 @@ public class EmployeeQueryConditionDTO implements Serializable {
     /**
      * 部门集合
      */
-    private Long orgId;
+    private String orgId;
 
     private String otherStatus;
 

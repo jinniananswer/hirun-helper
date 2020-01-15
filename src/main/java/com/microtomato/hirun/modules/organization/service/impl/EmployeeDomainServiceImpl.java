@@ -623,11 +623,12 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         String employeeIds = "";
         String orgLine = "";
 
-        if (null==conditionDTO.getOrgId()) {
+        if (StringUtils.isEmpty(conditionDTO.getOrgId())) {
             orgLine = orgService.listOrgSecurityLine();
         } else {
-            OrgDO conditionOrgDO = SpringContextUtils.getBean(OrgDO.class, conditionDTO.getOrgId());
-            orgLine = conditionOrgDO.getOrgLine(conditionDTO.getOrgId());
+/*            OrgDO conditionOrgDO = SpringContextUtils.getBean(OrgDO.class, conditionDTO.getOrgId());
+            orgLine = conditionOrgDO.getOrgLine(conditionDTO.getOrgId());*/
+            orgLine=conditionDTO.getOrgId();
         }
 
         if(!SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_ORG)
