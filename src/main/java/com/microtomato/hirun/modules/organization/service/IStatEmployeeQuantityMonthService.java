@@ -40,7 +40,7 @@ public interface IStatEmployeeQuantityMonthService extends IService<StatEmployee
      * @param orgId
      * @return
      */
-    List<Map<String,String>> queryEmployeeTrendsStat(String time,Long orgId,String orgNature);
+    List<Map<String,String>> queryEmployeeTrendsStat(String time,String orgId,String orgNature);
 
     /**
      *家装分公司四大业务类人员汇总情况
@@ -54,14 +54,14 @@ public interface IStatEmployeeQuantityMonthService extends IService<StatEmployee
      * @param time
      * @return
      */
-    List<Map<String,String>> busiCountByOrgNatureAndJobRole(String time,Long orgId,String orgNature);
+    List<Map<String,String>> busiCountByOrgNatureAndJobRole(String time,String orgId,String orgNature);
 
     /**
      *四大业务类人员与部门所有员工异动人数趋势
      * @param time
      * @return
      */
-    List<Map<String,String>> busiAndAllCountTrend(String time,Long orgId);
+    List<Map<String,String>> busiAndAllCountTrend(String time,String orgId);
 
     /**
      * 重新加载在岗人数数据

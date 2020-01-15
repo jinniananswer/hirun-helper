@@ -97,7 +97,7 @@ layui.extend({
         },
 
         selectOrg: function () {
-            layui.orgTree.init('orgTree', 'orgId', 'orgPath', false,false);
+            layui.orgTree.init('orgTree', 'orgId', 'orgPath', true,false);
         },
 
 

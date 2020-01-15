@@ -69,5 +69,5 @@ public interface IStatEmployeeTransitionService extends IService<StatEmployeeTra
      * @param queryTime
      * @return
      */
-    List<Map<String,String>> queryTransitionList(Long orgId, String queryTime);
+    List<Map<String,String>> queryTransitionList(String orgId, String queryTime);
 }

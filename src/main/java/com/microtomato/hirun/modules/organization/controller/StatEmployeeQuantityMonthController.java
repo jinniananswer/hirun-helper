@@ -39,7 +39,7 @@ public class StatEmployeeQuantityMonthController {
 
     @GetMapping("/queryEmployeeTrendsStat")
     @RestResult
-    public List<Map<String,String>> queryEmployeeTrendsStat(String queryTime, Long orgId,String orgNature){
+    public List<Map<String,String>> queryEmployeeTrendsStat(String queryTime, String orgId,String orgNature){
         return statEmployeeQuantityMonthServiceImpl.queryEmployeeTrendsStat(queryTime,orgId,orgNature);
     }
 
@@ -51,13 +51,13 @@ public class StatEmployeeQuantityMonthController {
 
     @GetMapping("/busiCountByOrgNatureAndJobRole")
     @RestResult
-    public List<Map<String,String>> busiCountByOrgNatureAndJobRole(String queryTime,Long orgId,String orgNature){
+    public List<Map<String,String>> busiCountByOrgNatureAndJobRole(String queryTime,String orgId,String orgNature){
         return statEmployeeQuantityMonthServiceImpl.busiCountByOrgNatureAndJobRole(queryTime,orgId,orgNature);
     }
 
     @GetMapping("/busiAndAllCountTrend")
     @RestResult
-    public List<Map<String,String>> busiAndAllCountTrend(String queryTime,Long orgId){
+    public List<Map<String,String>> busiAndAllCountTrend(String queryTime,String orgId){
         return statEmployeeQuantityMonthServiceImpl.busiAndAllCountTrend(queryTime,orgId);
     }
 

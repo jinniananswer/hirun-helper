@@ -28,7 +28,7 @@ public class StatEmployeeTransitionController {
 
     @GetMapping("/queryEmployeeTransitionStat")
     @RestResult
-    public List<Map<String,String>> queryEmployeeTransitionStat(String queryTime, Long orgId){
+    public List<Map<String,String>> queryEmployeeTransitionStat(String queryTime, String orgId){
         return statEmployeeTransitionServiceImpl.queryTransitionList(orgId,queryTime);
     }
 
