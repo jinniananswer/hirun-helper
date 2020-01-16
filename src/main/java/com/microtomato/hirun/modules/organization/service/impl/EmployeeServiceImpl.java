@@ -2,6 +2,7 @@ package com.microtomato.hirun.modules.organization.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.util.ArrayUtils;
@@ -133,6 +134,21 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
     @Override
     public List<EmployeeQuantityStatDTO> countEmployeeQuantityByOrgId() {
         return employeeMapper.countEmployeeQuantityByOrgId();
+    }
+
+    /**
+     * 加载所有员工
+     *
+     * @return
+     */
+    @Override
+    public List<Employee> loadEmployee() {
+        List<Employee> employeeList = this.list(
+            Wrappers.<Employee>lambdaQuery()
+                .select(Employee::getUserId, Employee::getName, Employee::getMobileNo)
+                .eq(Employee::getStatus, "0")
+        );
+        return employeeList;
     }
 
     /**
