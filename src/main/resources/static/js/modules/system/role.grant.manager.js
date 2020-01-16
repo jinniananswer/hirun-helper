@@ -156,7 +156,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree', 'form'], f
             });
 
             form.on('select(employeeOptions)', function (data) {
-                if (-1 == data.value) {
+                if ("" == data.value) {
                     return;
                 }
 
@@ -189,7 +189,7 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree', 'form'], f
             });
 
             form.on('select(roleOptions)', function (data) {
-                if (-1 == data.value) {
+                if ("" == data.value) {
                     return;
                 }
 
@@ -220,13 +220,12 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree', 'form'], f
             // 加载员工数据
             layui.ajax.get('api/organization/employee/loadEmployee', '', function (data) {
                 let employees = data.rows;
-                $('#employeeOptions').empty();
                 if (employees == null || employees.length <= 0) {
                     return;
                 }
 
                 let length = employees.length;
-                let datas = '<option value="-1">输入姓名或手机号搜索</option>';
+                let datas = ''; //'<option value="-1">输入姓名或手机号搜索</option>';
                 for (let i = 0; i < length; i++) {
                     let employee = employees[i];
                     datas += "<option value='" + employee.userId + "'>" + (employee.name + '-' + employee.mobileNo) + "</option>";
@@ -238,13 +237,12 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree', 'form'], f
             // 加载角色数据
             layui.ajax.get('api/user/role/loadRole', '', function (data) {
                 let roles = data.rows;
-                $('#roleOptions').empty();
                 if (roles == null || roles.length <= 0) {
                     return;
                 }
 
                 let length = roles.length;
-                let datas = '<option value="-1">输入角色名搜索</option>';
+                let datas = '';
                 for (let i = 0; i < length; i++) {
                     let role = roles[i];
                     datas += "<option value='" + role.roleId + "'>" + role.roleName + "</option>";
