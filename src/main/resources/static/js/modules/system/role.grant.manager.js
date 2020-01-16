@@ -23,17 +23,17 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree', 'form'], f
                 let userIds = roleGrantManager.selectUserIds();
                 let roleIds = roleGrantManager.selectRoleIds();
 
-                alert('给员工：' + JSON.stringify(userIds) + ', 分配角色：' + JSON.stringify(roleIds));
+                let params = {
+                    "userIds": userIds,
+                    "roleIds": roleIds
+                };
 
                 $.ajax({
                     type: "post",
                     url: "api/user/user-role/grantRole",
                     dataType: "json",
                     contentType: "application/json",
-                    data: {
-                        userIds: userIds,
-                        roleIds: roleIds
-                    },
+                    data: JSON.stringify(params),
                     success: function (data) {
                         if (0 == data.code) {
                             layer.msg("保存成功！", {time: 3000, icon: 6});
@@ -46,15 +46,34 @@ layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree', 'form'], f
                     }
                 });
 
-
             });
 
             $(document).on('click', '#revokeRoleBtn', function () {
                 let userIds = roleGrantManager.selectUserIds();
                 let roleIds = roleGrantManager.selectRoleIds();
 
-                alert('给员工：' + JSON.stringify(userIds) + ', 回收角色：' + JSON.stringify(roleIds));
+                let params = {
+                    "userIds": userIds,
+                    "roleIds": roleIds
+                };
 
+                $.ajax({
+                    type: "post",
+                    url: "api/user/user-role/revokeRole",
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: JSON.stringify(params),
+                    success: function (data) {
+                        if (0 == data.code) {
+                            layer.msg("保存成功！", {time: 3000, icon: 6});
+                        } else {
+                            layer.alert("保存失败！" + data.message);
+                        }
+                    },
+                    error: function (data) {
+                        layer.alert("保存失败！");
+                    }
+                });
             });
 
             $('body').on('click', '.del', function () {

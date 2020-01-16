@@ -2,6 +2,7 @@ package com.microtomato.hirun.modules.user.controller;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.microtomato.hirun.framework.annotation.RestResult;
+import com.microtomato.hirun.modules.user.entity.dto.GrantUserRoleDTO;
 import com.microtomato.hirun.modules.user.entity.po.Role;
 import com.microtomato.hirun.modules.user.entity.po.UserRole;
 import com.microtomato.hirun.modules.user.service.IRoleService;
@@ -35,25 +36,30 @@ public class UserRoleController {
 
     @PostMapping("grantRole")
     @RestResult
-    public void grantRole(@RequestParam(value = "userIds[]") List<Long> userIds, @RequestParam(value = "roleIds[]")  List<Long> roleIds) {
-        log.debug("========= 角色分配 =========");
-        log.debug("userIds: {}", userIds);
-        log.debug("roleIds: {}", roleIds);
+    public void grantRole(@RequestBody GrantUserRoleDTO grantUserRoleDTO) {
+        log.debug("角色分配: {}", grantUserRoleDTO);
+
+        List<Long> userIds = grantUserRoleDTO.getUserIds();
+        List<Long> roleIds = grantUserRoleDTO.getRoleIds();
+
+        userRoleService.grantRole(userIds, roleIds);
     }
 
     @PostMapping("revokeRole")
     @RestResult
-    public void revokeRole(@RequestParam(value = "userIds") List<Long> userIds, @RequestParam(value = "roleIds")  List<Long> roleIds) {
-        log.debug("========= 角色回收 =========");
-        log.debug("userIds: {}", userIds);
-        log.debug("roleIds: {}", roleIds);
+    public void revokeRole(@RequestBody GrantUserRoleDTO grantUserRoleDTO) {
+        log.debug("角色回收: {}", grantUserRoleDTO);
+
+        List<Long> userIds = grantUserRoleDTO.getUserIds();
+        List<Long> roleIds = grantUserRoleDTO.getRoleIds();
+
+        userRoleService.revokeRole(userIds, roleIds);
     }
 
 
     @GetMapping("listRole")
     @RestResult
     public List<Role> listRole(String userId) {
-        log.info("===> userId: " + userId);
         LocalDateTime now = LocalDateTime.now();
         List<UserRole> userRoleList = userRoleService.list(
             Wrappers.<UserRole>lambdaQuery()
