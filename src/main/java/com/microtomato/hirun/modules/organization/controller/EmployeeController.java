@@ -55,6 +55,17 @@ public class EmployeeController extends AbstractExcelHarbour  {
         return employeeDomainServiceImpl.searchEmployee(searchText);
     }
 
+    /**
+     * 前端加载所有员工数据
+     *
+     * @return
+     */
+    @GetMapping("/loadEmployee")
+    @RestResult
+    public List<Employee> loadEmployee() {
+        return employeeServiceImpl.loadEmployee();
+    }
+
     @RequestMapping("/verifyIdentityNo")
     @RestResult
     public EmployeeDTO verifyIdentityNo(String createType, String identityNo, Long employeeId, String operType) {
@@ -124,10 +135,10 @@ public class EmployeeController extends AbstractExcelHarbour  {
         exportExcel(response, "users", EmployeeInfoDTO.class, list, ExcelTypeEnum.XLSX);
     }
 
-    @PostMapping("/queryChildEmployee4Destroy")
+    @PostMapping("/queryExtendCondition4Destroy")
     @RestResult
-    public List<EmployeeInfoDTO> queryChildEmployee4Destroy(Long employeeId) {
-        return employeeServiceImpl.findSubordinate(employeeId);
+    public Map<String,String> queryExtendCondition4Destroy(Long employeeId) {
+        return employeeDomainServiceImpl.queryExtendCondition4Destroy(employeeId);
     }
 
     @GetMapping("/showBirthdayWish")
@@ -152,5 +163,6 @@ public class EmployeeController extends AbstractExcelHarbour  {
                 .build();
         exportExcelByTemplate(response, excelConfig);
     }
+
 
 }
