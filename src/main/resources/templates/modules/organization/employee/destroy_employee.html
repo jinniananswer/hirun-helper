@@ -78,8 +78,8 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label">离职次数</label>
                     <div class="layui-input-block" style="">
-                        <select name="destroyTimes" id="destroyTimes">
-                            <option value="1" selected>1</option>
+                        <select name="destroyTimes" id="destroyTimes" lay-filter="destroyTimes">
+                            <option value="1">1</option>
                             <option value="2">2</option>
                         </select>
                     </div>
@@ -103,7 +103,11 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label">永不录用</label>
                     <div class="layui-input-block">
-                        <input type="checkbox" name="isBlackList" lay-skin="switch" lay-text="是|否">
+                        <div class="layui-form" lay-filter="isBlackList">
+                            <select id="isBlackList" name="isBlackList" lay-verify="required">
+
+                            </select>
+                        </div>
                     </div>
                 </div>
                 <div class="layui-form-item" id="newParent" style="display: none">
