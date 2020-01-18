@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.organization.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.exception.ErrorKind;
 import com.microtomato.hirun.framework.exception.cases.AlreadyExistException;
@@ -35,7 +36,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @program: hirun-helper
@@ -390,7 +393,7 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             throw new AlreadyExistException(" 该员工下存在未处理的待办任务，请将待办任务转移之后再办理离职！", ErrorKind.ALREADY_EXIST.getCode());
         }
 
-        EmployeeJobRole employeeJobRole=employeeJobRoleService.queryValidMain(employeeDestroyInfoDTO.getEmployeeId());
+        EmployeeJobRole employeeJobRole = employeeJobRoleService.queryValidMain(employeeDestroyInfoDTO.getEmployeeId());
         //判断离职员工是否为后台任务对应人资提醒人员
         List<OrgHrRel> orgHrRelList = orgHrRelService.queryOrgHrRelByEmployeeId(employeeDestroyInfoDTO.getEmployeeId());
 
@@ -419,11 +422,12 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         userDO.destory(employeeDestroyInfoDTO.getDestroyDate());
 
         //如果为永不录用插入黑名单表
-        if (StringUtils.equals(employeeDestroyInfoDTO.getIsBlackList(), "on")) {
+        if (StringUtils.equals(employeeDestroyInfoDTO.getIsBlackList(), EmployeeConst.YES)) {
             EmployeeBlacklist employeeBlacklist = new EmployeeBlacklist();
             BeanUtils.copyProperties(employeeDestroyInfoDTO, employeeBlacklist);
             employeeBlacklist.setStartTime(employeeDestroyInfoDTO.getDestroyDate());
             employeeBlacklist.setEndTime(TimeUtils.getForeverTime());
+            employeeBlacklist.setRemark(employeeDestroyInfoDTO.getDestroyReason());
 
             EmployeeBlackListDO employeeBlackListDO = SpringContextUtils.getBean(EmployeeBlackListDO.class);
             employeeBlackListDO.addBlackList(employeeBlacklist);
@@ -434,7 +438,7 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             employeeJobRoleService.changeParentEmployee(employeeDestroyInfoDTO.getEmployeeId(), employeeDestroyInfoDTO.getNewParentEmployeeId(), loginUserId);
         }
         //新增离职员工异动报表记录
-        EmployeeTransitonDTO dto=new EmployeeTransitonDTO();
+        EmployeeTransitonDTO dto = new EmployeeTransitonDTO();
         dto.setEmployeeId(employeeJobRole.getEmployeeId());
         dto.setOrgId(employeeJobRole.getOrgId());
         dto.setJobRole(employeeJobRole.getJobRole());
@@ -606,6 +610,32 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         return list;
     }
 
+    @Override
+    public Map<String, String> queryExtendCondition4Destroy(Long employeeId) {
+        Map<String, String> resultMap = new HashMap<>();
+        //获取离职员工的是否有下级
+        List<EmployeeInfoDTO> list = employeeService.findSubordinate(employeeId);
+        if(list.size()<=0){
+            resultMap.put("hasChildEmployee", "NO");
+        }else{
+            resultMap.put("hasChildEmployee", "YES");
+        }
+        //获取员工离职次数 1、离职员工未做复职做的员工新增，存在多条身份证一致的信息 2、做复职处理判断之前记录的离职次数
+        Employee employee = this.employeeMapper.selectById(employeeId);
+        List<Employee> employeeList = this.employeeMapper.selectList(Wrappers.<Employee>lambdaQuery().eq(Employee::getIdentityNo, employee.getIdentityNo()));
+        if (employeeList.size() > 1) {
+            resultMap.put("destroyTimes", "2");
+        } else {
+            Integer destroyTimes = employee.getDestroyTimes();
+            if (null == destroyTimes || 0 == destroyTimes) {
+                resultMap.put("destroyTimes", "1");
+            } else {
+                resultMap.put("destroyTimes", "2");
+            }
+        }
+        return resultMap;
+    }
+
     /**
      * 拼装除了界面传过来的筛选条件
      * 根据员工权限判断对应的数据权限
@@ -628,20 +658,20 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         } else {
 /*            OrgDO conditionOrgDO = SpringContextUtils.getBean(OrgDO.class, conditionDTO.getOrgId());
             orgLine = conditionOrgDO.getOrgLine(conditionDTO.getOrgId());*/
-            orgLine=conditionDTO.getOrgId();
+            orgLine = conditionDTO.getOrgId();
         }
 
-        if(!SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_ORG)
-                &&!SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_BU)
-                &&!SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_SUB_COMPANY)
-                &&!SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_SHOP)
-                &&!SecurityUtils.hasFuncId(OrgConst.SECURITY_SELF_SHOP)
-                &&!SecurityUtils.hasFuncId(OrgConst.SECURITY_SELF_BU)
-                &&!SecurityUtils.hasFuncId(OrgConst.SECURITY_SELF_SUB_COMPANY)
-                &&!SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_COMANY_SHOP)
-                &&!StringUtils.isNotBlank(orgHrRelService.getOrgLine(employeeId))){
+        if (!SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_ORG)
+                && !SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_BU)
+                && !SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_SUB_COMPANY)
+                && !SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_SHOP)
+                && !SecurityUtils.hasFuncId(OrgConst.SECURITY_SELF_SHOP)
+                && !SecurityUtils.hasFuncId(OrgConst.SECURITY_SELF_BU)
+                && !SecurityUtils.hasFuncId(OrgConst.SECURITY_SELF_SUB_COMPANY)
+                && !SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_COMANY_SHOP)
+                && !StringUtils.isNotBlank(orgHrRelService.getOrgLine(employeeId))) {
 
-            List<EmployeeInfoDTO> employeeList = employeeService.recursiveAllSubordinates(employeeId+"");
+            List<EmployeeInfoDTO> employeeList = employeeService.recursiveAllSubordinates(employeeId + "");
             if (ArrayUtils.isEmpty(employeeList)) {
                 conditionDTO.setEmployeeIds(employeeId + "");
                 conditionDTO.setOrgLine(orgId + "");
@@ -650,8 +680,8 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
                 employeeIds += employee.getEmployeeId() + ",";
             }
             conditionDTO.setOrgLine("");
-            conditionDTO.setEmployeeIds(employeeIds+employeeId);
-        }else{
+            conditionDTO.setEmployeeIds(employeeIds + employeeId);
+        } else {
             conditionDTO.setOrgLine(orgLine);
         }
         return conditionDTO;

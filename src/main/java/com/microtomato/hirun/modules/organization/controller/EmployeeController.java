@@ -135,10 +135,10 @@ public class EmployeeController extends AbstractExcelHarbour  {
         exportExcel(response, "users", EmployeeInfoDTO.class, list, ExcelTypeEnum.XLSX);
     }
 
-    @PostMapping("/queryChildEmployee4Destroy")
+    @PostMapping("/queryExtendCondition4Destroy")
     @RestResult
-    public List<EmployeeInfoDTO> queryChildEmployee4Destroy(Long employeeId) {
-        return employeeServiceImpl.findSubordinate(employeeId);
+    public Map<String,String> queryExtendCondition4Destroy(Long employeeId) {
+        return employeeDomainServiceImpl.queryExtendCondition4Destroy(employeeId);
     }
 
     @GetMapping("/showBirthdayWish")
@@ -163,5 +163,6 @@ public class EmployeeController extends AbstractExcelHarbour  {
                 .build();
         exportExcelByTemplate(response, excelConfig);
     }
+
 
 }
