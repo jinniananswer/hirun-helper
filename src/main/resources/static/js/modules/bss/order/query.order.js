@@ -1,4 +1,4 @@
-require(['vue','ELEMENT', 'axios'], function(Vue, element, axios) {
+require(['vue','ELEMENT', 'axios', 'ajax', 'vueselect'], function(Vue, element, axios, ajax, vueselect) {
     let vm = new Vue({
         el: '#app',
         data: function() {
@@ -12,16 +12,16 @@ require(['vue','ELEMENT', 'axios'], function(Vue, element, axios) {
 
                 custOrder: [],
 
-                display:'display:block'
+                display:'display:block',
+
+                defaultSex: '2'
             }
         },
 
         methods: {
             onSubmit: function() {
-                axios.get('api/organization/employee/searchEmployee?searchText=金').then(function(responseData){
-                    vm.custOrder = responseData.data.rows;
-                }).catch(function(error){
-                    console.log(error);
+                ajax.get('api/organization/employee/searchEmployee?searchText=金', null, function(responseData){
+                    vm.custOrder = responseData;
                 });
             }
         }
