@@ -41,4 +41,14 @@ public interface IEmployeeDomainService {
      * @return
      */
     Map<String,String> queryExtendCondition4Destroy(Long employeeId);
+
+    /**
+     * 根据上级员工ID或者部门查询员工
+     * @param parentEmployeeId
+     * @param orgId
+     * @param page
+     * @return
+     */
+    IPage<EmployeeInfoDTO> queryEmployee4BatchChange(Long parentEmployeeId,Long orgId, Page<EmployeeQueryConditionDTO> page);
+
 }
