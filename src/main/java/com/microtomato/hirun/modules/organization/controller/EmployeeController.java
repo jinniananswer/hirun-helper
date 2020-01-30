@@ -11,6 +11,7 @@ import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.organization.entity.dto.*;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.service.IEmployeeDomainService;
+import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,10 @@ public class EmployeeController extends AbstractExcelHarbour  {
 
     @Autowired
     private IEmployeeDomainService employeeDomainServiceImpl;
+
+    @Autowired
+    private IEmployeeJobRoleService jobRoleService;
+
 
     @PostMapping("/create")
     @RestResult
@@ -164,5 +169,17 @@ public class EmployeeController extends AbstractExcelHarbour  {
         exportExcelByTemplate(response, excelConfig);
     }
 
+    @GetMapping("/queryEmployee4BatchChange")
+    @RestResult
+    public IPage<EmployeeInfoDTO> queryEmployee4BatchChange(Long parentEmployeeId ,Long orgId, Integer page, Integer limit) {
+        Page<EmployeeQueryConditionDTO> employeeInfoDTOPage = new Page<>(page, limit);
+        IPage<EmployeeInfoDTO> employeeList = employeeDomainServiceImpl.queryEmployee4BatchChange(parentEmployeeId,orgId,employeeInfoDTOPage);
+        return employeeList;
+    }
 
+    @PostMapping("/batchUpdateParentEmployee")
+    @RestResult
+    public boolean batchUpdateParentEmployee(String ids, Long parentEmployeeId) {
+        return jobRoleService.batchUpdateParentEmployee(ids,parentEmployeeId);
+    }
 }

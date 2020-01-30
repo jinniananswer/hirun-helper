@@ -12,6 +12,7 @@ import com.microtomato.hirun.modules.organization.entity.consts.EmployeeConst;
 import com.microtomato.hirun.modules.organization.entity.domain.EmployeeDO;
 import com.microtomato.hirun.modules.organization.entity.dto.*;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
+import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
 import com.microtomato.hirun.modules.organization.mapper.EmployeeMapper;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import lombok.extern.slf4j.Slf4j;
@@ -21,10 +22,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -144,11 +142,22 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
     @Override
     public List<Employee> loadEmployee() {
         List<Employee> employeeList = this.list(
-            Wrappers.<Employee>lambdaQuery()
-                .select(Employee::getUserId, Employee::getName, Employee::getMobileNo)
-                .eq(Employee::getStatus, "0")
+                Wrappers.<Employee>lambdaQuery()
+                        .select(Employee::getUserId, Employee::getName, Employee::getMobileNo)
+                        .eq(Employee::getStatus, "0")
         );
         return employeeList;
+    }
+
+    @Override
+    public IPage<EmployeeInfoDTO> queryEmployee4BatchChange(Long parentEmployeeId, String orgLine, Page<EmployeeQueryConditionDTO> employeePage) {
+        QueryWrapper<EmployeeJobRole> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(null != parentEmployeeId, "b.parent_employee_id", parentEmployeeId);
+        queryWrapper.apply(StringUtils.isNotEmpty(orgLine), "b.org_id in (" + orgLine + ")");
+        queryWrapper.apply("a.employee_id=b.employee_id and a.status='0' and b.org_id = c.org_id ");
+        queryWrapper.apply("now() between b.start_date and b.end_date and c.status='0' ");
+        IPage<EmployeeInfoDTO> iPage = employeeMapper.queryEmployee4BatchChange(employeePage, queryWrapper);
+        return iPage;
     }
 
     /**
@@ -249,5 +258,6 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         }
         return queryWrapper;
     }
+
 
 }

@@ -5,9 +5,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
+import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.organization.entity.consts.EmployeeConst;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeOrgGroupByDTO;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
@@ -18,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -98,5 +101,26 @@ public class EmployeeJobRoleServiceImpl extends ServiceImpl<EmployeeJobRoleMappe
     @Override
     public List<EmployeeOrgGroupByDTO> countGroupByOrgId() {
         return employeeJobRoleMapper.countGroupByOrgId();
+    }
+
+    /**
+     * 批量修改员工上级
+     * @param ids
+     * @param parentEmployeeId
+     * @return
+     */
+    @Override
+    public boolean batchUpdateParentEmployee(String ids, Long parentEmployeeId) {
+        UserContext userContext = WebContextUtils.getUserContext();
+        Long loginUserId = userContext.getUserId();
+        UpdateWrapper<EmployeeJobRole> updateWrapper=new UpdateWrapper<>();
+        updateWrapper.in("job_role_id", Arrays.asList(ids.split(",")));
+
+        EmployeeJobRole employeeJobRole=new EmployeeJobRole();
+        employeeJobRole.setParentEmployeeId(parentEmployeeId);
+        employeeJobRole.setUpdateTime(LocalDateTime.now());
+        employeeJobRole.setUpdateUserId(loginUserId);
+
+        return this.update(employeeJobRole,updateWrapper);
     }
 }

@@ -180,5 +180,6 @@ public class EmployeeInfoDTO implements Serializable {
     @ExcelProperty("技术职称")
     private String techTitle;
 
-
+    @ExcelIgnore
+    private Long jobRoleId;
 }

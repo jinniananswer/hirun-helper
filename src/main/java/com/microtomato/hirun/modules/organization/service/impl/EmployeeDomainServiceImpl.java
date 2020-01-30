@@ -636,6 +636,34 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         return resultMap;
     }
 
+    @Override
+    public IPage<EmployeeInfoDTO> queryEmployee4BatchChange(Long parentEmployeeId, Long orgId, Page<EmployeeQueryConditionDTO> page) {
+        String orgLine = "";
+        if (null==orgId) {
+            UserContext userContext = WebContextUtils.getUserContext();
+            orgId = userContext.getOrgId();
+            orgLine = orgService.listOrgSecurityLine();
+        } else {
+           OrgDO conditionOrgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+           orgLine = conditionOrgDO.getOrgLine(orgId);
+        }
+
+        IPage<EmployeeInfoDTO> iPage=employeeService.queryEmployee4BatchChange(parentEmployeeId,orgLine,page);
+        if (iPage == null) {
+            return null;
+        }
+        for (EmployeeInfoDTO employeeInfoDTOResult : iPage.getRecords()) {
+            employeeInfoDTOResult.setJobRoleName(staticDataService.getCodeName("JOB_ROLE", employeeInfoDTOResult.getJobRole()));
+            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, employeeInfoDTOResult.getOrgId());
+            employeeInfoDTOResult.setOrgPath(orgDO.getCompanyLinePath());
+            employeeInfoDTOResult.setJobRoleNatureName(this.staticDataService.getCodeName("JOB_NATURE", employeeInfoDTOResult.getJobRoleNature()));
+            employeeInfoDTOResult.setParentEmployeeName(employeeService.getEmployeeNameEmployeeId(employeeInfoDTOResult.getParentEmployeeId()));
+        }
+
+        return iPage;
+    }
+
+
     /**
      * 拼装除了界面传过来的筛选条件
      * 根据员工权限判断对应的数据权限

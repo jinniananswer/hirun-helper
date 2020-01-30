@@ -6,8 +6,12 @@ require.config({
     },
     paths: {
         'vue': 'static/js/framework/vue/vue.min',
+        'vue-router': 'static/js/framework/vue/vue-router',
         'ELEMENT': 'static/element-ui/js/index',
-        'axios': 'static/js/framework/axios/axios.min'
+        'axios': 'static/js/framework/axios/axios.min',
+        'ajax': 'static/js/framework/extend/ajax',
+        'vueselect': 'static/js/framework/extend/select',
+        'util': 'static/js/framework/extend/util'
     },
     shim: {
         'ELEMENT': {
@@ -16,6 +20,7 @@ require.config({
     }
 });
 
-require(['vue', 'ELEMENT'], function(Vue, element){
+require(['vue', 'ELEMENT', 'vue-router'], function(Vue, element, VueRouter){
     element.install(Vue);
+    Vue.use(VueRouter);
 });
