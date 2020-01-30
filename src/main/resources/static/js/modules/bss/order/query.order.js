@@ -23,6 +23,11 @@ require(['vue','ELEMENT', 'axios', 'ajax', 'vueselect'], function(Vue, element, 
                 ajax.get('api/organization/employee/searchEmployee?searchText=金', null, function(responseData){
                     vm.custOrder = responseData;
                 });
+            },
+
+            changeSex: function(newVal) {
+                alert(newVal);
+                alert(this.defaultSex);
             }
         }
     });
