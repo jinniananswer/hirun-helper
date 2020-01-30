@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>员工角色分配</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="../../../static/layui/css/layui.css" th:href="@{static/layui/css/layui.css(v=${version})}" media="all">
+    <link rel="stylesheet" href="../../../static/css/admin.css" th:href="@{static/css/admin.css(v=${version})}" media="all">
+    <script src="../../../static/layui/layui.js" th:src="@{static/layui/layui.js(v=${version})}"></script>
+    <script src="../../../static/js/base.js" th:src="@{static/js/base.js(v=${version})}"></script>
+</head>
+<body>
+<div class="layui-fluid" id="LAY-component-grid-stack">
+    <div class="layui-row layui-col-space10">
+        <div class="layui-col-md5">
+            <div class="layui-card">
+                <div class="layui-card-header">员工列表</div>
+                <div class="layui-card-body">
+                    <div class="layui-form">
+                        <div class="layui-inline">
+                            <div class="layui-inline">
+                                <div class="layui-input-inline">
+                                    <select id="employeeOptions" lay-verify="required" lay-filter="employeeOptions" lay-search="">
+                                        <option value="">输入姓名或手机号搜索</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-card-body">
+                    <table class="layui-table" id="employee-table" lay-filter="table">
+                        <thead>
+                        <tr>
+                            <td style="display: none">ID</td>
+                            <td align="center">姓名</td>
+                            <td align="center">手机号</td>
+                            <td align="center">操作</td>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md2">
+            <div class="layui-card">
+                <div class="layui-card-header">操作区域</div>
+                <div class="layui-card-body" align="center">
+                    <button class="layui-btn" type="button" id="grantRoleBtn" lay-event="grantRole">角色分配</button>
+                </div>
+                <div class="layui-card-body" align="center">
+                    <button class="layui-btn" type="button" id="revokeRoleBtn" lay-event="revokeRole">角色回收</button>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md5">
+            <div class="layui-card">
+                <div class="layui-card-header">角色列表</div>
+                <div class="layui-card-body">
+                    <div class="layui-form">
+                        <div class="layui-inline">
+                            <div class="layui-inline">
+                                <div class="layui-input-inline">
+                                    <select id="roleOptions" lay-verify="required" lay-filter="roleOptions" lay-search="">
+                                        <option value="">输入角色名搜索</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-card-body">
+                    <table class="layui-table" id="role-table" lay-filter="table">
+                        <thead>
+                        <tr>
+                            <td align="center">ID</td>
+                            <td align="center">角色名</td>
+                            <td align="center">操作</td>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    layui.extend(
+        {
+            roleGrantManager: "{/}static/js/modules/system/role.grant.manager",
+        }).use(['roleGrantManager'], function () {
+        layui.roleGrantManager.init();
+    })
+</script>
+</body>
+</html>
