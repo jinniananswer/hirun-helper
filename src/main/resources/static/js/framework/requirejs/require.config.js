@@ -7,7 +7,9 @@ require.config({
     paths: {
         'vue': 'static/js/framework/vue/vue.min',
         'ELEMENT': 'static/element-ui/js/index',
-        'axios': 'static/js/framework/axios/axios.min'
+        'axios': 'static/js/framework/axios/axios.min',
+        'ajax': 'static/js/framework/extend/ajax',
+        'vueselect': 'static/js/framework/extend/select'
     },
     shim: {
         'ELEMENT': {
