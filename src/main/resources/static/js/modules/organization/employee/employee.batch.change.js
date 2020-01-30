@@ -12,7 +12,7 @@ layui.extend({
             table.render({
                 elem: "#employeeBatchChange_table",
                 height: 550,
-                loading: true,
+                loading:false,
                 defaultToolbar: ['filter'],
                 toolbar: '#operateBar',
                 parseData: function (res) { //res 即为原始返回的数据
