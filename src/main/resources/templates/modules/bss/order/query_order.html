@@ -26,10 +26,7 @@
                         </el-col>
                         <el-col :span="8">
                             <el-form-item label="客户性别">
-                                <el-select v-model="custQueryCond.sex" placeholder="请选择客户性别" style="width:100%">
-                                    <el-option label="男" value="1"></el-option>
-                                    <el-option label="女" value="2"></el-option>
-                                </el-select>
+                                <vue-select code-type="SEX" v-model="defaultSex"></vue-select>
                             </el-form-item>
                         </el-col>
                         <el-col :span="8">
