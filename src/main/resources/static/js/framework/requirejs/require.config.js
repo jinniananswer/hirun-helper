@@ -9,6 +9,7 @@ require.config({
         'vue-router': 'static/js/framework/vue/vue-router',
         'ELEMENT': 'static/element-ui/js/index',
         'axios': 'static/js/framework/axios/axios.min',
+        'qs': 'static/js/framework/axios/qs.min',
         'ajax': 'static/js/framework/extend/ajax',
         'vueselect': 'static/js/framework/extend/select',
         'util': 'static/js/framework/extend/util'
