@@ -2,6 +2,7 @@ package com.microtomato.hirun.modules.user.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.user.entity.po.RoleMapping;
 import com.microtomato.hirun.modules.user.entity.po.User;
@@ -12,6 +13,8 @@ import com.microtomato.hirun.modules.user.service.IUserRoleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,7 +32,7 @@ import java.util.List;
 public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> implements IUserRoleService {
 
     @Autowired
-    private IRoleMappingService roleMappingServiceImpl;
+    private IRoleMappingService roleMappingService;
 
     /**
      * 根据 User 查 UserRole
@@ -76,7 +79,7 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
     @Override
     public void createRole(Long userId, Long orgId, String jobRole, String orgNature, LocalDateTime startDate, LocalDateTime endDate) {
 
-        RoleMapping one = roleMappingServiceImpl.getOne(
+        RoleMapping one = roleMappingService.getOne(
             Wrappers.<RoleMapping>lambdaQuery()
                 .select(RoleMapping::getRoleId)
                 .eq(RoleMapping::getJobRole, jobRole)
@@ -162,5 +165,56 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
                 .set(UserRole::getEndDate, endDatetime)
                 .eq(UserRole::getUserId, userId)
         );
+    }
+
+    /**
+     * 批量分配角色
+     *
+     * @param userIds
+     * @param roleIds
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    public void grantRole(List<Long> userIds, List<Long> roleIds) {
+
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+        LocalDateTime foreverTime = TimeUtils.getForeverTime();
+
+        for (Long userId : userIds) {
+            for (Long roleId : roleIds) {
+
+                UserRole one = this.getOne(
+                    Wrappers.<UserRole>lambdaQuery()
+                        .eq(UserRole::getUserId, userId)
+                        .eq(UserRole::getRoleId, roleId)
+                        .lt(UserRole::getStartDate, now)
+                        .gt(UserRole::getEndDate, now)
+                        .last("LIMIT 1")
+                );
+
+                if (null == one) {
+                    UserRole userRole = UserRole.builder().userId(userId).roleId(roleId).startDate(now).endDate(foreverTime).build();
+                    this.save(userRole);
+                }
+
+            }
+        }
+
+    }
+
+    /**
+     * 批量回收角色
+     *
+     * @param userIds
+     * @param roleIds
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    public void revokeRole(List<Long> userIds, List<Long> roleIds) {
+        for (Long userId : userIds) {
+            for (Long roleId : roleIds) {
+                this.deleteRole(userId, roleId);
+            }
+        }
     }
 }

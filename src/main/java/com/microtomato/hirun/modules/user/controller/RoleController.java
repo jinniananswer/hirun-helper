@@ -1,12 +1,9 @@
 package com.microtomato.hirun.modules.user.controller;
 
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.microtomato.hirun.framework.annotation.RestResult;
-import com.microtomato.hirun.framework.util.Constants;
 import com.microtomato.hirun.modules.user.entity.po.Role;
 import com.microtomato.hirun.modules.user.service.IRoleService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +25,17 @@ public class RoleController {
 
     @Autowired
     private IRoleService roleServiceImpl;
+
+    /**
+     * 前端加载所有角色数据
+     *
+     * @return
+     */
+    @GetMapping("/loadRole")
+    @RestResult
+    public List<Role> loadRole() {
+        return roleServiceImpl.loadRole();
+    }
 
     /**
      * 根据角色名查询
