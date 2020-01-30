@@ -22,8 +22,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util'], function(Vue, 
 
         methods: {
             onSubmit: function() {
-                alert(this.id);
-                ajax.get('api/organization/employee/searchEmployee?searchText=金', null, function(responseData){
+                ajax.get('api/organization/employee/searchEmployee', {searchText:'金'}, function(responseData){
                     vm.custOrder = responseData;
                 });
             },
