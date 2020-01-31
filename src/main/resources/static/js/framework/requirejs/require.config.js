@@ -8,6 +8,7 @@ require.config({
         'vue': 'static/js/framework/vue/vue.min',
         'vue-router': 'static/js/framework/vue/vue-router',
         'ELEMENT': 'static/element-ui/js/index',
+        'moment': 'static/js/framework/date/moment.min',
         'axios': 'static/js/framework/axios/axios.min',
         'qs': 'static/js/framework/axios/qs.min',
         'ajax': 'static/js/framework/extend/ajax',
