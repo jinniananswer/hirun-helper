@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.microtomato.hirun.framework.exception.ErrorKind;
 import com.microtomato.hirun.framework.exception.cases.AlreadyExistException;
 import com.microtomato.hirun.framework.security.UserContext;
+import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
@@ -15,6 +16,7 @@ import com.microtomato.hirun.modules.organization.entity.dto.EmployeeInfoDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeTransDetailDTO;
 import com.microtomato.hirun.modules.organization.entity.po.*;
 import com.microtomato.hirun.modules.organization.mapper.EmployeeTransDetailMapper;
+import com.microtomato.hirun.modules.organization.mapper.HrPendingMapper;
 import com.microtomato.hirun.modules.organization.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.modules.system.service.INotifyService;
@@ -72,6 +74,9 @@ public class EmployeeTransDetailServiceImpl extends ServiceImpl<EmployeeTransDet
 
     @Autowired
     IOrgService orgService;
+
+    @Autowired
+    HrPendingMapper hrPendingMapper;
 
     @Override
     public EmployeeTransDetail queryPendingDetailById(Long id) {
@@ -141,10 +146,29 @@ public class EmployeeTransDetailServiceImpl extends ServiceImpl<EmployeeTransDet
     @Override
     public boolean confirmTransPending(EmployeeTransDetailDTO transDetail) {
         UserContext userContext = WebContextUtils.getUserContext();
+        boolean result=false;
 
         List<EmployeeInfoDTO> childEmployeeList = employeeService.findSubordinate(transDetail.getEmployeeId());
         if (childEmployeeList.size() > 0) {
-            throw new AlreadyExistException("该员工下存在下属员工，请将下属员工转移之后，再进行调动申请。", ErrorKind.ALREADY_EXIST.getCode());
+            throw new AlreadyExistException("该员工下存在下属员工，请将下属员工转移之后，再进行调动。", ErrorKind.ALREADY_EXIST.getCode());
+        }
+
+        if(StringUtils.equals(transDetail.getTransType(),HrPendingConst.PENDING_TYPE_INSIDE_TRANS)){
+
+            List<HrPending> pendingList = hrPendingService.queryVaildPendingByEmployeeId(transDetail.getEmployeeId());
+            if (ArrayUtils.isNotEmpty(pendingList)) {
+                throw new AlreadyExistException(" 该员工存在未处理的调动待办任务，请处理后再新增.", ErrorKind.ALREADY_EXIST.getCode());
+            }
+
+            //判断员工是否有在生效的借调记录
+            List<HrPending> effectList = hrPendingService.queryEffectBorrowPendingByEmployeeId(transDetail.getEmployeeId());
+            if (effectList.size() > 0) {
+                throw new AlreadyExistException(" 该员工存在正在生效的借调记录，请处理后再进行内部调动.", ErrorKind.ALREADY_EXIST.getCode());
+            }
+
+            //如果是内部调动需要设置开始时间与结束时间
+            transDetail.setStartTime(LocalDateTime.now());
+            transDetail.setEndTime(TimeUtils.getForeverTime());
         }
 
         Employee employee = new Employee();
@@ -174,6 +198,7 @@ public class EmployeeTransDetailServiceImpl extends ServiceImpl<EmployeeTransDet
         employeeTransDetail.setSourceParentEmployeeId(validEmployeeJobRole.getParentEmployeeId());
         employeeTransDetail.setSourceJobRole(validEmployeeJobRole.getJobRole());
         employeeTransDetail.setSourceOrgId(validEmployeeJobRole.getOrgId());
+        employeeTransDetail.setSourceJobGrade(validEmployeeJobRole.getJobGrade());
         //结束原来生效的jobrole数据
         employeeDo.destroyJob(transDetail.getStartTime());
         //新增员工jobRole数据
@@ -185,12 +210,26 @@ public class EmployeeTransDetailServiceImpl extends ServiceImpl<EmployeeTransDet
         //借调同样走借出流程
         employeeJobRoleService.save(employeeJobRole);
         //拼装调动记录的其他数据
-        employeeTransDetail.setRelPendingId(transDetail.getId());
-        this.save(employeeTransDetail);
+        if(StringUtils.equals(transDetail.getTransType(),HrPendingConst.PENDING_TYPE_INSIDE_TRANS)){
+            HrPending insideTransPending=new HrPending();
+            insideTransPending.setEmployeeId(transDetail.getEmployeeId());
+            insideTransPending.setPendingType(HrPendingConst.PENDING_TYPE_INSIDE_TRANS);
+            insideTransPending.setStartTime(LocalDateTime.now());
+            insideTransPending.setEndTime(TimeUtils.getForeverTime());
+            insideTransPending.setPendingStatus(HrPendingConst.PENDING_STATUS_2);
+            insideTransPending.setPendingExecuteId(userContext.getEmployeeId());
+            insideTransPending.setPendingCreateId(userContext.getEmployeeId());
+            hrPendingMapper.insert(insideTransPending);
+            employeeTransDetail.setRelPendingId(insideTransPending.getId());
+            this.save(employeeTransDetail);
+        }else{
+            employeeTransDetail.setRelPendingId(transDetail.getId());
+            this.save(employeeTransDetail);
+            //更新待办数据
+            hrPending.setPendingStatus(HrPendingConst.PENDING_STATUS_2);
+             result = hrPendingService.updateById(hrPending);
+        }
 
-        //更新待办数据
-        hrPending.setPendingStatus(HrPendingConst.PENDING_STATUS_2);
-        boolean result = hrPendingService.updateById(hrPending);
 
         //分配默认权限
         Org org = this.orgService.getById(transDetail.getOrgId());
@@ -204,7 +243,8 @@ public class EmployeeTransDetailServiceImpl extends ServiceImpl<EmployeeTransDet
                     transDetail.getStartTime().toLocalDate(),validEmployeeJobRole.getJobRole(),
                     validEmployeeJobRole.getJobRoleNature(),validEmployeeJobRole.getJobGrade());
         }
-        if (StringUtils.equals(transDetail.getTransType(), "2")) {
+        if (StringUtils.equals(transDetail.getTransType(), "2")
+                ||StringUtils.equals(transDetail.getTransType(), HrPendingConst.PENDING_TYPE_INSIDE_TRANS)) {
             transitionService.addEmployeeTransTransition(transDetail.getOrgId(), validEmployeeJobRole.getOrgId(), transDetail.getEmployeeId(),
                     transDetail.getStartTime().toLocalDate(),validEmployeeJobRole.getJobRole(),validEmployeeJobRole.getJobRoleNature(),
                     validEmployeeJobRole.getJobGrade());
@@ -215,7 +255,8 @@ public class EmployeeTransDetailServiceImpl extends ServiceImpl<EmployeeTransDet
         OrgDO sourceOrgDO = SpringContextUtils.getBean(OrgDO.class, validEmployeeJobRole.getOrgId());
         String historyContent = "";
 
-        if (StringUtils.equals(transDetail.getTransType(), HrPendingConst.PENDING_TYPE_TRANS)) {
+        if (StringUtils.equals(transDetail.getTransType(), HrPendingConst.PENDING_TYPE_TRANS)
+                ||StringUtils.equals(transDetail.getTransType(), HrPendingConst.PENDING_TYPE_INSIDE_TRANS)) {
             historyContent = "【" + sourceOrgDO.getOrg().getName() + "】调出到【" + targetOrgDO.getOrg().getName() + "】";
         }
         if (StringUtils.equals(transDetail.getTransType(), HrPendingConst.PENDING_TYPE_BORROW)) {

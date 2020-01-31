@@ -212,6 +212,9 @@ public class HrPendingDomainServiceImpl implements IHrPendingDomainService {
         hrPendingDetailDTO.setSourceJobRoleNatureName(staticDataService.getCodeName("JOB_NATURE", hrPendingDetailDTO.getSourceJobRoleNature()));
         hrPendingDetailDTO.setJobRoleNatureName(staticDataService.getCodeName("JOB_NATURE", hrPendingDetailDTO.getJobRoleNature()));
 
+        hrPendingDetailDTO.setSourceJobGradeName(staticDataService.getCodeName("JOB_GRADE",hrPendingDetailDTO.getSourceJobGrade()));
+        hrPendingDetailDTO.setJobGradeName(staticDataService.getCodeName("JOB_GRADE",hrPendingDetailDTO.getJobGrade()));
+
         return hrPendingDetailDTO;
     }
 

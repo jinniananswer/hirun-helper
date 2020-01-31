@@ -15,6 +15,8 @@ layui.extend({
                 var detail = data.rows;
                 layui.select.init('jobRoleNature', 'JOB_NATURE', detail.sourceJobRoleNature, false);
                 layui.select.init('jobRole', 'JOB_ROLE', detail.sourceJobRole, true, '请选择或搜索岗位');
+                layui.select.init('jobGrade', 'JOB_GRADE', detail.sourceJobGrade,true,'');
+
                 $('#orgId').val(detail.sourceOrgId);
                 $('#orgPath').val(detail.sourceOrgPath);
                 $('#discountRate').val(detail.sourceDiscountRate);
