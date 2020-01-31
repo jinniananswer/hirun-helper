@@ -14,6 +14,9 @@ public class HrPendingConst {
     //确认借调员工归还待办
     public static final String PENDING_TYPE_RETURN="3";
 
+    //内部调动
+    public static final String PENDING_TYPE_INSIDE_TRANS="4";
+
     //未处理
     public static final String PENDING_STATUS_1 = "1";
     //已处理

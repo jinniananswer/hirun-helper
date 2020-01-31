@@ -41,20 +41,16 @@
                         <input type="text" name="name" id="name" autocomplete="off" class="layui-input" readonly>
                     </div>
                     <input type="hidden" name="employeeId" id="employeeId" autocomplete="off" class="layui-input" readonly>
-                    <input type="hidden" name="id" id="id" autocomplete="off" class="layui-input" readonly>
-                    <input type="hidden" name="pendingTypeValue" id="pendingTypeValue" autocomplete="off"
-                           class="layui-input">
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label layui-required">调动类型</label>
                     <div class="layui-input-block">
                         <select name="transType" id="transType" lay-verify="required" lay-filter="transType" readonly disabled>
-                            <option value="1">借调</option>
-                            <option value="2">调出</option>
+                            <option value="4" selected>内部调动</option>
                         </select>
                     </div>
                 </div>
-                <div class="layui-form-item">
+<!--                <div class="layui-form-item">
                     <label class="layui-form-label layui-required">开始时间</label>
                     <div class="layui-input-block">
                         <input type="text" id="startTime" name="startTime" required lay-verify="required" readonly autocomplete="off" class="layui-input"/>
@@ -65,11 +61,11 @@
                     <div class="layui-input-block">
                         <input type="text" id="endTime" name="endTime" lay-verify="required" readonly autocomplete="off" class="layui-input" disabled/>
                     </div>
-                </div>
+                </div>-->
                 <div class="layui-form-item">
                     <label class="layui-form-label layui-required">归属部门</label>
                     <div class="layui-input-block">
-                        <input type="text" id="orgPath" name="orgPath" onclick="layui.transPendingConfirm.selectOrg();" placeholder="请点击选择部门" autocomplete="off" class="layui-input"/>
+                        <input type="text" id="orgPath" name="orgPath" onclick="layui.employeeInsideTrans.selectOrg();" placeholder="请点击选择部门" autocomplete="off" class="layui-input"/>
                         <input type="hidden" id="orgId" name="orgId" lay-verify="required"/>
                     </div>
                 </div>
@@ -113,7 +109,7 @@
                     <label class="layui-form-label layui-required">直属上级</label>
                     <div class="layui-input-block">
                         <input type="text" id="parentEmployeeName" name="parentEmployeeName"
-                               onclick="layui.transPendingConfirm.selectParentEmployee();" placeholder="请点击选择直属上级" autocomplete="off" class="layui-input"/>
+                               onclick="layui.employeeInsideTrans.selectParentEmployee();" placeholder="请点击选择直属上级" autocomplete="off" class="layui-input"/>
                         <input type="hidden" id="parentEmployeeId" name="parentEmployeeId" lay-verify="required"/>
                     </div>
                 </div>
@@ -142,7 +138,6 @@
             </div>
         </div>
     </div>
-    <span style="color :red">注意:(调出确认之后请重新签订合同)。</span>
 </div>
 
 <div id="orgTree" style="display:none">
@@ -155,9 +150,9 @@
 <script>
     layui.extend(
         {
-            transPendingConfirm: "{/}static/js/modules/organization/hr/transorg.pending.confirm"
-        }).use('transPendingConfirm', function () {
-        layui.transPendingConfirm.init();
+            employeeInsideTrans: "{/}static/js/modules/organization/employee/employee.inside.trans"
+        }).use('employeeInsideTrans', function () {
+        layui.employeeInsideTrans.init();
     })
 </script>
 </body>

@@ -91,4 +91,12 @@ public class EmployeeTransDetailDTO implements Serializable {
 
     private String transType;
 
+    private String sourceJobGrade;
+
+    private String sourceJobGradeName;
+
+    private String jobGrade;
+
+    private String jobGradeName;
+
 }

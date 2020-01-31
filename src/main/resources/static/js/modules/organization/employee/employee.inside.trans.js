@@ -3,20 +3,81 @@ layui.extend({
     citypicker: 'city-picker/city-picker',
     selectEmployee: 'employee'
 }).define(['ajax', 'form', 'layer', 'element', 'laydate', 'select','orgTree','selectEmployee','citypicker'], function (exports) {
-    var $ = layui.$;
-    var form = layui.form;
-    var layer = layui.layer;
-    var laydate = layui.laydate;
-    var transPendingConfirm = {
+    let $ = layui.$;
+    let form = layui.form;
+    let layer = layui.layer;
+    let laydate = layui.laydate;
+    let employeeInsideTrans = {
         init: function () {
 
             layui.select.init('jobRoleNature', 'JOB_NATURE', '1', false);
             layui.select.init('jobRole', 'JOB_ROLE', null, true, '请选择或搜索岗位');
             layui.select.init('jobGrade', 'JOB_GRADE', null, true);
 
+            let homePicker = new layui.citypicker("#home-city-picker", {
+                provincename:"homeProv",
+                cityname:"homeCity",
+                districtname: "homeRegion",
+                level: 'homeRegion',// 级别
+            });
+            homePicker.setValue("湖南省/长沙市/天心区");
 
-            $("#transType option[value='"+$('#pendingTypeValue').val()+"']").prop("selected",true);
-            form.render("select");
+            layui.ajax.get('api/organization/employee/load', 'employeeId=' + $('#employeeId').val(), function (data) {
+                var detail = data.rows;
+                if (detail == null) {
+                    return;
+                }
+                form.val("tranorg-confirm-form",detail);
+
+                let home = detail.home;
+                if (home != null) {
+                    homePicker.setValue(home);
+                }
+
+                let orgPath = detail.employeeJobRole.orgPath;
+                if (orgPath != null) {
+                    $("#orgPath").val(orgPath);
+                }
+
+                let orgId = detail.employeeJobRole.orgId;
+                if (orgId != null) {
+                    $(document.getElementById("orgId")).val(orgId);
+                }
+
+                let jobRole = detail.employeeJobRole.jobRole;
+                if (jobRole != null) {
+                    $("#jobRole").val(jobRole);
+                    form.render('select', 'jobRole');
+                }
+
+                let jobGrade = detail.employeeJobRole.jobGrade;
+                if (jobRole != null) {
+                    $("#jobGrade").val(jobGrade);
+                    form.render('select', 'jobGrade');
+                }
+
+                let jobRoleNature = detail.employeeJobRole.jobRoleNature;
+                if (jobRoleNature != null) {
+                    $("#jobRoleNature").val(jobRoleNature);
+                    form.render('select', 'jobRoleNature');
+                }
+
+                let discountRate = detail.employeeJobRole.discountRate;
+                if (discountRate != null) {
+                    $(document.getElementById("discountRate")).val(discountRate);
+                }
+
+                let parentEmployeeName = detail.employeeJobRole.parentEmployeeName;
+                if (parentEmployeeName != null) {
+                    $("#parentEmployeeName").val(parentEmployeeName);
+                }
+
+                let parentEmployeeId = detail.employeeJobRole.parentEmployeeId;
+                if (parentEmployeeId != null) {
+                    $(document.getElementById("parentEmployeeId")).val(parentEmployeeId);
+                }
+            });
+
 
             laydate.render({
                 elem: '#startTime',
@@ -52,20 +113,13 @@ layui.extend({
             });
 
             form.on('select(jobRoleNature)', function(data) {
-                layui.transPendingConfirm.calculateDiscountRate();
+                layui.employeeInsideTrans.calculateDiscountRate();
             });
 
-            var homePicker = new layui.citypicker("#home-city-picker", {
-                provincename:"homeProv",
-                cityname:"homeCity",
-                districtname: "homeRegion",
-                level: 'homeRegion',// 级别
-            });
-            homePicker.setValue("湖南省/长沙市/天心区");
 
             form.on('submit(confirm-submit)', function (data) {
-                var field = data.field; //获取提交的字段
-                var index = parent.layer.getFrameIndex(window.name);
+                let field = data.field; //获取提交的字段
+                let index = parent.layer.getFrameIndex(window.name);
                 $.ajax({
                     url: 'api/organization/hr-pending/confirmTransPending',
                     type: 'POST',
@@ -80,13 +134,13 @@ layui.extend({
                                 shade: [0.5, '#fff'],
                                 skin: 'layui-layer-admin layui-anim'
                             }, function () {
-                                parent.layui.table.reload('pending_table'); //重载表格
+                                parent.layui.table.reload('employeeTransTable'); //重载表格
                                 parent.layer.close(index); //再执行关闭
                             }, function () {
                                 top.layui.admin.closeThisTabs();
                             });
                         } else {
-                            parent.layer.msg("提交失败", {icon: 5});
+                            parent.layer.msg("提交失败" + data.message, {icon: 5});
                         }
                     }
                 });
@@ -102,9 +156,8 @@ layui.extend({
         },
 
         calculateDiscountRate : function(data) {
-            var jobRoleNature = $(document.getElementById("jobRoleNature")).val();
-            var orgId = $(document.getElementById("orgId")).val();
-            console.log(jobRoleNature,orgId);
+            let jobRoleNature = $(document.getElementById("jobRoleNature")).val();
+            let orgId = $(document.getElementById("orgId")).val();
             if (orgId == null || orgId == "") {
                 this.selectOrg();
                 return;
@@ -116,5 +169,5 @@ layui.extend({
         },
 
     };
-    exports('transPendingConfirm', transPendingConfirm);
+    exports('employeeInsideTrans', employeeInsideTrans);
 });

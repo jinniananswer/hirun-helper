@@ -248,6 +248,14 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
                     "and iep.trans_type='2' and (now() between iep.start_time and iep.end_time)" +
                     "and (iep.source_org_id in(" + conditionDTO.getOrgLine() + ") or iep.org_id in (" + conditionDTO.getOrgLine() + "))");
         }
+
+        //内部调动
+        if (StringUtils.equals(conditionDTO.getOtherStatus(), EmployeeConst.EMPLOYEE_INSIDE_TRANS_STATUS)) {
+            queryWrapper.exists("select * from ins_employee_trans_detail iep where a.employee_id=iep.employee_id  " +
+                    "and iep.trans_type='4' and (now() between iep.start_time and iep.end_time)" +
+                    "and (iep.source_org_id in(" + conditionDTO.getOrgLine() + ") or iep.org_id in (" + conditionDTO.getOrgLine() + "))");
+        }
+
         //是黑名单
         if (StringUtils.equals(conditionDTO.getIsBlackList(), EmployeeConst.YES)) {
             queryWrapper.exists("select * from ins_employee_blacklist ieb where a.identity_no=ieb.identity_no  and (now() between ieb.start_time and ieb.end_time)");
