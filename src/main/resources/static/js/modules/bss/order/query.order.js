@@ -16,7 +16,9 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util'], function(Vue, 
 
                 defaultSex: '2',
 
-                id: util.getRequest('id')
+                id: util.getRequest('id'),
+
+                createDate: util.getNowDate()
             }
         },
 
