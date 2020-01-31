@@ -5,82 +5,183 @@
     <title>dolphin-admin</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <!-- 引入样式 -->
-    <link rel="stylesheet" href="static/element-ui/css/index.css"  th:href="@{static/element-ui/css/index.css(v=${version})}">
-    <script src="static/js/framework/vue/vue.min.js" th:src="@{static/js/framework/vue/vue.min.js(v=${version})}"></script>
-    <!-- 引入组件库 -->
-    <script src="static/element-ui/js/index.js" th:src="@{static/element-ui/js/index.js(v=${version})}"></script>
-    <script src="static/js/framework/axios/axios.min.js" th:src="@{static/js/framework/axios/axios.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.min.js" th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js" th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
 </head>
 <body>
 <div id="app">
     <el-container>
         <el-main>
-            <el-row :gutter="20">
+            <el-row :gutter="12">
                 <el-col :span="6">
                     <div class="grid-content bg-purple">
-                        <el-card class="box-card">
-                            <el-row :gutter="20">
+                        <el-card class="box-card" shadow="hover">
+                            <el-row :gutter="12">
                                 <el-col :span="12">
-                                    <el-avatar :size="80" :src="avatarUrl"></el-avatar>
+                                    <el-avatar :size="60" :src="avatarUrl"></el-avatar>
                                 </el-col>
                                 <el-col :span="12">
-                                    <h2>{{customer.name}}</h2>
+                                    <h3>金念</h3>
                                 </el-col>
                             </el-row>
-                            <el-divider>基本信息</el-divider>
+                            <el-divider>客户基本信息</el-divider>
                             <div class="text item">
-                                姓名：{{customer.name}}
+                                客户编码：<el-tag>KH20191231026</el-tag>
                             </div>
                             <div class="text item">
-                                生日：{{customer.birthday}}
+                                客户类型：<el-tag>报备客户</el-tag>
                             </div>
                             <div class="text item">
-                                电话：{{customer.mobileNo}}
+                                电话：<el-tag>13723885094</el-tag>
                             </div>
+                            <el-collapse accordion>
+                                <el-collapse-item title="更多信息" name="1">
+                                    <div>客户年龄：<el-tag>35</el-tag></div>
+                                    <div>客户兴趣爱好：<el-tag type="warning">音乐</el-tag><el-tag type="warning">电影</el-tag><el-tag type="warning">篮球</el-tag></div>
+                                </el-collapse-item>
+                            </el-collapse>
+                        </el-card>
+
+                        <el-card class="box-card" shadow="hover">
+                            <div slot="header" class="clearfix">
+                                <span>订单主流程工作人员</span>
+                            </div>
+                            <el-row :gutter="12">
+                                <el-col :span="6">
+                                    <div style="padding:50px">
+
+                                    </div>
+                                </el-col>
+                                <el-col :span="18">
+                                    <el-steps direction="vertical" :space="80" :active="workers.length" align-center>
+                                        <el-step v-for="worker in workers" :title="worker.name" status="wait" :description="worker.job" icon="el-icon-s-custom"></el-step>
+                                    </el-steps>
+                                </el-col>
+                            </el-row>
                         </el-card>
                     </div>
                 </el-col>
                 <el-col :span="18">
                     <div class="grid-content bg-purple-light">
-                        <el-card class="box-card">
-                            <div slot="header" class="clearfix">
-                                <span>订单主流程工作人员</span>
-                            </div>
-                            <el-steps :active="workers.length" align-center>
-                                <el-step v-for="worker in workers" :title="worker.job" status="wait" :description="worker.name" icon="el-icon-s-custom"></el-step>
-                            </el-steps>
-                        </el-card>
+                        <el-card class="box-card" shadow="hover">
+                            <el-tabs v-model="activeTab">
+                                <el-tab-pane label="订单信息" name="orderInfo">
+                                    <div class="text item" style="margin-left: 18px;padding-bottom: 10px" >
+                                        <el-slider
+                                                v-model="progress"
+                                                range
+                                                :marks="marks">
+                                        </el-slider>
+                                    </div>
 
-                        <el-card class="box-card">
-                            <div slot="header" class="clearfix">
-                                <span>工程进度</span>
-                            </div>
-                            <el-progress :text-inside="true" :stroke-width="26" :percentage="70"></el-progress>
-                        </el-card>
+                                    <el-row :gutter="20">
+                                        <el-col :span="6">
+                                            <div class="text">
+                                                订单状态：<el-tag type="danger">收取设计费中</el-tag>
+                                            </div>
+                                        </el-col>
+                                        <el-col :span="6">
+                                            <div class="text item">
+                                                所属楼盘：<el-tag>鑫远御文台</el-tag>
+                                            </div>
+                                        </el-col>
+                                        <el-col :span="12">
+                                            <div class="text item">
+                                                装修地址：<el-tag>新韶西路鑫远御文台11栋1单元1003</el-tag>
+                                            </div>
+                                        </el-col>
+                                    </el-row >
+                                    <el-row :gutter="20">
+                                        <el-col :span="6">
+                                            <div class="text">
+                                                建筑面积：<el-tag>135平米</el-tag>
+                                            </div>
+                                        </el-col>
+                                        <el-col :span="6">
+                                            <div class="text">
+                                                套内面积：<el-tag>112平米</el-tag>
+                                            </div>
+                                        </el-col>
+                                        <el-col :span="6">
+                                            <div class="text">
+                                                户型：<el-tag>四房两厅</el-tag>
+                                            </div>
+                                        </el-col>
 
-                        <el-row :gutter="20">
-                            <el-col :span="12">
-                                <div class="grid-content bg-purple-light">
-                                    <el-card class="box-card">
-                                        <div slot="header" class="clearfix">
-                                            <span>工程进度</span>
-                                        </div>
-                                        <el-progress :text-inside="true" :stroke-width="26" :percentage="70"></el-progress>
-                                    </el-card>
-                                </div>
-                            </el-col>
-                            <el-col :span="12">
-                                <div class="grid-content bg-purple-light">
-                                    <el-card class="box-card">
-                                        <div slot="header" class="clearfix">
-                                            <span>工程进度</span>
-                                        </div>
-                                        <el-progress :text-inside="true" :stroke-width="26" :percentage="70"></el-progress>
-                                    </el-card>
-                                </div>
-                            </el-col>
-                        </el-row>
+                                    </el-row >
+                                </el-tab-pane>
+                                <el-tab-pane label="蓝图一" name="blueInfo1">
+                                    <div class="text item">
+                                        <h3>风格蓝图：写意白描</h3>
+                                        <el-alert
+                                            title="以抽象概括的设计手法，从中国传统图案或构件中提取线条，并运用于整套设计中表现文士审美追求的设计系列"
+                                            type="info"
+                                            :closable="false"
+                                            show-icon>
+                                        </el-alert>
+                                    </div>
+                                    <div class="text item">
+                                        <h3>功能蓝图</h3>
+                                    </div>
+                                </el-tab-pane>
+                                <el-tab-pane label="蓝图二" name="blueInfo2">蓝图二</el-tab-pane>
+                                <el-tab-pane label="合同信息" name="contract">合同信息</el-tab-pane>
+                            </el-tabs>
+                        </el-card>
+                        <el-card class="box-card">
+                            <div slot="header">
+                                <span>操作区</span>
+                            </div>
+                            <el-form :inline="false" label-position="right" label-width="80px">
+                                <el-row>
+                                    <el-col :span="8">
+                                        <el-form-item label="客户姓名">
+                                            <el-input placeholder="客户姓名"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="客户性别">
+                                            <vue-select code-type="SEX"></vue-select>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="微信昵称">
+                                            <el-input placeholder="微信昵称"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row>
+                                    <el-col :span="8">
+                                        <el-form-item label="联系电话">
+                                            <el-input placeholder="客户联系电话"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="创建日期">
+                                            <el-date-picker
+                                                    type="date"
+                                                    value-format="yyyy-MM-dd"
+                                                    placeholder="选择日期"
+                                                    style="width:100%">
+                                            </el-date-picker>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item>
+
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+
+                                    </el-col>
+                                </el-row>
+                                <el-form-item>
+                                    <el-button type="primary">立即创建</el-button>
+                                    <el-button>取消</el-button>
+                                </el-form-item>
+                            </el-form>
+                        </el-card>
+                        </el-card>
                     </div>
                 </el-col>
             </el-row>
@@ -97,84 +198,13 @@
     }
 
     .box-card {
-        margin-bottom: 18px;
+        margin-bottom: 12px;
+    }
+
+    .el-card__header {
+        padding:10px;
     }
 </style>
+<script src="static/js/modules/bss/order/cust.order.detail.js" th:src="@{static/js/modules/bss/order/cust.order.detail.js(v=${version})}"></script>
 </body>
-<script>
-    let vm = new Vue({
-        el: '#app',
-        data: function() {
-            return {
-                customer: {
-                    title : '客户基本信息',
-                    name : '刘慧',
-                    birthday : '1989-01-01',
-                    mobileNo : '18573140029'
-                },
-
-                customerDefault: 'base',
-
-                requirement : {
-                    title : '客户需求信息',
-                    style : '白色简约',
-                    func : '功能列表'
-                },
-
-                workers: [
-                    {
-                        job: '家装顾问',
-                        name: '左金虎'
-                    },
-                    {
-                        job: '客户代表',
-                        name: '张晓梅'
-                    },
-                    {
-                        job: '设计师',
-                        name: '罗厚石'
-                    },
-                    {
-                        job: '项目经理',
-                        name: '彭帅'
-                    },
-                    {
-                        job: '工程助理',
-                        name: '彭帅'
-                    },
-                    {
-                        job: '工程文员',
-                        name: '彭帅'
-                    },
-                    {
-                        job: '出纳',
-                        name: '彭帅'
-                    },
-                    {
-                        job: '财务',
-                        name: '彭帅'
-                    },
-                    {
-                        job: '售后人员',
-                        name: '彭帅'
-                    }
-                ],
-
-                avatarUrl: 'static/img/male.jpg'
-            }
-        },
-
-        methods: {
-            getEmployee : function() {
-                axios.get('api/organization/employee/loadEmployeeArchive?employeeId=1').then(function(responseData){
-                    vm.customer = responseData.data.rows;
-                }).catch(function(error){
-                    console.log(error);
-                });
-            }
-        }
-    });
-
-    vm.getEmployee();
-</script>
 </html>
