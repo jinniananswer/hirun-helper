@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>二级精算</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script src="static/js/framework/requirejs/require.min.js" th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js" th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-main>
+            <el-form :inline="false" :model="budget" label-width="130px">
+                <el-card class="box-card">
+                    <div slot="header" class="clearfix">
+                        <span>对审表信息</span>
+                        <span style="float: right; ">
+                            <el-form-item label="对审时间">
+                                <el-date-picker
+                                        v-model="budget.checkDate"
+                                        align="right"
+                                        type="date"
+                                        value-format="yyyy-MM-dd"
+                                        placeholder="选择日期"
+                                >
+                                </el-date-picker>
+                            </el-form-item>
+                        </span>
+                    </div>
+                    <el-row :gutter="20">
+                        <el-col :span="12">
+                            <el-form-item label="汇总金额是否正确" label-width="240px">
+                                <el-input v-model="budget.totalFeeCheckResult"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="所做项目位置标注是否不清" label-width="240px">
+                                <el-input v-model="budget.locationRemarkCheckResult"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="格式文字表达是否正确" label-width="240px">
+                                <el-input v-model="budget.contentExpressionCheckResult"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="表格上单价是否正确" label-width="240px">
+                                <el-input v-model="budget.unitPriceCheckResult"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="徽标是否错误、变形" label-width="240px">
+                                <el-input v-model="budget.logoCheckResult"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="表格上单价前后是否一致" label-width="240px">
+                                <el-input v-model="budget.unitPriceConsistenceCheckResult"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="表格上材料是否标注清楚" label-width="240px">
+                                <el-input v-model="budget.materialRemarkCheckResult"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="序号排列是否清楚" label-width="240px">
+                                <el-input v-model="budget.serialNumberCheckResult"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="预算材料与预算表后说明是否统一" label-width="240px">
+                                <el-input v-model="budget.materialRemarkConsistenceCheckResult"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="字体大小有没有调整" label-width="240px">
+                                <el-input v-model="budget.fontSizeCheckResult"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="对客户自购的材料是否标注清楚" label-width="240px">
+                                <el-input v-model="budget.selfPurchaseRemarkCheckResult"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="汇总表与明细表数字前后是否一致" label-width="240px">
+                                <el-input v-model="budget.numberConsistenceCheckResult"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-card>
+            </el-form>
+            <el-row>
+                <div style="text-align: center">
+                    <el-button type="primary" @click="submit">提交</el-button>
+                </div>
+            </el-row>
+        </el-main>
+    </el-container>
+</div>
+<script src="static/js/modules/bss/order/check.order.budget.js" th:src="@{static/js/modules/bss/order/check.order.budget.js(v=${version})}"></script>
+</body>
+</html>
