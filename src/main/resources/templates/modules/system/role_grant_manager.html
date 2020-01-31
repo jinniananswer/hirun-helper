@@ -6,100 +6,174 @@
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <link rel="stylesheet" href="../../../static/layui/css/layui.css" th:href="@{static/layui/css/layui.css(v=${version})}" media="all">
-    <link rel="stylesheet" href="../../../static/css/admin.css" th:href="@{static/css/admin.css(v=${version})}" media="all">
-    <script src="../../../static/layui/layui.js" th:src="@{static/layui/layui.js(v=${version})}"></script>
-    <script src="../../../static/js/base.js" th:src="@{static/js/base.js(v=${version})}"></script>
+    <link rel="stylesheet" href="../../../static/element-ui/css/index.css" th:href="@{static/element-ui/css/index.css(v=${version})}">
+    <script src="../../../static/js/framework/vue/vue.min.js" th:src="@{static/js/framework/vue/vue.min.js(v=${version})}"></script>
+    <script src="../../../static/element-ui/js/index.js" th:src="@{static/element-ui/js/index.js(v=${version})}"></script>
+    <script src="../../../static/js/framework/axios/axios.min.js" th:src="@{static/js/framework/axios/axios.min.js(v=${version})}"></script>
 </head>
 <body>
-<div class="layui-fluid" id="LAY-component-grid-stack">
-    <div class="layui-row layui-col-space10">
-        <div class="layui-col-md5">
-            <div class="layui-card">
-                <div class="layui-card-header">员工列表</div>
-                <div class="layui-card-body">
-                    <div class="layui-form">
-                        <div class="layui-inline">
-                            <div class="layui-inline">
-                                <div class="layui-input-inline">
-                                    <select id="employeeOptions" lay-verify="required" lay-filter="employeeOptions" lay-search="">
-                                        <option value="">输入姓名或手机号搜索</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="layui-card-body">
-                    <table class="layui-table" id="employee-table" lay-filter="table">
-                        <thead>
-                        <tr>
-                            <td style="display: none">ID</td>
-                            <td align="center">姓名</td>
-                            <td align="center">手机号</td>
-                            <td align="center">操作</td>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
+<div id="app">
 
-                </div>
-            </div>
-        </div>
-        <div class="layui-col-md2">
-            <div class="layui-card">
-                <div class="layui-card-header">操作区域</div>
-                <div class="layui-card-body" align="center">
-                    <button class="layui-btn" type="button" id="grantRoleBtn" lay-event="grantRole">角色分配</button>
-                </div>
-                <div class="layui-card-body" align="center">
-                    <button class="layui-btn" type="button" id="revokeRoleBtn" lay-event="revokeRole">角色回收</button>
-                </div>
-            </div>
-        </div>
-        <div class="layui-col-md5">
-            <div class="layui-card">
-                <div class="layui-card-header">角色列表</div>
-                <div class="layui-card-body">
-                    <div class="layui-form">
-                        <div class="layui-inline">
-                            <div class="layui-inline">
-                                <div class="layui-input-inline">
-                                    <select id="roleOptions" lay-verify="required" lay-filter="roleOptions" lay-search="">
-                                        <option value="">输入角色名搜索</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
+    <el-row :gutter="6">
+        <el-col :span="10">
+            <div class="grid-content bg-purple">
+                <el-card class="box-card">
+                    <div slot="header" class="clearfix">
+                        <span>员工列表</span>
                     </div>
-                </div>
-                <div class="layui-card-body">
-                    <table class="layui-table" id="role-table" lay-filter="table">
-                        <thead>
-                        <tr>
-                            <td align="center">ID</td>
-                            <td align="center">角色名</td>
-                            <td align="center">操作</td>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
+                    <div class="text item">
+                        <el-select v-model="selectedEmployee" filterable placeholder="输入姓名或手机号搜索" @change="selectEmployeeChange" style="width: 300px">
+                            <el-option v-for="item in employeeOptions" :key="item.userId"
+                                       :label="item.name + '-' + item.mobileNo"
+                                       :value="item.userId + '-' + item.name + '-' + item.mobileNo"></el-option>
+                        </el-select>
+                    </div>
 
-                </div>
+                    <el-divider><i class="el-icon-s-custom"></i></el-divider>
+
+                    <el-table :data="employeeTableData" style="width: 100%">
+                        <el-table-column prop="employeeName" label="姓名" fixed="left" width="80"></el-table-column>
+                        <el-table-column prop="employeeMobileNo" label="手机号" width="120"></el-table-column>
+                        <el-table-column label="操作" fixed="right">
+                            <template slot-scope="scope">
+                                <el-button size="mini" type="danger" @click="handleEmployeeTableDelete(scope.$index)"><i class="el-icon-delete"></i></el-button>
+                                <el-button size="mini" type="primary" @click="handleEmployeeRoleView(scope.$index, scope.row)"><i class="el-icon-view"></i></el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+
+                </el-card>
             </div>
+        </el-col>
+        <el-col :span="4">
+            <div class="grid-content bg-purple">
+                <el-card class="box-card">
+                    <div slot="header" class="clearfix">
+                        <span>操作区域</span>
+                    </div>
+                    <div style="text-align: center">
+                        <el-switch
+                                style="display: block"
+                                v-model="revoke"
+                                active-color="#F56C6C"
+                                inactive-color="#409EFF"
+                                active-text="回收"
+                                inactive-text="分配">
+                        </el-switch>
+                        </br>
+                    </div>
+                    <el-divider></el-divider>
+                    <div style="text-align: center">
+                        <el-button type="primary" v-if="!revoke" @click="grantRoleBtn">角色分配</el-button>
+                        <el-button type="danger" v-if="revoke" @click="revokeRoleBtn">角色回收</el-button>
+                    </div>
+                </el-card>
+            </div>
+        </el-col>
+        <el-col :span="10">
+            <div class="grid-content bg-purple">
+                <el-card class="box-card">
+                    <div slot="header" class="clearfix">
+                        <span>角色列表</span>
+                    </div>
+                    <div class="text item">
+                        <el-select v-model="selectedRole" filterable placeholder="输入角色名搜索" @change="selectRoleChange" style="width: 300px">
+                            <el-option v-for="item in roleOptions" :key="item.id"
+                                       :label="item.roleName"
+                                       :value="item.roleId + '-' + item.roleName"></el-option>
+                        </el-select>
+                    </div>
+
+                    <el-divider><i class="el-icon-user"></i></el-divider>
+
+                    <el-table :data="roleTableData" style="width: 100%">
+                        <el-table-column prop="roleId" label="ID" fixed="left" width="60"></el-table-column>
+                        <el-table-column prop="roleName" label="角色名"></el-table-column>
+                        <el-table-column label="操作" width="160" fixed="right">
+                            <template slot-scope="scope">
+                                <el-button size="mini" type="danger" @click="handleRoleTableDelete(scope.$index)"><i class="el-icon-delete"></i></el-button>
+                                <el-button size="mini" type="primary" @click="handleRoleFuncView(scope.$index, scope.row)"><i class="el-icon-view"></i></el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+
+                </el-card>
+            </div>
+        </el-col>
+    </el-row>
+
+    <!-- 员工已有角色弹出框 -->
+    <el-dialog :title="employeeDialogTitle" :visible.sync="employeeDialogVisible" width="60%">
+        <el-table :data="haveRoleTableData" style="width: 100%">
+            <el-table-column prop="roleId" label="ID" fixed="left" width="60"></el-table-column>
+            <el-table-column prop="roleName" label="角色名"></el-table-column>
+        </el-table>
+
+        <span slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="employeeDialogVisible = false">我知道了</el-button>
+        </span>
+    </el-dialog>
+
+    <!-- 角色权限弹出框 -->
+    <el-dialog title="角色权限" :visible.sync="roleDetailDialogVisible" fullscreen="true" width="100%">
+
+        <div class="dialog-content">
+
+            <el-row :gutter="4">
+                <el-col :span="8">
+                    <div class="grid-content bg-purple">
+                        <el-card class="box-card">
+                            <div slot="header" class="clearfix">
+                                <span>菜单权限</span>
+                            </div>
+                            <el-tree
+                                    :data="menuData"
+                                    show-checkbox
+                                    default-expand-all
+                                    node-key="id"
+                                    ref="tree"
+                                    highlight-current
+                                    :default-checked-keys="menuCheckedKeys"
+                                    :props="defaultProps">
+                            </el-tree>
+                        </el-card>
+                    </div>
+                </el-col>
+
+                <el-col :span="16">
+                    <div class="grid-content bg-purple">
+                        <el-card class="box-card">
+                            <div slot="header" class="clearfix">
+                                <span>操作权限</span>
+                            </div>
+                            <el-table :data="haveFuncTableData" style="width: 100%">
+                                <el-table-column label="" width="55">
+                                    <template slot-scope="scope">
+                                        <el-checkbox v-model="scope.row.checked"></el-checkbox>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column prop="funcId" label="ID" width="60"></el-table-column>
+                                <el-table-column prop="funcCode" label="权限编码"></el-table-column>
+                                <el-table-column prop="funcDesc" label="权限说明"></el-table-column>
+                            </el-table>
+
+                        </el-card>
+                    </div>
+                </el-col>
+            </el-row>
+
         </div>
-    </div>
+
+        <span slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="roleDetailDialogVisible = false">我知道了</el-button>
+        </span>
+    </el-dialog>
 </div>
-
-<script>
-    layui.extend(
-        {
-            roleGrantManager: "{/}static/js/modules/system/role.grant.manager",
-        }).use(['roleGrantManager'], function () {
-        layui.roleGrantManager.init();
-    })
-</script>
+<style>
+    .el-table td, .el-table th {
+        text-align: center;
+    }
+</style>
+<script src="../../../static/js/modules/system/role.grant.manager.js" th:src="@{static/js/modules/system/role.grant.manager.js(v=${version})}"></script>
 </body>
 </html>
