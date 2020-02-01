@@ -51,8 +51,7 @@
                         </el-col>
                         <el-col :span="8">
                             <el-form-item label="设计费标准">
-                                <el-input v-model="custQueryCond.jacketArea" placeholder=""></el-input>
-                                <vue-select code-type="SEX" v-model="defaultSex" @change="changeSex"></vue-select>
+                                <vue-select code-type="designStandard" v-model="defaultStandard" @change="changeSex"></vue-select>
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -174,7 +173,7 @@
         margin-bottom: 18px;
     }
 </style>
-<script src="static/js/modules/bss/order/finance/cashier/collect.fee.js" th:src="@{static/js/modules/bss/order/finance/cashier/collect.fee.js(v=${version})}"></script>
+<script src="static/js/modules/bss/order/finance/cashier/audit.fee.js" th:src="@{static/js/modules/bss/order/finance/cashier/audit.fee.js(v=${version})}"></script>
 </body>
 
 </html>
