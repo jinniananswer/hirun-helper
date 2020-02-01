@@ -9,289 +9,455 @@
     <script src="static/js/framework/requirejs/require.config.js" th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
 </head>
 <body>
-<div id="app" style="display:none" :style="display?display:''">
+<div id="app">
     <el-container>
         <el-main>
-            <el-card class="box-card">
-                <div slot="header" class="clearfix">
-                    <span>设计合同信息</span>
-                   <!-- <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>-->
-                </div>
-                <el-form :inline="false" :model="custQueryCond" label-position="right" label-width="120px">
-                    <el-row>
-                        <el-col :span="8">
-                            <el-form-item label="已收量房费(元)">
-                                <el-input v-model="custQueryCond.roomchargeFee" placeholder=""></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="8">
-                            <el-form-item label="已收设计定金(元)">
-                                <el-input v-model="custQueryCond.designDeposit" placeholder=""></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="8">
-                            <el-form-item label="合同设计费(元)">
-                                <el-input v-model="custQueryCond.contractDesignFee" placeholder=""></el-input>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-row>
-                        <el-col :span="8">
-                            <el-form-item label="合同签订时间">
-                                <el-date-picker v-model="custQueryCond.contractStartDate" align="right" type="date" placeholder="选择日期" style="width:100%">
-                                </el-date-picker>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="8">
-                            <el-form-item label="合同结束时间">
-                                <el-date-picker v-model="custQueryCond.contractEndDate" align="right" type="date" placeholder="选择日期" style="width:100%">
-                                </el-date-picker>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                </el-form>
-            </el-card>
-            <el-card class="box-card">
-                <div slot="header" class="clearfix">
-                    <span>工程合同信息</span>
-                    <!-- <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>-->
-                </div>
-                <el-form :inline="false" :model="custQueryCond" label-position="right" label-width="130px">
-                    <el-row>
-                        <el-col :span="8">
-                            <el-form-item label="合同编号">
-                                <el-input v-model="custQueryCond.contractNumber" placeholder=""></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="8">
-                            <el-form-item label="合同总金额(元)">
-                                <el-input v-model="custQueryCond.contractTotalFee" placeholder=""></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="8">
-                            <el-form-item label="已收首付款(元)">
-                                <el-input v-model="custQueryCond.firstPayment" placeholder=""></el-input>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-row>
-                        <el-col :span="8">
-                            <el-form-item label="已收2期款(元)">
-                                <el-input v-model="custQueryCond.secondPayment" placeholder=""></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="8">
-                            <el-form-item label="已收主材款(元)">
-                                <el-input v-model="custQueryCond.materialPayment" placeholder=""></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="8">
-                            <el-form-item label="已收橱柜款(元)">
-                                <el-input v-model="custQueryCond.cabinetPayment" placeholder=""></el-input>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-row>
-                        <el-col :span="8">
-                            <el-form-item label="现金优惠(元)">
-                                <el-input v-model="custQueryCond.cashDiscount" placeholder=""></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="优惠项目">
-                                <el-input v-model="custQueryCond.preferentialItems" placeholder=""></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="8">
-                        </el-col>
-                    </el-row>
-                </el-form>
-            </el-card>
-            <el-card class="box-card">
-                <div slot="header" class="clearfix">
-                    <span>收款信息</span>
-                    <!-- <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>-->
-                </div>
-                <el-form :inline="false" :model="custQueryCond" label-position="right" label-width="130px">
-                    <el-row>
-                        <el-col :span="8">
-                            <el-form-item label="收据编号">
-                                <el-input v-model="custQueryCond.receiptNumber" placeholder=""></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="8">
-                            <el-form-item label="收款日期">
-                                <el-date-picker v-model="custQueryCond.collectionDate" align="right" type="date" placeholder="选择日期" style="width:100%">
-                                </el-date-picker>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="8">
-                            <el-form-item label="收款人">
-                                <el-input v-model="custQueryCond.payee" placeholder=""></el-input>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-row>
-                        <el-col :span="8">
-                            <el-form-item label="财务员">
-<!--                                <el-input v-model="custQueryCond.treasurer" placeholder=""></el-input>-->
-                                <vue-select code-type="SEX" v-model="defaultSex" @change="changeSex"></vue-select>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="8">
-                            <el-form-item label="收款金额(元)">
-                                <el-input v-model="custQueryCond.collectedFee" placeholder=""></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="8">
-                            <el-form-item label="大写金额(元)">
-                                <el-input v-model="custQueryCond.capitalizationAmount" placeholder=""></el-input>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-row>
-                        <el-col :span="8">
-                            <el-form-item label="现金(元)">
-                                <el-input v-model="custQueryCond.cash" placeholder=""></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="8">
-                            <el-form-item label="兴业刷卡(元)">
-                                <el-input v-model="custQueryCond.industrialBankCard" placeholder=""></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="8">
-                            <el-form-item label="浦发刷卡(元)">
-                                <el-input v-model="custQueryCond.pudongDevelopmentBankCard" placeholder=""></el-input>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-row>
-                        <el-col :span="8">
-                            <el-form-item label="建行基本户(元)">
-                                <el-input v-model="custQueryCond.constructionBankBasic" placeholder=""></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="8">
-                            <el-form-item label="建行3797(元)">
-                                <el-input v-model="custQueryCond.constructionBank3797" placeholder=""></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="8">
-                            <el-form-item label="工行3301(元)">
-                                <el-input v-model="custQueryCond.ICBC3301" placeholder=""></el-input>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-row>
-                        <el-col :span="8">
-                            <el-form-item label="工行分期(元)">
-                                <el-input v-model="custQueryCond.ICBCInstallment" placeholder=""></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="8">
-                            <el-form-item label="农行分期(元)">
-                                <el-input v-model="custQueryCond.ABCInstallment" placeholder=""></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="8">
-                            <el-form-item label="袁备用金(元)">
-                                <el-input v-model="custQueryCond.yuanFund" placeholder=""></el-input>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-row>
-                        <el-col :span="8">
-                            <el-form-item label="芙备用金(元)">
-                                <el-input v-model="custQueryCond.fuFund" placeholder=""></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="8">
-                            <el-form-item label="河西备用金(元)">
-                                <el-input v-model="custQueryCond.hxFund" placeholder=""></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="收款摘要">
-                                <el-input v-model="custQueryCond.summary" placeholder=""></el-input>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                </el-form>
-            </el-card>
-            <template>
-                <el-table
-                        :data="custOrder"
-                        stripe="true"
-                        style="width: 100%">
-                    <el-table-column
-                            prop="feeCategory"
-                            label="款项"
-                            fixed
-                            align="center"
-                            width="180">
-                    </el-table-column>
-                    <el-table-column
-                            prop="periods"
-                            label="期数"
-                            width="180">
-                    </el-table-column>
-                    <el-table-column
-                            prop="details"
-                            label="收款类别（或品牌）"
-                            width="180">
-                    </el-table-column>
-                    <el-table-column
-                            prop="ShopName"
-                            label="店名"
-                            width="180">
-                    </el-table-column>
-                    <el-table-column
-                            prop="collected"
-                            label="是否收齐"
-                            width="180">
-                    </el-table-column>
-                    <el-table-column
-                            prop="fee"
-                            label="金额"
-                            width="180">
-                    </el-table-column>
-                    <el-table-column
-                            prop="collectDate"
-                            label="收取时间"
-                            width="180">
-                    </el-table-column>
-                    <el-table-column
-                            prop="designer"
-                            label="设计师"
-                            width="180">
-                    </el-table-column>
-                    <el-table-column
-                            prop="designerLevel"
-                            label="设计师级别"
-                            width="180">
-                    </el-table-column>
-                    <el-table-column
-                            prop="cabinetDesigner"
-                            label="橱柜设计师"
-                            width="180">
-                    </el-table-column>
-                    <el-table-column
-                            prop="accountManager"
-                            label="客户代表"
-                            width="180">
-                    </el-table-column>
-                    <el-table-column
-                            prop="projectManager"
-                            label="项目经理"
-                            width="180">
-                    </el-table-column>
-                    <el-table-column
-                            prop="remarks"
-                            label="备注">
-                    </el-table-column>
-                </el-table>
-            </template>
+            <el-row :gutter="12">
+                <el-col :span="6">
+                    <div class="grid-content bg-purple">
+                        <el-card class="box-card" shadow="hover">
+                            <div slot="header" class="clearfix">
+                                <span>客户信息</span>
+                            </div>
+                            <el-row :gutter="12">
+                                <el-col :span="12">
+                                    <el-avatar :size="60" :src="avatarUrl"></el-avatar>
+                                </el-col>
+                                <el-col :span="12">
+                                    <h3>金念</h3>
+                                </el-col>
+                            </el-row>
+                            <el-divider>基本资料</el-divider>
+                            <div class="text item">
+                                客户编码：<el-tag>KH20191231026</el-tag>
+                            </div>
+                            <div class="text item">
+                                客户类型：<el-tag>报备客户</el-tag>
+                            </div>
+                            <div class="text item">
+                                电话：<el-tag>13723885094</el-tag>
+                            </div>
+                            <el-collapse accordion>
+                                <el-collapse-item title="更多信息" name="1">
+                                    <div class="item">客户年龄：<el-tag>35</el-tag></div>
+                                    <div>客户兴趣爱好：<el-tag type="warning">音乐</el-tag><el-tag type="warning">电影</el-tag><el-tag type="warning">篮球</el-tag></div>
+                                </el-collapse-item>
+                            </el-collapse>
+                        </el-card>
+
+                        <el-card class="box-card" shadow="hover">
+                            <div slot="header" class="clearfix">
+                                <span>订单主流程工作人员</span>
+                            </div>
+                            <el-row :gutter="12">
+                                <el-col :span="6">
+                                    <div style="padding:50px">
+
+                                    </div>
+                                </el-col>
+                                <el-col :span="18">
+                                    <el-steps direction="vertical" :space="80" :active="workers.length" align-center>
+                                        <el-step v-for="worker in workers" :title="worker.name" status="wait" :description="worker.job" icon="el-icon-s-custom"></el-step>
+                                    </el-steps>
+                                </el-col>
+                            </el-row>
+                        </el-card>
+                    </div>
+                </el-col>
+                <el-col :span="18">
+                    <div class="grid-content bg-purple-light">
+                        <el-card class="box-card" shadow="hover">
+                            <el-tabs v-model="activeTab">
+                                <el-tab-pane label="订单信息" name="orderInfo">
+                                    <div class="text item" style="margin-left: 18px;padding-bottom: 10px" >
+                                        <el-slider
+                                                v-model="progress"
+                                                range
+                                                :marks="marks">
+                                        </el-slider>
+                                    </div>
+
+                                    <el-row :gutter="5">
+                                        <el-col :span="8">
+                                            <div class="text">
+                                                订单状态：<el-tag type="danger">收取设计费中</el-tag>
+                                            </div>
+                                        </el-col>
+                                        <el-col :span="8">
+                                            <div class="text item">
+                                                所属楼盘：<el-tag>鑫远御文台</el-tag>
+                                            </div>
+                                        </el-col>
+                                        <el-col :span="8">
+                                            <div class="text item">
+                                                装修地址：<el-tag>新韶西路鑫远御文台11栋1单元1003</el-tag>
+                                            </div>
+                                        </el-col>
+                                    </el-row >
+                                    <el-row :gutter="5">
+                                        <el-col :span="8">
+                                            <div class="text">
+                                                建筑面积：<el-tag>135平米</el-tag>
+                                            </div>
+                                        </el-col>
+                                        <el-col :span="8">
+                                            <div class="text">
+                                                套内面积：<el-tag>112平米</el-tag>
+                                            </div>
+                                        </el-col>
+                                        <el-col :span="8">
+                                            <div class="text">
+                                                户型：<el-tag>四房两厅</el-tag>
+                                            </div>
+                                        </el-col>
+
+                                    </el-row >
+                                </el-tab-pane>
+                                <el-tab-pane label="蓝图一" name="blueInfo1">
+                                    <div class="text item">
+                                        <h3>风格蓝图：写意白描</h3>
+                                        <el-alert
+                                            title="以抽象概括的设计手法，从中国传统图案或构件中提取线条，并运用于整套设计中表现文士审美追求的设计系列"
+                                            type="info"
+                                            :closable="false"
+                                            show-icon>
+                                        </el-alert>
+                                    </div>
+                                    <div class="text item">
+                                        <h3>功能蓝图</h3>
+                                    </div>
+                                </el-tab-pane>
+                                <el-tab-pane label="蓝图二" name="blueInfo2">蓝图二</el-tab-pane>
+                                <el-tab-pane label="合同信息" name="contract">合同信息</el-tab-pane>
+                            </el-tabs>
+                        </el-card>
+                        <el-card class="box-card">
+                            <div slot="header" class="clearfix">
+                                <span>设计合同信息</span>
+                                <!-- <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>-->
+                            </div>
+                            <el-form :inline="false" :model="custQueryCond" label-position="right" label-width="120px">
+                                <el-row>
+                                    <el-col :span="8">
+                                        <el-form-item label="已收量房费(元)">
+                                            <el-input v-model="custQueryCond.roomchargeFee" placeholder=""></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="已收设计定金(元)">
+                                            <el-input v-model="custQueryCond.designDeposit" placeholder=""></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="合同设计费(元)">
+                                            <el-input v-model="custQueryCond.contractDesignFee" placeholder=""></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row>
+                                    <el-col :span="8">
+                                        <el-form-item label="合同签订时间">
+                                            <el-date-picker v-model="custQueryCond.contractStartDate" align="right" type="date" placeholder="选择日期" style="width:100%">
+                                            </el-date-picker>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="合同结束时间">
+                                            <el-date-picker v-model="custQueryCond.contractEndDate" align="right" type="date" placeholder="选择日期" style="width:100%">
+                                            </el-date-picker>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                            </el-form>
+                        </el-card>
+                        <el-card class="box-card">
+                            <div slot="header" class="clearfix">
+                                <span>工程合同信息</span>
+                                <!-- <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>-->
+                            </div>
+                            <el-form :inline="false" :model="custQueryCond" label-position="right" label-width="130px">
+                                <el-row>
+                                    <el-col :span="8">
+                                        <el-form-item label="合同编号">
+                                            <el-input v-model="custQueryCond.contractNumber" placeholder=""></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="合同总金额(元)">
+                                            <el-input v-model="custQueryCond.contractTotalFee" placeholder=""></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="已收首付款(元)">
+                                            <el-input v-model="custQueryCond.firstPayment" placeholder=""></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row>
+                                    <el-col :span="8">
+                                        <el-form-item label="已收2期款(元)">
+                                            <el-input v-model="custQueryCond.secondPayment" placeholder=""></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="已收主材款(元)">
+                                            <el-input v-model="custQueryCond.materialPayment" placeholder=""></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="已收橱柜款(元)">
+                                            <el-input v-model="custQueryCond.cabinetPayment" placeholder=""></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row>
+                                    <el-col :span="8">
+                                        <el-form-item label="现金优惠(元)">
+                                            <el-input v-model="custQueryCond.cashDiscount" placeholder=""></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="12">
+                                        <el-form-item label="优惠项目">
+                                            <el-input v-model="custQueryCond.preferentialItems" placeholder=""></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                    </el-col>
+                                </el-row>
+                            </el-form>
+                        </el-card>
+                        <el-card class="box-card">
+                            <div slot="header" class="clearfix">
+                                <span>收款信息</span>
+                                <!-- <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>-->
+                            </div>
+                            <el-form :inline="false" :model="custQueryCond" label-position="right" label-width="130px">
+                                <el-row>
+                                    <el-col :span="8">
+                                        <el-form-item label="收据编号">
+                                            <el-input v-model="custQueryCond.receiptNumber" placeholder=""></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="收款日期">
+                                            <el-date-picker v-model="custQueryCond.collectionDate" align="right" type="date" placeholder="选择日期" style="width:100%">
+                                            </el-date-picker>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="收款人">
+                                            <el-input v-model="custQueryCond.payee" placeholder=""></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row>
+                                    <el-col :span="8">
+                                        <el-form-item label="财务员">
+                                            <!--                                <el-input v-model="custQueryCond.treasurer" placeholder=""></el-input>-->
+                                            <vue-select code-type="FeeDetails" v-model="defaultSex" @change="changeSex"></vue-select>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="收款金额(元)">
+                                            <el-input v-model="custQueryCond.collectedFee" placeholder=""></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="大写金额(元)">
+                                            <el-input v-model="custQueryCond.capitalizationAmount" placeholder=""></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row>
+                                    <el-col :span="8">
+                                        <el-form-item label="现金(元)">
+                                            <el-input v-model="custQueryCond.cash" placeholder=""></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="兴业刷卡(元)">
+                                            <el-input v-model="custQueryCond.industrialBankCard" placeholder=""></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="浦发刷卡(元)">
+                                            <el-input v-model="custQueryCond.pudongDevelopmentBankCard" placeholder=""></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row>
+                                    <el-col :span="8">
+                                        <el-form-item label="建行基本户(元)">
+                                            <el-input v-model="custQueryCond.constructionBankBasic" placeholder=""></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="建行3797(元)">
+                                            <el-input v-model="custQueryCond.constructionBank3797" placeholder=""></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="工行3301(元)">
+                                            <el-input v-model="custQueryCond.ICBC3301" placeholder=""></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row>
+                                    <el-col :span="8">
+                                        <el-form-item label="工行分期(元)">
+                                            <el-input v-model="custQueryCond.ICBCInstallment" placeholder=""></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="农行分期(元)">
+                                            <el-input v-model="custQueryCond.ABCInstallment" placeholder=""></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="袁备用金(元)">
+                                            <el-input v-model="custQueryCond.yuanFund" placeholder=""></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row>
+                                    <el-col :span="8">
+                                        <el-form-item label="芙备用金(元)">
+                                            <el-input v-model="custQueryCond.fuFund" placeholder=""></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="河西备用金(元)">
+                                            <el-input v-model="custQueryCond.hxFund" placeholder=""></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="12">
+                                        <el-form-item label="收款摘要">
+                                            <el-input v-model="custQueryCond.summary" placeholder=""></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                            </el-form>
+                        </el-card>
+                        <el-card class="box-card">
+                            <div slot="header">
+                                <span>操作区</span>
+                            </div>
+                            <el-button type="success" @click="addRow(feeTableData)">新增</el-button>
+                            <template>
+                                <el-table :data="feeTableData" style="width: 100%" @selection-change="handleSelectionChange">>
+                                    <el-table-column
+                                            prop="collected"
+                                            type="selection"
+                                            label="是否收齐"
+                                            width="150">
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="feeCategory"
+                                            label="款项"
+                                            width="150">
+                                        <template scope="scope">
+                                            <vue-select code-type="feeCategory" v-model="scope.row.feeCategory" @change="changeFeeCategory"size="mini"></vue-select>
+                                        </template>
+                                    </el-table-column>
+<!--                                    <el-table-column-->
+<!--                                            prop="periods"-->
+<!--                                            label="期数"-->
+<!--                                            width="100">-->
+<!--                                    </el-table-column>-->
+                                    <el-table-column
+                                            prop="designFeeDetails"
+                                            label="收款类别（或品牌）"
+                                            width="100">
+                                        <template scope="scope">
+                                            <vue-select code-type="designFeeDetails" v-model="scope.row.designFeeDetails" @change="changeDesignFeeDetails"></vue-select>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="ShopName"
+                                            label="店名"
+                                            width="180">
+                                        <template scope="scope">
+                                            <el-input v-model="scope.row.ShopName" placeholder="":disabled="true"></el-input>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="fee"
+                                            label="金额"
+                                            width="180">
+                                        <template scope="scope">
+                                            <el-input v-model="scope.row.fee" placeholder=""></el-input>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="collectDate"
+                                            label="收取时间"
+                                            width="180">
+                                        <template scope="scope">
+                                            <el-date-picker v-model="scope.row.collectDate" align="right" type="date" placeholder="选择日期" style="width:100%" :disabled="true">
+                                            </el-date-picker>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="designer"
+                                            label="设计师"
+                                            width="180">
+                                        <template scope="scope">
+                                            <el-input v-model="scope.row.designer" placeholder="" :disabled="true"></el-input>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="designerLevel"
+                                            label="设计师级别"
+                                            width="180">
+                                        <template scope="scope">
+                                            <el-input v-model="scope.row.designerLevel" placeholder="" :disabled="true"></el-input>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="cabinetDesigner"
+                                            label="橱柜设计师"
+                                            width="180">
+                                        <template scope="scope">
+                                            <el-input v-model="scope.row.cabinetDesigner" placeholder="" :disabled="true"></el-input>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="accountManager"
+                                            label="客户代表"
+                                            width="180">
+                                        <template scope="scope">
+                                            <el-input v-model="scope.row.accountManager" placeholder="" :disabled="true"></el-input>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="projectManager"
+                                            label="项目经理"
+                                            width="180">
+                                        <template scope="scope">
+                                            <el-input v-model="scope.row.projectManager" placeholder="" :disabled="true"></el-input>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="remarks"
+                                            label="备注"
+                                            width="180">
+                                        <template scope="scope">
+                                            <el-input v-model="scope.row.remarks" placeholder=""></el-input>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column label="操作" fixed="right"  width="150">
+                                        <template slot-scope="scope">
+                                            <el-button  type="primary" icon="el-icon-edit" circle @click="handleFeeTableEdit(scope.$index, scope.row)"></el-button>
+                                            <el-button type="danger" icon="el-icon-delete" circle @click="handleFeeTableDelete(scope.$index)"></el-button>
+                                        </template>
+                                    </el-table-column>
+                                </el-table>
+                            </template>
+                        </el-card>
+                        </el-card>
+                    </div>
+                </el-col>
+            </el-row>
         </el-main>
     </el-container>
 </div>
@@ -301,14 +467,17 @@
     }
 
     .item {
-        margin-bottom:18px;
+        margin-bottom: 18px;
     }
 
     .box-card {
-        margin-bottom: 18px;
+        margin-bottom: 12px;
+    }
+
+    .el-card__header {
+        padding:10px;
     }
 </style>
 <script src="static/js/modules/bss/order/finance/cashier/collect.fee.js" th:src="@{static/js/modules/bss/order/finance/cashier/collect.fee.js(v=${version})}"></script>
 </body>
-
 </html>
