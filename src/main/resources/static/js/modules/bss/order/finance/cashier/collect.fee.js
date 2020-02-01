@@ -14,7 +14,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util'], function(Vue, 
 
                 display:'display:block',
 
-                defaultSex: '2',
+                defaultSex: '1',
 
                 id: util.getRequest('id')
             }
