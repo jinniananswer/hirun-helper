@@ -93,6 +93,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util'], function(Vue, 
                     vm.custOrder = responseData;
                 });
             },
+            //处理表格多选表头初始化方法
             init(){
                 document.querySelector(".el-checkbox__inner").style.display="none";
                 document.querySelector(".cell").innerHTML = '是否交齐'
