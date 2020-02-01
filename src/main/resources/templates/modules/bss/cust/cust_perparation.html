@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>dolphin-admin</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script src="static/js/framework/requirejs/require.min.js"
+            th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js"
+            th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+</head>
+<body>
+<div id="customer_perparation" style="display:none" :style="display?display:''">
+    <el-container>
+        <el-main>
+            <template>
+
+                <el-form :inline="false" :model="custQueryCond" label-position="right" label-width="80px">
+                    <el-card class="box-card">
+                        <div>
+                            <el-divider content-position="left"><span style="font-weight: 700">客户信息</span></el-divider>
+                        </div>
+                        <el-row :gutter="20">
+                            <el-col :span="6">
+                                <el-form-item label="客户编号">
+                                    <el-input v-model="custQueryCond.name" placeholder="客户编号"
+                                              value="20200201001"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="6">
+                                <el-form-item label="客户姓名">
+                                    <el-input v-model="custQueryCond.name" placeholder="客户姓名"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="6">
+                                <el-form-item label="客户电话">
+                                    <el-input v-model="custQueryCond.mobileNo" placeholder="客户联系电话"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="6">
+                                <el-form-item label="房屋类型">
+                                    <vue-select code-type="HOUSE_MODE" v-model="defaultSex"
+                                                @change="changeSex"></vue-select>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row :gutter="20">
+                            <el-col :span="6">
+                                <el-form-item label="房屋面积">
+                                    <el-input v-model="custQueryCond.name" controls-position="right"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="6">
+                                <el-form-item label="装修地点">
+                                    <vue-select code-type="HOUSE_MODE" v-model="defaultSex"
+                                                @change="changeSex"></vue-select>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="6">
+                                <el-form-item label="">
+                                    <el-input v-model="custQueryCond.name">
+                                        <template slot="append">栋</template>
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="6">
+                                <el-form-item label="">
+                                    <el-input v-model="custQueryCond.name"></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                    </el-card>
+
+                    <el-card class="box-card">
+                        <div>
+                            <el-divider content-position="left"><span style="font-weight: 700">报备信息</span></el-divider>
+                        </div>
+                        <el-row :gutter="20">
+                            <el-col :span="6">
+                                <el-form-item label="部门">
+                                    <el-input v-model="custQueryCond.name" controls-position="right"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="6">
+                                <el-form-item label="申报人">
+                                    <vue-select code-type="HOUSE_MODE" v-model="defaultSex"
+                                                @change="changeSex"></vue-select>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="6">
+                                <el-form-item label="报备时间">
+                                    <el-date-picker v-model="custQueryCond.name" type="datetime">
+                                    </el-date-picker>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="6">
+                                <el-form-item label="录入人">
+                                    <el-input v-model="custQueryCond.name"></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row :gutter="20">
+                            <el-col :span="6">
+                                <el-form-item label="客户属性">
+                                    <el-input v-model="custQueryCond.name" controls-position="right"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="6">
+                                <el-form-item label="装修地址">
+                                    <vue-select code-type="HOUSE_MODE" v-model="defaultSex"
+                                                @change="changeSex"></vue-select>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="6">
+                                <el-form-item label="客户姓名">
+                                    <el-date-picker v-model="custQueryCond.name" type="datetime">
+                                    </el-date-picker>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="6">
+                                <el-form-item label="客户电话">
+                                    <el-input v-model="custQueryCond.name"></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="24">
+                                <el-form-item label="备注">
+                                    <el-input type="textarea" v-model="custQueryCond.name"
+                                              controls-position="right"></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                    </el-card>
+<!--                    <el-card class="box-card">
+                        <div>
+                            <el-divider content-position="center"><span style="font-weight: 700">报备裁定，可以将某次报备视为无效报备</span></el-divider>
+                        </div>
+                        <el-row :gutter="20">
+                            <el-col :span="6">
+                                <el-form-item label="">
+                                    <el-checkbox v-model="defaultSex">裁定为无效报备</el-checkbox>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="6">
+                                <el-form-item label="裁定人">
+                                    <vue-select code-type="HOUSE_MODE" v-model="defaultSex" @change="changeSex"
+                                                disabled></vue-select>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="6">
+                                <el-form-item label="裁定时间">
+                                    <el-date-picker v-model="custQueryCond.name" type="datetime" disabled>
+                                    </el-date-picker>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="6">
+                                <el-form-item label="">
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="24">
+                                <el-form-item label="主管备注">
+                                    <el-input type="textarea" v-model="custQueryCond.name" controls-position="right"
+                                              disabled></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                    </el-card>-->
+                </el-form>
+            </template>
+
+            <el-card class="box-card">
+                <div>
+                    <el-divider content-position="left"><span style="font-weight: 700">历史报备</span></el-divider>
+                </div>
+                <template>
+                    <el-table
+                            :data="custOrder"
+                            border
+                            stripe="true"
+                            style="width: 100%">
+                        <el-table-column
+                                prop="name"
+                                label="申报人"
+                                align="center"
+                                width="180">
+                        </el-table-column>
+                        <el-table-column
+                                prop="sex"
+                                label="申报时间"
+                                width="180">
+                        </el-table-column>
+                        <el-table-column
+                                prop="mobileNo"
+                                label="联系电话"
+                                align="center"
+                                width="180">
+                        </el-table-column>
+                        <el-table-column
+                                prop="wechatNicName"
+                                label="上门时间"
+                                width="180">
+                        </el-table-column>
+                        <el-table-column
+                                prop="address"
+                                label="报备状态">
+                        </el-table-column>
+                    </el-table>
+                </template>
+            </el-card>
+        </el-main>
+    </el-container>
+</div>
+<style>
+    .text {
+        font-size: 14px;
+    }
+
+    .item {
+        margin-bottom: 18px;
+    }
+
+    .box-card {
+        margin-bottom: 18px;
+    }
+</style>
+<script src="static/js/modules/bss/cust/cust.perparation.js"
+        th:src="@{static/js/modules/bss/cust/cust.perparation.js(v=${version})}"></script>
+</body>
+
+</html>
