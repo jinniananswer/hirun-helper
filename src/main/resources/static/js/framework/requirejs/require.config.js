@@ -14,7 +14,8 @@ require.config({
         'ajax': 'static/js/framework/extend/ajax',
         'vueselect': 'static/js/framework/extend/select',
         'util': 'static/js/framework/extend/util',
-        'cust-info': 'static/js/modules/bss/component/cust.info'
+        'cust-info': 'static/js/modules/bss/component/cust.info',
+        'order-info': 'static/js/modules/bss/component/order.info'
     },
     shim: {
         'ELEMENT': {
