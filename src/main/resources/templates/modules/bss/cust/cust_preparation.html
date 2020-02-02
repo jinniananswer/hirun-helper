@@ -16,57 +16,55 @@
         <el-main>
             <template>
 
-                <el-form :inline="false" :model="custQueryCond" label-position="right" label-width="80px">
+                <el-form :inline="false" label-position="right" label-width="80px">
                     <el-card class="box-card">
                         <div>
                             <el-divider content-position="left"><span style="font-weight: 700">客户信息</span></el-divider>
                         </div>
                         <el-row :gutter="20">
                             <el-col :span="6">
-                                <el-form-item label="客户编号">
-                                    <el-input v-model="custQueryCond.name" placeholder="客户编号"
+                                <el-form-item label="客户编号" required="true">
+                                    <el-input v-model="custBase.custNo" placeholder="客户编号"
                                               value="20200201001"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="6">
-                                <el-form-item label="客户姓名">
-                                    <el-input v-model="custQueryCond.name" placeholder="客户姓名"></el-input>
+                                <el-form-item label="客户姓名" required="true">
+                                    <el-input v-model="custBase.custName" placeholder="客户姓名"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="6">
-                                <el-form-item label="客户电话">
-                                    <el-input v-model="custQueryCond.mobileNo" placeholder="客户联系电话"></el-input>
+                                <el-form-item label="客户电话" required="true">
+                                    <el-input v-model="custBase.mobileNo" placeholder="客户联系电话"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="6">
-                                <el-form-item label="房屋类型">
-                                    <vue-select code-type="HOUSE_MODE" v-model="defaultSex"
-                                                @change="changeSex"></vue-select>
+                                <el-form-item label="房屋类型" required="true">
+                                    <vue-select code-type="HOUSE_MODE" v-model="project.houseMode"></vue-select>
                                 </el-form-item>
                             </el-col>
                         </el-row>
                         <el-row :gutter="20">
                             <el-col :span="6">
                                 <el-form-item label="房屋面积">
-                                    <el-input v-model="custQueryCond.name" controls-position="right"></el-input>
+                                    <el-input v-model="project.houseArea" controls-position="right"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="6">
-                                <el-form-item label="装修地点">
-                                    <vue-select code-type="HOUSE_MODE" v-model="defaultSex"
-                                                @change="changeSex"></vue-select>
+                                <el-form-item label="装修地点" required="true">
+                                    <vue-select code-type="HOUSE_MODE" v-model="project.housePlace"></vue-select>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="6">
-                                <el-form-item label="">
-                                    <el-input v-model="custQueryCond.name">
+                                <el-form-item label="楼栋" required="true">
+                                    <el-input v-model="project.houseBuilding">
                                         <template slot="append">栋</template>
                                     </el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="6">
-                                <el-form-item label="">
-                                    <el-input v-model="custQueryCond.name"></el-input>
+                                <el-form-item label="房间号"  required="true">
+                                    <el-input v-model="project.houseRoomNo"></el-input>
                                 </el-form-item>
                             </el-col>
                         </el-row>
@@ -78,60 +76,64 @@
                         </div>
                         <el-row :gutter="20">
                             <el-col :span="6">
-                                <el-form-item label="部门">
-                                    <el-input v-model="custQueryCond.name" controls-position="right"></el-input>
+                                <el-form-item label="部门" required="true">
+                                    <el-input v-model="custPreparation.prepareOrgId" controls-position="right"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="6">
-                                <el-form-item label="申报人">
-                                    <vue-select code-type="HOUSE_MODE" v-model="defaultSex"
-                                                @change="changeSex"></vue-select>
+                                <el-form-item label="申报人" required="true">
+                                        <el-select v-model="custPreparation.prepareEmployeeId" filterable placeholder="输入姓名或手机号搜索"  style="width: 220px">
+                                            <el-option v-for="item in employeeOptions" :key="item.userId"
+                                                       :label="item.name"
+                                                       :value="item.userId + '-' + item.name + '-' + item.mobileNo"></el-option>
+                                        </el-select>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="6">
-                                <el-form-item label="报备时间">
-                                    <el-date-picker v-model="custQueryCond.name" type="datetime">
+                                <el-form-item label="报备时间" required="true">
+                                    <el-date-picker v-model="custPreparation.prepareTime" type="datetime">
                                     </el-date-picker>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="6">
-                                <el-form-item label="录入人">
-                                    <el-input v-model="custQueryCond.name"></el-input>
+                                <el-form-item label="录入人" required="true">
+                                    <el-input v-model="custPreparation.enterEmployeeId"></el-input>
                                 </el-form-item>
                             </el-col>
                         </el-row>
                         <el-row :gutter="20">
                             <el-col :span="6">
-                                <el-form-item label="客户属性">
-                                    <el-input v-model="custQueryCond.name" controls-position="right"></el-input>
+                                <el-form-item label="客户属性" required="true">
+                                    <vue-select code-type="HOUSE_MODE" v-model="custPreparation.custProperty"></vue-select>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="6">
                                 <el-form-item label="装修地址">
-                                    <vue-select code-type="HOUSE_MODE" v-model="defaultSex"
-                                                @change="changeSex"></vue-select>
+                                    <el-input v-model="custPreparation.refereeFixPlace"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="6">
                                 <el-form-item label="客户姓名">
-                                    <el-date-picker v-model="custQueryCond.name" type="datetime">
-                                    </el-date-picker>
+                                    <el-input v-model="custPreparation.refereeName"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="6">
                                 <el-form-item label="客户电话">
-                                    <el-input v-model="custQueryCond.name"></el-input>
+                                    <el-input v-model="custPreparation.refereeMobileNo"></el-input>
                                 </el-form-item>
                             </el-col>
                         </el-row>
                         <el-row>
                             <el-col :span="24">
                                 <el-form-item label="备注">
-                                    <el-input type="textarea" v-model="custQueryCond.name"
-                                              controls-position="right"></el-input>
+                                    <el-input type="textarea" v-model="custPreparation.remark"></el-input>
                                 </el-form-item>
                             </el-col>
                         </el-row>
+                        <el-form-item style="text-align: center ">
+                            <el-button type="primary" @click="submit">保存</el-button>
+                            <el-button>取消</el-button>
+                        </el-form-item>
                     </el-card>
 <!--                    <el-card class="box-card">
                         <div>
@@ -191,6 +193,7 @@
                         <el-table-column
                                 prop="sex"
                                 label="申报时间"
+                                align="center"
                                 width="180">
                         </el-table-column>
                         <el-table-column
@@ -202,10 +205,12 @@
                         <el-table-column
                                 prop="wechatNicName"
                                 label="上门时间"
+                                align="center"
                                 width="180">
                         </el-table-column>
                         <el-table-column
                                 prop="address"
+                                align="center"
                                 label="报备状态">
                         </el-table-column>
                     </el-table>
@@ -227,8 +232,8 @@
         margin-bottom: 18px;
     }
 </style>
-<script src="static/js/modules/bss/cust/cust.perparation.js"
-        th:src="@{static/js/modules/bss/cust/cust.perparation.js(v=${version})}"></script>
+<script src="../../../static/js/modules/bss/cust/cust.preparation.js"
+        th:src="@{static/js/modules/bss/cust/cust.preparation.js(v=${version})}"></script>
 </body>
 
 </html>
