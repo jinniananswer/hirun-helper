@@ -1,4 +1,4 @@
-require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util'], function(Vue, element, axios, ajax, vueselect, util) {
+require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info'], function(Vue, element, axios, ajax, vueselect, util, custInfo) {
     let vm = new Vue({
         el: '#app',
         data: function() {

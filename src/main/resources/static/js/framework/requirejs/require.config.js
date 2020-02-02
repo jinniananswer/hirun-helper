@@ -13,7 +13,8 @@ require.config({
         'qs': 'static/js/framework/axios/qs.min',
         'ajax': 'static/js/framework/extend/ajax',
         'vueselect': 'static/js/framework/extend/select',
-        'util': 'static/js/framework/extend/util'
+        'util': 'static/js/framework/extend/util',
+        'cust-info': 'static/js/modules/bss/component/cust.info'
     },
     shim: {
         'ELEMENT': {
