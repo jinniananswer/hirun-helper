@@ -101,6 +101,7 @@ public class MySQLGenerator {
         globalConfig.setOutputDir(outPutDir);
         globalConfig.setAuthor(author);
         globalConfig.setOpen(false);
+        globalConfig.setFileOverride(false);
         autoGenerator.setGlobalConfig(globalConfig);
 
         // 数据源配置

@@ -44,5 +44,4 @@ public class OrderBudgetController {
     public OrderBudget getBudgetById(String id) {
         return orderBudgetServiceImpl.getById(id);
     }
-
 }
