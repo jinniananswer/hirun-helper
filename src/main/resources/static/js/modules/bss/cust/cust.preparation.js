@@ -1,38 +1,31 @@
-require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util'], function(Vue, element, axios, ajax, vueselect, util) {
+require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util'], function (Vue, element, axios, ajax, vueselect, util) {
     let vm = new Vue({
         el: '#customer_perparation',
-        data: function() {
+        data: function () {
             return {
                 employeeOptions: [],
 
-                custBase: {
-                    custNo: '',
-                    custName: '',
-                    custBase: '',
-                    mobileNo: ''
-                },
-
-                project: {
-                    houseMode: '',
-                    houseArea: '',
-                    housePlace: '',
-                    houseBuilding: '',
-                    houseRoomNo:'',
-                },
-
-                custPreparation: {
+                customerPreparation: {
                     prepareOrgId: '',
                     prepareEmployeeId: '',
-                    prepareTime: util.getNowDate(),
+                    prepareTime:  new Date(),
                     enterEmployeeId: '',
-                    custProperty:'',
+                    custProperty: '',
                     refereeFixPlace: '',
                     refereeName: '',
-                    refereeMobileNo:'',
-                    remark:'',
+                    refereeMobileNo: '',
+                    custNo: 'KH2020020216',
+                    custName: '',
+                    mobileNo: '',
+                    remark: '',
+                    houseMode: '',
+                    houseArea: 0,
+                    housePlace: '',
+                    houseBuilding: '',
+                    houseRoomNo: '',
                 },
                 custOrder: [],
-                display:'display:block',
+                display: 'display:block',
                 id: util.getRequest('id'),
 
             }
@@ -47,9 +40,27 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util'], function(Vue, 
                 });
             },
 
-            submit: function() {
-                ajax.get('api/organization/employee/searchEmployee', {searchText:'金'}, function(responseData){
-                    vm.custOrder = responseData;
+            loadPreparationHistory: function () {
+                axios.get('api/customer/cust-preparation/loadPreparationHistory?mobileNo='+this.customerPreparation.mobileNo).then(function (responseData) {
+                    vm.custOrder = responseData.data.rows;
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+
+            submit: function () {
+                axios({
+                    method: 'post',
+                    url: 'api/customer/cust-preparation/addCustomerPreparation',
+                    data: this.customerPreparation
+                }).then(function (responseData) {
+                    if (0 == responseData.data.code) {
+
+                        Vue.prototype.$message({
+                            message: '报备成功！',
+                            type: 'success'
+                        });
+                    }
                 });
             },
 

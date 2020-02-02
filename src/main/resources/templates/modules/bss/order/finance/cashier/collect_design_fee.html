@@ -344,7 +344,7 @@
                             </div>
                             <el-button type="success" @click="addRow(feeTableData)">新增</el-button>
                             <template>
-                                <el-table :data="feeTableData" style="width: 100%" @selection-change="handleSelectionChange">>
+                                <el-table :data="feeTableData" style="width: 100%" @selection-change="handleSelectionChange">
                                     <el-table-column
                                             prop="collected"
                                             type="selection"
@@ -367,7 +367,7 @@
                                     <el-table-column
                                             prop="designFeeDetails"
                                             label="收款类别（或品牌）"
-                                            width="100">
+                                            width="180">
                                         <template scope="scope">
                                             <vue-select code-type="designFeeDetails" v-model="scope.row.designFeeDetails" @change="changeDesignFeeDetails"></vue-select>
                                         </template>
@@ -453,6 +453,14 @@
                                     </el-table-column>
                                 </el-table>
                             </template>
+                            <div>
+                                <el-form :inline="false" label-position="right" label-width="80px">
+                                    <el-form-item>
+                                        <el-button type="primary">立即创建</el-button>
+                                        <el-button>取消</el-button>
+                                    </el-form-item>
+                                </el-form>
+                            </div>
                         </el-card>
                         </el-card>
                     </div>
