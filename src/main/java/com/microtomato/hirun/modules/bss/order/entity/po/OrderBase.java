@@ -1,17 +1,14 @@
 package com.microtomato.hirun.modules.bss.order.entity.po;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.microtomato.hirun.framework.data.BaseEntity;
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
-import lombok.Data;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.microtomato.hirun.framework.data.BaseEntity;
+import lombok.*;
 import lombok.experimental.Accessors;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -80,7 +77,7 @@ public class OrderBase extends BaseEntity {
     private Integer stage;
 
     /**
-     * 订单阶段，对应0-酝酿，10-初选，30-初步决策，50-决策，60-施工，95-维护
+     * 订单状态，见静态参数ORDER_STATUS
      */
     @TableField("status")
     private String status;
