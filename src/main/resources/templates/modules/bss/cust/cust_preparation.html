@@ -16,53 +16,53 @@
         <el-main>
             <template>
 
-                <el-form :inline="false" label-position="right" label-width="80px" :model="customerPreparation">
+                <el-form :inline="false" :rules="rules" label-position="right" label-width="80px" :model="customerPreparation" ref="customerPreparation">
                     <el-card class="box-card">
                         <div>
                             <el-divider content-position="left"><span style="font-weight: 700">客户信息</span></el-divider>
                         </div>
                         <el-row :gutter="20">
                             <el-col :span="6">
-                                <el-form-item label="客户编号" required="true">
+                                <el-form-item label="客户编号">
                                     <el-input v-model="customerPreparation.custNo" placeholder="客户编号" readonly></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="6">
-                                <el-form-item label="客户姓名" required="true">
+                                <el-form-item label="客户姓名" prop="custName">
                                     <el-input v-model="customerPreparation.custName" placeholder="客户姓名"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="6">
-                                <el-form-item label="客户电话" required="true">
+                                <el-form-item label="客户电话"  prop="mobileNo">
                                     <el-input v-model="customerPreparation.mobileNo" placeholder="客户联系电话" @blur="loadPreparationHistory"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="6">
-                                <el-form-item label="房屋类型" required="true">
+                                <el-form-item label="房屋类型"  prop="houseMode">
                                     <vue-select code-type="HOUSE_MODE" v-model="customerPreparation.houseMode"></vue-select>
                                 </el-form-item>
                             </el-col>
                         </el-row>
                         <el-row :gutter="20">
                             <el-col :span="6">
-                                <el-form-item label="房屋面积">
-                                    <el-input-number v-model="customerPreparation.houseArea" controls-position="right" :step="0.1" :max="5000"></el-input-number>
+                                <el-form-item label="房屋面积" prop="houseArea">
+                                    <el-input-number v-model="customerPreparation.houseArea" :step="0.1" :max="5000" style="width: 220px"></el-input-number>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="6">
-                                <el-form-item label="装修地点" required="true">
+                                <el-form-item label="装修地点" prop="housePlace">
                                     <el-input v-model="customerPreparation.housePlace"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="6">
-                                <el-form-item label="楼栋" required="true">
+                                <el-form-item label="楼栋"  prop="houseBuilding">
                                     <el-input v-model="customerPreparation.houseBuilding">
                                         <template slot="append">栋</template>
                                     </el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="6">
-                                <el-form-item label="单元房间"  required="true">
+                                <el-form-item label="房间号"  prop="houseRoomNo">
                                     <el-input v-model="customerPreparation.houseRoomNo"></el-input>
                                 </el-form-item>
                             </el-col>
@@ -75,12 +75,12 @@
                         </div>
                         <el-row :gutter="20">
                             <el-col :span="6">
-                                <el-form-item label="部门" required="true">
-                                    <el-input v-model="customerPreparation.prepareOrgId" controls-position="right"></el-input>
+                                <el-form-item label="部门"  prop="prepareOrgId">
+                                    <el-input v-model="customerPreparation.prepareOrgId"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="6">
-                                <el-form-item label="申报人" required="true">
+                                <el-form-item label="申报人"  prop="prepareEmployeeId">
                                         <el-select v-model="customerPreparation.prepareEmployeeId" filterable placeholder="输入姓名或手机号搜索"  style="width: 220px">
                                             <el-option v-for="item in employeeOptions" :key="item.userId"
                                                        :label="item.name"
@@ -89,36 +89,36 @@
                                 </el-form-item>
                             </el-col>
                             <el-col :span="6">
-                                <el-form-item label="报备时间" required="true">
-                                    <el-date-picker v-model="customerPreparation.prepareTime" type="datetime">
+                                <el-form-item label="报备时间"  prop="prepareTime">
+                                    <el-date-picker v-model="customerPreparation.prepareTime" type="datetime" readonly>
                                     </el-date-picker>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="6">
-                                <el-form-item label="录入人" required="true">
+                                <el-form-item label="录入人"  prop="enterEmployeeId">
                                     <el-input v-model="customerPreparation.enterEmployeeId"></el-input>
                                 </el-form-item>
                             </el-col>
                         </el-row>
                         <el-row :gutter="20">
                             <el-col :span="6">
-                                <el-form-item label="客户属性" required="true">
-                                    <vue-select code-type="CUSTOMER_PROPERTY" v-model="customerPreparation.custProperty"></vue-select>
+                                <el-form-item label="客户属性" prop="custProperty">
+                                    <vue-select code-type="CUSTOMER_PROPERTY" v-model="customerPreparation.custProperty" @change="changeCustomerProperty"></vue-select>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="6">
                                 <el-form-item label="装修地址">
-                                    <el-input v-model="customerPreparation.refereeFixPlace"></el-input>
+                                    <el-input v-model="customerPreparation.refereeFixPlace" :disabled="isRefereeFixPlaceDisable"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="6">
                                 <el-form-item label="客户姓名">
-                                    <el-input v-model="customerPreparation.refereeName"></el-input>
+                                    <el-input v-model="customerPreparation.refereeName" :disabled="isRefereeNameDisable"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="6">
-                                <el-form-item label="客户电话">
-                                    <el-input v-model="customerPreparation.refereeMobileNo"></el-input>
+                                <el-form-item label="客户电话" prop="refereeMobileNo">
+                                    <el-input v-model="customerPreparation.refereeMobileNo" :disabled="isRefereeMobileNoDisable"></el-input>
                                 </el-form-item>
                             </el-col>
                         </el-row>
@@ -184,7 +184,7 @@
                             stripe="true"
                             style="width: 100%">
                         <el-table-column
-                                prop="prepareEmployeeId"
+                                prop="prepareEmployeeName"
                                 label="申报人"
                                 align="center"
                                 width="180">
@@ -197,17 +197,17 @@
                         </el-table-column>
                         <el-table-column
                                 prop="consultTime"
-                                label="上门事件"
+                                label="上门时间"
                                 align="center"
                                 width="180">
                         </el-table-column>
                         <el-table-column
-                                prop="status"
+                                prop="preparationStatusName"
                                 align="center"
                                 label="报备状态">
                         </el-table-column>
                         <el-table-column
-                                prop="enterEmployeeId"
+                                prop="enterEmployeeName"
                                 align="center"
                                 label="录入人">
                         </el-table-column>

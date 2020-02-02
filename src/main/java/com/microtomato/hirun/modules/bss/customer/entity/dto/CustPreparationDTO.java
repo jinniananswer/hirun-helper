@@ -32,9 +32,13 @@ public class CustPreparationDTO {
 
     private Long prepareEmployeeId;
 
+    private String prepareEmployeeName;
+
     private LocalDateTime prepareTime;
 
     private Long enterEmployeeId;
+
+    private String enterEmployeeName;
 
     private String custProperty;
 
@@ -47,4 +51,8 @@ public class CustPreparationDTO {
     private String remark;
 
     private LocalDateTime consultTime;
+
+    private Integer status;
+
+    private String preparationStatusName;
 }

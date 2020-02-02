@@ -11,6 +11,8 @@ import com.microtomato.hirun.modules.bss.customer.mapper.CustPreparationMapper;
 import com.microtomato.hirun.modules.bss.customer.service.ICustBaseService;
 import com.microtomato.hirun.modules.bss.customer.service.ICustPreparationService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.modules.organization.service.IEmployeeService;
+import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,12 +42,19 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
     @Autowired
     private CustPreparationMapper preparationMapper;
 
+    @Autowired
+    private IEmployeeService employeeService;
+
+    @Autowired
+    private IStaticDataService staticDataService;
 
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void addCustomerPreparation(CustPreparationDTO dto) {
         UserContext userContext= WebContextUtils.getUserContext();
-
+        //当客户存在报备信息时，联系文员可以直接做报备信息保存，否则客户存在多次，需判断客户之前的报备信息是否失效，如果失效则客户选择继续报备
+        //客户申报状态为有效期内，不允许办理报备
+        //客户未做过报备，但是在客户表存在过数据，可以联系有权限的人员进行报备信息录入
         CustBase custBase=new CustBase();
         CustPreparation preparation=new CustPreparation();
         BeanUtils.copyProperties(dto, preparation);
@@ -55,7 +64,7 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
         baseService.save(custBase);
         //保存报备信息
         preparation.setCustId(custBase.getCustId());
-        preparation.setStatus(0);
+        preparation.setStatus(1);
         preparation.setEnterEmployeeId(userContext.getEmployeeId());
         preparation.setEnterTime(LocalDateTime.now());
         this.preparationMapper.insert(preparation);
@@ -64,6 +73,15 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
 
     @Override
     public List<CustPreparationDTO> loadPreparationHistory(String mobileNo) {
-        return this.preparationMapper.loadPreparationHistory(mobileNo);
+        List<CustPreparationDTO> list=this.preparationMapper.loadPreparationHistory(mobileNo);
+        if(list.size()<=0){
+            return null;
+        }
+        for(CustPreparationDTO dto:list){
+            dto.setPrepareEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getPrepareEmployeeId()));
+            dto.setEnterEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getEnterEmployeeId()));
+            dto.setPreparationStatusName(staticDataService.getCodeName("PREPARATION_STATUS",dto.getStatus()+""));
+        }
+        return list;
     }
 }
