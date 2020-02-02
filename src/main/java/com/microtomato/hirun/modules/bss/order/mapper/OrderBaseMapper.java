@@ -8,11 +8,11 @@ import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 
 /**
  * <p>
- *  Mapper 接口
+ * 订单主表 Mapper 接口
  * </p>
  *
  * @author jinnian
- * @since 2020-02-02
+ * @since 2020-02-03
  */
 @Storage
 @DataSource(DataSourceKey.INS)

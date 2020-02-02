@@ -12,11 +12,11 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- * 
+ * 订单主表
  * </p>
  *
  * @author jinnian
- * @since 2020-02-02
+ * @since 2020-02-03
  */
 @Data
 @Builder
@@ -81,6 +81,42 @@ public class OrderBase extends BaseEntity {
      */
     @TableField("status")
     private String status;
+
+    /**
+     * 风格主题ID
+     */
+    @TableField("style_id")
+    private Long styleId;
+
+    /**
+     * 功能蓝图内容
+     */
+    @TableField("func_content")
+    private String funcContent;
+
+    /**
+     * 合同总金额
+     */
+    @TableField("contract_fee")
+    private Integer contractFee;
+
+    /**
+     * 总应收费用
+     */
+    @TableField("total_fee")
+    private Integer totalFee;
+
+    /**
+     * 总实收费用
+     */
+    @TableField("total_act_fee")
+    private Integer totalActFee;
+
+    /**
+     * 参与的活动ID
+     */
+    @TableField("activity_id")
+    private Long activityId;
 
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)
     private Long createUserId;

@@ -5,11 +5,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
  * <p>
- *  服务类
+ * 订单主表 服务类
  * </p>
  *
  * @author jinnian
- * @since 2020-02-02
+ * @since 2020-02-03
  */
 public interface IOrderBaseService extends IService<OrderBase> {
 
