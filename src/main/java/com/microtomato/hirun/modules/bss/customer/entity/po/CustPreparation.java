@@ -89,7 +89,7 @@ public class CustPreparation extends BaseEntity {
     private String remark;
 
     @TableField("status")
-    private String status;
+    private Integer status;
 
     @TableField("prepartion_expire_time")
     private LocalDateTime prepartionExpireTime;

@@ -95,10 +95,16 @@ public class CustBase extends BaseEntity {
     private String wxNo;
 
     /**
-     * 工作单位
+     * 职业
      */
     @TableField("profession")
     private String profession;
+
+    /**
+     * 工作单位
+     */
+    @TableField("work_company")
+    private String workCompany;
 
     /**
      * 学历

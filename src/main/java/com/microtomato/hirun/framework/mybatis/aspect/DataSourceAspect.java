@@ -29,7 +29,7 @@ public class DataSourceAspect {
     /**
      * 业务 Mapper 以及，mybatisplus 核心 Mapper 的切点
      */
-    @Pointcut("execution(* com.microtomato.hirun.modules.*.mapper.*Mapper.*(..))||execution(* com.baomidou.mybatisplus.core.mapper.*Mapper.*(..)))")
+    @Pointcut("execution(* com.microtomato.hirun.modules..*.mapper.*Mapper.*(..))||execution(* com.baomidou.mybatisplus.core.mapper.*Mapper.*(..)))")
     public void pointCut() {
 
     }
@@ -46,7 +46,7 @@ public class DataSourceAspect {
         return process(pjp);
     }
 
-    @Pointcut("execution(* com.microtomato.hirun.modules.*.service.*Impl.*Batch*(..))||execution(* com.baomidou.mybatisplus.extension.service.IService.*Batch*(..)))")
+    @Pointcut("execution(* com.microtomato.hirun.modules..*.service.*Impl.*Batch*(..))||execution(* com.baomidou.mybatisplus.extension.service.IService.*Batch*(..)))")
     public void pointCutBatch() {
 
     }
