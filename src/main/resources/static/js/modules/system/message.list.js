@@ -131,9 +131,10 @@ let vm = new Vue({
                 vm.notifyType = e.notifyType;
             });
         }
-    }
+    },
+    created: function () {
+        this.loadAnnounceTableData();
+        this.loadNoticeTableData();
+        this.loadMessageTableData();
+    },
 });
-
-vm.loadAnnounceTableData();
-vm.loadNoticeTableData();
-vm.loadMessageTableData();

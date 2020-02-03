@@ -142,7 +142,6 @@ let vm = new Vue({
                 return false;
             }
 
-            alert('userIds: ' + userIds + ", roleIds: " + roleIds);
             return true;
         },
 
@@ -206,6 +205,8 @@ let vm = new Vue({
         },
 
     },
+    created: function () {
+        this.loadEmployee();
+        this.loadRole();
+    },
 });
-vm.loadEmployee();
-vm.loadRole();
