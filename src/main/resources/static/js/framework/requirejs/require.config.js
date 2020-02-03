@@ -15,7 +15,8 @@ require.config({
         'vueselect': 'static/js/framework/extend/select',
         'util': 'static/js/framework/extend/util',
         'cust-info': 'static/js/modules/bss/component/cust.info',
-        'order-info': 'static/js/modules/bss/component/order.info'
+        'order-info': 'static/js/modules/bss/component/order.info',
+        'order-worker': 'static/js/modules/bss/component/order.worker'
     },
     shim: {
         'ELEMENT': {

@@ -17,23 +17,7 @@
                     <div class="grid-content bg-purple">
                         <cust-info cust-id="263"></cust-info>
 
-                        <el-card class="box-card" shadow="hover">
-                            <div slot="header" class="clearfix">
-                                <span>订单主流程工作人员</span>
-                            </div>
-                            <el-row :gutter="12">
-                                <el-col :span="6">
-                                    <div style="padding:50px">
-
-                                    </div>
-                                </el-col>
-                                <el-col :span="18">
-                                    <el-steps direction="vertical" :space="80" :active="workers.length" align-center>
-                                        <el-step v-for="worker in workers" :title="worker.name" status="wait" :description="worker.job" icon="el-icon-s-custom"></el-step>
-                                    </el-steps>
-                                </el-col>
-                            </el-row>
-                        </el-card>
+                        <order-worker order-id="1"></order-worker>
                     </div>
                 </el-col>
                 <el-col :span="18">
