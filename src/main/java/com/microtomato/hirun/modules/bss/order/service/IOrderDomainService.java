@@ -1,6 +1,9 @@
 package com.microtomato.hirun.modules.bss.order.service;
 
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderInfoDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerDTO;
+
+import java.util.List;
 
 /**
  * @program: hirun-helper
@@ -11,4 +14,6 @@ import com.microtomato.hirun.modules.bss.order.entity.dto.OrderInfoDTO;
 public interface IOrderDomainService {
 
     OrderInfoDTO getOrderInfo(Long orderId);
+
+    List<OrderWorkerDTO> queryOrderWorkers(Long orderId);
 }

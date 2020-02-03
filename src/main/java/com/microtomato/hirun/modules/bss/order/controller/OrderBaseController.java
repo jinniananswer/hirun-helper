@@ -2,6 +2,7 @@ package com.microtomato.hirun.modules.bss.order.controller;
 
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderInfoDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerDTO;
 import com.microtomato.hirun.modules.bss.order.service.IOrderBaseService;
 import com.microtomato.hirun.modules.bss.order.service.IOrderDomainService;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * <p>
@@ -33,5 +36,11 @@ public class OrderBaseController {
     @RestResult
     public OrderInfoDTO getOrderInfo(Long orderId) {
         return this.orderDomainService.getOrderInfo(orderId);
+    }
+
+    @GetMapping("/getOrderWorkers")
+    @RestResult
+    public List<OrderWorkerDTO> queryOrderWorkers(Long orderId) {
+        return this.orderDomainService.queryOrderWorkers(orderId);
     }
 }
