@@ -191,6 +191,13 @@ layui.extend({
                     employee.contractManager(data[0]);
                 } else if (event === 'export') {
                     employee.export();
+                }else if(event === 'applyBlackList'){
+                    if (data[0].employeeStatus == 0 ) {
+                        layer.msg('员工为正常状态,如需永不录用，请操作员工离职。');
+                        return;
+                    } else {
+                        employee.applyBlackList(data[0]);
+                    }
                 }
             });
 
@@ -255,6 +262,17 @@ layui.extend({
 
         edit: function (data) {
             layui.redirect.open('openUrl?url=modules/organization/employee/employee_archive&operType=edit&employeeId=' + data.employeeId, '编辑员工资料');
+        },
+
+        applyBlackList:function (data) {
+            let employeeId=data.employeeId;
+            layer.prompt({formType: 2,
+                title: '申请永不录用原因',
+                area: ['300px', '200px'] //自定义文本域宽高
+        },function(val, index){
+                let param='employeeId='+employeeId+'&reason='+val;
+                layui.ajax.post('api/organization/employee/applyEmployeeBlackList', param);
+            });
         },
 
         export: function () {

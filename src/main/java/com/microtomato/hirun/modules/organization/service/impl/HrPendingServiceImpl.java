@@ -52,7 +52,7 @@ public class HrPendingServiceImpl extends ServiceImpl<HrPendingMapper, HrPending
     public IPage<HrPendingInfoDTO> queryPendingByExecuteId(HrPending hrPending, Page<HrPending> pendingPage) {
         QueryWrapper<HrPending> queryWrapper = new QueryWrapper<>();
         if(StringUtils.isBlank(hrPending.getPendingType())){
-            queryWrapper.in("a.pending_type", Arrays.asList(1, 2, 3));
+            queryWrapper.in("a.pending_type", Arrays.asList(1, 2, 3,5));
         }else{
             queryWrapper.eq(StringUtils.isNotBlank(hrPending.getPendingType()), "a.pending_type", hrPending.getPendingType());
         }

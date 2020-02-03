@@ -122,4 +122,13 @@ public class HrPendingController {
         return list;
     }
 
+    /**
+     * 确认员工黑名单待办
+     */
+    @PostMapping("/approveEmployeeBlackListPending")
+    @RestResult
+    public void approveEmployeeBlackListPending(Long employeeId,String approveStatus,Long id) {
+        hrPendingDomainService.approveEmployeeBlackListPending(employeeId,id,approveStatus);
+    }
+
 }
