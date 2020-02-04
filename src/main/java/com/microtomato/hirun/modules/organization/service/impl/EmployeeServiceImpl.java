@@ -10,9 +10,11 @@ import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.organization.entity.consts.EmployeeConst;
 import com.microtomato.hirun.modules.organization.entity.domain.EmployeeDO;
+import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
 import com.microtomato.hirun.modules.organization.entity.dto.*;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
+import com.microtomato.hirun.modules.organization.entity.po.Org;
 import com.microtomato.hirun.modules.organization.mapper.EmployeeMapper;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +24,10 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -259,5 +264,21 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         return queryWrapper;
     }
 
+    @Override
+    public List<SimpleEmployeeDTO> querySimpleEmployeeInfo(Long orgId, Long roleId) {
+        OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
 
+        Org root = orgDO.getBelongShop();
+        if (root == null) {
+            root = orgDO.getBelongCompany();
+        }
+
+        if (root != null) {
+            String orgLine = orgDO.getOrgLine(root.getOrgId());
+            List<SimpleEmployeeDTO> employees = this.employeeMapper.querySimpleEmployees(roleId, orgLine);
+            return employees;
+        }
+
+        return null;
+    }
 }

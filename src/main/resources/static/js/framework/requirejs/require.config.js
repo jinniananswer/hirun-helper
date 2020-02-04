@@ -17,7 +17,7 @@ require.config({
         'cust-info': 'static/js/modules/bss/component/cust.info',
         'order-info': 'static/js/modules/bss/component/order.info',
         'order-worker': 'static/js/modules/bss/component/order.worker',
-        'cust-visit': 'static/js/modules/bss/component/cust.visit'
+        'order-selectemployee': 'static/js/modules/bss/component/order.selectemployee'
     },
     shim: {
         'ELEMENT': {

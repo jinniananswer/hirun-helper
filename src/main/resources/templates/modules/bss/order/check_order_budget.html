@@ -17,92 +17,12 @@
                     <div class="grid-content bg-purple">
                         <cust-info cust-id="263"></cust-info>
 
-                        <el-card class="box-card" shadow="hover">
-                            <div slot="header" class="clearfix">
-                                <span>订单主流程工作人员</span>
-                            </div>
-                            <el-row :gutter="12">
-                                <el-col :span="6">
-                                    <div style="padding:50px">
-
-                                    </div>
-                                </el-col>
-                                <el-col :span="18">
-                                    <el-steps direction="vertical" :space="80" :active="workers.length" align-center>
-                                        <el-step v-for="worker in workers" :title="worker.name" status="wait" :description="worker.job" icon="el-icon-s-custom"></el-step>
-                                    </el-steps>
-                                </el-col>
-                            </el-row>
-                        </el-card>
+                        <order-worker order-id="1"></order-worker>
                     </div>
                 </el-col>
                 <el-col :span="18">
                     <div class="grid-content bg-purple-light">
-                        <el-card class="box-card" shadow="hover">
-                            <el-tabs v-model="activeTab">
-                                <el-tab-pane label="订单信息" name="orderInfo">
-                                    <div class="text item" style="margin-left: 18px;padding-bottom: 10px" >
-                                        <el-slider
-                                                v-model="progress"
-                                                range
-                                                :marks="marks">
-                                        </el-slider>
-                                    </div>
-
-                                    <el-row :gutter="5">
-                                        <el-col :span="8">
-                                            <div class="text">
-                                                订单状态：<el-tag type="danger">收取设计费中</el-tag>
-                                            </div>
-                                        </el-col>
-                                        <el-col :span="8">
-                                            <div class="text item">
-                                                所属楼盘：<el-tag>鑫远御文台</el-tag>
-                                            </div>
-                                        </el-col>
-                                        <el-col :span="8">
-                                            <div class="text item">
-                                                装修地址：<el-tag>新韶西路鑫远御文台11栋1单元1003</el-tag>
-                                            </div>
-                                        </el-col>
-                                    </el-row >
-                                    <el-row :gutter="5">
-                                        <el-col :span="8">
-                                            <div class="text">
-                                                建筑面积：<el-tag>135平米</el-tag>
-                                            </div>
-                                        </el-col>
-                                        <el-col :span="8">
-                                            <div class="text">
-                                                套内面积：<el-tag>112平米</el-tag>
-                                            </div>
-                                        </el-col>
-                                        <el-col :span="8">
-                                            <div class="text">
-                                                户型：<el-tag>四房两厅</el-tag>
-                                            </div>
-                                        </el-col>
-
-                                    </el-row >
-                                </el-tab-pane>
-                                <el-tab-pane label="蓝图一" name="blueInfo1">
-                                    <div class="text item">
-                                        <h3>风格蓝图：写意白描</h3>
-                                        <el-alert
-                                                title="以抽象概括的设计手法，从中国传统图案或构件中提取线条，并运用于整套设计中表现文士审美追求的设计系列"
-                                                type="info"
-                                                :closable="false"
-                                                show-icon>
-                                        </el-alert>
-                                    </div>
-                                    <div class="text item">
-                                        <h3>功能蓝图</h3>
-                                    </div>
-                                </el-tab-pane>
-                                <el-tab-pane label="蓝图二" name="blueInfo2">蓝图二</el-tab-pane>
-                                <el-tab-pane label="合同信息" name="contract">合同信息</el-tab-pane>
-                            </el-tabs>
-                        </el-card>
+                        <order-info order-id="1"></order-info>
                         <el-card class="box-card">
                             <div slot="header" class="clearfix">
                                 <span>操作区域</span>
