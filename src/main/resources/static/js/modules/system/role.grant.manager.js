@@ -24,8 +24,8 @@ let vm = new Vue({
     },
     methods: {
         loadEmployee: function () {
-            axios.get('api/organization/employee/loadEmployee').then(function (responseData) {
-                vm.employeeOptions = responseData.data.rows;
+            axios.get('api/organization/employee/loadEmployee').then(function (res) {
+                vm.employeeOptions = res.data.rows;
             }).catch(function (error) {
                 console.log(error);
             });
@@ -54,8 +54,8 @@ let vm = new Vue({
 
         handleEmployeeRoleView: function (index, row) {
             vm.employeeDialogTitle = '已分配给【' + row.employeeName + '】的角色';
-            axios.get('api/user/user-role/listRole', {params: {userId: row.userId}}).then(function (responseData) {
-                vm.haveRoleTableData = responseData.data.rows;
+            axios.get('api/user/user-role/listRole', {params: {userId: row.userId}}).then(function (res) {
+                vm.haveRoleTableData = res.data.rows;
             }).catch(function (error) {
                 console.log(error);
             });
@@ -63,8 +63,8 @@ let vm = new Vue({
         },
 
         loadRole: function () {
-            axios.get('api/user/role/loadRole').then(function (responseData) {
-                vm.roleOptions = responseData.data.rows;
+            axios.get('api/user/role/loadRole').then(function (res) {
+                vm.roleOptions = res.data.rows;
             }).catch(function (error) {
                 console.log(error);
             });
@@ -95,22 +95,22 @@ let vm = new Vue({
         handleRoleFuncView: function (index, row) {
 
             // 查角色能看到的菜单Id
-            axios.get('api/system/menu/role-menu', {params: {roleId: row.roleId}}).then(function (responseData) {
-                vm.menuCheckedKeys = responseData.data.rows;
+            axios.get('api/system/menu/role-menu', {params: {roleId: row.roleId}}).then(function (res) {
+                vm.menuCheckedKeys = res.data.rows;
             }).catch(function (error) {
                 console.log(error);
             });
 
             // 查全量菜单信息用于展示
-            axios.get('api/system/menu/all-menu', {params: {roleId: row.roleId}}).then(function (responseData) {
-                vm.menuData = responseData.data.rows;
+            axios.get('api/system/menu/all-menu', {params: {roleId: row.roleId}}).then(function (res) {
+                vm.menuData = res.data.rows;
             }).catch(function (error) {
                 console.log(error);
             });
 
             // 查角色可用的功能权限信息
-            axios.get('api/system/func/func-list', {params: {roleId: row.roleId}}).then(function (responseData) {
-                vm.haveFuncTableData = responseData.data.rows;
+            axios.get('api/system/func/func-list', {params: {roleId: row.roleId}}).then(function (res) {
+                vm.haveFuncTableData = res.data.rows;
             }).catch(function (error) {
                 console.log(error);
             });
@@ -188,7 +188,6 @@ let vm = new Vue({
                     }
                 }).then(function (responseData) {
                     if (0 == responseData.data.code) {
-
                         Vue.prototype.$message({
                             message: '角色回收成功！',
                             type: 'success'
