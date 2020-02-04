@@ -12,7 +12,7 @@
     <script src="../../../static/js/framework/axios/axios.min.js" th:src="@{static/js/framework/axios/axios.min.js(v=${version})}"></script>
 </head>
 <body>
-<div id="app" style="display: none;" :style="{display: 'block'}">
+<div id="app" v-cloak>
 
     <el-card class="box-card">
         <el-tabs v-model="activeName">
@@ -119,6 +119,9 @@
 
 </div>
 <style>
+    [v-cloak] {
+        display: none;
+    }
 </style>
 <script src="../../../static/js/modules/system/message.list.js" th:src="@{static/js/modules/system/message.list.js(v=${version})}"></script>
 </body>

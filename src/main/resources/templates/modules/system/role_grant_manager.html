@@ -12,7 +12,7 @@
     <script src="../../../static/js/framework/axios/axios.min.js" th:src="@{static/js/framework/axios/axios.min.js(v=${version})}"></script>
 </head>
 <body>
-<div id="app" style="display: none;" :style="{display: 'block'}">
+<div id="app" v-cloak>
 
     <el-row :gutter="6">
         <el-col :span="10">
@@ -170,6 +170,10 @@
     </el-dialog>
 </div>
 <style>
+    [v-cloak] {
+        display: none;
+    }
+
     .el-table td, .el-table th {
         text-align: center;
     }
