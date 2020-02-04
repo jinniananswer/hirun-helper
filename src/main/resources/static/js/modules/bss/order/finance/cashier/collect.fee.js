@@ -1,4 +1,4 @@
-require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util'], function(Vue, element, axios, ajax, vueselect, util) {
+require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'order-info','order-worker'], function(Vue, element, axios, ajax, vueselect, util, custInfo, orderInfo, orderWorker) {
     let vm = new Vue({
         el: '#app',
         data: function() {
@@ -39,44 +39,6 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util'], function(Vue, 
                     func : '功能列表'
                 },
 
-                workers: [
-                    {
-                        job: '家装顾问',
-                        name: '左金虎'
-                    },
-                    {
-                        job: '客户代表',
-                        name: '张晓梅'
-                    },
-                    {
-                        job: '设计师',
-                        name: '罗厚石'
-                    },
-                    {
-                        job: '项目经理',
-                        name: '彭帅'
-                    },
-                    {
-                        job: '工程助理',
-                        name: '彭帅'
-                    },
-                    {
-                        job: '工程文员',
-                        name: '彭帅'
-                    },
-                    {
-                        job: '出纳',
-                        name: '彭帅'
-                    },
-                    {
-                        job: '财务',
-                        name: '彭帅'
-                    },
-                    {
-                        job: '售后人员',
-                        name: '彭帅'
-                    }
-                ],
 
                 avatarUrl: 'static/img/male.jpg'
             }
