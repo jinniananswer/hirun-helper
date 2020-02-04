@@ -23,25 +23,26 @@ define(['vue', 'ELEMENT', 'ajax'], function (Vue, element, ajax) {
                                 label="回访类型"
                                 fixed
                                 align="center"
-                                width="180"
+                                width="150"
                                 >
                         </el-table-column>
                         <el-table-column
                                 prop="visitObject"
                                 label="回访对象"
                                 align="center"
-                                width="180">
+                                width="150">
                         </el-table-column>
                         <el-table-column
                                 prop="visitEmployeeName"
                                 label="回访人"
                                 align="center"
-                                width="180">
+                                width="120">
                         </el-table-column>
                         <el-table-column
                                 prop="visitTime"
                                 align="center"
-                                label="回访时间">
+                                label="回访时间"
+                                width="180">
                         </el-table-column>
                         <el-table-column
                                 prop="visitWay"
@@ -51,7 +52,8 @@ define(['vue', 'ELEMENT', 'ajax'], function (Vue, element, ajax) {
                         <el-table-column
                                 prop="visitContent"
                                 align="center"
-                                label="回访内容">
+                                label="回访内容"
+                                width="400">
                         </el-table-column>
                     </el-table>
                 </template>

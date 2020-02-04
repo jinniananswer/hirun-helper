@@ -1,4 +1,4 @@
-require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-visit','cust-info'], function (Vue, element, axios, ajax, vueselect, util,custVisit,custInfo) {
+require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info'], function (Vue, element, axios, ajax, vueselect, util,custInfo) {
     let vm = new Vue({
         el: '#customer_perparation',
         data: function () {
