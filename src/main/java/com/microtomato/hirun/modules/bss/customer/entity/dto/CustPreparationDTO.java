@@ -7,8 +7,8 @@ import java.time.LocalDateTime;
 
 /**
  * @program: hirun-helper
- * @description: 客户信息数据传输对象，主要用于客户资料的展示，如应用于客户信息展示组件
- * @author: jinnian
+ * @description: 客户报备信息传输对象
+ * @author: liuhui
  * @create: 2020-02-01 23:54
  **/
 @Data
