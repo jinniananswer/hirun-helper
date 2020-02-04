@@ -11,6 +11,10 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
 
                 },
 
+                designEmployeeId : '',
+
+                sex: '',
+
                 customerDefault: 'base',
 
                 progress: [-10,70],
@@ -78,12 +82,9 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
         },
 
         methods: {
-            getEmployee : function() {
-                axios.get('api/organization/employee/loadEmployeeArchive?employeeId=1').then(function(responseData){
-                    vm.customer = responseData.data.rows;
-                }).catch(function(error){
-                    console.log(error);
-                });
+            submit : function() {
+                alert(this.designEmployeeId);
+                alert(this.sex);
             }
         }
     });
