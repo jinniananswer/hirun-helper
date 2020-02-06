@@ -22,7 +22,7 @@
                     <el-row>
                         <el-col :span="6">
                             <el-form-item label="客户姓名">
-                                <el-input v-model="custQueryCond.name" placeholder="客户姓名"></el-input>
+                                <el-input v-model="custQueryCond.custName" placeholder="客户姓名"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="6">
@@ -99,7 +99,7 @@
                         </el-col>
                         <el-col :span="6">
                             <el-form-item>
-                                <el-button type="primary" @click="onSubmit">查询</el-button>
+                                <el-button type="primary" @click="queryCustomer">查询</el-button>
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -108,11 +108,11 @@
 
             <template>
 
-                <el-button type="info" router size="small" @click="customerVisit">回访</el-button>
+                <el-button type="primary" router size="small" @click="customerVisit">回访</el-button>
                 <el-button type="warning" size="small">裁定</el-button>
                 <br/>
                 <br/>
-                <el-table :data="customerInfo" stripe="true" border style="width: 100%">
+                <el-table :data="customerInfo" stripe="true" style="width: 100%">
                     <el-table-column label="选择" fixed align="center" width="65">
                         <template scope="scope">
                             <el-radio :label="scope.row" v-model="checked"
@@ -120,23 +120,29 @@
                             </el-radio>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="name" label="客户编码" fixed align="center" width="180"></el-table-column>
-                    <el-table-column prop="name" label="客户姓名" fixed align="center" width="180"></el-table-column>
-                    <el-table-column prop="sex" label="客户代表" fixed width="180"></el-table-column>
-                    <el-table-column prop="mobileNo" label="设计师" align="center" width="180"></el-table-column>
+                    <el-table-column prop="custId" label="客户编码" fixed align="center" width="180"></el-table-column>
+                    <el-table-column prop="custName" label="客户姓名" fixed align="center"  width="180"></el-table-column>
+                    <el-table-column prop="prepareEmployeeName" label="客户代表" align="center" fixed width="100"></el-table-column>
+                    <el-table-column prop="prepareEmployeeName" label="设计师" align="center" width="100"></el-table-column>
                     <el-table-column prop="mobileNo" label="联系电话" align="center" width="180"></el-table-column>
-                    <el-table-column prop="mobileNo" label="家装顾问" align="center" width="180"></el-table-column>
-                    <el-table-column prop="address" label="咨询时间"></el-table-column>
-                    <el-table-column prop="address" label="申报时间"></el-table-column>
-                    <el-table-column prop="address" label="客户类型"></el-table-column>
-                    <el-table-column prop="address" label="信息来源"></el-table-column>
-                    <el-table-column prop="address" label="活动类型"></el-table-column>
-                    <el-table-column prop="address" label="活动时间"></el-table-column>
-                    <el-table-column prop="address" label="客户状态"></el-table-column>
-                    <el-table-column prop="address" label="电话咨询时间"></el-table-column>
-                    <el-table-column prop="address" label="客户类型备注"></el-table-column>
-                    <el-table-column prop="address" label="量房时间"></el-table-column>
-                    <el-table-column fixed="right" label="操作" width="100">
+                    <el-table-column prop="prepareEmployeeName" label="家装顾问" align="center" width="180"></el-table-column>
+                    <el-table-column prop="consultTime" label="咨询时间" align="center" width="180"></el-table-column>
+                    <el-table-column prop="prepareTime" label="申报时间" align="center" width="180"></el-table-column>
+                    <el-table-column prop="custType" label="客户类型" align="center"></el-table-column>
+                    <el-table-column prop="custType" label="信息来源" align="center"></el-table-column>
+                    <el-table-column prop="custType" label="活动类型" align="center"></el-table-column>
+                    <el-table-column prop="prepareTime" label="活动时间" align="center" width="180"></el-table-column>
+                    <el-table-column prop="custStatus" label="客户状态" align="center"></el-table-column>
+                    <el-table-column prop="custPropertyName" label="客户报备类型" width="180" align="center"></el-table-column>
+                    <el-table-column prop="status" label="报备状态" align="center"></el-table-column>
+                    <el-table-column prop="preparationExpireTime" align="center" label="报备失效时间" width="180"></el-table-column>
+                    <el-table-column prop="rulingEmployeeName" align="center" label="裁定人"></el-table-column>
+                    <el-table-column prop="rulingTime" label="裁定时间" width="180" align="center"></el-table-column>
+                    <el-table-column prop="rulingRemark" label="裁定备注" align="center"></el-table-column>
+                    <el-table-column prop="prepareTime" label="电话咨询时间" width="180" align="center"></el-table-column>
+                    <el-table-column prop="address" label="客户类型备注" align="center"></el-table-column>
+                    <el-table-column prop="prepareTime" label="量房时间" width="180" align="center"></el-table-column>
+                    <el-table-column fixed="right" label="操作" align="center" width="100">
                         <template slot-scope="scope">
                             <el-button type="text" size="small">编辑</el-button>
                         </template>

@@ -91,8 +91,8 @@ public class CustPreparation extends BaseEntity {
     @TableField("status")
     private Integer status;
 
-    @TableField("prepartion_expire_time")
-    private LocalDateTime prepartionExpireTime;
+    @TableField("preparation_expire_time")
+    private LocalDateTime preparationExpireTime;
 
     @TableField("ruling_employee_id")
     private Long rulingEmployeeId;
