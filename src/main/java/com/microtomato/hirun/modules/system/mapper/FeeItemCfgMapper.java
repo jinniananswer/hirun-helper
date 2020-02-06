@@ -17,5 +17,4 @@ import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 @Storage
 @DataSource(DataSourceKey.SYS)
 public interface FeeItemCfgMapper extends BaseMapper<FeeItemCfg> {
-
 }
