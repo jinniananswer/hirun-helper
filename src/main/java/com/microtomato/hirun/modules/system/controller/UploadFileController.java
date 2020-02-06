@@ -48,28 +48,22 @@ public class UploadFileController {
         return batchId;
     }
 
-    @GetMapping("confirmUpload/{batchId}")
+    @GetMapping("confirmUpload/{ids}")
     @RestResult
-    public void confirmUpload(@PathVariable("batchId") String batchId) {
-        uploadFileService.confirmUpload(batchId);
+    public void confirmUpload(@PathVariable("ids") String ids) {
+        uploadFileService.confirmUpload(ids);
     }
 
-    @GetMapping("listByBatchId/{batchId}")
+    @GetMapping("listByIds/{ids}")
     @RestResult
-    public List<UploadFile> listByBatchId(@PathVariable("batchId") String batchId) {
-        return uploadFileService.listByBatchId(batchId);
+    public List<UploadFile> listByIds(@PathVariable("ids") String ids) {
+        return uploadFileService.listByIds(ids);
     }
 
     @GetMapping("deleteById/{id}")
     @RestResult
     public void deleteById(@PathVariable("id") Long id) {
         uploadFileService.deleteById(id);
-    }
-
-    @GetMapping("deleteByBatchId/{batchId}")
-    @RestResult
-    public void deleteByBatchId(@PathVariable("batchId") String batchId) {
-        uploadFileService.deleteByBatchId(batchId);
     }
 
 }
