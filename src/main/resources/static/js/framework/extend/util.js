@@ -15,6 +15,10 @@ define(['moment'], function(moment){
         openPage: function(url, title) {
             let topLayui = parent === self ? layui : top.layui;
             topLayui.index.openTabsPage(url, title);
+        },
+
+        redirect: function(url) {
+            document.location.href = url;
         }
     }
 
