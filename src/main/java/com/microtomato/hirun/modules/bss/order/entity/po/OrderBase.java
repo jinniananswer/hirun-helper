@@ -116,14 +116,14 @@ public class OrderBase extends BaseEntity {
     /**
      * 施工开始时间
      */
-    @TableField("project_start_time")
-    private LocalDate projectStartTime;
+    @TableField("project_start_date")
+    private LocalDate projectStartDate;
 
     /**
      * 施工结束时间
      */
-    @TableField("project_finish_time")
-    private LocalDate projectFinishTime;
+    @TableField("project_finish_date")
+    private LocalDate projectFinishDate;
 
     /**
      * 合同总金额
