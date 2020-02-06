@@ -40,12 +40,6 @@ public class UploadFile extends BaseEntity {
     private Long id;
 
     /**
-     * 批次号
-     */
-    @TableField("batch_id")
-    private String batchId;
-
-    /**
      * 原件名称
      */
     @TableField("file_name")
