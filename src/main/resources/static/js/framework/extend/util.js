@@ -10,6 +10,11 @@ define(['moment'], function(moment){
 
         getNowTime: function() {
             return moment(new Date()).add('year',0).format("YYYY-MM-DD HH:mm:ss");
+        },
+
+        openPage: function(url, title) {
+            let topLayui = parent === self ? layui : top.layui;
+            topLayui.index.openTabsPage(url, title);
         }
     }
 
