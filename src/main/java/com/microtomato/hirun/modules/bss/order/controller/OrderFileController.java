@@ -60,10 +60,19 @@ public class OrderFileController {
         orderFileService.deleteById(id);
     }
 
+    @GetMapping("view/{orderId}/{stage}")
+    @RestResult
+    public OrderFile getOne(@PathVariable("orderId") Long orderId, @PathVariable("stage") Integer stage) {
+        return orderFileService.getOrderFile(orderId, stage);
+    }
+
     @RequestMapping("download/{orderId}/{stage}")
     public ResponseEntity<InputStreamResource> download(@PathVariable("orderId") Long orderId, @PathVariable("stage") Integer stage) throws IOException {
-        OrderFile orderFile = orderFileService.getOrderFileAbsolutePath(orderId, stage);
-        FileSystemResource file = new FileSystemResource(orderFile.getFilePath());
+        OrderFile orderFile = orderFileService.getOrderFile(orderId, stage);
+        String filePath = orderFile.getFilePath();
+        String absolutePath = orderFileService.toAbsolutePath(filePath);
+
+        FileSystemResource file = new FileSystemResource(absolutePath);
         String filename = new String(orderFile.getFileName().getBytes("UTF-8"),"ISO-8859-1");
 
         HttpHeaders headers = new HttpHeaders();

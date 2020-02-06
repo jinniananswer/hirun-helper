@@ -84,7 +84,7 @@ public class OrderFileServiceImpl extends ServiceImpl<OrderFileMapper, com.micro
             .fileName(fileName)
             .filePath(filePath)
             .fileSize(fileSize)
-            .enabled(false)
+            .enabled(true)
             .build();
         return orderFile;
     }
@@ -156,17 +156,14 @@ public class OrderFileServiceImpl extends ServiceImpl<OrderFileMapper, com.micro
     }
 
     @Override
-    public OrderFile getOrderFileAbsolutePath(Long orderId, Integer stage) {
+    public OrderFile getOrderFile(Long orderId, Integer stage) {
         OrderFile orderFile = this.getOne(
             Wrappers.<OrderFile>lambdaQuery()
-                .select(OrderFile::getFileName, OrderFile::getFilePath)
                 .eq(OrderFile::getOrderId, orderId)
                 .eq(OrderFile::getStage, stage)
                 .eq(OrderFile::getEnabled, true)
+                .orderByDesc(OrderFile::getCreateTime)
         );
-        String filePath = orderFile.getFilePath();
-        String absolutePath = toAbsolutePath(filePath);
-        orderFile.setFilePath(absolutePath);
         return orderFile;
     }
 }
