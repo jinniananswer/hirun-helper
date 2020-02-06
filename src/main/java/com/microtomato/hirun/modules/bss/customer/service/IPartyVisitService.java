@@ -21,4 +21,10 @@ public interface IPartyVisitService extends IService<PartyVisit> {
      * @return
      */
     List<CustVisitInfoDTO> queryCustVisit(Long custId);
+
+    /**
+     * 新增客户回访
+     * @param partyVisit
+     */
+    void addCustomerVisit(PartyVisit partyVisit);
 }

@@ -29,4 +29,6 @@ public class CustVisitInfoDTO {
 
     private LocalDateTime visitTime;
 
+    private Long custId;
+
 }

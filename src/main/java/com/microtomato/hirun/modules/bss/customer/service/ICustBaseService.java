@@ -1,8 +1,11 @@
 package com.microtomato.hirun.modules.bss.customer.service;
 
 import com.microtomato.hirun.modules.bss.customer.entity.dto.CustInfoDTO;
+import com.microtomato.hirun.modules.bss.customer.entity.dto.CustQueryCondDTO;
 import com.microtomato.hirun.modules.bss.customer.entity.po.CustBase;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
  * <p>
@@ -17,4 +20,6 @@ public interface ICustBaseService extends IService<CustBase> {
     CustBase queryByCustId(Long custId);
 
     CustInfoDTO queryByCustIdOrOrderId(Long custId, Long orderId);
+
+    List<CustInfoDTO> queryCustomerInfo(CustQueryCondDTO condDTO);
 }
