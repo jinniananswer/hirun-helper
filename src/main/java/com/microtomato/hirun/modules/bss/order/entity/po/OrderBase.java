@@ -8,6 +8,7 @@ import com.microtomato.hirun.framework.data.BaseEntity;
 import lombok.*;
 import lombok.experimental.Accessors;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -71,6 +72,18 @@ public class OrderBase extends BaseEntity {
     private String indoorArea;
 
     /**
+     * 上一订单阶段，对应0-酝酿，10-初选，30-初步决策，50-决策，60-施工，95-维护
+     */
+    @TableField("stage")
+    private Integer previousStage;
+
+    /**
+     * 上一订单状态，见静态参数ORDER_STATUS
+     */
+    @TableField("status")
+    private String previousStatus;
+
+    /**
      * 订单阶段，对应0-酝酿，10-初选，30-初步决策，50-决策，60-施工，95-维护
      */
     @TableField("stage")
@@ -83,6 +96,12 @@ public class OrderBase extends BaseEntity {
     private String status;
 
     /**
+     * 订单结束时间
+     */
+    @TableField("finish_time")
+    private LocalDateTime finishTime;
+
+    /**
      * 风格主题ID
      */
     @TableField("style_id")
@@ -93,6 +112,18 @@ public class OrderBase extends BaseEntity {
      */
     @TableField("func_content")
     private String funcContent;
+
+    /**
+     * 施工开始时间
+     */
+    @TableField("project_start_time")
+    private LocalDate projectStartTime;
+
+    /**
+     * 施工结束时间
+     */
+    @TableField("project_finish_time")
+    private LocalDate projectFinishTime;
 
     /**
      * 合同总金额
