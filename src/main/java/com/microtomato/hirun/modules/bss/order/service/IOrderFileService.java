@@ -52,4 +52,13 @@ public interface IOrderFileService extends IService<com.microtomato.hirun.module
      * @param id
      */
     void deleteById(Long id);
+
+    /**
+     * 根据订单Id，和订单阶段，获取对应的文件地址，以供下载
+     *
+     * @param orderId
+     * @param stage
+     * @return
+     */
+    OrderFile getOrderFileAbsolutePath(Long orderId, Integer stage);
 }

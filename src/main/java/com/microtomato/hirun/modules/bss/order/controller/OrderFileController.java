@@ -5,6 +5,11 @@ import com.microtomato.hirun.modules.bss.order.entity.po.OrderFile;
 import com.microtomato.hirun.modules.bss.order.service.IOrderFileService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -53,6 +58,26 @@ public class OrderFileController {
     @RestResult
     public void deleteById(@PathVariable("id") Long id) {
         orderFileService.deleteById(id);
+    }
+
+    @RequestMapping("download/{orderId}/{stage}")
+    public ResponseEntity<InputStreamResource> download(@PathVariable("orderId") Long orderId, @PathVariable("stage") Integer stage) throws IOException {
+        OrderFile orderFile = orderFileService.getOrderFileAbsolutePath(orderId, stage);
+        FileSystemResource file = new FileSystemResource(orderFile.getFilePath());
+        String filename = new String(orderFile.getFileName().getBytes("UTF-8"),"ISO-8859-1");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
+        headers.add("Content-Disposition", String.format("attachment; filename=\"%s\"", filename));
+        headers.add("Pragma", "no-cache");
+        headers.add("Expires", "0");
+
+        return ResponseEntity
+            .ok()
+            .headers(headers)
+            .contentLength(file.contentLength())
+            .contentType(MediaType.parseMediaType("application/octet-stream"))
+            .body(new InputStreamResource(file.getInputStream()));
     }
 
 }
