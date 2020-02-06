@@ -1,5 +1,6 @@
 package com.microtomato.hirun.modules.system.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
@@ -77,7 +78,7 @@ public class UploadFileServiceImpl extends ServiceImpl<UploadFileMapper, UploadF
 
     @Override
     @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
-    public String uploadOne(MultipartFile multipartFile) throws IOException {
+    public Long uploadOne(MultipartFile multipartFile) throws IOException {
         String batchId = UUID.randomUUID().toString();
         String destPath = ResourceUtils.getURL("classpath:").getPath() + "../../upload";
         File destDir = makesureFolderExist(destPath);
@@ -85,7 +86,7 @@ public class UploadFileServiceImpl extends ServiceImpl<UploadFileMapper, UploadF
         this.save(uploadFile);
 
         log.debug("batchId: {}", batchId);
-        return batchId;
+        return uploadFile.getId();
     }
 
     @Override
@@ -105,4 +106,34 @@ public class UploadFileServiceImpl extends ServiceImpl<UploadFileMapper, UploadF
         log.debug("batchId: {}", batchId);
         return batchId;
     }
+
+    @Override
+    @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
+    public void confirmUpload(String batchId) {
+        UploadFile uploadFile = UploadFile.builder().enabled(true).build();
+        this.update(uploadFile, Wrappers.<UploadFile>lambdaUpdate().eq(UploadFile::getBatchId, batchId));
+    }
+
+    @Override
+    public List<UploadFile> listByBatchId(String batchId) {
+        List<UploadFile> uploadFiles = this.list(
+            Wrappers.<UploadFile>lambdaQuery()
+                .eq(UploadFile::getBatchId, batchId)
+                .eq(UploadFile::getEnabled, true)
+        );
+        return uploadFiles;
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        UploadFile uploadFile = UploadFile.builder().enabled(false).build();
+        this.update(uploadFile, Wrappers.<UploadFile>lambdaUpdate().eq(UploadFile::getId, id));
+    }
+
+    @Override
+    public void deleteByBatchId(String batchId) {
+        UploadFile uploadFile = UploadFile.builder().enabled(false).build();
+        this.update(uploadFile, Wrappers.<UploadFile>lambdaUpdate().eq(UploadFile::getBatchId, batchId));
+    }
+
 }

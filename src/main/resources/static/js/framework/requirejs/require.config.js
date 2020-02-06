@@ -18,7 +18,8 @@ require.config({
         'order-info': 'static/js/modules/bss/component/order.info',
         'order-worker': 'static/js/modules/bss/component/order.worker',
         'order-selectemployee': 'static/js/modules/bss/component/order.selectemployee',
-        'cust-visit': 'static/js/modules/bss/component/cust.visit'
+        'cust-visit': 'static/js/modules/bss/component/cust.visit',
+        'upload-file': 'static/js/modules/system/component/upload.file',
     },
     shim: {
         'ELEMENT': {

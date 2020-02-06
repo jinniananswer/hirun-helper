@@ -1,26 +1,15 @@
 package com.microtomato.hirun.modules.system.controller;
 
+import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.modules.system.entity.po.UploadFile;
 import com.microtomato.hirun.modules.system.service.IUploadFileService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.util.ResourceUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * <p>
@@ -38,22 +27,18 @@ public class UploadFileController {
     @Autowired
     private IUploadFileService uploadFileService;
 
-    @Value("${hirun.file.store}")
-    private String hirunFileStore;
-
     @PostMapping("uploadOne")
-    public String uploadOne(@RequestParam("fileUpload") MultipartFile multipartFile) throws IOException {
+    public Long uploadOne(@RequestParam("file") MultipartFile multipartFile) throws IOException {
 
         if (multipartFile.isEmpty()) {
             throw new IllegalArgumentException("上传失败，请先选择文件。");
         }
 
-        String batchId = uploadFileService.uploadOne(multipartFile);
-        return batchId;
+        return uploadFileService.uploadOne(multipartFile);
     }
 
     @PostMapping("uploadMulti")
-    public String uploadMulti(@RequestParam("fileUploads") MultipartFile[] multipartFiles) throws IOException {
+    public String uploadMulti(@RequestParam("file") MultipartFile[] multipartFiles) throws IOException {
 
         if (null == multipartFiles || 0 == multipartFiles.length) {
             throw new IllegalArgumentException("上传失败，请先选择文件。");
@@ -63,6 +48,28 @@ public class UploadFileController {
         return batchId;
     }
 
+    @GetMapping("confirmUpload/{batchId}")
+    @RestResult
+    public void confirmUpload(@PathVariable("batchId") String batchId) {
+        uploadFileService.confirmUpload(batchId);
+    }
 
+    @GetMapping("listByBatchId/{batchId}")
+    @RestResult
+    public List<UploadFile> listByBatchId(@PathVariable("batchId") String batchId) {
+        return uploadFileService.listByBatchId(batchId);
+    }
+
+    @GetMapping("deleteById/{id}")
+    @RestResult
+    public void deleteById(@PathVariable("id") Long id) {
+        uploadFileService.deleteById(id);
+    }
+
+    @GetMapping("deleteByBatchId/{batchId}")
+    @RestResult
+    public void deleteByBatchId(@PathVariable("batchId") String batchId) {
+        uploadFileService.deleteByBatchId(batchId);
+    }
 
 }
