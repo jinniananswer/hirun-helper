@@ -7,7 +7,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info'], fu
                 customerPreparation: {
                     prepareOrgId: '',
                     prepareEmployeeId: '',
-                    prepareTime: new Date(),
+                    prepareTime: util.getNowTime(),
                     enterEmployeeId: '',
                     custProperty: '',
                     refereeFixPlace: '',
