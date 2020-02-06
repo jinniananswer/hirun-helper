@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>dolphin-admin</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script src="static/js/framework/requirejs/require.min.js" th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js" th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+</head>
+<body>
+<div id="customer_visit">
+    <el-container>
+        <el-main>
+            <el-row :gutter="12">
+                <el-col :span="6">
+                    <div class="grid-content bg-purple">
+                        <cust-info :cust-id="customerVisit.custId"></cust-info>
+
+                        <order-worker order-id="1"></order-worker>
+                    </div>
+                </el-col>
+                <el-col :span="18">
+                    <div class="grid-content bg-purple-light">
+                        <el-card class="box-card">
+                            <div slot="header">
+                                <span>操作区</span>
+                            </div>
+                            <el-form :inline="false" :rules="rules" label-position="right" label-width="80px" :model="customerVisit" ref="customerVisit">
+                                <el-row>
+                                    <el-col :span="12">
+                                        <el-form-item label="回访对象" prop="visitObject">
+                                            <el-input v-model="customerVisit.visitObject" placeholder="请输入回访对象"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <!--
+                                    <el-col :span="8">
+                                        <el-form-item label="回访人" prop="visitEmployeeId">
+                                            <order-selectemployee role-id="30" v-model="customerVisit.visitEmployeeId"></order-selectemployee>
+                                        </el-form-item>
+                                    </el-col>
+                                    <-->
+                                    <el-col :span="12">
+                                        <el-form-item label="回访类型" prop="visitType">
+                                            <vue-select code-type="VISIT_TYPE" v-model="customerVisit.visitType"></vue-select>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row>
+                                    <el-col :span="24">
+                                        <el-form-item label="回访方式">
+                                            <el-input type="textarea" :rows="1" v-model="customerVisit.visitWay"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row>
+                                    <el-col :span="24">
+                                        <el-form-item label="回访内容" prop="visitContent">
+                                            <el-input   :rows="2" type="textarea" v-model="customerVisit.visitContent"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-form-item style="text-align: center ">
+                                    <el-button type="primary" @click="submit">保存</el-button>
+                                </el-form-item>
+                            </el-form>
+                        </el-card>
+                        <div>
+                            <cust-visit :cust-id="customerVisit.custId"></cust-visit>
+                        </div>
+                        </el-card>
+                    </div>
+                </el-col>
+            </el-row>
+        </el-main>
+    </el-container>
+</div>
+<style>
+    .text {
+        font-size: 14px;
+    }
+
+    .item {
+        margin-bottom: 18px;
+    }
+
+    .box-card {
+        margin-bottom: 12px;
+    }
+
+    .el-card__header {
+        padding:10px;
+    }
+</style>
+<script src="../../../static/js/modules/bss/cust/cust.visit.manage.js" th:src="@{static/js/modules/bss/cust/cust.visit.manage.js(v=${version})}"></script>
+</body>
+</html>

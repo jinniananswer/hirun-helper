@@ -1,15 +1,14 @@
 package com.microtomato.hirun.modules.bss.customer.controller;
 
 import com.microtomato.hirun.framework.annotation.RestResult;
+import com.microtomato.hirun.modules.bss.customer.entity.dto.CustPreparationDTO;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.CustVisitInfoDTO;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import com.microtomato.hirun.modules.bss.customer.entity.po.PartyVisit;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import lombok.extern.slf4j.Slf4j;
 
 import com.microtomato.hirun.modules.bss.customer.service.IPartyVisitService;
-
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -33,6 +32,13 @@ public class PartyVisitController {
     @RestResult
     public List<CustVisitInfoDTO> queryCustVisit(Long custId){
         return partyVisitServiceImpl.queryCustVisit(custId);
+    }
+
+    @PostMapping("/addCustomerVisit")
+    @RestResult
+    public void addCustomerVisit(PartyVisit customerVisit) {
+        log.debug(customerVisit.toString());
+        partyVisitServiceImpl.addCustomerVisit(customerVisit);
     }
 
 }

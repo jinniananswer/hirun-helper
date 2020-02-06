@@ -1,33 +1,25 @@
-require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','order-selectemployee','vue-router'], function(Vue, element, axios, ajax, vueselect, util,orderSelectEmployee,vueRouter) {
-    const Foo = { template: '<div>foo</div>' };
-    const Bar = { template: '<div>bar</div>' };
-    const routes = [
-        { path: '/foo', component: Foo },
-        { path: '/bar', component: Bar }
-    ];
+require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'order-selectemployee', 'vue-router'], function (Vue, element, axios, ajax, vueselect, util, orderSelectEmployee, vueRouter) {
     let vm = new Vue({
         el: '#app',
-        router:new vueRouter({routes}),
-        data: function() {
+        data: function () {
             return {
                 custQueryCond: {
-                    name: '',
-                    designEmployeeId:'',
-                    counselorEmployeeId:'',
-                    reportEmployeeId:'',
-                    informationSource:'',
-                    customerStatus:'',
-                    customerType:'',
-                    reportEmployeeId:'',
-                    timeType:'',
-                    startTime:'',
-                    endTime:'',
-                    houseMode:''
+                    custName: '',
+                    designEmployeeId: '',
+                    counselorEmployeeId: '',
+                    informationSource: '',
+                    customerStatus: '',
+                    customerType: '',
+                    reportEmployeeId: '',
+                    timeType: '',
+                    startTime: '',
+                    endTime: '',
+                    houseMode: ''
                 },
-                custId:'',
+                custId: '',
                 customerInfo: [],
                 checked: null,
-                display:'display:block',
+                display: 'display:block',
 
                 id: util.getRequest('id'),
 
@@ -35,8 +27,8 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','order-selectemp
         },
 
         methods: {
-            onSubmit: function() {
-                ajax.get('api/organization/employee/searchEmployee', {searchText:'金'}, function(responseData){
+            queryCustomer: function () {
+                ajax.get('api/customer/cust-base/queryCustomerInfo', this.custQueryCond, function (responseData) {
                     vm.customerInfo = responseData;
                 });
             },
@@ -45,15 +37,21 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','order-selectemp
                 console.log(row);
             },
 
-            getTemplateRow(index,row){                                 //获取选中数据
+            getTemplateRow(index, row) {
                 this.templateSelection = row;
-                this.custId=row.employeeId;
+                this.custId = row.custId;
             },
 
-            customerVisit(){
-                alert(this.custId);
-                const that=this;
-                that.$router.push({ path: '/a' }).catch(err => {err});
+            customerVisit() {
+                if (this.custId == '') {
+                    this.$message({
+                        showClose: true,
+                        message: '请选择一条客户数据再操作',
+                        type: 'error'
+                    });
+                    return;
+                }
+                util.openPage('openUrl?url=modules/bss/cust/cust_visit_manage&custId=' + this.custId, '客户回访');
             }
 
         }

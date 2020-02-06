@@ -1,7 +1,9 @@
 package com.microtomato.hirun.modules.bss.customer.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.CustVisitInfoDTO;
 import com.microtomato.hirun.modules.bss.customer.entity.po.PartyVisit;
 import com.microtomato.hirun.modules.bss.customer.mapper.PartyVisitMapper;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,5 +52,13 @@ public class PartyVisitServiceImpl extends ServiceImpl<PartyVisitMapper, PartyVi
             dtoList.add(custVisitInfoDTO);
         }
         return dtoList;
+    }
+
+    @Override
+    public void addCustomerVisit(PartyVisit partyVisit) {
+        UserContext userContext= WebContextUtils.getUserContext();
+        partyVisit.setVisitTime(LocalDateTime.now());
+        partyVisit.setVisitEmployeeId(userContext.getEmployeeId());
+        this.baseMapper.insert(partyVisit);
     }
 }

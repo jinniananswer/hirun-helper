@@ -99,18 +99,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info'], fu
             submit(customerPreparation) {
                 this.$refs.customerPreparation.validate((valid) => {
                     if (valid) {
-                        axios({
-                            method: 'post',
-                            url: 'api/customer/cust-preparation/addCustomerPreparation',
-                            data: this.customerPreparation
-                        }).then(function (responseData) {
-                            if (0 == responseData.data.code) {
-                                Vue.prototype.$message({
-                                    message: '报备成功！',
-                                    type: 'success'
-                                });
-                            }
-                        });
+                        ajax.post('api/customer/cust-preparation/addCustomerPreparation',this.customerPreparation);
                     }
                 })
             },

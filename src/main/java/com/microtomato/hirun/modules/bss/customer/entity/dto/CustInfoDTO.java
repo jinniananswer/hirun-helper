@@ -2,6 +2,8 @@ package com.microtomato.hirun.modules.bss.customer.entity.dto;
 
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 /**
  * @program: hirun-helper
  * @description: 客户信息数据传输对象，主要用于客户资料的展示，如应用于客户信息展示组件
@@ -60,4 +62,28 @@ public class CustInfoDTO {
     private String otherHobby;
 
     private String custType;
+
+    private Long prepareEmployeeId;
+
+    private String prepareEmployeeName;
+
+    private LocalDateTime prepareTime;
+
+    private String custProperty;
+
+    private String custPropertyName;
+
+    private String status;
+
+    private LocalDateTime preparationExpireTime;
+
+    private Long rulingEmployeeId;
+
+    private String rulingEmployeeName;
+
+    private LocalDateTime rulingTime;
+
+    private String rulingRemark;
+
+    private LocalDateTime consultTime;
 }
