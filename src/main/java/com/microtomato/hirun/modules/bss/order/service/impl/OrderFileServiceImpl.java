@@ -120,6 +120,14 @@ public class OrderFileServiceImpl extends ServiceImpl<OrderFileMapper, com.micro
         String destPath = getDestPath();
         File destDir = makesureFolderExist(destPath);
         OrderFile orderFile = prepare(destDir, multipartFile, orderId, stage);
+
+        this.update(
+            Wrappers.<OrderFile>lambdaUpdate()
+                .setSql("enabled = false")
+                .eq(OrderFile::getOrderId, orderId)
+                .eq(OrderFile::getStage, stage)
+        );
+
         this.save(orderFile);
     }
 
