@@ -28,7 +28,7 @@
                             </div>
                             <el-form :inline="false" :rules="rules" label-position="right" label-width="80px" :model="customerVisit" ref="customerVisit">
                                 <el-row>
-                                    <el-col :span="12">
+                                    <el-col :span="8">
                                         <el-form-item label="回访对象" prop="visitObject">
                                             <el-input v-model="customerVisit.visitObject" placeholder="请输入回访对象"></el-input>
                                         </el-form-item>
@@ -40,9 +40,15 @@
                                         </el-form-item>
                                     </el-col>
                                     <-->
-                                    <el-col :span="12">
+                                    <el-col :span="8">
                                         <el-form-item label="回访类型" prop="visitType">
                                             <vue-select code-type="VISIT_TYPE" v-model="customerVisit.visitType"></vue-select>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="回访时间"  prop="visitTime">
+                                            <el-date-picker v-model="customerVisit.visitTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss">
+                                            </el-date-picker>
                                         </el-form-item>
                                     </el-col>
                                 </el-row>
