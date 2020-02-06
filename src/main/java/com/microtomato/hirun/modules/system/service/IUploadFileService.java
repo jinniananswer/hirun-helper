@@ -2,8 +2,6 @@ package com.microtomato.hirun.modules.system.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.microtomato.hirun.modules.system.entity.po.UploadFile;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -18,6 +16,8 @@ import java.util.List;
  * @since 2020-02-05
  */
 public interface IUploadFileService extends IService<UploadFile> {
+
+    String toAbsolutePath(String relativePath);
 
     /**
      * 上传单个文件
@@ -40,17 +40,17 @@ public interface IUploadFileService extends IService<UploadFile> {
     /**
      * 确认上传文件
      *
-     * @param batchId
+     * @param ids
      */
-    void confirmUpload(String batchId);
+    void confirmUpload(String ids);
 
     /**
-     * 根据 batchId 查文件清单
+     * 根据 ids 查文件清单
      *
-     * @param batchId
+     * @param ids
      * @return
      */
-    List<UploadFile> listByBatchId(String batchId);
+    List<UploadFile> listByIds(String ids);
 
     /**
      * 根据Id，删除上传文件
@@ -59,10 +59,4 @@ public interface IUploadFileService extends IService<UploadFile> {
      */
     void deleteById(Long id);
 
-    /**
-     * 根据 batchId，删除上传文件
-     *
-     * @param batchId
-     */
-    void deleteByBatchId(String batchId);
 }
