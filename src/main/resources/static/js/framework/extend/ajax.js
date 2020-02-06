@@ -28,7 +28,7 @@ define(['vue','ELEMENT','axios', 'qs'], function(Vue,element,axios, QS){
                 let data = info.data;
                 let code = data.code;
                 if (code != 0) {
-                    vm.$confirm('操作失败', code+":"+data.message, {
+                    vm.$confirm(code+":"+data.message, '操作失败', {
                         confirmButtonText: '确定',
                         type: 'error',
                         center: true
@@ -38,9 +38,9 @@ define(['vue','ELEMENT','axios', 'qs'], function(Vue,element,axios, QS){
 
                     });
                 } else if (successFunc == null || typeof(successFunc) == "undefined") {
-                    vm.$confirm('操作成功', '操作成功，点击确定按钮刷新本页面，点击关闭按钮关闭本界面', {
+                    vm.$confirm('点击确定按钮刷新本页面，点击关闭按钮关闭本界面', '操作成功', {
                         confirmButtonText: '确定',
-                        type: 'error',
+                        type: 'success',
                         center: true
                     }).then(() => {
                         document.location.reload();
