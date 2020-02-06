@@ -11,10 +11,7 @@
 </head>
 <body>
 <div id="app">
-
-    <upload-file ref="upload" accept=".txt" limit="3"></upload-file>
-    <hr/>
-    <el-button type="primary" @click="handleClick">获取上传文件编号</el-button>
+    <order-file-upload ref="upload" button-name="上传平面图" accept=".txt,.png" limit="1" order-id="ABC" stage="DD"></order-file-upload>
 </div>
 <style>
     [v-cloak] {
