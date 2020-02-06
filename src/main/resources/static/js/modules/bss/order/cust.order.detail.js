@@ -85,6 +85,8 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
             submit : function() {
                 alert(this.designEmployeeId);
                 alert(this.sex);
+
+                util.redirect('openUrl?url=modules/bss/order/query_order&id=12', '客户资料查询')
             }
         }
     });

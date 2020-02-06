@@ -275,5 +275,5 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
             " and (now() between b.start_date and b.end_date)" +
             " and b.org_id in (${orgId}) " +
             " and c.role_id = #{roleId}")
-    List<SimpleEmployeeDTO> querySimpleEmployees(Long roleId, String orgId);
+    List<SimpleEmployeeDTO> querySimpleEmployees(@Param("roleId")Long roleId, @Param("orgId")String orgId);
 }
