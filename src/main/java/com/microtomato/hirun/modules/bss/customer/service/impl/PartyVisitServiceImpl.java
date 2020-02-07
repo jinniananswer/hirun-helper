@@ -57,7 +57,10 @@ public class PartyVisitServiceImpl extends ServiceImpl<PartyVisitMapper, PartyVi
     @Override
     public void addCustomerVisit(PartyVisit partyVisit) {
         UserContext userContext= WebContextUtils.getUserContext();
-        partyVisit.setVisitTime(LocalDateTime.now());
+        //考虑有可能先做回访，后记录的情况，回访时间设置前台可选
+        if(partyVisit.getVisitTime()==null){
+            partyVisit.setVisitTime(LocalDateTime.now());
+        }
         partyVisit.setVisitEmployeeId(userContext.getEmployeeId());
         this.baseMapper.insert(partyVisit);
     }

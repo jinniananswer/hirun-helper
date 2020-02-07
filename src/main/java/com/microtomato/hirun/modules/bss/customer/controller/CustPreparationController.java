@@ -28,7 +28,7 @@ public class CustPreparationController {
 
     @PostMapping("/addCustomerPreparation")
     @RestResult
-    public void addCustomerPreparation(@RequestBody CustPreparationDTO custPreparation) {
+    public void addCustomerPreparation(CustPreparationDTO custPreparation) {
         log.debug(custPreparation.toString());
         custPreparationServiceImpl.addCustomerPreparation(custPreparation);
     }

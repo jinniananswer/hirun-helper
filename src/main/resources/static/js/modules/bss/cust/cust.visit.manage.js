@@ -7,6 +7,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info','cus
                     visitObject: '',
                     //visitEmployeeId: '',
                     visitType: '',
+                    visitTime:util.getNowTime(),
                     visitWay:'',
                     visitContent:'',
                     custId: util.getRequest('custId'),
