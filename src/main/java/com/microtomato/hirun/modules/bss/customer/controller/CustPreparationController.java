@@ -40,4 +40,17 @@ public class CustPreparationController {
         return custPreparationServiceImpl.loadPreparationHistory(mobileNo);
     }
 
+    @PostMapping("/customerRuling")
+    @RestResult
+    public void customerRuling(CustPreparationDTO custPreparation) {
+        log.debug(custPreparation.toString());
+        custPreparationServiceImpl.customerRuling(custPreparation);
+    }
+
+    @GetMapping("/queryFailPreparation")
+    @RestResult
+    public List<CustPreparationDTO> queryFailPreparation(String mobileNo,Long custId,String houseId){
+        log.debug(mobileNo);
+        return custPreparationServiceImpl.queryCustPreparaton(mobileNo,custId,"3",houseId,"1");
+    }
 }

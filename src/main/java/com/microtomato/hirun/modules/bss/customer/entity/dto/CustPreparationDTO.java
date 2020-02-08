@@ -1,6 +1,5 @@
 package com.microtomato.hirun.modules.bss.customer.entity.dto;
 
-import com.microtomato.hirun.modules.bss.customer.entity.po.CustBase;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -22,7 +21,7 @@ public class CustPreparationDTO {
 
     private String houseMode;
 
-    private String housePlace;
+    private String houseId;
 
     private String houseBuilding;
 
@@ -42,6 +41,8 @@ public class CustPreparationDTO {
 
     private String custProperty;
 
+    private String custPropertyName;
+
     private String refereeFixPlace;
 
     private String refereeName;
@@ -55,4 +56,12 @@ public class CustPreparationDTO {
     private Integer status;
 
     private String preparationStatusName;
+
+    private Long rulingEmployeeId;
+
+    private String rulingRemark;
+
+    private Long custId;
+
+    private LocalDateTime enterTime;
 }

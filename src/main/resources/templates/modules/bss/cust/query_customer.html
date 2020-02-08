@@ -109,7 +109,7 @@
             <template>
 
                 <el-button type="primary" router size="small" @click="customerVisit">回访</el-button>
-                <el-button type="warning" size="small">裁定</el-button>
+                <el-button type="warning" size="small" @click="customerRuling">裁定</el-button>
                 <br/>
                 <br/>
                 <el-table :data="customerInfo" stripe="true" style="width: 100%">

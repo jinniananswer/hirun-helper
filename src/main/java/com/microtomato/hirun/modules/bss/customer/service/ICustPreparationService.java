@@ -27,4 +27,19 @@ public interface ICustPreparationService extends IService<CustPreparation> {
      * @return
      */
     List<CustPreparationDTO> loadPreparationHistory(String mobileNo);
+
+    /**
+     * 报备裁定
+     * @param custPreparation
+     */
+    void customerRuling(CustPreparationDTO custPreparation);
+
+    /**
+     * 查询报表记录
+     * @param mobileNo
+     * @param custId
+     * @param status
+     * @return
+     */
+    List<CustPreparationDTO> queryCustPreparaton(String mobileNo,Long custId,String status,String houseId,String isExpire);
 }

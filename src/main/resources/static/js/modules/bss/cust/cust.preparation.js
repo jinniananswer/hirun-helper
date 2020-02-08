@@ -19,7 +19,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info'], fu
                     remark: '',
                     houseMode: '',
                     houseArea: 0,
-                    housePlace: '',
+                    houseId: '',
                     houseBuilding: '',
                     houseRoomNo: '',
                 },
@@ -32,7 +32,6 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info'], fu
                 rules: {
                     custName: [
                         {required: true, message: '请填写客户姓名', trigger: 'blur'},
-                        {min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur'}
                     ],
                     mobileNo: [
                         {required: true, message: '请填写电话号码', trigger: 'blur'},
@@ -41,7 +40,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info'], fu
                     houseMode: [
                         {required: true, message: '请选择房屋类型', trigger: 'change'}
                     ],
-                    housePlace: [
+                    houseId: [
                         {required: true, message: '请填写装修地址', trigger: 'blur'}
                     ],
                     houseBuilding: [

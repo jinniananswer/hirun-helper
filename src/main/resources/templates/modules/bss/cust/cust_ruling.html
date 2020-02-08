@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>dolphin-admin</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script src="static/js/framework/requirejs/require.min.js"
+            th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js"
+            th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+</head>
+<body>
+<div id="customer_ruling" style="display:none" :style="display?display:''">
+    <el-container>
+        <el-main>
+            <template>
+                <el-form :inline="false" :rules="rules" label-position="right" label-width="80px" :model="customerRuling" ref="customerRuling">
+                    <el-card class="box-card">
+                        <div>
+                            <el-divider content-position="left"><span style="font-weight: 700">申报人信息</span></el-divider>
+                        </div>
+                        <el-row :gutter="20">
+                            <el-col :span="6">
+                                <el-form-item label="部门"  prop="prepareOrgId">
+                                    <el-input v-model="customerRuling.prepareOrgId"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="6">
+                                <el-form-item label="申报人"  prop="prepareEmployeeId">
+                                        <el-select v-model="customerRuling.prepareEmployeeId" filterable placeholder="输入姓名或手机号搜索"  style="width: 220px">
+                                            <el-option v-for="item in employeeOptions" :key="item.userId"
+                                                       :label="item.name"
+                                                       :value="item.userId"></el-option>
+                                        </el-select>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="6">
+                                <el-form-item label="裁定主管"  prop="rulingEmployeeId">
+                                    <el-input v-model="customerRuling.rulingEmployeeId"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="6">
+                                <el-form-item label="客户电话" >
+                                    <el-input v-model="customerRuling.mobileNo" class="text" readonly></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="24">
+                                <el-form-item label="主管意见" prop="rulingRemark">
+                                    <el-input type="textarea" v-model="customerRuling.rulingRemark"></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-form-item style="text-align: center ">
+                            <el-button type="primary" @click="submit">保存</el-button>
+                            <el-button>系统自动补入有效报备</el-button>
+                        </el-form-item>
+                    </el-card>
+                </el-form>
+            </template>
+
+            <el-card class="box-card">
+                <div>
+                    <el-divider content-position="left"><span style="font-weight: 700">申报失败记录</span></el-divider>
+                </div>
+                <template>
+                    <el-table
+                            :data="preparationFailRecord"
+                            style="width: 100%">
+                        <el-table-column
+                                prop="custId"
+                                label="客户编码"
+                                align="center"
+                                width="180">
+                        </el-table-column>
+                        <el-table-column
+                                prop="custName"
+                                label="客户姓名"
+                                align="center"
+                                width="180">
+                        </el-table-column>
+                        <el-table-column
+                                prop="custPropertyName"
+                                label="客户属性"
+                                align="center"
+                                width="180">
+                        </el-table-column>
+                        <el-table-column
+                                prop="refereeName"
+                                align="center"
+                                label="老客户">
+                        </el-table-column>
+                        <el-table-column
+                                prop="refereeName"
+                                align="center"
+                                label="楼盘">
+                        </el-table-column>
+                        <el-table-column
+                                prop="prepareEmployeeName"
+                                align="center"
+                                label="申报人">
+                        </el-table-column>
+                        <el-table-column
+                                prop="prepareTime"
+                                align="center"
+                                label="申报时间">
+                        </el-table-column>
+                        <el-table-column
+                                prop="enterEmployeeName"
+                                align="center"
+                                label="录入人">
+                        </el-table-column>
+                    </el-table>
+                </template>
+            </el-card>
+        </el-main>
+    </el-container>
+</div>
+<style>
+    .text {
+        font-size: 14px;
+        color: red;
+    }
+
+    .item {
+        margin-bottom: 18px;
+    }
+
+    .box-card {
+        margin-bottom: 18px;
+    }
+</style>
+<script src="../../../static/js/modules/bss/cust/cust.ruling.js"
+        th:src="@{static/js/modules/bss/cust/cust.ruling.js(v=${version})}"></script>
+</body>
+
+</html>
