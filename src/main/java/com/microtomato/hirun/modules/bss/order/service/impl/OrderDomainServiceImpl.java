@@ -2,12 +2,17 @@ package com.microtomato.hirun.modules.bss.order.service.impl;
 
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.modules.bss.config.entity.po.OrderRoleCfg;
+import com.microtomato.hirun.modules.bss.config.entity.po.OrderStatusCfg;
 import com.microtomato.hirun.modules.bss.config.service.IOrderRoleCfgService;
+import com.microtomato.hirun.modules.bss.config.service.IOrderStatusCfgService;
+import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
+import com.microtomato.hirun.modules.bss.order.entity.dto.NewOrderDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderInfoDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderBase;
 import com.microtomato.hirun.modules.bss.order.service.IOrderBaseService;
 import com.microtomato.hirun.modules.bss.order.service.IOrderDomainService;
+import com.microtomato.hirun.modules.bss.order.service.IOrderOperLogService;
 import com.microtomato.hirun.modules.bss.order.service.IOrderWorkerService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +45,12 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
 
     @Autowired
     private IOrderRoleCfgService orderRoleCfgService;
+
+    @Autowired
+    private IOrderStatusCfgService orderStatusCfgService;
+
+    @Autowired
+    private IOrderOperLogService orderOperLogService;
 
     @Override
     public OrderInfoDTO getOrderInfo(Long orderId) {
@@ -87,5 +98,26 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
             }
         }
         return orderWorkers;
+    }
+
+    @Override
+    public void createNewOrder(NewOrderDTO newOrder) {
+        if (newOrder == null) {
+            return;
+        }
+        OrderBase order = new OrderBase();
+        BeanUtils.copyProperties(newOrder, order);
+        if (StringUtils.isNotBlank(newOrder.getStatus())) {
+            order.setStatus(OrderConst.ORDER_STATUS_ASKING);
+        }
+
+        OrderStatusCfg orderStatusCfg = this.orderStatusCfgService.getCfgByStatus(order.getStatus());
+
+        if (orderStatusCfg != null) {
+            order.setStage(orderStatusCfg.getOrderStage());
+        }
+
+        this.orderBaseService.save(order);
+        this.orderOperLogService.createOrderOperLog(order.getOrderId(), order.getStage(), order.getStatus(), OrderConst.OPER_LOG_CONTENT_CREATE);
     }
 }
