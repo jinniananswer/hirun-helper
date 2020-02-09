@@ -12,7 +12,7 @@ import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
  * </p>
  *
  * @author jinnian
- * @since 2020-02-07
+ * @since 2020-02-09
  */
 @Storage
 @DataSource(DataSourceKey.SYS)

@@ -9,8 +9,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * </p>
  *
  * @author jinnian
- * @since 2020-02-07
+ * @since 2020-02-09
  */
 public interface IOrderStatusTransCfgService extends IService<OrderStatusTransCfg> {
 
+    OrderStatusTransCfg getByStatusIdOper(Long id, String oper);
 }

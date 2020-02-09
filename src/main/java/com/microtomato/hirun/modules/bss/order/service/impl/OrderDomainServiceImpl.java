@@ -3,13 +3,16 @@ package com.microtomato.hirun.modules.bss.order.service.impl;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.modules.bss.config.entity.po.OrderRoleCfg;
 import com.microtomato.hirun.modules.bss.config.entity.po.OrderStatusCfg;
+import com.microtomato.hirun.modules.bss.config.entity.po.OrderStatusTransCfg;
 import com.microtomato.hirun.modules.bss.config.service.IOrderRoleCfgService;
 import com.microtomato.hirun.modules.bss.config.service.IOrderStatusCfgService;
+import com.microtomato.hirun.modules.bss.config.service.IOrderStatusTransCfgService;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.NewOrderDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderInfoDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderBase;
+import com.microtomato.hirun.modules.bss.order.exception.OrderException;
 import com.microtomato.hirun.modules.bss.order.service.IOrderBaseService;
 import com.microtomato.hirun.modules.bss.order.service.IOrderDomainService;
 import com.microtomato.hirun.modules.bss.order.service.IOrderOperLogService;
@@ -50,8 +53,16 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
     private IOrderStatusCfgService orderStatusCfgService;
 
     @Autowired
+    private IOrderStatusTransCfgService orderStatusTransCfgService;
+
+    @Autowired
     private IOrderOperLogService orderOperLogService;
 
+    /**
+     * 查询订单综合信息
+     * @param orderId
+     * @return
+     */
     @Override
     public OrderInfoDTO getOrderInfo(Long orderId) {
         OrderInfoDTO orderInfo = new OrderInfoDTO();
@@ -69,6 +80,11 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
         return orderInfo;
     }
 
+    /**
+     * 查询订单工作人员信息
+     * @param orderId
+     * @return
+     */
     @Override
     public List<OrderWorkerDTO> queryOrderWorkers(Long orderId) {
         List<OrderWorkerDTO> orderWorkers = new ArrayList<>();
@@ -100,6 +116,10 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
         return orderWorkers;
     }
 
+    /**
+     * 创建新订单
+     * @param newOrder
+     */
     @Override
     public void createNewOrder(NewOrderDTO newOrder) {
         if (newOrder == null) {
@@ -119,5 +139,53 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
 
         this.orderBaseService.save(order);
         this.orderOperLogService.createOrderOperLog(order.getOrderId(), order.getStage(), order.getStatus(), OrderConst.OPER_LOG_CONTENT_CREATE);
+    }
+
+    /**
+     * 订单状态切换
+     * @param orderId
+     */
+    @Override
+    public void orderStatusTrans(Long orderId, String oper) {
+        OrderBase order = this.orderBaseService.queryByOrderId(orderId);
+        this.orderStatusTrans(order, oper);
+    }
+
+    @Override
+    public void orderStatusTrans(OrderBase order, String oper) {
+        Integer stage = order.getStage();
+        String status = order.getStatus();
+        OrderStatusCfg statusCfg = this.orderStatusCfgService.getCfgByStatus(status);
+        OrderStatusTransCfg statusTransCfg = this.orderStatusTransCfgService.getByStatusIdOper(statusCfg.getId(), oper);
+
+        if (statusTransCfg == null) {
+            throw new OrderException(OrderException.OrderExceptionEnum.STATUS_TRANS_CFG_NOT_FOUND);
+        }
+
+        Long newStatusId = statusTransCfg.getNextOrderStatusId();
+        OrderStatusCfg newStatusCfg = this.orderStatusCfgService.getById(newStatusId);
+
+        if (newStatusCfg == null) {
+            throw new OrderException(OrderException.OrderExceptionEnum.STATUS_CFG_NOT_FOUND);
+        }
+
+        order.setPreviousStage(stage);
+        order.setPreviousStatus(status);
+
+        order.setStage(newStatusCfg.getOrderStage());
+        order.setStatus(newStatusCfg.getOrderStatus());
+
+        //保存订单信息
+        this.orderBaseService.save(order);
+
+        String stageName = this.staticDataService.getCodeName("ORDER_STAGE", stage + "");
+        String statusName = this.staticDataService.getCodeName("ORDER_STATUS", status);
+
+        String newStageName = this.staticDataService.getCodeName("ORDER_STAGE", newStatusCfg.getOrderStage() + "");
+        String newStatusName = this.staticDataService.getCodeName("ORDER_STATUS", newStatusCfg.getOrderStatus());
+
+        String logContent = "，由订单阶段：" + stageName + "，订单状态：" + statusName + "变为新订单阶段：" + newStageName+"，新订单状态：" + newStatusName;
+
+        this.orderOperLogService.createOrderOperLog(order.getOrderId(), newStatusCfg.getOrderStage(), newStatusCfg.getOrderStatus(), OrderConst.OPER_LOG_CONTENT_STATUS_CHANGE+logContent);
     }
 }
