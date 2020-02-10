@@ -156,7 +156,12 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
         Integer stage = order.getStage();
         String status = order.getStatus();
         OrderStatusCfg statusCfg = this.orderStatusCfgService.getCfgByStatus(status);
-        OrderStatusTransCfg statusTransCfg = this.orderStatusTransCfgService.getByStatusIdOper(statusCfg.getId(), oper);
+        OrderStatusTransCfg statusTransCfg = null;
+        if (StringUtils.equals(OrderConst.OPER_RUN, oper)) {
+            statusTransCfg = this.orderStatusTransCfgService.getByStatusIdOper(-1L, oper);
+        } else {
+            statusTransCfg = this.orderStatusTransCfgService.getByStatusIdOper(statusCfg.getId(), oper);
+        }
 
         if (statusTransCfg == null) {
             throw new OrderException(OrderException.OrderExceptionEnum.STATUS_TRANS_CFG_NOT_FOUND);
