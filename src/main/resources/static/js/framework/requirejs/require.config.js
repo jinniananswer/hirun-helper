@@ -19,7 +19,7 @@ require.config({
         'order-worker': 'static/js/modules/bss/component/order.worker',
         'order-selectemployee': 'static/js/modules/bss/component/order.selectemployee',
         'cust-visit': 'static/js/modules/bss/component/cust.visit',
-        'order-file-upload': 'static/js/modules/bss/component/order.file.upload',
+        'upload-file': 'static/js/modules/system/component/upload.file',
     },
     shim: {
         'ELEMENT': {

@@ -8,7 +8,8 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                     designCupboardEmployeeId: '',
                     mainMaterialKeeperEmployeeId: '',
                     cupboardKeeperEmployeeId: '',
-                    consultRemark: ''
+                    consultRemark: '',
+                    orderId:'2',
                 },
                 progress: [-10, 70],
 
@@ -79,7 +80,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                             cancelButtonText: '取消',
                             type: 'warning'
                         }).then(() => {
-                            ajax.post('api/customer/cust-preparation/customerRuling', this.customerConsult);
+                            ajax.post('api/customer/cust-base/submitMeasure', this.customerConsult);
                         })
                     }
                 })

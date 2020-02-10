@@ -19,12 +19,12 @@
                     <div class="grid-content bg-purple">
                         <cust-info cust-id="263"></cust-info>
 
-                        <order-worker order-id="1"></order-worker>
+                        <order-worker :order-id="customerConsult.orderId"></order-worker>
                     </div>
                 </el-col>
                 <el-col :span="18">
                     <div class="grid-content bg-purple-light">
-                        <order-info order-id="1"></order-info>
+                        <order-info :order-id="customerConsult.orderId"></order-info>
                         <el-card class="box-card">
                             <div slot="header">
                                 <span>操作区</span>
