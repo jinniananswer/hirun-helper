@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import lombok.extern.slf4j.Slf4j;
 
-import com.microtomato.hirun.modules.house.service.IHousesService;
+import com.microtomato.hirun.modules.bss.house.service.IHousesService;
 
 import org.springframework.web.bind.annotation.RestController;
 

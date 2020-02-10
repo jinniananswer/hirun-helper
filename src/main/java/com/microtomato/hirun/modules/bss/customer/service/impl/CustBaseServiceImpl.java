@@ -10,6 +10,7 @@ import com.microtomato.hirun.modules.bss.customer.entity.dto.CustQueryCondDTO;
 import com.microtomato.hirun.modules.bss.customer.entity.po.CustBase;
 import com.microtomato.hirun.modules.bss.customer.mapper.CustBaseMapper;
 import com.microtomato.hirun.modules.bss.customer.service.ICustBaseService;
+import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderBase;
 import com.microtomato.hirun.modules.bss.order.service.IOrderBaseService;
 import com.microtomato.hirun.modules.bss.order.service.IOrderDomainService;
@@ -124,11 +125,11 @@ public class CustBaseServiceImpl extends ServiceImpl<CustBaseMapper, CustBase> i
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void submitMeasure(CustConsultDTO dto) {
         this.saveCustomerConsultInfo(dto);
-        orderDomainService.orderStatusTrans(dto.getOrderId(),"NEXT");
+        orderDomainService.orderStatusTrans(dto.getOrderId(),OrderConst.OPER_NEXT_STEP);
     }
 
     @Override
     public void submitSneak(CustConsultDTO dto) {
-
+        orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_RUN);
     }
 }

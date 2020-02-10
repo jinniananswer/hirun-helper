@@ -46,15 +46,18 @@ public class CustBaseController {
     @RestResult
     public void submitMeasure(CustConsultDTO dto) {
         custBaseServiceImpl.submitMeasure(dto);
-        log.debug(dto.toString());
     }
 
     @PostMapping("/saveCustomerConsultInfo")
     @RestResult
     public void saveCustomerConsultInfo(CustConsultDTO dto) {
         custBaseServiceImpl.saveCustomerConsultInfo(dto);
-        log.debug(dto.toString());
     }
 
+    @PostMapping("/submitSneak")
+    @RestResult
+    public void submitSneak(CustConsultDTO dto) {
+        custBaseServiceImpl.submitSneak(dto);
+    }
 
 }
