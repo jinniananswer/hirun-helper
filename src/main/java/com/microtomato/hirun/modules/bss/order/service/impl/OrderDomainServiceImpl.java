@@ -169,8 +169,13 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
             throw new OrderException(OrderException.OrderExceptionEnum.STATUS_CFG_NOT_FOUND);
         }
 
-        order.setPreviousStage(stage);
-        order.setPreviousStatus(status);
+        Integer isUpdatePreious = statusTransCfg.getIsUpdatePrevious();
+
+        if (isUpdatePreious.equals(new Integer(1))) {
+            //需要修改前续订单状态
+            order.setPreviousStage(stage);
+            order.setPreviousStatus(status);
+        }
 
         order.setStage(newStatusCfg.getOrderStage());
         order.setStatus(newStatusCfg.getOrderStatus());

@@ -1,18 +1,11 @@
 package com.microtomato.hirun.modules.bss.config.entity.po;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import java.time.LocalDateTime;
-import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.*;
 import com.microtomato.hirun.framework.data.BaseEntity;
-import com.baomidou.mybatisplus.annotation.TableField;
-import lombok.Data;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import lombok.experimental.Accessors;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -53,6 +46,12 @@ public class OrderStatusTransCfg extends BaseEntity {
      */
     @TableField("next_order_status_id")
     private Long nextOrderStatusId;
+
+    /**
+     * 是否更新前续订单状态，1-是，0-否
+     */
+    @TableField("is_update_previous")
+    private Integer isUpdatePrevious;
 
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)
     private Long createUserId;
