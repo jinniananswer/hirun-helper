@@ -39,6 +39,11 @@ public class OrderConst {
     public static String OPER_DELAY = "DELAY";
 
     /**
+     * 订单操作跑单
+     */
+    public static String OPER_RUN = "RUN";
+
+    /**
      * 日志类型-创建订单
      */
     public static String LOG_TYPE_CREATE = "1";
