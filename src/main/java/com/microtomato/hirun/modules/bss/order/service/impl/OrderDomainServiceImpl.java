@@ -138,7 +138,7 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
         }
 
         this.orderBaseService.save(order);
-        this.orderOperLogService.createOrderOperLog(order.getOrderId(), order.getStage(), order.getStatus(), OrderConst.OPER_LOG_CONTENT_CREATE);
+        this.orderOperLogService.createOrderOperLog(order.getOrderId(), OrderConst.LOG_TYPE_CREATE, order.getStage(), order.getStatus(), OrderConst.OPER_LOG_CONTENT_CREATE);
     }
 
     /**
@@ -186,6 +186,6 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
 
         String logContent = "，由订单阶段：" + stageName + "，订单状态：" + statusName + "变为新订单阶段：" + newStageName+"，新订单状态：" + newStatusName;
 
-        this.orderOperLogService.createOrderOperLog(order.getOrderId(), newStatusCfg.getOrderStage(), newStatusCfg.getOrderStatus(), OrderConst.OPER_LOG_CONTENT_STATUS_CHANGE+logContent);
+        this.orderOperLogService.createOrderOperLog(order.getOrderId(), OrderConst.LOG_TYPE_STATUS_TRANS, newStatusCfg.getOrderStage(), newStatusCfg.getOrderStatus(), OrderConst.OPER_LOG_CONTENT_STATUS_CHANGE+logContent);
     }
 }
