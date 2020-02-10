@@ -37,4 +37,14 @@ public class OrderConst {
      * 订单操作延迟
      */
     public static String OPER_DELAY = "DELAY";
+
+    /**
+     * 日志类型-创建订单
+     */
+    public static String LOG_TYPE_CREATE = "1";
+
+    /**
+     * 日志类型-订单转换
+     */
+    public static String LOG_TYPE_STATUS_TRANS = "2";
 }
