@@ -1,17 +1,14 @@
 package com.microtomato.hirun.modules.bss.order.entity.po;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.microtomato.hirun.framework.data.BaseEntity;
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
-import lombok.Data;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.microtomato.hirun.framework.data.BaseEntity;
+import lombok.*;
 import lombok.experimental.Accessors;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -38,10 +35,16 @@ public class OrderFee extends BaseEntity {
     private Long orderId;
 
     /**
-     * 费用大类，见参数sys_fee_type
+     * 费用项编码
      */
     @TableField("fee_item_id")
     private Long feeItemId;
+
+    /**
+     * 上级费用项编码
+     */
+    @TableField("parent_fee_item_id")
+    private Long parentFeeItemId;
 
     /**
      * 期数
