@@ -74,13 +74,13 @@ public class OrderBase extends BaseEntity {
     /**
      * 上一订单阶段，对应0-酝酿，10-初选，30-初步决策，50-决策，60-施工，95-维护
      */
-    @TableField("stage")
+    @TableField("previous_stage")
     private Integer previousStage;
 
     /**
      * 上一订单状态，见静态参数ORDER_STATUS
      */
-    @TableField("status")
+    @TableField("previous_status")
     private String previousStatus;
 
     /**
