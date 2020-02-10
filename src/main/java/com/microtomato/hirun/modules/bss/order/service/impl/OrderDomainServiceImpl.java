@@ -176,7 +176,7 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
         order.setStatus(newStatusCfg.getOrderStatus());
 
         //保存订单信息
-        this.orderBaseService.save(order);
+        this.orderBaseService.updateById(order);
 
         String stageName = this.staticDataService.getCodeName("ORDER_STAGE", stage + "");
         String statusName = this.staticDataService.getCodeName("ORDER_STATUS", status);
