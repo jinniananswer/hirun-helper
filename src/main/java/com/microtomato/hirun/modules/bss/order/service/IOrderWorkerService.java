@@ -17,4 +17,12 @@ import java.util.List;
 public interface IOrderWorkerService extends IService<OrderWorker> {
 
     List<OrderWorkerDTO> queryByOrderId(Long orderId);
+
+    /**
+     *更新订单参与人
+     * @param orderId
+     * @param roleId
+     * @param employeeId
+     */
+    void updateOrderWorker(Long orderId,Long roleId,Long employeeId);
 }

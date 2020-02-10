@@ -53,7 +53,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
             save(customerConsult) {
                 this.$refs.customerConsult.validate((valid) => {
                     if (valid) {
-                        ajax.post('api/customer/cust-preparation/customerRuling', this.customerConsult);
+                        ajax.post('api/customer/cust-base/saveCustomerConsultInfo', this.customerConsult);
                     }
                 })
             },
