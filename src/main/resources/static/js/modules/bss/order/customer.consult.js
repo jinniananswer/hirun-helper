@@ -4,10 +4,10 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
         data: function () {
             return {
                 customerConsult: {
-                    custServiceEmployeeId: 163,
-                    designCupboardEmployeeId: 163,
-                    mainMaterialKeeperEmployeeId: 163,
-                    cupboardKeeperEmployeeId: 163,
+                    custServiceEmployeeId: '',
+                    designCupboardEmployeeId: '',
+                    mainMaterialKeeperEmployeeId: '',
+                    cupboardKeeperEmployeeId: '',
                     consultRemark: '',
                     orderId:'2',
                 },

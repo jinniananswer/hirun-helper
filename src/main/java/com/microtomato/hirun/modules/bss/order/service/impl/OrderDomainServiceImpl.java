@@ -1,18 +1,21 @@
 package com.microtomato.hirun.modules.bss.order.service.impl;
 
+import com.microtomato.hirun.framework.security.Role;
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.bss.config.entity.po.OrderRoleCfg;
 import com.microtomato.hirun.modules.bss.config.entity.po.OrderStatusCfg;
 import com.microtomato.hirun.modules.bss.config.entity.po.OrderStatusTransCfg;
+import com.microtomato.hirun.modules.bss.config.entity.po.RoleAttentionStatusCfg;
 import com.microtomato.hirun.modules.bss.config.service.IOrderRoleCfgService;
 import com.microtomato.hirun.modules.bss.config.service.IOrderStatusCfgService;
 import com.microtomato.hirun.modules.bss.config.service.IOrderStatusTransCfgService;
+import com.microtomato.hirun.modules.bss.config.service.IRoleAttentionStatusCfgService;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
-import com.microtomato.hirun.modules.bss.order.entity.dto.NewOrderDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.OrderInfoDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.*;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderBase;
 import com.microtomato.hirun.modules.bss.order.exception.OrderException;
+import com.microtomato.hirun.modules.bss.order.mapper.OrderBaseMapper;
 import com.microtomato.hirun.modules.bss.order.service.IOrderBaseService;
 import com.microtomato.hirun.modules.bss.order.service.IOrderDomainService;
 import com.microtomato.hirun.modules.bss.order.service.IOrderOperLogService;
@@ -57,6 +60,12 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
 
     @Autowired
     private IOrderOperLogService orderOperLogService;
+
+    @Autowired
+    private IRoleAttentionStatusCfgService roleAttentionStatusCfgService;
+
+    @Autowired
+    private OrderBaseMapper orderBaseMapper;
 
     /**
      * 查询订单综合信息
@@ -144,6 +153,7 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
     /**
      * 订单状态切换
      * @param orderId
+     * @param oper 见OrderConst里面的常量
      */
     @Override
     public void orderStatusTrans(Long orderId, String oper) {
@@ -151,6 +161,11 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
         this.orderStatusTrans(order, oper);
     }
 
+    /**
+     * 订单状态切换
+     * @param order
+     * @param oper 见OrderConst里面的常量
+     */
     @Override
     public void orderStatusTrans(OrderBase order, String oper) {
         Integer stage = order.getStage();
@@ -197,5 +212,62 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
         String logContent = "，由订单阶段：" + stageName + "，订单状态：" + statusName + "变为新订单阶段：" + newStageName+"，新订单状态：" + newStatusName;
 
         this.orderOperLogService.createOrderOperLog(order.getOrderId(), OrderConst.LOG_TYPE_STATUS_TRANS, newStatusCfg.getOrderStage(), newStatusCfg.getOrderStatus(), OrderConst.OPER_LOG_CONTENT_STATUS_CHANGE+logContent);
+    }
+
+    /**
+     * 查询主营业务系统的待办任务
+     * @return
+     */
+    @Override
+    public List<PendingTaskDTO> queryPendingTask() {
+        List<Role> roles = WebContextUtils.getUserContext().getRoles();
+        Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
+        if (ArrayUtils.isEmpty(roles)) {
+            return null;
+        }
+
+        List<Long> roleIds = new ArrayList<>();
+        for (Role role : roles) {
+            roleIds.add(role.getId());
+        }
+        List<RoleAttentionStatusCfg> roleAttentionStatusCfgs = this.roleAttentionStatusCfgService.queryInRoleIds(roleIds);
+        if (ArrayUtils.isEmpty(roleAttentionStatusCfgs)) {
+            return null;
+        }
+
+        String statuses = "";
+        List<PendingTaskDTO> tasks = new ArrayList<>();
+
+        for (RoleAttentionStatusCfg attentionStatusCfg : roleAttentionStatusCfgs) {
+            Long statusId = attentionStatusCfg.getAttentionStatusId();
+            OrderStatusCfg statusCfg = this.orderStatusCfgService.getById(statusId);
+            statuses += statusCfg.getOrderStatus() + ",";
+
+            PendingTaskDTO task = new PendingTaskDTO();
+            task.setStatusId(statusCfg.getId());
+            task.setStatus(statusCfg.getOrderStatus());
+            task.setPageUrl(statusCfg.getPageUrl());
+            task.setStatusName(this.staticDataService.getCodeName("ORDER_STATUS", statusCfg.getOrderStatus()));
+            tasks.add(task);
+        }
+
+        List<PendingOrderDTO> orders = this.orderBaseMapper.queryAttentionStatusOrders(statuses.substring(0, statuses.length() -1), employeeId);
+        if (ArrayUtils.isEmpty(orders)) {
+            return tasks;
+        }
+
+        for (PendingTaskDTO task : tasks) {
+            String status = task.getStatus();
+            List<PendingOrderDTO> statusOrders = new ArrayList<>();
+            for (PendingOrderDTO order : orders) {
+                if (StringUtils.equals(order.getStatus(), status)) {
+                    statusOrders.add(order);
+                }
+            }
+
+            task.setOrders(statusOrders);
+        }
+
+        return tasks;
     }
 }
