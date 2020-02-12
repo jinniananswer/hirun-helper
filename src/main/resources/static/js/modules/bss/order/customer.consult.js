@@ -4,15 +4,14 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
         data: function () {
             return {
                 customerConsult: {
-                    custServiceEmployeeId: '',
-                    designCupboardEmployeeId: '',
-                    mainMaterialKeeperEmployeeId: '',
-                    cupboardKeeperEmployeeId: '',
+                    custServiceEmployeeId: 163,
+                    designCupboardEmployeeId: 163,
+                    mainMaterialKeeperEmployeeId: 163,
+                    cupboardKeeperEmployeeId: 163,
                     consultRemark: '',
                     orderId:'2',
                 },
                 progress: [-10, 70],
-
                 activeTab: 'orderInfo',
 
                 rules: {
@@ -50,10 +49,16 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
         },
 
         methods: {
+            init:function(){
+                ajax.get('api/bss.order/order-base/getOrderWorkers', {orderId:this.customerConsult.orderId}, function(data) {
+
+                })
+            },
+
             save(customerConsult) {
                 this.$refs.customerConsult.validate((valid) => {
                     if (valid) {
-                        ajax.post('api/customer/cust-preparation/customerRuling', this.customerConsult);
+                        ajax.post('api/customer/cust-base/saveCustomerConsultInfo', this.customerConsult);
                     }
                 })
             },
@@ -66,7 +71,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                             cancelButtonText: '取消',
                             type: 'warning'
                         }).then(() => {
-                            ajax.post('api/customer/cust-preparation/customerRuling', this.customerConsult);
+                            ajax.post('api/customer/cust-base/submitSneak', this.customerConsult);
                         })
                     }
                 })
@@ -85,6 +90,10 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                     }
                 })
             },
+        },
+
+        mounted () {
+            this.init();
         }
     });
 

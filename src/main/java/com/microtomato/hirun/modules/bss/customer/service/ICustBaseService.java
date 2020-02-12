@@ -1,5 +1,6 @@
 package com.microtomato.hirun.modules.bss.customer.service;
 
+import com.microtomato.hirun.modules.bss.customer.entity.dto.CustConsultDTO;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.CustInfoDTO;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.CustQueryCondDTO;
 import com.microtomato.hirun.modules.bss.customer.entity.po.CustBase;
@@ -22,4 +23,11 @@ public interface ICustBaseService extends IService<CustBase> {
     CustInfoDTO queryByCustIdOrOrderId(Long custId, Long orderId);
 
     List<CustInfoDTO> queryCustomerInfo(CustQueryCondDTO condDTO);
+
+    void saveCustomerConsultInfo(CustConsultDTO dto);
+
+    void submitMeasure(CustConsultDTO dto);
+
+    void submitSneak(CustConsultDTO dto);
+
 }

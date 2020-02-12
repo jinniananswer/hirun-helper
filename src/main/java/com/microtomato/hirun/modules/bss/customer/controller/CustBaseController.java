@@ -4,9 +4,7 @@ import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.CustConsultDTO;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.CustInfoDTO;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.CustQueryCondDTO;
-import com.microtomato.hirun.modules.bss.customer.entity.po.PartyVisit;
 import com.microtomato.hirun.modules.bss.customer.service.ICustBaseService;
-import com.microtomato.hirun.modules.bss.order.service.IOrderDomainService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -29,8 +27,7 @@ public class CustBaseController {
     @Autowired
     private ICustBaseService custBaseServiceImpl;
 
-    @Autowired
-    private IOrderDomainService orderDomainService;
+
 
     @GetMapping("/getCustInfo")
     @RestResult
@@ -48,7 +45,19 @@ public class CustBaseController {
     @PostMapping("/submitMeasure")
     @RestResult
     public void submitMeasure(CustConsultDTO dto) {
-        orderDomainService.orderStatusTrans(dto.getOrderId(),"NEXT");
-        log.debug(dto.toString());
+        custBaseServiceImpl.submitMeasure(dto);
     }
+
+    @PostMapping("/saveCustomerConsultInfo")
+    @RestResult
+    public void saveCustomerConsultInfo(CustConsultDTO dto) {
+        custBaseServiceImpl.saveCustomerConsultInfo(dto);
+    }
+
+    @PostMapping("/submitSneak")
+    @RestResult
+    public void submitSneak(CustConsultDTO dto) {
+        custBaseServiceImpl.submitSneak(dto);
+    }
+
 }

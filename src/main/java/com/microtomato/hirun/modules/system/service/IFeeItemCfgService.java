@@ -26,4 +26,10 @@ public interface IFeeItemCfgService extends IService<FeeItemCfg> {
 
     List<FeeItemCfg> getAllFeeItemDatas();
 
+    /**
+     * 根据feeItemId获取name
+     */
+    String getFeeItemNameFeeItemId(Long feeItemId);
+
+
 }

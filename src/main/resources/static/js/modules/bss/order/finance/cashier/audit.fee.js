@@ -1,75 +1,176 @@
-require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'order-info','order-worker'], function(Vue, element, axios, ajax, vueselect, util, custInfo, orderInfo, orderWorker) {
+require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'order-info', 'order-worker', 'order-selectemployee', 'cust-visit'], function (Vue, element, axios, ajax, vueselect, util, custInfo, orderInfo, orderWorker, orderSelectEmployee, custVisit) {
     let vm = new Vue({
-        el: '#app',
-        data: function() {
-            return {
-                custQueryCond: {
-                    name: '',
-                    sex: '',
-                    wechatNicName: '',
-                    mobileNo: ''
-                },
+            el: '#app',
+            data: function () {
+                return {
+                    FeeDetails: [],
+                    custQueryCond: {
+                        name: '',
+                        sex: '',
+                        wechatNicName: '',
+                        mobileNo: ''
+                    },
 
-                custOrder: [],
+                    collectedDesignFee: {
+                        parentFeeItemId: '',
+                        collectionDate: '',
+                        payee: '',
+                        feeItemId: '',
+                        payee: '',
+                        designEmployeeId: '',
+                        collectedFee: '',
+                        cash: '',
+                        industrialBankCard: '',
+                        pudongDevelopmentBankCard: '',
+                        constructionBankBasic: '',
+                        constructionBank3797: '',
+                        ICBC3301: '',
+                        ICBCInstallment: '',
+                        ABCInstallment: '',
+                        summary: '',
+                    },
+                    feeTableData: [],
+                    defaultStandard: '1',
+                    custOrder: [],
+                    display: 'display:block',
+                    multipleSelection: [],
+                    designEmployeeId: '',
+                    id: util.getRequest('id'),
+                    customerDefault: 'base',
+                    progress: [-10, 70],
+                    parentFeeItemId: '设计费',
+                    activeTab: 'orderInfo',
 
-                display:'display:block',
-                feeTableData: [{ receiptNumber:'1',feeCategory: '1', periods: '',designFeeDetails:'3',ShopName:'邵阳店', fee: '1',collectDate:new Date(),designer:'设计师测试1',designerLevel:'初级审计师', accountManager: '客户代表测试1' }],
-                defaultSex: '2',
-                defaultStandard: '1',
 
-                id: util.getRequest('id'),
-                customerDefault: 'base',
+                    requirement: {
+                        title: '客户需求信息',
+                        style: '白色简约',
+                        func: '功能列表'
+                    },
+                    rules: {
+                        feeItemId: [
+                            {required: true, message: '请选择对应小类', trigger: 'blur'},
+                        ],
+                    },
 
-                progress: [-10,70],
-
-                activeTab:'orderInfo',
-
-
-
-                marks: {
-                    0: '酝酿',
-                    10: '初选',
-                    30: '初步决策',
-                    50: '决策',
-                    60: '施工',
-                    95: '维护'
-                },
-
-                requirement : {
-                    title : '客户需求信息',
-                    style : '白色简约',
-                    func : '功能列表'
-                },
-
-
-                avatarUrl: 'static/img/male.jpg'
-            }
-        },
-
-        methods: {
-            onSubmit: function() {
-                alert(this.id);
-                ajax.get('api/organization/employee/searchEmployee?searchText=金', null, function(responseData){
-                    vm.custOrder = responseData;
+                    avatarUrl: 'static/img/male.jpg'
+                }
+            },
+            mounted: function() {
+                let data = {
+                    orderId : 1111
+                }
+                ajax.post('api/bss/order/order-fee/loadDesignFeeInfo',data, (responseData)=>{
+                    Object.assign(this.collectedDesignFee, responseData);
                 });
             },
-            getEmployee : function() {
-                axios.get('api/organization/employee/loadEmployeeArchive?employeeId=1').then(function(responseData){
-                    vm.customer = responseData.data.rows;
-                }).catch(function(error){
-                    console.log(error);
-                });
-            },
-            changeStandard: function(newVal) {
-                alert(newVal);
-                alert(this.defaultStandard);
-            },
-            changeSex: function(newVal) {
-                alert(newVal);
-                alert(this.defaultSex);
-            }
-        }
-    });
+            methods: {
+                checkMoney: function () {
+                    var money=this.collectedDesignFee.collectedFee;
+                    var oldmoney=this.collectedDesignFee.oldCollectedFee;
+                    if (money.indexOf('.') != -1)
+                    {
+                        alert("请输入正确的金额,单位为元");
+                        this.collectedDesignFee.collectedFee=oldmoney;
+                    }
+                    var reg = /(^[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/;
+                    if (!reg.test(money)) {
+                        alert("请输入正确的金额");
+                    }
+                },
 
+                //处理表格多选表头初始化方法
+                // init(){
+                //     document.querySelector(".el-checkbox__inner").style.display="none";
+                //     document.querySelector(".cell").innerHTML = '是否交齐';
+                //
+                // },
+                auditSubmit(collectedDesignFee)
+                {
+                    this.$refs.collectedDesignFee.validate((valid) => {
+                        if (valid) {
+                            axios({
+                                method: 'post',
+                                url: 'api/bss/order/order-fee/addOrderFee',
+                                data: this.collectedDesignFee
+                            }).then(function (responseData) {
+                                if (0 == responseData.data.code) {
+                                    Vue.prototype.$message({
+                                        message: '缴费成功！',
+                                        type: 'success'
+                                    });
+                                }
+                            });
+                        }
+                    })
+                },
+                auditUpdate(collectedDesignFee)
+                {
+
+                    this.$refs.collectedDesignFee.validate((valid) => {
+                        if (valid) {
+                            axios({
+                                method: 'post',
+                                url: 'api/bss/order/order-fee/addOrderFee',
+                                data: this.collectedDesignFee
+                            }).then(function (responseData) {
+                                if (0 == responseData.data.code) {
+                                    Vue.prototype.$message({
+                                        message: '缴费成功！',
+                                        type: 'success'
+                                    });
+                                }
+                            });
+                        }
+                    })
+                },
+                submit(collectedDesignFee)
+                {
+                    this.$refs.collectedDesignFee.validate((valid) => {
+                        if (valid) {
+                            axios({
+                                method: 'post',
+                                url: 'api/bss/order/order-fee/addOrderFee',
+                                data: this.collectedDesignFee
+                            }).then(function (responseData) {
+                                if (0 == responseData.data.code) {
+                                    Vue.prototype.$message({
+                                        message: '缴费成功！',
+                                        type: 'success'
+                                    });
+                                }
+                            });
+                        }
+                    })
+                },
+                getEmployee : function () {
+                    axios.get('api/organization/employee/loadEmployeeArchive?employeeId=1').then(function (responseData) {
+                        vm.customer = responseData.data.rows;
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+                }
+                ,
+                handleFeeTableDelete: function (index) {
+                    vm.employeeTableData.splice(index, 1);
+                }
+                ,
+                // addRow: function(feeTableData,event){//新增一行
+                //     //之前一直想不到怎么新增一行空数据，最后幸亏一位朋友提示：表格新增一行，其实就是源数据的新增，从源数据入手就可以实现了，于是 恍然大悟啊！
+                //     feeTableData.push({ feeCategory: '1', periods: '',designFeeDetails:'3',ShopName:'邵阳店', fee: '',collectDate:new Date(),designer:'设计师测试1',designerLevel:'初级审计师',cabinetDesigner:'橱柜设计师测试1', accountManager: '客户代表测试1',projectManager:'项目经理测试1',remarks:'' })
+                // },
+
+                handleSelectionChange(val)
+                {
+                    this.multipleSelection = val;
+                }
+                ,
+                handleFeeTableDelete: function (index) {
+                    vm.feeTableData.splice(index, 1);
+                    console.log(JSON.stringify(this.feeTableData))
+                }
+            }
+        })
+    ;
     return vm;
 })

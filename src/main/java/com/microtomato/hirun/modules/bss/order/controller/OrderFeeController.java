@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import com.microtomato.hirun.modules.bss.order.service.IOrderFeeService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -30,11 +31,17 @@ public class OrderFeeController {
 
     @PostMapping("/addOrderFee")
     @RestResult
-    public void addOrderFee(@RequestBody OrderFeeDTO orderFee) {
+    public void addDesignFee(@RequestBody OrderFeeDTO orderFee) {
         log.debug(orderFee.toString());
-        orderFeeServiceImpl.addOrderFee(orderFee);
+        orderFeeServiceImpl.addDesignFee(orderFee);
     }
 
+    @PostMapping("/loadDesignFeeInfo")
+    @RestResult
+    public OrderFeeDTO loadDesignFeeInfo(Long orderId){
+        System.out.print("orderId=====rrrrrrrrr===="+orderId);
+        return orderFeeServiceImpl.loadDesignFeeInfo(orderId);
+    }
 
 
 
