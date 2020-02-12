@@ -149,6 +149,12 @@ public class OrderBase extends BaseEntity {
     @TableField("activity_id")
     private Long activityId;
 
+    /**
+     * 结束时间
+     */
+    @TableField("done_date")
+    private LocalDateTime doneDate;
+
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)
     private Long createUserId;
 

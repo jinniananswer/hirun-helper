@@ -9,11 +9,11 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- * 订单阶段及状态配置表
+ * 角色关注的订单状态配置表
  * </p>
  *
  * @author jinnian
- * @since 2020-02-09
+ * @since 2020-02-11
  */
 @Data
 @Builder
@@ -21,8 +21,8 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("sys_order_status_cfg")
-public class OrderStatusCfg extends BaseEntity {
+@TableName("sys_role_attention_status_cfg")
+public class RoleAttentionStatusCfg extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -30,22 +30,16 @@ public class OrderStatusCfg extends BaseEntity {
     private Long id;
 
     /**
-     * 订单阶段
+     * 角色ID
      */
-    @TableField("order_stage")
-    private Integer orderStage;
+    @TableField("role_id")
+    private Long roleId;
 
     /**
-     * 订单状态
+     * 关注的订单状态
      */
-    @TableField("order_status")
-    private String orderStatus;
-
-    /**
-     * 处理页面
-     */
-    @TableField("page_url")
-    private String pageUrl;
+    @TableField("attention_status_id")
+    private Long attentionStatusId;
 
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)
     private Long createUserId;
