@@ -13,11 +13,25 @@ public class OrderFeeDTO {
 
     private Long orderId;
 
+    private Long parentFeeItemId;
+
     private Long feeItemId;
+
+    private String parentFeeItemName;
+
+    private String feeItemName;
+
+    private String payee;
+
+    private String collectionDate;
+
+    private Long paymentType;
 
     private Integer period;
 
     private Integer collectedFee;
+
+    private Integer oldCollectedFee;
 
     private Integer actFee;
 
@@ -27,19 +41,39 @@ public class OrderFeeDTO {
 
     private String cash;
 
+    private String oldCash;
+
     private String industrialBankCard;
+
+    private String oldIndustrialBankCard;
 
     private String pudongDevelopmentBankCard;
 
+    private String oldPudongDevelopmentBankCard;
+
     private String constructionBankBasic;
+
+    private String oldConstructionBankBasic;
 
     private String constructionBank3797;
 
+    private String oldConstructionBank3797;
+
     private String ICBC3301;
+
+    private String oldICBC3301;
 
     private String ICBCInstallment;
 
+    private String oldICBCInstallment;
+
     private String ABCInstallment;
+
+    private String oldABCInstallment;
+
+    private String summary;
+
+    private String oldSummary;
 
 
 }

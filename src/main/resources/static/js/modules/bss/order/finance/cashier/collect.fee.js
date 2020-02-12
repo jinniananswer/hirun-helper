@@ -28,17 +28,18 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                     summary: '',
                 },
                 feeTableData: [],
+                defaultStandard: '1',
                 custOrder: [],
                 display: 'display:block',
                 multipleSelection: [],
                 designEmployeeId: '',
                 id: util.getRequest('id'),
                 customerDefault: 'base',
-                defaultFeeType: '设计费',
                 progress: [-10, 70],
-
+                parentFeeItemId: '设计费',
                 activeTab: 'orderInfo',
-
+                collectedFee: '',
+                capitalizationAmount: '',
 
                 requirement: {
                     title: '客户需求信息',
@@ -48,9 +49,6 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                 rules: {
                     feeItemId: [
                         {required: true, message: '请选择对应小类', trigger: 'blur'},
-                    ],
-                    collectedFee: [
-                        {required: true, message: '请填写金额', trigger: 'blur'},
                     ],
                 },
 
@@ -72,13 +70,13 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
             },
             checkMoney: function () {
                 var money=this.collectedFee;
-                if (money.indexOf('.') != -1)
+                 if (money.indexOf('.') != -1)
                 {
                     alert("请输入正确的金额,单位为元");
                 }
                 var reg = /(^[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/;
                 if (reg.test(money)) {
-                   this.capitalizationAmount=this.MoneyToChinese(money);
+                   this.capitalizationAmount= this.MoneyToChinese(money);
                 } else {
                     alert("请输入正确的金额");
                 }
@@ -155,15 +153,15 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                     chineseStr += cnIntLast;
                 }
                 //小数部分
-                // if (decimalNum != '') {
-                //     var decLen = decimalNum.length;
-                //     for (var i = 0; i < decLen; i++) {
-                //         var n = decimalNum.substr(i, 1);
-                //         if (n != '0') {
-                //             chineseStr += cnNums[Number(n)] + cnDecUnits[i];
-                //         }
-                //     }
-                // }
+                if (decimalNum != '') {
+                    var decLen = decimalNum.length;
+                    for (var i = 0; i < decLen; i++) {
+                        var n = decimalNum.substr(i, 1);
+                        if (n != '0') {
+                            chineseStr += cnNums[Number(n)] + cnDecUnits[i];
+                        }
+                    }
+                }
                 if (chineseStr == '') {
                     chineseStr += cnNums[0] + cnIntLast + cnInteger;
                 } else if (decimalNum == '') {
