@@ -1,5 +1,7 @@
 package com.microtomato.hirun.modules.bss.house.controller;
 
+import com.microtomato.hirun.framework.annotation.RestResult;
+import com.microtomato.hirun.modules.bss.house.entity.po.Houses;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import com.microtomato.hirun.modules.bss.house.service.IHousesService;
 
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * <p>
@@ -26,6 +30,11 @@ public class HousesController {
     @Autowired
     private IHousesService housesServiceImpl;
 
-
+    @GetMapping("queryHouse")
+    @RestResult
+    public List<Houses> queryHouse(){
+        List<Houses> housesList=housesServiceImpl.list();
+        return housesList;
+    }
 
 }
