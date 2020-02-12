@@ -29,11 +29,20 @@ public class OrderFeeController {
     @Autowired
     private IOrderFeeService orderFeeServiceImpl;
 
-    @PostMapping("/addOrderFee")
+    @PostMapping("/addDesignFee")
     @RestResult
     public void addDesignFee(@RequestBody OrderFeeDTO orderFee) {
-        log.debug(orderFee.toString());
+        System.out.println("orderFee=========="+orderFee.toString());
+        orderFee.setOrderId((long)7);//测试用
         orderFeeServiceImpl.addDesignFee(orderFee);
+    }
+
+    @PostMapping("/addDownPayment")
+    @RestResult
+    public void addDownPayment(@RequestBody OrderFeeDTO orderFee) {
+        log.debug(orderFee.toString());
+        orderFee.setOrderId((long)7);//测试用
+        orderFeeServiceImpl.addDownPayment(orderFee);
     }
 
     @PostMapping("/loadDesignFeeInfo")
@@ -43,6 +52,12 @@ public class OrderFeeController {
         return orderFeeServiceImpl.loadDesignFeeInfo(orderId);
     }
 
+    @PostMapping("/auditUpdate")
+    @RestResult
+    public void auditUpdate(OrderFeeDTO orderFee){
+        System.out.print("orderFee=====gggggg===="+orderFee);
+        orderFeeServiceImpl.auditUpdate(orderFee);
+    }
 
 
 }

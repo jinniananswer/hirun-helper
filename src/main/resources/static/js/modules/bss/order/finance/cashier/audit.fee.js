@@ -58,7 +58,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
             },
             mounted: function() {
                 let data = {
-                    orderId : 1111
+                    orderId : 7//测试用
                 }
                 ajax.post('api/bss/order/order-fee/loadDesignFeeInfo',data, (responseData)=>{
                     Object.assign(this.collectedDesignFee, responseData);
@@ -96,7 +96,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                             }).then(function (responseData) {
                                 if (0 == responseData.data.code) {
                                     Vue.prototype.$message({
-                                        message: '缴费成功！',
+                                        message: '审核成功！',
                                         type: 'success'
                                     });
                                 }
@@ -106,23 +106,24 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                 },
                 auditUpdate(collectedDesignFee)
                 {
-
-                    this.$refs.collectedDesignFee.validate((valid) => {
-                        if (valid) {
-                            axios({
-                                method: 'post',
-                                url: 'api/bss/order/order-fee/addOrderFee',
-                                data: this.collectedDesignFee
-                            }).then(function (responseData) {
-                                if (0 == responseData.data.code) {
-                                    Vue.prototype.$message({
-                                        message: '缴费成功！',
-                                        type: 'success'
-                                    });
-                                }
-                            });
-                        }
-                    })
+                    let url = 'api/bss/order/order-fee/auditUpdate';
+                   ajax.post(url, this.collectedDesignFee);
+                    // this.$refs.collectedDesignFee.validate((valid) => {
+                    //     if (valid) {
+                    //         axios({
+                    //             method: 'post',
+                    //             url: 'api/bss/order/order-fee/auditUpdate',
+                    //             data: this.collectedDesignFee
+                    //         }).then(function (responseData) {
+                    //             if (0 == responseData.data.code) {
+                    //                 Vue.prototype.$message({
+                    //                     message: '修改并审核成功！',
+                    //                     type: 'success'
+                    //                 });
+                    //             }
+                    //         });
+                    //     }
+                    // })
                 },
                 submit(collectedDesignFee)
                 {
@@ -135,7 +136,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                             }).then(function (responseData) {
                                 if (0 == responseData.data.code) {
                                     Vue.prototype.$message({
-                                        message: '缴费成功！',
+                                        message: '审核不通过！',
                                         type: 'success'
                                     });
                                 }

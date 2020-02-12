@@ -25,6 +25,12 @@ public interface IOrderFeeService extends IService<OrderFee> {
     void addDesignFee(OrderFeeDTO dto);
 
     /**
+     * 新增首期工程款信息
+     * @param dto
+     */
+    void addDownPayment(OrderFeeDTO dto);
+
+    /**
      * 新增订单费用信息
      * @param orderFee
      */
@@ -33,9 +39,9 @@ public interface IOrderFeeService extends IService<OrderFee> {
 
     /**
      * 新增订单收费方式信息
-     * @param orderPaymoney
+     * @param dto,id
      */
-    void addOrderPaymoney(OrderPaymoney orderPaymoney);
+    void addOrderPaymoney(OrderFeeDTO dto,long id);
 
 
 
@@ -44,5 +50,11 @@ public interface IOrderFeeService extends IService<OrderFee> {
      * @param orderId
      */
     OrderFeeDTO loadDesignFeeInfo(Long orderId);
+
+    /**
+     * 修改订单费用信息
+     * @param dto
+     */
+    void auditUpdate(OrderFeeDTO dto);
 
 }
