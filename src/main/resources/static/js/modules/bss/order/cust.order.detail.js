@@ -11,9 +11,11 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
 
                 },
 
-                designEmployeeId : '',
+                designEmployeeId : 7,
 
-                sex: '',
+                sex: '2',
+
+                sexDisable: false,
 
                 customerDefault: 'base',
 
@@ -84,9 +86,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
         methods: {
             submit : function() {
                 alert(this.designEmployeeId);
-                alert(this.sex);
-
-                util.redirect('openUrl?url=modules/bss/order/query_order&id=12', '客户资料查询')
+                this.sexDisable = true;
             }
         }
     });
