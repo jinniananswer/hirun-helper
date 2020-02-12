@@ -36,6 +36,8 @@ layui.extend({
                                     return '调出';
                                 }else if (d.pendingType == 3) {
                                     return '员工借调归还确认';
+                                }else if (d.pendingType == 5) {
+                                    return '员工永不录用';
                                 }
                             }
                         },
@@ -46,7 +48,7 @@ layui.extend({
                             align: 'center',
                             title: '待办状态',
                             sort: true,
-                            width: 100,
+                            width: 200,
                             templet: function (d) {
                                 if (d.pendingStatus == 1) {
                                     return '<span style="color:#FF4500;">' + '未处理' + '</span>';
@@ -94,6 +96,8 @@ layui.extend({
                     pendingManager.detail(data);
                 }else if (layEvent === 'confirmReturn') {
                     pendingManager.confirmReturn(data);
+                }else if(layEvent==='approve'){
+                    pendingManager.approve(data);
                 }
             });
 
@@ -198,6 +202,29 @@ layui.extend({
             });
             layer.full(index);
         },
+
+        approve:function (data) {
+            layer.open({
+                type: 2,
+                title: '员工永不录用审核',
+                content: 'openUrl?url=modules/organization/hr/approve_employee_blackList',
+                maxmin: true,
+                btn: ['确定', '取消'],
+                area: ['450px', '600px'],
+                skin: 'layui-layer-molv',
+                success: function (layero, index) {
+                    var body = layer.getChildFrame('body', index);
+                    body.find('#employeeId').val(data.employeeId);
+                    body.find('#id').val(data.id);
+                    form.render();
+                },
+                yes: function (index, layero) {
+                    var body = layer.getChildFrame('body', index);
+                    var submit = body.find("#confirm-submit");
+                    submit.click();
+                }
+            });
+        }
 
     };
     exports('pendingManager', pendingManager);

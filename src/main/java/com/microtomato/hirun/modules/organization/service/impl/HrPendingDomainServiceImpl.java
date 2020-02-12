@@ -15,6 +15,7 @@ import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeInfoDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeTransDetailDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.HrPendingInfoDTO;
+import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeTransDetail;
 import com.microtomato.hirun.modules.organization.entity.po.HrPending;
 import com.microtomato.hirun.modules.organization.service.*;
@@ -59,6 +60,9 @@ public class HrPendingDomainServiceImpl implements IHrPendingDomainService {
 
     @Autowired
     private IEmployeeTransDetailService detailService;
+
+    @Autowired
+    private IEmployeeBlacklistService blacklistService;
 
 
     @Override
@@ -212,7 +216,58 @@ public class HrPendingDomainServiceImpl implements IHrPendingDomainService {
         hrPendingDetailDTO.setSourceJobRoleNatureName(staticDataService.getCodeName("JOB_NATURE", hrPendingDetailDTO.getSourceJobRoleNature()));
         hrPendingDetailDTO.setJobRoleNatureName(staticDataService.getCodeName("JOB_NATURE", hrPendingDetailDTO.getJobRoleNature()));
 
+        hrPendingDetailDTO.setSourceJobGradeName(staticDataService.getCodeName("JOB_GRADE",hrPendingDetailDTO.getSourceJobGrade()));
+        hrPendingDetailDTO.setJobGradeName(staticDataService.getCodeName("JOB_GRADE",hrPendingDetailDTO.getJobGrade()));
+
         return hrPendingDetailDTO;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    public void addEmployeeBlackListApply(Long employeeId, String remark) {
+        UserContext userContext=WebContextUtils.getUserContext();
+        HrPending hrPending=new HrPending();
+        hrPending.setEmployeeId(employeeId);
+        hrPending.setPendingCreateId(userContext.getEmployeeId());
+        hrPending.setPendingExecuteId(107L);
+        hrPending.setRemark(remark);
+        hrPending.setPendingType(HrPendingConst.PENDING_TYPE_EMPLOYEEBLACK);
+        hrPending.setStartTime(LocalDateTime.now());
+        hrPending.setEndTime(TimeUtils.getForeverTime());
+        hrPending.setPendingStatus(HrPendingConst.PENDING_STATUS_1);
+        String content=employeeService.getEmployeeNameEmployeeId(107L) + ",您好。"
+                + employeeService.getEmployeeNameEmployeeId(userContext.getEmployeeId()) + "发起了员工【"
+                + employeeService.getEmployeeNameEmployeeId(employeeId) + "】的加入黑名单申请，请进行待办处理！";
+        hrPending.setContent(content);
+
+        hrPendingService.save(hrPending);
+        //发送消息
+        notifyService.sendMessage(hrPending.getPendingExecuteId(),content,userContext.getEmployeeId());
+
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    public void approveEmployeeBlackListPending(Long employeeId, Long id, String approveStatus) {
+        UserContext userContext=WebContextUtils.getUserContext();
+        HrPending hrPending=this.hrPendingService.getById(id);
+        Employee employee=employeeService.getById(employeeId);
+
+        if(StringUtils.equals(approveStatus,"2")){
+            String content=employeeService.getEmployeeNameEmployeeId(hrPending.getPendingCreateId())+",您好！【" +
+                    employeeService.getEmployeeNameEmployeeId(userContext.getEmployeeId())+"】未审核通过员工【" +
+                    employeeService.getEmployeeNameEmployeeId(hrPending.getEmployeeId())+"】的加入黑名单请求！";
+            notifyService.sendMessage(hrPending.getPendingCreateId(),content,userContext.getEmployeeId());
+        }else{
+            blacklistService.addEmployeeBlackList(employee,hrPending.getRemark()+"。人资发起，集团审核通过加入黑名单。");
+            String content=employeeService.getEmployeeNameEmployeeId(hrPending.getPendingCreateId())+",您好！【" +
+                    employeeService.getEmployeeNameEmployeeId(userContext.getEmployeeId())+"】审核通过员工【" +
+                    employeeService.getEmployeeNameEmployeeId(hrPending.getEmployeeId())+"】的加入黑名单请求！";
+            notifyService.sendMessage(hrPending.getPendingCreateId(),content,userContext.getEmployeeId());
+        }
+
+        hrPending.setPendingStatus("2");
+        this.hrPendingService.updateById(hrPending);
     }
 
 

@@ -267,7 +267,7 @@ public class StatEmployeeTransitionServiceImpl extends ServiceImpl<StatEmployeeT
     }
 
     @Override
-    public List<Map<String,String>> queryTransitionList(Long orgId, String queryTime) {
+    public List<Map<String,String>> queryTransitionList(String orgId, String queryTime) {
         String year = "";
         String month = "";
         if (StringUtils.isNotEmpty(queryTime)) {
@@ -284,11 +284,12 @@ public class StatEmployeeTransitionServiceImpl extends ServiceImpl<StatEmployeeT
         OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, userOrgId);
         String orgLine="";
 
-        if (null == orgId) {
+        if (StringUtils.isEmpty(orgId)) {
             orgLine = orgService.listOrgSecurityLine();
         } else {
-            OrgDO orgDo = SpringContextUtils.getBean(OrgDO.class, orgId);
-            orgLine = orgDo.getOrgLine(orgId);
+/*            OrgDO orgDo = SpringContextUtils.getBean(OrgDO.class, orgId);
+            orgLine = orgDo.getOrgLine(orgId);*/
+            orgLine=orgId;
         }
 
         List<Map<String,String>> statEmployeeTransitionList = this.mapper.employeeTransitionDetail(year,month,orgLine);

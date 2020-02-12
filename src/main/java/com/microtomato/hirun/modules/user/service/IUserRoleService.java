@@ -89,4 +89,20 @@ public interface IUserRoleService extends IService<UserRole> {
      * @param endDatetime 终止时间
      */
     void deleteAllRole(Long userId, LocalDateTime endDatetime);
+
+    /**
+     * 批量分配角色
+     *
+     * @param userIds
+     * @param roleIds
+     */
+    void grantRole(List<Long> userIds, List<Long> roleIds);
+
+    /**
+     * 批量回收角色
+     *
+     * @param userIds
+     * @param roleIds
+     */
+    void revokeRole(List<Long> userIds, List<Long> roleIds);
 }

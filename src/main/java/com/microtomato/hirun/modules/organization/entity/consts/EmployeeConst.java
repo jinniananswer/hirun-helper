@@ -140,6 +140,11 @@ public class EmployeeConst {
     public static final String EMPLOYEE_TRANS_STATUS="3";
 
     /**
+     * 内部调动状态
+     */
+    public static final String EMPLOYEE_INSIDE_TRANS_STATUS="4";
+
+    /**
      * 男
      */
     public static final String EMPLOYEE_SEX_MAN="1";

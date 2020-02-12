@@ -11,7 +11,9 @@ import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.organization.entity.dto.*;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.service.IEmployeeDomainService;
+import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
+import com.microtomato.hirun.modules.organization.service.IHrPendingDomainService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,6 +44,13 @@ public class EmployeeController extends AbstractExcelHarbour  {
     @Autowired
     private IEmployeeDomainService employeeDomainServiceImpl;
 
+    @Autowired
+    private IEmployeeJobRoleService jobRoleService;
+
+    @Autowired
+    private IHrPendingDomainService hrPendingDomainService;
+
+
     @PostMapping("/create")
     @RestResult
     public Map create(EmployeeDTO employee) {
@@ -53,6 +62,17 @@ public class EmployeeController extends AbstractExcelHarbour  {
     @RestResult
     public List<EmployeeInfoDTO> searchEmployee(String searchText) {
         return employeeDomainServiceImpl.searchEmployee(searchText);
+    }
+
+    /**
+     * 前端加载所有员工数据
+     *
+     * @return
+     */
+    @GetMapping("/loadEmployee")
+    @RestResult
+    public List<Employee> loadEmployee() {
+        return employeeServiceImpl.loadEmployee();
     }
 
     @RequestMapping("/verifyIdentityNo")
@@ -124,10 +144,10 @@ public class EmployeeController extends AbstractExcelHarbour  {
         exportExcel(response, "users", EmployeeInfoDTO.class, list, ExcelTypeEnum.XLSX);
     }
 
-    @PostMapping("/queryChildEmployee4Destroy")
+    @PostMapping("/queryExtendCondition4Destroy")
     @RestResult
-    public List<EmployeeInfoDTO> queryChildEmployee4Destroy(Long employeeId) {
-        return employeeServiceImpl.findSubordinate(employeeId);
+    public Map<String,String> queryExtendCondition4Destroy(Long employeeId) {
+        return employeeDomainServiceImpl.queryExtendCondition4Destroy(employeeId);
     }
 
     @GetMapping("/showBirthdayWish")
@@ -153,4 +173,23 @@ public class EmployeeController extends AbstractExcelHarbour  {
         exportExcelByTemplate(response, excelConfig);
     }
 
+    @GetMapping("/queryEmployee4BatchChange")
+    @RestResult
+    public IPage<EmployeeInfoDTO> queryEmployee4BatchChange(Long parentEmployeeId ,Long orgId, Integer page, Integer limit) {
+        Page<EmployeeQueryConditionDTO> employeeInfoDTOPage = new Page<>(page, limit);
+        IPage<EmployeeInfoDTO> employeeList = employeeDomainServiceImpl.queryEmployee4BatchChange(parentEmployeeId,orgId,employeeInfoDTOPage);
+        return employeeList;
+    }
+
+    @PostMapping("/batchUpdateParentEmployee")
+    @RestResult
+    public boolean batchUpdateParentEmployee(String ids, Long parentEmployeeId) {
+        return jobRoleService.batchUpdateParentEmployee(ids,parentEmployeeId);
+    }
+
+    @PostMapping("/applyEmployeeBlackList")
+    @RestResult
+    public void applyEmployeeBlackList(Long employeeId, String reason) {
+        hrPendingDomainService.addEmployeeBlackListApply(employeeId,reason);
+    }
 }

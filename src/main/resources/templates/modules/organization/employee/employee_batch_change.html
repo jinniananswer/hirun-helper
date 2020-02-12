@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>dolphin-admin</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/static/layui/css/layui.css" th:href="@{static/layui/css/layui.css(v=${version})}" media="all">
+    <link rel="stylesheet" href="/static/css/admin.css" th:href="@{static/css/admin.css(v=${version})}" media="all">
+    <link rel="stylesheet" href="/static/css/template.css" th:href="@{static/css/template.css(v=${version})}" media="all">
+    <script src="../static/layui/layui.js" th:src="@{static/layui/layui.js(v=${version})}"></script>
+    <script src="../static/js/base.js" th:src="@{static/js/base.js(v=${version})}"></script>
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">员工批量变更</div>
+                <div class="layui-card-body">
+
+                    <form class="layui-form" id="query_form">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label layui-required">上级员工</label>
+                                <div class="layui-input-block">
+                                    <input type="text" id="employeeName" name="employeeName" onclick="layui.employeeBatchChange.selectEmployee();" placeholder="请选择上级员工" autocomplete="off"
+                                           class="layui-input" required lay-verify="required"/>
+                                    <input type="hidden" id="employeeId" name="employeeId"/>
+                                </div>
+                            </div>
+
+                            <div class="layui-inline">
+                                <label class="layui-form-label layui-required">归属部门</label>
+                                <div class="layui-input-block">
+                                    <input type="text" id="orgPath" name="orgPath" onclick="layui.employeeBatchChange.selectOrg();" placeholder="请点击选择部门" autocomplete="off" class="layui-input"/>
+                                    <input type="hidden" id="orgSet" name="orgSet"/>
+                                </div>
+                            </div>
+
+                            <div class="layui-inline">
+                                <div class="layui-input-block">
+                                    <button class="layui-btn" type="button" id="queryOrgHrRel"><i class="layui-icon">&#xe615;</i>查询
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <table lay-even class="layui-hide" id="employeeBatchChange_table" lay-filter="employeeBatchChange_table"
+                           lay-size="lg"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="orgTree" style="display:none">
+
+</div>
+<div id="employeeList" style="display:none">
+
+</div>
+<script type="text/html" id="operateBar">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="update">批量变更上级</button>
+    </div>
+</script>
+<script>
+    layui.extend(
+        {
+            employeeBatchChange: "{/}static/js/modules/organization/employee/employee.batch.change"
+        }).use('employeeBatchChange', function () {
+        layui.employeeBatchChange.init();
+    })
+</script>
+</body>
+</html>

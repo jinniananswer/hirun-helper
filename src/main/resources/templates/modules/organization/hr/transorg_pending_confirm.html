@@ -57,7 +57,7 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label layui-required">开始时间</label>
                     <div class="layui-input-block">
-                        <input type="text" id="startTime" name="startTime" required lay-verify="required" readonly autocomplete="off" class="layui-input" disabled/>
+                        <input type="text" id="startTime" name="startTime" required lay-verify="required" readonly autocomplete="off" class="layui-input"/>
                     </div>
                 </div>
                 <div class="layui-form-item" id="end">
@@ -78,6 +78,16 @@
                     <div class="layui-input-block">
                         <div class="layui-form" lay-filter="jobRole">
                             <select id="jobRole" name="jobRole" lay-verify="required" lay-search>
+
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item" id="jobGradeDiv">
+                    <label class="layui-form-label">岗位等级</label>
+                    <div class="layui-input-block">
+                        <div class="layui-form" lay-filter="jobGrade">
+                            <select id="jobGrade" name="jobGrade" lay-filter="jobGradeFilter">
 
                             </select>
                         </div>

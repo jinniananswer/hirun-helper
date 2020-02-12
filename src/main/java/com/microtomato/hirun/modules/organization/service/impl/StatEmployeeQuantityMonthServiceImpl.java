@@ -106,7 +106,7 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
      * @return
      */
     @Override
-    public List<EmployeeQuantityStatDTO> queryEmployeeQuantityStat(String year, Long orgId) {
+    public List<EmployeeQuantityStatDTO> queryEmployeeQuantityStat(String year, String orgId) {
         //如果前台选择的年份为空，则默认设置为当前年份
         if (StringUtils.isEmpty(year)) {
             Calendar date = Calendar.getInstance();
@@ -115,11 +115,11 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
 
         //选择部门为空，则根据权限计算默认可查询的部门数据
         String orgLine = "";
-        if (orgId == null) {
+        if (StringUtils.isEmpty(orgId)) {
             orgLine = orgService.listOrgSecurityLine();
         } else {
-            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
-            orgLine = orgDO.getOrgLine(orgId);
+            //OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+            orgLine = orgId;
         }
 
         List<EmployeeQuantityStatDTO> recordList = this.mapper.countByOrgId(year, orgLine);
@@ -351,7 +351,7 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
      * @return
      */
     @Override
-    public List<Map<String, String>> queryEmployeeTrendsStat(String time, Long orgId, String orgNature) {
+    public List<Map<String, String>> queryEmployeeTrendsStat(String time, String orgId, String orgNature) {
         String year = "";
         String month = "";
         String orgLine = "";
@@ -364,11 +364,12 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
             year = String.valueOf(date.get(Calendar.YEAR));
             month = String.valueOf(date.get(Calendar.MONTH) + 1);
         }
-        if (null == orgId) {
+        if (StringUtils.isEmpty(orgId)) {
             orgLine = orgService.listOrgSecurityLine();
         } else {
-            OrgDO orgDo = SpringContextUtils.getBean(OrgDO.class, orgId);
-            orgLine = orgDo.getOrgLine(orgId);
+/*            OrgDO orgDo = SpringContextUtils.getBean(OrgDO.class, orgId);
+            orgLine = orgDo.getOrgLine(orgId);*/
+            orgLine=orgId;
         }
         if (StringUtils.isEmpty(orgNature)) {
             orgNature = "1,2,3,4,5,6,7,8,9";
@@ -554,7 +555,7 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
      * @return
      */
     @Override
-    public List<Map<String, String>> busiCountByOrgNatureAndJobRole(String time, Long orgId,String orgNature) {
+    public List<Map<String, String>> busiCountByOrgNatureAndJobRole(String time, String orgId,String orgNature) {
         if (StringUtils.isEmpty(time)) {
             Calendar date = Calendar.getInstance();
             time = String.valueOf(date.get(Calendar.YEAR));
@@ -562,11 +563,12 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
 
         //选择部门为空，则根据权限计算默认可查询的部门数据
         String orgLine = "";
-        if (orgId == null) {
+        if (StringUtils.isEmpty(orgId)) {
             orgLine = orgService.listOrgSecurityLine();
         } else {
-            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
-            orgLine = orgDO.getOrgLine(orgId);
+/*            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+            orgLine = orgDO.getOrgLine(orgId);*/
+            orgLine=orgId;
         }
 
         if(StringUtils.isEmpty(orgNature)){
@@ -621,20 +623,23 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
      * @return
      */
     @Override
-    public List<Map<String, String>> busiAndAllCountTrend(String time, Long orgId) {
+    public List<Map<String, String>> busiAndAllCountTrend(String time, String orgId) {
         String year = "";
         if (StringUtils.isEmpty(time)) {
             Calendar date = Calendar.getInstance();
             year = String.valueOf(date.get(Calendar.YEAR));
+        }else{
+            year=time;
         }
 
         //选择部门为空，则根据权限计算默认可查询的部门数据
         String orgLine = "";
-        if (orgId == null) {
+        if (StringUtils.isEmpty(orgId)) {
             orgLine = orgService.listOrgSecurityLine();
         } else {
-            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
-            orgLine = orgDO.getOrgLine(orgId);
+/*            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+            orgLine = orgDO.getOrgLine(orgId);*/
+            orgLine=orgId;
         }
 
         List<Map<String, String>> busiAndAllCountTrendList = this.mapper.busiAndAllCountTrend(year, orgLine);

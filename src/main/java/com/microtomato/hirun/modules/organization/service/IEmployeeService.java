@@ -80,4 +80,21 @@ public interface IEmployeeService extends IService<Employee> {
      * @return
      */
     List<EmployeeInfoDTO> recursiveAllSubordinates(String parentEmployeeId);
+
+    /**
+     * 加载所有员工
+     *
+     * @return
+     */
+    List<Employee> loadEmployee();
+
+    /**
+     *
+     * @param parentEmployeeId
+     * @param orgLine
+     * @param employeePage
+     * @return
+     */
+    IPage<EmployeeInfoDTO> queryEmployee4BatchChange(Long parentEmployeeId,String orgLine, Page<EmployeeQueryConditionDTO> employeePage);
+
 }

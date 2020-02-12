@@ -25,4 +25,12 @@ public interface IEmployeeJobRoleService extends IService<EmployeeJobRole> {
     boolean changeParentEmployee(Long oldParentEmployeeId,Long newParentEmployeeId,Long userId);
 
     List<EmployeeOrgGroupByDTO> countGroupByOrgId();
+
+    /**
+     * 批量修改员工上级
+     * @param ids
+     * @param parentEmployeeId
+     * @return
+     */
+    boolean batchUpdateParentEmployee(String ids,Long parentEmployeeId);
 }

@@ -49,6 +49,9 @@ public class EmployeeTransDetail extends BaseEntity {
     @TableField("source_job_role")
     private String sourceJobRole;
 
+    @TableField("source_job_grade")
+    private String sourceJobGrade;
+
     @TableField("source_job_role_nature")
     private String sourceJobRoleNature;
 
@@ -115,5 +118,6 @@ public class EmployeeTransDetail extends BaseEntity {
     @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
 
-
+    @TableField("job_grade")
+    private String jobGrade;
 }

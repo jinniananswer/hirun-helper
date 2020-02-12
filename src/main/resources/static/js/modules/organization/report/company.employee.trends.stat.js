@@ -10,7 +10,8 @@ layui.extend({
 
             laydate.render({
                 elem: '#queryTime',
-                type: 'year'
+                type: 'year',
+                value: new Date(),
             });
 
             table.render({
@@ -110,7 +111,7 @@ layui.extend({
         },
 
         selectOrg: function () {
-            layui.orgTree.init('orgTree', 'orgId', 'orgPath', false);
+            layui.orgTree.init('orgTree', 'orgId', 'orgPath', true,false);
         },
 
 
