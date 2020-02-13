@@ -276,4 +276,9 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
             " and b.org_id in (${orgId}) " +
             " and c.role_id = #{roleId}")
     List<SimpleEmployeeDTO> querySimpleEmployees(@Param("roleId")Long roleId, @Param("orgId")String orgId);
+
+    @Select("select a.employee_id,a.name, b.org_id, b.job_role from " +
+            " ins_employee a, ins_employee_job_role b " +
+            " ${ew.customSqlSegment}")
+    List<SimpleEmployeeDTO> queryEmployee4Select(@Param(Constants.WRAPPER) Wrapper wrapper);
 }

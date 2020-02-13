@@ -53,9 +53,9 @@ public class OrderBaseController {
 
     @GetMapping("/selectRoleEmployee")
     @RestResult
-    public List<SimpleEmployeeDTO> selectRoleEmployee(Long roleId) {
+    public List<SimpleEmployeeDTO> selectRoleEmployee(Long roleId,Boolean isSelf) {
         UserContext userContext = WebContextUtils.getUserContext();
         Long orgId = userContext.getOrgId();
-        return this.employeeService.querySimpleEmployeeInfo(orgId, roleId);
+        return this.employeeService.querySimpleEmployeeInfo(orgId, roleId,isSelf);
     }
 }

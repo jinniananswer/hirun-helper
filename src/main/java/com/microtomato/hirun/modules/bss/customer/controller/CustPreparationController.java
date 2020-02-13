@@ -20,7 +20,7 @@ import java.util.List;
  */
 @RestController
 @Slf4j
-@RequestMapping("/api/order/cust-preparation")
+@RequestMapping("/api/customer/cust-preparation")
 public class CustPreparationController {
 
     @Autowired
@@ -49,7 +49,7 @@ public class CustPreparationController {
 
     @GetMapping("/queryFailPreparation")
     @RestResult
-    public List<CustPreparationDTO> queryFailPreparation(String mobileNo,Long custId,String houseId){
+    public List<CustPreparationDTO> queryFailPreparation(String mobileNo,Long custId,Long houseId){
         log.debug(mobileNo);
         return custPreparationServiceImpl.queryCustPreparaton(mobileNo,custId,"3",houseId,"1");
     }

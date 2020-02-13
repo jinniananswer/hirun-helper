@@ -15,6 +15,7 @@ import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -33,7 +34,7 @@ public interface CustPreparationMapper extends BaseMapper<CustPreparation> {
      * @param mobileNo
      * @return
      */
-    @Select("select b.prepare_employee_id,b.prepare_time,a.consult_time,b.status,b.enter_employee_id,b.remark" +
+    @Select("select b.prepare_employee_id,b.prepare_time,a.consult_time,b.status,b.enter_employee_id,b.remark,b.house_id " +
             " from cust_base a, cust_preparation b\n" +
             " where a.cust_id=b.cust_id \n" +
             " and a.mobile_no=#{mobileNo}\n")
@@ -47,4 +48,11 @@ public interface CustPreparationMapper extends BaseMapper<CustPreparation> {
     )
     List<CustPreparationDTO> queryCustomerPreparation(@Param(Constants.WRAPPER) Wrapper wrapper);
 
+    @Select("select a.cust_id,a.cust_name,a.mobile_no,b.prepare_employee_id,b.prepare_time" +
+            " from cust_base a , cust_preparation b " +
+            " where a.cust_id=b.cust_id" +
+            " and a.mobile_no=#{mobileNo}" +
+            " and b.prepare_time > #{limitTime}"
+    )
+    List<CustPreparationDTO> queryPrepareByTime(@Param("mobileNo")String mobileNo, @Param("limitTime") LocalDateTime limitTime);
 }
