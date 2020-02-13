@@ -109,7 +109,7 @@
                                 <span>收费操作区</span>
                             </div>
                             <el-form :inline="false" :rules="rules" :model="collectedDesignFee" label-position="right"
-                                     label-width="130px">
+                                     label-width="130px" ref="collectedDesignFee">
                                 <el-row>
                                     <!--                                    <el-col :span="8">-->
                                     <!--                                        <el-form-item label="收据编号">-->
@@ -201,8 +201,8 @@
                                     </el-col>
                                     <el-col :span="8">
                                         <el-form-item label="工行3301(元)">
-                                            <el-input v-model="collectedDesignFee.ICBC3301" placeholder=""></el-input>
-                                            <el-input v-model="collectedDesignFee.oldICBC3301" placeholder=""
+                                            <el-input v-model="collectedDesignFee.gong3301" placeholder=""></el-input>
+                                            <el-input v-model="collectedDesignFee.oldGong3301" placeholder=""
                                                       v-if="false"></el-input>
                                         </el-form-item>
                                     </el-col>
@@ -210,17 +210,17 @@
                                 <el-row>
                                     <el-col :span="8">
                                         <el-form-item label="工行分期(元)">
-                                            <el-input v-model="collectedDesignFee.ICBCInstallment"
+                                            <el-input v-model="collectedDesignFee.gongInstallment"
                                                       placeholder=""></el-input>
-                                            <el-input v-model="collectedDesignFee.oldICBCInstallment" placeholder=""
+                                            <el-input v-model="collectedDesignFee.oldGongInstallment" placeholder=""
                                                       v-if="false"></el-input>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="8">
                                         <el-form-item label="农行分期(元)">
-                                            <el-input v-model="collectedDesignFee.ABCInstallment"
+                                            <el-input v-model="collectedDesignFee.nongInstallment"
                                                       placeholder=""></el-input>
-                                            <el-input v-model="collectedDesignFee.oldABCInstallment" placeholder=""
+                                            <el-input v-model="collectedDesignFee.oldNongInstallment" placeholder=""
                                                       v-if="false"></el-input>
                                         </el-form-item>
                                     </el-col>
@@ -246,9 +246,9 @@
                                     <!--                                    </el-col>-->
                                     <el-col :span="12">
                                         <el-form-item label="收款摘要">
-                                            <el-input v-model="collectedDesignFee.summary" placeholder=""
+                                            <el-input v-model="collectedDesignFee.remark" placeholder=""
                                                       style="width:200%"></el-input>
-                                            <el-input v-model="collectedDesignFee.oldSummary" placeholder=""
+                                            <el-input v-model="collectedDesignFee.oldRemark" placeholder=""
                                                       v-if="false"></el-input>
                                         </el-form-item>
                                     </el-col>

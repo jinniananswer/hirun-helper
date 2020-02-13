@@ -20,7 +20,7 @@ import java.util.List;
  */
 @RestController
 @Slf4j
-@RequestMapping("/api/customer/cust-preparation")
+@RequestMapping("/api/order/cust-preparation")
 public class CustPreparationController {
 
     @Autowired

@@ -1,5 +1,5 @@
 define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
-    Vue.component('select-house', {
+    Vue.component('house-select', {
         props: ['value', 'disabled'],
 
         data : function(){
@@ -13,9 +13,9 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
             <el-select v-model="sValue" filterable :disabled="this.disabled===true?true:false" placeholder="请选择" style="width:100%" @change="handle">
                 <el-option
                     v-for="item in options"
-                    :key="item.houseId"
+                    :key="item.housesId"
                     :label="item.name"
-                    :value="item.houseId">
+                    :value="item.housesId">
                 </el-option>
             </el-select>
             `,
@@ -23,7 +23,7 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
         methods: {
             init() {
                 let that = this;
-                ajax.get('api/house/houses/queryHouse', '', function(data) {
+                ajax.get('api/house/houses/queryHouse','', function(data) {
                     that.options = data;
                 })
             },
@@ -34,11 +34,9 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
         },
 
         watch: {
-/*
             value(val) {
                 this.sValue = val;
             },
-*/
 
             sValue(val, oldValue) {
                 if (val != oldValue) {

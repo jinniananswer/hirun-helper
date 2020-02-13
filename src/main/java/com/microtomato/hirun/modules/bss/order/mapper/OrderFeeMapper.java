@@ -28,7 +28,7 @@ public interface OrderFeeMapper extends BaseMapper<OrderFee> {
      * @param orderId
      * @return
      */
-    @Select("select a.act_fee,a.id,a.order_id,a.fee_item_id,b.payment_type,a.create_time collectionDate,a.remark summary,a.fee_employee_id" +
+    @Select("select a.act_fee,a.id,a.order_id,a.fee_item_id,b.payment_type,a.create_time collectionDate,a.remark summary,a.fee_employee_id,b.fee detail_fee" +
             " from order_fee a,order_paymoney b\n" +
             " where a.id =b.fee_id\n" +
             "and a.parent_fee_item_id ='-1'\n "+

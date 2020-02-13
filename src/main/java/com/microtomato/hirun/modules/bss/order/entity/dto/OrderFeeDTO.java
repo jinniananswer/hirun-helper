@@ -35,6 +35,8 @@ public class OrderFeeDTO {
 
     private Integer actFee;
 
+    private Integer detailFee;//费用小类具体收费值
+
     private Long feeEmployeeId;
 
     private Long contractId;
@@ -59,21 +61,21 @@ public class OrderFeeDTO {
 
     private String oldConstructionBank3797;
 
-    private String ICBC3301;
+    private String gong3301;
 
-    private String oldICBC3301;
+    private String oldGong3301;
 
-    private String ICBCInstallment;
+    private String gongInstallment;
 
-    private String oldICBCInstallment;
+    private String oldGongInstallment;
 
-    private String ABCInstallment;
+    private String nongInstallment;
 
-    private String oldABCInstallment;
+    private String oldNongInstallment;
 
-    private String summary;
+    private String remark;
 
-    private String oldSummary;
+    private String oldRemark;
 
 
 }
