@@ -14,6 +14,8 @@ layui.extend({}).define(['ajax', 'form', 'element'], function (exports) {
                     "orgPath": detail.orgPath,
                     "sourceJobRoleName": detail.sourceJobRoleName,
                     "jobRoleName": detail.jobRoleName,
+                    "sourceJobGradeName": detail.sourceJobGradeName,
+                    "jobGradeName": detail.jobGradeName,
                     "sourceJobRoleNatureName": detail.sourceJobRoleNatureName,
                     "jobRoleNatureName": detail.jobRoleNatureName,
                     "sourceDiscountRate": detail.sourceDiscountRate,

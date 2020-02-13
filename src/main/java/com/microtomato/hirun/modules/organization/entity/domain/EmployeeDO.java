@@ -330,6 +330,19 @@ public class EmployeeDO {
     }
 
     /**
+     * 获得员工的司龄
+     * @return
+     */
+    public int getCompanyAge() {
+        LocalDateTime inDate = this.employee.getInDate();
+        if (inDate == null) {
+            return 0;
+        }
+        LocalDate today = LocalDate.now();
+        return TimeUtils.getAbsDateDiffYear(inDate.toLocalDate(), today);
+    }
+
+    /**
      * 判断今天是否员工生日
      * @return
      */

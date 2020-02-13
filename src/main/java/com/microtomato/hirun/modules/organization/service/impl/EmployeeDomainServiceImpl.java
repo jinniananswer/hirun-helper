@@ -181,6 +181,9 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
 
         employeeDTO.setJobYear(new Integer(jobYear));
 
+        int companyAge = employeeDO.getCompanyAge();
+        employeeDTO.setCompanyAge(new Integer(companyAge));
+
         AddressDO addressDO = SpringContextUtils.getBean(AddressDO.class);
         employeeDTO.setNatives(addressDO.getFullName(employee.getNativeRegion()));
         employeeDTO.setHome(addressDO.getFullName(employee.getHomeRegion()));
@@ -554,7 +557,6 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         AddressDO addressDO = SpringContextUtils.getBean(AddressDO.class);
         archive.setNativeArea(addressDO.getFullName(employee.getNativeRegion()));
         archive.setHomeArea(addressDO.getFullName(employee.getHomeRegion()));
-        archive.setCompanyAge(employeeDO.getJobYear() + "");
         archive.setEducationLevelName(this.staticDataService.getCodeName("EDUCATION_LEVEL", employee.getEducationLevel()));
         archive.setFirstEducationLevelName(this.staticDataService.getCodeName("EDUCATION_LEVEL", employee.getFirstEducationLevel()));
         archive.setSchoolTypeName(this.staticDataService.getCodeName("SCHOOL_TYPE", employee.getSchoolType()));
@@ -563,7 +565,7 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         archive.setStatusName(this.staticDataService.getCodeName("EMPLOYEE_STATUS", employee.getStatus()));
         archive.setIsSocialSecurityName(this.staticDataService.getCodeName("YES_NO", employee.getIsSocialSecurity() + ""));
         archive.setSocialSecurityStatusName(this.staticDataService.getCodeName("SOCIAL_SECURITY_STATUS", employee.getSocialSecurityStatus()));
-
+        archive.setCompanyAge(employeeDO.getCompanyAge()+"");
         archive.setJobRoleName(this.staticDataService.getCodeName("JOB_ROLE", jobRole.getJobRole()));
         archive.setJobGradeName(this.staticDataService.getCodeName("JOB_GRADE", jobRole.getJobGrade()));
 

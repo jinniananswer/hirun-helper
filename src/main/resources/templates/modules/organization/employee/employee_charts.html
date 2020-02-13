@@ -5,10 +5,13 @@
     <title>dolphin-admin</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <link rel="stylesheet" href="/static/layui/css/layui.css" th:href="@{static/layui/css/layui.css(v=${version})}" media="all">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="/static/layui/css/layui.css" th:href="@{static/layui/css/layui.css(v=${version})}"
+          media="all">
     <link rel="stylesheet" href="/static/css/admin.css" th:href="@{static/css/admin.css(v=${version})}" media="all">
-    <link rel="stylesheet" href="/static/css/template.css" th:href="@{static/css/template.css(v=${version})}" media="all">
+    <link rel="stylesheet" href="/static/css/template.css" th:href="@{static/css/template.css(v=${version})}"
+          media="all">
     <script src="../static/layui/layui.js" th:src="@{static/layui/layui.js(v=${version})}"></script>
     <script src="../static/js/base.js" th:src="@{static/js/base.js(v=${version})}"></script>
 </head>
@@ -17,10 +20,20 @@
     <div class="layui-card">
         <div class="layui-form layui-card-header layuiadmin-card-header-auto">
             <div class="layui-form-item">
-                <label class="layui-form-label">选择部门</label>
-                <div class="layui-input-block">
-                    <input type="text" id="orgPath" name="orgPath"  onPropertyChange="layui.charts.init();" onclick="layui.orgTree.init('orgTree', 'orgId', 'orgPath', false, false);" placeholder="请点击选择部门" autocomplete="off" class="layui-input"/>
-                    <input type="hidden" id="orgId" name="orgId" onPropertyChange="layui.charts.init();"/>
+                <div class="layui-inline">
+                    <label class="layui-form-label">选择部门</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="orgPath" name="orgPath" onPropertyChange="layui.charts.init();"
+                               onclick="layui.orgTree.init('orgTree', 'orgId', 'orgPath', true, false);"
+                               placeholder="请点击选择部门" autocomplete="off" class="layui-input" style="width: 400px"/>
+                        <input type="hidden" id="orgId" name="orgId" onPropertyChange="layui.charts.init();"/>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">
+                        <button class="layui-btn" type="button" id="queryEmployeeCharts" style="width: 100px"><i class="layui-icon">&#xe615;</i>
+                        </button>
+                    </label>
                 </div>
             </div>
         </div>
@@ -31,7 +44,8 @@
                 <div class="layui-card-header">员工性别占比图</div>
                 <div class="layui-card-body">
                     <div id="LAY-index-sexPie">
-                        <div style="width:100%;height:332px;"><i class="layui-icon layui-icon-loading1 layadmin-loading"></i></div>
+                        <div style="width:100%;height:332px;"><i
+                                class="layui-icon layui-icon-loading1 layadmin-loading"></i></div>
                     </div>
                 </div>
             </div>
@@ -39,7 +53,8 @@
                 <div class="layui-card-header">员工年龄占比图</div>
                 <div class="layui-card-body">
                     <div id="LAY-index-agePie">
-                        <div style="width:100%;height:332px;"><i class="layui-icon layui-icon-loading1 layadmin-loading"></i></div>
+                        <div style="width:100%;height:332px;"><i
+                                class="layui-icon layui-icon-loading1 layadmin-loading"></i></div>
                     </div>
                 </div>
             </div>
@@ -47,7 +62,8 @@
                 <div class="layui-card-header">员工学历分布图</div>
                 <div class="layui-card-body">
                     <div carousel-item id="LAY-index-educationLevel">
-                        <div style="width:100%;height:332px;"><i class="layui-icon layui-icon-loading1 layadmin-loading"></i></div>
+                        <div style="width:100%;height:332px;"><i
+                                class="layui-icon layui-icon-loading1 layadmin-loading"></i></div>
                     </div>
                 </div>
             </div>
@@ -57,7 +73,8 @@
                 <div class="layui-card-header">员工岗位性质占比图</div>
                 <div class="layui-card-body">
                     <div id="LAY-index-jobRoleNature">
-                        <div style="width:100%;height:332px;"><i class="layui-icon layui-icon-loading1 layadmin-loading"></i></div>
+                        <div style="width:100%;height:332px;"><i
+                                class="layui-icon layui-icon-loading1 layadmin-loading"></i></div>
                     </div>
                 </div>
             </div>
@@ -65,7 +82,8 @@
                 <div class="layui-card-header">员工司龄分布图</div>
                 <div class="layui-card-body">
                     <div id="LAY-index-companyAge">
-                        <div style="width:100%;height:332px;"><i class="layui-icon layui-icon-loading1 layadmin-loading"></i></div>
+                        <div style="width:100%;height:332px;"><i
+                                class="layui-icon layui-icon-loading1 layadmin-loading"></i></div>
                     </div>
                 </div>
             </div>
@@ -73,7 +91,8 @@
                 <div class="layui-card-header">员工类型分布图</div>
                 <div class="layui-card-body">
                     <div id="LAY-index-type">
-                        <div style="width:100%;height:332px;"><i class="layui-icon layui-icon-loading1 layadmin-loading"></i></div>
+                        <div style="width:100%;height:332px;"><i
+                                class="layui-icon layui-icon-loading1 layadmin-loading"></i></div>
                     </div>
                 </div>
             </div>
@@ -86,9 +105,9 @@
 <script>
     layui.extend(
         {
-            charts : "{/}static/js/modules/organization/employee/employee.charts"
+            charts: "{/}static/js/modules/organization/employee/employee.charts"
         }
-    ).use(['charts'],function(args){
+    ).use(['charts'], function (args) {
         layui.charts.init();
     });
 </script>

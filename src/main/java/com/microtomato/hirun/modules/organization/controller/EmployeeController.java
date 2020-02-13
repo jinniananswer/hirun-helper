@@ -13,6 +13,7 @@ import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.service.IEmployeeDomainService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
+import com.microtomato.hirun.modules.organization.service.IHrPendingDomainService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,6 +46,9 @@ public class EmployeeController extends AbstractExcelHarbour  {
 
     @Autowired
     private IEmployeeJobRoleService jobRoleService;
+
+    @Autowired
+    private IHrPendingDomainService hrPendingDomainService;
 
 
     @PostMapping("/create")
@@ -181,5 +185,11 @@ public class EmployeeController extends AbstractExcelHarbour  {
     @RestResult
     public boolean batchUpdateParentEmployee(String ids, Long parentEmployeeId) {
         return jobRoleService.batchUpdateParentEmployee(ids,parentEmployeeId);
+    }
+
+    @PostMapping("/applyEmployeeBlackList")
+    @RestResult
+    public void applyEmployeeBlackList(Long employeeId, String reason) {
+        hrPendingDomainService.addEmployeeBlackListApply(employeeId,reason);
     }
 }

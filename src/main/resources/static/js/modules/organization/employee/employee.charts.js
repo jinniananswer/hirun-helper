@@ -9,6 +9,10 @@ layui.extend({
                 layui.charts.query();
             });
 
+            $('#queryEmployeeCharts').on('click', function () {
+                layui.charts.query();
+            });
+
             layui.charts.query();
 
         },

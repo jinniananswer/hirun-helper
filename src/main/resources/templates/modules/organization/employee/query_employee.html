@@ -104,6 +104,7 @@
                                     <option value="1">休假</option>
                                     <option value="2">借调</option>
                                     <option value="3">调出</option>
+                                    <option value="4">内部调动</option>
                                 </select>
                             </div>
                         </div>
@@ -226,6 +227,7 @@
         <button class="layui-btn" style="background-color:#13227a;" lay-event="transOrg" sec:authorize="hasAuthority('EMPLOYEE_TRANS')"><i class="layui-icon">&#x21c4;</i>调动</button>
         <button class="layui-btn " style="background-color:#e87233;" lay-event="contract" sec:authorize="hasAuthority('EMPLOYEE_CONTRACT')"><i class="layui-icon layui-icon-templeate-1"></i>合同</button>
         <button class="layui-btn" lay-event="export" sec:authorize="hasAuthority('EXPORT_EMPLOYEE')"><i class="layui-icon layui-icon-download-circle"></i>导出</button>
+        <button class="layui-btn" lay-event="applyBlackList" sec:authorize="hasAuthority('EMPLOYEE_DESTORY')"><i class="layui-icon layui-icon-friends"></i>黑名单申请</button>
     </div>
 </script>
 

@@ -26,6 +26,8 @@ layui.extend({}).define(['ajax', 'table', 'element', 'select', 'layer', 'form'],
                                     return '借调';
                                 } else if (d.pendingType == 2) {
                                     return '调出';
+                                }else if (d.pendingType == 4) {
+                                    return '内部调动';
                                 }
                                 ;
                             }
@@ -175,6 +177,31 @@ layui.extend({}).define(['ajax', 'table', 'element', 'select', 'layer', 'form'],
                 yes: function (index, layero) {
                     var body = layer.getChildFrame('body', index);
                     var submit = body.find("#add-employeetrans-submit");
+                    submit.click();
+                }
+            });
+            layer.full(index);
+        },
+
+        insideTrans: function () {
+            var index = layer.open({
+                type: 2,
+                title: '内部调动',
+                content: 'openUrl?url=modules/organization/employee/employee_inside_trans',
+                maxmin: true,
+                btn: ['保存', '取消'],
+                skin: 'layui-layer-molv',
+                success: function (layero, index) {
+                    var employee_id = $("#employee_id").val();
+                    var name = $("#name").val();
+                    var body = layer.getChildFrame('body', index);
+                    body.find('#employeeId').val(employee_id);
+                    body.find('#name').val(name);
+                    form.render();
+                },
+                yes: function (index, layero) {
+                    var body = layer.getChildFrame('body', index);
+                    var submit = body.find("#confirm-submit");
                     submit.click();
                 }
             });
