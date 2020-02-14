@@ -21,11 +21,13 @@ public class CustPreparationDTO {
 
     private String houseMode;
 
-    private String houseId;
+    private Long houseId;
 
     private String houseBuilding;
 
     private String houseRoomNo;
+
+    private String houseAddress;
 
     private Long prepareOrgId;
 

@@ -5,9 +5,11 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
+import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.organization.entity.consts.EmployeeConst;
 import com.microtomato.hirun.modules.organization.entity.domain.EmployeeDO;
 import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
@@ -273,20 +275,32 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
     }
 
     @Override
-    public List<SimpleEmployeeDTO> querySimpleEmployeeInfo(Long orgId, Long roleId) {
-        OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+    public List<SimpleEmployeeDTO> querySimpleEmployeeInfo(Long orgId, Long roleId, Boolean isSelf) {
+        List<SimpleEmployeeDTO> employees = null;
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.apply("a.employee_id=b.employee_id " +
+                " and a.status='0' and (now() between b.start_date and b.end_date) and is_main='1'");
+        if (isSelf) {
+            //只查询自己
+            UserContext userContext = WebContextUtils.getUserContext();
+            queryWrapper.eq("a.employee_id", userContext.getEmployeeId());
+            employees=this.employeeMapper.queryEmployee4Select(queryWrapper);
+        } else if (StringUtils.equals(roleId + "", "-1")) {
+            //查所有
+            employees=this.employeeMapper.queryEmployee4Select(queryWrapper);
+        } else {
+            //按role_id和org_id查
+            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+            Org root = orgDO.getBelongShop();
+            if (root == null) {
+                root = orgDO.getBelongCompany();
+            }
 
-        Org root = orgDO.getBelongShop();
-        if (root == null) {
-            root = orgDO.getBelongCompany();
+            if (root != null) {
+                String orgLine = orgDO.getOrgLine(root.getOrgId());
+                employees = this.employeeMapper.querySimpleEmployees(roleId, orgLine);
+            }
         }
-
-        if (root != null) {
-            String orgLine = orgDO.getOrgLine(root.getOrgId());
-            List<SimpleEmployeeDTO> employees = this.employeeMapper.querySimpleEmployees(roleId, orgLine);
-            return employees;
-        }
-
-        return null;
+        return employees;
     }
 }

@@ -1,4 +1,4 @@
-require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','house-select'], function (Vue, element, axios, ajax, vueselect, util,houseSelect) {
+require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','house-select','order-selectemployee'], function (Vue, element, axios, ajax, vueselect, util,houseSelect,orderSelectEmployee) {
     let vm = new Vue({
         el: '#customer_perparation',
         data: function () {
@@ -27,6 +27,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','house-select'],
                 isRefereeFixPlaceDisable: true,
                 isRefereeNameDisable: true,
                 isRefereeMobileNoDisable: true,
+                enterDisabled:true,
                 display: 'display:block',
                 id: util.getRequest('id'),
                 rules: {

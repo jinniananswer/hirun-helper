@@ -1,6 +1,6 @@
 define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
     Vue.component('order-selectemployee', {
-        props: ['role-id', 'value', 'disabled'],
+        props: ['role-id', 'value', 'disabled','self'],
 
         data : function(){
             return {
@@ -23,8 +23,11 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
         methods: {
             init() {
                 let that = this;
-                ajax.get('api/bss.order/order-base/selectRoleEmployee', {roleId:this.roleId}, function(data) {
+                ajax.get('api/bss.order/order-base/selectRoleEmployee', {roleId:this.roleId,isSelf:this.self==='true'?true:false}, function(data) {
                     that.options = data;
+                    if(that.self){
+                        that.sValue=data[0].employeeId;
+                    }
                 })
             },
 

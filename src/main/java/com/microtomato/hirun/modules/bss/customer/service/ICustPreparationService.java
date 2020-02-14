@@ -41,5 +41,5 @@ public interface ICustPreparationService extends IService<CustPreparation> {
      * @param status
      * @return
      */
-    List<CustPreparationDTO> queryCustPreparaton(String mobileNo,Long custId,String status,String houseId,String isExpire);
+    List<CustPreparationDTO> queryCustPreparaton(String mobileNo,Long custId,String status,Long houseId,String isExpire);
 }

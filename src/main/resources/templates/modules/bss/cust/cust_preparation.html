@@ -81,11 +81,7 @@
                             </el-col>
                             <el-col :span="6">
                                 <el-form-item label="申报人"  prop="prepareEmployeeId">
-                                        <el-select v-model="customerPreparation.prepareEmployeeId" filterable placeholder="输入姓名或手机号搜索"  style="width: 220px">
-                                            <el-option v-for="item in employeeOptions" :key="item.userId"
-                                                       :label="item.name"
-                                                       :value="item.userId"></el-option>
-                                        </el-select>
+                                    <order-selectemployee  v-model="customerPreparation.prepareEmployeeId" role-id="-1" ></order-selectemployee>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="6">
@@ -96,7 +92,7 @@
                             </el-col>
                             <el-col :span="6">
                                 <el-form-item label="录入人"  prop="enterEmployeeId">
-                                    <el-input v-model="customerPreparation.enterEmployeeId"></el-input>
+                                    <order-selectemployee  v-model="customerPreparation.enterEmployeeId" self="true" :disabled="enterDisabled"></order-selectemployee>
                                 </el-form-item>
                             </el-col>
                         </el-row>
@@ -212,7 +208,7 @@
                                 label="录入人">
                         </el-table-column>
                         <el-table-column
-                                prop="status"
+                                prop="houseAddress"
                                 align="center"
                                 label="楼盘地址">
                         </el-table-column>

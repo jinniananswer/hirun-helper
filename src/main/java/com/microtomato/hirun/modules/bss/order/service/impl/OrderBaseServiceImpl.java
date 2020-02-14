@@ -29,4 +29,9 @@ public class OrderBaseServiceImpl extends ServiceImpl<OrderBaseMapper, OrderBase
         OrderBase order = this.getById(orderId);
         return order;
     }
+
+    @Override
+    public void updateOrderBase(OrderBase orderBase) {
+        this.baseMapper.updateById(orderBase);
+    }
 }
