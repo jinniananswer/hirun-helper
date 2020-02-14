@@ -31,7 +31,7 @@
                                 <el-row>
                                     <el-col :span="8">
                                         <el-form-item label="客户姓名">
-                                            <el-input placeholder="客户姓名"></el-input>
+                                            <order-search-employee :employee-id.sync="employeeId" :employee-name.sync="employeeName"></order-search-employee>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="8">
@@ -85,7 +85,9 @@
             </el-row>
         </el-main>
     </el-container>
+
 </div>
+
 <style>
     .text {
         font-size: 14px;
@@ -103,6 +105,7 @@
         padding:10px;
     }
 </style>
+
 <script src="static/js/modules/bss/order/cust.order.detail.js" th:src="@{static/js/modules/bss/order/cust.order.detail.js(v=${version})}"></script>
 </body>
 </html>
