@@ -14,4 +14,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface IOrderBaseService extends IService<OrderBase> {
 
     OrderBase queryByOrderId(Long orderId);
+
+    void updateOrderBase(OrderBase orderBase);
 }
