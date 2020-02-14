@@ -1,4 +1,4 @@
-require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'order-info', 'order-worker', 'order-selectemployee','cust-visit'], function(Vue, element, axios, ajax, vueselect, util, custInfo, orderInfo, orderWorker, orderSelectEmployee,custVisit) {
+require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'order-info', 'order-worker', 'order-selectemployee','cust-visit','order-search-employee'], function(Vue, element, axios, ajax, vueselect, util, custInfo, orderInfo, orderWorker, orderSelectEmployee,custVisit,orderSearchEmployee) {
     let vm = new Vue({
         el: '#app',
         data: function() {
@@ -23,6 +23,9 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
 
                 activeTab:'orderInfo',
 
+                employeeId:null,
+                employeeName:'',
+
 
 
                 marks: {
@@ -33,6 +36,8 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     60: '施工',
                     95: '维护'
                 },
+
+                datas:[],
 
                 requirement : {
                     title : '客户需求信息',
@@ -85,7 +90,8 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
 
         methods: {
             submit : function() {
-                alert(this.designEmployeeId);
+                alert(this.employeeId);
+                alert(this.employeeName);
                 this.sexDisable = true;
             }
         }
