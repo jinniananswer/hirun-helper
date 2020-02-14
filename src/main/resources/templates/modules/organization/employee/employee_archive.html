@@ -299,45 +299,45 @@
                         </div>
                         <div class="layui-tab-item">
                             <div class="layui-form-item">
-                                <label class="layui-form-label">第一学历</label>
+                                <label class="layui-form-label  layui-required">第一学历</label>
                                 <div class="layui-input-block">
                                     <div class="layui-form" lay-filter="firstEducationLevel">
-                                        <select id="firstEducationLevel" name="firstEducationLevel">
+                                        <select id="firstEducationLevel" name="firstEducationLevel" lay-verify="required">
 
                                         </select>
                                     </div>
                                 </div>
                             </div>
                             <div class="layui-form-item">
-                                <label class="layui-form-label">最高学历</label>
+                                <label class="layui-form-label  layui-required">最高学历</label>
                                 <div class="layui-input-block">
                                     <div class="layui-form" lay-filter="educationLevel">
-                                        <select id="educationLevel" name="educationLevel">
+                                        <select id="educationLevel" name="educationLevel" lay-verify="required">
 
                                         </select>
                                     </div>
                                 </div>
                             </div>
                             <div class="layui-form-item">
-                                <label class="layui-form-label">学校类型</label>
+                                <label class="layui-form-label layui-required">学校类型</label>
                                 <div class="layui-input-block">
                                     <div class="layui-form" lay-filter="schoolType">
-                                        <select id="schoolType" name="schoolType">
+                                        <select id="schoolType" name="schoolType" lay-verify="required">
 
                                         </select>
                                     </div>
                                 </div>
                             </div>
                             <div class="layui-form-item">
-                                <label class="layui-form-label">毕业院校</label>
+                                <label class="layui-form-label layui-required">毕业院校</label>
                                 <div class="layui-input-block">
-                                    <input type="text" name="school" placeholder="请输入毕业院校" autocomplete="off" class="layui-input"/>
+                                    <input type="text" name="school" placeholder="请输入毕业院校" autocomplete="off" class="layui-input" lay-verify="required"/>
                                 </div>
                             </div>
                             <div class="layui-form-item">
-                                <label class="layui-form-label">专业</label>
+                                <label class="layui-form-label layui-required">专业</label>
                                 <div class="layui-input-block">
-                                    <input type="text" name="major" placeholder="请输入专业名称" autocomplete="off" class="layui-input"/>
+                                    <input type="text" name="major" placeholder="请输入专业名称" autocomplete="off" class="layui-input" lay-verify="required"/>
                                 </div>
                             </div>
                             <div class="layui-form-item">
