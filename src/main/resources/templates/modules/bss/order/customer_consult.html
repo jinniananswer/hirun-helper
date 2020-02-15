@@ -31,32 +31,37 @@
                             </div>
                             <el-form :inline="false" :rules="rules" label-position="right" label-width="80px" :model="customerConsult" ref="customerConsult">
                                 <el-row>
-                                    <el-col :span="12">
-                                        <el-form-item label="客户代表" prop="custServiceEmployeeId">
+                                    <el-col :span="8">
+                                        <el-form-item label="客户代表" prop="custServiceEmployeeId" label-width="100px">
                                             <order-selectemployee role-id="15" v-model="customerConsult.custServiceEmployeeId"></order-selectemployee>
                                         </el-form-item>
                                     </el-col>
-                                    <el-col :span="12">
+                                    <el-col :span="8">
+                                        <el-form-item label="设计师" prop="designEmployeeId" label-width="100px">
+                                            <order-selectemployee role-id="30" v-model="customerConsult.designEmployeeId" ></order-selectemployee>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
                                         <el-form-item label="橱柜设计师" prop="designCupboardEmployeeId" label-width="100px">
                                             <order-selectemployee role-id="45" v-model="customerConsult.designCupboardEmployeeId" ></order-selectemployee>
                                         </el-form-item>
                                     </el-col>
                                 </el-row>
                                 <el-row>
-                                    <el-col :span="12">
-                                        <el-form-item label="主材管家" prop="mainMaterialKeeperEmployeeId">
+                                    <el-col :span="8">
+                                        <el-form-item label="主材管家" prop="mainMaterialKeeperEmployeeId" label-width="100px">
                                             <order-selectemployee role-id="46" v-model="customerConsult.mainMaterialKeeperEmployeeId"></order-selectemployee>
                                         </el-form-item>
                                     </el-col>
-                                    <el-col :span="12">
-                                        <el-form-item label="橱柜管家" prop="cupboardKeeperEmployeeId">
+                                    <el-col :span="8">
+                                        <el-form-item label="橱柜管家" prop="cupboardKeeperEmployeeId" label-width="100px">
                                             <order-selectemployee role-id="46" v-model="customerConsult.cupboardKeeperEmployeeId"></order-selectemployee>
                                         </el-form-item>
                                     </el-col>
                                 </el-row>
                                 <el-row>
                                     <el-col :span="24">
-                                        <el-form-item label="咨询备注" prop="consultRemark">
+                                        <el-form-item label="咨询备注" prop="consultRemark" label-width="100px">
                                             <el-input type="textarea" v-model="customerConsult.consultRemark"></el-input>
                                         </el-form-item>
                                     </el-col>

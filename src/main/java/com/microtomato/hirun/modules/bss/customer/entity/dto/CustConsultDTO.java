@@ -25,5 +25,7 @@ public class CustConsultDTO {
 
     private String consultRemark;
 
+    private Long id;
 
+    private Long designEmployeeId;
 }

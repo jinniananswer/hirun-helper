@@ -16,13 +16,20 @@ import com.microtomato.hirun.modules.bss.config.service.IPrepareConfigService;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.CustPreparationDTO;
 import com.microtomato.hirun.modules.bss.customer.entity.po.CustBase;
 import com.microtomato.hirun.modules.bss.customer.entity.po.CustPreparation;
+import com.microtomato.hirun.modules.bss.customer.entity.po.Project;
+import com.microtomato.hirun.modules.bss.customer.entity.po.ProjectIntention;
 import com.microtomato.hirun.modules.bss.customer.mapper.CustPreparationMapper;
 import com.microtomato.hirun.modules.bss.customer.service.ICustBaseService;
 import com.microtomato.hirun.modules.bss.customer.service.ICustPreparationService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.modules.bss.customer.service.IProjectIntentionService;
+import com.microtomato.hirun.modules.bss.customer.service.IProjectService;
 import com.microtomato.hirun.modules.bss.house.entity.po.HousesPlan;
 import com.microtomato.hirun.modules.bss.house.service.IHousesPlanService;
 import com.microtomato.hirun.modules.bss.house.service.IHousesService;
+import com.microtomato.hirun.modules.bss.order.entity.dto.NewOrderDTO;
+import com.microtomato.hirun.modules.bss.order.entity.po.OrderBase;
+import com.microtomato.hirun.modules.bss.order.service.IOrderDomainService;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
 import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
@@ -75,24 +82,42 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
     @Autowired
     private IHousesPlanService housesPlanService;
 
+    @Autowired
+    private IProjectService projectService;
+
+    @Autowired
+    private IProjectIntentionService intentionService;
+
+    @Autowired
+    private IOrderDomainService domainService;
+
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void addCustomerPreparation(CustPreparationDTO dto) {
         UserContext userContext = WebContextUtils.getUserContext();
         //校验报备的规则
         this.checkRules(dto);
-        //当客户存在报备信息时，联系文员可以直接做报备信息保存，否则客户存在多次，需判断客户之前的报备信息是否失效，如果失效则客户选择继续报备
+        //todo 当客户存在报备信息时，联系文员可以直接做报备信息保存，否则客户存在多次，需判断客户之前的报备信息是否失效，如果失效则客户选择继续报备
 
-        //客户未做过报备，但是在客户表存在过数据，可以联系有权限的人员进行报备信息录入
-        //houseId不一样判定报备失败
+        //todo 客户未做过报备，但是在客户表存在过数据，可以联系有权限的人员进行报备信息录入
 
         CustBase custBase = new CustBase();
         CustPreparation preparation = new CustPreparation();
+        Project project=new Project();
+        ProjectIntention projectIntention=new ProjectIntention();
         BeanUtils.copyProperties(dto, preparation);
         BeanUtils.copyProperties(dto, custBase);
-        //保存customer信息
+        BeanUtils.copyProperties(dto, project);
+
+        //保存customer信息,用作测试将状态设置成0，实际应该将状态设置成报备状态
         custBase.setCustStatus(0);
         baseService.save(custBase);
+        //保存project信息
+        project.setPartyId(custBase.getCustId());
+        projectService.save(project);
+        //保存客户意向
+        projectIntention.setProjectId(project.getProjectId());
+        intentionService.save(projectIntention);
         //保存报备信息
         if (preparation.getPrepareOrgId() == null) {
             EmployeeJobRole employeeJobRole = jobRoleService.queryValidMain(preparation.getPrepareEmployeeId());
@@ -104,7 +129,16 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
         preparation.setEnterTime(LocalDateTime.now());
         preparation.setPreparationExpireTime(TimeUtils.addTime(dto.getPrepareTime(), ChronoUnit.DAYS, 5));
         this.preparationMapper.insert(preparation);
-
+        //生成订单信息
+        NewOrderDTO orderBase=new NewOrderDTO();
+        orderBase.setCustId(custBase.getCustId());
+        orderBase.setHousesId(preparation.getHouseId());
+        orderBase.setHouseLayout(dto.getHouseMode());
+        orderBase.setFloorage(dto.getHouseArea());
+        orderBase.setType("0");
+        orderBase.setStatus("1");
+        orderBase.setDecorateAddress(dto.getHouseBuilding()+dto.getHouseRoomNo());
+        domainService.createNewOrder(orderBase);
     }
 
     @Override
@@ -179,7 +213,7 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
         EmployeeJobRole employeeJobRole = jobRoleService.queryValidMain(dto.getPrepareEmployeeId());
         String prepareOrgId = "";
         if (dto.getPrepareOrgId() == null) {
-            prepareOrgId = "," + 57 + ",";
+            prepareOrgId = "," + employeeJobRole.getOrgId() + ",";
         } else {
             prepareOrgId = "," + dto.getPrepareOrgId() + ",";
         }
