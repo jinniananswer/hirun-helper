@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.bss.order.controller;
 
 import com.microtomato.hirun.framework.annotation.RestResult;
+import com.microtomato.hirun.modules.bss.order.entity.dto.OrderDetailDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.PendingTaskDTO;
 import com.microtomato.hirun.modules.bss.order.service.IOrderDomainService;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +16,7 @@ import java.util.List;
  * @program: hirun-helper
  * @description: 订单领域控制器
  * @author: jinnian
- * @create: 2020-02-12 00:21
+ * @create: 2020sssss-02-12 00:21
  **/
 @RestController
 @Slf4j
@@ -29,5 +30,11 @@ public class OrderDomainController {
     @RestResult
     public List<PendingTaskDTO> getPendingTask() {
         return this.domainService.queryPendingTask();
+    }
+
+    @GetMapping("/getOrderDetail")
+    @RestResult
+    public OrderDetailDTO getOrderDetail(Long orderId) {
+        return this.domainService.getOrderDetail(orderId);
     }
 }
