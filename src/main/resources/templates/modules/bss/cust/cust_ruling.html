@@ -21,26 +21,17 @@
                             <el-divider content-position="left"><span style="font-weight: 700">申报人信息</span></el-divider>
                         </div>
                         <el-row :gutter="20">
-                            <el-col :span="6">
-                                <el-form-item label="部门"  prop="prepareOrgId">
-                                    <el-input v-model="customerRuling.prepareOrgId"></el-input>
-                                </el-form-item>
-                            </el-col>
-                            <el-col :span="6">
+                            <el-col :span="8">
                                 <el-form-item label="申报人"  prop="prepareEmployeeId">
-                                        <el-select v-model="customerRuling.prepareEmployeeId" filterable placeholder="输入姓名或手机号搜索"  style="width: 220px">
-                                            <el-option v-for="item in employeeOptions" :key="item.userId"
-                                                       :label="item.name"
-                                                       :value="item.userId"></el-option>
-                                        </el-select>
+                                    <order-search-employee :employee-id.sync="customerRuling.prepareEmployeeId" :employee-name.sync="customerRuling.prepareEmployeeName"></order-search-employee>
                                 </el-form-item>
                             </el-col>
-                            <el-col :span="6">
+                            <el-col :span="8">
                                 <el-form-item label="裁定主管"  prop="rulingEmployeeId">
-                                    <el-input v-model="customerRuling.rulingEmployeeId"></el-input>
+                                    <order-selectemployee  v-model="customerRuling.rulingEmployeeId" self="true" :disabled="true"></order-selectemployee>
                                 </el-form-item>
                             </el-col>
-                            <el-col :span="6">
+                            <el-col :span="8">
                                 <el-form-item label="客户电话" >
                                     <el-input v-model="customerRuling.mobileNo" class="text" readonly></el-input>
                                 </el-form-item>
@@ -69,6 +60,13 @@
                     <el-table
                             :data="preparationFailRecord"
                             style="width: 100%">
+                        <el-table-column label="选择" fixed align="center" width="65">
+                            <template scope="scope">
+                                <el-radio :label="scope.row" v-model="checked"
+                                          @change.native="getTemplateRow(scope.$index,scope.row)">&nbsp
+                                </el-radio>
+                            </template>
+                        </el-table-column>
                         <el-table-column
                                 prop="custId"
                                 label="客户编码"
@@ -88,14 +86,19 @@
                                 width="180">
                         </el-table-column>
                         <el-table-column
-                                prop="refereeName"
+                                prop="refereeFixPlace"
                                 align="center"
-                                label="老客户">
+                                label="老客户施工地址">
                         </el-table-column>
                         <el-table-column
-                                prop="refereeName"
+                                prop="houseAddress"
                                 align="center"
                                 label="楼盘">
+                        </el-table-column>
+                        <el-table-column
+                                prop="houseModeName"
+                                align="center"
+                                label="户型">
                         </el-table-column>
                         <el-table-column
                                 prop="prepareEmployeeName"
