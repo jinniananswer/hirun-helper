@@ -1,4 +1,5 @@
 require(['vue', 'ELEMENT', 'vxe-table', 'axios'], function (Vue, element, vxetable, axios) {
+    Vue.use(vxetable)
     let vm = new Vue({
         el: '#app',
         data: function () {
@@ -36,8 +37,8 @@ require(['vue', 'ELEMENT', 'vxe-table', 'axios'], function (Vue, element, vxetab
 
             },
             save() {
-                // let updateRecords = vm.$refs.xTable.getUpdateRecords()
-                // console.log(updateRecords)
+                let updateRecords = vm.$refs.xTable.getUpdateRecords()
+                console.log(updateRecords)
             },
             footerMethod ({ columns, data }) {
                 return [
