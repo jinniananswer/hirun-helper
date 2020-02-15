@@ -68,4 +68,8 @@ public class CustPreparationDTO {
     private LocalDateTime enterTime;
 
     private String houseArea;
+
+    private String houseModeName;
+
+    private Long id;
 }

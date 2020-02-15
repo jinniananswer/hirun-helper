@@ -91,6 +91,7 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
     @Autowired
     private IOrderDomainService domainService;
 
+
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void addCustomerPreparation(CustPreparationDTO dto) {
@@ -152,6 +153,7 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
             dto.setEnterEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getEnterEmployeeId()));
             dto.setHouseAddress(housesService.queryHouseName(dto.getHouseId()));
             dto.setPreparationStatusName(staticDataService.getCodeName("PREPARATION_STATUS", dto.getStatus() + ""));
+
         }
         return list;
     }
@@ -166,9 +168,17 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
         BeanUtils.copyProperties(custPreparation, addPreparation);
         //设置之前的报备信息失败
         updatePreparation.setStatus(3);
-        this.baseMapper.update(updatePreparation, new UpdateWrapper<CustPreparation>().lambda()
-                .eq(CustPreparation::getCustId, custPreparation.getCustId()).eq(CustPreparation::getStatus, 1));
+        if(custPreparation.getId()!=null){
+            updatePreparation.setId(custPreparation.getId());
+            this.baseMapper.updateById(updatePreparation);
+        }
+/*        this.baseMapper.update(updatePreparation, new UpdateWrapper<CustPreparation>().lambda()
+                .eq(CustPreparation::getCustId, custPreparation.getCustId()).eq(CustPreparation::getStatus, 1));*/
         //新增主管裁定记录，设置客户属性为主管报备
+        if(custPreparation.getPrepareOrgId()==null){
+            EmployeeJobRole employeeJobRole=jobRoleService.queryValidMain(custPreparation.getPrepareEmployeeId());
+            addPreparation.setPrepareOrgId(employeeJobRole.getOrgId());
+        }
         addPreparation.setCustProperty("6");
         addPreparation.setPrepareEmployeeId(userContext.getEmployeeId());
         addPreparation.setPrepareTime(LocalDateTime.now());
@@ -199,6 +209,8 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
             dto.setPrepareEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getPrepareEmployeeId()));
             dto.setEnterEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getEnterEmployeeId()));
             dto.setCustPropertyName(staticDataService.getCodeName("CUSTOMER_PROPERTY", dto.getCustProperty()));
+            dto.setHouseModeName(staticDataService.getCodeName("HOUSE_MODE",dto.getHouseMode()));
+            dto.setHouseAddress(housesService.queryHouseName(dto.getHouseId())+dto.getHouseBuilding()+dto.getHouseRoomNo());
         }
         return list;
     }

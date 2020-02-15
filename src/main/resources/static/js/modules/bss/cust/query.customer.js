@@ -1,4 +1,4 @@
-require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'order-selectemployee', 'vue-router'], function (Vue, element, axios, ajax, vueselect, util, orderSelectEmployee, vueRouter) {
+require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'order-selectemployee', 'vue-router','house-select'], function (Vue, element, axios, ajax, vueselect, util, orderSelectEmployee, vueRouter,houseSelect) {
     let vm = new Vue({
         el: '#app',
         data: function () {
@@ -8,13 +8,21 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'order-selectem
                     designEmployeeId: '',
                     counselorEmployeeId: '',
                     informationSource: '',
-                    customerStatus: '',
                     customerType: '',
                     reportEmployeeId: '',
                     timeType: '',
-                    startTime: '',
-                    endTime: '',
-                    houseMode: ''
+                    startTime: util.getNowDate(),
+                    endTime: util.getNowDate(),
+                    houseMode: '',
+                    orderStatus:'',
+                    houseId:''
+                },
+                pageConf: {
+                    //设置一些初始值(会被覆盖)
+                    pageCode: 1, //当前页
+                    pageSize: 4, //每页显示的记录数
+                    totalPage: 12, //总记录数
+                    pageOption: [4, 10, 20], //分页选项
                 },
                 custId: '',
                 customerInfo: [],

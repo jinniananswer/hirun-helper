@@ -26,6 +26,11 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="6">
+                            <el-form-item label="楼盘">
+                                <house-select v-model="custQueryCond.houseId"></house-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="6">
                             <el-form-item label="户型">
                                 <vue-select code-type="HOUSE_MODE" v-model="custQueryCond.houseMode"></vue-select>
                             </el-form-item>
@@ -34,12 +39,6 @@
                             <el-form-item label="设计师">
                                 <order-selectemployee role-id="30"
                                                       v-model="custQueryCond.designEmployeeId"></order-selectemployee>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="6">
-                            <el-form-item label="家装顾问">
-                                <order-selectemployee role-id="3"
-                                                      v-model="custQueryCond.counselorEmployeeId"></order-selectemployee>
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -52,19 +51,19 @@
                         </el-col>
                         <el-col :span="6">
                             <el-form-item label="状态">
-                                <vue-select code-type="EMPLOYEE_STATUS"
-                                            v-model="custQueryCond.customerStatus"></vue-select>
+                                <vue-select code-type="ORDER_STATUS"
+                                            v-model="custQueryCond.orderStatus"></vue-select>
                             </el-form-item>
                         </el-col>
                         <el-col :span="6">
                             <el-form-item label="类型">
-                                <vue-select code-type="EMPLOYEE_STATUS"
+                                <vue-select code-type="CUSTOMER_TYPE"
                                             v-model="custQueryCond.customerType"></vue-select>
                             </el-form-item>
                         </el-col>
                         <el-col :span="6">
                             <el-form-item label="申报人">
-                                <order-selectemployee role-id="3"
+                                <order-selectemployee role-id="-1"
                                                       v-model="custQueryCond.reportEmployeeId"></order-selectemployee>
                             </el-form-item>
                         </el-col>
@@ -72,7 +71,7 @@
                     <el-row>
                         <el-col :span="6">
                             <el-form-item label="业务时间">
-                                <vue-select code-type="EMPLOYEE_STATUS" v-model="custQueryCond.timeType"></vue-select>
+                                <vue-select code-type="BUSITIME_TYPE" v-model="custQueryCond.timeType"></vue-select>
                             </el-form-item>
                         </el-col>
                         <el-col :span="6">
@@ -98,7 +97,15 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="6">
-                            <el-form-item>
+                            <el-form-item label="家装顾问">
+                                <order-selectemployee role-id="3"
+                                                      v-model="custQueryCond.counselorEmployeeId"></order-selectemployee>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row >
+                        <el-col :span="20" >
+                            <el-form-item style="text-align: right">
                                 <el-button type="primary" @click="queryCustomer">查询</el-button>
                             </el-form-item>
                         </el-col>
@@ -148,6 +155,16 @@
                         </template>
                     </el-table-column>
                 </el-table>
+                <div class="pagination">
+                    <el-pagination
+                            background
+                            :current-page="pageConf.pageCode"
+                            :page-sizes="pageConf.pageOption"
+                            :page-size="pageConf.pageSize"
+                            layout="total, sizes, prev, pager, next, jumper"
+                            :total="pageConf.totalPage">
+                    </el-pagination>
+                </div>
             </template>
         </el-main>
     </el-container>
