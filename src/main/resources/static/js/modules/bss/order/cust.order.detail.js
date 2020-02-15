@@ -12,7 +12,8 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 },
 
                 designEmployeeId : 7,
-
+                orderId: util.getRequest('orderId'),
+                custId: util.getRequest('custId'),
                 sex: '2',
 
                 sexDisable: false,
@@ -23,7 +24,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
 
                 activeTab:'orderInfo',
 
-                employeeId:null,
+                eid:null,
                 employeeName:'',
 
 
@@ -90,7 +91,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
 
         methods: {
             submit : function() {
-                alert(this.employeeId);
+                alert(this.eid);
                 alert(this.employeeName);
                 this.sexDisable = true;
             }
