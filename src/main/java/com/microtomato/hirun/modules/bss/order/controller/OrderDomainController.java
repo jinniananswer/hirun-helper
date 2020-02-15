@@ -1,6 +1,10 @@
 package com.microtomato.hirun.modules.bss.order.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
+import com.microtomato.hirun.modules.bss.order.entity.dto.CustOrderInfoDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.CustOrderQueryDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderDetailDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.PendingTaskDTO;
 import com.microtomato.hirun.modules.bss.order.service.IOrderDomainService;
@@ -32,9 +36,21 @@ public class OrderDomainController {
         return this.domainService.queryPendingTask();
     }
 
+    /**
+     * 订单信息组件所用查询订单详情的方法
+     * @param orderId
+     * @return
+     */
     @GetMapping("/getOrderDetail")
     @RestResult
     public OrderDetailDTO getOrderDetail(Long orderId) {
         return this.domainService.getOrderDetail(orderId);
+    }
+
+    @GetMapping("/queryCustOrderInfo")
+    @RestResult
+    public IPage<CustOrderInfoDTO> queryCustOrderInfo(CustOrderQueryDTO queryCond) {
+        Page<CustOrderQueryDTO> page = new Page<>(queryCond.getPage(), queryCond.getLimit());
+        return this.domainService.queryCustOrderInfos(queryCond, page);
     }
 }
