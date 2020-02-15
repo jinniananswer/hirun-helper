@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderEscapeDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.OrderInfoDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.OrderDetailDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderBase;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderEscape;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderEscapeMapper;
@@ -69,7 +69,7 @@ public class OrderEscapeServiceImpl extends ServiceImpl<OrderEscapeMapper, Order
         OrderEscapeDTO dto = new OrderEscapeDTO();
 
         if (orderEscape == null) {
-            OrderInfoDTO infoDTO = domainService.getOrderInfo(orderId);
+            OrderDetailDTO infoDTO = domainService.getOrderDetail(orderId);
             dto.setEscapeNode(infoDTO.getStatus());
             dto.setEscapeNodeName(infoDTO.getStatusName());
         } else {

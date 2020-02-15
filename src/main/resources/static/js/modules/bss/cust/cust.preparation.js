@@ -1,12 +1,12 @@
-require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','house-select','order-selectemployee'], function (Vue, element, axios, ajax, vueselect, util,houseSelect,orderSelectEmployee) {
+require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','house-select','order-selectemployee','order-search-employee'], function (Vue, element, axios, ajax, vueselect, util,houseSelect,orderSelectEmployee,orderSearchEmployee) {
     let vm = new Vue({
         el: '#customer_perparation',
         data: function () {
             return {
-                employeeOptions: [],
                 customerPreparation: {
                     prepareOrgId: '',
                     prepareEmployeeId: '',
+                    prepareEmployeeName:'',
                     prepareTime: util.getNowTime(),
                     enterEmployeeId: '',
                     custProperty: '',
@@ -67,14 +67,6 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','house-select','
         },
 
         methods: {
-            loadEmployee: function () {
-                axios.get('api/organization/employee/loadEmployee').then(function (responseData) {
-                    vm.employeeOptions = responseData.data.rows;
-                }).catch(function (error) {
-                    console.log(error);
-                });
-            },
-
             loadPreparationHistory: function () {
                 axios.get('api/customer/cust-preparation/loadPreparationHistory?mobileNo=' + this.customerPreparation.mobileNo).then(function (responseData) {
                     vm.custOrder = responseData.data.rows;
@@ -106,6 +98,5 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','house-select','
 
         }
     });
-    vm.loadEmployee();
     return vm;
 })

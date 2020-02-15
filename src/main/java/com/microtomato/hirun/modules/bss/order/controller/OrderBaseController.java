@@ -3,7 +3,6 @@ package com.microtomato.hirun.modules.bss.order.controller;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.WebContextUtils;
-import com.microtomato.hirun.modules.bss.order.entity.dto.OrderInfoDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerDTO;
 import com.microtomato.hirun.modules.bss.order.service.IOrderBaseService;
 import com.microtomato.hirun.modules.bss.order.service.IOrderDomainService;
@@ -38,12 +37,6 @@ public class OrderBaseController {
 
     @Autowired
     private IEmployeeService employeeService;
-
-    @GetMapping("/getOrderInfo")
-    @RestResult
-    public OrderInfoDTO getOrderInfo(Long orderId) {
-        return this.orderDomainService.getOrderInfo(orderId);
-    }
 
     @GetMapping("/getOrderWorkers")
     @RestResult

@@ -1,7 +1,7 @@
 package com.microtomato.hirun.modules.bss.order.service;
 
 import com.microtomato.hirun.modules.bss.order.entity.dto.NewOrderDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.OrderInfoDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.OrderDetailDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.PendingTaskDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderBase;
@@ -16,7 +16,7 @@ import java.util.List;
  **/
 public interface IOrderDomainService {
 
-    OrderInfoDTO getOrderInfo(Long orderId);
+    OrderDetailDTO getOrderDetail(Long orderId);
 
     List<OrderWorkerDTO> queryOrderWorkers(Long orderId);
 
