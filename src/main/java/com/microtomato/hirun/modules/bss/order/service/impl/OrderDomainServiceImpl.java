@@ -11,6 +11,8 @@ import com.microtomato.hirun.modules.bss.config.service.IOrderRoleCfgService;
 import com.microtomato.hirun.modules.bss.config.service.IOrderStatusCfgService;
 import com.microtomato.hirun.modules.bss.config.service.IOrderStatusTransCfgService;
 import com.microtomato.hirun.modules.bss.config.service.IRoleAttentionStatusCfgService;
+import com.microtomato.hirun.modules.bss.house.entity.po.Houses;
+import com.microtomato.hirun.modules.bss.house.service.IHousesService;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.*;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderBase;
@@ -65,6 +67,9 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
     private IRoleAttentionStatusCfgService roleAttentionStatusCfgService;
 
     @Autowired
+    private IHousesService housesService;
+
+    @Autowired
     private OrderBaseMapper orderBaseMapper;
 
     /**
@@ -73,11 +78,20 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
      * @return
      */
     @Override
-    public OrderInfoDTO getOrderInfo(Long orderId) {
-        OrderInfoDTO orderInfo = new OrderInfoDTO();
+    public OrderDetailDTO getOrderDetail(Long orderId) {
+        OrderDetailDTO orderInfo = new OrderDetailDTO();
         OrderBase orderBase = this.orderBaseService.queryByOrderId(orderId);
 
         BeanUtils.copyProperties(orderBase, orderInfo);
+
+        Long housesId = orderBase.getHousesId();
+        if (housesId != null) {
+            //查询楼盘信息
+            Houses house = housesService.queryHouse(housesId);
+            if (house != null) {
+                orderInfo.setHousesName(house.getName());
+            }
+        }
 
         if (StringUtils.isNotBlank(orderInfo.getStatus())) {
             orderInfo.setStatusName(this.staticDataService.getCodeName("ORDER_STATUS", orderInfo.getStatus()));

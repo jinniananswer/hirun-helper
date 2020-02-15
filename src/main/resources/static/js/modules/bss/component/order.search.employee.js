@@ -4,7 +4,7 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
 
         data : function(){
             return {
-                sEmployeeId: null,
+                sEmployeeId: this.employeeId,
                 sEmployeeName: this.employeeName,
                 datas:[],
                 dialogVisible: false,
@@ -72,7 +72,6 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
 
             sEmployeeName(val, oldValue) {
                 if (val != oldValue) {
-                    console.log("aa");
                     this.$emit('update:employeeName', val)
                 }
             }
