@@ -9,7 +9,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'house-select']
                     mobileNo: '',
                     housesId: null,
                     orderStatus: '',
-                    limit: 2,
+                    limit: 20,
                     page: 1,
                     count: null
                 },
