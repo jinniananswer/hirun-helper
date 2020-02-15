@@ -8,6 +8,8 @@ require.config({
         'vue': 'static/js/framework/vue/vue.min',
         'vue-router': 'static/js/framework/vue/vue-router',
         'ELEMENT': 'static/element-ui/js/index',
+        'xe-utils': 'static/vxe/js/xe-utils',
+        'vxe-table': 'static/vxe/js/vxe-table',
         'moment': 'static/js/framework/date/moment.min',
         'axios': 'static/js/framework/axios/axios.min',
         'qs': 'static/js/framework/axios/qs.min',
@@ -26,11 +28,14 @@ require.config({
     shim: {
         'ELEMENT': {
             deps: ['vue', 'css!static/element-ui/css/index.css']
+        },
+        'vxe-table': {
+            deps: ['vue', 'xe-utils', 'css!static/vxe/css/index.css']
         }
     }
 });
 
-require(['vue', 'ELEMENT', 'vue-router'], function(Vue, element, VueRouter){
+require(['vue', 'ELEMENT', 'vue-router'], function(Vue, element, VueRouter) {
     element.install(Vue);
     Vue.use(VueRouter);
 });
