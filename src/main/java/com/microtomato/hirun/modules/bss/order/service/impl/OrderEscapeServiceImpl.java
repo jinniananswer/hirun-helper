@@ -90,7 +90,7 @@ public class OrderEscapeServiceImpl extends ServiceImpl<OrderEscapeMapper, Order
        EmployeeInfoDTO infoDTO= employeeService.queryEmployeeInfoByEmployeeId(userContext.getEmployeeId());
        Long parentEmployeeId=infoDTO.getParentEmployeeId();
        //19客户代表用作测试
-        workerService.updateOrderWorker(orderEscape.getOrderId(),19L,1473L);
+        workerService.updateOrderWorker(orderEscape.getOrderId(),48L,1473L);
 
     }
 

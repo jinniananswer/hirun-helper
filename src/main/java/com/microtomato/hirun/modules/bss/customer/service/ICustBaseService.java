@@ -24,10 +24,5 @@ public interface ICustBaseService extends IService<CustBase> {
 
     List<CustInfoDTO> queryCustomerInfo(CustQueryCondDTO condDTO);
 
-    void saveCustomerConsultInfo(CustConsultDTO dto);
-
-    void submitMeasure(CustConsultDTO dto);
-
-    void submitSneak(CustConsultDTO dto);
 
 }
