@@ -104,7 +104,7 @@ public class CustPreparation extends BaseEntity {
     private String rulingRemark;
 
     @TableField("house_id")
-    private String houseId;
+    private Long houseId;
 
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)
     private Long createUserId;

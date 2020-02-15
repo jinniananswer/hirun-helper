@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.microtomato.hirun.framework.exception.ErrorKind;
 import com.microtomato.hirun.framework.exception.cases.AlreadyExistException;
+import com.microtomato.hirun.framework.exception.cases.NotFoundException;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 import com.microtomato.hirun.framework.security.UserContext;
@@ -19,7 +20,11 @@ import com.microtomato.hirun.modules.bss.customer.mapper.CustPreparationMapper;
 import com.microtomato.hirun.modules.bss.customer.service.ICustBaseService;
 import com.microtomato.hirun.modules.bss.customer.service.ICustPreparationService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.modules.bss.house.entity.po.HousesPlan;
+import com.microtomato.hirun.modules.bss.house.service.IHousesPlanService;
 import com.microtomato.hirun.modules.bss.house.service.IHousesService;
+import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
+import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import org.apache.commons.lang3.StringUtils;
@@ -64,6 +69,12 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
     @Autowired
     private IPrepareConfigService configService;
 
+    @Autowired
+    private IEmployeeJobRoleService jobRoleService;
+
+    @Autowired
+    private IHousesPlanService housesPlanService;
+
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void addCustomerPreparation(CustPreparationDTO dto) {
@@ -83,6 +94,10 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
         custBase.setCustStatus(0);
         baseService.save(custBase);
         //保存报备信息
+        if (preparation.getPrepareOrgId() == null) {
+            EmployeeJobRole employeeJobRole = jobRoleService.queryValidMain(preparation.getPrepareEmployeeId());
+            preparation.setPrepareOrgId(employeeJobRole.getOrgId());
+        }
         preparation.setCustId(custBase.getCustId());
         preparation.setStatus(1);
         preparation.setEnterEmployeeId(userContext.getEmployeeId());
@@ -136,7 +151,7 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
         queryWrapper.eq(StringUtils.isNotEmpty(mobileNo), "a.mobile_no", mobileNo);
         queryWrapper.eq(custId != null, "a.cust_id", custId);
         queryWrapper.eq(StringUtils.isNotEmpty(status), "b.status", status);
-        queryWrapper.eq(houseId!=null, "b.house_id", houseId);
+        queryWrapper.eq(houseId != null, "b.house_id", houseId);
         //2表示需要判断未过失效期
         queryWrapper.apply(StringUtils.equals(isExpire, "2"), "b.preparation_expire_time > now() ");
 
@@ -154,42 +169,60 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
         return list;
     }
 
-    private void checkRules(CustPreparationDTO dto){
-        PrepareConfig prepareConfig=configService.queryValid();
+    private void checkRules(CustPreparationDTO dto) {
+        PrepareConfig prepareConfig = configService.queryValid();
+
+        if (prepareConfig == null) {
+            return;
+        }
+        //加上判断如果报备部门id为空，则查询报备员工所属部门
+        EmployeeJobRole employeeJobRole = jobRoleService.queryValidMain(dto.getPrepareEmployeeId());
+        String prepareOrgId = "";
+        if (dto.getPrepareOrgId() == null) {
+            prepareOrgId = "," + 57 + ",";
+        } else {
+            prepareOrgId = "," + dto.getPrepareOrgId() + ",";
+        }
+
         //客户申报状态为有效期内，不允许办理报备
         List<CustPreparationDTO> list = this.queryCustPreparaton(dto.getMobileNo(), null, "1", dto.getHouseId(), "2");
         if (ArrayUtils.isNotEmpty(list)) {
             throw new AlreadyExistException(" 该客户有效期内存在有效的报备！", ErrorKind.ALREADY_EXIST.getCode());
         }
         //限制报备客户周期范围的报备次数limitCycle限制周期limitTimes限制次数
-        Integer limitTimes=prepareConfig.getLimitCustPrepareTimes();
-        Integer limitCycle=prepareConfig.getLimitCustPrepareCycle();
-        LocalDateTime limitTime=TimeUtils.addTime(LocalDateTime.now(), ChronoUnit.DAYS, -limitCycle);
-        List<CustPreparationDTO> existList=this.preparationMapper.queryPrepareByTime(dto.getMobileNo(),limitTime);
-        if(existList.size()>=limitTimes){
-            throw new AlreadyExistException(" 该客户在"+limitCycle+"天内已超过限制报备次数"+limitTimes+"不允许报备！", ErrorKind.ALREADY_EXIST.getCode());
+        Integer limitTimes = prepareConfig.getLimitCustPrepareTimes();
+        Integer limitCycle = prepareConfig.getLimitCustPrepareCycle();
+        LocalDateTime limitTime = TimeUtils.addTime(LocalDateTime.now(), ChronoUnit.DAYS, -limitCycle);
+        List<CustPreparationDTO> existList = this.preparationMapper.queryPrepareByTime(dto.getMobileNo(), limitTime);
+        if (existList.size() >= limitTimes) {
+            throw new AlreadyExistException(" 该客户在" + limitCycle + "天内已超过限制报备次数" + limitTimes + "不允许报备！", ErrorKind.ALREADY_EXIST.getCode());
         }
         //限制部门报备次数
-        if(!StringUtils.isEmpty(prepareConfig.getLimitPrepareOrgId())){
-            String limitOrgId=","+prepareConfig.getLimitPrepareOrgId()+",";
-            String prepareOrgId=","+dto.getPrepareOrgId()+",";
-            if(limitOrgId.indexOf(prepareOrgId)!=-1){
-                Integer limitOrgPrepareTimes=prepareConfig.getLimitOrgPrepareTimes();
-                LocalDateTime limitTime1=TimeUtils.addTime(LocalDateTime.now(), ChronoUnit.DAYS, -7);
-                List<CustPreparation> existList1=this.preparationMapper.selectList(new QueryWrapper<CustPreparation>().lambda()
-                        .eq(CustPreparation::getPrepareOrgId,dto.getPrepareOrgId())
-                        .ge(CustPreparation::getPrepareTime,limitTime1));
-                if(existList1.size()>=limitOrgPrepareTimes){
-                    throw new AlreadyExistException(" 该部门在过去的7天内已超过限制报备次数"+limitOrgPrepareTimes+"不允许报备！", ErrorKind.ALREADY_EXIST.getCode());
+        if (!StringUtils.isEmpty(prepareConfig.getLimitPrepareOrgId())) {
+            String limitOrgId = "," + prepareConfig.getLimitPrepareOrgId() + ",";
+
+            if (limitOrgId.indexOf(prepareOrgId) != -1) {
+                Integer limitOrgPrepareTimes = prepareConfig.getLimitOrgPrepareTimes();
+                LocalDateTime limitTime1 = TimeUtils.addTime(LocalDateTime.now(), ChronoUnit.DAYS, -7);
+                List<CustPreparation> existList1 = this.preparationMapper.selectList(new QueryWrapper<CustPreparation>().lambda()
+                        .eq(CustPreparation::getPrepareOrgId, employeeJobRole.getOrgId())
+                        .ge(CustPreparation::getPrepareTime, limitTime1));
+                if (existList1.size() >= limitOrgPrepareTimes) {
+                    throw new AlreadyExistException(" 该部门在过去的7天内已超过限制报备次数" + limitOrgPrepareTimes + "不允许报备！", ErrorKind.ALREADY_EXIST.getCode());
                 }
             }
         }
-        //todo 判断责任楼盘
-
+        //判断责任楼盘 1现 2责任 3 散
+        String limitConsultOrgId = "," + prepareConfig.getLimitOrgId() + ",";
+        //限制家装顾问只允许报备责任楼盘则进判断
+        if (prepareConfig.getIsLimitConsult().equals(1)) {
+            if(limitConsultOrgId.indexOf(prepareOrgId)!=-1){
+                HousesPlan housesPlan=housesPlanService.queryHousesPlan(dto.getHouseId(),dto.getPrepareEmployeeId());
+                if(housesPlan==null){
+                    throw new NotFoundException("报备员工只能报备责任楼盘！", ErrorKind.NOT_FOUND.getCode());
+                }
+            }
+        }
     }
 
-    public List<CustPreparation> queryPrepareByTime(String mobileNo,Integer limitCycle){
-        List<CustPreparation> list=this.preparationMapper.selectList(new QueryWrapper<CustPreparation>().lambda());
-        return list;
-    }
 }
