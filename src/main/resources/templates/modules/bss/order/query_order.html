@@ -60,11 +60,13 @@
             <el-table
                     :data="custOrder"
                     stripe="true"
-                    height="300"
+                    border
+                    height="400"
                     style="width: 100%">
                 <el-table-column
                         label="客户姓名"
                         fixed
+                        width="100"
                         align="center">
                     <template slot-scope="scope">
                         <el-button type="text" @click="toOrderDetail(scope.row.orderId, scope.row.custId)">{{ scope.row.custName }}</el-button>
@@ -72,19 +74,21 @@
                 </el-table-column>
                 <el-table-column
                         prop="sexName"
+                        width="100"
                         label="性别">
                 </el-table-column>
                 <el-table-column
                         prop="mobileNo"
+                        width="120"
                         label="联系电话"
                         align="center">
                 </el-table-column>
                 <el-table-column
-                        width="100"
                         prop="decorateAddress"
                         label="装修地址">
                 </el-table-column>
                 <el-table-column
+                        width="150"
                         prop="housesName"
                         label="所属楼盘">
                 </el-table-column>
@@ -93,18 +97,22 @@
                         label="户型">
                 </el-table-column>
                 <el-table-column
+                        width="100"
                         prop="floorage"
                         label="建筑面积">
                 </el-table-column>
                 <el-table-column
+                        width="100"
                         prop="indoorArea"
                         label="室内面积">
                 </el-table-column>
                 <el-table-column
+                        width="100"
                         prop="stageName"
                         label="订单阶段">
                 </el-table-column>
                 <el-table-column
+                        width="100"
                         prop="statusName"
                         label="订单状态">
                 </el-table-column>
