@@ -27,4 +27,15 @@ public class HousesServiceImpl extends ServiceImpl<HousesMapper, Houses> impleme
         }
         return houses.getName();
     }
+
+    /**
+     * 根据楼盘ID查询楼盘信息
+     * @param houseId
+     * @return
+     */
+    @Override
+    public Houses queryHouse(Long houseId) {
+        Houses house = this.getById(houseId);
+        return house;
+    }
 }
