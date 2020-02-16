@@ -1,5 +1,4 @@
-require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'order-info', 'order-worker'], function(Vue, element, axios, ajax, vueselect, util, custInfo, orderInfo, orderWorker) {
-    let vm = new Vue({
+require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'order-info', 'order-worker', 'order-selectemployee','cust-visit'], function(Vue, element, axios, ajax, vueselect, util, custInfo, orderInfo, orderWorker, orderSelectEmployee,custVisit) {    let vm = new Vue({
         el: '#app',
         data() {
             return {
@@ -45,11 +44,12 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 {value : "1", name : "活动3"},
                 {value : "2", name : "活动4"}
             ];
+            // this.budget.checkUserId = 296;
         },
         methods: {
             submit : function() {
                 let url = 'api/bss.order/order-budget/submitBudget';
-                if(orderState == 'fail') {
+                if(this.orderState == 'fail') {
                     url = 'api/bss.order/order-budget/submitBudgetCheckedResult';
                 }
                 ajax.post(url, this.budget);
