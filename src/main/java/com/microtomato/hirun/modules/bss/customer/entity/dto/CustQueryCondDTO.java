@@ -35,4 +35,10 @@ public class CustQueryCondDTO {
 
     private String houseMode;
 
+    private Integer page;
+
+    private Integer size;
+
+    private Integer total;
+
 }

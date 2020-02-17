@@ -1,5 +1,6 @@
 package com.microtomato.hirun.modules.bss.customer.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.CustInfoDTO;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.CustQueryCondDTO;
@@ -36,7 +37,7 @@ public class CustBaseController {
 
     @GetMapping("/queryCustomerInfo")
     @RestResult
-    public List<CustInfoDTO> queryCustomerInfo(CustQueryCondDTO custQueryCond){
+    public IPage<CustInfoDTO> queryCustomerInfo(CustQueryCondDTO custQueryCond){
         log.debug(custQueryCond.toString());
         return custBaseServiceImpl.queryCustomerInfo(custQueryCond);
     }

@@ -78,9 +78,9 @@ public class CustBaseServiceImpl extends ServiceImpl<CustBaseMapper, CustBase> i
     }
 
     @Override
-    public List<CustInfoDTO> queryCustomerInfo(CustQueryCondDTO condDTO) {
+    public IPage<CustInfoDTO> queryCustomerInfo(CustQueryCondDTO condDTO) {
         QueryWrapper<CustQueryCondDTO> queryWrapper = new QueryWrapper<>();
-        Page<CustQueryCondDTO> page = new Page<>(1, 20);
+        Page<CustQueryCondDTO> page = new Page<>(condDTO.getPage(), condDTO.getSize());
 
         queryWrapper.like(StringUtils.isNotEmpty(condDTO.getCustName()), "a.cust_name", condDTO.getCustName());
         queryWrapper.apply(" 1=1 order by a.consult_time desc");
@@ -93,7 +93,7 @@ public class CustBaseServiceImpl extends ServiceImpl<CustBaseMapper, CustBase> i
             dto.setPrepareEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getPrepareEmployeeId()));
             dto.setCustPropertyName(staticDataService.getCodeName("CUSTOMER_PROPERTY",dto.getCustProperty()));
         }
-        return custInfoDTOList;
+        return iPage;
     }
 
 }
