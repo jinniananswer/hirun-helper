@@ -315,20 +315,20 @@ layui.extend({
 
             let educationLevel = employee.educationLevel;
             if (educationLevel != null) {
-                $("#educationLevel").val(educationLevel);
-                form.render('select', 'educationLevel');
+               // $("#educationLevel").val(educationLevel);
+                layui.select.init('educationLevel', 'EDUCATION_LEVEL', educationLevel, false);
             }
 
             let schoolType = employee.schoolType;
             if (schoolType != null) {
-                $("#schoolType").val(schoolType);
-                form.render('select', 'schoolType');
+               // $("#schoolType").val(schoolType);
+                layui.select.init('schoolType', 'SCHOOL_TYPE', schoolType, false);
             }
 
             let firstEducationLevel = employee.firstEducationLevel;
             if (firstEducationLevel != null) {
-                $("#firstEducationLevel").val(firstEducationLevel);
-                form.render('select', 'firstEducationLevel');
+               // $("#firstEducationLevel").val(firstEducationLevel);
+                layui.select.init('firstEducationLevel', 'EDUCATION_LEVEL', firstEducationLevel, false);
             }
 
             let employeeJobRole = employee.employeeJobRole;
