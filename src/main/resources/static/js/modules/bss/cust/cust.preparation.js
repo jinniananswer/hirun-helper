@@ -1,4 +1,4 @@
-require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','house-select','order-selectemployee','order-search-employee'], function (Vue, element, axios, ajax, vueselect, util,houseSelect,orderSelectEmployee,orderSearchEmployee) {
+require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'house-select', 'order-selectemployee', 'order-search-employee'], function (Vue, element, axios, ajax, vueselect, util, houseSelect, orderSelectEmployee, orderSearchEmployee) {
     let vm = new Vue({
         el: '#customer_perparation',
         data: function () {
@@ -6,7 +6,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','house-select','
                 customerPreparation: {
                     prepareOrgId: '',
                     prepareEmployeeId: '',
-                    prepareEmployeeName:'',
+                    prepareEmployeeName: '',
                     prepareTime: util.getNowTime(),
                     enterEmployeeId: '',
                     custProperty: '',
@@ -22,13 +22,18 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','house-select','
                     houseId: '',
                     houseBuilding: '',
                     houseRoomNo: '',
+                    prepareId:'',
+                    custId:'',
                 },
                 custOrder: [],
+                custInfo: [],
                 isRefereeFixPlaceDisable: true,
                 isRefereeNameDisable: true,
                 isRefereeMobileNoDisable: true,
-                enterDisabled:true,
+                enterDisabled: true,
+                dialogTableVisible: false,
                 display: 'display:block',
+
                 id: util.getRequest('id'),
                 rules: {
                     custName: [
@@ -62,26 +67,33 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','house-select','
                     custProperty: [
                         {required: true, message: '请选择客户属性', trigger: 'change'}
                     ],
-                }
+
+                },
+
             }
         },
 
         methods: {
             loadPreparationHistory: function () {
-                axios.get('api/customer/cust-preparation/loadPreparationHistory?mobileNo=' + this.customerPreparation.mobileNo).then(function (responseData) {
-                    vm.custOrder = responseData.data.rows;
-                }).catch(function (error) {
-                    console.log(error);
+                let that = this;
+                if (that.customerPreparation.mobileNo == '') {
+                    return;
+                }
+                ajax.get('api/customer/cust-base/queryCustomerInfoByMobile', {mobileNo: this.customerPreparation.mobileNo}, function (responseDate) {
+                    if (responseDate != null && responseDate.length > 0) {
+                        that.dialogTableVisible = true;
+                        vm.custInfo = responseDate;
+                    }
                 });
             },
 
             changeCustomerProperty: function (newVal) {
 
-                if (newVal == 2) {
+                if (newVal == 2 || newVal == 3) {
                     this.isRefereeFixPlaceDisable = false;
                     this.isRefereeNameDisable = false;
                     this.isRefereeMobileNoDisable = false;
-                }else{
+                } else {
                     this.isRefereeFixPlaceDisable = true;
                     this.isRefereeNameDisable = true;
                     this.isRefereeMobileNoDisable = true;
@@ -91,11 +103,33 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','house-select','
             submit(customerPreparation) {
                 this.$refs.customerPreparation.validate((valid) => {
                     if (valid) {
-                        ajax.post('api/customer/cust-preparation/addCustomerPreparation',this.customerPreparation);
+                        if (this.checkReferee()) {
+                            ajax.post('api/customer/cust-preparation/addCustomerPreparation', this.customerPreparation);
+                        } else {
+                            this.$message.error('客户属性为老客户介绍或者工地营销需填工地地址、客户姓名、客户电话');
+                        }
                     }
                 })
             },
 
+            checkReferee() {
+                if (this.customerPreparation.custProperty == 2 || this.customerPreparation.custProperty == 3) {
+                    if (this.customerPreparation.refereeFixPlace == '' || this.customerPreparation.refereeMobileNo == '' || this.customerPreparation.refereeName == '') {
+                        return false;
+                    }
+                }
+                return true;
+            },
+
+            handle(row) {
+                this.customerPreparation.custName = row.custName;
+                this.customerPreparation.houseId = row.houseId;
+                this.customerPreparation.houseMode = row.houseMode;
+                this.customerPreparation.houseArea = row.houseArea;
+                this.customerPreparation.houseBuilding = row.houseBuilding;
+                this.customerPreparation.houseRoomNo = row.houseRoomNo;
+                this.dialogTableVisible = false;
+            },
         }
     });
     return vm;

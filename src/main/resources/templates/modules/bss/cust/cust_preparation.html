@@ -28,13 +28,13 @@
                                 </el-form-item>
                             </el-col>
                             <el-col :span="6">
-                                <el-form-item label="客户姓名" prop="custName">
-                                    <el-input v-model="customerPreparation.custName" placeholder="客户姓名"></el-input>
+                                <el-form-item label="客户电话"  prop="mobileNo">
+                                    <el-input v-model="customerPreparation.mobileNo" placeholder="客户联系电话" @blur="loadPreparationHistory"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="6">
-                                <el-form-item label="客户电话"  prop="mobileNo">
-                                    <el-input v-model="customerPreparation.mobileNo" placeholder="客户联系电话" @blur="loadPreparationHistory"></el-input>
+                                <el-form-item label="客户姓名" prop="custName">
+                                    <el-input v-model="customerPreparation.custName" placeholder="客户姓名"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="6">
@@ -104,12 +104,12 @@
                         </el-row>
                         <el-row :gutter="20">
                             <el-col :span="6">
-                                <el-form-item label="装修地址">
+                                <el-form-item label="工地地址" prop="refereeFixPlace">
                                     <el-input v-model="customerPreparation.refereeFixPlace" :disabled="isRefereeFixPlaceDisable"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="6">
-                                <el-form-item label="客户姓名">
+                                <el-form-item label="客户姓名" prop="refereeName">
                                     <el-input v-model="customerPreparation.refereeName" :disabled="isRefereeNameDisable"></el-input>
                                 </el-form-item>
                             </el-col>
@@ -221,6 +221,80 @@
                     </el-table>
                 </template>
             </el-card>
+            <el-dialog title="存在多条客户记录" :visible.sync="dialogTableVisible" width="80%" close-on-press-escape>
+                <el-table
+                        :data="custInfo"
+                        border
+                        stripe="true"
+                        style="width: 100%">
+                    <el-table-column  width="100"label="选择客户">
+                        <template slot-scope="scope">
+                            <el-button v-if="scope.row.isContinueAuth==true" type="primary" size="mini" @click="handle(scope.row)">选择</el-button>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                            prop="custName"
+                            label="客户姓名"
+                            align="center"
+                            width="120">
+                    </el-table-column>
+                    <el-table-column
+                            prop="houseAddress"
+                            label="详细地址"
+                            align="center"
+                            width="200">
+                    </el-table-column>
+                    <el-table-column
+                            prop="mobileNo"
+                            label="电话"
+                            align="center"
+                            width="150">
+                    </el-table-column>
+                    <el-table-column
+                            prop="houseModeName"
+                            align="center"
+                            label="户型"
+                            width="120">
+                    </el-table-column>
+                    <el-table-column
+                            prop="custTypeName"
+                            align="center"
+                            label="客户类型"
+                            width="100">
+                    </el-table-column>
+                    <el-table-column
+                            prop="prepareEmployeeName"
+                            align="center"
+                            label="申报人">
+                    </el-table-column>
+                    <el-table-column
+                            prop="prepareTime"
+                            align="center"
+                            label="申报时间"
+                            width="180">
+                    </el-table-column>
+                    <el-table-column
+                            prop="status"
+                            align="center"
+                            label="报备状态"
+                            width="150">
+                    </el-table-column>
+                    <el-table-column
+                            prop="enterEmployeeName"
+                            align="center"
+                            label="录入人">
+                    </el-table-column>
+                    <el-table-column
+                            prop="enterTime"
+                            align="center"
+                            label="录入时间"
+                            width="180">
+                    </el-table-column>
+                </el-table>
+                <div slot="footer" class="dialog-footer">
+                    <el-button @click="dialogTableVisible = false" type="primary">继续新增</el-button>
+                </div>
+            </el-dialog>
         </el-main>
     </el-container>
 </div>

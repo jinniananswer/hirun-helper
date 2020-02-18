@@ -42,5 +42,11 @@ public class CustBaseController {
         return custBaseServiceImpl.queryCustomerInfo(custQueryCond);
     }
 
+    @GetMapping("/queryCustomerInfoByMobile")
+    @RestResult
+    public List<CustInfoDTO> queryCustomerInfoByMobile(String mobileNo){
+        return custBaseServiceImpl.queryCustomerInfoByMobile(mobileNo);
+    }
+
 
 }
