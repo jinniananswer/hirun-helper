@@ -211,6 +211,12 @@ public class CustBase extends BaseEntity {
     @TableField("consult_time")
     private LocalDateTime consultTime;
 
+    /**
+     * 报备ID
+     */
+    @TableField("prepare_id")
+    private LocalDateTime prepareId;
+
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)
     private Long createUserId;
 

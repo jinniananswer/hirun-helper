@@ -38,4 +38,13 @@ public interface CustBaseMapper extends BaseMapper<CustBase> {
     )
     IPage<CustInfoDTO> queryCustomerInfo(Page<CustQueryCondDTO> page, @Param(Constants.WRAPPER) Wrapper wrapper);
 
+    @Select("select a.cust_id,a.cust_name,a.mobile_no,a.cust_status,a.consult_time,a.cust_type," +
+            " b.prepare_employee_id,b.prepare_time,b.cust_property,b.status,b.preparation_expire_time,b.status,a.prepare_id,c.house_mode,c.house_area, " +
+            " b.ruling_employee_id,b.ruling_time,b.ruling_remark,c.house_id,c.house_building,c.house_room_no,b.enter_employee_id,b.enter_time " +
+            " from cust_base a left join cust_preparation b on (a.prepare_id=b.id) ," +
+            " ins_project c " +
+            " where a.cust_id=c.party_id and a.mobile_no=#{mobileNo}"
+    )
+    List<CustInfoDTO> queryCustomerInfoByMobile(@Param("mobileNo") String mobileNo);
+
 }

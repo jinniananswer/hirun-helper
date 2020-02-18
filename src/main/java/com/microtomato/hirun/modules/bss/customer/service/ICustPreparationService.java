@@ -42,4 +42,16 @@ public interface ICustPreparationService extends IService<CustPreparation> {
      * @return
      */
     List<CustPreparationDTO> queryCustPreparaton(String mobileNo,Long custId,String status,Long houseId,String isExpire);
+
+    /**
+     * 校验针对公司部门的判断规则
+     * @param dto
+     */
+    void checkPrepareOrgRules(CustPreparationDTO dto);
+
+    /**
+     * 校验针对客户的规则
+     * @param mobileNo
+     */
+    void checkCustomerRules(String mobileNo);
 }

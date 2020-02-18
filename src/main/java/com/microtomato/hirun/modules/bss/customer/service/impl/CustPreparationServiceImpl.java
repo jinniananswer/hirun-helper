@@ -97,10 +97,17 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
     public void addCustomerPreparation(CustPreparationDTO dto) {
         UserContext userContext = WebContextUtils.getUserContext();
         //校验报备的规则
-        this.checkRules(dto);
+        this.checkCustomerRules(dto.getMobileNo());
+        this.checkPrepareOrgRules(dto);
         //todo 当客户存在报备信息时，联系文员可以直接做报备信息保存，否则客户存在多次，需判断客户之前的报备信息是否失效，如果失效则客户选择继续报备
 
         //todo 客户未做过报备，但是在客户表存在过数据，可以联系有权限的人员进行报备信息录入
+
+        //todo 先录客户信息，再报备，可以报备成功，且可以关联成功，但是报备状态不修改
+
+        //todo 客户先报备，上门咨询，报备失败，再次报备，需文员或者主管新增客户，且无法下拉框客户
+
+        //todo  报备成功的客户，再来报备只能做继续保存操作
 
         CustBase custBase = new CustBase();
         CustPreparation preparation = new CustPreparation();
@@ -130,6 +137,8 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
         preparation.setEnterTime(LocalDateTime.now());
         preparation.setPreparationExpireTime(TimeUtils.addTime(dto.getPrepareTime(), ChronoUnit.DAYS, 5));
         this.preparationMapper.insert(preparation);
+        //回填customer表的prepareId
+        baseService.update(new UpdateWrapper<CustBase>().lambda().eq(CustBase::getCustId,custBase.getCustId()).set(CustBase::getPrepareId,preparation.getId()));
         //生成订单信息
         NewOrderDTO orderBase=new NewOrderDTO();
         orderBase.setCustId(custBase.getCustId());
@@ -153,7 +162,6 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
             dto.setEnterEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getEnterEmployeeId()));
             dto.setHouseAddress(housesService.queryHouseName(dto.getHouseId()));
             dto.setPreparationStatusName(staticDataService.getCodeName("PREPARATION_STATUS", dto.getStatus() + ""));
-
         }
         return list;
     }
@@ -215,7 +223,8 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
         return list;
     }
 
-    private void checkRules(CustPreparationDTO dto) {
+    @Override
+    public void checkPrepareOrgRules(CustPreparationDTO dto) {
         PrepareConfig prepareConfig = configService.queryValid();
 
         if (prepareConfig == null) {
@@ -230,19 +239,6 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
             prepareOrgId = "," + dto.getPrepareOrgId() + ",";
         }
 
-        //客户申报状态为有效期内，不允许办理报备
-        List<CustPreparationDTO> list = this.queryCustPreparaton(dto.getMobileNo(), null, "1", dto.getHouseId(), "2");
-        if (ArrayUtils.isNotEmpty(list)) {
-            throw new AlreadyExistException(" 该客户有效期内存在有效的报备！", ErrorKind.ALREADY_EXIST.getCode());
-        }
-        //限制报备客户周期范围的报备次数limitCycle限制周期limitTimes限制次数
-        Integer limitTimes = prepareConfig.getLimitCustPrepareTimes();
-        Integer limitCycle = prepareConfig.getLimitCustPrepareCycle();
-        LocalDateTime limitTime = TimeUtils.addTime(LocalDateTime.now(), ChronoUnit.DAYS, -limitCycle);
-        List<CustPreparationDTO> existList = this.preparationMapper.queryPrepareByTime(dto.getMobileNo(), limitTime);
-        if (existList.size() >= limitTimes) {
-            throw new AlreadyExistException(" 该客户在" + limitCycle + "天内已超过限制报备次数" + limitTimes + "不允许报备！", ErrorKind.ALREADY_EXIST.getCode());
-        }
         //限制部门报备次数
         if (!StringUtils.isEmpty(prepareConfig.getLimitPrepareOrgId())) {
             String limitOrgId = "," + prepareConfig.getLimitPrepareOrgId() + ",";
@@ -270,5 +266,29 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
             }
         }
     }
+
+    @Override
+    public void checkCustomerRules(String mobileNo) {
+
+        //客户申报状态为有效期内，不允许办理报备
+        List<CustPreparationDTO> list = this.queryCustPreparaton(mobileNo, null, "1", null, "2");
+        if (ArrayUtils.isNotEmpty(list)) {
+            throw new AlreadyExistException(" 该客户有效期内存在有效的报备！", ErrorKind.ALREADY_EXIST.getCode());
+        }
+
+        PrepareConfig prepareConfig = configService.queryValid();
+        if (prepareConfig == null) {
+            return;
+        }
+        //限制报备客户周期范围的报备次数limitCycle限制周期limitTimes限制次数
+        Integer limitTimes = prepareConfig.getLimitCustPrepareTimes();
+        Integer limitCycle = prepareConfig.getLimitCustPrepareCycle();
+        LocalDateTime limitTime = TimeUtils.addTime(LocalDateTime.now(), ChronoUnit.DAYS, -limitCycle);
+        List<CustPreparationDTO> existList = this.preparationMapper.queryPrepareByTime(mobileNo, limitTime);
+        if (existList.size() >= limitTimes) {
+            throw new AlreadyExistException(" 该客户在" + limitCycle + "天内已超过限制报备次数" + limitTimes + "不允许报备！", ErrorKind.ALREADY_EXIST.getCode());
+        }
+    }
+
 
 }
