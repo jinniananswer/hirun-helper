@@ -9,6 +9,7 @@ import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.framework.util.SecurityUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.bss.config.entity.po.PrepareConfig;
@@ -44,7 +45,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -288,6 +291,14 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
         if (existList.size() >= limitTimes) {
             throw new AlreadyExistException(" 该客户在" + limitCycle + "天内已超过限制报备次数" + limitTimes + "不允许报备！", ErrorKind.ALREADY_EXIST.getCode());
         }
+    }
+
+    @Override
+    public Map<String, String> getCustomerNoAndSec() {
+        Map<String,String> map=new HashMap<>();
+        map.put("isContinueAuth",SecurityUtils.hasFuncId("")+"");
+        map.put("custNo","KH20190219001");
+        return map;
     }
 
 

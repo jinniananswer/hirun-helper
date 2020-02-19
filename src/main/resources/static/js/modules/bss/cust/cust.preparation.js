@@ -32,6 +32,11 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'house-select',
                 isRefereeMobileNoDisable: true,
                 enterDisabled: true,
                 dialogTableVisible: false,
+                mobileReadonly:false,
+                custNameReadonly:false,
+                houseModeReadonly:false,
+                custReadonly:false,
+                isContinueAuth:'',
                 display: 'display:block',
 
                 id: util.getRequest('id'),
@@ -74,6 +79,15 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'house-select',
         },
 
         methods: {
+
+            init(){
+                let that=this;
+                ajax.get('api/customer/cust-preparation/getCustomerNoAndSec', '', function (responseDate) {
+                    that.isContinueAuth=responseDate.isContinueAuth;
+                    that.customerPreparation.custNo=responseDate.custNo;
+                });
+            },
+
             loadPreparationHistory: function () {
                 let that = this;
                 if (that.customerPreparation.mobileNo == '') {
@@ -129,7 +143,14 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'house-select',
                 this.customerPreparation.houseBuilding = row.houseBuilding;
                 this.customerPreparation.houseRoomNo = row.houseRoomNo;
                 this.dialogTableVisible = false;
+                this.custReadonly=true;
+                this.mobileReadonly=true;
+                this.customerPreparation.custId=row.custId;
             },
+        },
+
+        mounted () {
+            this.init();
         }
     });
     return vm;

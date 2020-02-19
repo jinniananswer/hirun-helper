@@ -17,11 +17,11 @@
             <template>
 
                 <el-form :inline="false" :rules="rules" label-position="right" label-width="80px" :model="customerPreparation" ref="customerPreparation">
-                    <el-card class="box-card">
+                    <el-card class="box-card" shadow="hover">
                         <div>
                             <el-divider content-position="left"><span style="font-weight: 700">客户信息</span></el-divider>
                         </div>
-                        <el-row :gutter="20">
+                        <el-row :gutter="20" >
                             <el-col :span="6">
                                 <el-form-item label="客户编号">
                                     <el-input v-model="customerPreparation.custNo" placeholder="客户编号" readonly></el-input>
@@ -29,17 +29,17 @@
                             </el-col>
                             <el-col :span="6">
                                 <el-form-item label="客户电话"  prop="mobileNo">
-                                    <el-input v-model="customerPreparation.mobileNo" placeholder="客户联系电话" @blur="loadPreparationHistory"></el-input>
+                                    <el-input v-model="customerPreparation.mobileNo" placeholder="客户联系电话" @blur="loadPreparationHistory" :readonly="mobileReadonly"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="6">
                                 <el-form-item label="客户姓名" prop="custName">
-                                    <el-input v-model="customerPreparation.custName" placeholder="客户姓名"></el-input>
+                                    <el-input v-model="customerPreparation.custName" placeholder="客户姓名" :readonly="custNameReadonly"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="6">
                                 <el-form-item label="房屋类型"  prop="houseMode">
-                                    <vue-select code-type="HOUSE_MODE" v-model="customerPreparation.houseMode"></vue-select>
+                                    <vue-select code-type="HOUSE_MODE" v-model="customerPreparation.houseMode" :readonly="houseModeReadonly"></vue-select>
                                 </el-form-item>
                             </el-col>
                         </el-row>
@@ -69,7 +69,7 @@
                         </el-row>
                     </el-card>
 
-                    <el-card class="box-card">
+                    <el-card class="box-card" shadow="hover">
                         <div>
                             <el-divider content-position="left"><span style="font-weight: 700">报备信息</span></el-divider>
                         </div>
@@ -170,7 +170,7 @@
                 </el-form>
             </template>
 
-            <el-card class="box-card">
+            <el-card class="box-card" shadow="hover">
                 <div>
                     <el-divider content-position="left"><span style="font-weight: 700">历史报备</span></el-divider>
                 </div>
@@ -292,7 +292,7 @@
                     </el-table-column>
                 </el-table>
                 <div slot="footer" class="dialog-footer">
-                    <el-button @click="dialogTableVisible = false" type="primary">继续新增</el-button>
+                    <el-button @click="dialogTableVisible = false" type="primary"  v-if="isContinueAuth=='true'">继续新增</el-button>
                 </div>
             </el-dialog>
         </el-main>

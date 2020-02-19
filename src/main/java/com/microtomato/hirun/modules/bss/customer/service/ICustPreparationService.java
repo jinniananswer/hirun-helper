@@ -5,6 +5,7 @@ import com.microtomato.hirun.modules.bss.customer.entity.po.CustPreparation;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -54,4 +55,10 @@ public interface ICustPreparationService extends IService<CustPreparation> {
      * @param mobileNo
      */
     void checkCustomerRules(String mobileNo);
+
+    /**
+     * 获取客户编码和校验权限
+     * @return
+     */
+    Map<String,String> getCustomerNoAndSec();
 }

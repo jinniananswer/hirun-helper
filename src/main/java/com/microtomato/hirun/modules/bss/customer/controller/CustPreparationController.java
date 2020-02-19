@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import com.microtomato.hirun.modules.bss.customer.service.ICustPreparationService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -52,5 +53,11 @@ public class CustPreparationController {
     public List<CustPreparationDTO> queryFailPreparation(String mobileNo,Long custId,Long houseId){
         log.debug(mobileNo);
         return custPreparationServiceImpl.queryCustPreparaton(mobileNo,custId,"3",houseId,"1");
+    }
+
+    @GetMapping("/getCustomerNoAndSec")
+    @RestResult
+    public Map<String,String> getCustomerNoAndSec(){
+        return custPreparationServiceImpl.getCustomerNoAndSec();
     }
 }
