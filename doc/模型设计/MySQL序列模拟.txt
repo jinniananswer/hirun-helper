@@ -1,0 +1,32 @@
+-- 创建序列表
+DROP TABLE IF EXISTS sequence;
+CREATE TABLE sequence
+(
+    name          VARCHAR(50) NOT NULL,
+    initial_value INT NOT NULL DEFAULT 1,
+    cur_value     BIGINT unsigned NOT NULL,
+    max_value     BIGINT unsigned NOT NULL,
+    increment     INT NOT NULL DEFAULT 1,
+    PRIMARY KEY (name)
+)
+ENGINE=InnoDB;
+
+-- 创建对应函数
+DROP FUNCTION IF EXISTS nextval;
+DELIMITER $$
+CREATE FUNCTION nextval(seq_name char (50)) returns BIGINT
+BEGIN
+ SELECT cur_value, max_value, initial_value INTO @cur_value, @max_value, @initial_value FROM sequence WHERE name = seq_name;
+ if(@cur_value >= @max_value) then
+     UPDATE sequence SET cur_value = @initial_value WHERE name = seq_name;
+ end if;
+ UPDATE sequence SET cur_value = last_insert_id(cur_value + increment) WHERE name = seq_name;
+ RETURN last_insert_id();
+END $$
+DELIMITER ;
+
+-- 插入测试数据
+INSERT INTO sequence VALUES ('SEQ_CUST_ID', 0, 1, 20, 1);
+
+-- 序列测试验证
+select nextval('SEQ_CUST_ID');
