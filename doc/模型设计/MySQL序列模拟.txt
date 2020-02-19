@@ -47,3 +47,6 @@ INSERT INTO sequence VALUES ('SEQ_ID_MINUTE_CYCLE', 0, 0, 2000, 1, 'minute_cycle
 select nextval('SEQ_ID_MAX_CYCLE');
 select nextval('SEQ_ID_DAY_CYCLE');
 select nextval('SEQ_ID_MINUTE_CYCLE');
+
+grant execute on sys.* to sys;
+grant execute on ins.* to ins;
