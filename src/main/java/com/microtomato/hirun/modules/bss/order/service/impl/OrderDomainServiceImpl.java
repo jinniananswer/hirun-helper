@@ -1,5 +1,8 @@
 package com.microtomato.hirun.modules.bss.order.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.security.Role;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
@@ -11,7 +14,6 @@ import com.microtomato.hirun.modules.bss.config.service.IOrderRoleCfgService;
 import com.microtomato.hirun.modules.bss.config.service.IOrderStatusCfgService;
 import com.microtomato.hirun.modules.bss.config.service.IOrderStatusTransCfgService;
 import com.microtomato.hirun.modules.bss.config.service.IRoleAttentionStatusCfgService;
-import com.microtomato.hirun.modules.bss.house.entity.po.Houses;
 import com.microtomato.hirun.modules.bss.house.service.IHousesService;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.*;
@@ -87,9 +89,8 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
         Long housesId = orderBase.getHousesId();
         if (housesId != null) {
             //查询楼盘信息
-            Houses house = housesService.queryHouse(housesId);
-            if (house != null) {
-                orderInfo.setHousesName(house.getName());
+            if (housesId != null) {
+                orderInfo.setHousesName(this.housesService.queryHouseName(housesId));
             }
         }
 
@@ -283,5 +284,36 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
         }
 
         return tasks;
+    }
+
+    /**
+     * 分页查询客户订单信息
+     * @return
+     */
+    @Override
+    public IPage<CustOrderInfoDTO> queryCustOrderInfos(CustOrderQueryDTO queryCondition, Page<CustOrderQueryDTO> page) {
+        QueryWrapper<CustOrderQueryDTO> queryWrapper = new QueryWrapper<>();
+        queryWrapper.like(StringUtils.isNotEmpty(queryCondition.getCustName()), "b.cust_name", queryCondition.getCustName());
+        queryWrapper.eq(StringUtils.isNotEmpty(queryCondition.getSex()), "b.sex", queryCondition.getSex());
+        queryWrapper.likeRight(StringUtils.isNotEmpty(queryCondition.getMobileNo()), "b.mobile_no", queryCondition.getMobileNo());
+        queryWrapper.eq(StringUtils.isNotEmpty(queryCondition.getOrderStatus()), "a.status", queryCondition.getOrderStatus());
+        queryWrapper.eq(queryCondition.getHousesId() != null, "a.housesId", queryCondition.getHousesId());
+        IPage<CustOrderInfoDTO> result = this.orderBaseMapper.queryCustOrderInfo(page, queryWrapper);
+
+        List<CustOrderInfoDTO> custOrders = result.getRecords();
+        if (ArrayUtils.isNotEmpty(custOrders)) {
+            for (CustOrderInfoDTO custOrder : custOrders) {
+                custOrder.setStageName(this.staticDataService.getCodeName("ORDER_STAGE", custOrder.getStage()));
+                custOrder.setSexName(this.staticDataService.getCodeName("SEX", custOrder.getSex()));
+                custOrder.setStatusName(this.staticDataService.getCodeName("ORDER_STATUS", custOrder.getStatus()));
+                custOrder.setHouseLayoutName(this.staticDataService.getCodeName("HOUSE_LAYOUT", custOrder.getHouseLayout()));
+                Long housesId = custOrder.getHousesId();
+                if (housesId != null) {
+                    custOrder.setHousesName(this.housesService.queryHouseName(housesId));
+
+                }
+            }
+        }
+        return result;
     }
 }

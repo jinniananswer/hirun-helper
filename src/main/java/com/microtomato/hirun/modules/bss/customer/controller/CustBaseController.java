@@ -1,7 +1,7 @@
 package com.microtomato.hirun.modules.bss.customer.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.microtomato.hirun.framework.annotation.RestResult;
-import com.microtomato.hirun.modules.bss.customer.entity.dto.CustConsultDTO;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.CustInfoDTO;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.CustQueryCondDTO;
 import com.microtomato.hirun.modules.bss.customer.service.ICustBaseService;
@@ -37,27 +37,16 @@ public class CustBaseController {
 
     @GetMapping("/queryCustomerInfo")
     @RestResult
-    public List<CustInfoDTO> queryCustomerInfo(CustQueryCondDTO custQueryCond){
+    public IPage<CustInfoDTO> queryCustomerInfo(CustQueryCondDTO custQueryCond){
         log.debug(custQueryCond.toString());
         return custBaseServiceImpl.queryCustomerInfo(custQueryCond);
     }
 
-    @PostMapping("/submitMeasure")
+    @GetMapping("/queryCustomerInfoByMobile")
     @RestResult
-    public void submitMeasure(CustConsultDTO dto) {
-        custBaseServiceImpl.submitMeasure(dto);
+    public List<CustInfoDTO> queryCustomerInfoByMobile(String mobileNo){
+        return custBaseServiceImpl.queryCustomerInfoByMobile(mobileNo);
     }
 
-    @PostMapping("/saveCustomerConsultInfo")
-    @RestResult
-    public void saveCustomerConsultInfo(CustConsultDTO dto) {
-        custBaseServiceImpl.saveCustomerConsultInfo(dto);
-    }
-
-    @PostMapping("/submitSneak")
-    @RestResult
-    public void submitSneak(CustConsultDTO dto) {
-        custBaseServiceImpl.submitSneak(dto);
-    }
 
 }

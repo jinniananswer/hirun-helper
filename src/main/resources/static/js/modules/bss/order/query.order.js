@@ -1,37 +1,37 @@
-require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util'], function(Vue, element, axios, ajax, vueselect, util) {
+require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'house-select'], function(Vue, element, axios, ajax, vueselect, util, houseSelect) {
     let vm = new Vue({
         el: '#app',
         data: function() {
             return {
-                custQueryCond: {
-                    name: '',
+                queryCond: {
+                    custName: '',
                     sex: '',
-                    wechatNicName: '',
-                    mobileNo: ''
+                    mobileNo: '',
+                    housesId: null,
+                    orderStatus: '',
+                    limit: 20,
+                    page: 1,
+                    count: null
                 },
 
                 custOrder: [],
 
                 display:'display:block',
-
-                defaultSex: '2',
-
-                id: util.getRequest('id'),
-
-                createDate: util.getNowDate()
             }
         },
 
         methods: {
             onSubmit: function() {
-                ajax.get('api/organization/employee/searchEmployee', {searchText:'金'}, function(responseData){
-                    vm.custOrder = responseData;
+                let that = this;
+                ajax.get('api/bss.order/order-domain/queryCustOrderInfo', this.queryCond, function(responseData){
+                    that.custOrder = responseData.records;
+                    that.queryCond.page = responseData.current;
+                    that.queryCond.count = responseData.total;
                 });
             },
 
-            changeSex: function(newVal) {
-                alert(newVal);
-                alert(this.defaultSex);
+            toOrderDetail(orderId, custId) {
+                util.openPage('openUrl?url=modules/bss/order/cust_order_detail&orderId='+orderId+'&custId='+custId, '订单详情');
             }
         }
     });

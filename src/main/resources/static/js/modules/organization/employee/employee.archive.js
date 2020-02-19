@@ -29,9 +29,9 @@ layui.extend({
             }
             layui.select.init('isSocialSecurity', 'YES_NO', '1', false);
             layui.select.init('socialSecurityStatus', 'SOCIAL_SECURITY_STATUS', '1', true);
-            layui.select.init('firstEducationLevel', 'EDUCATION_LEVEL', '1', false);
-            layui.select.init('educationLevel', 'EDUCATION_LEVEL', '1', false);
-            layui.select.init('schoolType', 'SCHOOL_TYPE', '1', false);
+            layui.select.init('firstEducationLevel', 'EDUCATION_LEVEL',null, true);
+            layui.select.init('educationLevel', 'EDUCATION_LEVEL', null, true);
+            layui.select.init('schoolType', 'SCHOOL_TYPE', null, true);
             layui.select.init('contactManRelType', 'KEYMAN_REL_TYPE', '6', false);
             layui.select.init('jobGrade', 'JOB_GRADE', null, true);
 
@@ -317,6 +317,18 @@ layui.extend({
             if (educationLevel != null) {
                 $("#educationLevel").val(educationLevel);
                 form.render('select', 'educationLevel');
+            }
+
+            let schoolType = employee.schoolType;
+            if (schoolType != null) {
+                $("#schoolType").val(schoolType);
+                form.render('select', 'schoolType');
+            }
+
+            let firstEducationLevel = employee.firstEducationLevel;
+            if (firstEducationLevel != null) {
+                $("#firstEducationLevel").val(firstEducationLevel);
+                form.render('select', 'firstEducationLevel');
             }
 
             let employeeJobRole = employee.employeeJobRole;

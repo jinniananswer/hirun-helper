@@ -40,7 +40,7 @@ public interface CustPreparationMapper extends BaseMapper<CustPreparation> {
             " and a.mobile_no=#{mobileNo}\n")
     List<CustPreparationDTO> loadPreparationHistory(String mobileNo);
 
-    @Select("select a.cust_id,a.cust_name,a.mobile_no,b.prepare_employee_id,b.prepare_time,b.cust_property,b.status,b.preparation_expire_time," +
+    @Select("select  b.id, a.cust_id,a.cust_name,a.mobile_no,b.prepare_employee_id,b.prepare_time,b.cust_property,b.status,b.preparation_expire_time," +
             " b.ruling_employee_id,b.ruling_time,b.ruling_remark,b.referee_name,b.referee_mobile_no,b.referee_fix_place, " +
             " b.enter_employee_id,b.enter_time" +
             " from cust_base a left join cust_preparation b on (a.cust_id=b.cust_id) " +
@@ -48,9 +48,9 @@ public interface CustPreparationMapper extends BaseMapper<CustPreparation> {
     )
     List<CustPreparationDTO> queryCustomerPreparation(@Param(Constants.WRAPPER) Wrapper wrapper);
 
-    @Select("select a.cust_id,a.cust_name,a.mobile_no,b.prepare_employee_id,b.prepare_time" +
-            " from cust_base a , cust_preparation b " +
-            " where a.cust_id=b.cust_id" +
+    @Select("select a.cust_id,a.cust_name,a.mobile_no,b.prepare_employee_id,b.prepare_time,c.house_mode,c.house_id,c.house_building,c.house_room_no" +
+            " from cust_base a , cust_preparation b , ins_project c" +
+            " where a.cust_id=b.cust_id and a.cust_id=c.party_id" +
             " and a.mobile_no=#{mobileNo}" +
             " and b.prepare_time > #{limitTime}"
     )

@@ -63,6 +63,8 @@ public class CustInfoDTO {
 
     private String custType;
 
+    private String custTypeName;
+
     private Long prepareEmployeeId;
 
     private String prepareEmployeeName;
@@ -86,4 +88,28 @@ public class CustInfoDTO {
     private String rulingRemark;
 
     private LocalDateTime consultTime;
+
+    private Long prepareId;
+
+    private Long houseId;
+
+    private String houseMode;
+
+    private String houseModeName;
+
+    private String houseArea;
+
+    private String houseBuilding;
+
+    private String houseRoomNo;
+
+    private Long enterEmployeeId;
+
+    private String enterEmployeeName;
+
+    private Boolean isContinueAuth;
+
+    private LocalDateTime enterTime;
+
+    private String houseAddress;
 }

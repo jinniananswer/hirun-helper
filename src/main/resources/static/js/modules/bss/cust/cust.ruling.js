@@ -1,20 +1,23 @@
-require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info'], function (Vue, element, axios, ajax, vueselect, util,custInfo) {
+require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info','order-search-employee','order-selectemployee'], function (Vue, element, axios, ajax, vueselect, util,custInfo,orderSearchEmployee,orderSelectEmployee) {
     let vm = new Vue({
         el: '#customer_ruling',
         data: function () {
             return {
-                employeeOptions: [],
                 customerRuling: {
                     prepareOrgId: '',
                     prepareEmployeeId: '',
+                    prepareEmployeeName:'',
                     enterEmployeeId: '',
                     mobileNo: util.getRequest('mobileNo'),
                     rulingRemark: '',
                     rulingEmployeeId: '',
                     custId: util.getRequest('custId'),
+                    id:''
                 },
                 preparationFailRecord: [],
                 display: 'display:block',
+                enterDisabled:true,
+                checked: null,
                 rules: {
                     rulingEmployeeId: [
                         {required: true, message: '请填写裁定主管', trigger: 'blur'}
@@ -25,18 +28,14 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info'], fu
                     prepareEmployeeId: [
                         {required: true, message: '请选择申报人', trigger: 'change'}
                     ],
+                    rulingRemark: [
+                        {required: true, message: '请填写主管备注', trigger: 'blur'}
+                    ],
                 }
             }
         },
 
         methods: {
-            loadEmployee: function () {
-                axios.get('api/organization/employee/loadEmployee').then(function (responseData) {
-                    vm.employeeOptions = responseData.data.rows;
-                }).catch(function (error) {
-                    console.log(error);
-                });
-            },
 
             queryFailPreparation: function () {
                 axios.get('api/customer/cust-preparation/queryFailPreparation?mobileNo=' + this.customerRuling.mobileNo+'&custId='+this.customerRuling.custId)
@@ -55,9 +54,20 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info'], fu
                 })
             },
 
+            getTemplateRow(index, row) {
+                let that = this;
+
+                that.customerRuling.id = row.id;
+                that.customerRuling.prepareEmployeeId=row.prepareEmployeeId;
+                that.customerRuling.prepareEmployeeName=row.prepareEmployeeName;
+            },
+
+        },
+
+        mounted () {
+            this.queryFailPreparation();
         }
     });
-    vm.loadEmployee();
-    vm.queryFailPreparation();
+
     return vm;
 })

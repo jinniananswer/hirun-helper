@@ -16,13 +16,20 @@ import com.microtomato.hirun.modules.bss.config.service.IPrepareConfigService;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.CustPreparationDTO;
 import com.microtomato.hirun.modules.bss.customer.entity.po.CustBase;
 import com.microtomato.hirun.modules.bss.customer.entity.po.CustPreparation;
+import com.microtomato.hirun.modules.bss.customer.entity.po.Project;
+import com.microtomato.hirun.modules.bss.customer.entity.po.ProjectIntention;
 import com.microtomato.hirun.modules.bss.customer.mapper.CustPreparationMapper;
 import com.microtomato.hirun.modules.bss.customer.service.ICustBaseService;
 import com.microtomato.hirun.modules.bss.customer.service.ICustPreparationService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.modules.bss.customer.service.IProjectIntentionService;
+import com.microtomato.hirun.modules.bss.customer.service.IProjectService;
 import com.microtomato.hirun.modules.bss.house.entity.po.HousesPlan;
 import com.microtomato.hirun.modules.bss.house.service.IHousesPlanService;
 import com.microtomato.hirun.modules.bss.house.service.IHousesService;
+import com.microtomato.hirun.modules.bss.order.entity.dto.NewOrderDTO;
+import com.microtomato.hirun.modules.bss.order.entity.po.OrderBase;
+import com.microtomato.hirun.modules.bss.order.service.IOrderDomainService;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
 import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
@@ -75,24 +82,50 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
     @Autowired
     private IHousesPlanService housesPlanService;
 
+    @Autowired
+    private IProjectService projectService;
+
+    @Autowired
+    private IProjectIntentionService intentionService;
+
+    @Autowired
+    private IOrderDomainService domainService;
+
+
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void addCustomerPreparation(CustPreparationDTO dto) {
         UserContext userContext = WebContextUtils.getUserContext();
         //校验报备的规则
-        this.checkRules(dto);
-        //当客户存在报备信息时，联系文员可以直接做报备信息保存，否则客户存在多次，需判断客户之前的报备信息是否失效，如果失效则客户选择继续报备
+        this.checkCustomerRules(dto.getMobileNo());
+        this.checkPrepareOrgRules(dto);
+        //todo 当客户存在报备信息时，联系文员可以直接做报备信息保存，否则客户存在多次，需判断客户之前的报备信息是否失效，如果失效则客户选择继续报备
 
-        //客户未做过报备，但是在客户表存在过数据，可以联系有权限的人员进行报备信息录入
-        //houseId不一样判定报备失败
+        //todo 客户未做过报备，但是在客户表存在过数据，可以联系有权限的人员进行报备信息录入
+
+        //todo 先录客户信息，再报备，可以报备成功，且可以关联成功，但是报备状态不修改
+
+        //todo 客户先报备，上门咨询，报备失败，再次报备，需文员或者主管新增客户，且无法下拉框客户
+
+        //todo  报备成功的客户，再来报备只能做继续保存操作
 
         CustBase custBase = new CustBase();
         CustPreparation preparation = new CustPreparation();
+        Project project=new Project();
+        ProjectIntention projectIntention=new ProjectIntention();
         BeanUtils.copyProperties(dto, preparation);
         BeanUtils.copyProperties(dto, custBase);
-        //保存customer信息
+        BeanUtils.copyProperties(dto, project);
+
+        //保存customer信息,用作测试将状态设置成0，实际应该将状态设置成报备状态
         custBase.setCustStatus(0);
         baseService.save(custBase);
+        //保存project信息
+        project.setPartyId(custBase.getCustId());
+        projectService.save(project);
+        //保存客户意向
+        projectIntention.setProjectId(project.getProjectId());
+        intentionService.save(projectIntention);
         //保存报备信息
         if (preparation.getPrepareOrgId() == null) {
             EmployeeJobRole employeeJobRole = jobRoleService.queryValidMain(preparation.getPrepareEmployeeId());
@@ -104,7 +137,18 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
         preparation.setEnterTime(LocalDateTime.now());
         preparation.setPreparationExpireTime(TimeUtils.addTime(dto.getPrepareTime(), ChronoUnit.DAYS, 5));
         this.preparationMapper.insert(preparation);
-
+        //回填customer表的prepareId
+        baseService.update(new UpdateWrapper<CustBase>().lambda().eq(CustBase::getCustId,custBase.getCustId()).set(CustBase::getPrepareId,preparation.getId()));
+        //生成订单信息
+        NewOrderDTO orderBase=new NewOrderDTO();
+        orderBase.setCustId(custBase.getCustId());
+        orderBase.setHousesId(preparation.getHouseId());
+        orderBase.setHouseLayout(dto.getHouseMode());
+        orderBase.setFloorage(dto.getHouseArea());
+        orderBase.setType("0");
+        orderBase.setStatus("1");
+        orderBase.setDecorateAddress(dto.getHouseBuilding()+dto.getHouseRoomNo());
+        domainService.createNewOrder(orderBase);
     }
 
     @Override
@@ -132,9 +176,17 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
         BeanUtils.copyProperties(custPreparation, addPreparation);
         //设置之前的报备信息失败
         updatePreparation.setStatus(3);
-        this.baseMapper.update(updatePreparation, new UpdateWrapper<CustPreparation>().lambda()
-                .eq(CustPreparation::getCustId, custPreparation.getCustId()).eq(CustPreparation::getStatus, 1));
+        if(custPreparation.getId()!=null){
+            updatePreparation.setId(custPreparation.getId());
+            this.baseMapper.updateById(updatePreparation);
+        }
+/*        this.baseMapper.update(updatePreparation, new UpdateWrapper<CustPreparation>().lambda()
+                .eq(CustPreparation::getCustId, custPreparation.getCustId()).eq(CustPreparation::getStatus, 1));*/
         //新增主管裁定记录，设置客户属性为主管报备
+        if(custPreparation.getPrepareOrgId()==null){
+            EmployeeJobRole employeeJobRole=jobRoleService.queryValidMain(custPreparation.getPrepareEmployeeId());
+            addPreparation.setPrepareOrgId(employeeJobRole.getOrgId());
+        }
         addPreparation.setCustProperty("6");
         addPreparation.setPrepareEmployeeId(userContext.getEmployeeId());
         addPreparation.setPrepareTime(LocalDateTime.now());
@@ -165,11 +217,14 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
             dto.setPrepareEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getPrepareEmployeeId()));
             dto.setEnterEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getEnterEmployeeId()));
             dto.setCustPropertyName(staticDataService.getCodeName("CUSTOMER_PROPERTY", dto.getCustProperty()));
+            dto.setHouseModeName(staticDataService.getCodeName("HOUSE_MODE",dto.getHouseMode()));
+            dto.setHouseAddress(housesService.queryHouseName(dto.getHouseId())+dto.getHouseBuilding()+dto.getHouseRoomNo());
         }
         return list;
     }
 
-    private void checkRules(CustPreparationDTO dto) {
+    @Override
+    public void checkPrepareOrgRules(CustPreparationDTO dto) {
         PrepareConfig prepareConfig = configService.queryValid();
 
         if (prepareConfig == null) {
@@ -179,24 +234,11 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
         EmployeeJobRole employeeJobRole = jobRoleService.queryValidMain(dto.getPrepareEmployeeId());
         String prepareOrgId = "";
         if (dto.getPrepareOrgId() == null) {
-            prepareOrgId = "," + 57 + ",";
+            prepareOrgId = "," + employeeJobRole.getOrgId() + ",";
         } else {
             prepareOrgId = "," + dto.getPrepareOrgId() + ",";
         }
 
-        //客户申报状态为有效期内，不允许办理报备
-        List<CustPreparationDTO> list = this.queryCustPreparaton(dto.getMobileNo(), null, "1", dto.getHouseId(), "2");
-        if (ArrayUtils.isNotEmpty(list)) {
-            throw new AlreadyExistException(" 该客户有效期内存在有效的报备！", ErrorKind.ALREADY_EXIST.getCode());
-        }
-        //限制报备客户周期范围的报备次数limitCycle限制周期limitTimes限制次数
-        Integer limitTimes = prepareConfig.getLimitCustPrepareTimes();
-        Integer limitCycle = prepareConfig.getLimitCustPrepareCycle();
-        LocalDateTime limitTime = TimeUtils.addTime(LocalDateTime.now(), ChronoUnit.DAYS, -limitCycle);
-        List<CustPreparationDTO> existList = this.preparationMapper.queryPrepareByTime(dto.getMobileNo(), limitTime);
-        if (existList.size() >= limitTimes) {
-            throw new AlreadyExistException(" 该客户在" + limitCycle + "天内已超过限制报备次数" + limitTimes + "不允许报备！", ErrorKind.ALREADY_EXIST.getCode());
-        }
         //限制部门报备次数
         if (!StringUtils.isEmpty(prepareConfig.getLimitPrepareOrgId())) {
             String limitOrgId = "," + prepareConfig.getLimitPrepareOrgId() + ",";
@@ -224,5 +266,29 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
             }
         }
     }
+
+    @Override
+    public void checkCustomerRules(String mobileNo) {
+
+        //客户申报状态为有效期内，不允许办理报备
+        List<CustPreparationDTO> list = this.queryCustPreparaton(mobileNo, null, "1", null, "2");
+        if (ArrayUtils.isNotEmpty(list)) {
+            throw new AlreadyExistException(" 该客户有效期内存在有效的报备！", ErrorKind.ALREADY_EXIST.getCode());
+        }
+
+        PrepareConfig prepareConfig = configService.queryValid();
+        if (prepareConfig == null) {
+            return;
+        }
+        //限制报备客户周期范围的报备次数limitCycle限制周期limitTimes限制次数
+        Integer limitTimes = prepareConfig.getLimitCustPrepareTimes();
+        Integer limitCycle = prepareConfig.getLimitCustPrepareCycle();
+        LocalDateTime limitTime = TimeUtils.addTime(LocalDateTime.now(), ChronoUnit.DAYS, -limitCycle);
+        List<CustPreparationDTO> existList = this.preparationMapper.queryPrepareByTime(mobileNo, limitTime);
+        if (existList.size() >= limitTimes) {
+            throw new AlreadyExistException(" 该客户在" + limitCycle + "天内已超过限制报备次数" + limitTimes + "不允许报备！", ErrorKind.ALREADY_EXIST.getCode());
+        }
+    }
+
 
 }

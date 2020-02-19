@@ -15,14 +15,14 @@
             <el-row :gutter="12">
                 <el-col :span="6">
                     <div class="grid-content bg-purple">
-                        <cust-info cust-id="263"></cust-info>
+                        <cust-info :cust-id="custId"></cust-info>
 
-                        <order-worker order-id="1"></order-worker>
+                        <order-worker :order-id="orderId"></order-worker>
                     </div>
                 </el-col>
                 <el-col :span="18">
                     <div class="grid-content bg-purple-light">
-                        <order-info order-id="1"></order-info>
+                        <order-info :order-id="orderId"></order-info>
                         <el-card class="box-card">
                             <div slot="header">
                                 <span>操作区</span>
@@ -31,7 +31,7 @@
                                 <el-row>
                                     <el-col :span="8">
                                         <el-form-item label="客户姓名">
-                                            <order-search-employee :employee-id.sync="employeeId" :employee-name.sync="employeeName"></order-search-employee>
+                                            <order-search-employee :employee-id.sync="eid" :employee-name.sync="employeeName"></order-search-employee>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="8">

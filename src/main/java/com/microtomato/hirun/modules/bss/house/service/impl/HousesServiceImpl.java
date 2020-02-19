@@ -34,7 +34,7 @@ public class HousesServiceImpl extends ServiceImpl<HousesMapper, Houses> impleme
      * @return
      */
     @Override
-    public Houses queryHouse(Long houseId) {
+    public Houses getHouse(Long houseId) {
         Houses house = this.getById(houseId);
         return house;
     }

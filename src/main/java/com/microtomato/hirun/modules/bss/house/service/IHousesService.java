@@ -14,5 +14,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface IHousesService extends IService<Houses> {
     String queryHouseName(Long houseId);
 
-    Houses queryHouse(Long houseId);
+    Houses getHouse(Long houseId);
 }
