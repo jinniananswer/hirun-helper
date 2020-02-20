@@ -1,30 +1,27 @@
 package com.microtomato.hirun.modules.bss.order.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.WebContextUtils;
-import com.microtomato.hirun.modules.system.service.IFeeItemCfgService;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFee;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPaymoney;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderFeeMapper;
 import com.microtomato.hirun.modules.bss.order.service.IOrderFeeService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.modules.bss.order.service.IOrderPaymoneyService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
+import com.microtomato.hirun.modules.system.service.IFeeItemCfgService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -63,8 +60,8 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
         BeanUtils.copyProperties(dto, orderFee);
         //保存orderFee信息--插入设计费大类信息
         System.out.println("fee========="+dto.getCollectedFee().toString());
-        orderFee.setFee(dto.getCollectedFee());
-        orderFee.setActFee(dto.getCollectedFee());
+        //orderFee.setFee(dto.getCollectedFee());
+        //orderFee.setActFee(dto.getCollectedFee());
         orderFee.setFeeItemId((long) 1);
         orderFee.setParentFeeItemId((long) -1);
         this.addOrderFee(orderFee);
@@ -73,8 +70,8 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
         //保存orderFeeNew信息--插入设计费小类信息
         OrderFee orderFeeNew = new OrderFee();
         BeanUtils.copyProperties(dto, orderFeeNew);
-        orderFeeNew.setFee(dto.getCollectedFee());
-        orderFeeNew.setActFee(dto.getCollectedFee());
+       // orderFeeNew.setFee(dto.getCollectedFee());
+       // orderFeeNew.setActFee(dto.getCollectedFee());
         orderFeeNew.setParentFeeItemId((long) 1);
         this.addOrderFee(orderFeeNew);
 
@@ -88,12 +85,12 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
         OrderFee orderFee = new OrderFee();
         BeanUtils.copyProperties(dto, orderFee);
         //保存orderFee信息--插入工程大类信息
-        orderFee.setActFee(dto.getCollectedFee());
-        orderFee.setFee(dto.getCollectedFee());
+        //orderFee.setActFee(dto.getCollectedFee());
+        //orderFee.setFee(dto.getCollectedFee());
         orderFee.setFeeItemId((long) 2);
         orderFee.setParentFeeItemId((long) -1);
         orderFee.setRemark(dto.getRemark());
-        orderFee.setPeriod(1);//首期工程款
+        //orderFee.setPeriod(1);//首期工程款
         this.addOrderFee(orderFee);
         //处理收费类型数据
         this.addOrderPaymoney(dto,orderFee.getId());
@@ -115,8 +112,8 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
         UserContext userContext = WebContextUtils.getUserContext();
         UpdateWrapper<OrderFee> updateWrapper=new UpdateWrapper<>();
         OrderFee orderFeeUpdate = new OrderFee();
-        orderFeeUpdate.setFee(orderFee.getFee());
-        orderFeeUpdate.setActFee(orderFee.getActFee());
+        //orderFeeUpdate.setFee(orderFee.getFee());
+        //orderFeeUpdate.setActFee(orderFee.getActFee());
         orderFeeUpdate.setUpdateTime(LocalDateTime.now());
         orderFeeUpdate.setUpdateUserId(userContext.getEmployeeId());
         updateWrapper.eq("order_id",orderFee.getOrderId());
@@ -273,8 +270,8 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
         BeanUtils.copyProperties(dto, orderFee);
         orderFee.setOrderId((long)7);//测试
         //设计费可以一起更新，后续多条细项的需要区分更新
-        orderFee.setActFee(dto.getCollectedFee());
-        orderFee.setFee(dto.getCollectedFee());
+        //orderFee.setActFee(dto.getCollectedFee());
+        //orderFee.setFee(dto.getCollectedFee());
         this.updateOrderFee(orderFee);
 
         OrderPaymoney OrderPaymoney = new OrderPaymoney();

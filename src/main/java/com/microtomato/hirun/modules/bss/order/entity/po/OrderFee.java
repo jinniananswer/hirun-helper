@@ -49,50 +49,32 @@ public class OrderFee extends BaseEntity {
     /**
      * 期数
      */
-    @TableField("period")
-    private Integer period;
+    @TableField("periods")
+    private Integer periods;
 
     /**
-     * 收费方向 1-收费 2-退费
+     * 合同总金额
      */
-    @TableField("direction")
-    private String direction;
+    @TableField("contract_fee")
+    private Long contractFee;
 
     /**
-     * 销售价
+     * 应收比例
      */
-    @TableField("sale_price")
-    private Integer salePrice;
+    @TableField("rate")
+    private Integer rate;
 
     /**
-     * 退费类型，见静态参数BACK_TYPE
+     * 应收金额
      */
-    @TableField("back_type")
-    private String backType;
+    @TableField("need_pay")
+    private Long needPay;
 
     /**
-     * 返还费用，折扣，减免等
+     * 实收金额
      */
-    @TableField("back_fee")
-    private Integer backFee;
-
-    /**
-     * 折扣比例
-     */
-    @TableField("discount_rate")
-    private Integer discountRate;
-
-    /**
-     * 应收费用
-     */
-    @TableField("fee")
-    private Integer fee;
-
-    /**
-     * 实收费用
-     */
-    @TableField("act_fee")
-    private Integer actFee;
+    @TableField("pay")
+    private Long pay;
 
     /**
      * 本次处理费用的员工ID
