@@ -366,6 +366,9 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
         if (StringUtils.isNotEmpty(time)) {
             year = time.split("-")[0];
             month = time.split("-")[1];
+            if(month.contains("0")){
+                month=month.substring(1,2);
+            }
         } else {
             Calendar date = Calendar.getInstance();
             year = String.valueOf(date.get(Calendar.YEAR));
@@ -441,6 +444,9 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
         if (StringUtils.isNotEmpty(time)) {
             year = time.split("-")[0];
             month = time.split("-")[1];
+            if(month.contains("0")){
+                month=month.substring(1,2);
+            }
         } else {
             Calendar date = Calendar.getInstance();
             year = String.valueOf(date.get(Calendar.YEAR));
