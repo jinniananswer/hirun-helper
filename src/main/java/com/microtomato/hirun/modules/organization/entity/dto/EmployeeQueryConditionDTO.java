@@ -75,4 +75,10 @@ public class EmployeeQueryConditionDTO implements Serializable {
 
     private String orgLine;
 
+    private String isRegular;
+
+    private LocalDate regularDateStart;
+
+    private LocalDate regularDateEnd;
+
 }

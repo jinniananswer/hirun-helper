@@ -16,6 +16,7 @@ layui.extend({
             layui.select.init('isBlackList', 'YES_NO', '', true);
             layui.select.init('jobRole', 'JOB_ROLE', null, true);
             layui.select.init('jobRoleNature', 'JOB_NATURE', null, true);
+            layui.select.init('isRegular', 'YES_NO', '', true);
 
             laydate.render({
                 elem: '#inDateEnd',
@@ -33,6 +34,13 @@ layui.extend({
                 elem: '#destroyDateEnd',
             });
 
+            laydate.render({
+                elem: '#regularDateStart',
+            });
+
+            laydate.render({
+                elem: '#regularDateEnd',
+            });
             var ins = table.render({
                 elem: "#employee_table",
                 height: 550,
@@ -57,6 +65,11 @@ layui.extend({
                             align: 'center',
                             templet: '#templetArchive'
                         },
+                        {field: 'mobileNo', title: '电话号码', width: 150, align: 'center'},
+                        {field: 'orgPath', title: '部门', width: 300, align: 'center'},
+                        {field: 'jobRoleName', title: '岗位', width: 150, align: 'center', sort: true},
+                        {field: 'jobRoleNatureName', title: '岗位性质', width: 150, align: 'center', sort: true},
+                        {field: 'discountRate', title: '折算比例', width: 150, align: 'center', sort: true},
                         {
                             field: 'sex', title: '性别', width: 80, sort: true, align: 'center', templet: function (d) {
                                 if (d.sex == 1) {
@@ -68,7 +81,6 @@ layui.extend({
                         },
                         {field: 'typeName', title: '员工类型', width: 120, align: 'center', sort: true},
                         {field: 'identityNo', title: '身份证号码', width: 200, align: 'center'},
-                        {field: 'mobileNo', title: '电话号码', width: 150, align: 'center'},
                         {field: 'age', title: '年龄', width: 80, align: 'center', sort: true},
                         {
                             field: 'inDate',
@@ -83,11 +95,7 @@ layui.extend({
                             }
                         },
                         {field: 'companyAge', title: '司龄', width: 80, sort: true, align: 'center'},
-                        {field: 'jobRoleName', title: '岗位', width: 150, align: 'center'},
-                        {field: 'jobRoleNatureName', title: '岗位性质', width: 150, align: 'center'},
-                        {field: 'discountRate', title: '折算比例', width: 150, align: 'center'},
                         {field: 'parentEmployeeName', title: '上级', width: 100, align: 'center'},
-                        {field: 'orgPath', title: '部门', width: 100, align: 'center'},
                         {field: 'jobAge', title: '工作年限', width: 120, sort: true, align: 'center'},
                         {
                             field: 'status',
@@ -141,6 +149,9 @@ layui.extend({
                         destroyDateEnd: $('#destroyDateEnd').val(),
                         companyAgeStart: $('#companyAgeStart').val(),
                         companyAgeEnd: $('#companyAgeEnd').val(),
+                        regularDateStart: $('#regularDateStart').val(),
+                        regularDateEnd: $('#regularDateEnd').val(),
+                        isRegular: $("#isRegular").val(),
                     }
                 })
             });
@@ -281,7 +292,7 @@ layui.extend({
                 '&jobRole=' + $("select[name='jobRole']").val() + '&jobRoleNature=' + $("select[name='jobRoleNature']").val() + '&discountRate=' + $("select[name='discountRate']").val() +
                 '&jobYearStart=' + $("input[name='jobYearStart']").val() + '&jobYearEnd=' + $("input[name='jobYearEnd']").val() + '&ageStart=' + $("input[name='ageStart']").val() + '&ageEnd=' + $("input[name='ageEnd']").val() +
                 '&companyAgeStart=' + $("input[name='companyAgeStart']").val() + '&companyAgeEnd=' + $("input[name='companyAgeEnd']").val() + '&inDateStart=' + $("input[name='inDateStart']").val() + '&inDateEnd=' + $("input[name='inDateEnd']").val() +
-                '&destroyDateStart=' + $("input[name='destroyDateStart']").val() + '&destroyDateEnd=' + $("input[name='destroyDateEnd']").val();
+                '&destroyDateStart=' + $("input[name='destroyDateStart']").val() + '&destroyDateEnd=' + $("input[name='destroyDateEnd']").val()+'&isRegular='+$("#isRegular").val()+"&regularDateStart="+$("input[name='regularDateStart']").val()+"&regularDateEnd="+$("input[name='regularDateEnd']").val();
 
             window.location.href = "api/organization/employee/queryEmployeeList4Export" + param;
         },

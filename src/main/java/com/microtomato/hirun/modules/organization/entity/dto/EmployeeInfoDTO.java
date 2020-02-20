@@ -32,12 +32,24 @@ public class EmployeeInfoDTO implements Serializable {
     private String name;
 
     @ColumnWidth(20)
-    @ExcelProperty("员工类型")
-    private String typeName;
-
-    @ColumnWidth(20)
     @ExcelProperty("员工电话")
     private String mobileNo;
+
+    @ColumnWidth(20)
+    @ExcelProperty("岗位")
+    private String jobRoleName;
+
+    @ColumnWidth(20)
+    @ExcelProperty("岗位性质")
+    private String jobRoleNatureName;
+
+    @ColumnWidth(20)
+    @ExcelProperty("业务折算比例")
+    private String discountRate;
+
+    @ColumnWidth(20)
+    @ExcelProperty("员工类型")
+    private String typeName;
 
     @ColumnWidth(20)
     @ExcelProperty("员工证件")
@@ -117,10 +129,6 @@ public class EmployeeInfoDTO implements Serializable {
     @ExcelIgnore
     private String jobRole;
 
-    @ColumnWidth(20)
-    @ExcelProperty("岗位")
-    private String jobRoleName;
-
     @ExcelIgnore
     private Long parentEmployeeId;
 
@@ -130,14 +138,6 @@ public class EmployeeInfoDTO implements Serializable {
 
     @ExcelIgnore
     private String jobRoleNature;
-
-    @ColumnWidth(20)
-    @ExcelProperty("岗位性质")
-    private String jobRoleNatureName;
-
-    @ColumnWidth(20)
-    @ExcelProperty("业务折算比例")
-    private String discountRate;
 
     @ExcelIgnore
     private String isMain;

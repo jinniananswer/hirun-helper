@@ -223,9 +223,20 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         queryWrapper.ge(StringUtils.isNotEmpty(conditionDTO.getCompanyAgeStart()), "x.company_age", conditionDTO.getCompanyAgeStart());
         queryWrapper.le(StringUtils.isNotEmpty(conditionDTO.getCompanyAgeEnd()), "x.company_age", conditionDTO.getCompanyAgeEnd());
 
+        //新增查询条件是否转正以及转正时间判断
+        if (StringUtils.equals(conditionDTO.getIsRegular(), EmployeeConst.YES)) {
+            queryWrapper.apply("a.regular_date<now()");
+        }
+
+        if (StringUtils.equals(conditionDTO.getIsRegular(), EmployeeConst.NO)) {
+            queryWrapper.apply("a.regular_date > now()");
+        }
+
+        queryWrapper.ge(conditionDTO.getRegularDateStart() != null, "a.regular_date", conditionDTO.getRegularDateStart());
+        queryWrapper.le(conditionDTO.getRegularDateEnd() != null, "a.regular_date", conditionDTO.getRegularDateEnd());
+
         queryWrapper.apply(StringUtils.isNotBlank(conditionDTO.getEmployeeIds()), "a.employee_id in (" + conditionDTO.getEmployeeIds() + ")");
 
-        queryWrapper.orderByAsc("a.employee_id");
         //如果为查询调动信息的情况不判断现归属部门
         if (!StringUtils.equals(conditionDTO.getOtherStatus(), EmployeeConst.EMPLOYEE_BORROW_STATUS) &&
                 !StringUtils.equals(conditionDTO.getOtherStatus(), EmployeeConst.EMPLOYEE_TRANS_STATUS)) {
@@ -264,6 +275,9 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         if (StringUtils.equals(conditionDTO.getIsBlackList(), EmployeeConst.NO)) {
             queryWrapper.notExists("select * from ins_employee_blacklist ieb where a.identity_no=ieb.identity_no  and (now() between ieb.start_time and ieb.end_time)");
         }
+
+        queryWrapper.orderByAsc("c.nature,c.org_id,a.employee_id,a.status");
+
         return queryWrapper;
     }
 
