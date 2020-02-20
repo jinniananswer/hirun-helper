@@ -7,6 +7,8 @@ import com.microtomato.hirun.framework.exception.cases.AlreadyExistException;
 import com.microtomato.hirun.framework.exception.cases.NotFoundException;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
+import com.microtomato.hirun.framework.mybatis.sequence.impl.CustNoMaxCycleSeq;
+import com.microtomato.hirun.framework.mybatis.service.IDualService;
 import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.SecurityUtils;
@@ -94,6 +96,9 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
     @Autowired
     private IOrderDomainService domainService;
 
+    @Autowired
+    private IDualService dualService;
+
 
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
@@ -111,47 +116,54 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
         //todo 客户先报备，上门咨询，报备失败，再次报备，需文员或者主管新增客户，且无法下拉框客户
 
         //todo  报备成功的客户，再来报备只能做继续保存操作
-
-        CustBase custBase = new CustBase();
         CustPreparation preparation = new CustPreparation();
-        Project project=new Project();
-        ProjectIntention projectIntention=new ProjectIntention();
         BeanUtils.copyProperties(dto, preparation);
-        BeanUtils.copyProperties(dto, custBase);
-        BeanUtils.copyProperties(dto, project);
-
-        //保存customer信息,用作测试将状态设置成0，实际应该将状态设置成报备状态
-        custBase.setCustStatus(0);
-        baseService.save(custBase);
-        //保存project信息
-        project.setPartyId(custBase.getCustId());
-        projectService.save(project);
-        //保存客户意向
-        projectIntention.setProjectId(project.getProjectId());
-        intentionService.save(projectIntention);
-        //保存报备信息
-        if (preparation.getPrepareOrgId() == null) {
-            EmployeeJobRole employeeJobRole = jobRoleService.queryValidMain(preparation.getPrepareEmployeeId());
-            preparation.setPrepareOrgId(employeeJobRole.getOrgId());
-        }
-        preparation.setCustId(custBase.getCustId());
         preparation.setStatus(1);
         preparation.setEnterEmployeeId(userContext.getEmployeeId());
         preparation.setEnterTime(LocalDateTime.now());
         preparation.setPreparationExpireTime(TimeUtils.addTime(dto.getPrepareTime(), ChronoUnit.DAYS, 5));
-        this.preparationMapper.insert(preparation);
-        //回填customer表的prepareId
-        baseService.update(new UpdateWrapper<CustBase>().lambda().eq(CustBase::getCustId,custBase.getCustId()).set(CustBase::getPrepareId,preparation.getId()));
-        //生成订单信息
-        NewOrderDTO orderBase=new NewOrderDTO();
-        orderBase.setCustId(custBase.getCustId());
-        orderBase.setHousesId(preparation.getHouseId());
-        orderBase.setHouseLayout(dto.getHouseMode());
-        orderBase.setFloorage(dto.getHouseArea());
-        orderBase.setType("0");
-        orderBase.setStatus("1");
-        orderBase.setDecorateAddress(dto.getHouseBuilding()+dto.getHouseRoomNo());
-        domainService.createNewOrder(orderBase);
+
+        if (dto.getCustId() != null) {
+            preparation.setCustId(dto.getCustId());
+            this.preparationMapper.insert(preparation);
+            baseService.update(new UpdateWrapper<CustBase>().lambda().eq(CustBase::getCustId, dto.getCustId()).set(CustBase::getPrepareId, preparation.getId()));
+        } else {
+            CustBase custBase = new CustBase();
+            Project project = new Project();
+            ProjectIntention projectIntention = new ProjectIntention();
+            BeanUtils.copyProperties(dto, custBase);
+            BeanUtils.copyProperties(dto, project);
+
+            //保存customer信息,用作测试将状态设置成0，实际应该将状态设置成报备状态
+            custBase.setCustStatus(0);
+            baseService.save(custBase);
+            //保存project信息
+            project.setPartyId(custBase.getCustId());
+            projectService.save(project);
+            //保存客户意向
+            projectIntention.setProjectId(project.getProjectId());
+            intentionService.save(projectIntention);
+            //保存报备信息
+            if (preparation.getPrepareOrgId() == null) {
+                EmployeeJobRole employeeJobRole = jobRoleService.queryValidMain(preparation.getPrepareEmployeeId());
+                preparation.setPrepareOrgId(employeeJobRole.getOrgId());
+            }
+
+            preparation.setCustId(custBase.getCustId());
+            this.preparationMapper.insert(preparation);
+            //回填customer表的prepareId
+            baseService.update(new UpdateWrapper<CustBase>().lambda().eq(CustBase::getCustId, custBase.getCustId()).set(CustBase::getPrepareId, preparation.getId()));
+            //生成订单信息
+            NewOrderDTO orderBase = new NewOrderDTO();
+            orderBase.setCustId(custBase.getCustId());
+            orderBase.setHousesId(preparation.getHouseId());
+            orderBase.setHouseLayout(dto.getHouseMode());
+            orderBase.setFloorage(dto.getHouseArea());
+            orderBase.setType("0");
+            orderBase.setStatus("1");
+            orderBase.setDecorateAddress(dto.getHouseBuilding() + dto.getHouseRoomNo());
+            domainService.createNewOrder(orderBase);
+        }
     }
 
     @Override
@@ -179,15 +191,15 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
         BeanUtils.copyProperties(custPreparation, addPreparation);
         //设置之前的报备信息失败
         updatePreparation.setStatus(3);
-        if(custPreparation.getId()!=null){
+        if (custPreparation.getId() != null) {
             updatePreparation.setId(custPreparation.getId());
             this.baseMapper.updateById(updatePreparation);
         }
 /*        this.baseMapper.update(updatePreparation, new UpdateWrapper<CustPreparation>().lambda()
                 .eq(CustPreparation::getCustId, custPreparation.getCustId()).eq(CustPreparation::getStatus, 1));*/
         //新增主管裁定记录，设置客户属性为主管报备
-        if(custPreparation.getPrepareOrgId()==null){
-            EmployeeJobRole employeeJobRole=jobRoleService.queryValidMain(custPreparation.getPrepareEmployeeId());
+        if (custPreparation.getPrepareOrgId() == null) {
+            EmployeeJobRole employeeJobRole = jobRoleService.queryValidMain(custPreparation.getPrepareEmployeeId());
             addPreparation.setPrepareOrgId(employeeJobRole.getOrgId());
         }
         addPreparation.setCustProperty("6");
@@ -220,8 +232,8 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
             dto.setPrepareEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getPrepareEmployeeId()));
             dto.setEnterEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getEnterEmployeeId()));
             dto.setCustPropertyName(staticDataService.getCodeName("CUSTOMER_PROPERTY", dto.getCustProperty()));
-            dto.setHouseModeName(staticDataService.getCodeName("HOUSE_MODE",dto.getHouseMode()));
-            dto.setHouseAddress(housesService.queryHouseName(dto.getHouseId())+dto.getHouseBuilding()+dto.getHouseRoomNo());
+            dto.setHouseModeName(staticDataService.getCodeName("HOUSE_MODE", dto.getHouseMode()));
+            dto.setHouseAddress(housesService.queryHouseName(dto.getHouseId()) + dto.getHouseBuilding() + dto.getHouseRoomNo());
         }
         return list;
     }
@@ -261,9 +273,9 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
         String limitConsultOrgId = "," + prepareConfig.getLimitOrgId() + ",";
         //限制家装顾问只允许报备责任楼盘则进判断
         if (prepareConfig.getIsLimitConsult().equals(1)) {
-            if(limitConsultOrgId.indexOf(prepareOrgId)!=-1){
-                HousesPlan housesPlan=housesPlanService.queryHousesPlan(dto.getHouseId(),dto.getPrepareEmployeeId());
-                if(housesPlan==null){
+            if (limitConsultOrgId.indexOf(prepareOrgId) != -1) {
+                HousesPlan housesPlan = housesPlanService.queryHousesPlan(dto.getHouseId(), dto.getPrepareEmployeeId());
+                if (housesPlan == null) {
                     throw new NotFoundException("报备员工只能报备责任楼盘！", ErrorKind.NOT_FOUND.getCode());
                 }
             }
@@ -295,9 +307,10 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
 
     @Override
     public Map<String, String> getCustomerNoAndSec() {
-        Map<String,String> map=new HashMap<>();
-        map.put("isContinueAuth",SecurityUtils.hasFuncId("")+"");
-        map.put("custNo","KH20190219001");
+        Map<String, String> map = new HashMap<>();
+        map.put("isContinueAuth", SecurityUtils.hasFuncId("") + "");
+        Long seq = dualService.nextval(CustNoMaxCycleSeq.class);
+        map.put("custNo", "KH" + seq);
         return map;
     }
 

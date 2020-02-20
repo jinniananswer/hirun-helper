@@ -35,7 +35,6 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'house-select',
                 mobileReadonly:false,
                 custNameReadonly:false,
                 houseModeReadonly:false,
-                custReadonly:false,
                 isContinueAuth:'',
                 display: 'display:block',
 
@@ -142,9 +141,13 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'house-select',
                 this.customerPreparation.houseArea = row.houseArea;
                 this.customerPreparation.houseBuilding = row.houseBuilding;
                 this.customerPreparation.houseRoomNo = row.houseRoomNo;
+                this.customerPreparation.custNo=row.custNo;
                 this.dialogTableVisible = false;
-                this.custReadonly=true;
                 this.mobileReadonly=true;
+                this.custNameReadonly=true;
+                this.houseModeReadonly=true;
+
+
                 this.customerPreparation.custId=row.custId;
             },
         },
