@@ -143,64 +143,64 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
         System.out.println("ICBC3301=========="+ICBC3301);
         System.out.println("ICBCInstallment=========="+ICBCInstallment);
         System.out.println("ABCInstallment=========="+ABCInstallment);
-        OrderPaymoney.setFeeEmployeeId(userContext.getEmployeeId());
+        OrderPaymoney.setPayEmployeeId(userContext.getEmployeeId());
         OrderPaymoney.setCreateUserId(userContext.getEmployeeId());
         OrderPaymoney.setCreateTime(LocalDateTime.now());
         //处理现金收费方式
         if (StringUtils.isNotBlank(cash)) {
-            OrderPaymoney.setFeeId(id);
-            OrderPaymoney.setPaymentType((long) 1);
-            OrderPaymoney.setFee(Integer.parseInt(cash));
+            //OrderPaymoney.setFeeId(id);
+            OrderPaymoney.setPaymentType("");
+            OrderPaymoney.setMoney(Long.parseLong(cash));
             paymoneyServiceService.save(OrderPaymoney);
         }
         //处理兴业刷卡收费方式
         if (StringUtils.isNotBlank(industrialBankCard)) {
-            OrderPaymoney.setFeeId(id);
-            OrderPaymoney.setPaymentType((long) 2);
-            OrderPaymoney.setFee(Integer.parseInt(industrialBankCard));
+            //OrderPaymoney.setFeeId(id);
+            OrderPaymoney.setPaymentType("2");
+            OrderPaymoney.setMoney(Long.parseLong(industrialBankCard));
             paymoneyServiceService.save(OrderPaymoney);
         }
         //处理浦发刷卡收费方式
         if (StringUtils.isNotBlank(pudongDevelopmentBankCard)) {
-            OrderPaymoney.setFeeId(id);
-            OrderPaymoney.setPaymentType((long) 3);
-            OrderPaymoney.setFee(Integer.parseInt(pudongDevelopmentBankCard));
+            //OrderPaymoney.setFeeId(id);
+            OrderPaymoney.setPaymentType("3");
+            OrderPaymoney.setMoney(Long.parseLong(pudongDevelopmentBankCard));
             paymoneyServiceService.save(OrderPaymoney);
         }
         //处理建行基本户收费方式
         if (StringUtils.isNotBlank(constructionBankBasic)) {
-            OrderPaymoney.setFeeId(id);
-            OrderPaymoney.setPaymentType((long) 4);
-            OrderPaymoney.setFee(Integer.parseInt(constructionBankBasic));
+            //OrderPaymoney.setFeeId(id);
+            OrderPaymoney.setPaymentType("4");
+            OrderPaymoney.setMoney(Long.parseLong(constructionBankBasic));
             paymoneyServiceService.save(OrderPaymoney);
         }
         //处理建行3797收费方式
         if (StringUtils.isNotBlank(constructionBank3797)) {
-            OrderPaymoney.setFeeId(id);
-            OrderPaymoney.setPaymentType((long) 5);
-            OrderPaymoney.setFee(Integer.parseInt(constructionBank3797));
+//            OrderPaymoney.setFeeId(id);
+            OrderPaymoney.setPaymentType("5");
+            OrderPaymoney.setMoney(Long.parseLong(constructionBank3797));
             paymoneyServiceService.save(OrderPaymoney);
 
         }
         //处理工行3301收费方式
         if (StringUtils.isNotBlank(ICBC3301)) {
-            OrderPaymoney.setFeeId(id);
-            OrderPaymoney.setPaymentType((long) 6);
-            OrderPaymoney.setFee(Integer.parseInt(ICBC3301));
+            //OrderPaymoney.setFeeId(id);
+            OrderPaymoney.setPaymentType("6");
+            OrderPaymoney.setMoney(Long.parseLong(ICBC3301));
             paymoneyServiceService.save(OrderPaymoney);
         }
         //处理工行分期收费方式
         if (StringUtils.isNotBlank(ICBCInstallment)) {
-            OrderPaymoney.setFeeId(id);
-            OrderPaymoney.setPaymentType((long) 7);
-            OrderPaymoney.setFee(Integer.parseInt(ICBCInstallment));
+            //OrderPaymoney.setFeeId(id);
+            OrderPaymoney.setPaymentType("7");
+            OrderPaymoney.setMoney(Long.parseLong(ICBCInstallment));
             paymoneyServiceService.save(OrderPaymoney);
         }
         //处理农行分期收费方式
         if (StringUtils.isNotBlank(ABCInstallment)) {
-            OrderPaymoney.setFeeId(id);
-            OrderPaymoney.setPaymentType((long) 8);
-            OrderPaymoney.setFee(Integer.parseInt(ABCInstallment));
+//            OrderPaymoney.setFeeId(id);
+            OrderPaymoney.setPaymentType("8");
+            OrderPaymoney.setMoney(Long.parseLong(ABCInstallment));
             paymoneyServiceService.save(OrderPaymoney);
         }
 
