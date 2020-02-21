@@ -36,12 +36,6 @@ public class RoleAttentionStatusCfg extends BaseEntity {
     private Long roleId;
 
     /**
-     * 类型：H-家装订单 W-木制品订单
-     */
-    @TableField("type")
-    private String type;
-
-    /**
      * 关注的订单状态
      */
     @TableField("attention_status_id")

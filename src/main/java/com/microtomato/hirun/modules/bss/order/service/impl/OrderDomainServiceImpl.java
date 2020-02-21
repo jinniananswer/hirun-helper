@@ -155,7 +155,11 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
             order.setStatus(OrderConst.ORDER_STATUS_ASKING);
         }
 
-        OrderStatusCfg orderStatusCfg = this.orderStatusCfgService.getCfgByStatus(order.getStatus());
+        if (StringUtils.isBlank(newOrder.getType())) {
+            order.setType(OrderConst.ORDER_TYPE_PRE);
+        }
+
+        OrderStatusCfg orderStatusCfg = this.orderStatusCfgService.getCfgByTypeStatus(order.getType(), order.getStatus());
 
         if (orderStatusCfg != null) {
             order.setStage(orderStatusCfg.getOrderStage());
@@ -185,7 +189,8 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
     public void orderStatusTrans(OrderBase order, String oper) {
         Integer stage = order.getStage();
         String status = order.getStatus();
-        OrderStatusCfg statusCfg = this.orderStatusCfgService.getCfgByStatus(status);
+        String orderType = order.getType();
+        OrderStatusCfg statusCfg = this.orderStatusCfgService.getCfgByTypeStatus(orderType, status);
         OrderStatusTransCfg statusTransCfg = null;
         if (StringUtils.equals(OrderConst.OPER_RUN, oper)) {
             statusTransCfg = this.orderStatusTransCfgService.getByStatusIdOper(-1L, oper);

@@ -14,7 +14,7 @@ public class NewOrderDTO {
     private Long custId;
 
     /**
-     * 0-预订单 1-转入咨询阶段后的正式订单
+     * H-家装订单 W-木制品订单 P-预订单
      */
     private String type;
 
