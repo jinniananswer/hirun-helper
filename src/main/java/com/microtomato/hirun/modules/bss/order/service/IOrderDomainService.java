@@ -28,4 +28,6 @@ public interface IOrderDomainService {
     List<PendingTaskDTO> queryPendingTask();
 
     IPage<CustOrderInfoDTO> queryCustOrderInfos(CustOrderQueryDTO queryCondition, Page<CustOrderQueryDTO> page);
+
+    List<PaymentDTO> queryPayment();
 }

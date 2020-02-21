@@ -24,6 +24,7 @@ import com.microtomato.hirun.modules.bss.order.service.IOrderBaseService;
 import com.microtomato.hirun.modules.bss.order.service.IOrderDomainService;
 import com.microtomato.hirun.modules.bss.order.service.IOrderOperLogService;
 import com.microtomato.hirun.modules.bss.order.service.IOrderWorkerService;
+import com.microtomato.hirun.modules.system.entity.po.StaticData;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -320,5 +321,27 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
             }
         }
         return result;
+    }
+
+    /**
+     * 获取支付方式
+     * @return
+     */
+    @Override
+    public List<PaymentDTO> queryPayment() {
+        List<PaymentDTO> payments = new ArrayList<>();
+
+        List<StaticData> configs = this.staticDataService.getStaticDatas("PAYMENT_TYPE");
+        if (ArrayUtils.isEmpty(configs)) {
+            return payments;
+        }
+
+        for (StaticData config : configs) {
+            PaymentDTO payment = new PaymentDTO();
+            payment.setPaymentType(config.getCodeValue());
+            payment.setPaymentName(config.getCodeName());
+            payments.add(payment);
+        }
+        return payments;
     }
 }
