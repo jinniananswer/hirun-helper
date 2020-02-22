@@ -18,6 +18,7 @@ require.config({
         'util': 'static/js/framework/extend/util',
         'cust-info': 'static/js/modules/bss/component/cust.info',
         'order-info': 'static/js/modules/bss/component/order.info',
+        'order-payment': 'static/js/modules/bss/component/order.payment',
         'order-worker': 'static/js/modules/bss/component/order.worker',
         'order-selectemployee': 'static/js/modules/bss/component/order.selectemployee',
         'cust-visit': 'static/js/modules/bss/component/cust.visit',

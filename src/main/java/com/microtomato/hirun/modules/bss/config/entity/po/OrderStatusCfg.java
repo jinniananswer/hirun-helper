@@ -30,7 +30,7 @@ public class OrderStatusCfg extends BaseEntity {
     private Long id;
 
     /**
-     * 类型 H-家装订单 W-木制品订单
+     * 类型 H-家装订单 W-木制品订单 P-预订单
      */
     @TableField("type")
     private String type;

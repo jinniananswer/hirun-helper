@@ -1,4 +1,4 @@
-require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'order-info', 'order-worker', 'order-selectemployee','cust-visit','order-search-employee'], function(Vue, element, axios, ajax, vueselect, util, custInfo, orderInfo, orderWorker, orderSelectEmployee,custVisit,orderSearchEmployee) {
+require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'order-info', 'order-worker', 'order-selectemployee','cust-visit','order-search-employee', 'order-payment'], function(Vue, element, axios, ajax, vueselect, util, custInfo, orderInfo, orderWorker, orderSelectEmployee,custVisit,orderSearchEmployee,payment) {
     let vm = new Vue({
         el: '#app',
         data: function() {
@@ -85,15 +85,17 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     }
                 ],
 
-                avatarUrl: 'static/img/male.jpg'
+                avatarUrl: 'static/img/male.jpg',
+
+                pays: []
             }
         },
 
         methods: {
             submit : function() {
-                alert(this.eid);
-                alert(this.employeeName);
-                this.sexDisable = true;
+                this.pays = this.$refs.paymethods.payments;
+                alert(JSON.stringify(this.pays));
+                alert(JSON.stringify(this.$refs.paymethods2.payments));
             }
         }
     });

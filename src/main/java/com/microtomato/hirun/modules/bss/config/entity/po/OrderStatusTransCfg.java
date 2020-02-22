@@ -30,12 +30,6 @@ public class OrderStatusTransCfg extends BaseEntity {
     private Long id;
 
     /**
-     * 类型 H-家装订单 W-木制品订单
-     */
-    @TableField("type")
-    private String type;
-
-    /**
      * 订单阶段状态ID,-1表示任意状态
      */
     @TableField("order_status_id")
