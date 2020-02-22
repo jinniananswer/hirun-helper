@@ -727,6 +727,9 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
                         shopMap.put("busi_employee_entry_" + resultRecord.get("month"), resultRecord.get("busi_employee_entry_quantity"));
                     } else {
                         float shopCount = Float.parseFloat(shopMap.get("busi_employee_entry_" + resultRecord.get("month")));
+                        if(resultRecord.get("busi_employee_entry_quantity")==null){
+                            resultRecord.put("busi_employee_entry_quantity","0.0");
+                        }
                         float recordCount = Float.parseFloat(resultRecord.get("busi_employee_entry_quantity"));
                         shopMap.put("busi_employee_entry_" + resultRecord.get("month"), shopCount + recordCount + "");
                     }
@@ -735,6 +738,9 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
                         shopMap.put("busi_employee_destroy_" + resultRecord.get("month"), resultRecord.get("busi_employee_destroy_quantity"));
                     } else {
                         float shopCount = Float.parseFloat(shopMap.get("busi_employee_destroy_" + resultRecord.get("month")));
+                        if(resultRecord.get("busi_employee_destroy_quantity")==null){
+                            resultRecord.put("busi_employee_destroy_quantity","0.0");
+                        }
                         float recordCount = Float.parseFloat(resultRecord.get("busi_employee_destroy_quantity"));
                         shopMap.put("busi_employee_destroy_" + resultRecord.get("month"), shopCount + recordCount + "");
                     }
