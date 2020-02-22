@@ -5,8 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.microtomato.hirun.framework.exception.ErrorKind;
 import com.microtomato.hirun.framework.exception.cases.AlreadyExistException;
 import com.microtomato.hirun.framework.exception.cases.NotFoundException;
-import com.microtomato.hirun.framework.mybatis.DataSourceKey;
-import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 import com.microtomato.hirun.framework.mybatis.sequence.impl.CustNoMaxCycleSeq;
 import com.microtomato.hirun.framework.mybatis.service.IDualService;
 import com.microtomato.hirun.framework.security.UserContext;
@@ -100,6 +98,7 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
     private IDualService dualService;
 
 
+
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void addCustomerPreparation(CustPreparationDTO dto) {
@@ -107,25 +106,24 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
         //校验报备的规则
         this.checkCustomerRules(dto.getMobileNo());
         this.checkPrepareOrgRules(dto);
-        //todo 当客户存在报备信息时，联系文员可以直接做报备信息保存，否则客户存在多次，需判断客户之前的报备信息是否失效，如果失效则客户选择继续报备
-
-        //todo 客户未做过报备，但是在客户表存在过数据，可以联系有权限的人员进行报备信息录入
-
-        //todo 先录客户信息，再报备，可以报备成功，且可以关联成功，但是报备状态不修改
-
-        //todo 客户先报备，上门咨询，报备失败，再次报备，需文员或者主管新增客户，且无法下拉框客户
-
-        //todo  报备成功的客户，再来报备只能做继续保存操作
         CustPreparation preparation = new CustPreparation();
         BeanUtils.copyProperties(dto, preparation);
-        preparation.setStatus(1);
+        preparation.setStatus(0);
         preparation.setEnterEmployeeId(userContext.getEmployeeId());
         preparation.setEnterTime(LocalDateTime.now());
         preparation.setPreparationExpireTime(TimeUtils.addTime(dto.getPrepareTime(), ChronoUnit.DAYS, 5));
+        preparation.setRefereeInfo(dto.getRefereeName()+":"+dto.getRefereeMobileNo()+":"+dto.getRefereeFixPlace());
+
+        if (preparation.getPrepareOrgId() == null) {
+            EmployeeJobRole employeeJobRole = jobRoleService.queryValidMain(preparation.getPrepareEmployeeId());
+            preparation.setPrepareOrgId(employeeJobRole.getOrgId());
+        }
 
         if (dto.getCustId() != null) {
             preparation.setCustId(dto.getCustId());
             this.preparationMapper.insert(preparation);
+            this.preparationMapper.update(null,new UpdateWrapper<CustPreparation>().lambda().eq(CustPreparation::getId,dto.getPrepareId())
+                    .set(CustPreparation::getStatus,"2"));
             baseService.update(new UpdateWrapper<CustBase>().lambda().eq(CustBase::getCustId, dto.getCustId()).set(CustBase::getPrepareId, preparation.getId()));
         } else {
             CustBase custBase = new CustBase();
@@ -144,10 +142,6 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
             projectIntention.setProjectId(project.getProjectId());
             intentionService.save(projectIntention);
             //保存报备信息
-            if (preparation.getPrepareOrgId() == null) {
-                EmployeeJobRole employeeJobRole = jobRoleService.queryValidMain(preparation.getPrepareEmployeeId());
-                preparation.setPrepareOrgId(employeeJobRole.getOrgId());
-            }
 
             preparation.setCustId(custBase.getCustId());
             this.preparationMapper.insert(preparation);
@@ -176,7 +170,7 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
             dto.setPrepareEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getPrepareEmployeeId()));
             dto.setEnterEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getEnterEmployeeId()));
             dto.setHouseAddress(housesService.queryHouseName(dto.getHouseId()));
-            dto.setPreparationStatusName(staticDataService.getCodeName("PREPARATION_STATUS", dto.getStatus() + ""));
+            dto.setPreparationStatusName(staticDataService.getCodeName("PREPARATION_STATUS", dto.getPrepareStatus() + ""));
         }
         return list;
     }
@@ -187,29 +181,59 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
         UserContext userContext = WebContextUtils.getUserContext();
         CustPreparation addPreparation = new CustPreparation();
         CustPreparation updatePreparation = new CustPreparation();
-
+        Long prepareOrgId=null;
         BeanUtils.copyProperties(custPreparation, addPreparation);
-        //设置之前的报备信息失败
-        updatePreparation.setStatus(3);
-        if (custPreparation.getId() != null) {
-            updatePreparation.setId(custPreparation.getId());
-            this.baseMapper.updateById(updatePreparation);
-        }
-/*        this.baseMapper.update(updatePreparation, new UpdateWrapper<CustPreparation>().lambda()
-                .eq(CustPreparation::getCustId, custPreparation.getCustId()).eq(CustPreparation::getStatus, 1));*/
-        //新增主管裁定记录，设置客户属性为主管报备
+
         if (custPreparation.getPrepareOrgId() == null) {
             EmployeeJobRole employeeJobRole = jobRoleService.queryValidMain(custPreparation.getPrepareEmployeeId());
-            addPreparation.setPrepareOrgId(employeeJobRole.getOrgId());
+            prepareOrgId=employeeJobRole.getOrgId();
+        }else {
+            prepareOrgId=custPreparation.getPrepareOrgId();
         }
-        addPreparation.setCustProperty("6");
-        addPreparation.setPrepareEmployeeId(userContext.getEmployeeId());
-        addPreparation.setPrepareTime(LocalDateTime.now());
-        addPreparation.setEnterTime(LocalDateTime.now());
-        addPreparation.setEnterEmployeeId(userContext.getEmployeeId());
-        addPreparation.setRulingTime(LocalDateTime.now());
-        addPreparation.setStatus(2);
-        this.baseMapper.insert(addPreparation);
+
+        //如果点的为系统自动补录,设置客户属性为主管报备
+        if(custPreparation.getIsAddNewPrepareFlag()){
+            addPreparation.setPrepareOrgId(prepareOrgId);
+            addPreparation.setCustProperty("6");
+            addPreparation.setPrepareTime(LocalDateTime.now());
+            addPreparation.setEnterTime(LocalDateTime.now());
+            addPreparation.setEnterEmployeeId(userContext.getEmployeeId());
+            addPreparation.setRulingTime(LocalDateTime.now());
+            addPreparation.setStatus(2);
+            this.baseMapper.insert(addPreparation);
+            //获取客户原来的prepareId,根据该id将之前的报备信息改成报备失败,然后回填cust表的prepareId为新的报备id
+            CustBase custBase=baseService.getById(custPreparation.getCustId());
+            if(custBase.getPrepareId()!=null){
+                updatePreparation.setStatus(1);
+                updatePreparation.setId(custBase.getPrepareId());
+                this.baseMapper.updateById(updatePreparation);
+            }
+
+            this.baseService.update(new UpdateWrapper<CustBase>().lambda()
+                    .eq(CustBase::getCustId,custPreparation.getCustId()).set(CustBase::getPrepareId,addPreparation.getId()));
+        }else{
+            //如果选择为裁定，则更新选择的报备信息
+            BeanUtils.copyProperties(custPreparation, updatePreparation);
+            updatePreparation.setPrepareOrgId(prepareOrgId);
+            updatePreparation.setStatus(2);
+            updatePreparation.setRulingTime(LocalDateTime.now());
+            this.baseMapper.updateById(updatePreparation);
+
+            //防止原来的prepareId与选择的id不一致，多做一步更新cust对应的prepareId
+            CustBase custBase=baseService.getById(custPreparation.getCustId());
+            if(custBase.getPrepareId()!=null){
+                CustPreparation updateSource=new CustPreparation();
+                updateSource.setStatus(1);
+                updateSource.setId(custBase.getPrepareId());
+                this.baseMapper.updateById(updateSource);
+            }
+
+            this.baseService.update(new UpdateWrapper<CustBase>().lambda()
+                    .eq(CustBase::getCustId,custPreparation.getCustId()).set(CustBase::getPrepareId,custPreparation.getId()));
+        }
+
+
+
     }
 
     @Override
@@ -234,6 +258,8 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
             dto.setCustPropertyName(staticDataService.getCodeName("CUSTOMER_PROPERTY", dto.getCustProperty()));
             dto.setHouseModeName(staticDataService.getCodeName("HOUSE_MODE", dto.getHouseMode()));
             dto.setHouseAddress(housesService.queryHouseName(dto.getHouseId()) + dto.getHouseBuilding() + dto.getHouseRoomNo());
+            dto.setRulingEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getRulingEmployeeId()));
+            dto.setPreparationStatusName(staticDataService.getCodeName("PREPARATION_STATUS",dto.getPrepareStatus()+""));
         }
         return list;
     }
@@ -286,7 +312,7 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
     public void checkCustomerRules(String mobileNo) {
 
         //客户申报状态为有效期内，不允许办理报备
-        List<CustPreparationDTO> list = this.queryCustPreparaton(mobileNo, null, "1", null, "2");
+        List<CustPreparationDTO> list = this.queryCustPreparaton(mobileNo, null, "0", null, "2");
         if (ArrayUtils.isNotEmpty(list)) {
             throw new AlreadyExistException(" 该客户有效期内存在有效的报备！", ErrorKind.ALREADY_EXIST.getCode());
         }
@@ -308,10 +334,31 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
     @Override
     public Map<String, String> getCustomerNoAndSec() {
         Map<String, String> map = new HashMap<>();
+        //todo 未定义权限编码
         map.put("isContinueAuth", SecurityUtils.hasFuncId("") + "");
         Long seq = dualService.nextval(CustNoMaxCycleSeq.class);
         map.put("custNo", "KH" + seq);
         return map;
+    }
+
+    @Override
+    public List<CustPreparationDTO> queryPrepareByCustIdAndStatus(Long custId, String status) {
+        List<CustPreparationDTO> list = this.baseMapper.queryPrepareByCustIdAndStatus(custId,status);
+        if (ArrayUtils.isEmpty(list)) {
+            return list;
+        }
+        for (CustPreparationDTO dto : list) {
+            dto.setPrepareEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getPrepareEmployeeId()));
+            dto.setEnterEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getEnterEmployeeId()));
+            if(StringUtils.equals(dto.getCustProperty(),"6")){
+                dto.setCustPropertyName("主管补备");
+            }else{
+                dto.setCustPropertyName(staticDataService.getCodeName("CUSTOMER_PROPERTY", dto.getCustProperty()));
+            }
+            dto.setHouseModeName(staticDataService.getCodeName("HOUSE_MODE", dto.getHouseMode()));
+            dto.setHouseAddress(housesService.queryHouseName(dto.getHouseId()) + dto.getHouseBuilding() + dto.getHouseRoomNo());
+        }
+        return list;
     }
 
 

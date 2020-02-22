@@ -50,14 +50,21 @@ public class CustPreparationController {
 
     @GetMapping("/queryFailPreparation")
     @RestResult
-    public List<CustPreparationDTO> queryFailPreparation(String mobileNo,Long custId,Long houseId){
-        log.debug(mobileNo);
-        return custPreparationServiceImpl.queryCustPreparaton(mobileNo,custId,"3",houseId,"1");
+    public List<CustPreparationDTO> queryFailPreparation(Long custId){
+        log.debug(custId.toString());
+        return custPreparationServiceImpl.queryPrepareByCustIdAndStatus(custId,"1");
     }
 
     @GetMapping("/getCustomerNoAndSec")
     @RestResult
     public Map<String,String> getCustomerNoAndSec(){
         return custPreparationServiceImpl.getCustomerNoAndSec();
+    }
+
+    @GetMapping("/validIsNetOrg")
+    @RestResult
+    public Boolean validIsNetOrg(Long prepareEmployeeId){
+        log.debug(prepareEmployeeId.toString());
+        return false;
     }
 }

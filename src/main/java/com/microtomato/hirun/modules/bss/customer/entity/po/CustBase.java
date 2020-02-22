@@ -215,7 +215,7 @@ public class CustBase extends BaseEntity {
      * 报备ID
      */
     @TableField("prepare_id")
-    private LocalDateTime prepareId;
+    private Long prepareId;
 
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)
     private Long createUserId;
