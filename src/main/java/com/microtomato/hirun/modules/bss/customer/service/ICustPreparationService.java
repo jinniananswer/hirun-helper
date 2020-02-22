@@ -61,4 +61,13 @@ public interface ICustPreparationService extends IService<CustPreparation> {
      * @return
      */
     Map<String,String> getCustomerNoAndSec();
+
+    /**
+     * 根据custid和状态查询报备记录
+     * @param custId
+     * @param status
+     * @return
+     */
+    List<CustPreparationDTO> queryPrepareByCustIdAndStatus(Long custId,String status);
+
 }

@@ -1,4 +1,4 @@
-require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info','order-search-employee','order-selectemployee'], function (Vue, element, axios, ajax, vueselect, util,custInfo,orderSearchEmployee,orderSelectEmployee) {
+require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'order-search-employee', 'order-selectemployee'], function (Vue, element, axios, ajax, vueselect, util, custInfo, orderSearchEmployee, orderSelectEmployee) {
     let vm = new Vue({
         el: '#customer_ruling',
         data: function () {
@@ -6,17 +6,18 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info','ord
                 customerRuling: {
                     prepareOrgId: '',
                     prepareEmployeeId: '',
-                    prepareEmployeeName:'',
+                    prepareEmployeeName: '',
                     enterEmployeeId: '',
                     mobileNo: util.getRequest('mobileNo'),
                     rulingRemark: '',
                     rulingEmployeeId: '',
                     custId: util.getRequest('custId'),
-                    id:''
+                    id: '',
+                    isAddNewPrepareFlag: false
                 },
                 preparationFailRecord: [],
                 display: 'display:block',
-                enterDisabled:true,
+                enterDisabled: true,
                 checked: null,
                 rules: {
                     rulingEmployeeId: [
@@ -38,33 +39,49 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info','ord
         methods: {
 
             queryFailPreparation: function () {
-                axios.get('api/customer/cust-preparation/queryFailPreparation?mobileNo=' + this.customerRuling.mobileNo+'&custId='+this.customerRuling.custId)
+                axios.get('api/customer/cust-preparation/queryFailPreparation?custId=' + this.customerRuling.custId)
                     .then(function (responseData) {
-                    vm.preparationFailRecord = responseData.data.rows;
-                }).catch(function (error) {
+                        vm.preparationFailRecord = responseData.data.rows;
+                    }).catch(function (error) {
                     console.log(error);
                 });
             },
 
             submit(customerRuling) {
+                if (this.customerRuling.id == '') {
+                    this.$message({
+                        showClose: true,
+                        message: '请选择一条报备失败的记录进行裁定。',
+                        type: 'error'
+                    });
+                    return;
+                }
                 this.$refs.customerRuling.validate((valid) => {
                     if (valid) {
-                        ajax.post('api/customer/cust-preparation/customerRuling',this.customerRuling);
+                        ajax.post('api/customer/cust-preparation/customerRuling', this.customerRuling);
+                    }
+                })
+            },
+
+            addNewPrepare(customerRuling) {
+                this.customerRuling.isAddNewPrepareFlag = true;
+                this.$refs.customerRuling.validate((valid) => {
+                    if (valid) {
+                        ajax.post('api/customer/cust-preparation/customerRuling', this.customerRuling);
                     }
                 })
             },
 
             getTemplateRow(index, row) {
                 let that = this;
-
                 that.customerRuling.id = row.id;
-                that.customerRuling.prepareEmployeeId=row.prepareEmployeeId;
-                that.customerRuling.prepareEmployeeName=row.prepareEmployeeName;
+                that.customerRuling.prepareEmployeeId = row.prepareEmployeeId;
+                that.customerRuling.prepareEmployeeName = row.prepareEmployeeName;
             },
 
         },
 
-        mounted () {
+        mounted() {
             this.queryFailPreparation();
         }
     });

@@ -45,8 +45,8 @@
                             </el-col>
                         </el-row>
                         <el-form-item style="text-align: center ">
-                            <el-button type="primary" @click="submit">保存</el-button>
-                            <el-button>系统自动补入有效报备</el-button>
+                            <el-button type="primary" @click="submit">裁定</el-button>
+                            <el-button type="primary" @click="addNewPrepare">系统自动补入有效报备</el-button>
                         </el-form-item>
                     </el-card>
                 </el-form>
@@ -59,7 +59,10 @@
                 <template>
                     <el-table
                             :data="preparationFailRecord"
-                            style="width: 100%">
+                            style="width: 100%"
+                            border
+                            fit
+                            >
                         <el-table-column label="选择" fixed align="center" width="65">
                             <template scope="scope">
                                 <el-radio :label="scope.row" v-model="checked"
@@ -86,14 +89,16 @@
                                 width="180">
                         </el-table-column>
                         <el-table-column
-                                prop="refereeFixPlace"
+                                prop="refereeInfo"
                                 align="center"
-                                label="老客户施工地址">
+                                label="老客户施工地址"
+                                width="300">
                         </el-table-column>
                         <el-table-column
                                 prop="houseAddress"
                                 align="center"
-                                label="楼盘">
+                                label="楼盘"
+                                width="300">
                         </el-table-column>
                         <el-table-column
                                 prop="houseModeName"
@@ -108,7 +113,8 @@
                         <el-table-column
                                 prop="prepareTime"
                                 align="center"
-                                label="申报时间">
+                                label="申报时间"
+                                width="180">
                         </el-table-column>
                         <el-table-column
                                 prop="enterEmployeeName"

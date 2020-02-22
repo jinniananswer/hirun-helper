@@ -31,14 +31,14 @@ import java.util.List;
 @DataSource(DataSourceKey.INS)
 public interface CustBaseMapper extends BaseMapper<CustBase> {
 
-    @Select("select a.cust_id,a.cust_name,a.mobile_no,a.cust_status,a.consult_time,a.cust_type,b.prepare_employee_id,b.prepare_time,b.cust_property,b.status,b.preparation_expire_time," +
-            " b.ruling_employee_id,b.ruling_time,b.ruling_remark " +
-            " from cust_base a left join cust_preparation b on (a.cust_id=b.cust_id) " +
+    @Select("select a.cust_id,a.cust_name,a.mobile_no,a.cust_status,a.consult_time,a.cust_type,b.prepare_employee_id,b.prepare_time,b.cust_property,b.status as prepare_status,b.preparation_expire_time," +
+            " b.ruling_employee_id,b.ruling_time,b.ruling_remark,c.house_id,c.house_mode,c.house_building,c.house_room_no,c.house_area" +
+            " from cust_base a left join cust_preparation b on (a.prepare_id=b.id), ins_project c " +
             " ${ew.customSqlSegment}"
     )
     IPage<CustInfoDTO> queryCustomerInfo(Page<CustQueryCondDTO> page, @Param(Constants.WRAPPER) Wrapper wrapper);
 
-    @Select("select a.cust_id,a.cust_name,a.mobile_no,a.cust_status,a.consult_time,a.cust_type," +
+    @Select("select a.cust_id,a.cust_name,a.mobile_no,a.cust_status,a.consult_time,a.cust_type,a.cust_no," +
             " b.prepare_employee_id,b.prepare_time,b.cust_property,b.status,b.preparation_expire_time,b.status,a.prepare_id,c.house_mode,c.house_area, " +
             " b.ruling_employee_id,b.ruling_time,b.ruling_remark,c.house_id,c.house_building,c.house_room_no,b.enter_employee_id,b.enter_time " +
             " from cust_base a left join cust_preparation b on (a.prepare_id=b.id) ," +
