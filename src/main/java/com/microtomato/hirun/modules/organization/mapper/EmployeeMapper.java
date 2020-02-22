@@ -220,8 +220,10 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
      * @return
      */
     @Select("SELECT y.org_id,IFNULL(x.job_role,9999) as job_role,IFNULL(x.job_role_nature,0) as job_role_nature,IFNULL(y.nature,0) as org_nature,IFNULL(x.job_grade,0) as job_grade ,IFNULL(x.less_month_num,0) as less_month_num,IFNULL(x.more_month_num,0) as more_month_num,IFNULL(x.employee_sum,0) as employee_num,y.city,y.type as org_type  " +
-            " from ins_org y LEFT JOIN" +
-            " (select k.org_id,k.job_role,k.job_role_nature,k.nature,sum(less_num) as less_month_num,sum(more_num) as more_month_num,SUM(employee_num) as employee_sum,k.job_grade from ( " +
+            " from (SELECT DISTINCT g.org_id,IFNULL(h.job_role, 9999) as job_role,IFNULL(h.job_role_nature, 0) as job_role_nature,IFNULL(h.job_grade, 0) as job_grade," +
+            " IFNULL(g.nature, 0) as nature,g.city as city,g.type as type FROM ins_org g LEFT JOIN ins_employee_job_role h ON (g.org_id = h.org_id) ) y LEFT JOIN" +
+            " (select k.org_id,IFNULL(k.job_role,9999) as job_role,IFNULL(k.job_role_nature,0) as job_role_nature" +
+            " ,IFNULL(k.nature,0) as nature,sum(less_num) as less_month_num,sum(more_num) as more_month_num,SUM(employee_num) as employee_sum,IFNULL(k.job_grade,0) as job_grade from ( " +
             " select case when TIMESTAMPDIFF(MONTH,in_date,NOW()) between 0 and 9 and exists(select 1 from ins_employee_job_role c where c.employee_id = b.employee_id and now() between c.start_date and c.end_date group by c.employee_id having count(1) > 1) then '0.5' " +
             "             when TIMESTAMPDIFF(MONTH,in_date,NOW()) between 0 and 9 and exists(select 1 from ins_employee_job_role c where c.employee_id = b.employee_id and now() between c.start_date and c.end_date group by c.employee_id having count(1) <= 1) then '1' " +
             "             else '0' "+
@@ -236,7 +238,8 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
             " from ins_employee c, ins_org a ,ins_employee_job_role b " +
             " where b.employee_id=c.employee_id and b.org_id=a.org_id and now() BETWEEN b.start_date and b.end_date and c.`status`='0' and a.`status`='0' ) k" +
             " GROUP BY k.org_id , k.job_role,k.job_role_nature,k.nature,k.job_grade) x " +
-            " on (x.org_id=y.org_id)"
+            " on (x.org_id = y.org_id and x.job_role=y.job_role and x.job_role_nature=y.job_role_nature " +
+            " and x.job_grade=y.job_grade and x.nature=y.nature)"
             )
     List<EmployeeQuantityStatDTO> countEmployeeQuantityByOrgId();
 
