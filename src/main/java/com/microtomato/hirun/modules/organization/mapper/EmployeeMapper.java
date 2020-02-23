@@ -223,19 +223,19 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
             " IFNULL(y.job_grade, 0) AS job_grade,IFNULL(x.less_month_num, 0) AS less_month_num,IFNULL(x.more_month_num, 0) AS more_month_num," +
             " IFNULL(x.employee_sum, 0) AS employee_num,y.city,y.type AS org_type" +
             " FROM (" +
-            "  SELECT DISTINCT g.org_id,IFNULL(h.job_role, 9999) as job_role,IFNULL(h.job_role_nature, 0) as job_role_nature," +
+            "  SELECT DISTINCT g.org_id,IFNULL(h.job_role_nature, 0) as job_role_nature," +
             "  IFNULL(g.nature, 0) as nature,g.city as city,g.type as type," +
-            "  case when ISNULL(h.job_grade) ||  LENGTH(trim(h.job_grade))=0  then 0" +
-            "  end as job_grade" +
+            "  case when ISNULL(h.job_grade)=1 ||  LENGTH(trim(h.job_grade))<1  then 0 else h.job_grade " +
+            "  end as job_grade," +
+            "  case when ISNULL(h.job_role)=1 ||  LENGTH(trim(h.job_role))<1  then 9999 else h.job_role" +
+            "  end as job_role" +
             " FROM ins_org g" +
             " LEFT JOIN ins_employee_job_role h ON (g.org_id = h.org_id) " +
             " ) y" +
             " LEFT JOIN (" +
             " SELECT k.org_id,IFNULL(k.job_role,9999) as job_role,IFNULL(k.job_role_nature,0) as job_role_nature," +
             " IFNULL(k.nature,0) as nature,sum(less_num) AS less_month_num,sum(more_num) AS more_month_num," +
-            " SUM(employee_num) AS employee_sum," +
-            " case when ISNULL(k.job_grade) ||  LENGTH(trim(k.job_grade))=0  then 0 " +
-            " end as job_grade" +
+            " SUM(employee_num) AS employee_sum,k.job_grade" +
             " FROM (" +
             " SELECT" +
             "    CASE WHEN TIMESTAMPDIFF(MONTH, in_date, NOW()) BETWEEN 0 AND 9 AND EXISTS (SELECT 1 FROM ins_employee_job_role c WHERE c.employee_id = b.employee_id AND now() BETWEEN c.start_date AND c.end_date" +
@@ -254,7 +254,11 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
             "              GROUP BY c.employee_id HAVING count(1) > 1 ) THEN '0.5'" +
             "         ELSE '1'" +
             "    END AS employee_num," +
-            " b.org_id,b.job_role,b.job_role_nature,a.nature,b.job_grade" +
+            " b.org_id,b.job_role_nature,a.nature," +
+            "    case when ISNULL(b.job_grade)=1 ||  LENGTH(trim(b.job_grade))<1  then 0 else b.job_grade" +
+            "    end as job_grade," +
+            "    case when ISNULL(b.job_role)=1 ||  LENGTH(trim(b.job_role))<1  then 9999 else b.job_role" +
+            "    end as job_role" +
             " FROM ins_employee c,ins_org a,ins_employee_job_role b" +
             " WHERE b.employee_id = c.employee_id AND b.org_id = a.org_id AND now() BETWEEN b.start_date AND b.end_date AND c.`status` = '0' AND a.`status` = '0') k" +
             " GROUP BY k.org_id,k.job_role,k.job_role_nature,k.nature,k.job_grade ) x" +
