@@ -24,6 +24,7 @@ import com.microtomato.hirun.modules.bss.order.service.IOrderBaseService;
 import com.microtomato.hirun.modules.bss.order.service.IOrderDomainService;
 import com.microtomato.hirun.modules.bss.order.service.IOrderOperLogService;
 import com.microtomato.hirun.modules.bss.order.service.IOrderWorkerService;
+import com.microtomato.hirun.modules.system.entity.po.StaticData;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -155,7 +156,11 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
             order.setStatus(OrderConst.ORDER_STATUS_ASKING);
         }
 
-        OrderStatusCfg orderStatusCfg = this.orderStatusCfgService.getCfgByStatus(order.getStatus());
+        if (StringUtils.isBlank(newOrder.getType())) {
+            order.setType(OrderConst.ORDER_TYPE_PRE);
+        }
+
+        OrderStatusCfg orderStatusCfg = this.orderStatusCfgService.getCfgByTypeStatus(order.getType(), order.getStatus());
 
         if (orderStatusCfg != null) {
             order.setStage(orderStatusCfg.getOrderStage());
@@ -185,7 +190,8 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
     public void orderStatusTrans(OrderBase order, String oper) {
         Integer stage = order.getStage();
         String status = order.getStatus();
-        OrderStatusCfg statusCfg = this.orderStatusCfgService.getCfgByStatus(status);
+        String orderType = order.getType();
+        OrderStatusCfg statusCfg = this.orderStatusCfgService.getCfgByTypeStatus(orderType, status);
         OrderStatusTransCfg statusTransCfg = null;
         if (StringUtils.equals(OrderConst.OPER_RUN, oper)) {
             statusTransCfg = this.orderStatusTransCfgService.getByStatusIdOper(-1L, oper);
@@ -315,5 +321,27 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
             }
         }
         return result;
+    }
+
+    /**
+     * 获取支付方式
+     * @return
+     */
+    @Override
+    public List<PaymentDTO> queryPayment() {
+        List<PaymentDTO> payments = new ArrayList<>();
+
+        List<StaticData> configs = this.staticDataService.getStaticDatas("PAYMENT_TYPE");
+        if (ArrayUtils.isEmpty(configs)) {
+            return payments;
+        }
+
+        for (StaticData config : configs) {
+            PaymentDTO payment = new PaymentDTO();
+            payment.setPaymentType(config.getCodeValue());
+            payment.setPaymentName(config.getCodeName());
+            payments.add(payment);
+        }
+        return payments;
     }
 }

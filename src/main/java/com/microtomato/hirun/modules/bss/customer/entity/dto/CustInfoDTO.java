@@ -107,9 +107,13 @@ public class CustInfoDTO {
 
     private String enterEmployeeName;
 
-    private Boolean isContinueAuth;
+    private Boolean allowSelect;
 
     private LocalDateTime enterTime;
 
     private String houseAddress;
+
+    private Integer prepareStatus;
+
+    private String prepareStatusName;
 }

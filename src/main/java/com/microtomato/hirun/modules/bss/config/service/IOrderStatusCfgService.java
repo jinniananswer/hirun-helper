@@ -17,7 +17,7 @@ public interface IOrderStatusCfgService extends IService<OrderStatusCfg> {
 
     List<OrderStatusCfg> getAll();
 
-    OrderStatusCfg getCfgByStatus(String orderStatus);
+    OrderStatusCfg getCfgByTypeStatus(String orderType, String orderStatus);
 
     OrderStatusCfg getById(Long id);
 }

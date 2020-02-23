@@ -34,14 +34,14 @@ public interface CustPreparationMapper extends BaseMapper<CustPreparation> {
      * @param mobileNo
      * @return
      */
-    @Select("select b.prepare_employee_id,b.prepare_time,a.consult_time,b.status,b.enter_employee_id,b.remark,b.house_id " +
+    @Select("select b.prepare_employee_id,b.prepare_time,a.consult_time,b.status as prepare_status,b.enter_employee_id,b.remark,b.house_id " +
             " from cust_base a, cust_preparation b\n" +
             " where a.cust_id=b.cust_id \n" +
             " and a.mobile_no=#{mobileNo}\n")
     List<CustPreparationDTO> loadPreparationHistory(String mobileNo);
 
     @Select("select  b.id, a.cust_id,a.cust_name,a.mobile_no,b.prepare_employee_id,b.prepare_time,b.cust_property,b.status,b.preparation_expire_time," +
-            " b.ruling_employee_id,b.ruling_time,b.ruling_remark,b.referee_name,b.referee_mobile_no,b.referee_fix_place, " +
+            " b.ruling_employee_id,b.ruling_time,b.ruling_remark,b.referee_info, " +
             " b.enter_employee_id,b.enter_time" +
             " from cust_base a left join cust_preparation b on (a.cust_id=b.cust_id) " +
             " ${ew.customSqlSegment}"
@@ -55,4 +55,15 @@ public interface CustPreparationMapper extends BaseMapper<CustPreparation> {
             " and b.prepare_time > #{limitTime}"
     )
     List<CustPreparationDTO> queryPrepareByTime(@Param("mobileNo")String mobileNo, @Param("limitTime") LocalDateTime limitTime);
+
+    @Select("select  b.id, a.cust_id,a.cust_name,a.mobile_no,b.prepare_employee_id,b.prepare_time,b.cust_property,b.status as prepare_status,b.preparation_expire_time," +
+            " b.ruling_employee_id,b.ruling_time,b.ruling_remark,b.referee_info,c.house_id,c.house_building,c.house_room_no,c.house_area, c.house_mode," +
+            " b.enter_employee_id,b.enter_time" +
+            " from cust_base a,cust_preparation b,ins_project c  " +
+            " where a.cust_id=b.cust_id and a.cust_id=c.party_id " +
+            " and a.cust_id=#{custId}" +
+            " and b.status=#{status}" +
+            " order by b.update_time desc"
+    )
+    List<CustPreparationDTO> queryPrepareByCustIdAndStatus(@Param("custId")Long custId, @Param("status") String status);
 }

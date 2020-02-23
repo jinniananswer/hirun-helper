@@ -16,12 +16,13 @@ import com.microtomato.hirun.modules.bss.order.service.IOrderBaseService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,6 +60,7 @@ public class CustBaseServiceImpl extends ServiceImpl<CustBaseMapper, CustBase> i
 
     /**
      * 根据客户ID或者订单ID查询客户信息，如果客户ID不为空，永远以客户ID为准进行查询
+     *
      * @param custId
      * @param orderId
      * @return
@@ -94,15 +96,29 @@ public class CustBaseServiceImpl extends ServiceImpl<CustBaseMapper, CustBase> i
         Page<CustQueryCondDTO> page = new Page<>(condDTO.getPage(), condDTO.getSize());
 
         queryWrapper.like(StringUtils.isNotEmpty(condDTO.getCustName()), "a.cust_name", condDTO.getCustName());
-        queryWrapper.apply(" 1=1 order by a.create_time desc");
-        IPage<CustInfoDTO> iPage=this.baseMapper.queryCustomerInfo(page,queryWrapper);
-        if(iPage.getRecords().size()<=0){
-            return null;
+        queryWrapper.eq(condDTO.getHouseId()!=null, "c.house_id", condDTO.getHouseId());
+        queryWrapper.eq(StringUtils.isNotEmpty(condDTO.getHouseMode()), "c.house_mode", condDTO.getHouseMode());
+        queryWrapper.eq(condDTO.getReportEmployeeId()!=null, "b.prepare_employee_id", condDTO.getHouseMode());
+        queryWrapper.apply(" a.cust_id=c.party_id");
+        queryWrapper.orderByDesc("a.create_time");
+
+        IPage<CustInfoDTO> iPage = this.baseMapper.queryCustomerInfo(page, queryWrapper);
+        if (iPage.getRecords().size() <= 0) {
+            return iPage;
         }
-        List<CustInfoDTO> custInfoDTOList=iPage.getRecords();
-        for(CustInfoDTO dto:custInfoDTOList){
+        List<CustInfoDTO> custInfoDTOList = iPage.getRecords();
+        for (CustInfoDTO dto : custInfoDTOList) {
             dto.setPrepareEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getPrepareEmployeeId()));
-            dto.setCustPropertyName(staticDataService.getCodeName("CUSTOMER_PROPERTY",dto.getCustProperty()));
+            if(StringUtils.equals(dto.getCustProperty(),"6")){
+                dto.setCustPropertyName("主管补备");
+            }else{
+                dto.setCustPropertyName(staticDataService.getCodeName("CUSTOMER_PROPERTY", dto.getCustProperty()));
+            }
+            dto.setPrepareEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getPrepareEmployeeId()));
+            dto.setHouseModeName(staticDataService.getCodeName("HOUSE_MODE",dto.getHouseModeName()));
+            dto.setHouseAddress(housesService.queryHouseName(dto.getHouseId())+" |"+dto.getHouseBuilding()+" |"+dto.getHouseRoomNo());
+            dto.setRulingEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getRulingEmployeeId()));
+            dto.setPrepareStatusName(staticDataService.getCodeName("PREPARATION_STATUS",dto.getPrepareStatus()+""));
         }
         return iPage;
     }
@@ -110,19 +126,43 @@ public class CustBaseServiceImpl extends ServiceImpl<CustBaseMapper, CustBase> i
     @Override
     public List<CustInfoDTO> queryCustomerInfoByMobile(String mobileNo) {
         preparationService.checkCustomerRules(mobileNo);
-        List<CustInfoDTO> custList=this.baseMapper.queryCustomerInfoByMobile(mobileNo);
-        if(custList.size()<=0){
+        List<CustInfoDTO> custList = this.baseMapper.queryCustomerInfoByMobile(mobileNo);
+        if (custList.size() <= 0) {
             return new ArrayList<>();
         }
-        for(CustInfoDTO dto:custList){
-            dto.setHouseAddress(housesService.queryHouseName(dto.getHouseId())+"|"+dto.getHouseBuilding()+"|"+dto.getHouseRoomNo());
-            dto.setHouseModeName(staticDataService.getCodeName("HOUSE_MODE",dto.getHouseMode()));
+        for (CustInfoDTO dto : custList) {
+            dto.setHouseAddress(housesService.queryHouseName(dto.getHouseId()) + "|" + dto.getHouseBuilding() + "|" + dto.getHouseRoomNo());
+            dto.setHouseModeName(staticDataService.getCodeName("HOUSE_MODE", dto.getHouseMode()));
             dto.setPrepareEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getPrepareEmployeeId()));
             dto.setEnterEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getEnterEmployeeId()));
-            dto.setStatus(staticDataService.getCodeName("PREPARATION_STATUS",dto.getStatus()));
-            dto.setIsContinueAuth(true);
+            this.checkAllowSelect(dto);
+            dto.setStatus(staticDataService.getCodeName("PREPARATION_STATUS", dto.getStatus()));
         }
         return custList;
     }
 
+    /**
+     * 判断是否在前台选择做老客户的选择
+     *
+     * @param dto
+     * @return
+     */
+    private CustInfoDTO checkAllowSelect(CustInfoDTO dto) {
+        /**
+         * 客户报备已失效，允许普通报备员工选择报备客户进行再次报备。【权限操作】文员允许新增客户报备
+         * 先做客户信息新增，然后再做报备，允许普通报备员工选择客户进行报备。但是报备状态不更改
+         * 客户报备已失败，允许普通报备员工选择报备客户进行再次报备。【权限操作】文员允许新增客户报备
+         */
+
+        if (dto.getPrepareId() == null) {
+            dto.setAllowSelect(true);
+        } else if (StringUtils.equals(dto.getStatus(), "1")
+                && (Duration.between(dto.getPreparationExpireTime(),LocalDateTime.now()).toMillis()) > 0) {
+            dto.setAllowSelect(true);
+        } else {
+            dto.setAllowSelect(false);
+        }
+
+        return dto;
+    }
 }

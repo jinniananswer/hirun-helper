@@ -36,7 +36,7 @@ public class OrderBase extends BaseEntity {
     private Long custId;
 
     /**
-     * 0-预订单 1-转入咨询阶段后的正式订单
+     * P-预订单 H-家装订单 W-木制品订单
      */
     @TableField("type")
     private String type;
@@ -122,26 +122,73 @@ public class OrderBase extends BaseEntity {
     /**
      * 施工结束时间
      */
-    @TableField("project_finish_date")
-    private LocalDate projectFinishDate;
+    @TableField("project_end_date")
+    private LocalDate projectEndDate;
 
     /**
-     * 合同总金额
+     * 设计费
+     */
+    @TableField("design_fee")
+    private Long designFee;
+
+    /**
+     * 设计费实收金额
+     */
+    @TableField("design_pay")
+    private Long designPay;
+
+    /**
+     * 首期合同费用
      */
     @TableField("contract_fee")
-    private Integer contractFee;
+    private Long contractFee;
 
     /**
-     * 总应收费用
+     * 首期合同应付金额
      */
-    @TableField("total_fee")
-    private Integer totalFee;
+    @TableField("contract_need_pay")
+    private Long contractNeedPay;
 
     /**
-     * 总实收费用
+     * 首期合同实付金额
      */
-    @TableField("total_act_fee")
-    private Integer totalActFee;
+    @TableField("contract_pay")
+    private Long contractPay;
+
+    /**
+     * 二期合同费用
+     */
+    @TableField("second_contract_fee")
+    private Long secondContractFee;
+
+    /**
+     * 二期合同应付金额
+     */
+    @TableField("second_contract_need_pay")
+    private Long secondContractNeedPay;
+
+    /**
+     * 二期合同实付金额
+     */
+    @TableField("second_contract_pay")
+    private Long secondContractPay;
+
+    /**
+     * 结算金额
+     */
+    @TableField("settlement_fee")
+    private Long settlementFee;
+
+    /**
+     * 结算实收
+     */
+    @TableField("settlement_pay")
+    private Long settlementPay;
+
+    /**
+     * 客户总付费用
+     */
+    private Long totalPay;
 
     /**
      * 参与的活动ID
@@ -154,6 +201,11 @@ public class OrderBase extends BaseEntity {
      */
     @TableField("done_date")
     private LocalDateTime doneDate;
+
+    /**
+     * 是否测试订单 0-非测试订单 1-测试订单
+     */
+    private Integer isTest;
 
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)
     private Long createUserId;

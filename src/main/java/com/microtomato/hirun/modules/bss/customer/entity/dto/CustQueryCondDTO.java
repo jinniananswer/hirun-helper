@@ -41,4 +41,6 @@ public class CustQueryCondDTO {
 
     private Integer total;
 
+    private Long houseId;
+
 }

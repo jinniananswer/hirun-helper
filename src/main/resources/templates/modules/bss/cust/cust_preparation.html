@@ -24,12 +24,12 @@
                         <el-row :gutter="20" >
                             <el-col :span="6">
                                 <el-form-item label="客户编号">
-                                    <el-input v-model="customerPreparation.custNo" placeholder="客户编号" readonly></el-input>
+                                    <el-input v-model="customerPreparation.custNo" placeholder="客户编号" style="color: red" readonly></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="6">
                                 <el-form-item label="客户电话"  prop="mobileNo">
-                                    <el-input v-model="customerPreparation.mobileNo" placeholder="客户联系电话" @blur="loadPreparationHistory" :readonly="mobileReadonly"></el-input>
+                                    <el-input v-model="customerPreparation.mobileNo" placeholder="客户联系电话" @blur="loadCustomerInfo" :readonly="mobileReadonly"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="6">
@@ -39,7 +39,7 @@
                             </el-col>
                             <el-col :span="6">
                                 <el-form-item label="房屋类型"  prop="houseMode">
-                                    <vue-select code-type="HOUSE_MODE" v-model="customerPreparation.houseMode" :readonly="houseModeReadonly"></vue-select>
+                                    <vue-select code-type="HOUSE_MODE" v-model="customerPreparation.houseMode" :disabled="houseModeReadonly"></vue-select>
                                 </el-form-item>
                             </el-col>
                         </el-row>
@@ -50,8 +50,8 @@
                                 </el-form-item>
                             </el-col>
                             <el-col :span="6">
-                                <el-form-item label="装修地点" prop="houseId">
-                                    <house-select v-model="customerPreparation.houseId"></house-select>
+                                <el-form-item label="楼盘" prop="houseId">
+                                    <house-select v-model="customerPreparation.houseId" :disabled="houseIdDisabled" ></house-select>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="6">
@@ -229,7 +229,7 @@
                         style="width: 100%">
                     <el-table-column  width="100"label="选择客户">
                         <template slot-scope="scope">
-                            <el-button v-if="scope.row.isContinueAuth==true" type="primary" size="mini" @click="handle(scope.row)">选择</el-button>
+                            <el-button v-if="scope.row.allowSelect==true" type="primary" size="mini" @click="handle(scope.row)">选择</el-button>
                         </template>
                     </el-table-column>
                     <el-table-column
@@ -292,7 +292,7 @@
                     </el-table-column>
                 </el-table>
                 <div slot="footer" class="dialog-footer">
-                    <el-button @click="dialogTableVisible = false" type="primary"  v-if="isContinueAuth=='true'">继续新增</el-button>
+                    <el-button @click="dialogTableVisible = false" type="primary"  :disabled="isContinueAuth=='false'">继续新增</el-button>
                 </div>
             </el-dialog>
         </el-main>

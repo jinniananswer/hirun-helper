@@ -1,18 +1,16 @@
 package com.microtomato.hirun.modules.system.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
-import com.microtomato.hirun.modules.bss.order.mapper.OrderFeeMapper;
-import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.system.entity.po.FeeItemCfg;
 import com.microtomato.hirun.modules.system.mapper.FeeItemCfgMapper;
 import com.microtomato.hirun.modules.system.service.IFeeItemCfgService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +62,7 @@ public class FeeItemCfgServiceImpl extends ServiceImpl<FeeItemCfgMapper, FeeItem
     @Override
     public List<FeeItemCfg> getAllFeeItemDatas() {
         List<FeeItemCfg> datas = this.list(
-                Wrappers.<FeeItemCfg>lambdaQuery().eq(FeeItemCfg::getStatus, "0")
+            Wrappers.<FeeItemCfg>lambdaQuery().eq(FeeItemCfg::getStatus, "U")
         );
         return datas;
     }

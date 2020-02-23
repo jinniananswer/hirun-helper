@@ -115,7 +115,7 @@
 
             <template>
 
-                <el-table :data="customerInfo" stripe="true" style="width: 100%">
+                <el-table :data="customerInfo" stripe="true" style="width: 100%" fit="true" border height="400px">
                     <!--
                     <el-table-column label="选择" fixed align="center" width="65">
                         <template scope="scope">
@@ -125,11 +125,13 @@
                         </template>
                     </el-table-column>
                     <el-table-column prop="custId" label="客户编码" fixed align="center" width="180"></el-table-column>-->
-                    <el-table-column prop="custName" label="客户姓名" fixed align="center"  width="100">
+                    <el-table-column prop="custName" label="客户姓名" fixed align="center"  width="100" >
                         <template slot-scope="scopeCustomer">
                             <el-button type="text" @click="toOrderDetail(scopeCustomer.row.orderId, scopeCustomer.row.custId)">{{ scopeCustomer.row.custName }}</el-button>
                         </template>
                     </el-table-column>
+                    <el-table-column prop="houseAddress" label="装修地址" align="center" fixed width="200"></el-table-column>
+                    <el-table-column prop="prepareEmployeeName" label="客户代表" align="center" fixed width="100"></el-table-column>
                     <el-table-column prop="prepareEmployeeName" label="客户代表" align="center" fixed width="100"></el-table-column>
                     <el-table-column prop="prepareEmployeeName" label="设计师" align="center" width="100"></el-table-column>
                     <el-table-column prop="mobileNo" label="联系电话" align="center" width="180"></el-table-column>
@@ -142,8 +144,7 @@
                     <el-table-column prop="prepareTime" label="活动时间" align="center" width="180"></el-table-column>
                     <el-table-column prop="custStatus" label="客户状态" align="center"></el-table-column>
                     <el-table-column prop="custPropertyName" label="客户报备类型" width="180" align="center"></el-table-column>
-                    <el-table-column prop="status" label="报备状态" align="center"></el-table-column>
-                    <el-table-column prop="preparationExpireTime" align="center" label="报备失效时间" width="180"></el-table-column>
+                    <el-table-column prop="prepareStatusName" label="报备状态" align="center"  width="180"></el-table-column>
                     <el-table-column prop="rulingEmployeeName" align="center" label="裁定人"></el-table-column>
                     <el-table-column prop="rulingTime" label="裁定时间" width="180" align="center"></el-table-column>
                     <el-table-column prop="rulingRemark" label="裁定备注" align="center"></el-table-column>

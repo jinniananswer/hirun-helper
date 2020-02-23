@@ -1,17 +1,14 @@
 package com.microtomato.hirun.modules.bss.order.entity.po;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.microtomato.hirun.framework.data.BaseEntity;
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
-import lombok.Data;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.microtomato.hirun.framework.data.BaseEntity;
+import lombok.*;
 import lombok.experimental.Accessors;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -35,28 +32,34 @@ public class OrderPaymoney extends BaseEntity {
     private Long id;
 
     /**
-     * order_fee：id字段
+     * 订单ID
      */
-    @TableField("fee_id")
-    private Long feeId;
+    @TableField("orderId")
+    private Long orderId;
+
+    /**
+     * 收费单号
+     */
+    @TableField("pay_no")
+    private Long payNo;
 
     /**
      * 付费方式，见参数
      */
     @TableField("payment_type")
-    private Long paymentType;
+    private String paymentType;
 
     /**
-     * 费用
+     * 金额
      */
-    @TableField("fee")
-    private Integer fee;
+    @TableField("money")
+    private Long money;
 
     /**
      * 本次处理费用的员工ID
      */
-    @TableField("fee_employee_id")
-    private Long feeEmployeeId;
+    @TableField("pay_employee_id")
+    private Long payEmployeeId;
 
     /**
      * 备注
