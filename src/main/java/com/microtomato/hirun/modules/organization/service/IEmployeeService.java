@@ -101,5 +101,5 @@ public interface IEmployeeService extends IService<Employee> {
      * @param orgId
      * @return
      */
-    List<SimpleEmployeeDTO> querySimpleEmployeeInfo(Long orgId, Long roleId);
+    List<SimpleEmployeeDTO> querySimpleEmployeeInfo(Long orgId, Long roleId,Boolean isSelf);
 }

@@ -71,19 +71,10 @@ public class CustPreparation extends BaseEntity {
     private String custProperty;
 
     /**
-     * 推荐人姓名
+     * 推荐人信息
      */
-    @TableField("referee_name")
-    private String refereeName;
-
-    @TableField("referee_mobile_no")
-    private String refereeMobileNo;
-
-    /**
-     * 推荐人装修地点
-     */
-    @TableField("referee_fix_place")
-    private String refereeFixPlace;
+    @TableField("referee_info")
+    private String refereeInfo;
 
     @TableField("remark")
     private String remark;
@@ -104,7 +95,10 @@ public class CustPreparation extends BaseEntity {
     private String rulingRemark;
 
     @TableField("house_id")
-    private String houseId;
+    private Long houseId;
+
+    @TableField("is_net_prepare")
+    private String isNetPrepare;
 
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)
     private Long createUserId;

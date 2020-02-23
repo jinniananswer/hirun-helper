@@ -21,11 +21,13 @@ public class CustPreparationDTO {
 
     private String houseMode;
 
-    private String houseId;
+    private Long houseId;
 
     private String houseBuilding;
 
     private String houseRoomNo;
+
+    private String houseAddress;
 
     private Long prepareOrgId;
 
@@ -49,19 +51,37 @@ public class CustPreparationDTO {
 
     private String refereeMobileNo;
 
+    private String refereeInfo;
+
     private String remark;
 
     private LocalDateTime consultTime;
 
-    private Integer status;
+    private Integer prepareStatus;
 
     private String preparationStatusName;
 
     private Long rulingEmployeeId;
+
+    private String rulingEmployeeName;
 
     private String rulingRemark;
 
     private Long custId;
 
     private LocalDateTime enterTime;
+
+    private String houseArea;
+
+    private String houseModeName;
+
+    private Long id;
+
+    private Long prepareId;
+
+    private String isNetPrepare;
+    /**
+     * 用作判断裁定是否为原纪录修改还是新增一条新的报备记录
+     */
+    private Boolean isAddNewPrepareFlag;
 }

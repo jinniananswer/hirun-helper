@@ -12,5 +12,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2020-02-11
  */
 public interface IHousesPlanService extends IService<HousesPlan> {
-
+    /**
+     * 查询楼盘规划信息
+     * @param houseId
+     * @param employeeId
+     * @return
+     */
+    HousesPlan queryHousesPlan(Long houseId,Long employeeId);
 }

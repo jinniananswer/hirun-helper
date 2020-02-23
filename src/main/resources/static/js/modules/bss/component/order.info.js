@@ -70,7 +70,7 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
 
                         </el-row >
                     </el-tab-pane>
-                    <el-tab-pane label="订单费用" name="fee">
+                    <el-tab-pane label="费用信息" name="fee">
                         订单费用
                     </el-tab-pane>
                     <el-tab-pane label="所选产品" name="product">
@@ -94,7 +94,7 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
         methods: {
             init() {
                 let that = this;
-                ajax.get('api/bss.order/order-base/getOrderInfo', {orderId:this.orderId}, function(data) {
+                ajax.get('api/bss.order/order-domain/getOrderDetail', {orderId:this.orderId}, function(data) {
                     let stage = data.stage;
                     data.stage = [];
                     data.stage.push(-10);

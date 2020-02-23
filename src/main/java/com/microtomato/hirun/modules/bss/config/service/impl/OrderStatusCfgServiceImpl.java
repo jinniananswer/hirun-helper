@@ -42,7 +42,7 @@ public class OrderStatusCfgServiceImpl extends ServiceImpl<OrderStatusCfgMapper,
      */
     @Override
     @Cacheable(value = "orderstatus-cfg-with-status")
-    public OrderStatusCfg getCfgByStatus(String orderStatus) {
+    public OrderStatusCfg getCfgByTypeStatus(String orderType, String orderStatus) {
         IOrderStatusCfgService service = SpringContextUtils.getBean(OrderStatusCfgServiceImpl.class);
         List<OrderStatusCfg> datas = service.getAll();
 
@@ -51,7 +51,7 @@ public class OrderStatusCfgServiceImpl extends ServiceImpl<OrderStatusCfgMapper,
         }
 
         for (OrderStatusCfg data : datas) {
-            if (StringUtils.equals(data.getOrderStatus(), orderStatus)) {
+            if (StringUtils.equals(data.getOrderStatus(), orderStatus) && StringUtils.equals(orderType, data.getType())) {
                 return data;
             }
         }

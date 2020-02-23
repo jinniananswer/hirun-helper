@@ -1,5 +1,8 @@
 package com.microtomato.hirun.modules.bss.order.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.security.Role;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
@@ -11,6 +14,7 @@ import com.microtomato.hirun.modules.bss.config.service.IOrderRoleCfgService;
 import com.microtomato.hirun.modules.bss.config.service.IOrderStatusCfgService;
 import com.microtomato.hirun.modules.bss.config.service.IOrderStatusTransCfgService;
 import com.microtomato.hirun.modules.bss.config.service.IRoleAttentionStatusCfgService;
+import com.microtomato.hirun.modules.bss.house.service.IHousesService;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.*;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderBase;
@@ -20,6 +24,7 @@ import com.microtomato.hirun.modules.bss.order.service.IOrderBaseService;
 import com.microtomato.hirun.modules.bss.order.service.IOrderDomainService;
 import com.microtomato.hirun.modules.bss.order.service.IOrderOperLogService;
 import com.microtomato.hirun.modules.bss.order.service.IOrderWorkerService;
+import com.microtomato.hirun.modules.system.entity.po.StaticData;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -65,6 +70,9 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
     private IRoleAttentionStatusCfgService roleAttentionStatusCfgService;
 
     @Autowired
+    private IHousesService housesService;
+
+    @Autowired
     private OrderBaseMapper orderBaseMapper;
 
     /**
@@ -73,11 +81,19 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
      * @return
      */
     @Override
-    public OrderInfoDTO getOrderInfo(Long orderId) {
-        OrderInfoDTO orderInfo = new OrderInfoDTO();
+    public OrderDetailDTO getOrderDetail(Long orderId) {
+        OrderDetailDTO orderInfo = new OrderDetailDTO();
         OrderBase orderBase = this.orderBaseService.queryByOrderId(orderId);
 
         BeanUtils.copyProperties(orderBase, orderInfo);
+
+        Long housesId = orderBase.getHousesId();
+        if (housesId != null) {
+            //查询楼盘信息
+            if (housesId != null) {
+                orderInfo.setHousesName(this.housesService.queryHouseName(housesId));
+            }
+        }
 
         if (StringUtils.isNotBlank(orderInfo.getStatus())) {
             orderInfo.setStatusName(this.staticDataService.getCodeName("ORDER_STATUS", orderInfo.getStatus()));
@@ -140,7 +156,11 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
             order.setStatus(OrderConst.ORDER_STATUS_ASKING);
         }
 
-        OrderStatusCfg orderStatusCfg = this.orderStatusCfgService.getCfgByStatus(order.getStatus());
+        if (StringUtils.isBlank(newOrder.getType())) {
+            order.setType(OrderConst.ORDER_TYPE_PRE);
+        }
+
+        OrderStatusCfg orderStatusCfg = this.orderStatusCfgService.getCfgByTypeStatus(order.getType(), order.getStatus());
 
         if (orderStatusCfg != null) {
             order.setStage(orderStatusCfg.getOrderStage());
@@ -170,7 +190,8 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
     public void orderStatusTrans(OrderBase order, String oper) {
         Integer stage = order.getStage();
         String status = order.getStatus();
-        OrderStatusCfg statusCfg = this.orderStatusCfgService.getCfgByStatus(status);
+        String orderType = order.getType();
+        OrderStatusCfg statusCfg = this.orderStatusCfgService.getCfgByTypeStatus(orderType, status);
         OrderStatusTransCfg statusTransCfg = null;
         if (StringUtils.equals(OrderConst.OPER_RUN, oper)) {
             statusTransCfg = this.orderStatusTransCfgService.getByStatusIdOper(-1L, oper);
@@ -269,5 +290,58 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
         }
 
         return tasks;
+    }
+
+    /**
+     * 分页查询客户订单信息
+     * @return
+     */
+    @Override
+    public IPage<CustOrderInfoDTO> queryCustOrderInfos(CustOrderQueryDTO queryCondition, Page<CustOrderQueryDTO> page) {
+        QueryWrapper<CustOrderQueryDTO> queryWrapper = new QueryWrapper<>();
+        queryWrapper.like(StringUtils.isNotEmpty(queryCondition.getCustName()), "b.cust_name", queryCondition.getCustName());
+        queryWrapper.eq(StringUtils.isNotEmpty(queryCondition.getSex()), "b.sex", queryCondition.getSex());
+        queryWrapper.likeRight(StringUtils.isNotEmpty(queryCondition.getMobileNo()), "b.mobile_no", queryCondition.getMobileNo());
+        queryWrapper.eq(StringUtils.isNotEmpty(queryCondition.getOrderStatus()), "a.status", queryCondition.getOrderStatus());
+        queryWrapper.eq(queryCondition.getHousesId() != null, "a.housesId", queryCondition.getHousesId());
+        IPage<CustOrderInfoDTO> result = this.orderBaseMapper.queryCustOrderInfo(page, queryWrapper);
+
+        List<CustOrderInfoDTO> custOrders = result.getRecords();
+        if (ArrayUtils.isNotEmpty(custOrders)) {
+            for (CustOrderInfoDTO custOrder : custOrders) {
+                custOrder.setStageName(this.staticDataService.getCodeName("ORDER_STAGE", custOrder.getStage()));
+                custOrder.setSexName(this.staticDataService.getCodeName("SEX", custOrder.getSex()));
+                custOrder.setStatusName(this.staticDataService.getCodeName("ORDER_STATUS", custOrder.getStatus()));
+                custOrder.setHouseLayoutName(this.staticDataService.getCodeName("HOUSE_LAYOUT", custOrder.getHouseLayout()));
+                Long housesId = custOrder.getHousesId();
+                if (housesId != null) {
+                    custOrder.setHousesName(this.housesService.queryHouseName(housesId));
+
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 获取支付方式
+     * @return
+     */
+    @Override
+    public List<PaymentDTO> queryPayment() {
+        List<PaymentDTO> payments = new ArrayList<>();
+
+        List<StaticData> configs = this.staticDataService.getStaticDatas("PAYMENT_TYPE");
+        if (ArrayUtils.isEmpty(configs)) {
+            return payments;
+        }
+
+        for (StaticData config : configs) {
+            PaymentDTO payment = new PaymentDTO();
+            payment.setPaymentType(config.getCodeValue());
+            payment.setPaymentName(config.getCodeName());
+            payments.add(payment);
+        }
+        return payments;
     }
 }

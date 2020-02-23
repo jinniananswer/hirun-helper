@@ -7,9 +7,11 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                     custServiceEmployeeId: '',
                     designCupboardEmployeeId: '',
                     mainMaterialKeeperEmployeeId: '',
+                    designEmployeeId:'',
                     cupboardKeeperEmployeeId: '',
                     consultRemark: '',
                     orderId:'2',
+                    id:''
                 },
                 progress: [-10, 70],
                 activeTab: 'orderInfo',
@@ -17,6 +19,9 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                 rules: {
                     custServiceEmployeeId: [
                         {required: true, message: '请选择客户代表', trigger: 'change'}
+                    ],
+                    designEmployeeId: [
+                        {required: true, message: '请选择设计师', trigger: 'change'}
                     ],
                     designCupboardEmployeeId: [
                         {required: true, message: '请选择橱柜设计师', trigger: 'change'}
@@ -50,15 +55,16 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
 
         methods: {
             init:function(){
-                ajax.get('api/bss.order/order-base/getOrderWorkers', {orderId:this.customerConsult.orderId}, function(data) {
-
+                let that = this;
+                ajax.get('api/order/order-consult/queryOrderConsult', {orderId:this.customerConsult.orderId}, function(data) {
+                    Object.assign(that.customerConsult, data);
                 })
             },
 
             save(customerConsult) {
                 this.$refs.customerConsult.validate((valid) => {
                     if (valid) {
-                        ajax.post('api/customer/cust-base/saveCustomerConsultInfo', this.customerConsult);
+                        ajax.post('api/order/order-consult/saveCustomerConsultInfo', this.customerConsult);
                     }
                 })
             },
@@ -71,7 +77,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                             cancelButtonText: '取消',
                             type: 'warning'
                         }).then(() => {
-                            ajax.post('api/customer/cust-base/submitSneak', this.customerConsult);
+                            ajax.post('api/order/order-consult/submitSneak', this.customerConsult);
                         })
                     }
                 })
@@ -85,7 +91,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                             cancelButtonText: '取消',
                             type: 'warning'
                         }).then(() => {
-                            ajax.post('api/customer/cust-base/submitMeasure', this.customerConsult);
+                            ajax.post('api/order/order-consult/submitMeasure', this.customerConsult);
                         })
                     }
                 })

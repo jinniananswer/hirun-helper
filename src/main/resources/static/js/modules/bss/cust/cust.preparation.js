@@ -1,12 +1,12 @@
-require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','house-select'], function (Vue, element, axios, ajax, vueselect, util,houseSelect) {
+require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'house-select', 'order-selectemployee', 'order-search-employee'], function (Vue, element, axios, ajax, vueselect, util, houseSelect, orderSelectEmployee, orderSearchEmployee) {
     let vm = new Vue({
         el: '#customer_perparation',
         data: function () {
             return {
-                employeeOptions: [],
                 customerPreparation: {
                     prepareOrgId: '',
                     prepareEmployeeId: '',
+                    prepareEmployeeName: '',
                     prepareTime: util.getNowTime(),
                     enterEmployeeId: '',
                     custProperty: '',
@@ -22,12 +22,25 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','house-select'],
                     houseId: '',
                     houseBuilding: '',
                     houseRoomNo: '',
+                    prepareId:'',
+                    custId:'',
+                    isNetPrepare:'0',
                 },
                 custOrder: [],
+                custInfo: [],
                 isRefereeFixPlaceDisable: true,
                 isRefereeNameDisable: true,
                 isRefereeMobileNoDisable: true,
+                enterDisabled: true,
+                dialogTableVisible: false,
+                mobileReadonly:false,
+                custNameReadonly:false,
+                houseModeReadonly:false,
+                houseIdDisabled:false,
+                isContinueAuth:'',
+                moreCustomer:false,
                 display: 'display:block',
+
                 id: util.getRequest('id'),
                 rules: {
                     custName: [
@@ -40,15 +53,15 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','house-select'],
                     houseMode: [
                         {required: true, message: '请选择房屋类型', trigger: 'change'}
                     ],
-                    houseId: [
+/*                    houseId: [
                         {required: true, message: '请填写装修地址', trigger: 'blur'}
-                    ],
-                    houseBuilding: [
+                    ],*/
+/*                    houseBuilding: [
                         {required: true, message: '请填写栋号', trigger: 'blur'}
                     ],
                     houseRoomNo: [
                         {required: true, message: '请填写房间号', trigger: 'blur'}
-                    ],
+                    ],*/
                     prepareOrgId: [
                         {required: true, message: '请填写部门', trigger: 'blur'}
                     ],
@@ -61,34 +74,45 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','house-select'],
                     custProperty: [
                         {required: true, message: '请选择客户属性', trigger: 'change'}
                     ],
-                }
+
+                },
+
             }
         },
 
         methods: {
-            loadEmployee: function () {
-                axios.get('api/organization/employee/loadEmployee').then(function (responseData) {
-                    vm.employeeOptions = responseData.data.rows;
-                }).catch(function (error) {
-                    console.log(error);
+
+            init(){
+                let that=this;
+                ajax.get('api/customer/cust-preparation/getCustomerNoAndSec', '', function (responseDate) {
+                    that.isContinueAuth=responseDate.isContinueAuth;
+                    that.customerPreparation.custNo=responseDate.custNo;
                 });
             },
 
-            loadPreparationHistory: function () {
-                axios.get('api/customer/cust-preparation/loadPreparationHistory?mobileNo=' + this.customerPreparation.mobileNo).then(function (responseData) {
-                    vm.custOrder = responseData.data.rows;
-                }).catch(function (error) {
-                    console.log(error);
+            loadCustomerInfo: function () {
+                let that = this;
+                if (that.customerPreparation.mobileNo == '') {
+                    return;
+                }
+                ajax.get('api/customer/cust-base/queryCustomerInfoByMobile', {mobileNo: this.customerPreparation.mobileNo}, function (responseDate) {
+                    if (responseDate != null && responseDate.length > 0) {
+                        that.dialogTableVisible = true;
+                        that.moreCustomer=true;
+                        vm.custInfo = responseDate;
+                    }else{
+                        that.moreCustomer=false;
+                    }
                 });
             },
 
             changeCustomerProperty: function (newVal) {
 
-                if (newVal == 2) {
+                if (newVal == 2 || newVal == 3) {
                     this.isRefereeFixPlaceDisable = false;
                     this.isRefereeNameDisable = false;
                     this.isRefereeMobileNoDisable = false;
-                }else{
+                } else {
                     this.isRefereeFixPlaceDisable = true;
                     this.isRefereeNameDisable = true;
                     this.isRefereeMobileNoDisable = true;
@@ -96,15 +120,87 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','house-select'],
             },
 
             submit(customerPreparation) {
+                console.log(this.isContinueAuth=='false');
+                console.log(this.customerPreparation.custId=='');
+                console.log(this.moreCustomer);
+
+
+                if(this.isContinueAuth=='false'&&this.customerPreparation.custId==''&&this.moreCustomer){
+                    this.$message.error('该号码存在多条客户信息，请选择客户做新增报备。如为特殊情况，请联系文员进行新增操作');
+                    return;
+                }
+
                 this.$refs.customerPreparation.validate((valid) => {
                     if (valid) {
-                        ajax.post('api/customer/cust-preparation/addCustomerPreparation',this.customerPreparation);
+                        if (this.checkReferee()) {
+                            if(this.checkHouseIdReq()){
+                                ajax.post('api/customer/cust-preparation/addCustomerPreparation', this.customerPreparation);
+                            }else {
+                                this.$message.error('请选择楼盘地址');
+                            }
+                        } else {
+                            this.$message.error('客户属性为老客户介绍或者工地营销需填工地地址、客户姓名、客户电话');
+                        }
                     }
                 })
             },
 
+            checkReferee() {
+                if (this.customerPreparation.custProperty == 2 || this.customerPreparation.custProperty == 3) {
+                    if (this.customerPreparation.refereeFixPlace == '' || this.customerPreparation.refereeMobileNo == '' || this.customerPreparation.refereeName == '') {
+                        return false;
+                    }
+                }
+                return true;
+            },
+
+            checkHouseIdReq() {
+                if (this.customerPreparation.houseId != '') {
+                    return true;
+                }else{
+                    ajax.get('api/customer/cust-preparation/validIsNetOrg', {prepareEmployeeId: this.customerPreparation.prepareEmployeeId}, function (responseDate) {
+                        if (responseDate==true) {
+                            this.customerPreparation.isNetPrepare='1';
+                            return true;
+                        }else{
+                            return false;
+                        }
+                    });
+                }
+                return false;
+            },
+
+            handle(row) {
+                this.customerPreparation.custName = row.custName;
+                this.customerPreparation.houseId = row.houseId;
+                this.customerPreparation.houseMode = row.houseMode;
+                this.customerPreparation.houseArea = row.houseArea;
+                this.customerPreparation.houseBuilding = row.houseBuilding;
+                this.customerPreparation.houseRoomNo = row.houseRoomNo;
+                this.customerPreparation.custNo=row.custNo;
+                this.customerPreparation.prepareId=row.prepareId;
+
+                this.dialogTableVisible = false;
+                this.mobileReadonly=true;
+                this.custNameReadonly=true;
+                this.houseModeReadonly=true;
+                this.houseIdDisabled=true;
+                this.customerPreparation.custId=row.custId;
+                this.loadPrepareHistory();
+
+            },
+
+            loadPrepareHistory(){
+                let that = this;
+                ajax.get('api/customer/cust-preparation/loadPreparationHistory', {mobileNo: this.customerPreparation.mobileNo}, function (responseDate) {
+                    that.custOrder=responseDate;
+                });
+            }
+        },
+
+        mounted () {
+            this.init();
         }
     });
-    vm.loadEmployee();
     return vm;
 })

@@ -1,30 +1,27 @@
 package com.microtomato.hirun.modules.bss.order.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.WebContextUtils;
-import com.microtomato.hirun.modules.system.service.IFeeItemCfgService;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFee;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPaymoney;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderFeeMapper;
 import com.microtomato.hirun.modules.bss.order.service.IOrderFeeService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.modules.bss.order.service.IOrderPaymoneyService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
+import com.microtomato.hirun.modules.system.service.IFeeItemCfgService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -63,8 +60,8 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
         BeanUtils.copyProperties(dto, orderFee);
         //保存orderFee信息--插入设计费大类信息
         System.out.println("fee========="+dto.getCollectedFee().toString());
-        orderFee.setFee(dto.getCollectedFee());
-        orderFee.setActFee(dto.getCollectedFee());
+        //orderFee.setFee(dto.getCollectedFee());
+        //orderFee.setActFee(dto.getCollectedFee());
         orderFee.setFeeItemId((long) 1);
         orderFee.setParentFeeItemId((long) -1);
         this.addOrderFee(orderFee);
@@ -73,8 +70,8 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
         //保存orderFeeNew信息--插入设计费小类信息
         OrderFee orderFeeNew = new OrderFee();
         BeanUtils.copyProperties(dto, orderFeeNew);
-        orderFeeNew.setFee(dto.getCollectedFee());
-        orderFeeNew.setActFee(dto.getCollectedFee());
+       // orderFeeNew.setFee(dto.getCollectedFee());
+       // orderFeeNew.setActFee(dto.getCollectedFee());
         orderFeeNew.setParentFeeItemId((long) 1);
         this.addOrderFee(orderFeeNew);
 
@@ -88,12 +85,12 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
         OrderFee orderFee = new OrderFee();
         BeanUtils.copyProperties(dto, orderFee);
         //保存orderFee信息--插入工程大类信息
-        orderFee.setActFee(dto.getCollectedFee());
-        orderFee.setFee(dto.getCollectedFee());
+        //orderFee.setActFee(dto.getCollectedFee());
+        //orderFee.setFee(dto.getCollectedFee());
         orderFee.setFeeItemId((long) 2);
         orderFee.setParentFeeItemId((long) -1);
         orderFee.setRemark(dto.getRemark());
-        orderFee.setPeriod(1);//首期工程款
+        //orderFee.setPeriod(1);//首期工程款
         this.addOrderFee(orderFee);
         //处理收费类型数据
         this.addOrderPaymoney(dto,orderFee.getId());
@@ -115,8 +112,8 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
         UserContext userContext = WebContextUtils.getUserContext();
         UpdateWrapper<OrderFee> updateWrapper=new UpdateWrapper<>();
         OrderFee orderFeeUpdate = new OrderFee();
-        orderFeeUpdate.setFee(orderFee.getFee());
-        orderFeeUpdate.setActFee(orderFee.getActFee());
+        //orderFeeUpdate.setFee(orderFee.getFee());
+        //orderFeeUpdate.setActFee(orderFee.getActFee());
         orderFeeUpdate.setUpdateTime(LocalDateTime.now());
         orderFeeUpdate.setUpdateUserId(userContext.getEmployeeId());
         updateWrapper.eq("order_id",orderFee.getOrderId());
@@ -146,64 +143,64 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
         System.out.println("ICBC3301=========="+ICBC3301);
         System.out.println("ICBCInstallment=========="+ICBCInstallment);
         System.out.println("ABCInstallment=========="+ABCInstallment);
-        OrderPaymoney.setFeeEmployeeId(userContext.getEmployeeId());
+        OrderPaymoney.setPayEmployeeId(userContext.getEmployeeId());
         OrderPaymoney.setCreateUserId(userContext.getEmployeeId());
         OrderPaymoney.setCreateTime(LocalDateTime.now());
         //处理现金收费方式
         if (StringUtils.isNotBlank(cash)) {
-            OrderPaymoney.setFeeId(id);
-            OrderPaymoney.setPaymentType((long) 1);
-            OrderPaymoney.setFee(Integer.parseInt(cash));
+            //OrderPaymoney.setFeeId(id);
+            OrderPaymoney.setPaymentType("");
+            OrderPaymoney.setMoney(Long.parseLong(cash));
             paymoneyServiceService.save(OrderPaymoney);
         }
         //处理兴业刷卡收费方式
         if (StringUtils.isNotBlank(industrialBankCard)) {
-            OrderPaymoney.setFeeId(id);
-            OrderPaymoney.setPaymentType((long) 2);
-            OrderPaymoney.setFee(Integer.parseInt(industrialBankCard));
+            //OrderPaymoney.setFeeId(id);
+            OrderPaymoney.setPaymentType("2");
+            OrderPaymoney.setMoney(Long.parseLong(industrialBankCard));
             paymoneyServiceService.save(OrderPaymoney);
         }
         //处理浦发刷卡收费方式
         if (StringUtils.isNotBlank(pudongDevelopmentBankCard)) {
-            OrderPaymoney.setFeeId(id);
-            OrderPaymoney.setPaymentType((long) 3);
-            OrderPaymoney.setFee(Integer.parseInt(pudongDevelopmentBankCard));
+            //OrderPaymoney.setFeeId(id);
+            OrderPaymoney.setPaymentType("3");
+            OrderPaymoney.setMoney(Long.parseLong(pudongDevelopmentBankCard));
             paymoneyServiceService.save(OrderPaymoney);
         }
         //处理建行基本户收费方式
         if (StringUtils.isNotBlank(constructionBankBasic)) {
-            OrderPaymoney.setFeeId(id);
-            OrderPaymoney.setPaymentType((long) 4);
-            OrderPaymoney.setFee(Integer.parseInt(constructionBankBasic));
+            //OrderPaymoney.setFeeId(id);
+            OrderPaymoney.setPaymentType("4");
+            OrderPaymoney.setMoney(Long.parseLong(constructionBankBasic));
             paymoneyServiceService.save(OrderPaymoney);
         }
         //处理建行3797收费方式
         if (StringUtils.isNotBlank(constructionBank3797)) {
-            OrderPaymoney.setFeeId(id);
-            OrderPaymoney.setPaymentType((long) 5);
-            OrderPaymoney.setFee(Integer.parseInt(constructionBank3797));
+//            OrderPaymoney.setFeeId(id);
+            OrderPaymoney.setPaymentType("5");
+            OrderPaymoney.setMoney(Long.parseLong(constructionBank3797));
             paymoneyServiceService.save(OrderPaymoney);
 
         }
         //处理工行3301收费方式
         if (StringUtils.isNotBlank(ICBC3301)) {
-            OrderPaymoney.setFeeId(id);
-            OrderPaymoney.setPaymentType((long) 6);
-            OrderPaymoney.setFee(Integer.parseInt(ICBC3301));
+            //OrderPaymoney.setFeeId(id);
+            OrderPaymoney.setPaymentType("6");
+            OrderPaymoney.setMoney(Long.parseLong(ICBC3301));
             paymoneyServiceService.save(OrderPaymoney);
         }
         //处理工行分期收费方式
         if (StringUtils.isNotBlank(ICBCInstallment)) {
-            OrderPaymoney.setFeeId(id);
-            OrderPaymoney.setPaymentType((long) 7);
-            OrderPaymoney.setFee(Integer.parseInt(ICBCInstallment));
+            //OrderPaymoney.setFeeId(id);
+            OrderPaymoney.setPaymentType("7");
+            OrderPaymoney.setMoney(Long.parseLong(ICBCInstallment));
             paymoneyServiceService.save(OrderPaymoney);
         }
         //处理农行分期收费方式
         if (StringUtils.isNotBlank(ABCInstallment)) {
-            OrderPaymoney.setFeeId(id);
-            OrderPaymoney.setPaymentType((long) 8);
-            OrderPaymoney.setFee(Integer.parseInt(ABCInstallment));
+//            OrderPaymoney.setFeeId(id);
+            OrderPaymoney.setPaymentType("8");
+            OrderPaymoney.setMoney(Long.parseLong(ABCInstallment));
             paymoneyServiceService.save(OrderPaymoney);
         }
 
@@ -273,8 +270,8 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
         BeanUtils.copyProperties(dto, orderFee);
         orderFee.setOrderId((long)7);//测试
         //设计费可以一起更新，后续多条细项的需要区分更新
-        orderFee.setActFee(dto.getCollectedFee());
-        orderFee.setFee(dto.getCollectedFee());
+        //orderFee.setActFee(dto.getCollectedFee());
+        //orderFee.setFee(dto.getCollectedFee());
         this.updateOrderFee(orderFee);
 
         OrderPaymoney OrderPaymoney = new OrderPaymoney();

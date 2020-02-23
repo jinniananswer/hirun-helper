@@ -24,12 +24,14 @@ layui.extend({
             layui.select.init('type', 'EMPLOYEE_TYPE', '1', false);
             layui.select.init('birthdayType', 'BIRTHDAY_TYPE', '1', false);
             layui.select.init('jobRoleNature', 'JOB_NATURE', '1', false);
-            layui.select.init('jobRole', 'JOB_ROLE', null, true, '请选择或搜索岗位');
+            if ($("#operType").val() == "create") {
+                layui.select.init('jobRole', 'JOB_ROLE', null, true, '请选择或搜索岗位');
+            }
             layui.select.init('isSocialSecurity', 'YES_NO', '1', false);
             layui.select.init('socialSecurityStatus', 'SOCIAL_SECURITY_STATUS', '1', true);
-            layui.select.init('firstEducationLevel', 'EDUCATION_LEVEL', '1', false);
-            layui.select.init('educationLevel', 'EDUCATION_LEVEL', '1', false);
-            layui.select.init('schoolType', 'SCHOOL_TYPE', '1', false);
+            layui.select.init('firstEducationLevel', 'EDUCATION_LEVEL',null, true);
+            layui.select.init('educationLevel', 'EDUCATION_LEVEL', null, true);
+            layui.select.init('schoolType', 'SCHOOL_TYPE', null, true);
             layui.select.init('contactManRelType', 'KEYMAN_REL_TYPE', '6', false);
             layui.select.init('jobGrade', 'JOB_GRADE', null, true);
 
@@ -317,6 +319,18 @@ layui.extend({
                 form.render('select', 'educationLevel');
             }
 
+            let schoolType = employee.schoolType;
+            if (schoolType != null) {
+                $("#schoolType").val(schoolType);
+                form.render('select', 'schoolType');
+            }
+
+            let firstEducationLevel = employee.firstEducationLevel;
+            if (firstEducationLevel != null) {
+                $("#firstEducationLevel").val(firstEducationLevel);
+                form.render('select', 'firstEducationLevel');
+            }
+
             let employeeJobRole = employee.employeeJobRole;
 
             let orgPath = employeeJobRole.orgPath;
@@ -332,7 +346,7 @@ layui.extend({
             let jobRole = employeeJobRole.jobRole;
             if (jobRole != null) {
                 $("#jobRole").val(jobRole);
-                form.render('select', 'jobRole');
+                layui.select.init('jobRole', 'JOB_ROLE', jobRole, true, '请选择或搜索岗位');
             }
 
             let jobGrade = employeeJobRole.jobGrade;

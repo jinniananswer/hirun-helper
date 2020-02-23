@@ -26,6 +26,11 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="6">
+                            <el-form-item label="楼盘">
+                                <house-select v-model="custQueryCond.houseId"></house-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="6">
                             <el-form-item label="户型">
                                 <vue-select code-type="HOUSE_MODE" v-model="custQueryCond.houseMode"></vue-select>
                             </el-form-item>
@@ -34,12 +39,6 @@
                             <el-form-item label="设计师">
                                 <order-selectemployee role-id="30"
                                                       v-model="custQueryCond.designEmployeeId"></order-selectemployee>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="6">
-                            <el-form-item label="家装顾问">
-                                <order-selectemployee role-id="3"
-                                                      v-model="custQueryCond.counselorEmployeeId"></order-selectemployee>
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -52,19 +51,19 @@
                         </el-col>
                         <el-col :span="6">
                             <el-form-item label="状态">
-                                <vue-select code-type="EMPLOYEE_STATUS"
-                                            v-model="custQueryCond.customerStatus"></vue-select>
+                                <vue-select code-type="ORDER_STATUS"
+                                            v-model="custQueryCond.orderStatus"></vue-select>
                             </el-form-item>
                         </el-col>
                         <el-col :span="6">
                             <el-form-item label="类型">
-                                <vue-select code-type="EMPLOYEE_STATUS"
+                                <vue-select code-type="CUSTOMER_TYPE"
                                             v-model="custQueryCond.customerType"></vue-select>
                             </el-form-item>
                         </el-col>
                         <el-col :span="6">
                             <el-form-item label="申报人">
-                                <order-selectemployee role-id="3"
+                                <order-selectemployee role-id="-1"
                                                       v-model="custQueryCond.reportEmployeeId"></order-selectemployee>
                             </el-form-item>
                         </el-col>
@@ -72,7 +71,7 @@
                     <el-row>
                         <el-col :span="6">
                             <el-form-item label="业务时间">
-                                <vue-select code-type="EMPLOYEE_STATUS" v-model="custQueryCond.timeType"></vue-select>
+                                <vue-select code-type="BUSITIME_TYPE" v-model="custQueryCond.timeType"></vue-select>
                             </el-form-item>
                         </el-col>
                         <el-col :span="6">
@@ -98,7 +97,15 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="6">
-                            <el-form-item>
+                            <el-form-item label="家装顾问">
+                                <order-selectemployee role-id="3"
+                                                      v-model="custQueryCond.counselorEmployeeId"></order-selectemployee>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row >
+                        <el-col :span="20" >
+                            <el-form-item style="text-align: right">
                                 <el-button type="primary" @click="queryCustomer">查询</el-button>
                             </el-form-item>
                         </el-col>
@@ -108,11 +115,8 @@
 
             <template>
 
-                <el-button type="primary" router size="small" @click="customerVisit">回访</el-button>
-                <el-button type="warning" size="small" @click="customerRuling">裁定</el-button>
-                <br/>
-                <br/>
-                <el-table :data="customerInfo" stripe="true" style="width: 100%">
+                <el-table :data="customerInfo" stripe="true" style="width: 100%" fit="true" border height="400px">
+                    <!--
                     <el-table-column label="选择" fixed align="center" width="65">
                         <template scope="scope">
                             <el-radio :label="scope.row" v-model="checked"
@@ -120,8 +124,14 @@
                             </el-radio>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="custId" label="客户编码" fixed align="center" width="180"></el-table-column>
-                    <el-table-column prop="custName" label="客户姓名" fixed align="center"  width="180"></el-table-column>
+                    <el-table-column prop="custId" label="客户编码" fixed align="center" width="180"></el-table-column>-->
+                    <el-table-column prop="custName" label="客户姓名" fixed align="center"  width="100" >
+                        <template slot-scope="scopeCustomer">
+                            <el-button type="text" @click="toOrderDetail(scopeCustomer.row.orderId, scopeCustomer.row.custId)">{{ scopeCustomer.row.custName }}</el-button>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="houseAddress" label="装修地址" align="center" fixed width="200"></el-table-column>
+                    <el-table-column prop="prepareEmployeeName" label="客户代表" align="center" fixed width="100"></el-table-column>
                     <el-table-column prop="prepareEmployeeName" label="客户代表" align="center" fixed width="100"></el-table-column>
                     <el-table-column prop="prepareEmployeeName" label="设计师" align="center" width="100"></el-table-column>
                     <el-table-column prop="mobileNo" label="联系电话" align="center" width="180"></el-table-column>
@@ -134,20 +144,32 @@
                     <el-table-column prop="prepareTime" label="活动时间" align="center" width="180"></el-table-column>
                     <el-table-column prop="custStatus" label="客户状态" align="center"></el-table-column>
                     <el-table-column prop="custPropertyName" label="客户报备类型" width="180" align="center"></el-table-column>
-                    <el-table-column prop="status" label="报备状态" align="center"></el-table-column>
-                    <el-table-column prop="preparationExpireTime" align="center" label="报备失效时间" width="180"></el-table-column>
+                    <el-table-column prop="prepareStatusName" label="报备状态" align="center"  width="180"></el-table-column>
                     <el-table-column prop="rulingEmployeeName" align="center" label="裁定人"></el-table-column>
                     <el-table-column prop="rulingTime" label="裁定时间" width="180" align="center"></el-table-column>
                     <el-table-column prop="rulingRemark" label="裁定备注" align="center"></el-table-column>
                     <el-table-column prop="prepareTime" label="电话咨询时间" width="180" align="center"></el-table-column>
                     <el-table-column prop="address" label="客户类型备注" align="center"></el-table-column>
                     <el-table-column prop="prepareTime" label="量房时间" width="180" align="center"></el-table-column>
-                    <el-table-column fixed="right" label="操作" align="center" width="100">
+                    <el-table-column fixed="right" label="操作" align="center" width="180">
                         <template slot-scope="scope">
-                            <el-button type="text" size="small">编辑</el-button>
+                            <el-button type="text" size="small" >编辑</el-button>
+                            <el-button type="text" size="small" @click="customerVisit(scope.row.custId)">回访</el-button>
+                            <el-button type="text" size="small"  @click="customerRuling(scope.row.custId, scope.row.mobileNo)">裁定</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
+                <div class="pagination">
+                    <el-pagination
+                            background
+                            :current-page="custQueryCond.page"
+                            :page-size="custQueryCond.size"
+                            layout="total, sizes, prev, pager, next"
+                            :total="custQueryCond.total"
+                            @size-change="handleSizeChange"
+                            @current-change="handleCurrentChange">
+                    </el-pagination>
+                </div>
             </template>
         </el-main>
     </el-container>

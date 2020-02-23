@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author liuhui
@@ -19,4 +19,23 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class HousesServiceImpl extends ServiceImpl<HousesMapper, Houses> implements IHousesService {
 
+    @Override
+    public String queryHouseName(Long houseId) {
+        Houses houses = this.baseMapper.selectById(houseId);
+        if (houses == null) {
+            return "";
+        }
+        return houses.getName();
+    }
+
+    /**
+     * 根据楼盘ID查询楼盘信息
+     * @param houseId
+     * @return
+     */
+    @Override
+    public Houses getHouse(Long houseId) {
+        Houses house = this.getById(houseId);
+        return house;
+    }
 }

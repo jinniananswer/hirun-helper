@@ -22,6 +22,6 @@ import java.util.List;
 @DataSource(DataSourceKey.INS)
 public interface OrderWorkerMapper extends BaseMapper<OrderWorker> {
 
-    @Select("select a.order_id, a.role_id, b.name from order_worker a, ins_employee b where b.employee_id = a.employee_id and a.order_id = #{orderId} and now() between a.start_date and a.end_date")
+    @Select("select a.order_id,b.employee_id, a.role_id, b.name from order_worker a, ins_employee b where b.employee_id = a.employee_id and a.order_id = #{orderId} and now() between a.start_date and a.end_date")
     List<OrderWorkerDTO> queryByOrderId(Long orderId);
 }

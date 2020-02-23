@@ -12,6 +12,7 @@ layui.extend({
 
             layui.select.init('jobRoleNature', 'JOB_NATURE', '1', false);
             layui.select.init('jobRole', 'JOB_ROLE', null, true, '请选择或搜索岗位');
+            layui.select.init('jobGrade', 'JOB_GRADE', null, true);
 
 
             $("#transType option[value='"+$('#pendingTypeValue').val()+"']").prop("selected",true);

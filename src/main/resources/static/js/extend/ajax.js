@@ -25,7 +25,7 @@ layui.define(['layer', 'jquery'], function(exports){
                 needLoad = true;
             }
             let successMethod = null;
-
+            let loadLayer = null;
             successMethod = function(data) {
                 var code = data.code;
                 if (code != '0') {
@@ -53,12 +53,17 @@ layui.define(['layer', 'jquery'], function(exports){
                 } else {
                     successFunc(data);
                 }
-                layer.closeAll('loading');
+                if (loadLayer != null) {
+                    layer.close(loadLayer);
+                }
+
             }
 
             if(errFunc == null || typeof(errFunc) == "undefined" || typeof(errFunc) != "function") {
                 errFunc = function(data){
-                    layer.closeAll('loading');
+                    if (loadLayer != null) {
+                        layer.close(loadLayer);
+                    }
                     layer.alert('对不起，55555555555，偶们的系统出错了，'+data.statusText+'，赶紧联系管理员吧', {
                         skin: 'layui-layer-molv'
                         ,closeBtn: 0
@@ -67,7 +72,7 @@ layui.define(['layer', 'jquery'], function(exports){
             }
 
             if (needLoad) {
-                layer.load(1,{
+                loadLayer = layer.load(1,{
                     shade: [0.3,'#fff'] //0.1透明度的白色背景
                 });
             }

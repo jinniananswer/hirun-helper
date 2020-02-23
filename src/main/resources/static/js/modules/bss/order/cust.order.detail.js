@@ -1,4 +1,4 @@
-require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'order-info', 'order-worker', 'order-selectemployee','cust-visit'], function(Vue, element, axios, ajax, vueselect, util, custInfo, orderInfo, orderWorker, orderSelectEmployee,custVisit) {
+require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'order-info', 'order-worker', 'order-selectemployee','cust-visit','order-search-employee', 'order-payment'], function(Vue, element, axios, ajax, vueselect, util, custInfo, orderInfo, orderWorker, orderSelectEmployee,custVisit,orderSearchEmployee,payment) {
     let vm = new Vue({
         el: '#app',
         data: function() {
@@ -12,7 +12,8 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 },
 
                 designEmployeeId : 7,
-
+                orderId: util.getRequest('orderId'),
+                custId: util.getRequest('custId'),
                 sex: '2',
 
                 sexDisable: false,
@@ -22,6 +23,9 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 progress: [-10,70],
 
                 activeTab:'orderInfo',
+
+                eid:null,
+                employeeName:'',
 
 
 
@@ -33,6 +37,8 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     60: '施工',
                     95: '维护'
                 },
+
+                datas:[],
 
                 requirement : {
                     title : '客户需求信息',
@@ -79,14 +85,17 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     }
                 ],
 
-                avatarUrl: 'static/img/male.jpg'
+                avatarUrl: 'static/img/male.jpg',
+
+                pays: []
             }
         },
 
         methods: {
             submit : function() {
-                alert(this.designEmployeeId);
-                this.sexDisable = true;
+                this.pays = this.$refs.paymethods.payments;
+                alert(JSON.stringify(this.pays));
+                alert(JSON.stringify(this.$refs.paymethods2.payments));
             }
         }
     });

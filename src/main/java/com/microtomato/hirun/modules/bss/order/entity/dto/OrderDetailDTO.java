@@ -4,12 +4,12 @@ import lombok.Data;
 
 /**
  * @program: hirun-helper
- * @description: 订单信息数据传输对象
+ * @description: 订单信息数据传输对象,订单信息组件会用到
  * @author: jinnian
  * @create: 2020-02-03 01:21
  **/
 @Data
-public class OrderInfoDTO {
+public class OrderDetailDTO {
 
     private Long orderId;
 

@@ -1,4 +1,4 @@
-require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'order-selectemployee', 'vue-router'], function (Vue, element, axios, ajax, vueselect, util, orderSelectEmployee, vueRouter) {
+require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'order-selectemployee', 'vue-router','house-select'], function (Vue, element, axios, ajax, vueselect, util, orderSelectEmployee, vueRouter,houseSelect) {
     let vm = new Vue({
         el: '#app',
         data: function () {
@@ -8,14 +8,19 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'order-selectem
                     designEmployeeId: '',
                     counselorEmployeeId: '',
                     informationSource: '',
-                    customerStatus: '',
                     customerType: '',
                     reportEmployeeId: '',
                     timeType: '',
-                    startTime: '',
-                    endTime: '',
-                    houseMode: ''
+                    startTime: util.getNowDate(),
+                    endTime: util.getNowDate(),
+                    houseMode: '',
+                    orderStatus:'',
+                    houseId:'',
+                    page:1,
+                    size:10,
+                    total:0
                 },
+
                 custId: '',
                 customerInfo: [],
                 checked: null,
@@ -26,14 +31,14 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'order-selectem
 
         methods: {
             queryCustomer: function () {
+                let that = this;
                 ajax.get('api/customer/cust-base/queryCustomerInfo', this.custQueryCond, function (responseData) {
-                    vm.customerInfo = responseData;
+                    vm.customerInfo = responseData.records;
+                    that.custQueryCond.page = responseData.current;
+                    that.custQueryCond.total = responseData.total;
                 });
             },
 
-            handleClick(row) {
-                console.log(row);
-            },
 
             getTemplateRow(index, row) {
                 this.templateSelection = row;
@@ -41,30 +46,44 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'order-selectem
                 this.mobileNo=row.mobileNo;
             },
 
-            customerVisit() {
-                if (this.custId == '') {
+            customerVisit(custId) {
+/*                if (this.custId == '') {
                     this.$message({
                         showClose: true,
                         message: '请选择一条客户数据再操作',
                         type: 'error'
                     });
                     return;
-                }
-                util.openPage('openUrl?url=modules/bss/cust/cust_visit_manage&custId=' + this.custId, '客户回访');
+                }*/
+                util.openPage('openUrl?url=modules/bss/cust/cust_visit_manage&custId=' + custId, '客户回访');
             },
 
-            customerRuling(){
-                if (this.custId == '') {
+            customerRuling(custId,mobileId){
+/*                if (this.custId == '') {
                     this.$message({
                         showClose: true,
                         message: '请选择一条客户数据再操作',
                         type: 'error'
                     });
                     return;
-                }
-                util.openPage('openUrl?url=modules/bss/cust/cust_ruling&custId=' + this.custId+'&mobileNo='+this.mobileNo, '报备裁定');
+                }*/
+                util.openPage('openUrl?url=modules/bss/cust/cust_ruling&custId=' + custId+'&mobileNo='+mobileId, '报备裁定');
             },
 
+            handleSizeChange: function (size) {
+                this.custQueryCond.size = size;
+                this.custQueryCond.page = 1;
+                this.queryCustomer();
+            },
+
+            handleCurrentChange: function(currentPage){
+                this.custQueryCond.page = currentPage;
+                this.queryCustomer();
+            },
+
+            toOrderDetail(orderId, custId) {
+                util.openPage('openUrl?url=modules/bss/order/cust_order_detail&orderId='+orderId+'&custId='+custId, '订单详情');
+            }
         }
     });
 

@@ -1,9 +1,7 @@
 package com.microtomato.hirun.modules.organization.service.impl;
 
-import com.microtomato.hirun.framework.util.ArrayUtils;
-import com.microtomato.hirun.framework.util.SecurityUtils;
-import com.microtomato.hirun.framework.util.SpringContextUtils;
-import com.microtomato.hirun.framework.util.TimeUtils;
+import com.microtomato.hirun.framework.security.UserContext;
+import com.microtomato.hirun.framework.util.*;
 import com.microtomato.hirun.modules.organization.entity.consts.OrgConst;
 import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeePieStatisticDTO;
@@ -46,8 +44,11 @@ public class EmployeeStatisticServiceImpl implements IEmployeeStatisticService {
      * @return
      */
     @Override
-    public List<EmployeePieStatisticDTO> countBySex(Long orgId) {
-        String orgIds = this.getSecurityOrgIds(orgId);
+    public List<EmployeePieStatisticDTO> countBySex(String orgIds) {
+
+        if(StringUtils.isEmpty(orgIds)){
+            orgIds = this.getSecurityOrgIds(null);
+        }
         List<EmployeePieStatisticDTO> sexStatistics = this.employeeMapper.countBySex(orgIds);
 
         if (ArrayUtils.isNotEmpty(sexStatistics)) {
@@ -64,8 +65,10 @@ public class EmployeeStatisticServiceImpl implements IEmployeeStatisticService {
      * @return
      */
     @Override
-    public List<EmployeePieStatisticDTO> countByAge(Long orgId) {
-        String orgIds = this.getSecurityOrgIds(orgId);
+    public List<EmployeePieStatisticDTO> countByAge(String orgIds) {
+        if(StringUtils.isEmpty(orgIds)){
+            orgIds = this.getSecurityOrgIds(null);
+        }
         List<EmployeePieStatisticDTO> ageStatistics = this.employeeMapper.countByAge(orgIds);
         if (ArrayUtils.isNotEmpty(ageStatistics)) {
             for (EmployeePieStatisticDTO ageStatistic : ageStatistics) {
@@ -76,8 +79,10 @@ public class EmployeeStatisticServiceImpl implements IEmployeeStatisticService {
     }
 
     @Override
-    public List<EmployeePieStatisticDTO> countByJobRoleNature(Long orgId) {
-        String orgIds = this.getSecurityOrgIds(orgId);
+    public List<EmployeePieStatisticDTO> countByJobRoleNature(String orgIds) {
+        if(StringUtils.isEmpty(orgIds)){
+            orgIds = this.getSecurityOrgIds(null);
+        }
         List<EmployeePieStatisticDTO> jobRoleNatureStatistics = this.employeeMapper.countByJobRoleNature(orgIds);
 
         if (ArrayUtils.isNotEmpty(jobRoleNatureStatistics)) {
@@ -93,8 +98,10 @@ public class EmployeeStatisticServiceImpl implements IEmployeeStatisticService {
     }
 
     @Override
-    public List<EmployeePieStatisticDTO> countByCompanyAge(Long orgId) {
-        String orgIds = this.getSecurityOrgIds(orgId);
+    public List<EmployeePieStatisticDTO> countByCompanyAge(String orgIds) {
+        if(StringUtils.isEmpty(orgIds)){
+            orgIds = this.getSecurityOrgIds(null);
+        }
         List<EmployeePieStatisticDTO> ageStatistics = this.employeeMapper.countByCompanyAge(orgIds);
 
         if (ArrayUtils.isNotEmpty(ageStatistics)) {
@@ -106,8 +113,10 @@ public class EmployeeStatisticServiceImpl implements IEmployeeStatisticService {
     }
 
     @Override
-    public List<EmployeePieStatisticDTO> countByEducationLevel(Long orgId) {
-        String orgIds = this.getSecurityOrgIds(orgId);
+    public List<EmployeePieStatisticDTO> countByEducationLevel(String orgIds) {
+        if(StringUtils.isEmpty(orgIds)){
+            orgIds = this.getSecurityOrgIds(null);
+        }
         List<EmployeePieStatisticDTO> educationLevelStatistics = this.employeeMapper.countByEducationLevel(orgIds);
 
         if (ArrayUtils.isNotEmpty(educationLevelStatistics)) {
@@ -123,8 +132,10 @@ public class EmployeeStatisticServiceImpl implements IEmployeeStatisticService {
     }
 
     @Override
-    public List<EmployeePieStatisticDTO> countByType(Long orgId) {
-        String orgIds = this.getSecurityOrgIds(orgId);
+    public List<EmployeePieStatisticDTO> countByType(String orgIds) {
+        if(StringUtils.isEmpty(orgIds)){
+            orgIds = this.getSecurityOrgIds(null);
+        }
         List<EmployeePieStatisticDTO> typeStatistics = this.employeeMapper.countByType(orgIds);
 
         if (ArrayUtils.isNotEmpty(typeStatistics)) {
