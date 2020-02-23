@@ -224,14 +224,18 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
             " IFNULL(x.employee_sum, 0) AS employee_num,y.city,y.type AS org_type" +
             " FROM (" +
             "  SELECT DISTINCT g.org_id,IFNULL(h.job_role, 9999) as job_role,IFNULL(h.job_role_nature, 0) as job_role_nature," +
-            " IFNULL(h.job_grade, 0) as job_grade,IFNULL(g.nature, 0) as nature,g.city as city,g.type as type" +
+            "  IFNULL(g.nature, 0) as nature,g.city as city,g.type as type," +
+            "  case when ISNULL(h.job_grade) ||  LENGTH(trim(h.job_grade))=0  then 0" +
+            "  end as job_grade" +
             " FROM ins_org g" +
             " LEFT JOIN ins_employee_job_role h ON (g.org_id = h.org_id) " +
             " ) y" +
             " LEFT JOIN (" +
             " SELECT k.org_id,IFNULL(k.job_role,9999) as job_role,IFNULL(k.job_role_nature,0) as job_role_nature," +
             " IFNULL(k.nature,0) as nature,sum(less_num) AS less_month_num,sum(more_num) AS more_month_num," +
-            " SUM(employee_num) AS employee_sum,IFNULL(k.job_grade,0) as job_grade" +
+            " SUM(employee_num) AS employee_sum," +
+            " case when ISNULL(k.job_grade) ||  LENGTH(trim(k.job_grade))=0  then 0 " +
+            " end as job_grade" +
             " FROM (" +
             " SELECT" +
             "    CASE WHEN TIMESTAMPDIFF(MONTH, in_date, NOW()) BETWEEN 0 AND 9 AND EXISTS (SELECT 1 FROM ins_employee_job_role c WHERE c.employee_id = b.employee_id AND now() BETWEEN c.start_date AND c.end_date" +
