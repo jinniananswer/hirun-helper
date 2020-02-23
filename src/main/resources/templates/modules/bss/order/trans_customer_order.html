@@ -32,13 +32,21 @@
                             <el-form :inline="false" :rules="rules" label-position="right" label-width="80px" :model="customerConsult" ref="customerConsult">
                                 <el-row>
                                     <el-col :span="8">
-                                        <el-form-item label="客户代表" prop="custServiceEmployeeId" label-width="100px">
-                                            <order-selectemployee role-id="15" v-model="customerConsult.custServiceEmployeeId"></order-selectemployee>
+                                        <el-form-item label="选择客户" prop="custId" label-width="100px">
+                                            <el-input v-model="customerConsult.custName" placeholder="请选择客户" :readonly="custNameReadonly" @click="selectCustomer"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row>
+                                    <el-col :span="8">
+                                        <el-form-item label="咨询时间"  prop="consultTime">
+                                            <el-date-picker v-model="customerConsult.consultTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss">
+                                            </el-date-picker>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="8">
-                                        <el-form-item label="设计师" prop="designEmployeeId" label-width="100px">
-                                            <order-selectemployee role-id="30" v-model="customerConsult.designEmployeeId" ></order-selectemployee>
+                                        <el-form-item label="客户代表" prop="custServiceEmployeeId" label-width="100px">
+                                            <order-selectemployee role-id="15" v-model="customerConsult.custServiceEmployeeId"></order-selectemployee>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="8">
@@ -68,8 +76,8 @@
                                 </el-row>
                                 <el-form-item style="text-align: center ">
                                     <el-button type="primary" @click="save">保存</el-button>
-                                    <el-button type="primary" @click="submitMeasure">提交量房</el-button>
-                                    <el-button type="primary" @click="submitSneak">咨询跑单</el-button>
+                                    <el-button type="primary" @click="submitMeasure">咨询</el-button>
+                                    <el-button type="primary" @click="submitSneak">量房</el-button>
                                 </el-form-item>
                             </el-form>
                         </el-card>
@@ -80,6 +88,43 @@
                     </div>
                 </el-col>
             </el-row>
+            <el-dialog title="请选择客户" :visible.sync="dialogTableVisible" width="80%" close-on-press-escape>
+                <el-table
+                        :data="custInfo"
+                        border
+                        stripe="true"
+                        style="width: 100%">
+                    <el-table-column  width="100"label="选择客户">
+                        <template slot-scope="scope">
+                            <el-button  type="primary" size="mini" @click="handle(scope.row)">选择</el-button>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                            prop="custName"
+                            label="客户姓名"
+                            align="center"
+                            width="120">
+                    </el-table-column>
+                    <el-table-column
+                            prop="houseAddress"
+                            label="详细地址"
+                            align="center"
+                            width="200">
+                    </el-table-column>
+                    <el-table-column
+                            prop="mobileNo"
+                            label="电话"
+                            align="center"
+                            width="150">
+                    </el-table-column>
+                    <el-table-column
+                            prop="custTypeName"
+                            align="center"
+                            label="客户类型"
+                            width="100">
+                    </el-table-column>
+                </el-table>
+            </el-dialog>
         </el-main>
     </el-container>
 </div>
@@ -100,7 +145,7 @@
         padding: 10px;
     }
 </style>
-<script src="../../../static/js/modules/bss/order/customer.consult.js"
-        th:src="@{static/js/modules/bss/order/customer.consult.js(v=${version})}"></script>
+<script src="../../../static/js/modules/bss/order/trans.customer.order"
+        th:src="@{static/js/modules/bss/order/trans.customer.order(v=${version})}"></script>
 </body>
 </html>
