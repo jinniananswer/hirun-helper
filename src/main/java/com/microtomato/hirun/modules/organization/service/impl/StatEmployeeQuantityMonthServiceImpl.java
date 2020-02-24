@@ -500,7 +500,7 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
             float employeeSum = 0f;
             for (int i = 0; i < resultMapList.size(); i++) {
                 employeeSum += Float.parseFloat(resultMapList.get(i).get("employee_num"));
-                resultMap.put("city_count_" + resultMapList.get(i).get("city"), resultMapList.get(i).get("employee_num"));
+                resultMap.put("city_count_" + resultMapList.get(i).get("enterprise_id"), resultMapList.get(i).get("employee_num"));
                 resultMap.put("org_nature_name", this.staticDataService.getCodeName("ORG_NATURE", resultMapList.get(i).get("org_nature")));
                 resultMap.put("job_role_name", this.staticDataService.getCodeName("JOB_ROLE", resultMapList.get(i).get("job_role")));
             }
@@ -519,8 +519,8 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
             if (lastMap.get("city_count_3") == null) {
                 lastMap.put("city_count_3", "0");
             }
-            if (lastMap.get("city_count_1") == null) {
-                lastMap.put("city_count_1", "0");
+            if (lastMap.get("city_count_16") == null) {
+                lastMap.put("city_count_16", "0");
             }
             if (lastMap.get("city_count_4") == null) {
                 lastMap.put("city_count_4", "0");

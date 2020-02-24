@@ -67,9 +67,10 @@ public interface StatEmployeeQuantityMonthMapper extends BaseMapper<StatEmployee
      * @param month
      * @return
      */
-    @Select("select a.org_nature,a.job_role,a.city,CAST(sum(a.employee_num) AS char) as employee_num from stat_employee_quantity_month a  " +
-            "where a.org_nature in (${orgNature})  and a.org_id in (${orgId}) and a.year=${year} and a.month=${month} and a.job_role in (${jobRole}) " +
-            " GROUP BY a.org_nature ,a.job_role, a.city ")
+    @Select("select a.org_nature,a.job_role,CAST(b.enterprise_id as char) as enterprise_id,CAST(sum(a.employee_num) AS char) as employee_num from stat_employee_quantity_month a,ins_org b  " +
+            "where a.org_nature in (${orgNature})  and a.org_id in (${orgId}) and a.year=${year} and a.month=${month} and a.job_role in (${jobRole})" +
+            " and a.org_id=b.org_id" +
+            " GROUP BY a.org_nature ,a.job_role, b.enterprise_id ")
     List<Map<String, String>> companyCountByOrgNatureAndJobRoleAndCity(@Param("year") String year, @Param("month") String month, @Param("orgId") String orgId,@Param("orgNature") String orgNature,@Param("jobRole") String jobRole);
 
     /**
