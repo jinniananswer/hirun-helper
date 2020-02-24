@@ -362,9 +362,10 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
                 //分配默认权限
                 this.userRoleService.createRole(userId, jobRole.getOrgId(), org.getNature(), jobRole.getJobRole());
             } else {
+                EmployeeJobRole oldJobRole = this.employeeJobRoleService.queryLast(employeeDTO.getEmployeeId());
+
                 userDO.modify(employeeDTO.getMobileNo(), null, null);
 
-                EmployeeJobRole oldJobRole = this.employeeJobRoleService.queryLast(employeeDTO.getEmployeeId());
                 if (oldJobRole != null && (!StringUtils.equals(oldJobRole.getJobRole(), jobRole.getJobRole()) || !jobRole.getOrgId().equals(oldJobRole.getOrgId()) || !StringUtils.equals(oldJobRole.getJobGrade(), jobRole.getJobGrade()))) {
                     this.employeeHistoryService.createChangeJobRole(employeeDTO.getEmployeeId(), jobRole, null);
                 }
