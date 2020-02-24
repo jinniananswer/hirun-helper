@@ -619,9 +619,21 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
             for (int i = 0; i < resultMapList.size(); i++) {
                 resultMap.put("org_nature_name", this.staticDataService.getCodeName("ORG_NATURE", resultMapList.get(i).get("org_nature")));
                 resultMap.put("job_role_name", this.staticDataService.getCodeName("JOB_ROLE", resultMapList.get(i).get("job_role")));
-                resultMap.put("employee_num_" + resultMapList.get(i).get("month"), resultMapList.get(i).get("employee_num"));
-                resultMap.put("employee_entry_num_" + resultMapList.get(i).get("month"), resultMapList.get(i).get("employee_entry_quantity"));
-                resultMap.put("employee_destroy_num_" + resultMapList.get(i).get("month"), resultMapList.get(i).get("employee_destroy_quantity"));
+                if(StringUtils.isEmpty(resultMapList.get(i).get("employee_num")+"")){
+                    resultMap.put("employee_num_" + resultMapList.get(i).get("month"), "0");
+                }else{
+                    resultMap.put("employee_num_" + resultMapList.get(i).get("month"), resultMapList.get(i).get("employee_num"));
+                }
+                if(StringUtils.isEmpty(resultMapList.get(i).get("employee_entry_quantity")+"")){
+                    resultMap.put("employee_entry_num_" + resultMapList.get(i).get("month"), "0");
+                }else{
+                    resultMap.put("employee_entry_num_" + resultMapList.get(i).get("month"), resultMapList.get(i).get("employee_entry_quantity"));
+                }
+                if(StringUtils.isEmpty(resultMapList.get(i).get("employee_destroy_quantity")+"")){
+                    resultMap.put("employee_destroy_num_" + resultMapList.get(i).get("month"), "0");
+                }else{
+                    resultMap.put("employee_destroy_num_" + resultMapList.get(i).get("month"), resultMapList.get(i).get("employee_destroy_quantity"));
+                }
             }
             resultList.add(resultMap);
         }
