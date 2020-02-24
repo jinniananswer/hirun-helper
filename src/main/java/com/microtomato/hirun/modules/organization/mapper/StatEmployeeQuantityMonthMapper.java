@@ -81,10 +81,10 @@ public interface StatEmployeeQuantityMonthMapper extends BaseMapper<StatEmployee
      * @param orgId
      * @return
      */
-    @Select("select a.org_nature,a.`month`,a.job_role,SUM(a.employee_num) as employee_num,IFNULL(b.employee_entry_quantity,0) as employee_entry_quantity ,IFNULL(b.employee_destroy_quantity,0) as employee_destroy_quantity " +
+    @Select("select a.org_nature,a.`month`,a.job_role,SUM(a.employee_num) as employee_num,IFNULL(sum(b.employee_entry_quantity),0) as employee_entry_quantity ,IFNULL(sum(b.employee_destroy_quantity),0) as employee_destroy_quantity " +
             "from stat_employee_quantity_month a " +
             "LEFT JOIN stat_employee_transition b " +
-            "on (a.job_role=b.job_role and a.org_nature=b.org_nature and a.`month`=b.`month` and a.job_role_nature=b.job_role_nature and a.job_grade=b.job_grade) " +
+            "on (a.job_role=b.job_role and a.org_nature=b.org_nature and a.`month`=b.`month` and a.job_role_nature=b.job_role_nature and a.job_grade=b.job_grade and a.org_id=b.org_id) " +
             "where a.org_id in (${orgId}) and a.year=${year} and a.org_nature in (${orgNature}) " +
             "group by a.org_nature,a.job_role,a.`month`")
     List<Map<String, String>> busiCountByOrgNatureAndJobRole(@Param("year") String year, @Param("orgNature") String orgNature, @Param("orgId") String orgId);
