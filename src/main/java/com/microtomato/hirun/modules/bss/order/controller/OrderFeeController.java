@@ -1,8 +1,10 @@
 package com.microtomato.hirun.modules.bss.order.controller;
 
 import com.microtomato.hirun.framework.annotation.RestResult;
+import com.microtomato.hirun.modules.bss.customer.entity.dto.CustConsultDTO;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.CustPreparationDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeDTO;
+import com.microtomato.hirun.modules.bss.order.entity.po.OrderConsult;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFee;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,12 +54,46 @@ public class OrderFeeController {
         return orderFeeServiceImpl.loadDesignFeeInfo(orderId);
     }
 
-    @PostMapping("/auditUpdate")
+    @PostMapping("/loadProjectFeeInfo")
     @RestResult
-    public void auditUpdate(OrderFeeDTO orderFee){
-        System.out.print("orderFee=====gggggg===="+orderFee);
-        orderFeeServiceImpl.auditUpdate(orderFee);
+    public OrderFeeDTO loadProjectFeeInfo(Long orderId,String period){
+        System.out.print("orderId=====rrrrrrrrr===="+orderId);
+        System.out.print("period=====rrrrrrrrr===="+period);
+        return orderFeeServiceImpl.loadDesignFeeInfo(orderId);
     }
 
+    @PostMapping("/auditUpdateForDesign")
+    @RestResult
+    public void auditUpdateForDesign(OrderFeeDTO orderFee){
+        System.out.print("orderFee=====gggggg===="+orderFee);
+        orderFeeServiceImpl.auditUpdateForTotal(orderFee);
+    }
+
+    @PostMapping("/auditUpdateForProject")
+    @RestResult
+    public void auditUpdateForProject(OrderFeeDTO orderFee){
+        System.out.print("orderFee=====gggggg===="+orderFee);
+        orderFeeServiceImpl.auditUpdateForTotal(orderFee);
+    }
+
+//    @PostMapping("/auditUpdate")
+//    @RestResult
+//    public void auditUpdate(OrderFeeDTO orderFee){
+//        System.out.print("orderFee=====gggggg===="+orderFee);
+//        orderFeeServiceImpl.auditUpdate(orderFee);
+//    }
+
+//初始化方法
+    @GetMapping("/queryOrderConsult")
+    @RestResult
+    public OrderFee queryOrderCollectFee(Long orderId){
+        return orderFeeServiceImpl.queryOrderCollectFee(orderId);
+    }
+//费用审核
+    @PostMapping("/submitAudit")
+    @RestResult
+    public void submitAudit(OrderFeeDTO dto) {
+        orderFeeServiceImpl.submitAudit(dto);
+    }
 
 }

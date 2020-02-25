@@ -1,15 +1,23 @@
 package com.microtomato.hirun.modules.bss.order.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.security.UserContext;
+import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
+import com.microtomato.hirun.modules.bss.customer.entity.dto.CustConsultDTO;
+import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerDTO;
+import com.microtomato.hirun.modules.bss.order.entity.po.OrderConsult;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFee;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPaymoney;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderFeeMapper;
+import com.microtomato.hirun.modules.bss.order.service.IOrderDomainService;
 import com.microtomato.hirun.modules.bss.order.service.IOrderFeeService;
 import com.microtomato.hirun.modules.bss.order.service.IOrderPaymoneyService;
+import com.microtomato.hirun.modules.bss.order.service.IOrderWorkerService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import com.microtomato.hirun.modules.system.service.IFeeItemCfgService;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +42,12 @@ import java.util.List;
 @Slf4j
 @Service
 public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> implements IOrderFeeService {
+
+    @Autowired
+    private IOrderWorkerService workerService;
+
+    @Autowired
+    private IOrderDomainService orderDomainService;
 
     @Autowired
     private IOrderPaymoneyService paymoneyServiceService;
@@ -70,8 +84,8 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
         //保存orderFeeNew信息--插入设计费小类信息
         OrderFee orderFeeNew = new OrderFee();
         BeanUtils.copyProperties(dto, orderFeeNew);
-       // orderFeeNew.setFee(dto.getCollectedFee());
-       // orderFeeNew.setActFee(dto.getCollectedFee());
+        // orderFeeNew.setFee(dto.getCollectedFee());
+        // orderFeeNew.setActFee(dto.getCollectedFee());
         orderFeeNew.setParentFeeItemId((long) 1);
         this.addOrderFee(orderFeeNew);
 
@@ -96,7 +110,7 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
         this.addOrderPaymoney(dto,orderFee.getId());
     }
 
-    @Override
+    //@Override
     public void addOrderFee(OrderFee orderFee) {
         UserContext userContext = WebContextUtils.getUserContext();
         orderFee.setFeeEmployeeId(userContext.getEmployeeId());
@@ -117,7 +131,7 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
         orderFeeUpdate.setUpdateTime(LocalDateTime.now());
         orderFeeUpdate.setUpdateUserId(userContext.getEmployeeId());
         updateWrapper.eq("order_id",orderFee.getOrderId());
-         this.update(orderFeeUpdate,updateWrapper);
+        this.update(orderFeeUpdate,updateWrapper);
     }
 
     @Override
@@ -209,7 +223,7 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
     @Override
     public OrderFeeDTO loadDesignFeeInfo(Long orderId) {
         System.out.print("orderId====33333333333333======"+orderId.toString());
-        List<OrderFeeDTO> orderFeeList = this.orderFeeMapper.loadDesignFeeInfo(orderId);
+        List<OrderFeeDTO> orderFeeList = this.orderFeeMapper.loadFeeTotalInfo(orderId,1);
         System.out.print("orderFeeList=========="+orderFeeList);
         if (orderFeeList.size() <= 0) {
             return null;
@@ -262,9 +276,9 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
         return returnFeeDTO;
     }
 
-    @Override
+   // @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
-    public void auditUpdate(OrderFeeDTO dto) {
+    public void auditUpdateForTotal(OrderFeeDTO dto) {
         System.out.print("OrderFeeDTO======" + dto.toString());
         OrderFee orderFee = new OrderFee();
         BeanUtils.copyProperties(dto, orderFee);
@@ -301,6 +315,38 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
         }
 
 
+    }
 
+    @Override
+    public OrderFee queryOrderCollectFee(Long orderId) {
+        OrderFee orderFee = null;
+        orderFee = this.baseMapper.selectOne(new QueryWrapper<OrderFee>().lambda()
+                .eq(OrderFee::getOrderId, orderId));
+
+        if (orderFee == null) {
+            List<OrderWorkerDTO> workerList = workerService.queryByOrderId(orderId);
+            if (ArrayUtils.isEmpty(workerList)) {
+                return null;
+            }
+
+            orderFee = new OrderFee();
+            for (OrderWorkerDTO dto : workerList) {
+                if (dto.getRoleId().equals(15L)) {
+                    //  OrderFee.setCustServiceEmployeeId(dto.getEmployeeId());
+                } else if (dto.getRoleId().equals(30L)) {
+                    //  OrderFee.setDesignEmployeeId(dto.getEmployeeId());
+                }
+            }
+        }
+        return orderFee;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    public void submitAudit(OrderFeeDTO dto) {
+        //进行数据更新
+       // this.saveCustomerConsultInfo(dto);
+        System.out.println("hhahahhahaa");
+        orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_NEXT_STEP);
     }
 }
