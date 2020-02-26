@@ -99,9 +99,9 @@ END $$
 DELIMITER ;
 
 -- 插入测试数据
-INSERT INTO sequence VALUES ('SEQ_ID_MAX_CYCLE', 0, 0, 20, 1, 'max_cycle', now());
-INSERT INTO sequence VALUES ('SEQ_ID_DAY_CYCLE', 0, 0, 2000, 1, 'day_cycle', now());
-INSERT INTO sequence VALUES ('SEQ_ID_MINUTE_CYCLE', 0, 0, 2000, 1, 'minute_cycle', now());
+INSERT INTO sequence VALUES ('SEQ_ID_MAX_CYCLE', 0, 0, 99999999, 1, 'max_cycle', now());
+INSERT INTO sequence VALUES ('SEQ_ID_DAY_CYCLE', 0, 0, 99999999, 1, 'day_cycle', now());
+INSERT INTO sequence VALUES ('SEQ_ID_MINUTE_CYCLE', 0, 0, 99999999, 1, 'minute_cycle', now());
 
 -- 序列测试验证
 select nextval('SEQ_ID_MAX_CYCLE');

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>dolphin-admin</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script src="static/js/framework/requirejs/require.min.js"
+            th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js"
+            th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-main>
+            <el-row :gutter="12">
+                <el-col :span="6">
+                    <div class="grid-content bg-purple">
+                        <cust-info :cust-id="collectFee.custId"></cust-info>
+
+                        <order-worker :order-id="collectFee.orderId"></order-worker>
+                    </div>
+                </el-col>
+                <el-col :span="18">
+                    <div class="grid-content bg-purple-light">
+                        <order-info :order-id="collectFee.orderId"></order-info>
+                        <el-card class="box-card">
+                            <div slot="header">
+                                <span>操作区</span>
+                            </div>
+                            <el-form :inline="false" :rules="rules" label-position="right" label-width="80px" :model="collectFee" ref="collectFee">
+<!--                                <el-row>-->
+<!--                                    <el-col :span="8">-->
+<!--                                        <el-form-item label="客户代表" prop="custServiceEmployeeId" label-width="100px">-->
+<!--                                            <order-selectemployee role-id="15" v-model="customerConsult.custServiceEmployeeId"></order-selectemployee>-->
+<!--                                        </el-form-item>-->
+<!--                                    </el-col>-->
+<!--                                    <el-col :span="8">-->
+<!--                                        <el-form-item label="设计师" prop="designEmployeeId" label-width="100px">-->
+<!--                                            <order-selectemployee role-id="30" v-model="customerConsult.designEmployeeId" ></order-selectemployee>-->
+<!--                                        </el-form-item>-->
+<!--                                    </el-col>-->
+<!--                                    <el-col :span="8">-->
+<!--                                        <el-form-item label="橱柜设计师" prop="designCupboardEmployeeId" label-width="100px">-->
+<!--                                            <order-selectemployee role-id="45" v-model="customerConsult.designCupboardEmployeeId" ></order-selectemployee>-->
+<!--                                        </el-form-item>-->
+<!--                                    </el-col>-->
+<!--                                </el-row>-->
+<!--                                <el-row>-->
+<!--                                    <el-col :span="8">-->
+<!--                                        <el-form-item label="主材管家" prop="mainMaterialKeeperEmployeeId" label-width="100px">-->
+<!--                                            <order-selectemployee role-id="46" v-model="customerConsult.mainMaterialKeeperEmployeeId"></order-selectemployee>-->
+<!--                                        </el-form-item>-->
+<!--                                    </el-col>-->
+<!--                                    <el-col :span="8">-->
+<!--                                        <el-form-item label="橱柜管家" prop="cupboardKeeperEmployeeId" label-width="100px">-->
+<!--                                            <order-selectemployee role-id="46" v-model="customerConsult.cupboardKeeperEmployeeId"></order-selectemployee>-->
+<!--                                        </el-form-item>-->
+<!--                                    </el-col>-->
+<!--                                </el-row>-->
+<!--                                <el-row>-->
+<!--                                    <el-col :span="24">-->
+<!--                                        <el-form-item label="咨询备注" prop="consultRemark" label-width="100px">-->
+<!--                                            <el-input type="textarea" v-model="customerConsult.consultRemark"></el-input>-->
+<!--                                        </el-form-item>-->
+<!--                                    </el-col>-->
+<!--                                </el-row>-->
+                                <el-form-item style="text-align: center ">
+                                    <el-button type="primary" @click="save">保存</el-button>
+                                    <el-button type="primary" @click="submitAudit">提交审核</el-button>
+<!--                                    <el-button type="primary" @click="submitSneak">咨询跑单</el-button>-->
+                                </el-form-item>
+                            </el-form>
+                        </el-card>
+
+                        </el-card>
+                    </div>
+                </el-col>
+            </el-row>
+        </el-main>
+    </el-container>
+</div>
+<style>
+    .text {
+        font-size: 14px;
+    }
+
+    .item {
+        margin-bottom: 18px;
+    }
+
+    .box-card {
+        margin-bottom: 12px;
+    }
+
+    .el-card__header {
+        padding: 10px;
+    }
+</style>
+<script src="../../../static/js/modules/bss/order/cost_audit.js"
+        th:src="@{static/js/modules/bss/order/cost_audit.js(v=${version})}"></script>
+</body>
+</html>
