@@ -55,7 +55,7 @@
                                         <el-form-item label="享受活动">
                                             <el-select v-model="budget.activityId" placeholder="请选择" style="width: 100%">
                                                 <el-option
-                                                        v-for="activity in budget.activities"
+                                                        v-for="activity in activities"
                                                         :key="activity.value"
                                                         :label="activity.name"
                                                         :value="activity.value">
@@ -65,7 +65,7 @@
                                     </el-col>
                                     <el-col :span="12">
                                         <el-form-item label="对审人">
-                                            <order-selectemployee role-id="30" v-model="budget.checkUserId"></order-selectemployee>
+                                            <order-selectemployee v-model="budget.checkEmployeeId" role-id="15"></order-selectemployee>
                                             <!--<el-select v-model="budget.checkUserId" placeholder="请选择" required="true"-->
                                                        <!--:disabled = "isCheckFailed">-->
                                                 <!--<el-option-->

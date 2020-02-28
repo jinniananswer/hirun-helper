@@ -3,11 +3,13 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
         el: '#app',
         data() {
             return {
+                activeName : 'second',
                 decorateContract: {
+                    contractNo : '',
                     orderId : '',
                     signDate : util.getNowDate(),
-                    contractStartDate : util.getNowDate(),
-                    contractEndDate : '',
+                    StartDate : util.getNowDate(),
+                    EndDate : '',
                     chargeSecondFeeDate : '',
                     busiLevel : '',
                     environmentalTestingAgency: '',
@@ -67,6 +69,9 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
             },
             uploadDecorateContract : function () {
                 alert('上传合同附件')
+            },
+            handleClick(tab, event) {
+                console.log(tab, event);
             }
         }
     });
