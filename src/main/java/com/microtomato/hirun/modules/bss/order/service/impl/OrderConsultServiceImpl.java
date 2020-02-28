@@ -78,24 +78,24 @@ public class OrderConsultServiceImpl extends ServiceImpl<OrderConsultMapper, Ord
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void saveCustomerConsultInfo(CustConsultDTO dto) {
 
-        OrderConsult orderConsult=new OrderConsult();
-        BeanUtils.copyProperties(dto,orderConsult);
+        OrderConsult orderConsult = new OrderConsult();
+        BeanUtils.copyProperties(dto, orderConsult);
 
-        if(dto.getId()==null){
+        if (dto.getId() == null) {
             this.baseMapper.insert(orderConsult);
-        }else{
+        } else {
             this.baseMapper.updateById(orderConsult);
         }
-        workerService.updateOrderWorker(dto.getOrderId(),15L,dto.getCustServiceEmployeeId());
-        workerService.updateOrderWorker(dto.getOrderId(),45L,dto.getDesignCupboardEmployeeId());
-        workerService.updateOrderWorker(dto.getOrderId(),46L,dto.getMainMaterialKeeperEmployeeId());
-        workerService.updateOrderWorker(dto.getOrderId(),47L,dto.getCupboardKeeperEmployeeId());
-        if(dto.getDesignEmployeeId()!=null){
-            workerService.updateOrderWorker(dto.getOrderId(),30L,dto.getDesignEmployeeId());
+        workerService.updateOrderWorker(dto.getOrderId(), 15L, dto.getCustServiceEmployeeId());
+        workerService.updateOrderWorker(dto.getOrderId(), 45L, dto.getDesignCupboardEmployeeId());
+        workerService.updateOrderWorker(dto.getOrderId(), 46L, dto.getMainMaterialKeeperEmployeeId());
+        workerService.updateOrderWorker(dto.getOrderId(), 47L, dto.getCupboardKeeperEmployeeId());
+        if (dto.getDesignEmployeeId() != null) {
+            workerService.updateOrderWorker(dto.getOrderId(), 30L, dto.getDesignEmployeeId());
         }
         //更新客户表中的咨询时间
-        OrderBase orderBase=orderBaseService.getById(dto.getOrderId());
-        custBaseService.update(new UpdateWrapper<CustBase>().lambda().eq(CustBase::getCustId,orderBase.getCustId()).set(CustBase::getConsultTime,dto.getConsultTime()));
+        OrderBase orderBase = orderBaseService.getById(dto.getOrderId());
+        custBaseService.update(new UpdateWrapper<CustBase>().lambda().eq(CustBase::getCustId, orderBase.getCustId()).set(CustBase::getConsultTime, dto.getConsultTime()));
     }
 
     @Override
@@ -114,6 +114,6 @@ public class OrderConsultServiceImpl extends ServiceImpl<OrderConsultMapper, Ord
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void transOrder(CustConsultDTO dto) {
         this.saveCustomerConsultInfo(dto);
-        orderDomainService.orderStatusTrans(dto.getOrderId(),OrderConst.OPER_NEXT_STEP);
+        orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_NEXT_STEP);
     }
 }

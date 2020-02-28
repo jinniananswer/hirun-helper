@@ -10,6 +10,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                     designEmployeeId:'',
                     cupboardKeeperEmployeeId: '',
                     consultRemark: '',
+                    consultTime:'',
                     orderId:util.getRequest('orderId'),
                     id:'',
                     custId:util.getRequest('custId'),
