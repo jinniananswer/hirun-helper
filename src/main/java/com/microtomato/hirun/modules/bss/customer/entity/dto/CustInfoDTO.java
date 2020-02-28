@@ -116,4 +116,6 @@ public class CustInfoDTO {
     private Integer prepareStatus;
 
     private String prepareStatusName;
+
+    private Long orderId;
 }

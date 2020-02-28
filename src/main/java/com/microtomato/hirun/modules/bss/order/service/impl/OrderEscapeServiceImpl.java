@@ -52,11 +52,11 @@ public class OrderEscapeServiceImpl extends ServiceImpl<OrderEscapeMapper, Order
 
     @Override
     public void saveOrderEscape(OrderEscape orderEscape) {
-        if(orderEscape.getId()==null){
+        if (orderEscape.getId() == null) {
             //设置状态为未审核
             orderEscape.setEscapeStatus("1");
             this.baseMapper.insert(orderEscape);
-        }else{
+        } else {
             this.baseMapper.updateById(orderEscape);
         }
 
@@ -83,28 +83,28 @@ public class OrderEscapeServiceImpl extends ServiceImpl<OrderEscapeMapper, Order
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void submitDirectorAudit(OrderEscape orderEscape) {
         this.saveOrderEscape(orderEscape);
-        UserContext userContext= WebContextUtils.getUserContext();
+        UserContext userContext = WebContextUtils.getUserContext();
         //主管走NEXT_DIRECTOR，组长走NEXT_HEADMAN
-        domainService.orderStatusTrans(orderEscape.getOrderId(),"NEXT_DIRECTOR");
+        domainService.orderStatusTrans(orderEscape.getOrderId(), "NEXT_DIRECTOR");
         //todo 怎么将单子流转到选中的主管去，因为客户代表与设计师还有其他的角色对应的上级角色不一样
-       EmployeeInfoDTO infoDTO= employeeService.queryEmployeeInfoByEmployeeId(userContext.getEmployeeId());
-       Long parentEmployeeId=infoDTO.getParentEmployeeId();
-       //19客户代表用作测试
-        workerService.updateOrderWorker(orderEscape.getOrderId(),48L,1473L);
+        EmployeeInfoDTO infoDTO = employeeService.queryEmployeeInfoByEmployeeId(userContext.getEmployeeId());
+        Long parentEmployeeId = infoDTO.getParentEmployeeId();
+        //19客户代表用作测试
+        workerService.updateOrderWorker(orderEscape.getOrderId(), 19L, parentEmployeeId);
 
     }
 
     @Override
     public void submitBack(OrderEscape orderEscape) {
         //如果id不为空，则说明已保存过跑单数据，应将跑单数据改成失效，一个客户有效的跑单数据只有一条
-        if(orderEscape.getId()!=null){
+        if (orderEscape.getId() != null) {
             orderEscape.setEscapeStatus("2");
             this.baseMapper.updateById(orderEscape);
         }
         //跑单返回到上一个步骤需要从订单表中取上一个步骤的数据，不能单纯的通过orderStatusTrans方法，因为可以从很多环节做跑单
-        OrderBase orderBase=orderBaseService.queryByOrderId(orderEscape.getOrderId());
-        Integer previousStage=orderBase.getPreviousStage();
-        String previousStatus=orderBase.getPreviousStatus();
+        OrderBase orderBase = orderBaseService.queryByOrderId(orderEscape.getOrderId());
+        Integer previousStage = orderBase.getPreviousStage();
+        String previousStatus = orderBase.getPreviousStatus();
         orderBase.setStage(previousStage);
         orderBase.setStatus(previousStatus);
         orderBase.setPreviousStage(100);
@@ -117,14 +117,14 @@ public class OrderEscapeServiceImpl extends ServiceImpl<OrderEscapeMapper, Order
     public void closeOrder(OrderEscape orderEscape) {
         orderEscape.setEscapeStatus("2");
         this.baseMapper.updateById(orderEscape);
-        domainService.orderStatusTrans(orderEscape.getOrderId(),"NEXT");
+        domainService.orderStatusTrans(orderEscape.getOrderId(), "NEXT");
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void auditBack(OrderEscape orderEscape) {
         this.baseMapper.updateById(orderEscape);
-        domainService.orderStatusTrans(orderEscape.getOrderId(),"AUDIT_NO");
+        domainService.orderStatusTrans(orderEscape.getOrderId(), "AUDIT_NO");
     }
 
 

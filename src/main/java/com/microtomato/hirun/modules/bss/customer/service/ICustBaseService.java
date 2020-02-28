@@ -26,4 +26,6 @@ public interface ICustBaseService extends IService<CustBase> {
     IPage<CustInfoDTO> queryCustomerInfo(CustQueryCondDTO condDTO);
 
     List<CustInfoDTO> queryCustomerInfoByMobile(String mobileNo);
+
+    List<CustInfoDTO> queryCustomer4TransOrder();
 }

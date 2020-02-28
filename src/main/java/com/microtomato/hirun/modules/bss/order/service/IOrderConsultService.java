@@ -25,4 +25,6 @@ public interface IOrderConsultService extends IService<OrderConsult> {
     void submitMeasure(CustConsultDTO dto);
 
     void submitSneak(CustConsultDTO dto);
+
+    void transOrder(CustConsultDTO dto);
 }

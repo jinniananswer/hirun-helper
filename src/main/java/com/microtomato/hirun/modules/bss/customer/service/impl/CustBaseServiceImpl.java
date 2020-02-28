@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.framework.security.UserContext;
+import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.CustInfoDTO;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.CustQueryCondDTO;
 import com.microtomato.hirun.modules.bss.customer.entity.po.CustBase;
@@ -96,9 +98,9 @@ public class CustBaseServiceImpl extends ServiceImpl<CustBaseMapper, CustBase> i
         Page<CustQueryCondDTO> page = new Page<>(condDTO.getPage(), condDTO.getSize());
 
         queryWrapper.like(StringUtils.isNotEmpty(condDTO.getCustName()), "a.cust_name", condDTO.getCustName());
-        queryWrapper.eq(condDTO.getHouseId()!=null, "c.house_id", condDTO.getHouseId());
+        queryWrapper.eq(condDTO.getHouseId() != null, "c.house_id", condDTO.getHouseId());
         queryWrapper.eq(StringUtils.isNotEmpty(condDTO.getHouseMode()), "c.house_mode", condDTO.getHouseMode());
-        queryWrapper.eq(condDTO.getReportEmployeeId()!=null, "b.prepare_employee_id", condDTO.getHouseMode());
+        queryWrapper.eq(condDTO.getReportEmployeeId() != null, "b.prepare_employee_id", condDTO.getHouseMode());
         queryWrapper.apply(" a.cust_id=c.party_id");
         queryWrapper.orderByDesc("a.create_time");
 
@@ -109,16 +111,16 @@ public class CustBaseServiceImpl extends ServiceImpl<CustBaseMapper, CustBase> i
         List<CustInfoDTO> custInfoDTOList = iPage.getRecords();
         for (CustInfoDTO dto : custInfoDTOList) {
             dto.setPrepareEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getPrepareEmployeeId()));
-            if(StringUtils.equals(dto.getCustProperty(),"6")){
+            if (StringUtils.equals(dto.getCustProperty(), "6")) {
                 dto.setCustPropertyName("主管补备");
-            }else{
+            } else {
                 dto.setCustPropertyName(staticDataService.getCodeName("CUSTOMER_PROPERTY", dto.getCustProperty()));
             }
             dto.setPrepareEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getPrepareEmployeeId()));
-            dto.setHouseModeName(staticDataService.getCodeName("HOUSE_MODE",dto.getHouseModeName()));
-            dto.setHouseAddress(housesService.queryHouseName(dto.getHouseId())+" |"+dto.getHouseBuilding()+" |"+dto.getHouseRoomNo());
+            dto.setHouseModeName(staticDataService.getCodeName("HOUSE_MODE", dto.getHouseModeName()));
+            dto.setHouseAddress(housesService.queryHouseName(dto.getHouseId()) + " |" + dto.getHouseBuilding() + " |" + dto.getHouseRoomNo());
             dto.setRulingEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getRulingEmployeeId()));
-            dto.setPrepareStatusName(staticDataService.getCodeName("PREPARATION_STATUS",dto.getPrepareStatus()+""));
+            dto.setPrepareStatusName(staticDataService.getCodeName("PREPARATION_STATUS", dto.getPrepareStatus() + ""));
         }
         return iPage;
     }
@@ -141,6 +143,13 @@ public class CustBaseServiceImpl extends ServiceImpl<CustBaseMapper, CustBase> i
         return custList;
     }
 
+    @Override
+    public List<CustInfoDTO> queryCustomer4TransOrder() {
+        UserContext userContext = WebContextUtils.getUserContext();
+        List<CustInfoDTO> list = this.baseMapper.queryCustomer4TransOrder(userContext.getEmployeeId());
+        return list;
+    }
+
     /**
      * 判断是否在前台选择做老客户的选择
      *
@@ -157,7 +166,7 @@ public class CustBaseServiceImpl extends ServiceImpl<CustBaseMapper, CustBase> i
         if (dto.getPrepareId() == null) {
             dto.setAllowSelect(true);
         } else if (StringUtils.equals(dto.getStatus(), "1")
-                && (Duration.between(dto.getPreparationExpireTime(),LocalDateTime.now()).toMillis()) > 0) {
+                && (Duration.between(dto.getPreparationExpireTime(), LocalDateTime.now()).toMillis()) > 0) {
             dto.setAllowSelect(true);
         } else {
             dto.setAllowSelect(false);
