@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.framework.security.UserContext;
+import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.CustInfoDTO;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.CustQueryCondDTO;
 import com.microtomato.hirun.modules.bss.customer.entity.po.CustBase;
@@ -139,6 +141,14 @@ public class CustBaseServiceImpl extends ServiceImpl<CustBaseMapper, CustBase> i
             dto.setStatus(staticDataService.getCodeName("PREPARATION_STATUS", dto.getStatus()));
         }
         return custList;
+    }
+
+    @Override
+    public List<CustInfoDTO> queryCustomer4TransOrder() {
+        UserContext userContext= WebContextUtils.getUserContext();
+        List<CustInfoDTO> list=this.baseMapper.queryCustomer4TransOrder(userContext.getEmployeeId());
+
+        return list;
     }
 
     /**

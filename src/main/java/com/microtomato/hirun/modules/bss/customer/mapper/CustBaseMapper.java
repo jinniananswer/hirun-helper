@@ -47,4 +47,10 @@ public interface CustBaseMapper extends BaseMapper<CustBase> {
     )
     List<CustInfoDTO> queryCustomerInfoByMobile(@Param("mobileNo") String mobileNo);
 
+    @Select("select c.cust_no,cust_name,b.decorate_address as house_address,b.order_id " +
+            " from order_worker a,order_base b ,cust_base c " +
+            " where a.order_id=b.order_id and a.role_id='15' and now() between a.start_date and a.end_date and b.cust_id=c.cust_id " +
+            " and b.status='1' and c.cust_status='0'  " +
+            " and a.employee_id=#{employeeId}")
+    List<CustInfoDTO> queryCustomer4TransOrder(@Param("employeeId") Long employeeId);
 }

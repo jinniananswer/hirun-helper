@@ -11,8 +11,8 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                     escapeCause: '',
                     escapeTime: util.getNowDate(),
                     escapeRemark: '',
-                    orderId: '2',
-                    custId: '365',
+                    orderId: util.getRequest('orderId'),
+                    custId: util.getRequest('custId'),
                     id: '',
                     status: ''
                 },

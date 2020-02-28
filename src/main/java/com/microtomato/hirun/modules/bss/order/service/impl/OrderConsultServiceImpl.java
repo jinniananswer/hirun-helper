@@ -1,16 +1,22 @@
 package com.microtomato.hirun.modules.bss.order.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.CustConsultDTO;
+import com.microtomato.hirun.modules.bss.customer.entity.po.CustBase;
+import com.microtomato.hirun.modules.bss.customer.service.ICustBaseService;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerDTO;
+import com.microtomato.hirun.modules.bss.order.entity.po.OrderBase;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderConsult;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderConsultMapper;
+import com.microtomato.hirun.modules.bss.order.service.IOrderBaseService;
 import com.microtomato.hirun.modules.bss.order.service.IOrderConsultService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.modules.bss.order.service.IOrderDomainService;
 import com.microtomato.hirun.modules.bss.order.service.IOrderWorkerService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,6 +44,11 @@ public class OrderConsultServiceImpl extends ServiceImpl<OrderConsultMapper, Ord
     @Autowired
     private IOrderDomainService orderDomainService;
 
+    @Autowired
+    private IOrderBaseService orderBaseService;
+
+    @Autowired
+    private ICustBaseService custBaseService;
 
     @Override
     public OrderConsult queryOrderConsult(Long orderId) {
@@ -79,7 +90,12 @@ public class OrderConsultServiceImpl extends ServiceImpl<OrderConsultMapper, Ord
         workerService.updateOrderWorker(dto.getOrderId(),45L,dto.getDesignCupboardEmployeeId());
         workerService.updateOrderWorker(dto.getOrderId(),46L,dto.getMainMaterialKeeperEmployeeId());
         workerService.updateOrderWorker(dto.getOrderId(),47L,dto.getCupboardKeeperEmployeeId());
-        workerService.updateOrderWorker(dto.getOrderId(),30L,dto.getCupboardKeeperEmployeeId());
+        if(dto.getDesignEmployeeId()!=null){
+            workerService.updateOrderWorker(dto.getOrderId(),30L,dto.getDesignEmployeeId());
+        }
+        //更新客户表中的咨询时间
+        OrderBase orderBase=orderBaseService.getById(dto.getOrderId());
+        custBaseService.update(new UpdateWrapper<CustBase>().lambda().eq(CustBase::getCustId,orderBase.getCustId()).set(CustBase::getConsultTime,dto.getConsultTime()));
     }
 
     @Override
@@ -92,5 +108,12 @@ public class OrderConsultServiceImpl extends ServiceImpl<OrderConsultMapper, Ord
     @Override
     public void submitSneak(CustConsultDTO dto) {
         orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_RUN);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    public void transOrder(CustConsultDTO dto) {
+        this.saveCustomerConsultInfo(dto);
+        orderDomainService.orderStatusTrans(dto.getOrderId(),OrderConst.OPER_NEXT_STEP);
     }
 }

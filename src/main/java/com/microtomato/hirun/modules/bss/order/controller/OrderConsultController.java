@@ -49,4 +49,10 @@ public class OrderConsultController {
     public void submitSneak(CustConsultDTO dto) {
         orderConsultServiceImpl.submitSneak(dto);
     }
+
+    @PostMapping("/transOrder")
+    @RestResult
+    public void transOrder(CustConsultDTO dto) {
+        orderConsultServiceImpl.submitMeasure(dto);
+    }
 }

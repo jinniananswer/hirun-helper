@@ -10,9 +10,9 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                     designEmployeeId:'',
                     cupboardKeeperEmployeeId: '',
                     consultRemark: '',
-                    orderId:'2',
+                    orderId:util.getRequest('orderId'),
                     id:'',
-                    custId:'263'
+                    custId:util.getRequest('custId'),
                 },
                 progress: [-10, 70],
                 activeTab: 'orderInfo',
@@ -65,7 +65,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
             save(customerConsult) {
                 this.$refs.customerConsult.validate((valid) => {
                     if (valid) {
-                        ajax.post('api/order/order-consult/saveCustomerConsultInfo', this.customerConsult);
+                        ajax.post('api/order/order-consult/saveCustomerConsultInfo', this.customerConsult,null,null,true);
                     }
                 })
             },
