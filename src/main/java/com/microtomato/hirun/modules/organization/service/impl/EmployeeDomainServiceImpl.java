@@ -351,14 +351,14 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
                 userDO.modify(employeeDTO.getMobileNo(), UserConst.INIT_PASSWORD, UserConst.STATUS_NORMAL);
                 employeeDO.rehire(employee, jobRole, workExperiences, keyMen);
                 //新增部门异动记录
-                transitionService.addEmployeeEntryTransition(employeeDTO.getEmployeeJobRole().getOrgId(), employeeDTO.getEmployeeId(), LocalDate.now());
+                transitionService.addEmployeeEntryTransition(employeeDTO.getEmployeeJobRole().getOrgId(), employeeDTO.getEmployeeId(), employeeDTO.getInDate().toLocalDate());
                 //分配默认权限
                 this.userRoleService.createRole(userId, jobRole.getOrgId(), jobRole.getJobRole(), org.getNature());
             } else if (StringUtils.equals(createType, EmployeeConst.CREATE_TYPE_REHELLORING)) {
                 userDO.modify(employeeDTO.getMobileNo(), UserConst.INIT_PASSWORD, UserConst.STATUS_NORMAL);
                 employeeDO.rehelloring(employee, jobRole, workExperiences, keyMen);
                 //新增部门异动记录
-                transitionService.addEmployeeEntryTransition(employeeDTO.getEmployeeJobRole().getOrgId(), employeeDTO.getEmployeeId(), LocalDate.now());
+                transitionService.addEmployeeEntryTransition(employeeDTO.getEmployeeJobRole().getOrgId(), employeeDTO.getEmployeeId(), employeeDTO.getInDate().toLocalDate());
                 //分配默认权限
                 this.userRoleService.createRole(userId, jobRole.getOrgId(), org.getNature(), jobRole.getJobRole());
             } else {
@@ -554,6 +554,7 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         archive.setSexName(this.staticDataService.getCodeName("SEX", employee.getSex()));
         archive.setAge(employeeDO.getAge() + "");
         archive.setTypeName(this.staticDataService.getCodeName("EMPLOYEE_TYPE", employee.getType()));
+        archive.setDestroyWayName(this.staticDataService.getCodeName("DESTROY_WAY", employee.getDestroyWay()));
 
         AddressDO addressDO = SpringContextUtils.getBean(AddressDO.class);
         archive.setNativeArea(addressDO.getFullName(employee.getNativeRegion()));
