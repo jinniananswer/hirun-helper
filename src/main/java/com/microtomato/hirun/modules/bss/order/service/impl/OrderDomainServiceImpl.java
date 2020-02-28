@@ -3,27 +3,26 @@ package com.microtomato.hirun.modules.bss.order.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.microtomato.hirun.framework.mybatis.sequence.impl.PayNoCycleSeq;
+import com.microtomato.hirun.framework.mybatis.service.IDualService;
 import com.microtomato.hirun.framework.security.Role;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
-import com.microtomato.hirun.modules.bss.config.entity.po.OrderRoleCfg;
-import com.microtomato.hirun.modules.bss.config.entity.po.OrderStatusCfg;
-import com.microtomato.hirun.modules.bss.config.entity.po.OrderStatusTransCfg;
-import com.microtomato.hirun.modules.bss.config.entity.po.RoleAttentionStatusCfg;
-import com.microtomato.hirun.modules.bss.config.service.IOrderRoleCfgService;
-import com.microtomato.hirun.modules.bss.config.service.IOrderStatusCfgService;
-import com.microtomato.hirun.modules.bss.config.service.IOrderStatusTransCfgService;
-import com.microtomato.hirun.modules.bss.config.service.IRoleAttentionStatusCfgService;
+import com.microtomato.hirun.modules.bss.config.entity.dto.CascadeDTO;
+import com.microtomato.hirun.modules.bss.config.entity.dto.CollectFeeDTO;
+import com.microtomato.hirun.modules.bss.config.entity.dto.PayComponentDTO;
+import com.microtomato.hirun.modules.bss.config.entity.dto.PayItemDTO;
+import com.microtomato.hirun.modules.bss.config.entity.po.*;
+import com.microtomato.hirun.modules.bss.config.service.*;
 import com.microtomato.hirun.modules.bss.house.service.IHousesService;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.*;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderBase;
+import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayItem;
+import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayMoney;
 import com.microtomato.hirun.modules.bss.order.exception.OrderException;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderBaseMapper;
-import com.microtomato.hirun.modules.bss.order.service.IOrderBaseService;
-import com.microtomato.hirun.modules.bss.order.service.IOrderDomainService;
-import com.microtomato.hirun.modules.bss.order.service.IOrderOperLogService;
-import com.microtomato.hirun.modules.bss.order.service.IOrderWorkerService;
+import com.microtomato.hirun.modules.bss.order.service.*;
 import com.microtomato.hirun.modules.system.entity.po.StaticData;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +30,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,7 +72,19 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
     private IRoleAttentionStatusCfgService roleAttentionStatusCfgService;
 
     @Autowired
+    private IPayItemCfgService payItemCfgService;
+
+    @Autowired
     private IHousesService housesService;
+
+    @Autowired
+    private IOrderPayItemService orderPayItemService;
+
+    @Autowired
+    private IOrderPayMoneyService orderPayMoneyService;
+
+    @Autowired
+    private IDualService dualService;
 
     @Autowired
     private OrderBaseMapper orderBaseMapper;
@@ -343,5 +357,206 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
             payments.add(payment);
         }
         return payments;
+    }
+
+    /**
+     * 初始化支付组件
+     * @return
+     */
+    @Override
+    public PayComponentDTO initPayComponent() {
+        PayComponentDTO componentData = new PayComponentDTO();
+        List<PaymentDTO> payments = new ArrayList<>();
+
+        List<StaticData> configs = this.staticDataService.getStaticDatas("PAYMENT_TYPE");
+        if (ArrayUtils.isNotEmpty(configs)) {
+            for (StaticData config : configs) {
+                PaymentDTO payment = new PaymentDTO();
+                payment.setPaymentType(config.getCodeValue());
+                payment.setPaymentName(config.getCodeName());
+                payments.add(payment);
+            }
+            componentData.setPayments(payments);
+        }
+        List<PayItemCfg> payItemCfgs = this.payItemCfgService.queryPlusPayItems();
+        List<CascadeDTO<PayItemCfg>> payItems = this.buildPayItemCascade(payItemCfgs);
+
+        if (ArrayUtils.isNotEmpty(payItems)) {
+            for (CascadeDTO<PayItemCfg> node : payItems) {
+                this.addPeriods(node);
+            }
+            componentData.setPayItemOption(payItems);
+        }
+
+        return componentData;
+    }
+
+    /**
+     * 订单财务收款
+     * @param feeData
+     */
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    @Override
+    public void collectFee(CollectFeeDTO feeData) {
+        List<PayItemDTO> payItems = feeData.getPayItems();
+        Long payNo = this.dualService.nextval(PayNoCycleSeq.class);
+        Long orderId = feeData.getOrderId();
+        Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
+        LocalDate payDate = feeData.getPayDate();
+
+        Double needPayDouble = feeData.getNeedPay();
+
+        if (needPayDouble == null || needPayDouble <= 0.001) {
+            throw new OrderException(OrderException.OrderExceptionEnum.PAY_MUST_MORE_THAN_ZERO);
+        }
+
+        Long needPay = new Long(Math.round(needPayDouble * 100));
+        Long payItemTotal = 0L;
+        List<OrderPayItem> orderPayItems = new ArrayList<>();
+
+        if (ArrayUtils.isNotEmpty(payItems)) {
+            for (PayItemDTO payItem : payItems) {
+                Double money = payItem.getMoney();
+                if (money == null || money <= 0.001) {
+                    continue;
+                }
+
+                Long fee = new Long(Math.round(money*100));
+
+                OrderPayItem orderPayItem = new OrderPayItem();
+                orderPayItem.setOrderId(orderId);
+                orderPayItem.setAuditStatus("0");
+                orderPayItem.setPayItemId(payItem.getPayItemId());
+                orderPayItem.setFee(fee);
+                orderPayItem.setPayNo(payNo);
+                orderPayItem.setPayDate(payDate);
+                orderPayItem.setPayEmployeeId(employeeId);
+                orderPayItems.add(orderPayItem);
+                payItemTotal+= fee;
+            }
+        }
+        List<PaymentDTO> payments = feeData.getPayments();
+        List<OrderPayMoney> payMonies = new ArrayList<>();
+
+        Long totalMoney = 0L;
+        if (ArrayUtils.isNotEmpty(payments)) {
+            for (PaymentDTO payment : payments) {
+                OrderPayMoney payMoney = new OrderPayMoney();
+                payMoney.setOrderId(orderId);
+                payMoney.setPaymentType(payment.getPaymentType());
+
+                Double money = payment.getMoney();
+                if (money == null || money <= 0.001) {
+                    continue;
+                }
+                Long fee = new Long(Math.round(money*100));
+                payMoney.setMoney(fee);
+                payMoney.setPayNo(payNo);
+                payMoney.setPayEmployeeId(employeeId);
+                payMoney.setPayDate(payDate);
+                payMonies.add(payMoney);
+                totalMoney+=fee;
+            }
+        }
+        if (!payItemTotal.equals(needPay)) {
+            throw new OrderException(OrderException.OrderExceptionEnum.PAY_MUST_EQUAL_PAYITEM);
+        }
+        if (!payItemTotal.equals(totalMoney)) {
+            throw new OrderException(OrderException.OrderExceptionEnum.PAY_MUST_EQUAL_PAYITEM);
+        }
+
+        if (ArrayUtils.isNotEmpty(orderPayItems)) {
+            this.orderPayItemService.saveBatch(orderPayItems);
+        }
+        if (ArrayUtils.isNotEmpty(payMonies)) {
+            this.orderPayMoneyService.saveBatch(payMonies);
+        }
+
+        //todo 补充更新order_fee对应实收的逻辑
+    }
+
+    /**
+     * 构建支付类型选项树
+     * @return
+     */
+    private List<CascadeDTO<PayItemCfg>> buildPayItemCascade(List<PayItemCfg> payItemCfgs) {
+        if (ArrayUtils.isEmpty(payItemCfgs)) {
+            return null;
+        }
+
+        List<CascadeDTO<PayItemCfg>> roots = new ArrayList<>();
+        for (PayItemCfg payItemCfg : payItemCfgs) {
+            if (payItemCfg.getParentPayItemId().equals(-1L)) {
+                CascadeDTO<PayItemCfg> root = new CascadeDTO<>();
+                root.setLabel(payItemCfg.getName());
+                root.setValue("pay_"+payItemCfg.getId());
+                root.setSelf(payItemCfg);
+                roots.add(root);
+            }
+        }
+
+        if (ArrayUtils.isNotEmpty(roots)) {
+            for (CascadeDTO<PayItemCfg> root : roots) {
+                this.buildPayItemChildren(root, payItemCfgs);
+            }
+        }
+
+        return roots;
+    }
+
+    /**
+     * 构建子孙节点
+     * @param root
+     * @param payItemCfgs
+     * @return
+     */
+    private void buildPayItemChildren(CascadeDTO root, List<PayItemCfg> payItemCfgs) {
+        List<CascadeDTO<PayItemCfg>> children = new ArrayList<>();
+        for (PayItemCfg payItemCfg : payItemCfgs) {
+            if (StringUtils.equals("pay_"+payItemCfg.getParentPayItemId(),root.getValue())) {
+                CascadeDTO<PayItemCfg> child = new CascadeDTO<>();
+                child.setLabel(payItemCfg.getName());
+                child.setValue("pay_"+payItemCfg.getId());
+                child.setSelf(payItemCfg);
+                children.add(child);
+
+                buildPayItemChildren(child, payItemCfgs);
+            }
+        }
+        if (ArrayUtils.isNotEmpty(children)) {
+            root.setChildren(children);
+        }
+    }
+
+    /**
+     * 给级联增加分期付款期数
+     * @param node
+     */
+    private void addPeriods(CascadeDTO<PayItemCfg> node) {
+        if (ArrayUtils.isNotEmpty(node.getChildren())) {
+            List<CascadeDTO<PayItemCfg>> children = node.getChildren();
+            for (CascadeDTO child : children) {
+                this.addPeriods(child);
+            }
+        } else {
+            PayItemCfg payItemCfg = node.getSelf();
+            if (payItemCfg.getIsPeriod().equals(new Integer(1))) {
+                String periods = payItemCfg.getPeriods();
+                String[] periodsArray = periods.split(",");
+                List<CascadeDTO<PayItemCfg>> results = new ArrayList<>();
+                for (String period : periodsArray) {
+                    String periodName = this.staticDataService.getCodeName("PAY_PERIODS", period);
+                    CascadeDTO<PayItemCfg> result = new CascadeDTO<>();
+                    result.setLabel(periodName);
+                    result.setValue("period_"+period);
+                    results.add(result);
+                }
+
+                if (ArrayUtils.isNotEmpty(results)) {
+                    node.setChildren(results);
+                }
+            }
+
+        }
     }
 }

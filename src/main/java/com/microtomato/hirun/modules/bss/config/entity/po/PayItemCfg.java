@@ -1,9 +1,6 @@
-package com.microtomato.hirun.modules.bss.order.entity.po;
+package com.microtomato.hirun.modules.bss.config.entity.po;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.*;
 import com.microtomato.hirun.framework.data.BaseEntity;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -12,11 +9,11 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- * 付款类型明细表
+ * 收款项配置表
  * </p>
  *
- * @author sunxin
- * @since 2020-02-05
+ * @author jinnian
+ * @since 2020-02-23
  */
 @Data
 @Builder
@@ -24,7 +21,8 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderPaymoney extends BaseEntity {
+@TableName("sys_pay_item_cfg")
+public class PayItemCfg extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
 
@@ -32,40 +30,34 @@ public class OrderPaymoney extends BaseEntity {
     private Long id;
 
     /**
-     * 订单ID
+     * 收款项名称
      */
-    @TableField("orderId")
-    private Long orderId;
+    @TableField("name")
+    private String name;
 
     /**
-     * 收费单号
+     * 上级费用项
      */
-    @TableField("pay_no")
-    private Long payNo;
+    @TableField("parent_pay_item_id")
+    private Long parentPayItemId;
 
     /**
-     * 付费方式，见参数
+     * 0表示不分期，1表示分期
      */
-    @TableField("payment_type")
-    private String paymentType;
+    @TableField("is_period")
+    private Integer isPeriod;
 
     /**
-     * 金额
+     * 具体分期值
      */
-    @TableField("money")
-    private Long money;
+    @TableField("periods")
+    private String periods;
 
     /**
-     * 本次处理费用的员工ID
+     * 0-加 1-减
      */
-    @TableField("pay_employee_id")
-    private Long payEmployeeId;
-
-    /**
-     * 备注
-     */
-    @TableField("remark")
-    private String remark;
+    @TableField("direction")
+    private Integer direction;
 
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)
     private Long createUserId;
@@ -78,6 +70,12 @@ public class OrderPaymoney extends BaseEntity {
 
     @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
+
+    /**
+     * U-表示有效
+     */
+    @TableField("status")
+    private String status;
 
 
 }

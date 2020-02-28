@@ -18,7 +18,13 @@ public class OrderException extends BaseException {
         STATUS_TRANS_CFG_NOT_FOUND,
 
         @Error(code = ErrorKind.NOT_FOUND, message = "未找到订单状态配置信息")
-        STATUS_CFG_NOT_FOUND
+        STATUS_CFG_NOT_FOUND,
+
+        @Error(code = ErrorKind.BREACH_BUSINESS_RULE, message = "收款金额必须大于0")
+        PAY_MUST_MORE_THAN_ZERO,
+
+        @Error(code = ErrorKind.BREACH_BUSINESS_RULE, message = "收款金额必须等于付款金额")
+        PAY_MUST_EQUAL_PAYITEM,
     }
 
     public OrderException(String message, int code) {

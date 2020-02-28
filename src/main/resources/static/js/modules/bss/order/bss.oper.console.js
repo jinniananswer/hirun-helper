@@ -15,8 +15,8 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'util'], function(Vue, element, axio
                 })
             },
 
-            openProcess(url,title) {
-                util.openPage(url, title);
+            openProcess(url, title, orderId, custId) {
+                util.openPage(url+'&orderId='+orderId+'&custId='+custId, title);
             }
         },
 

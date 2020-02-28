@@ -10,16 +10,22 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                     designEmployeeId:'',
                     cupboardKeeperEmployeeId: '',
                     consultRemark: '',
-                    orderId:'2',
+                    consultTime:util.getNowTime(),
+                    orderId:'',
                     id:'',
-                    custId:'263'
+                    custId:'',
+                    custName:'',
                 },
                 progress: [-10, 70],
                 activeTab: 'orderInfo',
-
+                custInfo:'',
+                dialogTableVisible: false,
                 rules: {
-                    custServiceEmployeeId: [
-                        {required: true, message: '请选择客户代表', trigger: 'change'}
+                    designCupboardEmployeeId: [
+                        {required: true, message: '请选择橱柜设计师', trigger: 'change'}
+                    ],
+                    consultTime: [
+                        {required: true, message: '请选择咨询时间', trigger: 'blur'}
                     ],
                     designEmployeeId: [
                         {required: true, message: '请选择设计师', trigger: 'change'}
@@ -34,32 +40,19 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                         {required: true, message: '请选择橱柜管家', trigger: 'change'}
                     ],
                 },
-
-                marks: {
-                    0: '酝酿',
-                    10: '初选',
-                    30: '初步决策',
-                    50: '决策',
-                    60: '施工',
-                    95: '维护'
-                },
-
-                requirement: {
-                    title: '客户需求信息',
-                    style: '白色简约',
-                    func: '功能列表'
-                },
-
                 avatarUrl: 'static/img/male.jpg'
             }
         },
 
         methods: {
-            init:function(){
+
+            selectCustomer: function () {
                 let that = this;
-                ajax.get('api/order/order-consult/queryOrderConsult', {orderId:this.customerConsult.orderId}, function(data) {
-                    Object.assign(that.customerConsult, data);
-                })
+
+                ajax.get('api/customer/cust-base/queryCustomerInfoByMobile',null, function (responseDate) {
+                        that.dialogTableVisible = true;
+                        vm.custInfo = responseDate;
+                });
             },
 
             save(customerConsult) {
@@ -73,7 +66,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
             submitSneak(customerConsult) {
                 this.$refs.customerConsult.validate((valid) => {
                     if (valid) {
-                        this.$confirm('执行操作【咨询跑单】, 是否继续?', '提示', {
+                        this.$confirm('执行操作【咨询】, 是否继续?', '提示', {
                             confirmButtonText: '确定',
                             cancelButtonText: '取消',
                             type: 'warning'
@@ -82,6 +75,16 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                         })
                     }
                 })
+            },
+
+            handle(row) {
+                this.customerConsult.orderId=row.orderId;
+                this.customerConsult.custId=row.custId;
+                this.dialogTableVisible=false;
+                ajax.get('api/order/order-consult/queryOrderConsult', {orderId:this.customerConsult.orderId}, function(data) {
+                    Object.assign(that.customerConsult, data);
+                })
+
             },
 
             submitMeasure(customerConsult) {
@@ -100,7 +103,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
         },
 
         mounted () {
-            this.init();
+
         }
     });
 

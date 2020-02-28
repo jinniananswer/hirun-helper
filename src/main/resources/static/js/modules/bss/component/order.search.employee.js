@@ -18,11 +18,11 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
                 <el-dialog title="选择员工" :visible.sync="dialogVisible">
                     <el-input v-model="searchText" placeholder="请输入员工姓名和电话" @keyup.enter.native="search"><template slot="append"><el-button type="primary" icon="el-icon-search" @click="search">搜索</el-button></template></el-input>
                     <el-table :data="datas" height="400">
-                        <el-table-column property="name" label="姓名" width="150"></el-table-column>
+                        <el-table-column property="name" label="姓名" width="80"></el-table-column>
                         <el-table-column property="orgPath" label="部门"></el-table-column>
-                        <el-table-column property="jobRoleName" label="岗位" width="120"></el-table-column>
+                        <el-table-column property="jobRoleName" label="岗位" width="100"></el-table-column>
                         <el-table-column property="mobileNo" width="120"label="联系电话"></el-table-column>
-                        <el-table-column property="mobileNo" width="100"label="选择员工">
+                        <el-table-column property="mobileNo" width="100"label="选择员工" fixed="right">
                             <template slot-scope="scope">
                                 <el-button type="primary" size="mini" @click="handle(scope.row)">选择</el-button>
                             </template>

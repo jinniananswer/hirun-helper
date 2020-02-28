@@ -24,5 +24,5 @@ public class PaymentDTO {
     /**
      * 金额
      */
-    private Long money = 0L;
+    private Double money = 0.00;
 }

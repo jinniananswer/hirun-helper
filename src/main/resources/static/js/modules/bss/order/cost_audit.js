@@ -3,7 +3,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
         el: '#app',
         data: function () {
             return {
-                customerConsult: {
+                collectFee: {
                     custServiceEmployeeId: '',
                     designCupboardEmployeeId: '',
                     mainMaterialKeeperEmployeeId: '',
@@ -56,43 +56,30 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
 
         methods: {
             init:function(){
-                let that = this;
-                ajax.get('api/order/order-consult/queryOrderConsult', {orderId:this.customerConsult.orderId}, function(data) {
-                    Object.assign(that.customerConsult, data);
-                })
+                // let that = this;
+                // ajax.get('api/order/order-fee/queryOrderCollectFee', {orderId:this.collectFee.orderId}, function(data) {
+                //     Object.assign(that.customerConsult, data);
+                // })
+                alert("初始化方法");
             },
 
-            save(customerConsult) {
-                this.$refs.customerConsult.validate((valid) => {
+            save(collectFee) {
+                this.$refs.collectFee.validate((valid) => {
                     if (valid) {
-                        ajax.post('api/order/order-consult/saveCustomerConsultInfo', this.customerConsult);
+                        ajax.post('api/order/order-consult/saveCustomerConsultInfo', this.collectFee);
                     }
                 })
             },
 
-            submitSneak(customerConsult) {
-                this.$refs.customerConsult.validate((valid) => {
+            submitAudit(collectFee) {
+                this.$refs.collectFee.validate((valid) => {
                     if (valid) {
-                        this.$confirm('执行操作【咨询跑单】, 是否继续?', '提示', {
+                        this.$confirm('执行操作【提交审核】, 是否继续?', '提示', {
                             confirmButtonText: '确定',
                             cancelButtonText: '取消',
                             type: 'warning'
                         }).then(() => {
-                            ajax.post('api/order/order-consult/submitSneak', this.customerConsult);
-                        })
-                    }
-                })
-            },
-
-            submitMeasure(customerConsult) {
-                this.$refs.customerConsult.validate((valid) => {
-                    if (valid) {
-                        this.$confirm('执行操作【提交量房】, 是否继续?', '提示', {
-                            confirmButtonText: '确定',
-                            cancelButtonText: '取消',
-                            type: 'warning'
-                        }).then(() => {
-                            ajax.post('api/order/order-consult/submitMeasure', this.customerConsult);
+                            ajax.post('api/bss/order/order-fee/submitAudit', this.collectFee);
                         })
                     }
                 })

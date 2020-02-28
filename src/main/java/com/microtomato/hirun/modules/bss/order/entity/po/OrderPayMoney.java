@@ -1,19 +1,27 @@
 package com.microtomato.hirun.modules.bss.order.entity.po;
 
-import com.baomidou.mybatisplus.annotation.*;
-import com.microtomato.hirun.framework.data.BaseEntity;
-import lombok.*;
-import lombok.experimental.Accessors;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.microtomato.hirun.framework.data.BaseEntity;
+import com.baomidou.mybatisplus.annotation.TableField;
+
+import lombok.Data;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 /**
- * 订单支付项明细表(OrderPayItem)表实体类
+ * 付款类型明细表(OrderPayMoney)表实体类
  *
  * @author Jinnian
  * @version 1.0.0
- * @date 2020-02-26 15:56:11
+ * @date 2020-02-26 15:53:53
  */
 @Data
 @Builder
@@ -21,57 +29,41 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("order_pay_item")
-public class OrderPayItem extends BaseEntity {
+@TableName("order_pay_money")
+public class OrderPayMoney extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
     
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-
+    /** 订单编号 */
     @TableField(value = "order_id")
     private Long orderId;
 
-    /** 付款编码 */
+    /** 付款单号 */
     @TableField(value = "pay_no")
     private Long payNo;
 
-    /** 收款项编码，见参数sys_pay_item_cfg */
-    @TableField(value = "pay_item_id")
-    private Long payItemId;
+    /** 付费方式，见参数 */
+    @TableField(value = "payment_type")
+    private String paymentType;
 
-    /** 上级费用项编码，见参数sys_pay_item_cfg */
-    @TableField(value = "parent_pay_item_id")
-    private Long parentPayItemId;
+    /** 费用 */
+    @TableField(value = "money")
+    private Long money;
 
-    /** 期数 */
-    @TableField(value = "periods")
-    private Integer periods;
-
-    /** 金额 */
-    @TableField(value = "fee")
-    private Long fee;
-
-
+    /** 收款时间 */
     @TableField(value = "pay_date")
     private LocalDate payDate;
 
-
-    @TableField(value = "audit_employee_id")
-    private Long auditEmployeeId;
-
-    /** 0-未审核 1-审核通过 2-审核不通过 */
-    @TableField(value = "audit_status")
-    private String auditStatus;
+    /** 本次处理费用的员工ID */
+    @TableField(value = "pay_employee_id")
+    private Long payEmployeeId;
 
     /** 备注 */
     @TableField(value = "remark")
     private String remark;
-
-    /** 处理员工 */
-    @TableField(value = "pay_employee_id")
-    private Long payEmployeeId;
 
 
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)
