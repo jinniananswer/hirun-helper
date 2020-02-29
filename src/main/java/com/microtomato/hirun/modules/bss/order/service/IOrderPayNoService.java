@@ -3,6 +3,8 @@ package com.microtomato.hirun.modules.bss.order.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayNo;
 
+import java.util.List;
+
 /**
  * 订单支付流水表表(OrderPayNo)表服务接口
  *
@@ -12,4 +14,7 @@ import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayNo;
  */
 public interface IOrderPayNoService extends IService<OrderPayNo> {
 
+    OrderPayNo getByOrderIdAndPayNo(Long orderId, Long orderPayNo);
+
+    List<OrderPayNo> queryByOrderId(Long orderId);
 }
