@@ -1,6 +1,7 @@
 define(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'util'], function(Vue,element,ajax, table, vueSelect, util){
     Vue.use(table);
     Vue.component('order-payment', {
+        props: ['order-id', 'pay-no'],
         data : function(){
             return {
                 payItems: [],
@@ -138,9 +139,12 @@ define(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'util'], function(Vue,
         methods: {
             init() {
                 let that = this;
-                ajax.get('api/bss.order/order-domain/initPayComponent', null, function(data) {
+                ajax.get('api/bss.order/order-domain/initPayComponent?orderId='+this.orderId+'&payNo='+this.payNo, null, function(data) {
                     that.payments = data.payments;
+                    that.payItems = data.payItems;
                     that.payItemOptions = data.payItemOption;
+                    that.payForm.needPay = data.needPay;
+                    that.payForm.payDate = data.payDate;
                 })
             },
 
@@ -227,7 +231,7 @@ define(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'util'], function(Vue,
 
                     let payItemValue = '';
                     let periodName = '';
-                    let periodValue = '';
+                    let periodValue = null;
                     if (items[items.length-1].indexOf('period') < 0) {
                         payItemValue = items[items.length - 1];
                         periodName = '-';
@@ -252,7 +256,7 @@ define(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'util'], function(Vue,
 
                     let isFind = false;
                     for (let payItem of this.payItems) {
-                        if (payItem.payItem == payItemValue) {
+                        if (payItem.payItemId == payItemValue) {
                             isFind = true;
                             break;
                         }
@@ -308,6 +312,9 @@ define(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'util'], function(Vue,
                 for (let i=0;i<this.payItems.length;i++) {
                     data['payItems['+i+'].payItemId'] = this.payItems[i].payItemId.split("_")[1];
                     data['payItems['+i+'].money'] = this.payItems[i].money;
+                    if (this.payItems[i].period) {
+                        data['payItems['+i+'].period'] = this.payItems[i].period.split("_")[1];
+                    }
                 }
 
                 for (let i=0;i<this.payments.length;i++) {

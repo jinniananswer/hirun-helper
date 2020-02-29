@@ -4,7 +4,8 @@ require(['vue', 'ELEMENT','ajax', 'vueselect', 'util','cust-info', 'order-info',
         data: function() {
             return {
                 custId: 263,
-                orderId: 1
+                orderId: 1,
+                payNo: 20200229000001
             }
         },
 
