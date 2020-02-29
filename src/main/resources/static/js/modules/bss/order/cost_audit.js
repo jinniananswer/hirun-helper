@@ -4,36 +4,20 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
         data: function () {
             return {
                 collectFee: {
-                    custServiceEmployeeId: '',
-                    designCupboardEmployeeId: '',
-                    mainMaterialKeeperEmployeeId: '',
-                    designEmployeeId:'',
-                    cupboardKeeperEmployeeId: '',
-                    consultRemark: '',
-                    orderId:'2',
-                    id:'',
-                    custId:'263'
+                    orderId:28,//util.getRequest('orderId'),
+                    engineeringClerk:'',
+                    auditRemark:'',
+                    auditStatus:0,
+                    orderStatus : 30,//util.getRequest('status'),
+                    custId:18162,//util.getRequest('custId')
                 },
                 progress: [-10, 70],
                 activeTab: 'orderInfo',
-
-                rules: {
-                    custServiceEmployeeId: [
-                        {required: true, message: '请选择客户代表', trigger: 'change'}
-                    ],
-                    designEmployeeId: [
-                        {required: true, message: '请选择设计师', trigger: 'change'}
-                    ],
-                    designCupboardEmployeeId: [
-                        {required: true, message: '请选择橱柜设计师', trigger: 'change'}
-                    ],
-                    mainMaterialKeeperEmployeeId: [
-                        {required: true, message: '请选择主材管家', trigger: 'change'}
-                    ],
-                    cupboardKeeperEmployeeId: [
-                        {required: true, message: '请选择橱柜管家', trigger: 'change'}
-                    ],
-                },
+                // rules: {
+                //     engineeringClerk: [
+                //         {required: true, message: '请选择工程文员', trigger: 'change'}
+                //     ],
+                // },
 
                 marks: {
                     0: '酝酿',
@@ -64,17 +48,42 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
             },
 
             save(collectFee) {
-                this.$refs.collectFee.validate((valid) => {
-                    if (valid) {
-                        ajax.post('api/order/order-consult/saveCustomerConsultInfo', this.collectFee);
-                    }
-                })
+                // this.$refs.collectFee.validate((valid) => {
+                //     if (valid) {
+                //         ajax.post('api/order/order-consult/saveCustomerConsultInfo', this.collectFee);
+                //     }
+                // })
             },
 
+
             submitAudit(collectFee) {
+                this.collectFee['auditStatus'] = "1";
+                if(this.collectFee.engineeringClerk=="18"){
+                    if(this.collectFee.engineeringClerk==""){
+                        this.$message.error('工程文员没有选择，请亲重新选择哦~~~~~~~！');
+                        return ;
+                    }
+                }
+                    this.$refs.collectFee.validate((valid) => {
+                        if (valid) {
+                            this.$confirm('执行操作【提交审核】, 是否继续?', '提示', {
+                                confirmButtonText: '确定',
+                                cancelButtonText: '取消',
+                                type: 'warning'
+                            }).then(() => {
+
+                                ajax.post('api/bss/order/order-fee/submitAudit', this.collectFee);
+                            })
+                        }
+                    })
+
+            },
+
+            auditFailed(collectFee) {
+                this.collectFee['auditStatus'] = "2";
                 this.$refs.collectFee.validate((valid) => {
                     if (valid) {
-                        this.$confirm('执行操作【提交审核】, 是否继续?', '提示', {
+                        this.$confirm('执行操作【提交审核不通过】, 是否继续?', '提示', {
                             confirmButtonText: '确定',
                             cancelButtonText: '取消',
                             type: 'warning'
