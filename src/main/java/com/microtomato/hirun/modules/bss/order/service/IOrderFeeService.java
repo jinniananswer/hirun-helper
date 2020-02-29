@@ -2,6 +2,7 @@ package com.microtomato.hirun.modules.bss.order.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFee;
+import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayNo;
 
 /**
  * <p>
@@ -25,6 +26,10 @@ public interface IOrderFeeService extends IService<OrderFee> {
      */
     void submitAudit(OrderFeeDTO dto);
 
-
+    /**
+     * 费用复审
+     * @param orderPayNo
+     */
+    void costReview(OrderPayNo orderPayNo);
 
 }
