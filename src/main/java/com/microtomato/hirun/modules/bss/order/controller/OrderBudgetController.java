@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.bss.order.controller;
 
 import com.microtomato.hirun.framework.annotation.RestResult;
+import com.microtomato.hirun.modules.bss.order.entity.dto.OrderBudgetDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderBudget;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -28,8 +29,8 @@ public class OrderBudgetController {
     @PostMapping("/submitBudget")
     @Transactional(rollbackFor = Exception.class)
     @RestResult
-    public void submitBudget(OrderBudget orderBudget) {
-//        orderBudgetServiceImpl.save(orderBudget);
+    public void submitBudget(OrderBudgetDTO orderBudgetDTO) {
+        orderBudgetServiceImpl.submitBudget(orderBudgetDTO);
     }
 
     @PostMapping("/submitBudgetCheckedResult")

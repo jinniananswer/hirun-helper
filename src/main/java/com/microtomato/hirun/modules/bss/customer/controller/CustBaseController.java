@@ -48,5 +48,10 @@ public class CustBaseController {
         return custBaseServiceImpl.queryCustomerInfoByMobile(mobileNo);
     }
 
+    @GetMapping("/queryCustomer4TransOrder")
+    @RestResult
+    public List<CustInfoDTO> queryCustomer4TransOrder(){
+        return custBaseServiceImpl.queryCustomer4TransOrder();
+    }
 
 }

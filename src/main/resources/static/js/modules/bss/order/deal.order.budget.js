@@ -1,5 +1,4 @@
-require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'order-info', 'order-worker'], function(Vue, element, axios, ajax, vueselect, util, custInfo, orderInfo, orderWorker) {
-    let vm = new Vue({
+require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'order-info', 'order-worker', 'order-selectemployee','cust-visit'], function(Vue, element, axios, ajax, vueselect, util, custInfo, orderInfo, orderWorker, orderSelectEmployee,custVisit) {    let vm = new Vue({
         el: '#app',
         data() {
             return {
@@ -9,7 +8,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     fee : 0,
                     reportedBudgetDate : util.getNowDate(),
                     activityId : '',
-                    activities : [],
+
                     custIdea : '',
                     totalFeeCheckResult : '',
                     locationRemarkCheckResult : '',
@@ -24,32 +23,34 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     selfPurchaseRemarkCheckResult : '',
                     numberConsistenceCheckResult : '',
                     checkDate : '',
-                    checkUserId : ''
+                    checkEmployeeId : ''
                 },
-                id : util.getRequest('id'),
-                orderState : util.getRequest('orderState'),
-                isCheckFailed : ''
+                orderId : util.getRequest('orderId'),
+                orderStatus : util.getRequest('status'),
+                activities : [],
             }
         },
         mounted: function() {
-            if(this.orderState == 'fail') {
+            this.budget.orderId = this.orderId;
+            alert(this.orderStatus);
+            if(this.orderState == '15') {
                 let data = {
-                    id : this.id
+                    orderId : this.orderId
                 }
                 ajax.post('api/bss.order/order-budget/getBudgetById', data, (responseData)=>{
                     Object.assign(this.budget, responseData);
                 });
             }
-            this.isCheckFailed = this.orderState == 'fail' ? true : false;
-            this.budget.activities = [
+            this.activities = [
                 {value : "1", name : "活动3"},
                 {value : "2", name : "活动4"}
             ];
         },
         methods: {
             submit : function() {
+                this.budget.fee = this.budget.fee * 100;
                 let url = 'api/bss.order/order-budget/submitBudget';
-                if(orderState == 'fail') {
+                if(this.orderStatus == '15') {
                     url = 'api/bss.order/order-budget/submitBudgetCheckedResult';
                 }
                 ajax.post(url, this.budget);

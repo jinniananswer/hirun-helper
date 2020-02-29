@@ -28,4 +28,6 @@ public class CustConsultDTO {
     private Long id;
 
     private Long designEmployeeId;
+
+    private LocalDateTime consultTime;
 }

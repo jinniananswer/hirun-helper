@@ -46,6 +46,7 @@
                                                     value-format="yyyy-MM-dd"
                                                     placeholder="选择日期"
                                                     :disabled = "false"
+                                                    style="width: 100%;"
                                             >
                                             </el-date-picker>
                                         </el-form-item>
@@ -54,7 +55,7 @@
                                         <el-form-item label="享受活动">
                                             <el-select v-model="budget.activityId" placeholder="请选择" style="width: 100%">
                                                 <el-option
-                                                        v-for="activity in budget.activities"
+                                                        v-for="activity in activities"
                                                         :key="activity.value"
                                                         :label="activity.name"
                                                         :value="activity.value">
@@ -64,15 +65,16 @@
                                     </el-col>
                                     <el-col :span="12">
                                         <el-form-item label="对审人">
-                                            <el-select v-model="budget.checkUserId" placeholder="请选择" required="true"
-                                                       :disabled = "isCheckFailed">
-                                                <el-option
-                                                        v-for="activity in budget.activities"
-                                                        :key="activity.value"
-                                                        :label="activity.name"
-                                                        :value="activity.value">
-                                                </el-option>
-                                            </el-select>
+                                            <order-selectemployee v-model="budget.checkEmployeeId" role-id="15"></order-selectemployee>
+                                            <!--<el-select v-model="budget.checkUserId" placeholder="请选择" required="true"-->
+                                                       <!--:disabled = "isCheckFailed">-->
+                                                <!--<el-option-->
+                                                        <!--v-for="activity in budget.activities"-->
+                                                        <!--:key="activity.value"-->
+                                                        <!--:label="activity.name"-->
+                                                        <!--:value="activity.value">-->
+                                                <!--</el-option>-->
+                                            <!--</el-select>-->
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="24">
@@ -156,6 +158,9 @@
                                 </el-row>
                             </el-card>
                         </el-form>
+                    </div>
+                    <div>
+                        <cust-visit cust-id="365"></cust-visit>
                     </div>
                 </el-col>
             </el-row>

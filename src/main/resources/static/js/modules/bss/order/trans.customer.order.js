@@ -7,18 +7,18 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                     custServiceEmployeeId: '',
                     designCupboardEmployeeId: '',
                     mainMaterialKeeperEmployeeId: '',
-                    designEmployeeId:'',
+                    designEmployeeId: '',
                     cupboardKeeperEmployeeId: '',
                     consultRemark: '',
-                    consultTime:util.getNowTime(),
-                    orderId:'',
-                    id:'',
-                    custId:'',
-                    custName:'',
+                    consultTime: '',
+                    orderId: '26',
+                    id: '',
+                    custId: '18162',
+                    custName: '',
                 },
                 progress: [-10, 70],
                 activeTab: 'orderInfo',
-                custInfo:'',
+                custInfo: '',
                 dialogTableVisible: false,
                 rules: {
                     designCupboardEmployeeId: [
@@ -46,42 +46,66 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
 
         methods: {
 
-            selectCustomer: function () {
-                let that = this;
-
-                ajax.get('api/customer/cust-base/queryCustomerInfoByMobile',null, function (responseDate) {
-                        that.dialogTableVisible = true;
-                        vm.custInfo = responseDate;
+            init: function () {
+                ajax.get('api/customer/cust-base/queryCustomer4TransOrder', null, function (responseDate) {
+                    vm.custInfo = responseDate;
                 });
             },
 
+            selectCustomer: function () {
+                this.dialogTableVisible = true;
+            },
+
+            selectedCustomer: function (row, column, cell, event) {
+                console.log(row);
+                let that = this;
+                ajax.get('api/order/order-consult/queryOrderConsult', {orderId: row.orderId}, function (data) {
+                    Object.assign(that.customerConsult, data);
+                })
+                this.dialogTableVisible = false;
+            },
+
             save(customerConsult) {
+                if (this.customerConsult.orderId == '') {
+                    this.$message.error('请选择一位客户');
+                    return;
+                }
                 this.$refs.customerConsult.validate((valid) => {
                     if (valid) {
-                        ajax.post('api/order/order-consult/saveCustomerConsultInfo', this.customerConsult);
+                        ajax.post('api/order/order-consult/saveCustomerConsultInfo', this.customerConsult, null, null, true);
                     }
                 })
             },
 
             submitSneak(customerConsult) {
+                this.$confirm('执行操作【跑单】, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    ajax.post('api/order/order-consult/submitSneak', this.customerConsult);
+                })
+            },
+
+            submitTransOrder(customerConsult) {
                 this.$refs.customerConsult.validate((valid) => {
                     if (valid) {
-                        this.$confirm('执行操作【咨询】, 是否继续?', '提示', {
+                        this.$confirm('执行操作【转家装订单】, 是否继续?', '提示', {
                             confirmButtonText: '确定',
                             cancelButtonText: '取消',
                             type: 'warning'
                         }).then(() => {
-                            ajax.post('api/order/order-consult/submitSneak', this.customerConsult);
+                            ajax.post('api/order/order-consult/transOrder', this.customerConsult);
                         })
                     }
                 })
             },
 
             handle(row) {
-                this.customerConsult.orderId=row.orderId;
-                this.customerConsult.custId=row.custId;
-                this.dialogTableVisible=false;
-                ajax.get('api/order/order-consult/queryOrderConsult', {orderId:this.customerConsult.orderId}, function(data) {
+                this.customerConsult.orderId = row.orderId;
+                this.customerConsult.custId = row.custId;
+                this.dialogTableVisible = false;
+                ajax.get('api/order/order-consult/queryOrderConsult', {orderId: this.customerConsult.orderId}, function (data) {
                     Object.assign(that.customerConsult, data);
                 })
 
@@ -102,8 +126,8 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
             },
         },
 
-        mounted () {
-
+        mounted() {
+            this.init();
         }
     });
 
