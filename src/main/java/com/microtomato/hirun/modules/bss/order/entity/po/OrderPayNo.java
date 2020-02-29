@@ -1,5 +1,6 @@
 package com.microtomato.hirun.modules.bss.order.entity.po;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -16,11 +17,11 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 /**
- * 付款类型明细表(OrderPayMoney)表实体类
+ * 订单支付流水表表(OrderPayNo)表实体类
  *
  * @author Jinnian
  * @version 1.0.0
- * @date 2020-02-29 11:02:01
+ * @date 2020-02-29 11:03:03
  */
 @Data
 @Builder
@@ -28,29 +29,37 @@ import lombok.NoArgsConstructor;
 @Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("order_pay_money")
-public class OrderPayMoney extends BaseEntity {
+@TableName("order_pay_no")
+public class OrderPayNo extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
     
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    /** 订单编号 */
+
     @TableField(value = "order_id")
     private Long orderId;
 
-    /** 付款单号 */
+    /** 付款编码 */
     @TableField(value = "pay_no")
     private Long payNo;
 
-    /** 付费方式，见参数 */
-    @TableField(value = "payment_type")
-    private String paymentType;
+    /** 付款日期 */
+    @TableField(value = "pay_date")
+    private LocalDate payDate;
 
-    /** 费用 */
-    @TableField(value = "money")
-    private Long money;
+    /** 总收款金额 */
+    @TableField(value = "total_money")
+    private Long totalMoney;
+
+    /** 0-未审核 1-审核通过 2-审核不通过 */
+    @TableField(value = "audit_status")
+    private String auditStatus;
+
+    /** 审核员工ID */
+    @TableField(value = "audit_employee_id")
+    private Long auditEmployeeId;
 
     /** 开始时间 */
     @TableField(value = "start_date")
@@ -63,6 +72,14 @@ public class OrderPayMoney extends BaseEntity {
     /** 备注 */
     @TableField(value = "remark")
     private String remark;
+
+    /** 处理员工 */
+    @TableField(value = "pay_employee_id")
+    private Long payEmployeeId;
+
+    /** 处理部门 */
+    @TableField(value = "org_id")
+    private Long orgId;
 
 
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)

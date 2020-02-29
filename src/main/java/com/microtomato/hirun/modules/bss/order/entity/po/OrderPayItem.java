@@ -5,7 +5,6 @@ import com.microtomato.hirun.framework.data.BaseEntity;
 import lombok.*;
 import lombok.experimental.Accessors;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -13,7 +12,7 @@ import java.time.LocalDateTime;
  *
  * @author Jinnian
  * @version 1.0.0
- * @date 2020-02-26 15:56:11
+ * @date 2020-02-29 11:02:02
  */
 @Data
 @Builder
@@ -53,25 +52,17 @@ public class OrderPayItem extends BaseEntity {
     @TableField(value = "fee")
     private Long fee;
 
-
-    @TableField(value = "pay_date")
-    private LocalDate payDate;
-
-
-    @TableField(value = "audit_employee_id")
-    private Long auditEmployeeId;
-
-    /** 0-未审核 1-审核通过 2-审核不通过 */
-    @TableField(value = "audit_status")
-    private String auditStatus;
-
     /** 备注 */
     @TableField(value = "remark")
     private String remark;
 
-    /** 处理员工 */
-    @TableField(value = "pay_employee_id")
-    private Long payEmployeeId;
+    /** 开始时间 */
+    @TableField(value = "start_date")
+    private LocalDateTime startDate;
+
+    /** 结束时间 */
+    @TableField(value = "end_date")
+    private LocalDateTime endDate;
 
 
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)
