@@ -111,7 +111,8 @@ public class EmployeeHistoryServiceImpl extends ServiceImpl<EmployeeHistoryMappe
      */
     @Override
     public List<EmployeeHistory> queryHistories(Long employeeId) {
-        return this.list(new QueryWrapper<EmployeeHistory>().lambda().eq(EmployeeHistory::getEmployeeId, employeeId).orderByAsc(EmployeeHistory::getEventDate));
+        return this.list(new QueryWrapper<EmployeeHistory>().lambda().eq(EmployeeHistory::getEmployeeId, employeeId)
+                .eq(EmployeeHistory::getStatus,"1").orderByAsc(EmployeeHistory::getEventDate));
     }
 
     /**
@@ -162,6 +163,8 @@ public class EmployeeHistoryServiceImpl extends ServiceImpl<EmployeeHistoryMappe
      */
     private void processStandardData(Long employeeId, LocalDate eventDate, EmployeeHistory history) {
         history.setEmployeeId(employeeId);
+        //新增状态1、正常2、删除
+        history.setStatus("1");
         if (eventDate == null) {
             history.setEventDate(RequestTimeHolder.getRequestTime().toLocalDate());
         } else {

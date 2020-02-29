@@ -45,6 +45,7 @@ public class EmployeeHistoryController {
     @PostMapping("deleteEmployeeHistory")
     @RestResult
     private void deleteEmployeeHistory(EmployeeHistory employeeHistory){
+        employeeHistory.setStatus("2");
         employeeHistoryServiceImpl.updateById(employeeHistory);
     }
 

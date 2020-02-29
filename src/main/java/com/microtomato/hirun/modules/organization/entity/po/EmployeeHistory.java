@@ -42,6 +42,9 @@ public class EmployeeHistory extends BaseEntity {
     @TableField("event_content")
     private String eventContent;
 
+    @TableField("status")
+    private String status;
+
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)
     private Long createUserId;
 
