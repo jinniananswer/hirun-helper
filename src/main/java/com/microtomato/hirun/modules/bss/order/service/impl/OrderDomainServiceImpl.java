@@ -425,12 +425,9 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
 
                 OrderPayItem orderPayItem = new OrderPayItem();
                 orderPayItem.setOrderId(orderId);
-                orderPayItem.setAuditStatus("0");
                 orderPayItem.setPayItemId(payItem.getPayItemId());
                 orderPayItem.setFee(fee);
                 orderPayItem.setPayNo(payNo);
-                orderPayItem.setPayDate(payDate);
-                orderPayItem.setPayEmployeeId(employeeId);
                 orderPayItems.add(orderPayItem);
                 payItemTotal+= fee;
             }
@@ -452,8 +449,6 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
                 Long fee = new Long(Math.round(money*100));
                 payMoney.setMoney(fee);
                 payMoney.setPayNo(payNo);
-                payMoney.setPayEmployeeId(employeeId);
-                payMoney.setPayDate(payDate);
                 payMonies.add(payMoney);
                 totalMoney+=fee;
             }
