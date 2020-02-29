@@ -2,6 +2,7 @@ package com.microtomato.hirun.modules.bss.order.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayNo;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderPayNoMapper;
 import com.microtomato.hirun.modules.bss.order.service.IOrderPayNoService;
@@ -33,7 +34,7 @@ public class OrderPayNoServiceImpl extends ServiceImpl<OrderPayNoMapper, OrderPa
      */
     @Override
     public OrderPayNo getByOrderIdAndPayNo(Long orderId, Long orderPayNo) {
-        return this.getOne(new QueryWrapper<OrderPayNo>().lambda().eq(OrderPayNo::getOrderId, orderId).eq(OrderPayNo::getPayNo, orderPayNo));
+        return this.getOne(new QueryWrapper<OrderPayNo>().lambda().eq(OrderPayNo::getOrderId, orderId).eq(OrderPayNo::getPayNo, orderPayNo).gt(OrderPayNo::getEndDate, RequestTimeHolder.getRequestTime()));
     }
 
     /**
@@ -43,7 +44,7 @@ public class OrderPayNoServiceImpl extends ServiceImpl<OrderPayNoMapper, OrderPa
      */
     @Override
     public List<OrderPayNo> queryByOrderId(Long orderId) {
-        return this.list(new QueryWrapper<OrderPayNo>().lambda().eq(OrderPayNo::getOrderId, orderId));
+        return this.list(new QueryWrapper<OrderPayNo>().lambda().eq(OrderPayNo::getOrderId, orderId).gt(OrderPayNo::getEndDate, RequestTimeHolder.getRequestTime()));
     }
 
 }
