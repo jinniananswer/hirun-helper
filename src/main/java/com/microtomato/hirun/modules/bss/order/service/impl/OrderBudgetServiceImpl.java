@@ -1,6 +1,8 @@
 package com.microtomato.hirun.modules.bss.order.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
+import com.microtomato.hirun.modules.bss.order.entity.dto.OrderBudgetCheckedDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderBudgetDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderBudget;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderBudgetMapper;
@@ -35,12 +37,36 @@ public class OrderBudgetServiceImpl extends ServiceImpl<OrderBudgetMapper, Order
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void submitBudget(OrderBudgetDTO dto) {
-        OrderBudget orderBudget = new OrderBudget();
+        OrderBudget orderBudget = null;
+        if(dto.getId() == null) {
+            orderBudget = new OrderBudget();
+            orderWorkerService.updateOrderWorker(dto.getOrderId(), 15L, dto.getCheckEmployeeId());
+        } else {
+            orderBudget = this.getById(dto.getId());
+        }
         BeanUtils.copyProperties(dto, orderBudget);
-        this.save(orderBudget);
+        this.saveOrUpdate(orderBudget);
 
         orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_NEXT_STEP);
+    }
 
-        orderWorkerService.updateOrderWorker(dto.getOrderId(), 15L, dto.getCheckEmployeeId());
+    @Override
+    public OrderBudget getBudgetByOrderId(Long orderId) {
+        return baseMapper.selectOne((new QueryWrapper<OrderBudget>().lambda()
+                .eq(OrderBudget::getOrderId, orderId)));
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void submitBudgetCheckedResult(OrderBudgetCheckedDTO dto) {
+        OrderBudget orderBudget = this.getById(dto.getId());
+        BeanUtils.copyProperties(dto, orderBudget);
+        baseMapper.updateById(orderBudget);
+//
+        if("ok".equals(dto.getCheckResult())) {
+            orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_NEXT_STEP);
+        } else {
+            orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_AUDIT_NO);
+        }
     }
 }

@@ -14,7 +14,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     environmentalTestingAgency: '',
                     contractFee : '',
                     baseDecorationFee : '0',
-                    doorFee : '0',
+                    doorFee : 0,
                     furnitureFee : '0',
                     activityId : '',
                     chargedDesignFee : '0',
@@ -25,8 +25,8 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     firstContractFee : '0'
                 },
                 discountItemDetailList : [],
-                id : util.getRequest('id'),
-                orderState : util.getRequest('orderState'),
+                orderId : util.getRequest('orderId'),
+                orderStatus : util.getRequest('status'),
                 activities : [],
                 discountItemDetail: false,
                 employeeList: [
@@ -54,27 +54,27 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     ],
                     baseDecorationFee: [
                         {required: true, message: '请填写基础装修总金额', trigger: 'blur'},
-                        {type: 'number', message: '必须为数字', trigger: 'blur'}
+                        // {type: 'number', message: '必须为数字', trigger: 'blur'}
                     ],
                     doorFee: [
                         {required: true, message: '请填写门总金额', trigger: 'blur'},
-                        {type: 'number', message: '必须为数字', trigger: 'blur'}
+                        // {type: 'number', message: '必须为数字', trigger: 'blur'}
                     ],
                     furnitureFee: [
                         {required: true, message: '请填写家具总金额', trigger: 'blur'},
-                        {type: 'number', message: '必须为数字', trigger: 'blur'}
+                        // {type: 'number', message: '必须为数字', trigger: 'blur'}
                     ],
                     returnDesignFee: [
                         {required: true, message: '请填写返设计费', trigger: 'blur'},
-                        {type: 'number', message: '必须为数字', trigger: 'blur'}
+                        // {type: 'number', message: '必须为数字', trigger: 'blur'}
                     ],
                     taxFee: [
                         {required: true, message: '请填写税金', trigger: 'blur'},
-                        {type: 'number', message: '必须为数字', trigger: 'blur'}
+                        // {type: 'number', message: '必须为数字', trigger: 'blur'}
                     ],
                     cashDiscount: [
                         {required: true, message: '请填写现金优惠', trigger: 'blur'},
-                        {type: 'number', message: '必须为数字', trigger: 'blur'}
+                        // {type: 'number', message: '必须为数字', trigger: 'blur'}
                     ],
                 }
             }
@@ -104,13 +104,14 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
             }
         },
         mounted: function() {
-            let data = {
-                orderId : "1"
-            }
-            ajax.get('api/bss.order/order-contract/getDecorateContractInfo', data, (responseData)=>{
-                Object.assign(this.decorateContract, responseData);
-                this.fenTransToYuan(this.decorateContract);
-            });
+            this.decorateContract.orderId = this.orderId;
+            // let data = {
+            //     orderId : this.orderId
+            // }
+            // ajax.get('api/bss.order/order-contract/getDecorateContractInfo', data, (responseData)=>{
+            //     Object.assign(this.decorateContract, responseData);
+            //     this.fenTransToYuan(this.decorateContract);
+            // });
         },
         methods: {
             submit : function() {
