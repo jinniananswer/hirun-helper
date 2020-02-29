@@ -1,4 +1,4 @@
-package com.microtomato.hirun.framework.mybatis.aspect;
+package com.microtomato.hirun.framework.mybatis.aop;
 
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 import com.microtomato.hirun.framework.mybatis.threadlocal.DataSourceContextHolder;
@@ -20,10 +20,10 @@ import java.lang.reflect.Method;
  * @author Steven
  * @date 2019-12-19
  */
-@Component
 @Slf4j
-@Aspect
-@Order(-1)
+//@Component
+//@Aspect
+//@Order(-1)
 public class DataSourceAspect {
 
     /**
@@ -77,11 +77,15 @@ public class DataSourceAspect {
         }
 
         String dsName = dataSource.value();
-        log.debug("当前数据源：{}", dsName);
-        DataSourceContextHolder.setDataSource(dsName);
-        Object o = pjp.proceed();
-        DataSourceContextHolder.clear();
-        return o;
+        try {
+            DataSourceContextHolder.push(dsName);
+            log.debug("当前数据源：{}", dsName);
+            Object o = pjp.proceed();
+            return o;
+        } finally {
+            DataSourceContextHolder.poll();
+        }
+
     }
 
 }
