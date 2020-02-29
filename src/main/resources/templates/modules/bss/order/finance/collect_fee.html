@@ -27,7 +27,7 @@
                             <div slot="header">
                                 <span>操作区</span>
                             </div>
-                            <order-payment ref="pay"></order-payment>
+                            <order-payment :order-id="orderId" :pay-no="payNo" ref="pay"></order-payment>
                             <div class="bottom clearfix">
                                 <el-button type="primary" @click="submit">提交</el-button>
                             </div>
