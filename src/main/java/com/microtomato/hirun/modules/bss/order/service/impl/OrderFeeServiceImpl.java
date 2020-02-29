@@ -6,6 +6,7 @@ import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.SecondInstallmentCollectionDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFee;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderFeeMapper;
 import com.microtomato.hirun.modules.bss.order.service.IOrderDomainService;
@@ -68,6 +69,11 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
         //进行数据更新
        // this.saveCustomerConsultInfo(dto);
         System.out.println("hhahahhahaa");
+        orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_NEXT_STEP);
+    }
+
+    @Override
+    public void secondInstallmentCollect(SecondInstallmentCollectionDTO dto) {
         orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_NEXT_STEP);
     }
 }

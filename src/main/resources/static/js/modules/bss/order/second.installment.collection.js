@@ -57,6 +57,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
             }
         },
         mounted: function() {
+            this.secondInstallment.orderId = this.orderId;
             // if(this.orderState == 'fail') {
             //     let data = {
             //         id : this.id
@@ -74,11 +75,8 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
         },
         methods: {
             submit : function() {
-                let url = 'api/bss.order/order-budget/submitBudget';
-                if(this.orderState == 'fail') {
-                    url = 'api/bss.order/order-budget/submitBudgetCheckedResult';
-                }
-                ajax.post(url, this.budget);
+                let url = 'api/bss/order/order-fee/secondInstallmentCollect';
+                ajax.post(url, this.secondInstallment);
             },
             openDiscntItemWindow : function () {
                 alert('优惠项目录入')

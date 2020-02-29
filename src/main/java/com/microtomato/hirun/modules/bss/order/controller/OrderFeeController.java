@@ -2,6 +2,7 @@ package com.microtomato.hirun.modules.bss.order.controller;
 
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.SecondInstallmentCollectionDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFee;
 import com.microtomato.hirun.modules.bss.order.service.IOrderFeeService;
 import lombok.extern.slf4j.Slf4j;
@@ -46,6 +47,12 @@ public class OrderFeeController {
     @RestResult
     public void submitAudit(OrderFeeDTO dto) {
         orderFeeServiceImpl.submitAudit(dto);
+    }
+
+    @PostMapping("/secondInstallmentCollect")
+    @RestResult
+    public void secondInstallmentCollect(SecondInstallmentCollectionDTO dto) {
+        orderFeeServiceImpl.secondInstallmentCollect(dto);
     }
 
 }
