@@ -3,7 +3,6 @@ package com.microtomato.hirun.modules.bss.order.controller;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFee;
-import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayNo;
 import com.microtomato.hirun.modules.bss.order.service.IOrderFeeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,5 +59,11 @@ public class OrderFeeController {
         orderFeeServiceImpl.costReview(orderPayNo);
     }
 
+
+    @PostMapping("/secondInstallmentCollect")
+    @RestResult
+    public void secondInstallmentCollect(SecondInstallmentCollectionDTO dto) {
+        orderFeeServiceImpl.secondInstallmentCollect(dto);
+    }
 
 }

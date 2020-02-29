@@ -8,7 +8,6 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     fee : 0,
                     reportedBudgetDate : util.getNowDate(),
                     activityId : '',
-
                     custIdea : '',
                     totalFeeCheckResult : '',
                     locationRemarkCheckResult : '',
@@ -28,32 +27,34 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 orderId : util.getRequest('orderId'),
                 orderStatus : util.getRequest('status'),
                 activities : [],
+                submitButtonName : '提交对审',
+                checkedFail : false
             }
         },
         mounted: function() {
             this.budget.orderId = this.orderId;
-            alert(this.orderStatus);
-            if(this.orderState == '15') {
+            if(this.orderStatus == '15') {
+                this.checkedFail = true;
                 let data = {
                     orderId : this.orderId
                 }
-                ajax.post('api/bss.order/order-budget/getBudgetById', data, (responseData)=>{
+                ajax.post('api/bss.order/order-budget/getBudgetByOrderId', data, (responseData)=>{
                     Object.assign(this.budget, responseData);
+                    this.budget.fee = this.budget.fee/100;
                 });
             }
             this.activities = [
                 {value : "1", name : "活动3"},
                 {value : "2", name : "活动4"}
             ];
+            this.submitButtonName = '重新提交二级精算';
         },
         methods: {
             submit : function() {
-                this.budget.fee = this.budget.fee * 100;
+                let data = this.budget;
+                data.fee = data.fee * 100;
                 let url = 'api/bss.order/order-budget/submitBudget';
-                if(this.orderStatus == '15') {
-                    url = 'api/bss.order/order-budget/submitBudgetCheckedResult';
-                }
-                ajax.post(url, this.budget);
+                ajax.post(url, data);
             }
         }
     });
