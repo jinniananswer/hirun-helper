@@ -9,6 +9,7 @@ import com.microtomato.hirun.modules.bss.config.mapper.PayItemCfgMapper;
 import com.microtomato.hirun.modules.bss.config.service.IPayItemCfgService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -82,5 +83,49 @@ public class PayItemCfgServiceImpl extends ServiceImpl<PayItemCfgMapper, PayItem
             }
         }
         return result;
+    }
+
+    @Cacheable(value = "payitemcfg-payitem-path")
+    @Override
+    public String getPath(Long payItemId) {
+        String payItemIdPath = this.buildPayItemIdPath(queryAll(), payItemId, "");
+        if (StringUtils.isNotBlank(payItemIdPath)) {
+            String[] payItemIds = payItemIdPath.split(",");
+
+            String path = "";
+            for (int i=payItemIds.length-1; i >= 0; i--) {
+                PayItemCfg payItemCfg = this.getPayItem(Long.parseLong(payItemIds[i]));
+                path += payItemCfg.getName() + "-";
+            }
+
+            return path.substring(0, path.length() - 1);
+        }
+        return null;
+    }
+
+    /**
+     * 构建上下级节点的ID路径
+     * @param all
+     * @param payItemId
+     * @param path
+     * @return
+     */
+    private String buildPayItemIdPath(List<PayItemCfg> all, Long payItemId, String path) {
+        if (ArrayUtils.isEmpty(all)) {
+            return null;
+        }
+
+        for (PayItemCfg payItem : all) {
+            if (payItem.getId().equals(payItemId)) {
+                path += payItem.getId() + ",";
+                if (payItem.getParentPayItemId().equals(-1L)) {
+                    return path;
+                } else {
+                    path = this.buildPayItemIdPath(all, payItem.getParentPayItemId(), path);
+                }
+            }
+        }
+
+        return path.substring(0, path.length() - 1);
     }
 }

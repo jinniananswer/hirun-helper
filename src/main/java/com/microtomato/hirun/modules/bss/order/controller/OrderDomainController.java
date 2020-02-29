@@ -64,8 +64,8 @@ public class OrderDomainController {
 
     @GetMapping("/initPayComponent")
     @RestResult
-    public PayComponentDTO initPayComponent() {
-        return this.domainService.initPayComponent();
+    public PayComponentDTO initPayComponent(Long orderId, Long payNo) {
+        return this.domainService.initPayComponent(orderId, payNo);
     }
 
     @PostMapping("/collectFee")

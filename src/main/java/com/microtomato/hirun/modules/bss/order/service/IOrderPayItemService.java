@@ -1,7 +1,9 @@
 package com.microtomato.hirun.modules.bss.order.service;
 
-import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayItem;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayItem;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +15,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IOrderPayItemService extends IService<OrderPayItem> {
 
+    List<OrderPayItem> queryByOrderIdPayNo(Long orderId, Long payNo);
 }

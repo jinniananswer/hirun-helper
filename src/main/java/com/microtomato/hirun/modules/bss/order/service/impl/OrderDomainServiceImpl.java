@@ -6,7 +6,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.mybatis.sequence.impl.PayNoCycleSeq;
 import com.microtomato.hirun.framework.mybatis.service.IDualService;
 import com.microtomato.hirun.framework.security.Role;
+import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.bss.config.entity.dto.CascadeDTO;
 import com.microtomato.hirun.modules.bss.config.entity.dto.CollectFeeDTO;
@@ -20,6 +22,7 @@ import com.microtomato.hirun.modules.bss.order.entity.dto.*;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderBase;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayItem;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayMoney;
+import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayNo;
 import com.microtomato.hirun.modules.bss.order.exception.OrderException;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderBaseMapper;
 import com.microtomato.hirun.modules.bss.order.service.*;
@@ -34,6 +37,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,6 +82,9 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
     private IHousesService housesService;
 
     @Autowired
+    private IOrderPayNoService orderPayNoService;
+
+    @Autowired
     private IOrderPayItemService orderPayItemService;
 
     @Autowired
@@ -88,6 +95,7 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
 
     @Autowired
     private OrderBaseMapper orderBaseMapper;
+
 
     /**
      * 查询订单综合信息
@@ -364,7 +372,7 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
      * @return
      */
     @Override
-    public PayComponentDTO initPayComponent() {
+    public PayComponentDTO initPayComponent(Long orderId, Long payNo) {
         PayComponentDTO componentData = new PayComponentDTO();
         List<PaymentDTO> payments = new ArrayList<>();
 
@@ -378,6 +386,53 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
             }
             componentData.setPayments(payments);
         }
+
+        if (orderId != null && payNo != null) {
+            OrderPayNo orderPayNo = this.orderPayNoService.getByOrderIdAndPayNo(orderId, payNo);
+            if (orderPayNo != null) {
+                Long totalMoney = orderPayNo.getTotalMoney();
+                if (totalMoney != null) {
+                    //存储用分为单位，到界面上转换成元
+                    componentData.setNeedPay(totalMoney.doubleValue()/100);
+                }
+                componentData.setPayDate(orderPayNo.getPayDate());
+            }
+
+            List<OrderPayItem> payItems = this.orderPayItemService.queryByOrderIdPayNo(orderId, payNo);
+            if (ArrayUtils.isNotEmpty(payItems)) {
+                List<PayItemDTO> payItemDTOs = new ArrayList<>();
+                for (OrderPayItem payItem : payItems) {
+                    PayItemDTO payItemDTO = new PayItemDTO();
+                    payItemDTO.setPayItemId("pay_"+payItem.getPayItemId());
+                    payItemDTO.setMoney(payItem.getFee().doubleValue()/100);
+
+                    String payItemName = this.payItemCfgService.getPath(payItem.getPayItemId());
+                    Integer payPeriod = payItem.getPeriods();
+                    if (payPeriod != null) {
+                        payItemDTO.setPeriod(payPeriod);
+                        String payPeriodName = this.staticDataService.getCodeName("PAY_PERIODS", payPeriod + "");
+                        payItemDTO.setPeriodName(payPeriodName);
+                        payItemName += '-'+payPeriodName;
+                    }
+                    payItemDTO.setPayItemName(payItemName);
+
+                    payItemDTOs.add(payItemDTO);
+                }
+                componentData.setPayItems(payItemDTOs);
+            }
+
+            List<OrderPayMoney> payMonies = this.orderPayMoneyService.queryByOrderIdPayNo(orderId, payNo);
+            if (ArrayUtils.isNotEmpty(payMonies)) {
+                for (OrderPayMoney payMoney : payMonies) {
+                    for (PaymentDTO payment : payments) {
+                        if (StringUtils.equals(payment.getPaymentType(), payMoney.getPaymentType())) {
+                            payment.setMoney(payMoney.getMoney().doubleValue()/100);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
         List<PayItemCfg> payItemCfgs = this.payItemCfgService.queryPlusPayItems();
         List<CascadeDTO<PayItemCfg>> payItems = this.buildPayItemCascade(payItemCfgs);
 
@@ -387,6 +442,8 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
             }
             componentData.setPayItemOption(payItems);
         }
+
+
 
         return componentData;
     }
@@ -403,6 +460,8 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
         Long orderId = feeData.getOrderId();
         Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
         LocalDate payDate = feeData.getPayDate();
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+        LocalDateTime forever = TimeUtils.getForeverTime();
 
         Double needPayDouble = feeData.getNeedPay();
 
@@ -425,9 +484,12 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
 
                 OrderPayItem orderPayItem = new OrderPayItem();
                 orderPayItem.setOrderId(orderId);
-                orderPayItem.setPayItemId(payItem.getPayItemId());
+                orderPayItem.setPayItemId(new Long(payItem.getPayItemId()));
+                orderPayItem.setPeriods(payItem.getPeriod());
                 orderPayItem.setFee(fee);
                 orderPayItem.setPayNo(payNo);
+                orderPayItem.setStartDate(now);
+                orderPayItem.setEndDate(forever);
                 orderPayItems.add(orderPayItem);
                 payItemTotal+= fee;
             }
@@ -436,6 +498,7 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
         List<OrderPayMoney> payMonies = new ArrayList<>();
 
         Long totalMoney = 0L;
+
         if (ArrayUtils.isNotEmpty(payments)) {
             for (PaymentDTO payment : payments) {
                 OrderPayMoney payMoney = new OrderPayMoney();
@@ -449,6 +512,8 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
                 Long fee = new Long(Math.round(money*100));
                 payMoney.setMoney(fee);
                 payMoney.setPayNo(payNo);
+                payMoney.setStartDate(now);
+                payMoney.setEndDate(forever);
                 payMonies.add(payMoney);
                 totalMoney+=fee;
             }
@@ -459,6 +524,19 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
         if (!payItemTotal.equals(totalMoney)) {
             throw new OrderException(OrderException.OrderExceptionEnum.PAY_MUST_EQUAL_PAYITEM);
         }
+
+        OrderPayNo orderPayNo = new OrderPayNo();
+        orderPayNo.setOrderId(orderId);
+        orderPayNo.setPayDate(payDate);
+        orderPayNo.setPayNo(payNo);
+        //待审核状态
+        orderPayNo.setAuditStatus("0");
+        orderPayNo.setStartDate(now);
+        orderPayNo.setEndDate(forever);
+        orderPayNo.setTotalMoney(needPay);
+        orderPayNo.setPayEmployeeId(employeeId);
+        orderPayNo.setOrgId(WebContextUtils.getUserContext().getOrgId());
+        this.orderPayNoService.save(orderPayNo);
 
         if (ArrayUtils.isNotEmpty(orderPayItems)) {
             this.orderPayItemService.saveBatch(orderPayItems);

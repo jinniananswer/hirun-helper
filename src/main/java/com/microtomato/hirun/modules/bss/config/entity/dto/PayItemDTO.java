@@ -11,7 +11,13 @@ import lombok.Data;
 @Data
 public class PayItemDTO {
 
-    private Long payItemId;
+    private String payItemId;
+
+    private String payItemName;
+
+    private Integer period;
+
+    private String periodName;
 
     private Double money;
 }

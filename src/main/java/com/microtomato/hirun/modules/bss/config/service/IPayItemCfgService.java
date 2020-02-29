@@ -20,4 +20,6 @@ public interface IPayItemCfgService extends IService<PayItemCfg> {
     PayItemCfg getPayItem(Long payItemId);
 
     List<PayItemCfg> queryPlusPayItems();
+
+    String getPath(Long payItemId);
 }

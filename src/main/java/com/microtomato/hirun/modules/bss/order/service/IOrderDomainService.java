@@ -33,7 +33,7 @@ public interface IOrderDomainService {
 
     List<PaymentDTO> queryPayment();
 
-    PayComponentDTO initPayComponent();
+    PayComponentDTO initPayComponent(Long orderId, Long payNo);
 
     void collectFee(CollectFeeDTO feeData);
 }
