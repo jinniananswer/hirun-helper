@@ -20,7 +20,7 @@
 
     <el-card>
         <el-collapse value="1" accordion>
-            <el-collapse-item title="查询条件" name="1">
+            <el-collapse-item title="基本信息" name="1">
                 <el-form ref="form" inline="true" label-width="120px" size="small">
                     <el-row>
                         <el-col :span="12">
@@ -56,8 +56,10 @@
         </el-collapse>
 
         <div>
-            <div align="center">
-                <el-button type="primary" @click="save()" style="margin:10px;">保存修改</el-button>
+            <div align="left">
+                <el-button type="success" @click="save()" style="margin:10px;">新增</el-button>
+                <el-button type="primary" @click="save()">保存</el-button>
+                <el-button type="danger" @click="save()">删除</el-button>
                 <el-button type="primary" @click="$refs.xTable.revertData()" plain>全部还原</el-button>
             </div>
             <vxe-table

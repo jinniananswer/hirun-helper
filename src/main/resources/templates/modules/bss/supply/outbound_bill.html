@@ -20,8 +20,8 @@
 
     <el-card>
         <el-collapse value="1" accordion>
-            <el-collapse-item title="查询条件" name="1">
-                <el-form ref="form" inline="true" label-width="80px" size="small">
+            <el-collapse-item title="基本信息" name="1">
+                <el-form ref="form" inline="true" label-width="120px" size="small">
                     <el-row>
                         <el-col :span="12">
                             <el-form-item label="出库单号：">
@@ -64,12 +64,14 @@
                 </el-form>
             </el-collapse-item>
         </el-collapse>
-
         <div>
-            <div align="center">
-                <el-button type="primary" @click="save()" style="margin:10px;">保存修改</el-button>
+            <div align="left">
+                <el-button type="success" @click="save()" style="margin:10px;">新增</el-button>
+                <el-button type="primary" @click="save()">保存</el-button>
+                <el-button type="danger" @click="save()">删除</el-button>
                 <el-button type="primary" @click="$refs.xTable.revertData()" plain>全部还原</el-button>
             </div>
+
             <vxe-table
                     size="small"
                     keep-source
@@ -87,7 +89,12 @@
                     :edit-config="{trigger: 'dblclick', mode: 'row'}"
                     ref="xTable">
 
-                <vxe-table-column align="center" width="120" fixed="left" title="删除"></vxe-table-column>
+                <vxe-table-column title="操作" width="100" show-overflow>
+                    <template v-slot="{ row }">
+                        <vxe-button type="text" icon="fa fa-edit" @click="editEvent(row)"></vxe-button>
+                        <vxe-button type="text" icon="fa fa-trash-o" @click="removeEvent(row)"></vxe-button>
+                    </template>
+                </vxe-table-column>
                 <vxe-table-column align="center" width="120" fixed="left" field="date" title="日期" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
                 <vxe-table-column align="center" width="120" fixed="left" field="productName" title="品名" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
                 <vxe-table-column align="center" width="120" fixed="left" field="inboundQuantity" title="入库数量" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>

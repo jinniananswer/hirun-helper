@@ -1,4 +1,5 @@
 require(['vue', 'ELEMENT', 'vxe-table', 'axios'], function (Vue, element, vxetable, axios) {
+    // 入库单
     Vue.use(vxetable)
     let vm = new Vue({
         el: '#app',
