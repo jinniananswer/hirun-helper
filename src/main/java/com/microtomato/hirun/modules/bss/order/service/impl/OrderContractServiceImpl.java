@@ -10,6 +10,7 @@ import com.microtomato.hirun.modules.bss.order.service.IOrderContractService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.modules.bss.order.service.IOrderDomainService;
 import com.microtomato.hirun.modules.bss.order.service.IOrderFeeService;
+import com.microtomato.hirun.modules.bss.order.service.IOrderWorkerService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,9 @@ public class OrderContractServiceImpl extends ServiceImpl<OrderContractMapper, O
 
     @Autowired
     private IOrderDomainService orderDomainService;
+
+    @Autowired
+    private IOrderWorkerService orderWorkerService;
 
     public DecorateContractDTO getDecorateContractInfo(Long orderId) {
         DecorateContractDTO decorateContractDTO = new DecorateContractDTO();
@@ -69,6 +73,8 @@ public class OrderContractServiceImpl extends ServiceImpl<OrderContractMapper, O
         //保存费用信息到各个表
 
         orderDomainService.orderStatusTrans(decorateContractDTO.getOrderId(), OrderConst.OPER_NEXT_STEP);
+
+        orderWorkerService.updateOrderWorker(decorateContractDTO.getOrderId(), 35L, decorateContractDTO.getFinanceEmployeeId());
     }
 
 }

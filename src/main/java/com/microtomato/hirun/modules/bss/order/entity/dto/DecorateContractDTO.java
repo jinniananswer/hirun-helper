@@ -50,4 +50,6 @@ public class DecorateContractDTO {
     private String remark;
 
     private Integer firstContractFee;
+
+    private Long financeEmployeeId;
 }

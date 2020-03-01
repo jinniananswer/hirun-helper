@@ -14,7 +14,9 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'house-select']
                     count: null
                 },
 
-                custOrder: []
+                custOrder: [],
+
+                display:'display:block',
             }
         },
 
@@ -28,8 +30,8 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'house-select']
                 });
             },
 
-            toOrderDetail(orderId, custId) {
-                util.openPage('openUrl?url=modules/bss/order/cust_order_detail&orderId='+orderId+'&custId='+custId, '订单详情');
+            toCollectFee(orderId, custId) {
+                util.openPage('openUrl?url=modules/bss/order/finance/collect_fee&orderId='+orderId+'&custId='+custId, '订单详情');
             }
         }
     });

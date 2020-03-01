@@ -4,10 +4,10 @@ require(['vue', 'ELEMENT','ajax', 'vueselect', 'util','cust-info', 'order-info',
         data: function() {
             return {
                 auditData: {
-                    // orderId:util.getRequest('orderId'),
-                    // payNo:util.getRequest('payNo'),
-                    payNo: 1,
-                    orderId: 1,
+                    orderId:util.getRequest('orderId'),
+                    payNo:util.getRequest('payNo'),
+                    // payNo: 1,
+                    // orderId: 1,
                     auditStatus:0,
                 },
 

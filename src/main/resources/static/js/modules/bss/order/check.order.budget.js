@@ -59,7 +59,8 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     numberConsistenceCheckResult: [
                         {required: true, message: '请填写汇总表与明细表数字前后是否一致', trigger: 'blur'}
                     ],
-                }
+                },
+                downloadFileUrl : ''
             }
         },
         mounted: function() {
@@ -70,6 +71,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 Object.assign(this.budget, responseData);
             });
             this.budget.checkDate = util.getNowDate();
+            this.downloadFileUrl = 'api/bss.order/order-file/download/' + util.getRequest("orderId") + "/13";
         },
         methods: {
             submit : function(command) {

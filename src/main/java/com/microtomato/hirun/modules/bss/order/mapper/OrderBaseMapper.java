@@ -10,10 +10,12 @@ import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 import com.microtomato.hirun.modules.bss.order.entity.dto.CustOrderInfoDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.CustOrderQueryDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.FinancePendingOrderDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.PendingOrderDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderBase;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+
 import java.util.List;
 
 /**
@@ -35,7 +37,13 @@ public interface OrderBaseMapper extends BaseMapper<OrderBase> {
     List<PendingOrderDTO> queryAttentionStatusOrders(@Param("statuses")String statuses, @Param("employeeId") Long employeeId);
 
     @Select("select a.order_id, a.cust_id, a.houses_id, a.decorate_address, a.house_layout, a.floorage, a.indoor_area, a.stage,a. status, b.cust_name, b.mobile_no, b.sex from order_base a, cust_base b " +
-            "where b.cust_id = a.cust_id " +
             "${ew.customSqlSegment}")
     IPage<CustOrderInfoDTO> queryCustOrderInfo(Page<CustOrderQueryDTO> queryCondition, @Param(Constants.WRAPPER) Wrapper wrapper);
+
+
+    @Select("select a.cust_id, a.order_id, a.status,a.decorate_address, b.cust_name, b.mobile_no, a.create_time, c.total_money/100 total_money, c.pay_no, c.audit_status from order_base a, cust_base b, order_pay_no c " +
+            " where b.cust_id = a.cust_id and a.order_id = c.order_id and c.order_id = a.order_id and c.audit_status in (${statuses}) " +
+            " order by status, create_time desc;"
+    )
+    List<FinancePendingOrderDTO> queryFinancePendingOrders(@Param("employeeId") Long employeeId, @Param("statuses")String statuses);
 }

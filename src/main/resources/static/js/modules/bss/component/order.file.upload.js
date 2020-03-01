@@ -99,7 +99,11 @@ define(['vue', 'ELEMENT', 'ajax'], function (Vue, element, ajax) {
             },
         },
 
-        watch: {},
+        watch: {
+            stage(val) {
+                this.data.stage = val;
+            },
+        },
 
         mounted() {
 
