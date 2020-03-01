@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>入库单</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="../../../../static/element-ui/css/index.css" th:href="@{static/element-ui/css/index.css(v=${version})}">
+    <script src="../../../../static/js/framework/requirejs/require.min.js" th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="../../../../static/js/framework/requirejs/require.config.js" th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+
+<!--    <link rel="stylesheet" href="../../../../static/element-ui/css/index.css" th:href="@{static/element-ui/css/index.css(v=${version})}">-->
+<!--    <script src="../../../../static/js/framework/vue/vue.min.js" th:src="@{static/js/framework/vue/vue.min.js(v=${version})}"></script>-->
+<!--    <script src="../../../../static/element-ui/js/index.js" th:src="@{static/element-ui/js/index.js(v=${version})}"></script>-->
+<!--    <script src="../../../../static/js/framework/axios/axios.min.js" th:src="@{static/js/framework/axios/axios.min.js(v=${version})}"></script>-->
+</head>
+<body>
+<div id="app" v-cloak>
+
+    <el-card>
+        <el-collapse value="1" accordion>
+            <el-collapse-item title="查询条件" name="1">
+                <el-form ref="form" inline="true" label-width="120px" size="small">
+                    <el-row>
+                        <el-col :span="12">
+                            <el-form-item label="入库单号：">
+                                <el-input></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="状态：">
+                                <el-input></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+
+                    <el-row>
+                        <el-col :span="12">
+                            <el-form-item label="制单时间：">
+                                <el-date-picker
+                                        type="date"
+                                        placeholder="选择日期">
+                                </el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="摘要：">
+                                <el-input></el-input>
+                            </el-form-item>
+                        </el-col>
+
+                    </el-row>
+                </el-form>
+            </el-collapse-item>
+        </el-collapse>
+
+        <div>
+            <div align="center">
+                <el-button type="primary" @click="save()" style="margin:10px;">保存修改</el-button>
+                <el-button type="primary" @click="$refs.xTable.revertData()" plain>全部还原</el-button>
+            </div>
+            <vxe-table
+                    size="small"
+                    keep-source
+                    stripe
+                    highlight-current-row
+                    highlight-hover-row
+                    border
+                    resizable
+                    show-overflow
+                    height="340"
+                    show-footer
+                    :footer-method="footerMethod"
+                    :data="tableData"
+                    :edit-rules="validRules"
+                    :edit-config="{trigger: 'dblclick', mode: 'row'}"
+                    ref="xTable">
+
+                <vxe-table-column align="center" width="120" fixed="left" title="删除"></vxe-table-column>
+                <vxe-table-column align="center" width="120" fixed="left" field="date" title="日期" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                <vxe-table-column align="center" width="120" fixed="left" field="productName" title="品名" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                <vxe-table-column align="center" width="120" fixed="left" field="inboundQuantity" title="入库数量" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                <vxe-table-column align="center" width="120" fixed="left" field="unit" title="单位" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                <vxe-table-column align="center" width="120" field="unit" title="经办人" :edit-render="{name: 'select', options: sexList, events: {change: changeEvent}}"></vxe-table-column>
+                <vxe-table-column align="center" width="120" field="remark" title="备注" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                <vxe-table-column align="center" width="120" field="shopName" title="店名" :edit-render="{name: 'select', options: sexList, events: {change: changeEvent}}"></vxe-table-column>
+                <vxe-table-column align="center" width="120" field="departName" title="部门" :edit-render="{name: 'select', options: sexList, events: {change: changeEvent}}"></vxe-table-column>
+                <vxe-table-column align="center" width="120" field="projectName" title="项目名称" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                <vxe-table-column align="center" width="120" field="manualNo" title="手工单号" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                <vxe-table-column align="center" width="120" field="warehouseNo" title="仓库料号" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                <vxe-table-column align="center" width="120" field="specs" title="规格" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                <vxe-table-column align="center" width="120" field="model" title="型号" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                <vxe-table-column align="center" width="120" field="materialCategory" title="材料类别" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+
+            </vxe-table>
+        </div>
+    </el-card>
+
+</div>
+<style>
+    [v-cloak] {
+        display: none;
+    }
+
+</style>
+<script src="../../../../static/js/modules/bss/supply/inbound_bill.js" th:src="@{static/js/modules/bss/supply/inbound_bill.js(v=${version})}"></script>
+</body>
+
+</html>
