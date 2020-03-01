@@ -28,7 +28,19 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 orderStatus : util.getRequest('status'),
                 activities : [],
                 submitButtonName : '提交对审',
-                checkedFail : false
+                checkedFail : false,
+                budgetRules : {
+                    fee: [
+                        {required: true, message: '请填写预算总金额', trigger: 'blur'},
+                        {type: 'number', message: '必须为数字', trigger: 'blur'}
+                    ],
+                    checkEmployeeId : [
+                        {required: true, message: '请选择对审人', trigger: 'change'}
+                    ],
+                    reportedBudgetDate : [
+                        {required: true, message: '实际看预算时间', trigger: 'change' }
+                    ],
+                }
             }
         },
         mounted: function() {
@@ -51,10 +63,19 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
         },
         methods: {
             submit : function() {
-                let data = this.budget;
-                data.fee = data.fee * 100;
-                let url = 'api/bss.order/order-budget/submitBudget';
-                ajax.post(url, data);
+                this.$refs['budget'].validate((valid) => {
+                    if (valid) {
+                        let data = this.budget;
+                        data.fee = data.fee * 100;
+                        let url = 'api/bss.order/order-budget/submitBudget';
+                        ajax.post(url, data);
+                    } else {
+                        return false;
+                    }
+                });
+            },
+            uploadFile : function () {
+                alert('上传文件');
             }
         }
     });
