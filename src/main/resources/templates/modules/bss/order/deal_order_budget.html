@@ -79,8 +79,11 @@
                                 <el-row>
                                     <div style="text-align: center">
                                         <el-button type="primary" @click="submit">{{submitButtonName}}</el-button>
-                                        <el-button><order-file-upload ref="upload" button-name="上传预算表"
-                                                                      accept=".xls,.xlsx" limit="1" :order-id="orderId" stage="13"></order-file-upload></el-button>
+                                        <el-button>
+                                            <order-file-upload ref="upload" button-name="上传预算表"
+                                                                      accept=".xls,.xlsx" limit="1" :order-id="orderId" stage="13">
+                                            </order-file-upload>
+                                        </el-button>
 
                                         <!--<el-button type="primary" @click="uploadFile">上传文件</el-button>-->
                                     </div>

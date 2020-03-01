@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.bss.order.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.microtomato.hirun.framework.exception.cases.NotFoundException;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderBudgetCheckedDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderBudgetDTO;
@@ -9,6 +10,7 @@ import com.microtomato.hirun.modules.bss.order.mapper.OrderBudgetMapper;
 import com.microtomato.hirun.modules.bss.order.service.IOrderBudgetService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.modules.bss.order.service.IOrderDomainService;
+import com.microtomato.hirun.modules.bss.order.service.IOrderFileService;
 import com.microtomato.hirun.modules.bss.order.service.IOrderWorkerService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +36,17 @@ public class OrderBudgetServiceImpl extends ServiceImpl<OrderBudgetMapper, Order
     @Autowired
     private IOrderWorkerService orderWorkerService;
 
+    @Autowired
+    private IOrderFileService orderFileService;
+
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void submitBudget(OrderBudgetDTO dto) {
+        //校验规则
+        if(orderFileService.getOrderFile(dto.getOrderId(), 13) == null) {
+            throw new NotFoundException("请先上传预算表", -1);
+        }
+
         OrderBudget orderBudget = null;
         if(dto.getId() == null) {
             orderBudget = new OrderBudget();
