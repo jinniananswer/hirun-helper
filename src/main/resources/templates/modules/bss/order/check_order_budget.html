@@ -107,7 +107,15 @@
                             </el-form>
                             <el-row>
                                 <div style="text-align: center">
-                                    <el-button type="primary" @click="submit">提交</el-button>
+                                    <el-dropdown @command="submit">
+                                        <el-button type="primary" >
+                                            流程操作<i class="el-icon-arrow-down el-icon--right"></i>
+                                        </el-button>
+                                        <el-dropdown-menu slot="dropdown">
+                                            <el-dropdown-item command="ok">对审通过</el-dropdown-item>
+                                            <el-dropdown-item command="no">对审不通过</el-dropdown-item>
+                                        </el-dropdown-menu>
+                                    </el-dropdown>
                                 </div>
                             </el-row>
                         </el-card>

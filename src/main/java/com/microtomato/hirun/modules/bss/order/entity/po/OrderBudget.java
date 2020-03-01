@@ -146,6 +146,11 @@ public class OrderBudget extends BaseEntity {
     @TableField("check_date")
     private LocalDate checkDate;
 
+    /*** 对审人
+     */
+    @TableField("check_employee_id")
+    private Long checkEmployeeId;
+
     /**
      * 备注
      */

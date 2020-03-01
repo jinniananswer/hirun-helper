@@ -17,30 +17,40 @@
             <el-row :gutter="12">
                 <el-col :span="6">
                     <div class="grid-content bg-purple">
-                        <cust-info :cust-id="collectFee.custId"></cust-info>
+                        <cust-info :cust-id="task.custId"></cust-info>
 
-                        <order-worker :order-id="collectFee.orderId"></order-worker>
+                        <order-worker :order-id="task.orderId"></order-worker>
                     </div>
                 </el-col>
                 <el-col :span="18">
                     <div class="grid-content bg-purple-light">
-                        <order-info :order-id="collectFee.orderId"></order-info>
+                        <order-info :order-id="task.orderId"></order-info>
                         <el-card class="box-card">
                             <div slot="header">
                                 <span>操作区</span>
                             </div>
-                            <el-form :inline="false"  label-position="right" label-width="80px" :model="collectFee" ref="collectFee">
+                            <el-form :inline="false" :rules="projectrules" label-position="right" label-width="80px" :model="task" ref="task">
                                 <el-row>
-                                    <el-col :span="8" v-if="collectFee.orderStatus == '18'">
-                                        <el-form-item label="工程文员" prop="engineeringClerk" label-width="100px">
-                                            <order-selectemployee role-id="32" v-model="collectFee.engineeringClerk"  ></order-selectemployee>
+<!--                                    <el-col :span="8">-->
+<!--                                        <el-form-item label="工程主管" prop="engineeringSupervisor" label-width="100px">-->
+<!--                                            <order-selectemployee role-id="32" v-model="task.engineeringSupervisor"  ></order-selectemployee>-->
+<!--                                        </el-form-item>-->
+<!--                                    </el-col>-->
+<!--                                    <el-col :span="8">-->
+<!--                                        <el-form-item label="项目经理" prop="projectManager" label-width="100px">-->
+<!--                                            <order-selectemployee role-id="33" v-model="task.projectManager"  ></order-selectemployee>-->
+<!--                                        </el-form-item>-->
+<!--                                    </el-col>-->
+                                    <el-col :span="8">
+                                        <el-form-item label="工程助理" prop="engineeringAssistant" label-width="100px">
+                                            <order-selectemployee role-id="31" v-model="task.engineeringAssistant"  ></order-selectemployee>
                                         </el-form-item>
                                     </el-col>
                                 </el-row>
                                 <el-row>
                                     <el-col :span="24">
                                         <el-form-item label="审核备注" prop="auditRemark" label-width="100px">
-                                            <el-input type="textarea" v-model="collectFee.auditRemark"></el-input>
+                                            <el-input type="textarea" v-model="task.auditRemark"></el-input>
                                         </el-form-item>
                                     </el-col>
                                 </el-row>
@@ -77,7 +87,7 @@
         padding: 10px;
     }
 </style>
-<script src="../../../static/js/modules/bss/order/cost_audit.js"
-        th:src="@{static/js/modules/bss/order/cost_audit.js(v=${version})}"></script>
+<script src="../../../static/js/modules/bss/order/engineering_task.js"
+        th:src="@{static/js/modules/bss/order/engineering_task.js(v=${version})}"></script>
 </body>
 </html>

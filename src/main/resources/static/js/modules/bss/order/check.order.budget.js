@@ -23,21 +23,18 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
         },
         mounted: function() {
             let data = {
-                id : util.getRequest("id")
+                orderId : util.getRequest("orderId")
             }
-            ajax.post('api/bss.order/order-budget/getBudgetById', data, (responseData)=>{
+            ajax.post('api/bss.order/order-budget/getBudgetByOrderId', data, (responseData)=>{
                 Object.assign(this.budget, responseData);
             });
             this.budget.checkDate = util.getNowDate();
         },
         methods: {
-            submit : function() {
-                ajax.post('api/bss.order/order-budget/submitBudgetCheckedResult', this.budget /*(responseData)=>{*/
-                //     提示成功
-                    // this.$alert('提交成功', '提交成功', {
-                    //     confirmButtonText: '确定'
-                    // });
-                /*}*/);
+            submit : function(command) {
+                let data = this.budget;
+                data.checkResult = command;
+                ajax.post('api/bss.order/order-budget/submitBudgetCheckedResult', data);
             }
         }
     });

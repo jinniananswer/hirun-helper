@@ -3,44 +3,61 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
         el: '#app',
         data() {
             return {
-                activeName : 'second',
-                decorateContract: {
-                    contractNo : '',
+                secondInstallment: {
+                    chargedDecorateFee : '1000',
                     orderId : '',
-                    signDate : util.getNowDate(),
-                    StartDate : util.getNowDate(),
-                    EndDate : '',
-                    chargeSecondFeeDate : '',
-                    busiLevel : '',
-                    environmentalTestingAgency: '',
-                    contractFee : '',
+                    secondInstallmentFee : '0',
+                    secondContractFee : '0',
+                    chargedSecondInstallmentFee : '0',
+                    woodProductFee : '0',
                     baseDecorationFee : '0',
                     doorFee : '0',
+                    taxFee: '0',
                     furnitureFee : '0',
-                    activityId : '',
-                    chargedDesignFee : '0',
-                    returnDesignFee : '0',
-                    taxFee : '0',
-                    cashDiscount : '0',
-                    discountItem : ''
+                    otherFee : '0',
+                    HydropowerWages : '0',
+                    HydropowerRemark : '',
+                    WoodworkingWages : '0',
+                    WoodworkingRemark : '',
+                    MasonWages : '0',
+                    MasonWRemark : '',
+                    oilWorkerWages : '0',
+                    oilWorkerRemark : '',
+                    wallKnockingWorkerWages : '0',
+                    wallKnockingWorkerRemark : ''
                 },
-                id : util.getRequest('id'),
-                orderState : util.getRequest('orderState'),
-                activities : []
+                orderId : util.getRequest('orderId'),
+                orderStatus : util.getRequest('status'),
+                // activities : []
             }
         },
         computed: {
-            getContractFee: {
+            getWoodProductFee: {
                 get() {
-                    let contractFee = parseFloat(this.decorateContract.baseDecorationFee) + parseFloat(this.decorateContract.doorFee)
-                        + parseFloat(this.decorateContract.furnitureFee) - parseFloat(this.decorateContract.returnDesignFee)
-                        + parseFloat(this.decorateContract.taxFee);
-                    this.decorateContract.contractFee = contractFee;
-                    return contractFee;
+                    let woodProductFee = parseFloat(this.secondInstallment.doorFee) + parseFloat(this.secondInstallment.furnitureFee)
+                    this.secondInstallment.woodProductFee = woodProductFee;
+                    return woodProductFee;
+                }
+            },
+            getSecondContractFee : {
+                get() {
+                    let secondContractFee = parseFloat(this.secondInstallment.woodProductFee) + parseFloat(this.secondInstallment.baseDecorationFee)
+                        + parseFloat(this.secondInstallment.taxFee)
+                        + parseFloat(this.secondInstallment.otherFee)
+                    this.secondInstallment.secondContractFee = secondContractFee;
+                    return secondContractFee;
+                }
+            },
+            getSecondInstallmentFee : {
+                get() {
+                    let secondInstallmentFee = parseFloat(this.secondInstallment.secondContractFee) *0.95 - parseFloat(this.secondInstallment.chargedDecorateFee)
+                    this.secondInstallment.secondInstallmentFee = secondInstallmentFee;
+                    return secondInstallmentFee
                 }
             }
         },
         mounted: function() {
+            this.secondInstallment.orderId = this.orderId;
             // if(this.orderState == 'fail') {
             //     let data = {
             //         id : this.id
@@ -58,11 +75,8 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
         },
         methods: {
             submit : function() {
-                let url = 'api/bss.order/order-budget/submitBudget';
-                if(this.orderState == 'fail') {
-                    url = 'api/bss.order/order-budget/submitBudgetCheckedResult';
-                }
-                ajax.post(url, this.budget);
+                let url = 'api/bss/order/order-fee/secondInstallmentCollect';
+                ajax.post(url, this.secondInstallment);
             },
             openDiscntItemWindow : function () {
                 alert('优惠项目录入')

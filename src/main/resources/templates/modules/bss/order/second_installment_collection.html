@@ -23,9 +23,112 @@
                 <el-col :span="18">
                     <div class="grid-content bg-purple-light">
                         <order-info order-id="1"></order-info>
-                        <el-form :inline="false" :model="decorateContract" label-width="130px">
+                        <el-form :inline="false" :model="secondInstallment" label-width="130px">
                             <el-card class="box-card">
-                                <div slot="header" class="clearfix">
+                                <el-row :gutter="20">
+                                    <el-col :span="12">
+                                        <el-form-item label="二期合同金额" required="true">
+                                            <el-input v-model="getSecondContractFee" :disabled="true"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="12">
+                                        <el-form-item label="工程二期款">
+                                            <el-input v-model="getSecondInstallmentFee" :disabled="true"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="12">
+                                        <el-form-item label="已收工程二期款" required="true">
+                                            <el-input v-model="secondInstallment.chargedSecondInstallmentFee" :disabled="true"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-divider content-position="left">二期</el-divider>
+                                <el-row>
+                                    <el-col :span="12">
+                                        <el-form-item label="木制品二期金额">
+                                            <el-input v-model="getWoodProductFee" :disabled="true"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="12">
+                                        <el-form-item label="基础装修二期" required="true">
+                                            <el-input v-model="secondInstallment.baseDecorationFee"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="12">
+                                        <el-form-item label="门二期金额">
+                                            <el-input v-model="secondInstallment.doorFee"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="12">
+                                        <el-form-item label="税金二期金额">
+                                            <el-input v-model="secondInstallment.taxFee"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="12">
+                                        <el-form-item label="家具二期金额">
+                                            <el-input v-model="secondInstallment.furnitureFee"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="12">
+                                        <el-form-item label="其他二期金额">
+                                            <el-input v-model="secondInstallment.otherFee"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-divider content-position="left">二期工人工资</el-divider>
+                                <el-row>
+                                    <el-col :span="12">
+                                        <el-form-item label="水电工资">
+                                            <el-input v-model="secondInstallment.HydropowerWages"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="12">
+                                        <el-form-item label="水电备注">
+                                            <el-input v-model="secondInstallment.HydropowerRemark"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="12">
+                                        <el-form-item label="木工工资">
+                                            <el-input v-model="secondInstallment.WoodworkingWages"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="12">
+                                        <el-form-item label="木工备注">
+                                            <el-input v-model="secondInstallment.WoodworkingRemark"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="12">
+                                        <el-form-item label="泥工工资">
+                                            <el-input v-model="secondInstallment.MasonWages"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="12">
+                                        <el-form-item label="镶钻备注">
+                                            <el-input v-model="secondInstallment.MasonWRemark"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="12">
+                                        <el-form-item label="油工工资">
+                                            <el-input v-model="secondInstallment.oilWorkerWages"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="12">
+                                        <el-form-item label="涂裱备注">
+                                            <el-input v-model="secondInstallment.oilWorkerRemark"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="12">
+                                        <el-form-item label="敲墙工工资">
+                                            <el-input v-model="secondInstallment.wallKnockingWorkerWages"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="12">
+                                        <el-form-item label="敲墙备注">
+                                            <el-input v-model="secondInstallment.wallKnockingWorkerRemark"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <!--<div slot="header" class="clearfix">
                                     施工合同信息
                                 </div>
                                 <el-row :gutter="20">
@@ -116,15 +219,17 @@
                                         </el-form-item>
                                     </el-col>
                                 </el-row>
+                                -->
                                 <el-row>
                                     <div style="text-align: center">
-                                        <el-button type="primary" @click="submit">提交</el-button>
+                                        <el-button type="primary" @click="submit">提交财务审核二期款</el-button>
                                         <el-button @click="openDiscntItemWindow">保存优惠项目</el-button>
                                         <el-button @click="openDiscntItemWindow">优惠项目录入</el-button>
                                         <el-button @click="uploadDecorateContract">导出收款明细</el-button>
                                         <el-button @click="uploadDecorateContract">申请开票</el-button>
                                     </div>
                                 </el-row>
+                                <!--
                                 <el-divider></el-divider>
                                 <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
                                     <el-tab-pane label="首付款信息" name="first">
@@ -219,6 +324,7 @@
                                         </el-row>
                                     </el-tab-pane>
                                 </el-tabs>
+                                -->
                             </el-card>
                         </el-form>
                     </div>
