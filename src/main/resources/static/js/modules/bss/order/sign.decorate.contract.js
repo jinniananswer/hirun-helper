@@ -151,6 +151,10 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     orderId : this.orderId
                 }
                 ajax.get('api/bss.order/order-discount-item/list', data, (responseData)=>{
+                    for(let i = 0; i < responseData.length; i++) {
+                        responseData[i].contractDiscountFee = responseData[i].contractDiscountFee / 100;
+                        responseData[i].settleDiscountFee = responseData[i].settleDiscountFee / 100;
+                    }
                     this.discountItemDetailList = responseData;
                 });
             },
@@ -182,6 +186,10 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 ajax.post(url, updateRecords, (responseData)=>{
                     alert('保存成功');
                 });
+            },
+            selectRowChangeEvent ({ row }, evnt) {
+                debugger;
+                alert(evnt.target.value);
             }
         }
     });

@@ -35,7 +35,6 @@ public class OrderDiscountItemController {
     @PostMapping("save")
     @RestResult
     public void save(@RequestBody List<OrderDiscountItemDTO> dtoList) {
-//        orderDiscountItemServiceImpl.save(dtoList);
-        return;
+        orderDiscountItemServiceImpl.save(dtoList);
     }
 }
