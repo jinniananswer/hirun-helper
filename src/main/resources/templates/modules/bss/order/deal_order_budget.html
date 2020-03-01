@@ -23,7 +23,8 @@
                 <el-col :span="18">
                     <div class="grid-content bg-purple-light">
                         <order-info order-id="1"></order-info>
-                        <el-form :inline="false" :model="budget" label-width="130px">
+                        <el-form :inline="false" :model="budget" label-width="130px" :rules="budgetRules"
+                                 ref="budget">
                             <el-card class="box-card">
                                 <div slot="header" class="clearfix">
                                     操作区域
@@ -33,12 +34,13 @@
                                         <span style="color: #F56C6C">如果这个客户有做活动，请先选择享受活动</span>
                                     </el-col>
                                     <el-col :span="12">
-                                        <el-form-item label="预算总费用" required="true">
-                                            <el-input v-model="budget.fee"></el-input>
+                                        <el-form-item label="预算总费用" required="true" prop="fee">
+                                            <el-input v-model.number="budget.fee"></el-input>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="12">
-                                        <el-form-item label="实际看预算时间" required="true" style="width: 100%;">
+                                        <el-form-item label="实际看预算时间" required="true" style="width: 100%;"
+                                            prop="reportedBudgetDate">
                                             <el-date-picker
                                                     v-model="budget.reportedBudgetDate"
                                                     align="right"
@@ -64,7 +66,7 @@
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="12">
-                                        <el-form-item label="对审人">
+                                        <el-form-item label="对审人" required="true" prop="checkEmployeeId">
                                             <order-selectemployee v-model="budget.checkEmployeeId" :role-id="15" :disabled="checkedFail"></order-selectemployee>
                                         </el-form-item>
                                     </el-col>
@@ -77,6 +79,13 @@
                                 <el-row>
                                     <div style="text-align: center">
                                         <el-button type="primary" @click="submit">{{submitButtonName}}</el-button>
+                                        <el-button>
+                                            <order-file-upload ref="upload" button-name="上传预算表"
+                                                                      accept=".xls,.xlsx" limit="1" :order-id="orderId" stage="13">
+                                            </order-file-upload>
+                                        </el-button>
+
+                                        <!--<el-button type="primary" @click="uploadFile">上传文件</el-button>-->
                                     </div>
                                 </el-row>
                             </el-card>

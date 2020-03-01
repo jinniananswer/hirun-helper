@@ -27,10 +27,11 @@
                             <div slot="header" class="clearfix">
                                 <span>操作区域</span>
                             </div>
-                            <el-form :inline="false" :model="budget" label-width="240px">
+                            <el-form :inline="false" :model="budget" label-width="240px" :rules="budgetRules"
+                                ref="budget">
                                 <el-row :gutter="20">
                                     <el-col :span="12">
-                                        <el-form-item label="对审时间">
+                                        <el-form-item label="对审时间" prop="checkDate">
                                             <el-date-picker
                                                     v-model="budget.checkDate"
                                                     align="right"
@@ -44,62 +45,74 @@
                                     <el-col :span="12">
                                     </el-col>
                                     <el-col :span="24">
-                                        <el-form-item label="汇总金额是否正确" label-width="240px">
+                                        <el-form-item label="汇总金额是否正确" required="true"
+                                                      label-width="240px" prop="totalFeeCheckResult">
                                             <el-input v-model="budget.totalFeeCheckResult"></el-input>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="24">
-                                        <el-form-item label="所做项目位置标注是否不清" label-width="240px">
+                                        <el-form-item label="所做项目位置标注是否不清" label-width="240px"
+                                                      required="true" prop="locationRemarkCheckResult">
                                             <el-input v-model="budget.locationRemarkCheckResult"></el-input>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="24">
-                                        <el-form-item label="格式文字表达是否正确" label-width="240px">
+                                        <el-form-item label="格式文字表达是否正确" label-width="240px"
+                                            required="true" prop="contentExpressionCheckResult">
                                             <el-input v-model="budget.contentExpressionCheckResult"></el-input>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="24">
-                                        <el-form-item label="表格上单价是否正确" label-width="240px">
+                                        <el-form-item label="表格上单价是否正确" label-width="240px"
+                                            required="true" prop="unitPriceCheckResult">
                                             <el-input v-model="budget.unitPriceCheckResult"></el-input>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="24">
-                                        <el-form-item label="徽标是否错误、变形" label-width="240px">
+                                        <el-form-item label="徽标是否错误、变形" label-width="240px"
+                                            required="true" prop="logoCheckResult">
                                             <el-input v-model="budget.logoCheckResult"></el-input>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="24">
-                                        <el-form-item label="表格上单价前后是否一致" label-width="240px">
+                                        <el-form-item label="表格上单价前后是否一致" label-width="240px"
+                                            required="true" prop="unitPriceConsistenceCheckResult">
                                             <el-input v-model="budget.unitPriceConsistenceCheckResult"></el-input>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="24">
-                                        <el-form-item label="表格上材料是否标注清楚" label-width="240px">
+                                        <el-form-item label="表格上材料是否标注清楚" label-width="240px"
+                                            required="true" prop="materialRemarkCheckResult">
                                             <el-input v-model="budget.materialRemarkCheckResult"></el-input>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="24">
-                                        <el-form-item label="序号排列是否清楚" label-width="240px">
+                                        <el-form-item label="序号排列是否清楚" label-width="240px"
+                                            required="true" prop="serialNumberCheckResult">
                                             <el-input v-model="budget.serialNumberCheckResult"></el-input>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="24">
-                                        <el-form-item label="预算材料与预算表后说明是否统一" label-width="240px">
+                                        <el-form-item label="预算材料与预算表后说明是否统一" label-width="240px"
+                                            required="true" prop="materialRemarkConsistenceCheckResult">
                                             <el-input v-model="budget.materialRemarkConsistenceCheckResult"></el-input>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="24">
-                                        <el-form-item label="字体大小有没有调整" label-width="240px">
+                                        <el-form-item label="字体大小有没有调整" label-width="240px"
+                                            required="true" prop="fontSizeCheckResult">
                                             <el-input v-model="budget.fontSizeCheckResult"></el-input>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="24">
-                                        <el-form-item label="对客户自购的材料是否标注清楚" label-width="240px">
+                                        <el-form-item label="对客户自购的材料是否标注清楚" label-width="240px"
+                                            required="true" prop="selfPurchaseRemarkCheckResult">
                                             <el-input v-model="budget.selfPurchaseRemarkCheckResult"></el-input>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="24">
-                                        <el-form-item label="汇总表与明细表数字前后是否一致" label-width="240px">
+                                        <el-form-item label="汇总表与明细表数字前后是否一致" label-width="240px"
+                                            required="true" prop="numberConsistenceCheckResult">
                                             <el-input v-model="budget.numberConsistenceCheckResult"></el-input>
                                         </el-form-item>
                                     </el-col>

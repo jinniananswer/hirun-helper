@@ -18,6 +18,47 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     selfPurchaseRemarkCheckResult : '',
                     numberConsistenceCheckResult : '',
                     checkDate : '',
+                },
+                budgetRules : {
+                    checkDate: [
+                        {required: true, message: '请选择对审时间', trigger: 'change'}
+                    ],
+                    totalFeeCheckResult: [
+                        {required: true, message: '请填写汇总金额是否正确', trigger: 'blur'},
+                    ],
+                    locationRemarkCheckResult: [
+                        {required: true, message: '请填写所做项目位置标注是否不清', trigger: 'blur'}
+                    ],
+                    contentExpressionCheckResult: [
+                        {required: true, message: '请填写格式文字表达是否正确', trigger: 'blur'}
+                    ],
+                    unitPriceCheckResult: [
+                        {required: true, message: '请填写表格上单价是否正确', trigger: 'blur'}
+                    ],
+                    logoCheckResult: [
+                        {required: true, message: '请填写徽标是否错误、变形', trigger: 'blur'}
+                    ],
+                    unitPriceConsistenceCheckResult: [
+                        {required: true, message: '请填写表格上单价前后是否一致', trigger: 'blur'}
+                    ],
+                    materialRemarkCheckResult: [
+                        {required: true, message: '请填写表格上材料是否标注清楚', trigger: 'blur'}
+                    ],
+                    serialNumberCheckResult: [
+                        {required: true, message: '请填写序号排列是否清楚', trigger: 'blur'}
+                    ],
+                    materialRemarkConsistenceCheckResult: [
+                        {required: true, message: '请填写预算材料与预算表后说明是否统一', trigger: 'blur'}
+                    ],
+                    fontSizeCheckResult: [
+                        {required: true, message: '请填写字体大小有没有调整', trigger: 'blur'}
+                    ],
+                    selfPurchaseRemarkCheckResult: [
+                        {required: true, message: '请填写对客户自购的材料是否标注清楚', trigger: 'blur'}
+                    ],
+                    numberConsistenceCheckResult: [
+                        {required: true, message: '请填写汇总表与明细表数字前后是否一致', trigger: 'blur'}
+                    ],
                 }
             }
         },
@@ -32,9 +73,15 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
         },
         methods: {
             submit : function(command) {
-                let data = this.budget;
-                data.checkResult = command;
-                ajax.post('api/bss.order/order-budget/submitBudgetCheckedResult', data);
+                this.$refs['budget'].validate((valid) => {
+                    if (valid) {
+                        let data = this.budget;
+                        data.checkResult = command;
+                        ajax.post('api/bss.order/order-budget/submitBudgetCheckedResult', data);
+                    } else {
+                        return false;
+                    }
+                });
             }
         }
     });
