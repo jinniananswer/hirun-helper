@@ -139,13 +139,23 @@ define(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'util'], function(Vue,
         methods: {
             init() {
                 let that = this;
-                ajax.get('api/bss.order/order-domain/initPayComponent?orderId='+this.orderId+'&payNo='+this.payNo, null, function(data) {
+                let url = 'api/bss.order/finance/initPayComponent';
+                if (this.orderId != null && this.payNo != null) {
+                    url += '?orderId=' + this.orderId + '&payNo=' + this.payNo;
+                }
+                ajax.get(url, null, function(data) {
                     that.payments = data.payments;
-                    that.payItems = data.payItems;
+                    if (data.payItems) {
+                        that.payItems = data.payItems;
+                    }
+
                     that.payItemOptions = data.payItemOption;
                     that.payForm.needPay = data.needPay;
-                    that.payForm.payDate = data.payDate;
-                })
+
+                    if (data.payDate) {
+                        that.payForm.payDate = data.payDate;
+                    }
+                });
             },
 
             async valid() {
@@ -255,12 +265,15 @@ define(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'util'], function(Vue,
                     };
 
                     let isFind = false;
-                    for (let payItem of this.payItems) {
-                        if (payItem.payItemId == payItemValue) {
-                            isFind = true;
-                            break;
+                    if (this.payItems.length > 0) {
+                        for (let payItem of this.payItems) {
+                            if (payItem.payItemId == payItemValue) {
+                                isFind = true;
+                                break;
+                            }
                         }
                     }
+
                     if (!isFind) {
                         this.payItems.push(payItem);
                     }

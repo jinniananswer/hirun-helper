@@ -4,6 +4,7 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
 
         data : function(){
             return {
+                sOrderId: this.orderId,
                 order:{
                     base:{},
                     product:{},
@@ -94,19 +95,29 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
         methods: {
             init() {
                 let that = this;
-                ajax.get('api/bss.order/order-domain/getOrderDetail', {orderId:this.orderId}, function(data) {
-                    let stage = data.stage;
-                    data.stage = [];
-                    data.stage.push(-10);
-                    data.stage.push(stage);
-                    that.order.base = data;
+                if (this.orderId != null) {
+                    ajax.get('api/bss.order/order-domain/getOrderDetail', {orderId:this.sOrderId}, function(data) {
+                        let stage = data.stage;
+                        data.stage = [];
+                        data.stage.push(-10);
+                        data.stage.push(stage);
+                        that.order.base = data;
 
-                })
+                    });
+                }
             }
         },
 
         watch: {
+            orderId(val) {
+                this.sOrderId = val;
+            },
 
+            sOrderId(val, oldValue) {
+                if (val != oldValue) {
+                    this.init();
+                }
+            }
         },
 
         mounted () {
