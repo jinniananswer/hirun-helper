@@ -3,20 +3,18 @@ package com.microtomato.hirun.modules.bss.order.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
-import com.microtomato.hirun.modules.bss.config.entity.dto.CollectFeeDTO;
-import com.microtomato.hirun.modules.bss.config.entity.dto.PayComponentDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.*;
+import com.microtomato.hirun.modules.bss.order.entity.dto.CustOrderInfoDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.CustOrderQueryDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.OrderDetailDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.PendingTaskDTO;
 import com.microtomato.hirun.modules.bss.order.service.IOrderDomainService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @program: hirun-helper
@@ -54,24 +52,5 @@ public class OrderDomainController {
     public IPage<CustOrderInfoDTO> queryCustOrderInfo(CustOrderQueryDTO queryCond) {
         Page<CustOrderQueryDTO> page = new Page<>(queryCond.getPage(), queryCond.getLimit());
         return this.domainService.queryCustOrderInfos(queryCond, page);
-    }
-
-    @GetMapping("/queryPayment")
-    @RestResult
-    public List<PaymentDTO> queryPayment() {
-        return this.domainService.queryPayment();
-    }
-
-    @GetMapping("/initPayComponent")
-    @RestResult
-    public PayComponentDTO initPayComponent(Long orderId, Long payNo) {
-        return this.domainService.initPayComponent(orderId, payNo);
-    }
-
-    @PostMapping("/collectFee")
-    @RestResult
-    public Map collectFee(CollectFeeDTO collectFee) {
-        this.domainService.collectFee(collectFee);
-        return new HashMap();
     }
 }
