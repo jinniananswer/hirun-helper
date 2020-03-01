@@ -1,14 +1,14 @@
 package com.microtomato.hirun.modules.bss.order.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import com.microtomato.hirun.framework.annotation.RestResult;
+import com.microtomato.hirun.modules.bss.order.entity.dto.OrderDiscountItemDTO;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import lombok.extern.slf4j.Slf4j;
 
 import com.microtomato.hirun.modules.bss.order.service.IOrderDiscountItemService;
 
-import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
 
 /**
  * <p>
@@ -26,6 +26,16 @@ public class OrderDiscountItemController {
     @Autowired
     private IOrderDiscountItemService orderDiscountItemServiceImpl;
 
+    @GetMapping("list")
+    @RestResult
+    public List<OrderDiscountItemDTO> list(Long orderId) {
+        return orderDiscountItemServiceImpl.list(orderId);
+    }
 
-
+    @PostMapping("save")
+    @RestResult
+    public void save(@RequestBody List<OrderDiscountItemDTO> dtoList) {
+//        orderDiscountItemServiceImpl.save(dtoList);
+        return;
+    }
 }

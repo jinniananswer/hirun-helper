@@ -206,6 +206,7 @@
     </el-container>
     <el-dialog title="优惠明细" :visible.sync="discountItemDetail" @open="openDiscountItemDetailDialog"
                fullscreen="true">
+        <el-button type="primary" @click="saveDiscountItemList">保存</el-button>
         <vxe-table
                 :data="discountItemDetailList"
                 size="small"
@@ -219,29 +220,18 @@
                 height="340"
                 :edit-config="{trigger: 'click', mode: 'cell'}"
                 show-footer
-                ref="xTable">
-            <vxe-table-column align="center" field="employeeName" title="录入人" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-            <vxe-table-column align="center" field="createDate" title="录入时间" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                ref="discountItemTable">
+            <vxe-table-column align="center" field="employeeName" title="录入人"></vxe-table-column>
+            <vxe-table-column align="center" field="createTime" title="录入时间"></vxe-table-column>
             <vxe-table-column align="center" field="discountItemName" title="优惠项目"></vxe-table-column>
             <vxe-table-column align="center" field="contractDiscountFee" title="合同优惠金额" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
             <vxe-table-column align="center" field="settleDiscountFee" title="结算优惠金额" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-            <vxe-table-column align="center" field="approveEmployeeName" title="优惠审批人" :edit-render="{name: 'select', options: employeeList}"></vxe-table-column>
+            <vxe-table-column align="center" field="approveEmployeeName" title="优惠审批人" :edit-render="{name: 'select', options: approveEmployeeList}"></vxe-table-column>
             <vxe-table-column align="center" field="approveDate" title="审批时间"></vxe-table-column>
-            <vxe-table-column align="center" field="status" title="状态"></vxe-table-column>
-            <vxe-table-column align="center" field="remark" title="备注"></vxe-table-column>
+            <vxe-table-column align="center" field="statusName" title="状态"></vxe-table-column>
+            <vxe-table-column align="center" field="remark" title="备注" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
         </vxe-table>
-        <!--<el-table :data="discountItemDetailList">-->
-            <!--<el-table-column property="employeeName" label="录入人"></el-table-column>-->
-            <!--<el-table-column property="createDate" label="录入时间"></el-table-column>-->
-            <!--<el-table-column property="discountItemName" label="优惠项目"></el-table-column>-->
-            <!--<el-table-column property="contractDiscountFee" label="合同优惠金额"></el-table-column>-->
-            <!--<el-table-column property="settleDiscountFee" label="结算优惠金额"></el-table-column>-->
-            <!--<el-table-column property="approveEmployeeName" label="优惠审批人"></el-table-column>-->
-            <!--<el-table-column property="approveDate" label="审批时间"></el-table-column>-->
-            <!--<el-table-column property="status" label="状态"></el-table-column>-->
-            <!--<el-table-column property="remark" label="备注"></el-table-column>-->
-        <!--</el-table>-->
-    <!--</el-dialog>-->
+    </el-dialog>
 </div>
 <style>
     .text {

@@ -29,10 +29,6 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 orderStatus : util.getRequest('status'),
                 activities : [],
                 discountItemDetail: false,
-                employeeList: [
-                    {'label': '在职', 'value': '0'},
-                    {'label': '离职', 'value': '1'}
-                ],
                 decorateContractRules : {
                     signDate: [
                         { required: true, message: '请选择签订合同时间', trigger: 'change' }
@@ -76,7 +72,12 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                         {required: true, message: '请填写现金优惠', trigger: 'blur'},
                         // {type: 'number', message: '必须为数字', trigger: 'blur'}
                     ],
-                }
+                },
+                statusList : [],
+                approveEmployeeList : [
+                    // {'label': '女', 'value': '0'},
+                    // {'label': '1', 'value': '2'},
+                    ]
             }
         },
         computed: {
@@ -105,6 +106,18 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
         },
         mounted: function() {
             this.decorateContract.orderId = this.orderId;
+
+            // let arr = this.approveEmployeeList;
+            ajax.get('api/bss.order/order-base/selectRoleEmployee', {roleId:15,isSelf:false}, (responseData)=>{
+                let arr = [];
+                for(let i = 0; i < responseData.length; i++) {
+                    arr.push({
+                        label: responseData[i].name,
+                        value: responseData[i].employeeId
+                    });
+                }
+                this.approveEmployeeList = arr;
+            })
             // let data = {
             //     orderId : this.orderId
             // }
@@ -129,18 +142,13 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 alert('上传合同附件')
             },
             openDiscountItemDetailDialog : function() {
-                let discountItemDetailList = [{
-                    employeeName : "安文轩",
-                    createDate : util.getNowDate(),
-                    discountItemName : '现金优惠',
-                    contractDiscountFee : 100,
-                    settleDiscountFee : 0,
-                    approveEmployeeName : '1',
-                    approveDate : '',
-                    status : '新建',
-                    remark : ''
-                }]
-                this.discountItemDetailList = discountItemDetailList;
+                let data = {
+                    // orderId : this.orderId
+                    orderId : 1
+                }
+                ajax.get('api/bss.order/order-discount-item/list', data, (responseData)=>{
+                    this.discountItemDetailList = responseData;
+                });
             },
             fenTransToYuan : function(data) {
                 data.contractFee = data.contractFee / 100;
@@ -163,6 +171,13 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 data.taxFee = Math.round(data.taxFee * 100);
                 data.cashDiscount = Math.round(data.cashDiscount * 100);
                 data.firstContractFee = Math.round(data.firstContractFee * 100);
+            },
+            saveDiscountItemList : function () {
+                let updateRecords = vm.$refs.discountItemTable.getUpdateRecords()
+                let url = 'api/bss.order/order-discount-item/save';
+                ajax.post(url, updateRecords, (responseData)=>{
+                    alert('保存成功');
+                });
             }
         }
     });

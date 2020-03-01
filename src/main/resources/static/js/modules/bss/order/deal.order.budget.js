@@ -55,12 +55,12 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     Object.assign(this.budget, responseData);
                     this.budget.fee = this.budget.fee/100;
                 });
+                this.submitButtonName = '重新提交二级精算';
             }
             this.activities = [
                 {value : "1", name : "活动3"},
                 {value : "2", name : "活动4"}
             ];
-            this.submitButtonName = '重新提交二级精算';
         },
         methods: {
             submit : function() {
