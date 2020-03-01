@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>dolphin-admin</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script src="static/js/framework/requirejs/require.min.js"
+            th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js"
+            th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-main>
+            <el-row :gutter="12">
+                <el-col :span="6">
+                    <div class="grid-content bg-purple">
+                        <cust-info :cust-id="workerSalary.custId"></cust-info>
+
+                        <order-worker :order-id="workerSalary.orderId"></order-worker>
+                    </div>
+                </el-col>
+                <el-col :span="18">
+                    <div class="grid-content bg-purple-light">
+                        <order-info :order-id="workerSalary.orderId"></order-info>
+                        <el-card class="box-card">
+                            <div slot="header">
+                                <span>操作区</span>
+                            </div>
+                            <el-form :inline="false" :rules="rules" label-position="right" label-width="80px" :model="workerSalary" ref="workerSalary">
+                                <el-row>
+                                    <el-col :span="8">
+                                        <el-form-item label="水电工资" prop="hydropowerSalary" label-width="100px">
+                                            <el-input v-model="workerSalary.hydropowerSalary" placeholder="水电工资" ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="16">
+                                        <el-form-item label="水电备注" prop="hydropowerRemark" label-width="100px">
+                                            <el-input v-model="workerSalary.hydropowerRemark" placeholder="水电备注" ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row>
+                                    <el-col :span="8">
+                                        <el-form-item label="木工工资" prop="woodworkerSalary" label-width="100px">
+                                            <el-input v-model="workerSalary.woodworkerSalary" placeholder="水电工资" ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="16">
+                                        <el-form-item label="木工备注" prop="woodworkerRemark" label-width="100px">
+                                            <el-input v-model="workerSalary.woodworkerRemark" placeholder="水电备注" ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row>
+                                    <el-col :span="8">
+                                        <el-form-item label="泥工工资" prop="tilerSalary" label-width="100px">
+                                            <el-input v-model="workerSalary.tilerSalary" placeholder="泥工工资" ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="16">
+                                        <el-form-item label="镶贴备注" prop="tilerRemark" label-width="100px">
+                                            <el-input v-model="workerSalary.tilerRemark" placeholder="镶贴备注" ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row>
+                                    <el-col :span="8">
+                                        <el-form-item label="油工工资" prop="painterSalary" label-width="100px">
+                                            <el-input v-model="workerSalary.painterSalary" placeholder="油工工资" ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="16">
+                                        <el-form-item label="涂裱备注" prop="painterRemark" label-width="100px">
+                                            <el-input v-model="workerSalary.painterRemark" placeholder="涂裱备注" ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row>
+                                    <el-col :span="8">
+                                        <el-form-item label="墙工工资" prop="wallworkerSalary" label-width="100px">
+                                            <el-input v-model="workerSalary.wallworkerSalary" placeholder="墙工工资" ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="16">
+                                        <el-form-item label="敲墙备注" prop="wallworkerRemark" label-width="100px">
+                                            <el-input v-model="workerSalary.wallworkerRemark" placeholder="敲墙备注" ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-form-item style="text-align: center ">
+                                    <el-button type="primary" @click="save">保存</el-button>
+                                    <el-button type="primary" @click="closeWorkerSalary">关闭</el-button>
+                                </el-form-item>
+                            </el-form>
+                        </el-card>
+                        <div>
+                            <cust-visit :cust-id="workerSalary.custId"></cust-visit>
+                        </div>
+                        </el-card>
+                    </div>
+                </el-col>
+            </el-row>
+        </el-main>
+    </el-container>
+</div>
+<style>
+    .text {
+        font-size: 14px;
+    }
+
+    .item {
+        margin-bottom: 18px;
+    }
+
+    .box-card {
+        margin-bottom: 12px;
+    }
+
+    .el-card__header {
+        padding: 10px;
+    }
+</style>
+<script src="../../../static/js/modules/bss/order/calculate.worker.salary.js"
+        th:src="@{static/js/modules/bss/order/calculate.worker.salary.js(v=${version})}"></script>
+</body>
+</html>

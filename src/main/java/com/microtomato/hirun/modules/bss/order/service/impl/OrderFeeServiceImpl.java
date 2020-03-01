@@ -5,26 +5,35 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
+import com.microtomato.hirun.modules.bss.config.entity.dto.CascadeDTO;
+import com.microtomato.hirun.modules.bss.config.entity.dto.PayComponentDTO;
+import com.microtomato.hirun.modules.bss.config.entity.dto.PayItemDTO;
+import com.microtomato.hirun.modules.bss.config.entity.po.PayItemCfg;
+import com.microtomato.hirun.modules.bss.config.service.IPayItemCfgService;
 import com.microtomato.hirun.modules.bss.customer.entity.po.CustBase;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.PaymentDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.SecondInstallmentCollectionDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFee;
+import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayItem;
+import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayMoney;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayNo;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderFeeMapper;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderPayNoMapper;
-import com.microtomato.hirun.modules.bss.order.service.IOrderDomainService;
-import com.microtomato.hirun.modules.bss.order.service.IOrderFeeService;
-import com.microtomato.hirun.modules.bss.order.service.IOrderPayNoService;
-import com.microtomato.hirun.modules.bss.order.service.IOrderWorkerService;
+import com.microtomato.hirun.modules.bss.order.service.*;
+import com.microtomato.hirun.modules.system.entity.po.StaticData;
+import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -47,6 +56,17 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
 
     @Autowired
     private IOrderPayNoService OrderPayNoService;
+
+    @Autowired
+    private IStaticDataService staticDataService;
+
+    @Autowired
+    private IPayItemCfgService payItemCfgService;
+
+    @Autowired
+    private IOrderPayItemService orderPayItemService;
+
+
 
 
     @Override
@@ -72,6 +92,7 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
         }
         return orderFee;
     }
+
     /**
      * 财务审核
      *
@@ -81,22 +102,21 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void submitAudit(OrderFeeDTO dto) {
-       System.out.println("OrderFeeDTO=========="+dto);
-        String auditStatus =dto.getAuditStatus();//1是审核通过，2是审核不通过
+        System.out.println("OrderFeeDTO==========" + dto);
+        String auditStatus = dto.getAuditStatus();//1是审核通过，2是审核不通过
 
-        if(auditStatus.equals("1")){
+        if (auditStatus.equals("1")) {
             orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_NEXT_STEP);
-        }
-        else
+        } else
             orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_AUDIT_NO);
 
         //如果需要流转到指定人，才需要处理worker记录 首期款需要选择工程文员
-        String orderStatus =dto.getOrderStatus();//判断当前状态，处理worker表
-        if(orderStatus.equals("18")&&auditStatus.equals("1")){
+        String orderStatus = dto.getOrderStatus();//判断当前状态，处理worker表
+        if (orderStatus.equals("18") && auditStatus.equals("1")) {
             System.out.println("进来处理worker");
-            workerService.updateOrderWorker(dto.getOrderId(), 32L,dto.getEngineeringClerk());
+            workerService.updateOrderWorker(dto.getOrderId(), 32L, dto.getEngineeringClerk());
         }
-       //
+        //
     }
 
     /**
@@ -107,9 +127,8 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @Override
     public void costReview(OrderPayNo orderPayNo) {
-        System.out.println("orderPayNo============" + orderPayNo);
         Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
-//        OrderPayNoService.update(new UpdateWrapper<OrderPayNo>().lambda().eq(OrderPayNo::getPayNo, orderPayNo.getPayNo()).gt(OrderPayNo::getEndDate, LocalDateTime.now()).set(OrderPayNo::getAuditStatus, orderPayNo.getAuditStatus()).set(OrderPayNo::getAuditEmployeeId, employeeId).set(OrderPayNo::getUpdateTime, LocalDateTime.now()));
+        OrderPayNoService.update(new UpdateWrapper<OrderPayNo>().lambda().eq(OrderPayNo::getPayNo, orderPayNo.getPayNo()).eq(OrderPayNo::getOrderId, orderPayNo.getOrderId()).gt(OrderPayNo::getEndDate, LocalDateTime.now()).set(OrderPayNo::getAuditStatus, orderPayNo.getAuditStatus()).set(OrderPayNo::getAuditEmployeeId, employeeId).set(OrderPayNo::getUpdateTime, LocalDateTime.now()).set(OrderPayNo::getRemark, orderPayNo.getRemark()));
     }
 
     /**
@@ -121,10 +140,10 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void submitTask(OrderFeeDTO dto) {
-         System.out.println("OrderFeeDTO=========="+dto);
+        System.out.println("OrderFeeDTO==========" + dto);
         orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_NEXT_STEP);
         //如果需要流转到指定人，才需要处理worker记录，流转到角色33项目经理
-        workerService.updateOrderWorker(dto.getOrderId(), 33L,dto.getProjectManager());
+        workerService.updateOrderWorker(dto.getOrderId(), 33L, dto.getProjectManager());
 
 
     }
@@ -138,15 +157,14 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void submitAuditProject(OrderFeeDTO dto) {
-        System.out.println("OrderFeeDTO=========="+dto);
-        String auditStatus =dto.getAuditStatus();//1是审核通过，2是审核不通过
+        System.out.println("OrderFeeDTO==========" + dto);
+        String auditStatus = dto.getAuditStatus();//1是审核通过，2是审核不通过
 
-        if(auditStatus.equals("1")){
+        if (auditStatus.equals("1")) {
             orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_NEXT_STEP);
             //如果需要流转到指定人，才需要处理worker记录 流转到角色31项目助理
-            workerService.updateOrderWorker(dto.getOrderId(), 31L,dto.getEngineeringAssistant());
-        }
-        else
+            workerService.updateOrderWorker(dto.getOrderId(), 31L, dto.getEngineeringAssistant());
+        } else
             orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_AUDIT_NO);
 
     }
@@ -160,8 +178,8 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void submitAssignment(OrderFeeDTO dto) {
-        System.out.println("OrderFeeDTO=========="+dto);
-            orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_NEXT_STEP);
+        System.out.println("OrderFeeDTO==========" + dto);
+        orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_NEXT_STEP);
 
 
     }
@@ -172,5 +190,43 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
         orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_NEXT_STEP);
 
         workerService.updateOrderWorker(dto.getOrderId(), 35L, dto.getFinanceEmployeeId());
+    }
+
+    /**
+     * 初始化费用信息
+     *
+     * @return
+     */
+    @Override
+    public PayComponentDTO initCostAudit(Long orderId) {
+        System.out.println("orderId============"+orderId);
+        PayComponentDTO componentData = new PayComponentDTO();
+        if (orderId != null) {
+            List<OrderPayItem> payItems = orderPayItemService.queryByOrderId(orderId);
+           if (ArrayUtils.isNotEmpty(payItems)) {
+                List<PayItemDTO> payItemDTOs = new ArrayList<>();
+                for (OrderPayItem payItem : payItems) {
+                    PayItemDTO payItemDTO = new PayItemDTO();
+                    payItemDTO.setPayItemId("pay_" + payItem.getPayItemId());
+                    payItemDTO.setMoney(payItem.getFee().doubleValue() / 100);
+
+                    String payItemName = payItemCfgService.getPath(payItem.getPayItemId());
+                    Integer payPeriod = payItem.getPeriods();
+                    if (payPeriod != null) {
+                        payItemDTO.setPeriod(payPeriod);
+                        String payPeriodName = staticDataService.getCodeName("PAY_PERIODS", payPeriod + "");
+                        payItemDTO.setPeriodName(payPeriodName);
+                        payItemName += '-' + payPeriodName;
+                    }
+                    payItemDTO.setPayItemName(payItemName);
+
+                    payItemDTOs.add(payItemDTO);
+                }
+                componentData.setPayItems(payItemDTOs);
+            }
+
+        }
+        System.out.println("componentData============"+componentData);
+        return componentData;
     }
 }

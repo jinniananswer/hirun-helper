@@ -58,7 +58,6 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                 // ajax.get('api/order/order-fee/queryOrderCollectFee', {orderId:this.collectFee.orderId}, function(data) {
                 //     Object.assign(that.customerConsult, data);
                 // })
-                alert("初始化方法");
             },
 
             save(task) {
@@ -130,9 +129,9 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
             },
         },
 
-        mounted () {
-            this.init();
-        }
+        // mounted () {
+        //     this.init();
+        // }
     });
 
     return vm;

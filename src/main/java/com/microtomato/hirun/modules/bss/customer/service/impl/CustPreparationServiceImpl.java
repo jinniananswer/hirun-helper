@@ -133,7 +133,8 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
             BeanUtils.copyProperties(dto, project);
 
             //保存customer信息,用作测试将状态设置成0，实际应该将状态设置成报备状态
-            custBase.setCustStatus(0);
+            custBase.setCustStatus(2);
+            custBase.setCustType("1");
             baseService.save(custBase);
             //保存project信息
             project.setPartyId(custBase.getCustId());
@@ -153,7 +154,7 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
             orderBase.setHousesId(preparation.getHouseId());
             orderBase.setHouseLayout(dto.getHouseMode());
             orderBase.setFloorage(dto.getHouseArea());
-            orderBase.setType("0");
+            orderBase.setType("H");
             orderBase.setStatus("1");
             orderBase.setDecorateAddress(dto.getHouseBuilding() + dto.getHouseRoomNo());
             domainService.createNewOrder(orderBase);
