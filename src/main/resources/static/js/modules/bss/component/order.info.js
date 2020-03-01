@@ -72,7 +72,7 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
                         </el-row >
                     </el-tab-pane>
                     <el-tab-pane label="费用信息" name="fee">
-                        订单费用
+                        
                     </el-tab-pane>
                     <el-tab-pane label="所选产品" name="product">
                         <div class="text item">

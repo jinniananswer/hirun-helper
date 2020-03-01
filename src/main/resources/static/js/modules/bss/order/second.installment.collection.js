@@ -1,4 +1,4 @@
-require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'order-info', 'order-worker', 'order-selectemployee','cust-visit'], function(Vue, element, axios, ajax, vueselect, util, custInfo, orderInfo, orderWorker, orderSelectEmployee,custVisit) {
+require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'order-info', 'order-worker', 'order-selectemployee','cust-visit', 'order-search-employee'], function(Vue, element, axios, ajax, vueselect, util, custInfo, orderInfo, orderWorker, orderSelectEmployee,custVisit, orderSearchEmployee) {
     let vm = new Vue({
         el: '#app',
         data() {
@@ -24,10 +24,39 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     oilWorkerWages : '0',
                     oilWorkerRemark : '',
                     wallKnockingWorkerWages : '0',
-                    wallKnockingWorkerRemark : ''
+                    wallKnockingWorkerRemark : '',
+                    financeEmployeeId : ''
                 },
                 orderId : util.getRequest('orderId'),
                 orderStatus : util.getRequest('status'),
+                secondInstallmentRules : {
+                    financeEmployeeId: [
+                        { required: true, message: '请选择财务人员', trigger: 'change' }
+                    ],
+                    baseDecorationFee: [
+                        {required: true, message: '请填写基础装修总金额', trigger: 'blur'},
+                        // {type: 'number', message: '必须为数字', trigger: 'blur'}
+                    ],
+                    doorFee: [
+                        {required: true, message: '请填写门总金额', trigger: 'blur'},
+                        // {type: 'number', message: '必须为数字', trigger: 'blur'}
+                    ],
+                    furnitureFee: [
+                        {required: true, message: '请填写家具总金额', trigger: 'blur'},
+                        // {type: 'number', message: '必须为数字', trigger: 'blur'}
+                    ],
+                    otherFee: [
+                        {required: true, message: '请填写其他费用', trigger: 'blur'},
+                        // {type: 'number', message: '必须为数字', trigger: 'blur'}
+                    ],
+                    taxFee: [
+                        {required: true, message: '请填写税金', trigger: 'blur'},
+                        // {type: 'number', message: '必须为数字', trigger: 'blur'}
+                    ],
+                    financeEmployeeId : [
+                        {required: true, message: '请选择财务人员', trigger: 'change'},
+                    ]
+                },
                 // activities : []
             }
         },
@@ -75,8 +104,17 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
         },
         methods: {
             submit : function() {
-                let url = 'api/bss/order/order-fee/secondInstallmentCollect';
-                ajax.post(url, this.secondInstallment);
+                this.$refs['secondInstallment'].validate((valid) => {
+                    if (valid) {
+                        alert(valid);
+                        let url = 'api/bss/order/order-fee/secondInstallmentCollect';
+                        let data = this.secondInstallment;
+                        this.yuanTransToFen(data);
+                        ajax.post(url, data);
+                    } else {
+                        return false;
+                    }
+                });
             },
             openDiscntItemWindow : function () {
                 alert('优惠项目录入')
@@ -86,7 +124,18 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
             },
             handleClick(tab, event) {
                 console.log(tab, event);
-            }
+            },
+            yuanTransToFen : function(data) {
+                data.secondInstallmentFee = Math.round(data.secondInstallmentFee * 100);
+                data.secondContractFee = Math.round(data.secondContractFee * 100);
+                data.chargedSecondInstallmentFee = Math.round(data.chargedSecondInstallmentFee * 100);
+                data.woodProductFee = Math.round(data.woodProductFee * 100);
+                data.baseDecorationFee = Math.round(data.baseDecorationFee * 100);
+                data.doorFee = Math.round(data.doorFee * 100);
+                data.furnitureFee = Math.round(data.furnitureFee * 100);
+                data.otherFee = Math.round(data.otherFee * 100);
+                data.taxFee = Math.round(data.taxFee * 100);
+            },
         }
     });
 

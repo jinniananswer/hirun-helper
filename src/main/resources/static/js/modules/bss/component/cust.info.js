@@ -18,7 +18,7 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
                 <el-row :gutter="12">
                     <el-col :span="8">
                         <el-avatar :size="60" v-if="customer.headUrl != null" :src="customer.headUrl"></el-avatar>
-                        <el-avatar :size="60" v-else>{{customer.custName.substring(0,1)}}</el-avatar>
+                        <el-avatar :size="60" v-else>{{customer.custName!=null?customer.custName.substring(0,1):''}}</el-avatar>
                     </el-col>
                     <el-col :span="16">
                         <h3 v-if="customer.custName != null && customer.custName != ''">{{customer.custName}}</h3>

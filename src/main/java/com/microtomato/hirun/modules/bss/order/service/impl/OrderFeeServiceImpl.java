@@ -167,7 +167,10 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void secondInstallmentCollect(SecondInstallmentCollectionDTO dto) {
         orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_NEXT_STEP);
+
+        workerService.updateOrderWorker(dto.getOrderId(), 35L, dto.getFinanceEmployeeId());
     }
 }
