@@ -16,4 +16,5 @@ import java.util.List;
 public interface IOrderPayItemService extends IService<OrderPayItem> {
 
     List<OrderPayItem> queryByOrderIdPayNo(Long orderId, Long payNo);
+    List<OrderPayItem> queryByOrderId(Long orderId);
 }

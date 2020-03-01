@@ -182,9 +182,26 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
             },
             saveDiscountItemList : function () {
                 let updateRecords = vm.$refs.discountItemTable.getUpdateRecords()
-                let url = 'api/bss.order/order-discount-item/save';
-                ajax.post(url, updateRecords, (responseData)=>{
-                    alert('保存成功');
+                console.log("updateRecords: " + updateRecords);
+
+                axios({
+                    method: 'post',
+                    url: 'api/bss.order/order-discount-item/save',
+                    data: updateRecords
+                }).then(function (responseData) {
+                    if (0 == responseData.data.code) {
+
+                        Vue.prototype.$message({
+                            message: '保存成功！',
+                            type: 'success'
+                        });
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                    Vue.prototype.$message({
+                        message: '保存失败！',
+                        type: 'warning'
+                    });
                 });
             },
             selectRowChangeEvent ({ row }, evnt) {
