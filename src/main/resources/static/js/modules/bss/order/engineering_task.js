@@ -4,14 +4,14 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
         data: function () {
             return {
                 task: {
-                    orderId:28,//util.getRequest('orderId'),
+                    orderId:util.getRequest('orderId'),
                     engineeringSupervisor:'',
                     projectManager:'',
                     engineeringAssistant:'',
                     auditRemark:'',
                     auditStatus:0,
-                    orderStatus : 20,//util.getRequest('status'),
-                    custId:18162,//util.getRequest('custId')
+                    orderStatus : util.getRequest('status'),
+                    custId:util.getRequest('custId')
                 },
                 progress: [-10, 70],
                 activeTab: 'orderInfo',

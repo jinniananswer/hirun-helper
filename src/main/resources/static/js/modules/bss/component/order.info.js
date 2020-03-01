@@ -34,7 +34,7 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
                                     :marks="stages">
                             </el-slider>
                         </div>
-
+                        <el-divider></el-divider>
                         <el-row :gutter="5">
                             <el-col :span="8">
                                 <div class="text">
