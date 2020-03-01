@@ -24,7 +24,8 @@ require.config({
         'cust-visit': 'static/js/modules/bss/component/cust.visit',
         'upload-file': 'static/js/modules/system/component/upload.file',
         'house-select': 'static/js/modules/bss/component/house.select',
-        'order-search-employee':'static/js/modules/bss/component/order.search.employee'
+        'order-search-employee':'static/js/modules/bss/component/order.search.employee',
+        'order-file-upload':'static/js/modules/bss/component/order.file.upload'
     },
     shim: {
         'ELEMENT': {
