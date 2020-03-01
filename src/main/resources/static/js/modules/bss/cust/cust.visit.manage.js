@@ -37,7 +37,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info','cus
             submit(customerVisit) {
                 this.$refs.customerVisit.validate((valid) => {
                     if (valid) {
-                        ajax.post('api/customer/party-visit/addCustomerVisit',this.customerVisit);
+                        ajax.post('api/customer/party-visit/addCustomerVisit',this.customerVisit,null,null,true);
                     }
                 })
             },
