@@ -92,10 +92,13 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
         },
 
         methods: {
-            submit : function() {
-                this.pays = this.$refs.paymethods.payments;
-                alert(JSON.stringify(this.pays));
-                alert(JSON.stringify(this.$refs.paymethods2.payments));
+            submit : async function() {
+                // let errMap = this.$refs.paymethods.$refs.xTable.validate().catch(errMap => errMap);
+                // let errMap2 = this.$refs.paymethods2.$refs.xTable.validate().catch(errMap2 => errMap2);
+                let isValid = await this.$refs.paymethods.valid().then(isValid=>isValid);
+                console.log(isValid);
+                // alert(JSON.stringify(this.pays));
+                // alert(JSON.stringify(this.$refs.paymethods2.payments));
             }
         }
     });

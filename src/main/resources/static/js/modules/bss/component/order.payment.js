@@ -100,6 +100,7 @@ define(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'util'], function(Vue,
                     show-footer
                     show-overflow
                     highlight-hover-row
+                    :auto-resize="true"
                     :data="payItems"
                     :edit-rules="validRules"
                     :footer-method="footerMethod"
@@ -125,6 +126,7 @@ define(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'util'], function(Vue,
                     show-footer
                     show-overflow
                     highlight-hover-row
+                    :auto-resize="true"
                     :data="payments"
                     :edit-rules="validRules"
                     :footer-method="footerMethod"
