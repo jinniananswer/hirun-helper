@@ -4,12 +4,12 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
         data: function () {
             return {
                 collectFee: {
-                    orderId:28,//util.getRequest('orderId'),
+                    orderId:util.getRequest('orderId'),
                     engineeringClerk:'',
                     auditRemark:'',
                     auditStatus:0,
-                    orderStatus : 30,//util.getRequest('status'),
-                    custId:18162,//util.getRequest('custId')
+                    orderStatus :util.getRequest('status'),
+                    custId:util.getRequest('custId')
                 },
                 progress: [-10, 70],
                 activeTab: 'orderInfo',
