@@ -6,11 +6,12 @@ require(['vue', 'ELEMENT','ajax', 'vueselect', 'util','cust-info', 'order-info',
                 auditData: {
                     orderId:util.getRequest('orderId'),
                     payNo:util.getRequest('payNo'),
-                    // payNo: 1,
-                    // orderId: 1,
+                    custId:util.getRequest('custId'),
                     auditStatus:0,
+                    auditReason:"",
                 },
-
+                payItems: [],
+                payments: [],
             }
         },
         mounted: function() {
@@ -18,13 +19,19 @@ require(['vue', 'ELEMENT','ajax', 'vueselect', 'util','cust-info', 'order-info',
         },
         methods: {
             init() {
-                // let that = this;
-                // ajax.get('api/bss.order/order-domain/initPayComponent', null, function(data) {
-                //     that.payments = data.payments;
-                //     that.payItems = data.payItems;
-                // })
+                let that = this;
+                let url = 'api/bss.order/finance/initPayComponent';
+                if (this.auditData.orderId != null && this.auditData.payNo != null) {
+                    url += '?orderId=' + this.auditData.orderId + '&payNo=' + this.auditData.payNo;
+                }
+                ajax.get(url, null, function(data) {
+                    that.payments = data.payments;
+                    if (data.payItems) {
+                        that.payItems = data.payItems;
+                    }
+                });
             },
-            submitAudit: async function(){
+            submitAudit:  function(){
                 this.auditData['auditStatus'] = "1";
                     ajax.post('api/bss/order/order-fee/costReview', this.auditData);
 

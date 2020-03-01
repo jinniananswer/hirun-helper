@@ -34,9 +34,21 @@ public class OrderPayItemServiceImpl extends ServiceImpl<OrderPayItemMapper, Ord
      */
     @Override
     public List<OrderPayItem> queryByOrderIdPayNo(Long orderId, Long payNo) {
-        return this.list(new QueryWrapper<OrderPayItem>().lambda()
+         return this.list(new QueryWrapper<OrderPayItem>().lambda()
                                                         .eq(OrderPayItem::getOrderId, orderId)
                                                         .eq(OrderPayItem::getPayNo, payNo)
                                                         .gt(OrderPayItem::getEndDate, RequestTimeHolder.getRequestTime()));
+    }
+
+    /**
+     * 根据订单ID查询订单支付项信息
+     * @param orderId
+     * @return
+     */
+    @Override
+    public List<OrderPayItem> queryByOrderId(Long orderId) {
+        return this.list(new QueryWrapper<OrderPayItem>().lambda()
+                .eq(OrderPayItem::getOrderId, orderId)
+                .gt(OrderPayItem::getEndDate, RequestTimeHolder.getRequestTime()));
     }
 }
