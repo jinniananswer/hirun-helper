@@ -30,4 +30,6 @@ public class SecondInstallmentCollectionDTO {
     private Integer furnitureFee;
 
     private Integer otherFee;
+
+    private Long financeEmployeeId;
 }
