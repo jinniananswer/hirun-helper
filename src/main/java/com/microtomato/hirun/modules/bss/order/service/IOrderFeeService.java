@@ -37,4 +37,22 @@ public interface IOrderFeeService extends IService<OrderFee> {
 
 
 
+    /**
+     * 工程文员提交项目经理审核
+     * @param dto
+     */
+    void submitTask(OrderFeeDTO dto);
+
+    /**
+     * 项目经理审核
+     * @param dto
+     */
+    void submitAuditProject(OrderFeeDTO dto);
+
+    /**
+     * 开工交底
+     * @param dto
+     */
+    void submitAssignment(OrderFeeDTO dto);
+
 }

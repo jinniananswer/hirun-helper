@@ -50,7 +50,7 @@ public class OrderFeeController {
         orderFeeServiceImpl.submitAudit(dto);
     }
 
-    /**po
+    /**
      * 费用复核
      * @param orderPayNo
      */
@@ -61,6 +61,36 @@ public class OrderFeeController {
         orderFeeServiceImpl.costReview(orderPayNo);
     }
 
+    /**
+     * 工程文员提交项目经理审核
+     * @param dto
+     */
+    @PostMapping("/submitTask")
+    @RestResult
+    public void submitTask(OrderFeeDTO dto) {
+        orderFeeServiceImpl.submitTask(dto);
+    }
+
+    /**
+     * 项目经理审核
+     * @param dto
+     */
+    @PostMapping("/submitAuditProject")
+    @RestResult
+    public void submitAuditProject(OrderFeeDTO dto) {
+        orderFeeServiceImpl.submitAuditProject(dto);
+    }
+
+
+    /**
+     * 开工交底
+     * @param dto
+     */
+    @PostMapping("/submitAssignment")
+    @RestResult
+    public void submitAssignment(OrderFeeDTO dto) {
+        orderFeeServiceImpl.submitAssignment(dto);
+    }
 
     @PostMapping("/secondInstallmentCollect")
     @RestResult
