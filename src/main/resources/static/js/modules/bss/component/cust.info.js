@@ -4,6 +4,8 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
 
         data : function(){
             return {
+                sCustId: this.custId,
+                sOrderId: this.orderId,
                 customer:{}
             }
         },
@@ -46,14 +48,32 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
         methods: {
             init() {
                 let that = this;
-                ajax.get('api/customer/cust-base/getCustInfo', {custId:this.custId, orderId:this.orderId}, function(data) {
+                ajax.get('api/customer/cust-base/getCustInfo', {custId:this.sCustId, orderId:this.sOrderId}, function(data) {
                     that.customer = data;
                 })
             }
         },
 
         watch: {
+            custId(val) {
+                this.sCustId = val;
+            },
 
+            sCustId(val, oldValue) {
+                if (val != oldValue) {
+                    this.init();
+                }
+            },
+
+            orderId(val) {
+                this.sOrderId = val;
+            },
+
+            sCustId(val, oldValue) {
+                if (val != oldValue) {
+                    this.init();
+                }
+            }
         },
 
         mounted () {
