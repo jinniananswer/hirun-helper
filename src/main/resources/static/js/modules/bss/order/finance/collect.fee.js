@@ -57,6 +57,7 @@ require(['vue', 'ELEMENT','ajax', 'vueselect', 'util','cust-info', 'order-info',
                     that.custOrder = responseData.records;
                     that.queryCond.page = responseData.current;
                     that.queryCond.count = responseData.total;
+
                 });
             },
 
