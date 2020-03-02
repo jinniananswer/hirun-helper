@@ -121,7 +121,7 @@ public class ProjectIntention extends BaseEntity {
      * 计划居住时间
      */
     @TableField("plan_live_time")
-    private String planLiveTime;
+    private LocalDateTime planLiveTime;
 
     /**
      * 设计师作品
@@ -134,6 +134,36 @@ public class ProjectIntention extends BaseEntity {
      */
     @TableField("wood_intention")
     private String woodIntention;
+
+    /**
+     * 合作银行
+     */
+    @TableField("cooperative_bank")
+    private String cooperativeBank;
+
+    /**
+     * 分期金额
+     */
+    @TableField("quota")
+    private String quota;
+
+    /**
+     * 分期期数
+     */
+    @TableField("month_num")
+    private String monthNum;
+
+    /**
+     * 样板房
+     */
+    @TableField("sample_house")
+    private String sampleHouse;
+
+    /**
+     * 只做木制品
+     */
+    @TableField("only_wood")
+    private String onlyWood;
 
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)
     private Long createUserId;

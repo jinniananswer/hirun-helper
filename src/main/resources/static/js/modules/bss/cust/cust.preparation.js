@@ -120,11 +120,6 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'house-select',
             },
 
             submit(customerPreparation) {
-                console.log(this.isContinueAuth=='false');
-                console.log(this.customerPreparation.custId=='');
-                console.log(this.moreCustomer);
-
-
                 if(this.isContinueAuth=='false'&&this.customerPreparation.custId==''&&this.moreCustomer){
                     this.$message.error('该号码存在多条客户信息，请选择客户做新增报备。如为特殊情况，请联系文员进行新增操作');
                     return;
@@ -134,7 +129,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'house-select',
                     if (valid) {
                         if (this.checkReferee()) {
                             if(this.checkHouseIdReq()){
-                                ajax.post('api/customer/cust-preparation/addCustomerPreparation', this.customerPreparation);
+                                ajax.post('api/customer/cust-preparation/addCustomerPreparation', this.customerPreparation,null,null,true);
                             }else {
                                 this.$message.error('请选择楼盘地址');
                             }
