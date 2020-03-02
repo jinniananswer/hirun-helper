@@ -27,5 +27,9 @@ public class FinancePendingOrderDTO {
 
     private String status;
 
+    private String statusName;
+
     private String auditStatus;
+
+    private String auditStatusName;
 }

@@ -388,6 +388,9 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
         Map<String, FinancePendingTaskDTO> temp = new HashMap<>();
         for (FinancePendingOrderDTO financeOrder : financeOrders) {
             String auditStatus = financeOrder.getAuditStatus();
+            String orderStatus = financeOrder.getStatus();
+            financeOrder.setStatusName(this.staticDataService.getCodeName("ORDER_STATUS", orderStatus));
+            financeOrder.setAuditStatusName(this.staticDataService.getCodeName("AUDIT_STATUS", auditStatus));
             FinancePendingTaskDTO task = null;
             if (!temp.containsKey(auditStatus)) {
                 task = new FinancePendingTaskDTO();
