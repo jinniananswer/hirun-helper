@@ -1,12 +1,10 @@
 package com.microtomato.hirun.modules.bss.order.entity.dto;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.microtomato.hirun.framework.data.BaseEntity;
-import lombok.*;
-import lombok.experimental.Accessors;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.microtomato.hirun.framework.config.JsonLocalDateTimeDeserializer;
+import com.microtomato.hirun.framework.config.JsonLocalDateTimeSerializer;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
@@ -62,6 +60,8 @@ public class OrderDiscountItemDTO {
     /**
      * 审批时间
      */
+    @JsonSerialize(using = JsonLocalDateTimeSerializer.class)
+    @JsonDeserialize(using = JsonLocalDateTimeDeserializer.class)
     private LocalDateTime approveTime;
 
     /**
@@ -79,5 +79,7 @@ public class OrderDiscountItemDTO {
     /**
      * 创建时间
      */
+    @JsonSerialize(using = JsonLocalDateTimeSerializer.class)
+    @JsonDeserialize(using = JsonLocalDateTimeDeserializer.class)
     private LocalDateTime createTime;
 }

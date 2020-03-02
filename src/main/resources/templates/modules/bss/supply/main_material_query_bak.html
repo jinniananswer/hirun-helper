@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>主材查询</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="../../../../static/element-ui/css/index.css" th:href="@{static/element-ui/css/index.css(v=${version})}">
+    <script src="../../../../static/js/framework/requirejs/require.min.js" th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="../../../../static/js/framework/requirejs/require.config.js" th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+<!--    <link rel="stylesheet" href="../../../../static/element-ui/css/index.css" th:href="@{static/element-ui/css/index.css(v=${version})}">-->
+<!--    <script src="../../../../static/js/framework/vue/vue.min.js" th:src="@{static/js/framework/vue/vue.min.js(v=${version})}"></script>-->
+<!--    <script src="../../../../static/element-ui/js/index.js" th:src="@{static/element-ui/js/index.js(v=${version})}"></script>-->
+<!--    <script src="../../../../static/js/framework/axios/axios.min.js" th:src="@{static/js/framework/axios/axios.min.js(v=${version})}"></script>-->
+</head>
+<body>
+<div id="app">
+
+    <el-row :gutter="6">
+        <el-col :span="24">
+            <div class="grid-content bg-purple">
+                <el-card class="box-card">
+                    <div slot="header" class="clearfix">
+                        <span>查询条件</span>
+                    </div>
+                </el-card>
+            </div>
+        </el-col>
+    </el-row>
+    <el-row>
+        <el-col :span="24">
+            <div class="grid-content bg-purple-light">
+                <el-card class="box-card">
+                    <div slot="header" class="clearfix">
+                        <span>主材信息</span>
+                    </div>
+
+                    <el-button type="primary" @click="save()" style="margin:10px;">保存修改</el-button>
+                    <el-button type="primary" @click="$refs.xTable.revertData()" plain>全部还原</el-button>
+
+                    <vxe-table
+                            size="small"
+                            keep-source
+                            stripe
+                            highlight-current-row
+                            highlight-hover-row
+                            border
+                            resizable
+                            show-overflow
+                            height="340"
+                            show-footer
+                            :footer-method="footerMethod"
+                            :data="tableData"
+                            :edit-rules="validRules"
+                            :edit-config="{trigger: 'dblclick', mode: 'row'}"
+                            ref="xTable">
+                        <vxe-table-column align="center" width="60" type="seq"></vxe-table-column>
+                        <vxe-table-column align="center" width="120" field="name" title="姓名" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                        <vxe-table-column align="center" width="120" field="sex" title="性别" :edit-render="{name: 'select', options: sexList, events: {change: changeEvent}}"></vxe-table-column>
+                        <vxe-table-column align="center" width="120" field="status" title="状态" :edit-render="{name: 'select', options: statusList}"></vxe-table-column>
+                        <vxe-table-column align="center" width="120" field="age" title="年龄" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+                        <vxe-table-column align="center" width="120" field="birthday" title="生日" :edit-render="{name: 'input', attrs: {type: 'date', format: 'yyyy-MM-dd'}}"></vxe-table-column>
+                        <vxe-table-column align="center" width="120" field="salary" title="薪水" :edit-render="{name: 'input', attrs: {type: 'number'}}" :formatter="['toFixedString', 2]"></vxe-table-column>
+                        <vxe-table-column align="center" field="idCard" title="身份证号" :edit-render="{name: 'input', attrs: {type: 'text'}}" :formatter="['commafy', {spaceNumber: 4, separator: ' '}]"></vxe-table-column>
+                    </vxe-table>
+                </el-card>
+            </div>
+        </el-col>
+    </el-row>
+
+
+</div>
+<style>
+    [v-cloak] {
+        display: none;
+    }
+</style>
+<script src="../../../../static/js/modules/demo/edittable.js" th:src="@{static/js/modules/demo/edittable.js(v=${version})}"></script>
+</body>
+
+</html>

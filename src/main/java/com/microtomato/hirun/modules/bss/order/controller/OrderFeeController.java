@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.bss.order.controller;
 
 import com.microtomato.hirun.framework.annotation.RestResult;
+import com.microtomato.hirun.modules.bss.config.entity.dto.PayComponentDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.SecondInstallmentCollectionDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFee;
@@ -41,6 +42,16 @@ public class OrderFeeController {
     }
 
     /**
+     * 主营系统审核加载付费数据
+     * @param orderId
+     */
+    @GetMapping("/initCostAudit")
+    @RestResult
+    public PayComponentDTO initCostAudit(Long orderId) {
+        return this.orderFeeServiceImpl.initCostAudit(orderId);
+    }
+
+    /**
      * 费用审核
      * @param dto
      */
@@ -57,7 +68,6 @@ public class OrderFeeController {
     @PostMapping("/costReview")
     @RestResult
     public void costReview(OrderPayNo orderPayNo) {
-        System.out.println("orderPayNo========="+orderPayNo);
         orderFeeServiceImpl.costReview(orderPayNo);
     }
 

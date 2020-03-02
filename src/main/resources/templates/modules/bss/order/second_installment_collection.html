@@ -23,7 +23,8 @@
                 <el-col :span="18">
                     <div class="grid-content bg-purple-light">
                         <order-info order-id="1"></order-info>
-                        <el-form :inline="false" :model="secondInstallment" label-width="130px">
+                        <el-form :inline="false" :model="secondInstallment" label-width="130px"
+                                 ref="secondInstallment" :rules="secondInstallmentRules">
                             <el-card class="box-card">
                                 <el-row :gutter="20">
                                     <el-col :span="12">
@@ -41,6 +42,11 @@
                                             <el-input v-model="secondInstallment.chargedSecondInstallmentFee" :disabled="true"></el-input>
                                         </el-form-item>
                                     </el-col>
+                                    <el-col :span="12">
+                                        <el-form-item label="财务人员" required="true" prop="financeEmployeeId">
+                                            <order-search-employee :employee-id.sync="secondInstallment.financeEmployeeId"></order-search-employee>
+                                        </el-form-item>
+                                    </el-col>
                                 </el-row>
                                 <el-divider content-position="left">二期</el-divider>
                                 <el-row>
@@ -50,27 +56,27 @@
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="12">
-                                        <el-form-item label="基础装修二期" required="true">
+                                        <el-form-item label="基础装修二期" required="true" prop="baseDecorationFee">
                                             <el-input v-model="secondInstallment.baseDecorationFee"></el-input>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="12">
-                                        <el-form-item label="门二期金额">
+                                        <el-form-item label="门二期金额" prop="doorFee">
                                             <el-input v-model="secondInstallment.doorFee"></el-input>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="12">
-                                        <el-form-item label="税金二期金额">
+                                        <el-form-item label="税金二期金额" prop="taxFee">
                                             <el-input v-model="secondInstallment.taxFee"></el-input>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="12">
-                                        <el-form-item label="家具二期金额">
+                                        <el-form-item label="家具二期金额" prop="furnitureFee">
                                             <el-input v-model="secondInstallment.furnitureFee"></el-input>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="12">
-                                        <el-form-item label="其他二期金额">
+                                        <el-form-item label="其他二期金额" prop="otherFee">
                                             <el-input v-model="secondInstallment.otherFee"></el-input>
                                         </el-form-item>
                                     </el-col>

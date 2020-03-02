@@ -11,6 +11,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                     orderStatus :util.getRequest('status'),
                     custId:util.getRequest('custId')
                 },
+                payItems: [],
                 progress: [-10, 70],
                 activeTab: 'orderInfo',
                 // rules: {
@@ -39,12 +40,17 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
         },
 
         methods: {
-            init:function(){
-                // let that = this;
-                // ajax.get('api/order/order-fee/queryOrderCollectFee', {orderId:this.collectFee.orderId}, function(data) {
-                //     Object.assign(that.customerConsult, data);
-                // })
-                alert("初始化方法");
+            init() {
+                let that = this;
+                let url = 'api/bss/order/order-fee/initCostAudit';
+                if (this.collectFee.orderId != null) {
+                    url += '?orderId=' + this.collectFee.orderId;
+                }
+                ajax.get(url, null, function(data) {
+                    if (data.payItems) {
+                        that.payItems = data.payItems;
+                    }
+                });
             },
 
             save(collectFee) {

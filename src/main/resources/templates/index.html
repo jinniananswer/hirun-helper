@@ -77,6 +77,17 @@
                 </li>
                 <li class="layui-nav-item" lay-unselect>
                     <a href="javascript:;">
+                        <cite>测试</cite>
+                    </a>
+                    <dl class="layui-nav-child">
+                        <dd><a lay-href="openUrl?url=modules/bss/supply/main_material_query">主材查询</a></dd>
+                        <dd><a lay-href="openUrl?url=modules/bss/supply/cabinet_query">橱柜查询</a></dd>
+                        <dd><a lay-href="openUrl?url=modules/bss/supply/inbound_bill">入库单</a></dd>
+                        <dd><a lay-href="openUrl?url=modules/bss/supply/outbound_bill">出库单</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item" lay-unselect>
+                    <a href="javascript:;">
                         <cite sec:authentication="principal.name"></cite>
                         <span id="spanEmployeeId" style="display: none" sec:authentication="principal.employeeId"></span>
                         <span id="spanContextPath" style="display: none" th:text="${contextPath}"></span>

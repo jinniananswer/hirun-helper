@@ -1,4 +1,4 @@
-require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'order-info', 'order-worker', 'order-selectemployee','cust-visit', 'vxe-table'], function(Vue, element, axios, ajax, vueselect, util, custInfo, orderInfo, orderWorker, orderSelectEmployee,custVisit, vxetable) {
+require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'order-info', 'order-worker', 'order-selectemployee','cust-visit', 'vxe-table', 'order-search-employee'], function(Vue, element, axios, ajax, vueselect, util, custInfo, orderInfo, orderWorker, orderSelectEmployee,custVisit, vxetable, orderSearchEmployee) {
     Vue.use(vxetable);
     let vm = new Vue({
         el: '#app',
@@ -22,7 +22,8 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     taxFee : '0',
                     cashDiscount : '0',
                     remark : '',
-                    firstContractFee : '0'
+                    firstContractFee : '0',
+                    financeEmployeeId : '',
                 },
                 discountItemDetailList : [],
                 orderId : util.getRequest('orderId'),
@@ -72,6 +73,9 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                         {required: true, message: '请填写现金优惠', trigger: 'blur'},
                         // {type: 'number', message: '必须为数字', trigger: 'blur'}
                     ],
+                    financeEmployeeId : [
+                        {required: true, message: '请选择财务人员', trigger: 'change'},
+                    ]
                 },
                 statusList : [],
                 approveEmployeeList : [
@@ -108,7 +112,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
             this.decorateContract.orderId = this.orderId;
 
             // let arr = this.approveEmployeeList;
-            ajax.get('api/bss.order/order-base/selectRoleEmployee', {roleId:15,isSelf:false}, (responseData)=>{
+            ajax.get('api/bss.order/order-base/selectRoleEmployee', {roleId:19,isSelf:false}, (responseData)=>{
                 let arr = [];
                 for(let i = 0; i < responseData.length; i++) {
                     arr.push({
@@ -131,8 +135,9 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 this.$refs['decorateContract'].validate((valid) => {
                     if (valid) {
                         let url = 'api/bss.order/order-contract/submitDecorateContract';
-                        this.yuanTransToFen(this.decorateContract)
-                        ajax.post(url, this.decorateContract);
+                        let data = this.decorateContract;
+                        this.yuanTransToFen(this.data)
+                        ajax.post(url, data);
                     } else {
                         return false;
                     }
@@ -143,10 +148,13 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
             },
             openDiscountItemDetailDialog : function() {
                 let data = {
-                    // orderId : this.orderId
-                    orderId : 1
+                    orderId : this.orderId
                 }
                 ajax.get('api/bss.order/order-discount-item/list', data, (responseData)=>{
+                    for(let i = 0; i < responseData.length; i++) {
+                        responseData[i].contractDiscountFee = responseData[i].contractDiscountFee / 100;
+                        responseData[i].settleDiscountFee = responseData[i].settleDiscountFee / 100;
+                    }
                     this.discountItemDetailList = responseData;
                 });
             },
@@ -174,10 +182,31 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
             },
             saveDiscountItemList : function () {
                 let updateRecords = vm.$refs.discountItemTable.getUpdateRecords()
-                let url = 'api/bss.order/order-discount-item/save';
-                ajax.post(url, updateRecords, (responseData)=>{
-                    alert('保存成功');
+                console.log("updateRecords: " + updateRecords);
+
+                axios({
+                    method: 'post',
+                    url: 'api/bss.order/order-discount-item/save',
+                    data: updateRecords
+                }).then(function (responseData) {
+                    if (0 == responseData.data.code) {
+
+                        Vue.prototype.$message({
+                            message: '保存成功！',
+                            type: 'success'
+                        });
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                    Vue.prototype.$message({
+                        message: '保存失败！',
+                        type: 'warning'
+                    });
                 });
+            },
+            selectRowChangeEvent ({ row }, evnt) {
+                debugger;
+                alert(evnt.target.value);
             }
         }
     });
