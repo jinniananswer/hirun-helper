@@ -11,7 +11,8 @@ require(['vue', 'ELEMENT','ajax', 'vueselect', 'util','cust-info', 'order-info',
 
                 custQueryVisible: true,
 
-                show:'display:none',
+                show: 'display:none',
+                queryShow: 'display:none',
 
                 queryCond: {
                     custName: '',
@@ -29,6 +30,16 @@ require(['vue', 'ELEMENT','ajax', 'vueselect', 'util','cust-info', 'order-info',
         },
 
         methods: {
+            init: function() {
+                if (this.custId) {
+                    this.show = 'display:block';
+                    this.queryShow = 'display:none';
+                } else {
+                    this.show = 'display:none';
+                    this.queryShow = 'display:block';
+                }
+            },
+
             showCustQuery: function() {
                 this.dialogVisible = true;
             },
@@ -57,6 +68,10 @@ require(['vue', 'ELEMENT','ajax', 'vueselect', 'util','cust-info', 'order-info',
                     ajax.post('api/bss.order/finance/collectFee', data);
                 }
             }
+        },
+
+        mounted () {
+            this.init();
         }
     });
 

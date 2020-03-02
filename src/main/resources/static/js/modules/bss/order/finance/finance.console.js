@@ -15,8 +15,14 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'util'], function(Vue, element, axio
                 })
             },
 
-            openProcess(orderId, custId, payNo) {
-                util.openPage('openUrl?url=modules/bss/order/finance/audit_fee&orderId='+orderId+'&custId='+custId+'&payNo='+payNo, '出纳复核');
+            openProcess(orderId, custId, payNo, auditStatus) {
+                let url = null;
+                if (auditStatus == '0') {
+                    url = 'openUrl?url=modules/bss/order/finance/audit_fee';
+                } else {
+                    url = 'openUrl?url=modules/bss/order/finance/collect_fee'
+                }
+                util.openPage(url+'&orderId='+orderId+'&custId='+custId+'&payNo='+payNo, '出纳复核');
             }
         },
 
