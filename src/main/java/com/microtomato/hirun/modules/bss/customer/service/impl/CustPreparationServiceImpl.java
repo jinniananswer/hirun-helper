@@ -134,7 +134,7 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
 
             //保存customer信息,用作测试将状态设置成0，实际应该将状态设置成报备状态
             custBase.setCustStatus(2);
-            custBase.setCustType("1");
+            custBase.setCustType("4");
             baseService.save(custBase);
             //保存project信息
             project.setPartyId(custBase.getCustId());

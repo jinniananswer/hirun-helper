@@ -58,13 +58,13 @@ public class Project extends BaseEntity {
     private String houseAddress;
 
     @TableField("gauge_house_time")
-    private String gaugeHouseTime;
+    private LocalDateTime gaugeHouseTime;
 
     @TableField("offer_plane_time")
-    private String offerPlaneTime;
+    private LocalDateTime offerPlaneTime;
 
     @TableField("contact_time")
-    private String contactTime;
+    private LocalDateTime contactTime;
 
     @TableField("critical_process")
     private String criticalProcess;
@@ -73,7 +73,7 @@ public class Project extends BaseEntity {
     private String otherInfo;
 
     @TableField("mw_experience_time")
-    private String mwExperienceTime;
+    private LocalDateTime mwExperienceTime;
 
     @TableField("advantage")
     private String advantage;
