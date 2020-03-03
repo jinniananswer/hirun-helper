@@ -14,7 +14,7 @@ import com.microtomato.hirun.modules.bss.order.entity.po.OrderFeeItem;
  * @date 2020-03-03 21:57:46
  */
 @Storage
-@DataSource(DataSourceKey.ORD)
+@DataSource(DataSourceKey.INS)
 public interface OrderFeeItemMapper extends BaseMapper<OrderFeeItem> {
 
 }
