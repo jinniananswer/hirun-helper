@@ -66,3 +66,10 @@ LayUI学习视频: https://www.php.cn/code/30329.html
 
     13787235663
     820311
+
+时间字符串转 LocalDateTime 异常测试。
+========================================================================
+运营管理中心 -> 客户代表 -> 签订装修合同 -> 优惠项目录入 -> 修改合同优惠金额 -> 保存
+sign_decorate_contract.html
+sign.decorate.contract.js
+OrderDiscountItemController.save()
