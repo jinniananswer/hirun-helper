@@ -12,7 +12,7 @@
 <div id="app">
     <el-container>
         <el-main>
-            <el-row>
+            <el-row :style="queryShow">
                 <el-col :span="24">
                     <el-card class="box-card" shadow="hover">
                         <el-input placeholder="请点击进行客户订单查询" @focus="showCustQuery">

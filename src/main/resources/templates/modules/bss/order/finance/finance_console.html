@@ -38,11 +38,22 @@
                                 </el-table-column>
                                 <el-table-column
                                         prop="totalMoney"
-                                        label="总收取费用">
+                                        label="总收取费用"
+                                        width="100">
+                                </el-table-column>
+                                <el-table-column
+                                        prop="statusName"
+                                        label="订单状态"
+                                        width="100">
+                                </el-table-column>
+                                <el-table-column
+                                        prop="auditStatusName"
+                                        label="收款审核状态"
+                                        width="120">
                                 </el-table-column>
                                 <el-table-column label="操作" width="100">
                                     <template slot-scope="scope">
-                                        <el-button type="danger" size="mini" @click="openProcess(scope.row.orderId, scope.row.custId, scope.row.payNo)">处理</el-button>
+                                        <el-button type="danger" size="mini" @click="openProcess(scope.row.orderId, scope.row.custId, scope.row.payNo, scope.row.auditStatus)">处理</el-button>
                                     </template>
 
                                 </el-table-column>
