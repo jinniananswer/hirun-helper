@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>dolphin-admin</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script src="static/js/framework/requirejs/require.min.js"
+            th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js"
+            th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-main>
+            <el-row :gutter="12">
+                <el-col :span="6">
+                    <div class="grid-content bg-purple">
+                        <cust-info :cust-id="uploadGarrisonDesign.custId"></cust-info>
+
+                        <order-worker :order-id="uploadGarrisonDesign.orderId"></order-worker>
+                    </div>
+                </el-col>
+                <el-col :span="18">
+                    <div class="grid-content bg-purple-light">
+                        <order-info :order-id="uploadGarrisonDesign.orderId"></order-info>
+                        <el-card class="box-card">
+                            <div slot="header">
+                                <span>驻点设计信息</span>
+                            </div>
+                            <el-form :inline="false" :rules="rules" label-position="right" label-width="80px" :model="uploadGarrisonDesign" ref="uploadGarrisonDesign">
+                                <el-row>
+                                    <el-col :span="8">
+                                        <el-form-item label="设计师" prop="designEmployeeId" label-width="100px">
+                                            <order-selectemployee role-id="30" v-model="uploadGarrisonDesign.designEmployeeId" ></order-selectemployee>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="开始时间" prop="startDate" label-width="100px">
+                                            <el-date-picker v-model="uploadGarrisonDesign.startDate" type="date"
+                                                            value-format="yyyy-MM-dd">
+                                            </el-date-picker>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="结束时间" prop="endDate" label-width="100px">
+                                            <el-date-picker v-model="uploadGarrisonDesign.endDate" type="date"
+                                                            value-format="yyyy-MM-dd">
+                                            </el-date-picker>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-form-item style="text-align: center ">
+                                    <el-button type="primary" @click="save">保存</el-button>
+                                    <el-button type="primary" @click="submitBudget">提交预算</el-button>
+                                </el-form-item>
+                            </el-form>
+                        </el-card>
+                        <div>
+                            <cust-visit :cust-id="uploadGarrisonDesign.custId"></cust-visit>
+                        </div>
+                        </el-card>
+                    </div>
+                </el-col>
+            </el-row>
+        </el-main>
+    </el-container>
+</div>
+<style>
+    .text {
+        font-size: 14px;
+    }
+
+    .item {
+        margin-bottom: 18px;
+    }
+
+    .box-card {
+        margin-bottom: 12px;
+    }
+
+    .el-card__header {
+        padding: 10px;
+    }
+</style>
+<script src="../../../static/js/modules/bss/order/upload.garrison.design.js"
+        th:src="@{static/js/modules/bss/order/upload.garrison.design.js(v=${version})}"></script>
+</body>
+</html>
