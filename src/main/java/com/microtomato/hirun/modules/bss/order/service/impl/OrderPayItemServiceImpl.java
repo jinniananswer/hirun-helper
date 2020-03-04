@@ -1,15 +1,15 @@
 package com.microtomato.hirun.modules.bss.order.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayItem;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderPayItemMapper;
 import com.microtomato.hirun.modules.bss.order.service.IOrderPayItemService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -35,9 +35,9 @@ public class OrderPayItemServiceImpl extends ServiceImpl<OrderPayItemMapper, Ord
     @Override
     public List<OrderPayItem> queryByOrderIdPayNo(Long orderId, Long payNo) {
          return this.list(new QueryWrapper<OrderPayItem>().lambda()
-                                                        .eq(OrderPayItem::getOrderId, orderId)
-                                                        .eq(OrderPayItem::getPayNo, payNo)
-                                                        .gt(OrderPayItem::getEndDate, RequestTimeHolder.getRequestTime()));
+             .eq(OrderPayItem::getOrderId, orderId)
+             .eq(OrderPayItem::getPayNo, payNo)
+             .gt(OrderPayItem::getEndDate, RequestTimeHolder.getRequestTime()));
     }
 
     /**
@@ -50,5 +50,21 @@ public class OrderPayItemServiceImpl extends ServiceImpl<OrderPayItemMapper, Ord
         return this.list(new QueryWrapper<OrderPayItem>().lambda()
                 .eq(OrderPayItem::getOrderId, orderId)
                 .gt(OrderPayItem::getEndDate, RequestTimeHolder.getRequestTime()));
+    }
+
+    /**
+     * 根据订单ID，分期数，付款项编码查询订单付款项信息
+     * @param orderId
+     * @param payItemIds
+     * @param period
+     * @return
+     */
+    @Override
+    public List<OrderPayItem> queryByPayItemIds(Long orderId, List<Long> payItemIds, Integer period) {
+        QueryWrapper<OrderPayItem> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(OrderPayItem::getOrderId, orderId)
+            .eq(period != null, OrderPayItem::getPeriods, period)
+            .in(OrderPayItem::getPayItemId, payItemIds);
+        return this.list(queryWrapper);
     }
 }

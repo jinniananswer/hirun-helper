@@ -12,5 +12,9 @@ import java.util.List;
  **/
 public interface IFeeDomainService {
 
-    void createOrderFee(List<FeeDTO> fees, Long period);
+    void createOrderFee(Long orderId, String type, Integer period, List<FeeDTO> fees);
+
+    Long getPayedMoney(Long orderId, String type, Integer period);
+
+    Long getNeedPay(Long fee, Long orderId, String type, Integer period);
 }

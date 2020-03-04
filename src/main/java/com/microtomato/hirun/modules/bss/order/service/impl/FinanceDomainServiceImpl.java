@@ -190,9 +190,14 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
 
                 Long fee = new Long(Math.round(money*100));
 
+                Long payItemId = new Long(payItem.getPayItemId());
+                PayItemCfg payItemCfg = this.payItemCfgService.getPayItem(payItemId);
+                if (payItemCfg == null) {
+                    throw new OrderException(OrderException.OrderExceptionEnum.PAY_ITEM_NOT_FOUND, payItem.getPayItemId());
+                }
                 OrderPayItem orderPayItem = new OrderPayItem();
                 orderPayItem.setOrderId(orderId);
-                orderPayItem.setPayItemId(new Long(payItem.getPayItemId()));
+                orderPayItem.setPayItemId(payItemId);
                 orderPayItem.setPeriods(payItem.getPeriod());
                 orderPayItem.setFee(fee);
                 orderPayItem.setPayNo(payNo);

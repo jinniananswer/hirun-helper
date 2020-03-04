@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
  *
  * @author Jinnian
  * @version 1.0.0
- * @date 2020-03-03 21:56:45
+ * @date 2020-03-04 23:05:59
  */
 @Data
 @Builder
@@ -31,6 +31,10 @@ public class OrderFee extends BaseEntity {
 
     @TableField(value = "order_id")
     private Long orderId;
+
+    /** 费用编号 */
+    @TableField(value = "fee_no")
+    private Long feeNo;
 
     /** 类型 1-设计费 2-工程款 */
     @TableField(value = "type")
