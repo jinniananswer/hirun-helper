@@ -3,30 +3,23 @@ package com.microtomato.hirun.modules.bss.order.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
-import com.microtomato.hirun.modules.bss.config.entity.dto.CascadeDTO;
 import com.microtomato.hirun.modules.bss.config.entity.dto.PayComponentDTO;
 import com.microtomato.hirun.modules.bss.config.entity.dto.PayItemDTO;
-import com.microtomato.hirun.modules.bss.config.entity.po.PayItemCfg;
 import com.microtomato.hirun.modules.bss.config.service.IPayItemCfgService;
-import com.microtomato.hirun.modules.bss.customer.entity.po.CustBase;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.PaymentDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.SecondInstallmentCollectionDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFee;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayItem;
-import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayMoney;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayNo;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderFeeMapper;
-import com.microtomato.hirun.modules.bss.order.mapper.OrderPayNoMapper;
 import com.microtomato.hirun.modules.bss.order.service.*;
-import com.microtomato.hirun.modules.system.entity.po.StaticData;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -66,9 +59,6 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
     @Autowired
     private IOrderPayItemService orderPayItemService;
 
-
-
-
     @Override
     public OrderFee queryOrderCollectFee(Long orderId) {
         OrderFee orderFee = null;
@@ -102,18 +92,19 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void submitAudit(OrderFeeDTO dto) {
-        System.out.println("OrderFeeDTO==========" + dto);
-        String auditStatus = dto.getAuditStatus();//1是审核通过，2是审核不通过
+        //1是审核通过，2是审核不通过
+        String auditStatus = dto.getAuditStatus();
 
         if (auditStatus.equals("1")) {
             orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_NEXT_STEP);
-        } else
+        } else {
             orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_AUDIT_NO);
+        }
 
         //如果需要流转到指定人，才需要处理worker记录 首期款需要选择工程文员
-        String orderStatus = dto.getOrderStatus();//判断当前状态，处理worker表
+        //判断当前状态，处理worker表
+        String orderStatus = dto.getOrderStatus();
         if (orderStatus.equals("18") && auditStatus.equals("1")) {
-            System.out.println("进来处理worker");
             workerService.updateOrderWorker(dto.getOrderId(), 32L, dto.getEngineeringClerk());
         }
         //
@@ -140,7 +131,6 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void submitTask(OrderFeeDTO dto) {
-        System.out.println("OrderFeeDTO==========" + dto);
         orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_NEXT_STEP);
         //如果需要流转到指定人，才需要处理worker记录，流转到角色33项目经理
         workerService.updateOrderWorker(dto.getOrderId(), 33L, dto.getProjectManager());
@@ -157,8 +147,8 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void submitAuditProject(OrderFeeDTO dto) {
-        System.out.println("OrderFeeDTO==========" + dto);
-        String auditStatus = dto.getAuditStatus();//1是审核通过，2是审核不通过
+        //1是审核通过，2是审核不通过
+        String auditStatus = dto.getAuditStatus();
 
         if (auditStatus.equals("1")) {
             orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_NEXT_STEP);
@@ -178,7 +168,6 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void submitAssignment(OrderFeeDTO dto) {
-        System.out.println("OrderFeeDTO==========" + dto);
         orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_NEXT_STEP);
 
 
@@ -199,7 +188,6 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
      */
     @Override
     public PayComponentDTO initCostAudit(Long orderId) {
-        System.out.println("orderId============"+orderId);
         PayComponentDTO componentData = new PayComponentDTO();
         if (orderId != null) {
             List<OrderPayItem> payItems = orderPayItemService.queryByOrderId(orderId);
@@ -226,7 +214,32 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
             }
 
         }
-        System.out.println("componentData============"+componentData);
         return componentData;
+    }
+
+    /**
+     * 根据订单ID查询订单费用
+     * @param orderId
+     * @return
+     */
+    @Override
+    public List<OrderFee> queryByOrderId(Long orderId) {
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+        return this.list(new QueryWrapper<OrderFee>().lambda().eq(OrderFee::getOrderId, orderId).gt(OrderFee::getEndDate, now));
+    }
+
+    /**
+     * 根据订单ID、类型、期数查询订单费用
+     * @param orderId
+     * @param type
+     * @param period
+     * @return
+     */
+    @Override
+    public List<OrderFee> queryByOrderIdTypePeriod(Long orderId, String type, Integer period) {
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+        return this.list(new QueryWrapper<OrderFee>().lambda().eq(OrderFee::getOrderId, orderId)
+            .gt(OrderFee::getEndDate, now)
+            .eq(period !=null, OrderFee::getPeriods, period));
     }
 }
