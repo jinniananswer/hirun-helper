@@ -14,6 +14,9 @@ import com.microtomato.hirun.framework.util.ArrayUtils;
 public class OrderException extends BaseException {
 
     public enum OrderExceptionEnum {
+        @Error(code = ErrorKind.NOT_FOUND, message = "参数【%s】未传入")
+        ARGUMENT_NOT_FOUND,
+
         @Error(code = ErrorKind.NOT_FOUND, message = "未找到订单状态转换配置信息")
         STATUS_TRANS_CFG_NOT_FOUND,
 
@@ -31,6 +34,9 @@ public class OrderException extends BaseException {
 
         @Error(code = ErrorKind.NOT_FOUND, message = "未找到付款项【%s】配置信息")
         PAY_ITEM_NOT_FOUND,
+
+        @Error(code = ErrorKind.NOT_FOUND, message = "未找到订单费用信息")
+        ORDER_FEE_NOT_FOUND,
     }
 
     public OrderException(String message, int code) {

@@ -15,13 +15,33 @@ import java.util.List;
 @Data
 public class CollectFeeDTO {
 
+    /**
+     * 付款日期
+     */
     private LocalDate payDate;
 
+    /**
+     * 应付总金额
+     */
     private Double needPay;
 
+    /**
+     * 付款编码，修改时使用
+     */
+    private Long payNo;
+
+    /**
+     * 订单ID
+     */
     private Long orderId;
 
+    /**
+     * 付款项
+     */
     private List<PayItemDTO> payItems;
 
+    /**
+     * 付款方式明细
+     */
     private List<PaymentDTO> payments;
 }

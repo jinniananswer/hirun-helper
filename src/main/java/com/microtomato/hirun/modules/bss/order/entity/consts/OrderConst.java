@@ -67,4 +67,19 @@ public class OrderConst {
      * 订单类型-木制品订单
      */
     public static final String ORDER_TYPE_WOOD = "W";
+
+    /**
+     * 审核状态-未审核
+     */
+    public static final String AUDIT_STATUS_INIT = "0";
+
+    /**
+     * 审核状态-审核通过
+     */
+    public static final String AUDIT_STATUS_YES = "1";
+
+    /**
+     * 审核状态-审核不通过
+     */
+    public static final String AUDIT_STATUS_NO = "2";
 }

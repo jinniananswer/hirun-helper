@@ -236,9 +236,9 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
      * @return
      */
     @Override
-    public List<OrderFee> queryByOrderIdTypePeriod(Long orderId, String type, Integer period) {
+    public OrderFee getByOrderIdTypePeriod(Long orderId, String type, Integer period) {
         LocalDateTime now = RequestTimeHolder.getRequestTime();
-        return this.list(new QueryWrapper<OrderFee>().lambda().eq(OrderFee::getOrderId, orderId)
+        return this.getOne(new QueryWrapper<OrderFee>().lambda().eq(OrderFee::getOrderId, orderId)
             .gt(OrderFee::getEndDate, now)
             .eq(period !=null, OrderFee::getPeriods, period));
     }

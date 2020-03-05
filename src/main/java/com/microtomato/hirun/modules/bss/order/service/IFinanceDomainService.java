@@ -22,6 +22,8 @@ public interface IFinanceDomainService {
 
     void collectFee(CollectFeeDTO feeData);
 
+    void changePay(CollectFeeDTO feeData);
+
     IPage<CustOrderInfoDTO> queryCustOrderInfos(CustOrderQueryDTO queryCondition, Page<CustOrderQueryDTO> page);
 
     List<FinancePendingTaskDTO> queryFinancePendingTask();

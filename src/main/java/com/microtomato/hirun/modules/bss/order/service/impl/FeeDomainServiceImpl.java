@@ -129,6 +129,35 @@ public class FeeDomainServiceImpl implements IFeeDomainService {
     }
 
     /**
+     * 修改费用金额，比如审核不通过的时候
+     * @param orderId
+     * @param type
+     * @param period
+     * @param fees
+     */
+    @Override
+    public void changeOrderFee(Long orderId, String type, Integer period, List<FeeDTO> fees) {
+        OrderFee orderFee = this.orderFeeService.getByOrderIdTypePeriod(orderId, type, period);
+        if (orderFee == null) {
+            throw new OrderException(OrderException.OrderExceptionEnum.ORDER_FEE_NOT_FOUND);
+        }
+
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+        orderFee.setEndDate(now);
+        this.orderFeeService.updateById(orderFee);
+
+        List<OrderFeeItem> orderFeeItems = this.orderFeeItemService.queryByOrderIdTypePeriod(orderId, type, period);
+        if (ArrayUtils.isNotEmpty(orderFeeItems)) {
+            for (OrderFeeItem orderFeeItem : orderFeeItems) {
+                orderFeeItem.setEndDate(now);
+            }
+            this.orderFeeItemService.updateBatchById(orderFeeItems);
+        }
+
+        this.createOrderFee(orderId, type, period, fees);
+    }
+
+    /**
      * 查询某类型费用已付款信息
      * @param orderId
      * @param type

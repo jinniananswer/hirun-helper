@@ -77,5 +77,5 @@ public interface IOrderFeeService extends IService<OrderFee> {
      * @param period
      * @return
      */
-    List<OrderFee> queryByOrderIdTypePeriod(Long orderId, String type, Integer period);
+    OrderFee getByOrderIdTypePeriod(Long orderId, String type, Integer period);
 }

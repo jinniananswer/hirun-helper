@@ -16,6 +16,7 @@ import com.microtomato.hirun.modules.bss.config.entity.dto.PayItemDTO;
 import com.microtomato.hirun.modules.bss.config.entity.po.PayItemCfg;
 import com.microtomato.hirun.modules.bss.config.service.IPayItemCfgService;
 import com.microtomato.hirun.modules.bss.house.service.IHousesService;
+import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.*;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayItem;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayMoney;
@@ -243,7 +244,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
         orderPayNo.setPayDate(payDate);
         orderPayNo.setPayNo(payNo);
         //待审核状态
-        orderPayNo.setAuditStatus("0");
+        orderPayNo.setAuditStatus(OrderConst.AUDIT_STATUS_INIT);
         orderPayNo.setStartDate(now);
         orderPayNo.setEndDate(forever);
         orderPayNo.setTotalMoney(needPay);
@@ -259,6 +260,50 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
         }
 
         //todo 补充更新order_fee对应实收的逻辑
+    }
+
+    /**
+     * 更改收费项目或者付款方式
+     * @param feeData
+     */
+    @Override
+    public void changePay(CollectFeeDTO feeData) {
+        Long orderId = feeData.getOrderId();
+        Long payNo = feeData.getPayNo();
+
+        if (orderId == null) {
+            throw new OrderException(OrderException.OrderExceptionEnum.ARGUMENT_NOT_FOUND, "orderId");
+        }
+        if (payNo == null) {
+            throw new OrderException(OrderException.OrderExceptionEnum.ARGUMENT_NOT_FOUND, "payNo");
+        }
+
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+        //先终止原来的收款记录
+        OrderPayNo orderPayNo = this.orderPayNoService.getByOrderIdAndPayNo(orderId, payNo);
+        if (orderPayNo != null) {
+            orderPayNo.setEndDate(now);
+            this.orderPayNoService.updateById(orderPayNo);
+        }
+
+        List<OrderPayItem> orderPayItems = this.orderPayItemService.queryByOrderIdPayNo(orderId, payNo);
+        if (ArrayUtils.isNotEmpty(orderPayItems)) {
+            for (OrderPayItem orderPayItem : orderPayItems) {
+                orderPayItem.setEndDate(now);
+            }
+
+            this.orderPayItemService.updateBatchById(orderPayItems);
+        }
+
+        List<OrderPayMoney> orderPayMonies = this.orderPayMoneyService.queryByOrderIdPayNo(orderId, payNo);
+        if (ArrayUtils.isNotEmpty(orderPayMonies)) {
+            for (OrderPayMoney orderPayMoney : orderPayMonies) {
+                orderPayMoney.setEndDate(now);
+            }
+            this.orderPayMoneyService.updateBatchById(orderPayMonies);
+        }
+
+        this.collectFee(feeData);
     }
 
     /**

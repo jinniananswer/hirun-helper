@@ -14,6 +14,8 @@ public interface IFeeDomainService {
 
     void createOrderFee(Long orderId, String type, Integer period, List<FeeDTO> fees);
 
+    void changeOrderFee(Long orderId, String type, Integer period, List<FeeDTO> fees);
+
     Long getPayedMoney(Long orderId, String type, Integer period);
 
     Long getNeedPay(Long fee, Long orderId, String type, Integer period);
