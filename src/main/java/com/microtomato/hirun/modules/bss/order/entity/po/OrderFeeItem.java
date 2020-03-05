@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
  *
  * @author Jinnian
  * @version 1.0.0
- * @date 2020-03-04 23:06:38
+ * @date 2020-03-05 10:06:36
  */
 @Data
 @Builder
@@ -52,6 +52,10 @@ public class OrderFeeItem extends BaseEntity {
     @TableField(value = "parent_fee_item_id")
     private Long parentFeeItemId;
 
+    /** 类型 1-设计费 2-工程款 */
+    @TableField(value = "type")
+    private String type;
+
     /** 期数 */
     @TableField(value = "periods")
     private Integer periods;
@@ -71,6 +75,14 @@ public class OrderFeeItem extends BaseEntity {
     /** 处理费用的部门 */
     @TableField(value = "org_id")
     private Long orgId;
+
+    /** 开始时间 */
+    @TableField(value = "start_date")
+    private LocalDateTime startDate;
+
+    /** 结束时间 */
+    @TableField(value = "end_date")
+    private LocalDateTime endDate;
 
     /** 备注 */
     @TableField(value = "remark")
