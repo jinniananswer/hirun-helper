@@ -1,10 +1,13 @@
 package com.microtomato.hirun.modules.bss.order.service;
+
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.microtomato.hirun.modules.bss.config.entity.dto.PayComponentDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.SecondInstallmentCollectionDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFee;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayNo;
+
+import java.util.List;
 
 /**
  * <p>
@@ -40,9 +43,7 @@ public interface IOrderFeeService extends IService<OrderFee> {
      */
     void costReview(OrderPayNo orderPayNo);
 
-    public void secondInstallmentCollect(SecondInstallmentCollectionDTO dto);
-
-
+    void secondInstallmentCollect(SecondInstallmentCollectionDTO dto);
 
     /**
      * 工程文员提交项目经理审核
@@ -62,4 +63,19 @@ public interface IOrderFeeService extends IService<OrderFee> {
      */
     void submitAssignment(OrderFeeDTO dto);
 
+    /**
+     * 根据订单查询订单费用
+     * @param orderId
+     * @return
+     */
+    List<OrderFee> queryByOrderId(Long orderId);
+
+    /**
+     * 根据订单ID、类型、期数查询订单费用
+     * @param orderId
+     * @param type
+     * @param period
+     * @return
+     */
+    List<OrderFee> queryByOrderIdTypePeriod(Long orderId, String type, Integer period);
 }

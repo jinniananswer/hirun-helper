@@ -3,6 +3,8 @@ package com.microtomato.hirun.modules.bss.order.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFeeItem;
 
+import java.util.List;
+
 /**
  * 订单费用明细表(OrderFeeItem)表服务接口
  *
@@ -12,4 +14,7 @@ import com.microtomato.hirun.modules.bss.order.entity.po.OrderFeeItem;
  */
 public interface IOrderFeeItemService extends IService<OrderFeeItem> {
 
+    List<OrderFeeItem> queryByOrderId(Long orderId);
+
+    List<OrderFeeItem> queryByOrderIdTypePeriod(Long orderId, String type, Integer period);
 }
