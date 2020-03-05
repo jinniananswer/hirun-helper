@@ -29,33 +29,70 @@
                             <div slot="header">
                                 <span>操作区</span>
                             </div>
-                            <el-form :inline="false"  label-position="right" label-width="80px" :model="task" ref="task">
+
+                            <el-form :inline="false" :rules="commencementrules" label-position="right" label-width="80px" :model="task" ref="task">
                                 <el-row>
                                     <el-col :span="8">
                                         <el-form-item label="水电工" prop="plumberAndElectrician" label-width="100px">
-<!--                                            <order-selectemployee role-id="32" v-model="task.engineeringSupervisor"  ></order-selectemployee>-->
+                                            <order-selectdecorator type="0"
+                                                                   v-model="task.plumberAndElectrician"></order-selectdecorator>
                                         </el-form-item>
                                     </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="水电工人数" prop="plumberElectNum" label-width="100px">
+                                            <el-input v-model="task.plumberElectNum" placeholder=""></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row>
                                     <el-col :span="8">
                                         <el-form-item label="镶贴工" prop="inlayer" label-width="100px">
-<!--                                            <order-selectemployee role-id="33" v-model="task.projectManager"  ></order-selectemployee>-->
+                                            <order-selectdecorator type="1"
+                                                                   v-model="task.inlayer"></order-selectdecorator>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="8">
+                                        <el-form-item label="镶贴工人数" prop="inlayerNum" label-width="100px">
+                                            <el-input v-model="task.inlayerNum" placeholder=""></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row>
+                                    <el-col :span="8">
                                         <el-form-item label="木工" prop="carpentry" label-width="100px">
-<!--                                            <order-selectemployee role-id="31" v-model="task.engineeringAssistant"  ></order-selectemployee>-->
+                                            <order-selectdecorator type="2"
+                                                                   v-model="task.carpentry"></order-selectdecorator>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="木工人数" prop="carpentryNum" label-width="100px">
+                                            <el-input v-model="task.carpentryNum" placeholder=""></el-input>
                                         </el-form-item>
                                     </el-col>
                                 </el-row>
                                 <el-row>
                                     <el-col :span="8">
                                         <el-form-item label="涂裱工" prop="paperhanger" label-width="100px">
-<!--                                            <order-selectemployee role-id="32" v-model="task.engineeringSupervisor"  ></order-selectemployee>-->
+                                            <order-selectdecorator type="3"
+                                                                   v-model="task.paperhanger"></order-selectdecorator>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="8">
+                                        <el-form-item label="涂裱工人数" prop="paperhangerNum" label-width="100px">
+                                            <el-input v-model="task.paperhangerNum" placeholder=""></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row>
+                                    <el-col :span="8">
                                         <el-form-item label="敲墙工" prop="wallKnocking" label-width="100px">
-<!--                                            <order-selectemployee role-id="33" v-model="task.projectManager"  ></order-selectemployee>-->
+                                            <order-selectdecorator type="4"
+                                                                   v-model="task.wallKnocking"></order-selectdecorator>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="敲墙工人数" prop="wallknockingNum" label-width="100px">
+                                            <el-input v-model="task.wallknockingNum" placeholder=""></el-input>
                                         </el-form-item>
                                     </el-col>
                                 </el-row>
@@ -68,8 +105,8 @@
                                 </el-row>
                                 <el-form-item style="text-align: center ">
                                     <el-button type="primary" @click="save">保存</el-button>
-                                    <el-button type="primary" @click="submit">提交</el-button>
-<!--                                    <el-button type="primary" @click="auditFailed">审核不通过</el-button>-->
+                                    <el-button type="primary" @click="submitAssignment">提交</el-button>
+                                    <!--                                    <el-button type="primary" @click="auditFailed">审核不通过</el-button>-->
                                 </el-form-item>
                             </el-form>
                         </el-card>

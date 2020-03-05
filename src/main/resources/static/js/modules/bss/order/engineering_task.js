@@ -1,4 +1,4 @@
-require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'order-info', 'order-worker', 'order-selectemployee', 'cust-visit'], function (Vue, element, axios, ajax, vueselect, util, custInfo, orderInfo, orderWorker, orderSelectEmployee, custVisit) {
+require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'order-info', 'order-worker', 'order-selectemployee', 'cust-visit', 'order-selectdecorator'], function (Vue, element, axios, ajax, vueselect, util, custInfo, orderInfo, orderWorker, orderSelectEmployee, custVisit, orderSelectDecorator) {
     let vm = new Vue({
         el: '#app',
         data: function () {
@@ -8,6 +8,16 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                     engineeringSupervisor:'',
                     projectManager:'',
                     engineeringAssistant:'',
+                    plumberAndElectrician:'',
+                    plumberAndElectricianNum:'',
+                    inlayer:'',
+                    inlayerNum:'',
+                    carpentry:'',
+                    carpentryNum:'',
+                    paperhanger:'',
+                    paperhangerNum:'',
+                    wallKnocking:'',
+                    wallKnockingNum:'',
                     auditRemark:'',
                     auditStatus:0,
                     orderStatus : util.getRequest('status'),
@@ -32,7 +42,15 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                         {required: true, message: '请选择工程助理', trigger: 'change'}
                     ],
                 },
+                commencementrules: {
 
+                    plumberAndElectrician: [
+                        {required: true, message: '请选择水电组长', trigger: 'change'}
+                    ],
+                    // plumberAndElectricianNum: [
+                    //     {type: 'number', message: '必须为数字', trigger: 'blur'}
+                    // ],
+                },
                 marks: {
                     0: '酝酿',
                     10: '初选',
@@ -54,18 +72,28 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
 
         methods: {
             init:function(){
-                // let that = this;
-                // ajax.get('api/order/order-fee/queryOrderCollectFee', {orderId:this.collectFee.orderId}, function(data) {
-                //     Object.assign(that.customerConsult, data);
-                // })
+                let that = this;
+               ajax.get('api/bss.order/order-construction/queryOrderConstruction', {orderId:this.task.orderId}, function(data) {
+                    Object.assign(that.task, data);
+                })
             },
 
             save(task) {
-                // this.$refs.task.validate((valid) => {
-                //     if (valid) {
-                //         ajax.post('api/order/order-consult/saveCustomerConsultInfo', this.task);
-                //     }
-                // })
+                this.$refs.task.validate((valid) => {
+                    if (valid) {
+                        alert("orderStatus===22======"+util.getRequest('status'));
+                        let url = 'api/bss.order/order-construction/saveAssignInfo';
+                        let orderStatus=util.getRequest('status');
+                        if(orderStatus=='17'){
+                            url='api/bss.order/order-construction/saveProjectManagerInfo';
+                        }
+                        else  if(orderStatus=='21'){
+                            url='api/bss.order/order-construction/saveCommencementInfo';
+                        }
+
+                        ajax.post(url, this.task);
+                    }
+                })
             },
 
 
@@ -77,7 +105,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                                 cancelButtonText: '取消',
                                 type: 'warning'
                             }).then(() => {
-                                 ajax.post('api/bss/order/order-fee/submitTask', this.task);
+                                 ajax.post('api/bss.order/order-construction/submitTask', this.task);
                             })
                         }
                     })
@@ -93,7 +121,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                             cancelButtonText: '取消',
                             type: 'warning'
                         }).then(() => {
-                            ajax.post('api/bss/order/order-fee/submitAuditProject', this.task);
+                            ajax.post('api/bss.order/order-construction/submitAuditProject', this.task);
                         })
                     }
                 })
@@ -108,12 +136,12 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                             cancelButtonText: '取消',
                             type: 'warning'
                         }).then(() => {
-                            ajax.post('api/bss/order/order-fee/submitAuditProject', this.task);
+                            ajax.post('api/bss.order/order-construction/submitAuditProject', this.task);
                         })
                     }
                 })
             },
-            submit(task) {
+            submitAssignment(task) {
                 this.$refs.task.validate((valid) => {
                     if (valid) {
                         this.$confirm('执行操作【提交】, 是否继续?', '提示', {
@@ -121,7 +149,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                             cancelButtonText: '取消',
                             type: 'warning'
                         }).then(() => {
-                            ajax.post('api/bss/order/order-fee/submitAssignment', this.task);
+                            ajax.post('api/bss.order/order-construction/submitAssignment', this.task);
                         })
                     }
                 })
@@ -129,9 +157,9 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
             },
         },
 
-        // mounted () {
-        //     this.init();
-        // }
+        mounted () {
+            this.init();
+        }
     });
 
     return vm;
