@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
  *
  * @author Jinnian
  * @version 1.0.0
- * @date 2020-02-29 11:03:03
+ * @date 2020-03-06 00:00:08
  */
 @Data
 @Builder
@@ -60,6 +60,10 @@ public class OrderPayNo extends BaseEntity {
     /** 审核员工ID */
     @TableField(value = "audit_employee_id")
     private Long auditEmployeeId;
+
+    /** 审核意见 */
+    @TableField(value = "audit_comment")
+    private String auditComment;
 
     /** 开始时间 */
     @TableField(value = "start_date")
