@@ -2,7 +2,9 @@ package com.microtomato.hirun.modules.bss.order.service.impl;
 
 import com.microtomato.hirun.framework.mybatis.sequence.impl.FeeNoCycleSeq;
 import com.microtomato.hirun.framework.mybatis.service.IDualService;
+import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.bss.config.entity.consts.FeeConst;
 import com.microtomato.hirun.modules.bss.config.entity.po.FeeItemCfg;
@@ -22,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -69,6 +72,8 @@ public class FeeDomainServiceImpl implements IFeeDomainService {
         Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
         Long orgId = WebContextUtils.getUserContext().getOrgId();
         Long feeNo = dualService.nextval(FeeNoCycleSeq.class);
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+        LocalDateTime forever = TimeUtils.getForeverTime();
 
         long totalFee = 0L;
         List<OrderFeeItem> feeItems = new ArrayList<>();
@@ -95,10 +100,13 @@ public class FeeDomainServiceImpl implements IFeeDomainService {
             feeItem.setOrderId(orderId);
             feeItem.setFeeItemId(feeItemId);
             feeItem.setParentFeeItemId(feeItemCfg.getParentFeeItemId());
+            feeItem.setType(type);
             feeItem.setFeeNo(feeNo);
             feeItem.setPeriods(period);
             feeItem.setFeeEmployeeId(employeeId);
             feeItem.setOrgId(orgId);
+            feeItem.setStartDate(now);
+            feeItem.setEndDate(forever);
             feeItems.add(feeItem);
         }
 
@@ -109,6 +117,8 @@ public class FeeDomainServiceImpl implements IFeeDomainService {
         orderFee.setPeriods(period);
         orderFee.setType(type);
         orderFee.setFeeNo(feeNo);
+        orderFee.setStartDate(now);
+        orderFee.setEndDate(forever);
         orderFee.setOrderId(orderId);
 
         Long needPay = this.getNeedPay(totalFee, orderId, type, period);
