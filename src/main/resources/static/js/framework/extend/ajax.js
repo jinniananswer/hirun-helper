@@ -1,4 +1,4 @@
-define(['vue','ELEMENT','axios', 'qs'], function(Vue,element,axios, QS){
+define(['vue','ELEMENT','axios'], function(Vue,element,axios){
     let vm = new Vue({});
     let ajax = {
         get: function(url, request, successFunc, errFunc, needConfirm) {
@@ -77,8 +77,8 @@ define(['vue','ELEMENT','axios', 'qs'], function(Vue,element,axios, QS){
                 .then(successMethod)
                 .catch(errFunc);
             } else if (methodType == 'post') {
-                let data = QS.stringify(request);
-                axios.post(url, data).then(successMethod).catch(errFunc);
+                //let data = QS.stringify(request);
+                axios.post(url, request).then(successMethod).catch(errFunc);
             }
         }
     }
