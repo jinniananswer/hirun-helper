@@ -3,15 +3,11 @@ package com.microtomato.hirun.modules.bss.order.controller;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerSalaryDTO;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import lombok.extern.slf4j.Slf4j;
 
 import com.microtomato.hirun.modules.bss.order.service.IOrderWorkerSalaryService;
-
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -43,13 +39,13 @@ public class OrderWorkerSalaryController {
 
     @PostMapping("/saveWorkerSalary")
     @RestResult
-    public void saveWorkerSalary(OrderWorkerSalaryDTO dto){
+    public void saveWorkerSalary(@RequestBody OrderWorkerSalaryDTO dto){
         orderWorkerSalaryServiceImpl.updateWorkerSalary(1,dto);
     }
 
     @PostMapping("/closeWorkerSalary")
     @RestResult
-    public void closeWorkerSalary(OrderWorkerSalaryDTO dto){
+    public void closeWorkerSalary(@RequestBody OrderWorkerSalaryDTO dto){
         orderWorkerSalaryServiceImpl.closeWorkerSalary(1,dto);
     }
 }

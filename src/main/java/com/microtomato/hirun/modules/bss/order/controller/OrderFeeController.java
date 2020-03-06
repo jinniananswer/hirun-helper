@@ -59,7 +59,7 @@ public class OrderFeeController {
      */
     @PostMapping("/submitAudit")
     @RestResult
-    public void submitAudit(OrderFeeDTO dto) {
+    public void submitAudit(@RequestBody OrderFeeDTO dto) {
         orderFeeServiceImpl.submitAudit(dto);
     }
 
@@ -69,13 +69,13 @@ public class OrderFeeController {
      */
     @PostMapping("/costReview")
     @RestResult
-    public void costReview(OrderPayNo orderPayNo) {
+    public void costReview(@RequestBody OrderPayNo orderPayNo) {
         orderFeeServiceImpl.costReview(orderPayNo);
     }
 
     @PostMapping("/secondInstallmentCollect")
     @RestResult
-    public void secondInstallmentCollect(SecondInstallmentCollectionDTO dto) {
+    public void secondInstallmentCollect(@RequestBody SecondInstallmentCollectionDTO dto) {
         orderFeeServiceImpl.secondInstallmentCollect(dto);
     }
 

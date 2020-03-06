@@ -30,14 +30,14 @@ public class OrderBudgetController {
     @PostMapping("/submitBudget")
     @Transactional(rollbackFor = Exception.class)
     @RestResult
-    public void submitBudget(OrderBudgetDTO orderBudgetDTO) {
+    public void submitBudget(@RequestBody OrderBudgetDTO orderBudgetDTO) {
         orderBudgetServiceImpl.submitBudget(orderBudgetDTO);
     }
 
     @PostMapping("/submitBudgetCheckedResult")
     @Transactional(rollbackFor = Exception.class)
     @RestResult
-    public void submitBudgetCheckedResult(OrderBudgetCheckedDTO dto) {
+    public void submitBudgetCheckedResult(@RequestBody OrderBudgetCheckedDTO dto) {
         orderBudgetServiceImpl.submitBudgetCheckedResult(dto);
     }
 
@@ -47,7 +47,7 @@ public class OrderBudgetController {
         return orderBudgetServiceImpl.getById(id);
     }
 
-    @PostMapping("/getBudgetByOrderId")
+    @GetMapping("/getBudgetByOrderId")
     @RestResult
     public OrderBudget getBudgetByOrderId(Long orderId) {
         return orderBudgetServiceImpl.getBudgetByOrderId(orderId);

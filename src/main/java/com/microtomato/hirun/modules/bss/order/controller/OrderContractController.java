@@ -34,7 +34,7 @@ public class OrderContractController {
     @PostMapping("/submitDecorateContract")
     @RestResult
     @Transactional(rollbackFor = Exception.class)
-    public void submitDecorateContract(DecorateContractDTO decorateContractDTO) {
+    public void submitDecorateContract(@RequestBody DecorateContractDTO decorateContractDTO) {
         orderContractServiceImpl.submitDecorateContract(decorateContractDTO);
         //保存优惠项
     }
