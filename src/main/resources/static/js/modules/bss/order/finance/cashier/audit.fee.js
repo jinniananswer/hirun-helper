@@ -4,34 +4,9 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
             data: function () {
                 return {
                     FeeDetails: [],
-                    custQueryCond: {
-                        name: '',
-                        sex: '',
-                        wechatNicName: '',
-                        mobileNo: ''
-                    },
+                    payItems: [],
+                    payments: [],
 
-                    collectedDesignFee: {
-                        parentFeeItemId: '',
-                        collectionDate: '',
-                        payee: '',
-                        feeItemId: '',
-                        payee: '',
-                        designEmployeeId: '',
-                        collectedFee: '',
-                        cash: '',
-                        industrialBankCard: '',
-                        pudongDevelopmentBankCard: '',
-                        constructionBankBasic: '',
-                        constructionBank3797: '',
-                        ICBC3301: '',
-                        ICBCInstallment: '',
-                        ABCInstallment: '',
-                        summary: '',
-                    },
-                    feeTableData: [],
-                    defaultStandard: '1',
-                    custOrder: [],
                     display: 'display:block',
                     multipleSelection: [],
                     designEmployeeId: '',

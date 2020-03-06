@@ -21,6 +21,7 @@ require.config({
         'order-payment': 'static/js/modules/bss/component/order.payment',
         'order-worker': 'static/js/modules/bss/component/order.worker',
         'order-selectemployee': 'static/js/modules/bss/component/order.selectemployee',
+        'order-selectdecorator': 'static/js/modules/bss/component/order.selectdecorator',
         'cust-visit': 'static/js/modules/bss/component/cust.visit',
         'upload-file': 'static/js/modules/system/component/upload.file',
         'order-file-upload': 'static/js/modules/bss/component/order.file.upload',

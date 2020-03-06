@@ -122,56 +122,6 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
         OrderPayNoService.update(new UpdateWrapper<OrderPayNo>().lambda().eq(OrderPayNo::getPayNo, orderPayNo.getPayNo()).eq(OrderPayNo::getOrderId, orderPayNo.getOrderId()).gt(OrderPayNo::getEndDate, LocalDateTime.now()).set(OrderPayNo::getAuditStatus, orderPayNo.getAuditStatus()).set(OrderPayNo::getAuditEmployeeId, employeeId).set(OrderPayNo::getUpdateTime, LocalDateTime.now()).set(OrderPayNo::getRemark, orderPayNo.getRemark()));
     }
 
-    /**
-     * 工程文员提交项目经理审核
-     *
-     * @param dto
-     */
-
-    @Override
-    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
-    public void submitTask(OrderFeeDTO dto) {
-        orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_NEXT_STEP);
-        //如果需要流转到指定人，才需要处理worker记录，流转到角色33项目经理
-        workerService.updateOrderWorker(dto.getOrderId(), 33L, dto.getProjectManager());
-
-
-    }
-
-    /**
-     * 项目经理审核
-     *
-     * @param dto
-     */
-
-    @Override
-    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
-    public void submitAuditProject(OrderFeeDTO dto) {
-        //1是审核通过，2是审核不通过
-        String auditStatus = dto.getAuditStatus();
-
-        if (auditStatus.equals("1")) {
-            orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_NEXT_STEP);
-            //如果需要流转到指定人，才需要处理worker记录 流转到角色31项目助理
-            workerService.updateOrderWorker(dto.getOrderId(), 31L, dto.getEngineeringAssistant());
-        } else
-            orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_AUDIT_NO);
-
-    }
-
-    /**
-     * 开工交底
-     *
-     * @param dto
-     */
-
-    @Override
-    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
-    public void submitAssignment(OrderFeeDTO dto) {
-        orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_NEXT_STEP);
-
-
-    }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
