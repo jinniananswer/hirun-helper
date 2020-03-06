@@ -91,4 +91,10 @@ public class OrderFeeController {
         return collectDomainService.queryLastInstallmentCollect(orderId);
     }
 
+    @PostMapping("/applyFinanceAuditLast")
+    @RestResult
+    public void applyFinanceAuditLast(@RequestBody LastInstallmentCollectionDTO lastInstallmentCollectionDTO) {
+        collectDomainService.applyFinanceAuditLast(lastInstallmentCollectionDTO);
+    }
+
 }

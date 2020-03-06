@@ -46,6 +46,9 @@ public class InstallmentCollectDomainServiceImpl implements IInstallmentCollectD
     @Autowired
     private IFeeDomainService feeDomainService;
 
+    @Autowired
+    private IOrderDomainService orderDomainService;
+
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void saveLastCollectionFee(LastInstallmentCollectionDTO dto) {
@@ -55,11 +58,18 @@ public class InstallmentCollectDomainServiceImpl implements IInstallmentCollectD
         //保存费用
         LastInstallmentInfoDTO lastInstallmentInfoDTO=dto.getLastInstallmentInfoDTO();
         List<FeeDTO> feeDTOList=new ArrayList<>();
+        //木制品费
+        this.buildFeeList(6L,lastInstallmentInfoDTO.getWoodProductFee(),feeDTOList);
+        //门费用
+        this.buildFeeList(7L,lastInstallmentInfoDTO.getDoorFee(),feeDTOList);
+        //家具费用
+        this.buildFeeList(8L,lastInstallmentInfoDTO.getFurnitureFee(),feeDTOList);
+        //税金
+        this.buildFeeList(15L,lastInstallmentInfoDTO.getTaxFee(),feeDTOList);
+        //基础装修款
+        this.buildFeeList(5L,lastInstallmentInfoDTO.getBaseDecorationFee(),feeDTOList);
+        //todo 其他款项
 
-        FeeDTO feeDTO=new FeeDTO();
-        feeDTO.setFeeItemId(6L);
-        feeDTO.setMoney(lastInstallmentInfoDTO.getWoodProductFee());
-        feeDTOList.add(feeDTO);
 
         feeDomainService.createOrderFee(lastInstallmentInfoDTO.getOrderId(),"2",3,feeDTOList);
     }
@@ -74,9 +84,22 @@ public class InstallmentCollectDomainServiceImpl implements IInstallmentCollectD
         }
         Long chargedAllFee=feeDomainService.getPayedMoney(orderId,"2",3);
         LastInstallmentInfoDTO lastInstallmentInfoDTO=new LastInstallmentInfoDTO();
-        lastInstallmentInfoDTO.setChargedAllFee(chargedAllFee.doubleValue());
+        lastInstallmentInfoDTO.setChargedAllFee((chargedAllFee.doubleValue()/100));
         lastInstallmentCollectionDTO.setLastInstallmentInfoDTO(lastInstallmentInfoDTO);
 
         return lastInstallmentCollectionDTO;
+    }
+
+    @Override
+    public void applyFinanceAuditLast(LastInstallmentCollectionDTO dto) {
+        this.saveLastCollectionFee(dto);
+        orderDomainService.orderStatusTrans(dto.getLastInstallmentInfoDTO().getOrderId(),"NEXT");
+    }
+
+    private void buildFeeList(Long feeItemId,Double fee,List<FeeDTO> list){
+        FeeDTO feeDTO=new FeeDTO();
+        feeDTO.setMoney(fee);
+        feeDTO.setFeeItemId(feeItemId);
+        list.add(feeDTO);
     }
 }
