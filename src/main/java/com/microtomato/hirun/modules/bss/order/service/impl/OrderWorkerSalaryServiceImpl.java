@@ -89,11 +89,12 @@ public class OrderWorkerSalaryServiceImpl extends ServiceImpl<OrderWorkerSalaryM
         orderWorkerSalary.setPeriods(periods);
 
         OrderWorkerSalary existWorkerSalary = this.baseMapper.selectOne(new QueryWrapper<OrderWorkerSalary>().lambda().
-                eq(OrderWorkerSalary::getOrderId, dto.getOrderId()).eq(OrderWorkerSalary::getPeriods, 1));
+                eq(OrderWorkerSalary::getOrderId, dto.getOrderId()).eq(OrderWorkerSalary::getPeriods, periods));
         if (existWorkerSalary == null) {
             this.baseMapper.insert(orderWorkerSalary);
         } else {
-            this.baseMapper.update(orderWorkerSalary, new UpdateWrapper<OrderWorkerSalary>().lambda().eq(OrderWorkerSalary::getOrderId, dto.getOrderId()));
+            this.baseMapper.update(orderWorkerSalary, new UpdateWrapper<OrderWorkerSalary>().lambda().eq(OrderWorkerSalary::getOrderId, dto.getOrderId())
+                    .eq(OrderWorkerSalary::getPeriods,periods));
         }
     }
 }
