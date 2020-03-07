@@ -482,6 +482,72 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
      */
     @Override
     public List<OrderPayInfoDTO> queryPayInfoByOrderId(Long orderId) {
-        return null;
+        List<OrderPayNo> orderPayNos = this.orderPayNoService.queryByOrderId(orderId);
+        if (ArrayUtils.isEmpty(orderPayNos)) {
+            return null;
+        }
+
+        List<OrderPayInfoDTO> orderPayInfos = new ArrayList<>();
+        for (OrderPayNo orderPayNo : orderPayNos) {
+            OrderPayInfoDTO orderPayInfo = new OrderPayInfoDTO();
+            orderPayInfo.setPayDate(orderPayNo.getPayDate());
+            if (orderPayNo.getTotalMoney() != null) {
+                orderPayInfo.setTotalMoney(orderPayNo.getTotalMoney().doubleValue()/100);
+            } else {
+                orderPayInfo.setTotalMoney(0d);
+            }
+
+            List<OrderPayItem> orderPayItems = this.orderPayItemService.queryByOrderIdPayNo(orderId, orderPayNo.getPayNo());
+            if (ArrayUtils.isNotEmpty(orderPayItems)) {
+                List<OrderPayItemInfoDTO> orderPayItemInfos = new ArrayList<>();
+                for (OrderPayItem orderPayItem : orderPayItems) {
+                    OrderPayItemInfoDTO orderPayItemInfo = new OrderPayItemInfoDTO();
+                    Long payItemId = orderPayItem.getPayItemId();
+                    PayItemCfg payItemCfg = this.payItemCfgService.getPayItem(payItemId);
+                    String payItemName = payItemCfg.getName();
+
+                    Long parentPayItemId = orderPayItem.getParentPayItemId();
+                    if (parentPayItemId != null) {
+                        PayItemCfg parentPayItemCfg = this.payItemCfgService.getPayItem(parentPayItemId);
+                        payItemName = parentPayItemCfg.getName() + "-" + payItemName;
+                    }
+
+                    Integer period = orderPayItem.getPeriods();
+                    if (period != null) {
+                        payItemName += this.staticDataService.getCodeName("PAY_PERIODS", period+"");
+                    }
+                    orderPayItemInfo.setPayItemName(payItemName);
+
+                    Long money = orderPayItem.getFee();
+                    if (money != null) {
+                        orderPayItemInfo.setMoney(money.doubleValue()/100);
+                    } else {
+                        orderPayItemInfo.setMoney(0d);
+                    }
+                    orderPayItemInfos.add(orderPayItemInfo);
+                }
+                orderPayInfo.setPayItems(orderPayItemInfos);
+            }
+
+            List<OrderPayMoney> orderPayMonies = this.orderPayMoneyService.queryByOrderIdPayNo(orderId, orderPayNo.getPayNo());
+            if (ArrayUtils.isNotEmpty(orderPayMonies)) {
+                List<OrderPayMoneyInfoDTO> orderPayMoneyInfos = new ArrayList<>();
+                for (OrderPayMoney orderPayMoney : orderPayMonies) {
+                    OrderPayMoneyInfoDTO orderPayMoneyInfo = new OrderPayMoneyInfoDTO();
+                    orderPayMoneyInfo.setPaymentName(this.staticDataService.getCodeName("PAYMENT_TYPE", orderPayMoney.getPaymentType()));
+                    Long money = orderPayMoney.getMoney();
+                    if (money != null) {
+                        orderPayMoneyInfo.setMoney(money.doubleValue()/100);
+                    } else {
+                        orderPayMoneyInfo.setMoney(0d);
+                    }
+                    orderPayMoneyInfos.add(orderPayMoneyInfo);
+                }
+                orderPayInfo.setPayMonies(orderPayMoneyInfos);
+            }
+
+            orderPayInfos.add(orderPayInfo);
+        }
+        return orderPayInfos;
     }
 }
