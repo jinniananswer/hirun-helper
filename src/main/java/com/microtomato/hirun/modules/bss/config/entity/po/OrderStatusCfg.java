@@ -48,10 +48,22 @@ public class OrderStatusCfg extends BaseEntity {
     private String orderStatus;
 
     /**
+     * 状态名称
+     */
+    @TableField("status_name")
+    private String statusName;
+
+    /**
      * 处理页面
      */
     @TableField("page_url")
     private String pageUrl;
+
+    /**
+     * 订单信息展示时切换到哪个标签页
+     */
+    @TableField("order_tab_show")
+    private String orderTabShow;
 
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)
     private Long createUserId;

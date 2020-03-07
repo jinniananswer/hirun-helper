@@ -67,6 +67,9 @@ public class OrderDetailDTO {
      */
     private String status;
 
+    /**
+     * 状态名称
+     */
     private String statusName;
 
     /**
@@ -93,6 +96,11 @@ public class OrderDetailDTO {
      * 总实收费用
      */
     private Integer totalActFee;
+
+    /**
+     * 切换到订单信息展示组件的哪一个标签页
+     */
+    private String tabShow;
 
     /**
      * 参与的活动ID

@@ -107,6 +107,10 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
 
         if (StringUtils.isNotBlank(orderInfo.getStatus())) {
             orderInfo.setStatusName(this.staticDataService.getCodeName("ORDER_STATUS", orderInfo.getStatus()));
+            OrderStatusCfg statusCfg = this.orderStatusCfgService.getCfgByTypeStatus(orderBase.getType(), orderInfo.getStatus());
+            if (statusCfg != null) {
+                orderInfo.setTabShow(statusCfg.getOrderTabShow());
+            }
         }
 
         if (StringUtils.isNotBlank(orderInfo.getHouseLayout())) {
