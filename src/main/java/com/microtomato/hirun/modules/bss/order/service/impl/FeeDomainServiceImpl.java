@@ -8,19 +8,19 @@ import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.bss.config.entity.consts.FeeConst;
 import com.microtomato.hirun.modules.bss.config.entity.po.FeeItemCfg;
+import com.microtomato.hirun.modules.bss.config.entity.po.FeeItemStageCfg;
 import com.microtomato.hirun.modules.bss.config.entity.po.FeePayRelCfg;
 import com.microtomato.hirun.modules.bss.config.service.IFeeItemCfgService;
+import com.microtomato.hirun.modules.bss.config.service.IFeeItemStageCfgService;
 import com.microtomato.hirun.modules.bss.config.service.IFeePayRelCfgService;
 import com.microtomato.hirun.modules.bss.order.entity.dto.FeeDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeInfoDTO;
+import com.microtomato.hirun.modules.bss.order.entity.po.OrderBase;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFee;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFeeItem;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayItem;
 import com.microtomato.hirun.modules.bss.order.exception.OrderException;
-import com.microtomato.hirun.modules.bss.order.service.IFeeDomainService;
-import com.microtomato.hirun.modules.bss.order.service.IOrderFeeItemService;
-import com.microtomato.hirun.modules.bss.order.service.IOrderFeeService;
-import com.microtomato.hirun.modules.bss.order.service.IOrderPayItemService;
+import com.microtomato.hirun.modules.bss.order.service.*;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +60,12 @@ public class FeeDomainServiceImpl implements IFeeDomainService {
     private IStaticDataService staticDataService;
 
     @Autowired
+    private IOrderBaseService orderBaseService;
+
+    @Autowired
+    private IFeeItemStageCfgService feeItemStageCfgService;
+
+    @Autowired
     private IDualService dualService;
 
     /**
@@ -74,13 +80,19 @@ public class FeeDomainServiceImpl implements IFeeDomainService {
         if (ArrayUtils.isEmpty(fees)) {
             return;
         }
+
+        OrderBase orderBase = this.orderBaseService.queryByOrderId(orderId);
+        if (orderBase == null) {
+            throw new OrderException(OrderException.OrderExceptionEnum.ORDER_FEE_NOT_FOUND);
+        }
         Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
         Long orgId = WebContextUtils.getUserContext().getOrgId();
         Long feeNo = dualService.nextval(FeeNoCycleSeq.class);
         LocalDateTime now = RequestTimeHolder.getRequestTime();
         LocalDateTime forever = TimeUtils.getForeverTime();
 
-        long totalFee = 0L;
+        long totalFee = 0;
+        long stageNeedPay = 0;
         List<OrderFeeItem> feeItems = new ArrayList<>();
         for (FeeDTO fee : fees) {
             //创建费用项信息
@@ -92,7 +104,17 @@ public class FeeDomainServiceImpl implements IFeeDomainService {
                 throw new OrderException(OrderException.OrderExceptionEnum.FEE_ITEM_NOT_FOUND, String.valueOf(feeItemId));
             }
 
-            long money = (long)(fee.getMoney()*100);
+            long money= (long)(fee.getMoney()*100);
+
+            FeeItemStageCfg feeItemStageCfg = this.feeItemStageCfgService.getByFeeItemIdTypePeriod(feeItemId, orderBase.getType(), period);
+            if (feeItemStageCfg != null) {
+                Integer rate = feeItemStageCfg.getRate();
+                long ratePay = (long)(fee.getMoney() * (rate/100) * 100);
+                stageNeedPay += ratePay;
+            } else {
+                //没有找到费用分期配置，则全额收取
+                stageNeedPay += money;
+            }
 
             if (FeeConst.FEE_DIRECTION_PLUS.equals(feeItemCfg.getDirection())) {
                 totalFee += money;
@@ -126,7 +148,7 @@ public class FeeDomainServiceImpl implements IFeeDomainService {
         orderFee.setEndDate(forever);
         orderFee.setOrderId(orderId);
 
-        Long needPay = this.getNeedPay(totalFee, orderId, type, period);
+        Long needPay = this.getNeedPay(stageNeedPay, orderId, type, period);
         orderFee.setNeedPay(needPay);
 
         OrderFee oldOrderFee = this.orderFeeService.getByOrderIdTypePeriod(orderId, type, period);
