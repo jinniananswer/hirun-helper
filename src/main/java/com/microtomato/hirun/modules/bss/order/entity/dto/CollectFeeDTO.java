@@ -1,6 +1,5 @@
-package com.microtomato.hirun.modules.bss.config.entity.dto;
+package com.microtomato.hirun.modules.bss.order.entity.dto;
 
-import com.microtomato.hirun.modules.bss.order.entity.dto.PaymentDTO;
 import lombok.Data;
 
 import java.time.LocalDate;

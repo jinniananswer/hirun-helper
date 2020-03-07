@@ -9,10 +9,10 @@ import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
-import com.microtomato.hirun.modules.bss.config.entity.dto.CascadeDTO;
-import com.microtomato.hirun.modules.bss.config.entity.dto.CollectFeeDTO;
-import com.microtomato.hirun.modules.bss.config.entity.dto.PayComponentDTO;
-import com.microtomato.hirun.modules.bss.config.entity.dto.PayItemDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.CascadeDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.CollectFeeDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.PayComponentDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.PayItemDTO;
 import com.microtomato.hirun.modules.bss.config.entity.po.PayItemCfg;
 import com.microtomato.hirun.modules.bss.config.service.IPayItemCfgService;
 import com.microtomato.hirun.modules.bss.house.service.IHousesService;
@@ -199,6 +199,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
                 OrderPayItem orderPayItem = new OrderPayItem();
                 orderPayItem.setOrderId(orderId);
                 orderPayItem.setPayItemId(payItemId);
+                orderPayItem.setParentPayItemId(payItemCfg.getParentPayItemId());
                 orderPayItem.setPeriods(payItem.getPeriod());
                 orderPayItem.setFee(fee);
                 orderPayItem.setPayNo(payNo);
@@ -425,6 +426,10 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
         return result;
     }
 
+    /**
+     * 查询财务待办任务
+     * @return
+     */
     @Override
     public List<FinancePendingTaskDTO> queryFinancePendingTask() {
         Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
@@ -434,7 +439,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
             return null;
         }
 
-        List<FinancePendingTaskDTO> financeTasks = new ArrayList<>();
+        ArrayList<FinancePendingTaskDTO> financeTasks = new ArrayList<>();
         Map<String, FinancePendingTaskDTO> temp = new HashMap<>();
         for (FinancePendingOrderDTO financeOrder : financeOrders) {
             String auditStatus = financeOrder.getAuditStatus();
@@ -468,5 +473,15 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
             result.add(temp.get(key));
         }
         return result;
+    }
+
+    /**
+     * 查询订单客户付款信息
+     * @param orderId
+     * @return
+     */
+    @Override
+    public List<OrderPayInfoDTO> queryPayInfoByOrderId(Long orderId) {
+        return null;
     }
 }
