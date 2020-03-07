@@ -22,4 +22,6 @@ public interface IInstallmentCollectDomainService {
      * @return
      */
     LastInstallmentCollectionDTO queryLastInstallmentCollect(Long orderId);
+
+    void applyFinanceAuditLast(LastInstallmentCollectionDTO dto);
 }

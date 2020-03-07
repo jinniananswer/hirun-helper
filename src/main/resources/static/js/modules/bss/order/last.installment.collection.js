@@ -1,4 +1,4 @@
-require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'order-info', 'order-worker', 'order-selectemployee','cust-visit', 'order-search-employee'], function(Vue, element, axios, ajax, vueselect, util, custInfo, orderInfo, orderWorker, orderSelectEmployee,custVisit, orderSearchEmployee) {
+require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'order-info', 'order-worker', 'order-selectemployee','cust-visit', 'order-search-employee','order-discount-item'], function(Vue, element, axios, ajax, vueselect, util, custInfo, orderInfo, orderWorker, orderSelectEmployee,custVisit, orderSearchEmployee,orderDiscountItem) {
     let vm = new Vue({
         el: '#app',
         data() {
@@ -29,7 +29,9 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     wallworkerSalary:'',
                     wallworkerRemark:'',
                 },
-                //orderId : util.getRequest('orderId'),
+                orderId : util.getRequest('orderId'),
+                custId : util.getRequest('custId'),
+
                 //orderStatus : util.getRequest('status'),
                 lastInstallmentRules : {
                     doorFee: [
@@ -113,6 +115,32 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     }
                 });*/
             },
+
+            applyFinanceAuditLast:function () {
+                axios({
+                    method: 'post',
+                    url: 'api/bss/order/order-fee/applyFinanceAuditLast',
+                    data: {
+                        "lastInstallmentInfoDTO": this.lastInstallment,
+                        "workerSalaryDTO": this.workerSalary,
+                    }
+                }).then(function (responseData) {
+                    if (0 == responseData.data.code) {
+                        vm.$alert('点击确定关闭本页面', '操作成功', {
+                            confirmButtonText: '确定',
+                            callback: action => {
+                                top.layui.admin.closeThisTabs();
+                            }
+                        });
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                    Vue.prototype.$message({
+                        message: '保存失败！',
+                        type: 'warning'
+                    });
+                });
+            }
 
         }
     });
