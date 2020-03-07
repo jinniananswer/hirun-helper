@@ -97,7 +97,72 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
                                 </el-table>
                             </el-tab-pane>
                             <el-tab-pane label="付款信息">
-                                
+                                <el-table
+                                    :data="order.orderPays"
+                                    stripe="true"
+                                    border
+                                    style="width: 100%">
+                                    <el-table-column type="expand">
+                                        <template slot-scope="props">
+                                            <el-table
+                                                :data="props.row.payItems"
+                                                stripe="true"
+                                                border
+                                                style="width: 100%">
+                                                <el-table-column
+                                                        label="收款项"
+                                                        prop="payItemName"
+                                                        fixed>
+                                                </el-table-column>
+                                                <el-table-column
+                                                        prop="money"
+                                                        width="100"
+                                                        align="right"
+                                                        label="金额（元）">
+                                                </el-table-column>
+                                            </el-table>
+                                            <br/>
+                                            <el-table
+                                                :data="props.row.payMonies"
+                                                stripe="true"
+                                                border
+                                                style="width: 100%">
+                                                <el-table-column
+                                                        label="付款方式"
+                                                        prop="paymentName"
+                                                        fixed>
+                                                </el-table-column>
+                                                <el-table-column
+                                                        prop="money"
+                                                        width="100"
+                                                        align="right"
+                                                        label="金额（元）">
+                                                </el-table-column>
+                                            </el-table>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column
+                                            label="收款日期"
+                                            prop="payDate"
+                                            width="120">
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="employeeName"
+                                            label="收款员工"
+                                            width="100">
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="employeeName"
+                                            label="收款店面" 
+                                            width="140">
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="totalMoney"
+                                            align="right"
+                                            label="收款总金额（元）">
+                                    </el-table-column>
+                                    
+                                </el-table>
                             </el-tab-pane>
                         </el-tabs>
                     </el-tab-pane>
@@ -113,7 +178,33 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
                         </div>
                         <div class="text item">
                             <h3>功能蓝图</h3>
-                        </div></el-tab-pane>
+                        </div>
+                    </el-tab-pane>
+                    <el-tab-pane label="订单文件" name="file">
+                        <el-table
+                            :data="order.orderFiles"
+                            stripe="true"
+                            border
+                            style="width: 100%">
+                            <el-table-column
+                                    prop="stageName"
+                                    width="120"
+                                    label="文件类型">
+                            </el-table-column>
+                            <el-table-column
+                                    prop="fileName"
+                                    label="文件名称">
+                            </el-table-column>
+                            <el-table-column
+                                    align="center"
+                                    width="100"
+                                    label="文件下载">
+                                    <template slot-scope="scope">
+                                        <el-link type="primary" :href="'api/bss.order/order-file/download/'+scope.row.orderId+'/'+scope.row.stage">下载文件</el-link>
+                                    </template>
+                            </el-table-column>
+                        </el-table>
+                    </el-tab-pane>
                     <el-tab-pane label="合同信息" name="contract">合同信息</el-tab-pane>
                 </el-tabs>
             </el-card>
