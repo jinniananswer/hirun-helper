@@ -6,10 +6,7 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
             return {
                 sOrderId: this.orderId,
                 order:{
-                    base:{},
-                    product:{},
-                    fee:{},
-                    contract:{}
+
                 },
                 stages:{
                     0: '酝酿',
@@ -29,7 +26,7 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
                     <el-tab-pane label="订单信息" name="orderInfo">
                         <div class="text item" style="margin-left: 18px;padding-bottom: 10px;width:95%" >
                             <el-slider
-                                    v-model="order.base.stage"
+                                    v-model="order.stage"
                                     range
                                     :marks="stages">
                             </el-slider>
@@ -38,41 +35,71 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
                         <el-row :gutter="5">
                             <el-col :span="8">
                                 <div class="text">
-                                    订单状态：<template v-if="order.base.statusName != null && order.base.statusName != ''"><el-tag type="danger">{{order.base.statusName}}</el-tag></template>
+                                    订单状态：<template v-if="order.statusName != null && order.statusName != ''"><el-tag type="danger">{{order.statusName}}</el-tag></template>
                                 </div>
                             </el-col>
                             <el-col :span="8">
                                 <div class="text item">
-                                    所属楼盘：<template v-if="order.base.housesName != null && order.base.housesName != ''"><el-tag>{{order.base.housesName}}</el-tag></template>
+                                    所属楼盘：<template v-if="order.housesName != null && order.housesName != ''"><el-tag>{{order.housesName}}</el-tag></template>
                                 </div>
                             </el-col>
                             <el-col :span="8">
                                 <div class="text item">
-                                    装修地址：<template v-if="order.base.decorateAddress != null && order.base.decorateAddress != ''"><el-tag>{{order.base.decorateAddress}}</el-tag></template>
+                                    装修地址：<template v-if="order.decorateAddress != null && order.decorateAddress != ''"><el-tag>{{order.decorateAddress}}</el-tag></template>
                                 </div>
                             </el-col>
                         </el-row >
                         <el-row :gutter="5">
                             <el-col :span="8">
                                 <div class="text">
-                                    建筑面积：<template v-if="order.base.floorage != null && order.base.floorage != ''"><el-tag>{{order.base.floorage}}平米</el-tag></template>
+                                    建筑面积：<template v-if="order.floorage != null && order.floorage != ''"><el-tag>{{order.floorage}}平米</el-tag></template>
                                 </div>
                             </el-col>
                             <el-col :span="8">
                                 <div class="text">
-                                    套内面积：<template v-if="order.base.indoorArea != null && order.base.indoorArea != ''"><el-tag>{{order.base.indoorArea}}平米</el-tag></template>
+                                    套内面积：<template v-if="order.indoorArea != null && order.indoorArea != ''"><el-tag>{{order.indoorArea}}平米</el-tag></template>
                                 </div>
                             </el-col>
                             <el-col :span="8">
                                 <div class="text">
-                                    户型：<template v-if="order.base.houseLayoutName != null && order.base.houseLayoutName != ''"><el-tag>{{order.base.houseLayoutName}}</el-tag></template>
+                                    户型：<template v-if="order.houseLayoutName != null && order.houseLayoutName != ''"><el-tag>{{order.houseLayoutName}}</el-tag></template>
                                 </div>
                             </el-col>
 
                         </el-row >
                     </el-tab-pane>
-                    <el-tab-pane label="费用信息" name="fee">
-                        
+                    <el-tab-pane label="订单费用" name="fee">
+                        <el-tabs type="border-card">
+                            <el-tab-pane label="费用信息">
+                                <el-table
+                                    :data="order.orderFees"
+                                    stripe="true"
+                                    border
+                                    row-key="rowKey"
+                                    :tree-props="{children:'children', hasChildren: 'hasChildren'}"
+                                    style="width: 100%">
+                                    <el-table-column
+                                            label="费用项"
+                                            prop="typeName"
+                                            fixed>
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="periodName"
+                                            width="100"
+                                            label="期数">
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="totalMoney"
+                                            label="总金额（元）"
+                                            width="140"
+                                            align="right">
+                                    </el-table-column>
+                                </el-table>
+                            </el-tab-pane>
+                            <el-tab-pane label="付款信息">
+                                
+                            </el-tab-pane>
+                        </el-tabs>
                     </el-tab-pane>
                     <el-tab-pane label="所选产品" name="product">
                         <div class="text item">
@@ -101,8 +128,7 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
                         data.stage = [];
                         data.stage.push(-10);
                         data.stage.push(stage);
-                        that.order.base = data;
-
+                        that.order = data;
                     });
                 }
             }
