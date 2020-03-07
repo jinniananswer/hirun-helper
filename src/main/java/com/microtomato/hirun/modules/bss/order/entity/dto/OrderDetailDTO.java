@@ -2,6 +2,8 @@ package com.microtomato.hirun.modules.bss.order.entity.dto;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @program: hirun-helper
  * @description: 订单信息数据传输对象,订单信息组件会用到
@@ -96,5 +98,10 @@ public class OrderDetailDTO {
      * 参与的活动ID
      */
     private Long activityId;
+
+    /**
+     * 订单费用信息
+     */
+    private List<OrderFeeInfoDTO> orderFees;
 
 }

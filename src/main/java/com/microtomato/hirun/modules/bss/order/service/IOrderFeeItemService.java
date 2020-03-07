@@ -17,4 +17,6 @@ public interface IOrderFeeItemService extends IService<OrderFeeItem> {
     List<OrderFeeItem> queryByOrderId(Long orderId);
 
     List<OrderFeeItem> queryByOrderIdTypePeriod(Long orderId, String type, Integer period);
+
+    List<OrderFeeItem> queryByOrderIdFeeNo(Long orderId, Long feeNo);
 }

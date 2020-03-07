@@ -56,4 +56,19 @@ public class OrderFeeItemServiceImpl extends ServiceImpl<OrderFeeItemMapper, Ord
             .gt(OrderFeeItem::getEndDate, now)
             .eq(period != null, OrderFeeItem::getPeriods, period));
     }
+
+    /**
+     * 根据订单ID与费用编码查询费用信息
+     * @param orderId
+     * @param feeNo
+     * @return
+     */
+    @Override
+    public List<OrderFeeItem> queryByOrderIdFeeNo(Long orderId, Long feeNo) {
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+        return this.list(new QueryWrapper<OrderFeeItem>().lambda()
+            .eq(OrderFeeItem::getOrderId, orderId)
+            .eq(OrderFeeItem::getFeeNo, feeNo)
+            .gt(OrderFeeItem::getEndDate, now));
+    }
 }
