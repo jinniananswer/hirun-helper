@@ -69,6 +69,9 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
     private IHousesService housesService;
 
     @Autowired
+    private IFinanceDomainService financeDomainService;
+
+    @Autowired
     private OrderBaseMapper orderBaseMapper;
 
 
@@ -107,6 +110,11 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
         List<OrderFeeInfoDTO> orderFees = this.feeDomainService.queryOrderFeeInfo(orderId);
         if (ArrayUtils.isNotEmpty(orderFees)) {
             orderInfo.setOrderFees(orderFees);
+        }
+
+        List<OrderPayInfoDTO> orderPays = this.financeDomainService.queryPayInfoByOrderId(orderId);
+        if (ArrayUtils.isNotEmpty(orderPays)) {
+            orderInfo.setOrderPays(orderPays);
         }
         return orderInfo;
     }

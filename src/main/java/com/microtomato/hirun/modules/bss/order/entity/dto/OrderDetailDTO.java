@@ -104,4 +104,8 @@ public class OrderDetailDTO {
      */
     private List<OrderFeeInfoDTO> orderFees;
 
+    /**
+     * 订单付款信息
+     */
+    private List<OrderPayInfoDTO> orderPays;
 }

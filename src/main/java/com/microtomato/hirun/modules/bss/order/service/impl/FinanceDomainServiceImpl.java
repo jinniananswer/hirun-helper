@@ -514,7 +514,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
 
                     Integer period = orderPayItem.getPeriods();
                     if (period != null) {
-                        payItemName += this.staticDataService.getCodeName("PAY_PERIODS", period+"");
+                        payItemName += "-" + this.staticDataService.getCodeName("PAY_PERIODS", period+"");
                     }
                     orderPayItemInfo.setPayItemName(payItemName);
 

@@ -2,7 +2,7 @@ package com.microtomato.hirun.modules.bss.order.entity.dto;
 
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -14,7 +14,7 @@ import java.util.List;
 @Data
 public class OrderPayInfoDTO {
 
-    private LocalDateTime payDate;
+    private LocalDate payDate;
 
     private Double totalMoney;
 
