@@ -158,7 +158,7 @@ public class FeeDomainServiceImpl implements IFeeDomainService {
     }
 
     /**
-     * 查询某类型费用已付款信息
+     * 查询某类型费用已付款信息，如果要查询某类型全部的已付款，period字段传null
      * @param orderId
      * @param type
      * @param period
