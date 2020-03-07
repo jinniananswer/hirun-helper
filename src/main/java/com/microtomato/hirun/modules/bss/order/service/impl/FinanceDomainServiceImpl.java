@@ -7,12 +7,9 @@ import com.microtomato.hirun.framework.mybatis.sequence.impl.PayNoCycleSeq;
 import com.microtomato.hirun.framework.mybatis.service.IDualService;
 import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
-import com.microtomato.hirun.modules.bss.order.entity.dto.CascadeDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.CollectFeeDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.PayComponentDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.PayItemDTO;
 import com.microtomato.hirun.modules.bss.config.entity.po.PayItemCfg;
 import com.microtomato.hirun.modules.bss.config.service.IPayItemCfgService;
 import com.microtomato.hirun.modules.bss.house.service.IHousesService;
@@ -27,6 +24,9 @@ import com.microtomato.hirun.modules.bss.order.service.IFinanceDomainService;
 import com.microtomato.hirun.modules.bss.order.service.IOrderPayItemService;
 import com.microtomato.hirun.modules.bss.order.service.IOrderPayMoneyService;
 import com.microtomato.hirun.modules.bss.order.service.IOrderPayNoService;
+import com.microtomato.hirun.modules.organization.entity.domain.EmployeeDO;
+import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
+import com.microtomato.hirun.modules.organization.entity.po.Org;
 import com.microtomato.hirun.modules.system.entity.po.StaticData;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
@@ -491,6 +491,24 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
         for (OrderPayNo orderPayNo : orderPayNos) {
             OrderPayInfoDTO orderPayInfo = new OrderPayInfoDTO();
             orderPayInfo.setPayDate(orderPayNo.getPayDate());
+
+            Long employeeId = orderPayNo.getPayEmployeeId();
+            if (employeeId != null) {
+                EmployeeDO employeeDO = SpringContextUtils.getBean(EmployeeDO.class, employeeId);
+                orderPayInfo.setEmployeeName(employeeDO.getEmployee().getName());
+            }
+
+            Long orgId = orderPayNo.getOrgId();
+            if (orgId != null) {
+                OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+                if (orgDO.getOrg() != null) {
+                    Org shop = orgDO.getBelongShop();
+                    if (shop != null) {
+                        orderPayInfo.setShopName(shop.getName());
+                    }
+                }
+            }
+
             if (orderPayNo.getTotalMoney() != null) {
                 orderPayInfo.setTotalMoney(orderPayNo.getTotalMoney().doubleValue()/100);
             } else {

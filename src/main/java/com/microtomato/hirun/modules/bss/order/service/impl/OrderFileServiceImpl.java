@@ -2,12 +2,17 @@ package com.microtomato.hirun.modules.bss.order.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFileDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFile;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderFileMapper;
 import com.microtomato.hirun.modules.bss.order.service.IOrderFileService;
+import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +41,9 @@ import java.util.UUID;
 public class OrderFileServiceImpl extends ServiceImpl<OrderFileMapper, com.microtomato.hirun.modules.bss.order.entity.po.OrderFile> implements IOrderFileService {
 
     private static final String UPLOAD = "upload";
+
+    @Autowired
+    private IStaticDataService staticDataService;
 
     @Override
     public String toAbsolutePath(String relativePath) {
@@ -173,5 +181,26 @@ public class OrderFileServiceImpl extends ServiceImpl<OrderFileMapper, com.micro
                 .orderByDesc(OrderFile::getCreateTime)
         );
         return orderFile;
+    }
+
+    @Override
+    public List<OrderFileDTO> queryOrderFiles(Long orderId) {
+        List<OrderFile> files = this.list(Wrappers.<OrderFile>lambdaQuery()
+            .eq(OrderFile::getOrderId, orderId)
+            .eq(OrderFile::getEnabled, true)
+            .orderByAsc(OrderFile::getCreateTime));
+
+        if (ArrayUtils.isEmpty(files)) {
+            return null;
+        }
+
+        List<OrderFileDTO> orderFiles = new ArrayList<>();
+        for (OrderFile file : files) {
+            OrderFileDTO orderFile = new OrderFileDTO();
+            BeanUtils.copyProperties(file, orderFile);
+            orderFile.setStageName(this.staticDataService.getCodeName("FILE_STAGE", file.getStage() + ""));
+            orderFiles.add(orderFile);
+        }
+        return orderFiles;
     }
 }

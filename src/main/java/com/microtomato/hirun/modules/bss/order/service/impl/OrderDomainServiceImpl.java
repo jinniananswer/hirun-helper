@@ -10,7 +10,10 @@ import com.microtomato.hirun.modules.bss.config.entity.po.OrderRoleCfg;
 import com.microtomato.hirun.modules.bss.config.entity.po.OrderStatusCfg;
 import com.microtomato.hirun.modules.bss.config.entity.po.OrderStatusTransCfg;
 import com.microtomato.hirun.modules.bss.config.entity.po.RoleAttentionStatusCfg;
-import com.microtomato.hirun.modules.bss.config.service.*;
+import com.microtomato.hirun.modules.bss.config.service.IOrderRoleCfgService;
+import com.microtomato.hirun.modules.bss.config.service.IOrderStatusCfgService;
+import com.microtomato.hirun.modules.bss.config.service.IOrderStatusTransCfgService;
+import com.microtomato.hirun.modules.bss.config.service.IRoleAttentionStatusCfgService;
 import com.microtomato.hirun.modules.bss.house.service.IHousesService;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.*;
@@ -72,6 +75,9 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
     private IFinanceDomainService financeDomainService;
 
     @Autowired
+    private IOrderFileService orderFileService;
+
+    @Autowired
     private OrderBaseMapper orderBaseMapper;
 
 
@@ -115,6 +121,11 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
         List<OrderPayInfoDTO> orderPays = this.financeDomainService.queryPayInfoByOrderId(orderId);
         if (ArrayUtils.isNotEmpty(orderPays)) {
             orderInfo.setOrderPays(orderPays);
+        }
+
+        List<OrderFileDTO> orderFiles = this.orderFileService.queryOrderFiles(orderId);
+        if (ArrayUtils.isNotEmpty(orderFiles)) {
+            orderInfo.setOrderFiles(orderFiles);
         }
         return orderInfo;
     }

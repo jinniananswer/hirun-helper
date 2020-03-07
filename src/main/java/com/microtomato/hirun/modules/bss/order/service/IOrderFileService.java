@@ -1,8 +1,8 @@
 package com.microtomato.hirun.modules.bss.order.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFileDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFile;
-import com.microtomato.hirun.modules.system.entity.po.UploadFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -61,4 +61,11 @@ public interface IOrderFileService extends IService<com.microtomato.hirun.module
      * @return
      */
     OrderFile getOrderFile(Long orderId, Integer stage);
+
+    /**
+     * 查询订单文件信息供前台组件展示
+     * @param orderId
+     * @return
+     */
+    List<OrderFileDTO> queryOrderFiles(Long orderId);
 }

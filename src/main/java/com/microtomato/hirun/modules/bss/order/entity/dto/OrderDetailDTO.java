@@ -108,4 +108,9 @@ public class OrderDetailDTO {
      * 订单付款信息
      */
     private List<OrderPayInfoDTO> orderPays;
+
+    /**
+     * 订单上传文件信息
+     */
+    private List<OrderFileDTO> orderFiles;
 }
