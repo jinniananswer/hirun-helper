@@ -16,7 +16,8 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
                     60: '施工',
                     95: '维护'
                 },
-                activeTab:'orderInfo'
+                activeTab:'orderInfo',
+                subActiveTab: ''
             }
         },
 
@@ -69,8 +70,8 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
                         </el-row >
                     </el-tab-pane>
                     <el-tab-pane label="订单费用" name="fee">
-                        <el-tabs type="border-card">
-                            <el-tab-pane label="费用信息">
+                        <el-tabs v-model="subActiveTab" type="border-card">
+                            <el-tab-pane label="费用信息" name="feeInfo">
                                 <el-table
                                     :data="order.orderFees"
                                     stripe="true"
@@ -96,7 +97,7 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
                                     </el-table-column>
                                 </el-table>
                             </el-tab-pane>
-                            <el-tab-pane label="付款信息">
+                            <el-tab-pane label="付款信息" name="payInfo">
                                 <el-table
                                     :data="order.orderPays"
                                     stripe="true"
@@ -152,7 +153,7 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
                                             width="100">
                                     </el-table-column>
                                     <el-table-column
-                                            prop="employeeName"
+                                            prop="shopName"
                                             label="收款店面" 
                                             width="140">
                                     </el-table-column>
@@ -220,6 +221,20 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
                         data.stage.push(-10);
                         data.stage.push(stage);
                         that.order = data;
+
+                        if (data.tabShow) {
+                            if (data.tabShow.indexOf(".") > 0) {
+                                let array = data.tabShow.split(".");
+                                that.activeTab = array[0];
+                                that.subActiveTab = array[1];
+                            } else {
+                                that.activeTab = data.tabShow;
+                                that.subActiveTab = 'feeInfo';
+                            }
+                        } else {
+                            that.activeTab = 'orderInfo';
+                            that.subActiveTab = 'feeInfo';
+                        }
                     });
                 }
             }
