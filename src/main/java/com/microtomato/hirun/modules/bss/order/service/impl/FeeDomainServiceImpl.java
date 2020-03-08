@@ -105,24 +105,22 @@ public class FeeDomainServiceImpl implements IFeeDomainService {
             }
 
             long money= (long)(fee.getMoney()*100);
+            if (FeeConst.FEE_DIRECTION_MINUS.equals(feeItemCfg.getDirection())) {
+                money = -money;
+            }
 
             FeeItemStageCfg feeItemStageCfg = this.feeItemStageCfgService.getByFeeItemIdTypePeriod(feeItemId, orderBase.getType(), period);
             if (feeItemStageCfg != null) {
                 Integer rate = feeItemStageCfg.getRate();
-                long ratePay = (long)(fee.getMoney() * (rate/100) * 100);
+                long ratePay = (long)(money * (rate/100));
                 stageNeedPay += ratePay;
             } else {
                 //没有找到费用分期配置，则全额收取
                 stageNeedPay += money;
             }
 
-            if (FeeConst.FEE_DIRECTION_PLUS.equals(feeItemCfg.getDirection())) {
-                totalFee += money;
-                feeItem.setFee(money);
-            } else {
-                totalFee = totalFee - money;
-                feeItem.setFee(money*-1);
-            }
+            totalFee += money;
+            feeItem.setFee(money);
 
             feeItem.setOrderId(orderId);
             feeItem.setFeeItemId(feeItemId);
