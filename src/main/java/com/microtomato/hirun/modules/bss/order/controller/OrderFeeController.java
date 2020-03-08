@@ -72,13 +72,7 @@ public class OrderFeeController {
     public void costReview(@RequestBody OrderPayNo orderPayNo) {
         orderFeeServiceImpl.costReview(orderPayNo);
     }
-
-    @PostMapping("/secondInstallmentCollect")
-    @RestResult
-    public void secondInstallmentCollect(@RequestBody SecondInstallmentCollectionDTO dto) {
-        orderFeeServiceImpl.secondInstallmentCollect(dto);
-    }
-
+    
     @PostMapping("/saveLastInstallmentCollect")
     @RestResult
     public void saveLastInstallmentCollect(@RequestBody LastInstallmentCollectionDTO lastInstallmentCollectionDTO) {
@@ -97,4 +91,9 @@ public class OrderFeeController {
         collectDomainService.applyFinanceAuditLast(lastInstallmentCollectionDTO);
     }
 
+    @GetMapping("/getByOrderIdTypePeriod")
+    @RestResult
+    public OrderFee getByOrderIdTypePeriod(Long orderId, String type, Integer period) {
+        return orderFeeServiceImpl.getByOrderIdTypePeriod(orderId, type, period);
+    }
 }

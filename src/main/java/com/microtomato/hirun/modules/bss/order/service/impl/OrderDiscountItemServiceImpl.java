@@ -98,6 +98,6 @@ public class OrderDiscountItemServiceImpl extends ServiceImpl<OrderDiscountItemM
             list.add(orderDiscountItem);
         }
 
-        this.saveBatch(list);
+        this.saveOrUpdateBatch(list);
     }
 }

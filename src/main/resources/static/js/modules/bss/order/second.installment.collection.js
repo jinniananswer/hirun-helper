@@ -4,7 +4,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
         data() {
             return {
                 secondInstallment: {
-                    chargedDecorateFee : '1000',
+                    chargedDecorateFee : '0',
                     orderId : '',
                     secondInstallmentFee : '0',
                     secondContractFee : '0',
@@ -87,26 +87,19 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
         },
         mounted: function() {
             this.secondInstallment.orderId = this.orderId;
-            // if(this.orderState == 'fail') {
-            //     let data = {
-            //         id : this.id
-            //     }
-            //     ajax.post('api/bss.order/order-budget/getBudgetById', data, (responseData)=>{
-            //         Object.assign(this.budget, responseData);
-            //     });
-            // }
-            // this.isCheckFailed = this.orderState == 'fail' ? true : false;
-            // this.budget.activities = [
-            //     {value : "1", name : "活动3"},
-            //     {value : "2", name : "活动4"}
-            // ];
-            // this.budget.checkUserId = 296;
+            let data = {
+                orderId : this.orderId,
+                type : "2",
+                period : 1
+            }
+            ajax.get('api/bss/order/order-fee/getByOrderIdTypePeriod', data, (responseData)=>{
+                this.secondInstallment.chargedDecorateFee = parseFloat(responseData.needPay)/100;
+            });
         },
         methods: {
             submit : function() {
                 this.$refs['secondInstallment'].validate((valid) => {
                     if (valid) {
-                        alert(valid);
                         let url = 'api/bss/order/order-fee/secondInstallmentCollect';
                         let data = this.secondInstallment;
                         this.yuanTransToFen(data);
