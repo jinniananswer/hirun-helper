@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import com.microtomato.hirun.modules.bss.order.service.IOrderWorkerSalaryService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -47,5 +48,11 @@ public class OrderWorkerSalaryController {
     @RestResult
     public void closeWorkerSalary(@RequestBody OrderWorkerSalaryDTO dto){
         orderWorkerSalaryServiceImpl.closeWorkerSalary(1,dto);
+    }
+
+    @GetMapping("/queryAllWorkerSalary")
+    @RestResult
+    public Map<String, OrderWorkerSalaryDTO> queryAllWorkerSalary(Long orderId){
+       return orderWorkerSalaryServiceImpl.queryAllWorkerSalary(orderId);
     }
 }

@@ -33,4 +33,6 @@ public class LastInstallmentInfoDTO {
 
     private Double otherFee=0.0;
 
+    private Long financeEmployeeId;
+
 }

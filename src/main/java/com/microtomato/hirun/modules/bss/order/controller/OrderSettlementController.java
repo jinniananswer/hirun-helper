@@ -39,6 +39,6 @@ public class OrderSettlementController {
     @PostMapping("/submitCollectLastFee")
     @RestResult
     public void submitCollectLastFee(@RequestBody OrderSettlement orderSettlement){
-        orderSettlementServiceImpl.saveOrderSettlement(orderSettlement);
+        orderSettlementServiceImpl.submitCollectLastFee(orderSettlement);
     }
 }
