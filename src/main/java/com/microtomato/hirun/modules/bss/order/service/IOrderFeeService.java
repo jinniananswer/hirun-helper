@@ -43,10 +43,6 @@ public interface IOrderFeeService extends IService<OrderFee> {
      */
     void costReview(OrderPayNo orderPayNo);
 
-    void secondInstallmentCollect(SecondInstallmentCollectionDTO dto);
-
-
-
     /**
      * 根据订单查询订单费用
      * @param orderId

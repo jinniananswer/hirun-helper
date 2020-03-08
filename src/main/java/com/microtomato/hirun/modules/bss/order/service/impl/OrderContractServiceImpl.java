@@ -1,21 +1,21 @@
 package com.microtomato.hirun.modules.bss.order.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.microtomato.hirun.modules.bss.config.entity.consts.FeeConst;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.DecorateContractDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.FeeDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderContract;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFee;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderContractMapper;
-import com.microtomato.hirun.modules.bss.order.service.IOrderContractService;
+import com.microtomato.hirun.modules.bss.order.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.microtomato.hirun.modules.bss.order.service.IOrderDomainService;
-import com.microtomato.hirun.modules.bss.order.service.IOrderFeeService;
-import com.microtomato.hirun.modules.bss.order.service.IOrderWorkerService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,6 +38,9 @@ public class OrderContractServiceImpl extends ServiceImpl<OrderContractMapper, O
 
     @Autowired
     private IOrderWorkerService orderWorkerService;
+
+    @Autowired
+    private IFeeDomainService feeDomainService;
 
     public DecorateContractDTO getDecorateContractInfo(Long orderId) {
         DecorateContractDTO decorateContractDTO = new DecorateContractDTO();
@@ -71,6 +74,33 @@ public class OrderContractServiceImpl extends ServiceImpl<OrderContractMapper, O
         BeanUtils.copyProperties(decorateContractDTO, orderContract);
         this.saveOrUpdate(orderContract);
         //保存费用信息到各个表
+        List<FeeDTO> fees = new ArrayList<>();
+        //基础装修费
+        FeeDTO baseFee = new FeeDTO();
+        baseFee.setFeeItemId(5L);
+        baseFee.setMoney(decorateContractDTO.getBaseDecorationFee().doubleValue()/100);
+        fees.add(baseFee);
+        //门总金额
+        FeeDTO doorFee = new FeeDTO();
+        doorFee.setFeeItemId(7L);
+        doorFee.setMoney(decorateContractDTO.getDoorFee().doubleValue()/100);
+        fees.add(doorFee);
+        //家具总金额
+        FeeDTO furnitureFee = new FeeDTO();
+        furnitureFee.setFeeItemId(8L);
+        furnitureFee.setMoney(decorateContractDTO.getFurnitureFee().doubleValue()/100);
+        fees.add(furnitureFee);
+        //返设计金额
+        FeeDTO returnDesignFee = new FeeDTO();
+        returnDesignFee.setFeeItemId(14L);
+        returnDesignFee.setMoney(decorateContractDTO.getReturnDesignFee().doubleValue()/100);
+        fees.add(returnDesignFee);
+        //税金额
+        FeeDTO taxFee = new FeeDTO();
+        taxFee.setFeeItemId(15L);
+        taxFee.setMoney(decorateContractDTO.getTaxFee().doubleValue()/100);
+        fees.add(taxFee);
+        feeDomainService.createOrderFee(decorateContractDTO.getOrderId(), FeeConst.FEE_TYPE_PROJECT, FeeConst.FEE_PERIOD_FIRST, fees);
 
         orderDomainService.orderStatusTrans(decorateContractDTO.getOrderId(), OrderConst.OPER_NEXT_STEP);
 

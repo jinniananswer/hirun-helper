@@ -6,13 +6,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
-import com.microtomato.hirun.modules.bss.order.entity.dto.PayComponentDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.PayItemDTO;
+import com.microtomato.hirun.modules.bss.config.entity.consts.FeeConst;
+import com.microtomato.hirun.modules.bss.order.entity.dto.*;
 import com.microtomato.hirun.modules.bss.config.service.IPayItemCfgService;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
-import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.SecondInstallmentCollectionDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFee;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayItem;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayNo;
@@ -58,6 +55,9 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
 
     @Autowired
     private IOrderPayItemService orderPayItemService;
+
+    @Autowired
+    private IFeeDomainService feeDomainService;
 
     @Override
     public OrderFee queryOrderCollectFee(Long orderId) {
@@ -120,15 +120,6 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
     public void costReview(OrderPayNo orderPayNo) {
         Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
         OrderPayNoService.update(new UpdateWrapper<OrderPayNo>().lambda().eq(OrderPayNo::getPayNo, orderPayNo.getPayNo()).eq(OrderPayNo::getOrderId, orderPayNo.getOrderId()).gt(OrderPayNo::getEndDate, LocalDateTime.now()).set(OrderPayNo::getAuditStatus, orderPayNo.getAuditStatus()).set(OrderPayNo::getAuditEmployeeId, employeeId).set(OrderPayNo::getUpdateTime, LocalDateTime.now()).set(OrderPayNo::getRemark, orderPayNo.getRemark()));
-    }
-
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void secondInstallmentCollect(SecondInstallmentCollectionDTO dto) {
-        orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_NEXT_STEP);
-
-        workerService.updateOrderWorker(dto.getOrderId(), 35L, dto.getFinanceEmployeeId());
     }
 
     /**
