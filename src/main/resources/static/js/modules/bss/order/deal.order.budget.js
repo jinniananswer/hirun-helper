@@ -66,7 +66,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
             submit : function() {
                 this.$refs['budget'].validate((valid) => {
                     if (valid) {
-                        let data = this.budget;
+                        let data = JSON.parse(JSON.stringify(this.budget));
                         data.fee = data.fee * 100;
                         let url = 'api/bss.order/order-budget/submitBudget';
                         ajax.post(url, data);

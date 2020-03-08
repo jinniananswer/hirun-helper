@@ -1,4 +1,4 @@
-require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'order-info', 'order-worker', 'order-selectemployee','cust-visit', 'vxe-table', 'order-search-employee'], function(Vue, element, axios, ajax, vueselect, util, custInfo, orderInfo, orderWorker, orderSelectEmployee,custVisit, vxetable, orderSearchEmployee) {
+require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'order-info', 'order-worker', 'order-selectemployee','cust-visit', 'vxe-table', 'order-search-employee', 'order-file-upload'], function(Vue, element, axios, ajax, vueselect, util, custInfo, orderInfo, orderWorker, orderSelectEmployee,custVisit, vxetable, orderSearchEmployee) {
     Vue.use(vxetable);
     let vm = new Vue({
         el: '#app',
@@ -135,7 +135,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 this.$refs['decorateContract'].validate((valid) => {
                     if (valid) {
                         let url = 'api/bss.order/order-contract/submitDecorateContract';
-                        let data = this.decorateContract;
+                        let data = JSON.parse(JSON.stringify(this.decorateContract));
                         this.yuanTransToFen(data)
                         ajax.post(url, data);
                     } else {

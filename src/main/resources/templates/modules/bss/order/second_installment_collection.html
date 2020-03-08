@@ -44,7 +44,9 @@
                                     </el-col>
                                     <el-col :span="12">
                                         <el-form-item label="财务人员" required="true" prop="financeEmployeeId">
-                                            <order-search-employee :employee-id.sync="secondInstallment.financeEmployeeId"></order-search-employee>
+                                            <order-search-employee :employee-id="secondInstallment.financeEmployeeId"
+                                                                   :employee-name="secondInstallment.financeEmployeeName">
+                                            </order-search-employee>
                                         </el-form-item>
                                     </el-col>
                                 </el-row>
@@ -85,52 +87,52 @@
                                 <el-row>
                                     <el-col :span="12">
                                         <el-form-item label="水电工资">
-                                            <el-input v-model="secondInstallment.HydropowerWages"></el-input>
+                                            <el-input v-model="secondInstallment.hydropowerSalary"></el-input>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="12">
                                         <el-form-item label="水电备注">
-                                            <el-input v-model="secondInstallment.HydropowerRemark"></el-input>
+                                            <el-input v-model="secondInstallment.hydropowerRemark"></el-input>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="12">
                                         <el-form-item label="木工工资">
-                                            <el-input v-model="secondInstallment.WoodworkingWages"></el-input>
+                                            <el-input v-model="secondInstallment.woodworkerSalary"></el-input>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="12">
                                         <el-form-item label="木工备注">
-                                            <el-input v-model="secondInstallment.WoodworkingRemark"></el-input>
+                                            <el-input v-model="secondInstallment.woodworkerRemark"></el-input>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="12">
                                         <el-form-item label="泥工工资">
-                                            <el-input v-model="secondInstallment.MasonWages"></el-input>
+                                            <el-input v-model="secondInstallment.tilerSalary"></el-input>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="12">
                                         <el-form-item label="镶钻备注">
-                                            <el-input v-model="secondInstallment.MasonWRemark"></el-input>
+                                            <el-input v-model="secondInstallment.tilerRemark"></el-input>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="12">
                                         <el-form-item label="油工工资">
-                                            <el-input v-model="secondInstallment.oilWorkerWages"></el-input>
+                                            <el-input v-model="secondInstallment.painterSalary"></el-input>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="12">
                                         <el-form-item label="涂裱备注">
-                                            <el-input v-model="secondInstallment.oilWorkerRemark"></el-input>
+                                            <el-input v-model="secondInstallment.painterRemark"></el-input>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="12">
                                         <el-form-item label="敲墙工工资">
-                                            <el-input v-model="secondInstallment.wallKnockingWorkerWages"></el-input>
+                                            <el-input v-model="secondInstallment.wallworkerSalary"></el-input>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="12">
                                         <el-form-item label="敲墙备注">
-                                            <el-input v-model="secondInstallment.wallKnockingWorkerRemark"></el-input>
+                                            <el-input v-model="secondInstallment.wallworkerRemark"></el-input>
                                         </el-form-item>
                                     </el-col>
                                 </el-row>

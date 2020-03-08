@@ -163,7 +163,11 @@
                                     <div style="text-align: center">
                                         <el-button type="primary" @click="submit">提交财务审核首付款</el-button>
                                         <el-button @click="discountItemDetail = true">优惠项目录入</el-button>
-                                        <el-button @click="uploadDecorateContract">上传合同附件</el-button>
+                                        <el-button>
+                                            <order-file-upload ref="upload" button-name="上传合同附件"
+                                                               accept=".png,.jpg" limit="1" :order-id="orderId" stage="16">
+                                            </order-file-upload>
+                                        </el-button>
                                     </div>
                                 </el-row>
                             </el-card>

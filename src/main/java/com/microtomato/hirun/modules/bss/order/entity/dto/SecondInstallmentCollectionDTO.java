@@ -32,4 +32,28 @@ public class SecondInstallmentCollectionDTO {
     private Integer otherFee;
 
     private Long financeEmployeeId;
+
+    private String financeEmployeeName;
+
+    private Double hydropowerSalary=0.0;
+
+    private String hydropowerRemark;
+
+    private Double woodworkerSalary=0.0;
+
+    private String woodworkerRemark;
+
+    private Double tilerSalary=0.0;
+
+    private String tilerRemark;
+
+    private Double painterSalary=0.0;
+
+    private String painterRemark;
+
+    private Double wallworkerSalary=0.0;
+
+    private String wallworkerRemark;
+
+    private Long chargedDecorateFee;
 }
