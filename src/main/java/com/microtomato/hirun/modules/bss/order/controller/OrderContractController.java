@@ -2,6 +2,8 @@ package com.microtomato.hirun.modules.bss.order.controller;
 
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.modules.bss.order.entity.dto.DecorateContractDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.WoodContractDTO;
+import com.microtomato.hirun.modules.bss.order.service.IInstallmentCollectDomainService;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,9 @@ public class OrderContractController {
     @Autowired
     private IOrderContractService orderContractServiceImpl;
 
+    @Autowired
+    private IInstallmentCollectDomainService collectDomainService;
+
     @GetMapping("/getDecorateContractInfo")
     @RestResult
     public DecorateContractDTO getDecorateContractInfo(Long orderId) {
@@ -37,5 +42,12 @@ public class OrderContractController {
     public void submitDecorateContract(@RequestBody DecorateContractDTO decorateContractDTO) {
         orderContractServiceImpl.submitDecorateContract(decorateContractDTO);
         //保存优惠项
+    }
+
+    @PostMapping("/submitWoodContract")
+    @RestResult
+    @Transactional(rollbackFor = Exception.class)
+    public void submitWoodContract(@RequestBody WoodContractDTO woodContractDTO) {
+        collectDomainService.submitWoodContract(woodContractDTO);
     }
 }

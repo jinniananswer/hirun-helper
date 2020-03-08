@@ -1,14 +1,16 @@
 package com.microtomato.hirun.modules.bss.order.service.impl;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.ArrayUtils;
-import com.microtomato.hirun.modules.bss.order.entity.dto.FeeDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.LastInstallmentCollectionDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.LastInstallmentInfoDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerSalaryDTO;
+import com.microtomato.hirun.framework.util.WebContextUtils;
+import com.microtomato.hirun.modules.bss.order.entity.dto.*;
+import com.microtomato.hirun.modules.bss.order.entity.po.OrderContract;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFeeItem;
 import com.microtomato.hirun.modules.bss.order.service.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -41,6 +43,9 @@ public class InstallmentCollectDomainServiceImpl implements IInstallmentCollectD
     @Autowired
     private IOrderWorkerService workerService;
 
+    @Autowired
+    private IOrderContractService orderContractService;
+
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void saveLastCollectionFee(LastInstallmentCollectionDTO dto) {
@@ -65,8 +70,8 @@ public class InstallmentCollectDomainServiceImpl implements IInstallmentCollectD
 
         feeDomainService.createOrderFee(lastInstallmentInfoDTO.getOrderId(), "2", 3, feeDTOList);
         //更新财务人员
-        if(lastInstallmentInfoDTO.getFinanceEmployeeId()!=null){
-            workerService.updateOrderWorker(lastInstallmentInfoDTO.getOrderId(),35L,lastInstallmentInfoDTO.getFinanceEmployeeId());
+        if (lastInstallmentInfoDTO.getFinanceEmployeeId() != null) {
+            workerService.updateOrderWorker(lastInstallmentInfoDTO.getOrderId(), 35L, lastInstallmentInfoDTO.getFinanceEmployeeId());
         }
     }
 
@@ -92,7 +97,7 @@ public class InstallmentCollectDomainServiceImpl implements IInstallmentCollectD
         Long chargedMaterFee = feeDomainService.getPayedMoney(orderId, "4", null);
         lastInstallmentInfoDTO.setChargedMaterialFee((chargedMaterFee.doubleValue() / 100));
 
-        this.queryOrderPayItemToDTO(orderId,lastInstallmentInfoDTO);
+        this.queryOrderPayItemToDTO(orderId, lastInstallmentInfoDTO);
 
         lastInstallmentCollectionDTO.setLastInstallmentInfoDTO(lastInstallmentInfoDTO);
 
@@ -105,6 +110,34 @@ public class InstallmentCollectDomainServiceImpl implements IInstallmentCollectD
         orderDomainService.orderStatusTrans(dto.getLastInstallmentInfoDTO().getOrderId(), "NEXT");
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    public void submitWoodContract(WoodContractDTO dto) {
+        UserContext userContext = WebContextUtils.getUserContext();
+        //保存合同信息
+        OrderContract orderContract = new OrderContract();
+        BeanUtils.copyProperties(dto, orderContract);
+        orderContract.setContractType("1");
+        orderContract.setOrgId(userContext.getOrgId());
+        orderContractService.save(orderContract);
+        //保存费用信息
+        List<FeeDTO> feeDTOList = new ArrayList<>();
+        this.buildFeeList(6L, dto.getContractFee(), feeDTOList);
+        this.buildFeeList(7L, dto.getDoorFee(), feeDTOList);
+        this.buildFeeList(8L, dto.getFurnitureFee(), feeDTOList);
+        this.buildFeeList(15L, dto.getTaxFee(), feeDTOList);
+        feeDomainService.createOrderFee(dto.getOrderId(), "2", 1, feeDTOList);
+        //保存orderWorker
+        if (dto.getProjectEmployeeId() != null) {
+            workerService.updateOrderWorker(dto.getOrderId(), 33L, dto.getProjectEmployeeId());
+        }
+        if (dto.getFinanceEmployeeId() != null) {
+            workerService.updateOrderWorker(dto.getOrderId(), 34L, dto.getFinanceEmployeeId());
+        }
+        //状态转换
+        orderDomainService.orderStatusTrans(dto.getOrderId(), "NEXT");
+    }
+
     private void buildFeeList(Long feeItemId, Double fee, List<FeeDTO> list) {
         FeeDTO feeDTO = new FeeDTO();
         feeDTO.setMoney(fee);
@@ -114,6 +147,7 @@ public class InstallmentCollectDomainServiceImpl implements IInstallmentCollectD
 
     /**
      * 将竖表数据变成横表数据
+     *
      * @param orderId
      * @param lastInstallmentInfoDTO
      * @return
@@ -147,5 +181,32 @@ public class InstallmentCollectDomainServiceImpl implements IInstallmentCollectD
 
         }
         return lastInstallmentInfoDTO;
+    }
+
+    public WoodContractDTO queryWoodContract(Long orderId) {
+        WoodContractDTO dto = new WoodContractDTO();
+        //拼装合同信息
+        OrderContract orderContract = orderContractService.getOne(new QueryWrapper<OrderContract>().lambda().eq(OrderContract::getOrderId, orderId)
+                .eq(OrderContract::getContractType, "1"));
+        BeanUtils.copyProperties(orderContract, dto);
+        //拼装已收木制品信息
+        Long chargedWoodFee = feeDomainService.getPayedMoney(orderId, "3", null);
+        dto.setChargedWoodFee(chargedWoodFee.doubleValue() / 100);
+        //拼装合同费用信息 todo
+        feeItemService.queryByOrderIdTypePeriod(orderId, "2", 1);
+        //拼装参与人业务的人员信息
+        List<OrderWorkerDTO> workerList = workerService.queryByOrderId(orderId);
+        if (ArrayUtils.isEmpty(workerList)) {
+            return dto;
+        }
+
+        for (OrderWorkerDTO workerDTO : workerList) {
+            if (workerDTO.getRoleId().equals(33L)) {
+                dto.setProjectEmployeeId(workerDTO.getEmployeeId());
+            } else if (workerDTO.getRoleId().equals(34L)) {
+                dto.setFinanceEmployeeId(workerDTO.getEmployeeId());
+            }
+        }
+        return dto;
     }
 }
