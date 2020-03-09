@@ -45,7 +45,7 @@ public class OrderConstructionController {
      */
     @PostMapping("/saveAssignInfo")
     @RestResult
-    public void saveAssignInfo(ConstructionDTO dto) {
+    public void saveAssignInfo(@RequestBody ConstructionDTO dto) {
         orderConstructionServiceImpl.saveAssignInfo(dto);
     }
 
@@ -56,7 +56,7 @@ public class OrderConstructionController {
      */
     @PostMapping("/saveProjectManagerInfo")
     @RestResult
-    public void saveProjectManagerInfo(ConstructionDTO dto) {
+    public void saveProjectManagerInfo(@RequestBody ConstructionDTO dto) {
         orderConstructionServiceImpl.saveProjectManagerInfo(dto);
     }
 
@@ -68,7 +68,7 @@ public class OrderConstructionController {
      */
     @PostMapping("/saveCommencementInfo")
     @RestResult
-    public void saveCommencementInfo(ConstructionDTO dto) {
+    public void saveCommencementInfo(@RequestBody ConstructionDTO dto) {
         orderConstructionServiceImpl.saveCommencementInfo(dto);
     }
 
@@ -78,7 +78,7 @@ public class OrderConstructionController {
      */
     @PostMapping("/submitTask")
     @RestResult
-    public void submitTask(ConstructionDTO dto) {
+    public void submitTask( @RequestBody ConstructionDTO dto) {
         orderConstructionServiceImpl.submitTask(dto);
     }
 
@@ -88,7 +88,7 @@ public class OrderConstructionController {
      */
     @PostMapping("/submitAuditProject")
     @RestResult
-    public void submitAuditProject(ConstructionDTO dto) {
+    public void submitAuditProject(@RequestBody ConstructionDTO dto) {
         orderConstructionServiceImpl.submitAuditProject(dto);
     }
 
@@ -98,7 +98,7 @@ public class OrderConstructionController {
      */
     @PostMapping("/submitAssignment")
     @RestResult
-    public void submitAssignment(ConstructionDTO dto) {
+    public void submitAssignment( @RequestBody ConstructionDTO dto) {
         orderConstructionServiceImpl.submitAssignment(dto);
     }
 }
