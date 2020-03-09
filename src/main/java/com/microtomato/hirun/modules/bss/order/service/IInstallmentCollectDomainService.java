@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.bss.order.service;
 
 import com.microtomato.hirun.modules.bss.order.entity.dto.LastInstallmentCollectionDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.WoodContractDTO;
 
 
 /**
@@ -22,4 +23,8 @@ public interface IInstallmentCollectDomainService {
      * @return
      */
     LastInstallmentCollectionDTO queryLastInstallmentCollect(Long orderId);
+
+    void applyFinanceAuditLast(LastInstallmentCollectionDTO dto);
+
+    void submitWoodContract(WoodContractDTO dto);
 }

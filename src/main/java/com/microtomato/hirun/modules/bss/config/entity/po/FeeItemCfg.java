@@ -1,19 +1,11 @@
 package com.microtomato.hirun.modules.bss.config.entity.po;
 
-import java.time.LocalDateTime;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.*;
 import com.microtomato.hirun.framework.data.BaseEntity;
-import com.baomidou.mybatisplus.annotation.TableField;
-
-import lombok.Data;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import lombok.experimental.Accessors;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 /**
  * 费用项配置表(FeeItemCfg)表实体类
@@ -54,7 +46,7 @@ public class FeeItemCfg extends BaseEntity {
 
     /** 0-加 1-减 */
     @TableField(value = "direction")
-    private Boolean direction;
+    private Integer direction;
 
 
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)

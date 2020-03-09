@@ -5,8 +5,10 @@
     <title>尾款信息</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <script src="static/js/framework/requirejs/require.min.js" th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
-    <script src="static/js/framework/requirejs/require.config.js" th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.min.js"
+            th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js"
+            th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
 </head>
 <body>
 <div id="app">
@@ -15,14 +17,14 @@
             <el-row :gutter="12">
                 <el-col :span="6">
                     <div class="grid-content bg-purple">
-                        <cust-info cust-id="263"></cust-info>
+                        <cust-info :cust-id="custId"></cust-info>
 
-                        <order-worker order-id="1"></order-worker>
+                        <order-worker :order-id="orderId"></order-worker>
                     </div>
                 </el-col>
                 <el-col :span="18">
                     <div class="grid-content bg-purple-light">
-                        <order-info order-id="1"></order-info>
+                        <order-info :order-id="orderId"></order-info>
                         <el-form :inline="false" :model="lastInstallment" label-width="130px"
                                  ref="lastInstallment" :rules="lastInstallmentRules">
                             <el-card class="box-card">
@@ -66,7 +68,7 @@
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="12">
-                                        <el-form-item label="基础装修结算" required="true" prop="baseDecorationFee" >
+                                        <el-form-item label="基础装修结算" required="true" prop="baseDecorationFee">
                                             <el-input v-model="getBaseDecorationFee" :disabled="true">
                                                 <template slot="append">元</template>
                                             </el-input>
@@ -98,6 +100,13 @@
                                             <el-input v-model="lastInstallment.otherFee">
                                                 <template slot="append">元</template>
                                             </el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row>
+                                    <el-col :span="12">
+                                        <el-form-item label="财务人员" required="true" prop="financeEmployeeId">
+                                            <order-search-employee :employee-id.sync="lastInstallment.financeEmployeeId"></order-search-employee>
                                         </el-form-item>
                                     </el-col>
                                 </el-row>
@@ -167,114 +176,18 @@
 
                                 <el-row>
                                     <div style="text-align: center">
-                                        <el-button type="primary" @click="save">保存</el-button>
-<!--                                        <el-button @click="openDiscntItemWindow">保存优惠项目</el-button>
-                                        <el-button @click="openDiscntItemWindow">优惠项目录入</el-button>
-                                        <el-button @click="uploadDecorateContract">导出收款明细</el-button>
-                                        <el-button @click="uploadDecorateContract">申请开票</el-button>-->
+                                        <el-col>
+                                            <el-button type="primary" @click="save">保存</el-button>
+                                            <el-button type="primary" @click="applyFinanceAuditLast">提交财务审核尾款</el-button>
+                                            <order-discount-item order-id="18"></order-discount-item>
+                                        </el-col>
                                     </div>
                                 </el-row>
-                                <!--
-                                <el-divider></el-divider>
-                                <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
-                                    <el-tab-pane label="首付款信息" name="first">
-
-                                    </el-tab-pane>
-                                    <el-tab-pane label="二期款信息" name="second">
-                                        <el-row :gutter="20">
-                                            <el-col :span="12">
-                                                <el-form-item label="二期合同金额" required="true">
-                                                    <el-input v-model="decorateContract.furnitureFee"></el-input>
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="12">
-                                                <el-form-item label="工程二期款">
-                                                    <el-input v-model="decorateContract.chargedDesignFee" :disabled="true"></el-input>
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="12">
-                                                <el-form-item label="已收工程二期款" required="true">
-                                                    <el-input v-model="decorateContract.furnitureFee"></el-input>
-                                                </el-form-item>
-                                            </el-col>
-                                        </el-row>
-                                        <el-row>
-                                            <el-col :span="12">
-                                                <el-form-item label="木制品二期金额">
-                                                    <el-input v-model="decorateContract.chargedDesignFee" :disabled="true"></el-input>
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="12">
-                                                <el-form-item label="基础装修二期" required="true">
-                                                    <el-input v-model="decorateContract.furnitureFee"></el-input>
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="12">
-                                                <el-form-item label="门二期金额">
-                                                    <el-input v-model="decorateContract.chargedDesignFee" :disabled="true"></el-input>
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="12">
-                                                <el-form-item label="税金二期金额">
-                                                    <el-input v-model="decorateContract.chargedDesignFee" :disabled="true"></el-input>
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="12">
-                                                <el-form-item label="家具二期金额">
-                                                    <el-input v-model="decorateContract.chargedDesignFee" :disabled="true"></el-input>
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="12">
-                                                <el-form-item label="其他二期金额">
-                                                    <el-input v-model="decorateContract.chargedDesignFee" :disabled="true"></el-input>
-                                                </el-form-item>
-                                            </el-col>
-                                        </el-row>
-                                        <el-row>
-                                            <el-col :span="12">
-                                                <el-form-item label="木制品二期金额">
-                                                    <el-input v-model="decorateContract.chargedDesignFee" :disabled="true"></el-input>
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="12">
-                                                <el-form-item label="基础装修二期" required="true">
-                                                    <el-input v-model="decorateContract.furnitureFee"></el-input>
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="12">
-                                                <el-form-item label="门二期金额">
-                                                    <el-input v-model="decorateContract.chargedDesignFee" :disabled="true"></el-input>
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="12">
-                                                <el-form-item label="税金二期金额">
-                                                    <el-input v-model="decorateContract.chargedDesignFee" :disabled="true"></el-input>
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="12">
-                                                <el-form-item label="家具二期金额">
-                                                    <el-input v-model="decorateContract.chargedDesignFee" :disabled="true"></el-input>
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="12">
-                                                <el-form-item label="其他二期金额">
-                                                    <el-input v-model="decorateContract.chargedDesignFee" :disabled="true"></el-input>
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="12">
-                                                <el-form-item label="二期状态">
-                                                    <el-input v-model="decorateContract.chargedDesignFee" :disabled="true"></el-input>
-                                                </el-form-item>
-                                            </el-col>
-                                        </el-row>
-                                    </el-tab-pane>
-                                </el-tabs>
-                                -->
                             </el-card>
                         </el-form>
                     </div>
                     <div>
-                        <cust-visit cust-id="365"></cust-visit>
+                        <cust-visit :cust-id="custId"></cust-visit>
                     </div>
                 </el-col>
             </el-row>
@@ -296,7 +209,7 @@
     }
 
     .el-card__header {
-        padding:10px;
+        padding: 10px;
     }
 </style>
 <script src="static/js/modules/bss/order/last.installment.collection.js"

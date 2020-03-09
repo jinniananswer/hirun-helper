@@ -1,7 +1,7 @@
 package com.microtomato.hirun.modules.bss.order.controller;
 
 import com.microtomato.hirun.framework.annotation.RestResult;
-import com.microtomato.hirun.modules.bss.config.entity.dto.PayComponentDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.PayComponentDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.LastInstallmentCollectionDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.SecondInstallmentCollectionDTO;
@@ -59,7 +59,7 @@ public class OrderFeeController {
      */
     @PostMapping("/submitAudit")
     @RestResult
-    public void submitAudit(OrderFeeDTO dto) {
+    public void submitAudit(@RequestBody OrderFeeDTO dto) {
         orderFeeServiceImpl.submitAudit(dto);
     }
 
@@ -69,16 +69,10 @@ public class OrderFeeController {
      */
     @PostMapping("/costReview")
     @RestResult
-    public void costReview(OrderPayNo orderPayNo) {
+    public void costReview(@RequestBody OrderPayNo orderPayNo) {
         orderFeeServiceImpl.costReview(orderPayNo);
     }
-
-    @PostMapping("/secondInstallmentCollect")
-    @RestResult
-    public void secondInstallmentCollect(SecondInstallmentCollectionDTO dto) {
-        orderFeeServiceImpl.secondInstallmentCollect(dto);
-    }
-
+    
     @PostMapping("/saveLastInstallmentCollect")
     @RestResult
     public void saveLastInstallmentCollect(@RequestBody LastInstallmentCollectionDTO lastInstallmentCollectionDTO) {
@@ -91,4 +85,15 @@ public class OrderFeeController {
         return collectDomainService.queryLastInstallmentCollect(orderId);
     }
 
+    @PostMapping("/applyFinanceAuditLast")
+    @RestResult
+    public void applyFinanceAuditLast(@RequestBody LastInstallmentCollectionDTO lastInstallmentCollectionDTO) {
+        collectDomainService.applyFinanceAuditLast(lastInstallmentCollectionDTO);
+    }
+
+    @GetMapping("/getByOrderIdTypePeriod")
+    @RestResult
+    public OrderFee getByOrderIdTypePeriod(Long orderId, String type, Integer period) {
+        return orderFeeServiceImpl.getByOrderIdTypePeriod(orderId, type, period);
+    }
 }

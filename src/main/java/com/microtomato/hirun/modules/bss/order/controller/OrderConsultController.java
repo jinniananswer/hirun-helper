@@ -33,26 +33,26 @@ public class OrderConsultController {
 
     @PostMapping("/saveCustomerConsultInfo")
     @RestResult
-    public void saveCustomerConsultInfo(CustConsultDTO dto) {
+    public void saveCustomerConsultInfo(@RequestBody CustConsultDTO dto) {
         orderConsultServiceImpl.saveCustomerConsultInfo(dto);
     }
 
     @PostMapping("/submitMeasure")
     @RestResult
-    public void submitMeasure(CustConsultDTO dto) {
+    public void submitMeasure(@RequestBody CustConsultDTO dto) {
         orderConsultServiceImpl.submitMeasure(dto);
     }
 
 
     @PostMapping("/submitSneak")
     @RestResult
-    public void submitSneak(CustConsultDTO dto) {
+    public void submitSneak(@RequestBody CustConsultDTO dto) {
         orderConsultServiceImpl.submitSneak(dto);
     }
 
     @PostMapping("/transOrder")
     @RestResult
-    public void transOrder(CustConsultDTO dto) {
+    public void transOrder(@RequestBody CustConsultDTO dto) {
         orderConsultServiceImpl.submitMeasure(dto);
     }
 }

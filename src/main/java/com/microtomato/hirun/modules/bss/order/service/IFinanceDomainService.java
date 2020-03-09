@@ -2,11 +2,7 @@ package com.microtomato.hirun.modules.bss.order.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.microtomato.hirun.modules.bss.config.entity.dto.CollectFeeDTO;
-import com.microtomato.hirun.modules.bss.config.entity.dto.PayComponentDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.CustOrderInfoDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.CustOrderQueryDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.FinancePendingTaskDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.*;
 
 import java.util.List;
 
@@ -27,4 +23,6 @@ public interface IFinanceDomainService {
     IPage<CustOrderInfoDTO> queryCustOrderInfos(CustOrderQueryDTO queryCondition, Page<CustOrderQueryDTO> page);
 
     List<FinancePendingTaskDTO> queryFinancePendingTask();
+
+    List<OrderPayInfoDTO> queryPayInfoByOrderId(Long orderId);
 }

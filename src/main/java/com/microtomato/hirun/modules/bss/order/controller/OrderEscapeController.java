@@ -27,7 +27,7 @@ public class OrderEscapeController {
 
     @PostMapping("/save")
     @RestResult
-    public void save(OrderEscape orderEscape){
+    public void save(@RequestBody OrderEscape orderEscape){
         orderEscapeServiceImpl.saveOrderEscape(orderEscape);
     }
 
@@ -39,25 +39,25 @@ public class OrderEscapeController {
 
     @PostMapping("submitDirectorAudit")
     @RestResult
-    public void submitDirectorAudit(OrderEscape orderEscape){
+    public void submitDirectorAudit(@RequestBody OrderEscape orderEscape){
         orderEscapeServiceImpl.submitDirectorAudit(orderEscape);
     }
 
     @PostMapping("submitBack")
     @RestResult
-    public void submitBack(OrderEscape orderEscape){
+    public void submitBack(@RequestBody OrderEscape orderEscape){
         orderEscapeServiceImpl.submitBack(orderEscape);
     }
 
     @PostMapping("/closeOrder")
     @RestResult
-    public void closeOrder(OrderEscape orderEscape){
+    public void closeOrder(@RequestBody OrderEscape orderEscape){
         orderEscapeServiceImpl.closeOrder(orderEscape);
     }
 
     @PostMapping("/auditBack")
     @RestResult
-    public void auditBack(OrderEscape orderEscape){
+    public void auditBack(@RequestBody OrderEscape orderEscape){
         orderEscapeServiceImpl.auditBack(orderEscape);
     }
 

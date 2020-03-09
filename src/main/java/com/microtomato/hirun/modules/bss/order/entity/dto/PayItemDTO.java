@@ -1,4 +1,4 @@
-package com.microtomato.hirun.modules.bss.config.entity.dto;
+package com.microtomato.hirun.modules.bss.order.entity.dto;
 
 import lombok.Data;
 

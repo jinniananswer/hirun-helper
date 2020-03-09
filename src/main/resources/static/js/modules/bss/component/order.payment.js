@@ -322,19 +322,25 @@ define(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'util'], function(Vue,
                 let needPay = this.payForm.needPay;
                 let data = {
                     payDate : payDate,
-                    needPay : needPay
+                    needPay : needPay,
+                    payItems:[],
+                    payments:[]
                 };
                 for (let i=0;i<this.payItems.length;i++) {
-                    data['payItems['+i+'].payItemId'] = this.payItems[i].payItemId.split("_")[1];
-                    data['payItems['+i+'].money'] = this.payItems[i].money;
+                    let payItem = {};
+                    payItem.payItemId = this.payItems[i].payItemId.split("_")[1];
+                    payItem.money = this.payItems[i].money;
                     if (this.payItems[i].period) {
-                        data['payItems['+i+'].period'] = this.payItems[i].period.split("_")[1];
+                        payItem.period = this.payItems[i].period.split("_")[1];
                     }
+                    data.payItems.push(payItem);
                 }
 
                 for (let i=0;i<this.payments.length;i++) {
-                    data['payments['+i+'].paymentType'] = this.payments[i].paymentType;
-                    data['payments['+i+'].money'] = this.payments[i].money;
+                    let payment = {};
+                    payment.paymentType = this.payments[i].paymentType;
+                    payment.money = this.payments[i].money;
+                    data.payments.push(payment);
                 }
                 return data;
             }

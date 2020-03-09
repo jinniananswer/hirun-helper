@@ -7,12 +7,9 @@ import com.microtomato.hirun.framework.mybatis.sequence.impl.PayNoCycleSeq;
 import com.microtomato.hirun.framework.mybatis.service.IDualService;
 import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
-import com.microtomato.hirun.modules.bss.config.entity.dto.CascadeDTO;
-import com.microtomato.hirun.modules.bss.config.entity.dto.CollectFeeDTO;
-import com.microtomato.hirun.modules.bss.config.entity.dto.PayComponentDTO;
-import com.microtomato.hirun.modules.bss.config.entity.dto.PayItemDTO;
 import com.microtomato.hirun.modules.bss.config.entity.po.PayItemCfg;
 import com.microtomato.hirun.modules.bss.config.service.IPayItemCfgService;
 import com.microtomato.hirun.modules.bss.house.service.IHousesService;
@@ -27,6 +24,9 @@ import com.microtomato.hirun.modules.bss.order.service.IFinanceDomainService;
 import com.microtomato.hirun.modules.bss.order.service.IOrderPayItemService;
 import com.microtomato.hirun.modules.bss.order.service.IOrderPayMoneyService;
 import com.microtomato.hirun.modules.bss.order.service.IOrderPayNoService;
+import com.microtomato.hirun.modules.organization.entity.domain.EmployeeDO;
+import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
+import com.microtomato.hirun.modules.organization.entity.po.Org;
 import com.microtomato.hirun.modules.system.entity.po.StaticData;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
@@ -199,6 +199,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
                 OrderPayItem orderPayItem = new OrderPayItem();
                 orderPayItem.setOrderId(orderId);
                 orderPayItem.setPayItemId(payItemId);
+                orderPayItem.setParentPayItemId(payItemCfg.getParentPayItemId());
                 orderPayItem.setPeriods(payItem.getPeriod());
                 orderPayItem.setFee(fee);
                 orderPayItem.setPayNo(payNo);
@@ -425,6 +426,10 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
         return result;
     }
 
+    /**
+     * 查询财务待办任务
+     * @return
+     */
     @Override
     public List<FinancePendingTaskDTO> queryFinancePendingTask() {
         Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
@@ -434,7 +439,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
             return null;
         }
 
-        List<FinancePendingTaskDTO> financeTasks = new ArrayList<>();
+        ArrayList<FinancePendingTaskDTO> financeTasks = new ArrayList<>();
         Map<String, FinancePendingTaskDTO> temp = new HashMap<>();
         for (FinancePendingOrderDTO financeOrder : financeOrders) {
             String auditStatus = financeOrder.getAuditStatus();
@@ -468,5 +473,99 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
             result.add(temp.get(key));
         }
         return result;
+    }
+
+    /**
+     * 查询订单客户付款信息
+     * @param orderId
+     * @return
+     */
+    @Override
+    public List<OrderPayInfoDTO> queryPayInfoByOrderId(Long orderId) {
+        List<OrderPayNo> orderPayNos = this.orderPayNoService.queryByOrderId(orderId);
+        if (ArrayUtils.isEmpty(orderPayNos)) {
+            return null;
+        }
+
+        List<OrderPayInfoDTO> orderPayInfos = new ArrayList<>();
+        for (OrderPayNo orderPayNo : orderPayNos) {
+            OrderPayInfoDTO orderPayInfo = new OrderPayInfoDTO();
+            orderPayInfo.setPayDate(orderPayNo.getPayDate());
+
+            Long employeeId = orderPayNo.getPayEmployeeId();
+            if (employeeId != null) {
+                EmployeeDO employeeDO = SpringContextUtils.getBean(EmployeeDO.class, employeeId);
+                orderPayInfo.setEmployeeName(employeeDO.getEmployee().getName());
+            }
+
+            Long orgId = orderPayNo.getOrgId();
+            if (orgId != null) {
+                OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+                if (orgDO.getOrg() != null) {
+                    Org shop = orgDO.getBelongShop();
+                    if (shop != null) {
+                        orderPayInfo.setShopName(shop.getName());
+                    }
+                }
+            }
+
+            if (orderPayNo.getTotalMoney() != null) {
+                orderPayInfo.setTotalMoney(orderPayNo.getTotalMoney().doubleValue()/100);
+            } else {
+                orderPayInfo.setTotalMoney(0d);
+            }
+
+            List<OrderPayItem> orderPayItems = this.orderPayItemService.queryByOrderIdPayNo(orderId, orderPayNo.getPayNo());
+            if (ArrayUtils.isNotEmpty(orderPayItems)) {
+                List<OrderPayItemInfoDTO> orderPayItemInfos = new ArrayList<>();
+                for (OrderPayItem orderPayItem : orderPayItems) {
+                    OrderPayItemInfoDTO orderPayItemInfo = new OrderPayItemInfoDTO();
+                    Long payItemId = orderPayItem.getPayItemId();
+                    PayItemCfg payItemCfg = this.payItemCfgService.getPayItem(payItemId);
+                    String payItemName = payItemCfg.getName();
+
+                    Long parentPayItemId = orderPayItem.getParentPayItemId();
+                    if (parentPayItemId != null &&parentPayItemId != -1) {
+                        PayItemCfg parentPayItemCfg = this.payItemCfgService.getPayItem(parentPayItemId);
+                        payItemName = parentPayItemCfg.getName() + "-" + payItemName;
+                    }
+
+                    Integer period = orderPayItem.getPeriods();
+                    if (period != null) {
+                        payItemName += "-" + this.staticDataService.getCodeName("PAY_PERIODS", period+"");
+                    }
+                    orderPayItemInfo.setPayItemName(payItemName);
+
+                    Long money = orderPayItem.getFee();
+                    if (money != null) {
+                        orderPayItemInfo.setMoney(money.doubleValue()/100);
+                    } else {
+                        orderPayItemInfo.setMoney(0d);
+                    }
+                    orderPayItemInfos.add(orderPayItemInfo);
+                }
+                orderPayInfo.setPayItems(orderPayItemInfos);
+            }
+
+            List<OrderPayMoney> orderPayMonies = this.orderPayMoneyService.queryByOrderIdPayNo(orderId, orderPayNo.getPayNo());
+            if (ArrayUtils.isNotEmpty(orderPayMonies)) {
+                List<OrderPayMoneyInfoDTO> orderPayMoneyInfos = new ArrayList<>();
+                for (OrderPayMoney orderPayMoney : orderPayMonies) {
+                    OrderPayMoneyInfoDTO orderPayMoneyInfo = new OrderPayMoneyInfoDTO();
+                    orderPayMoneyInfo.setPaymentName(this.staticDataService.getCodeName("PAYMENT_TYPE", orderPayMoney.getPaymentType()));
+                    Long money = orderPayMoney.getMoney();
+                    if (money != null) {
+                        orderPayMoneyInfo.setMoney(money.doubleValue()/100);
+                    } else {
+                        orderPayMoneyInfo.setMoney(0d);
+                    }
+                    orderPayMoneyInfos.add(orderPayMoneyInfo);
+                }
+                orderPayInfo.setPayMonies(orderPayMoneyInfos);
+            }
+
+            orderPayInfos.add(orderPayInfo);
+        }
+        return orderPayInfos;
     }
 }

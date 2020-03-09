@@ -10,17 +10,17 @@ import com.microtomato.hirun.modules.bss.config.entity.po.OrderRoleCfg;
 import com.microtomato.hirun.modules.bss.config.entity.po.OrderStatusCfg;
 import com.microtomato.hirun.modules.bss.config.entity.po.OrderStatusTransCfg;
 import com.microtomato.hirun.modules.bss.config.entity.po.RoleAttentionStatusCfg;
-import com.microtomato.hirun.modules.bss.config.service.*;
+import com.microtomato.hirun.modules.bss.config.service.IOrderRoleCfgService;
+import com.microtomato.hirun.modules.bss.config.service.IOrderStatusCfgService;
+import com.microtomato.hirun.modules.bss.config.service.IOrderStatusTransCfgService;
+import com.microtomato.hirun.modules.bss.config.service.IRoleAttentionStatusCfgService;
 import com.microtomato.hirun.modules.bss.house.service.IHousesService;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.*;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderBase;
 import com.microtomato.hirun.modules.bss.order.exception.OrderException;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderBaseMapper;
-import com.microtomato.hirun.modules.bss.order.service.IOrderBaseService;
-import com.microtomato.hirun.modules.bss.order.service.IOrderDomainService;
-import com.microtomato.hirun.modules.bss.order.service.IOrderOperLogService;
-import com.microtomato.hirun.modules.bss.order.service.IOrderWorkerService;
+import com.microtomato.hirun.modules.bss.order.service.*;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -66,7 +66,16 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
     private IRoleAttentionStatusCfgService roleAttentionStatusCfgService;
 
     @Autowired
+    private IFeeDomainService feeDomainService;
+
+    @Autowired
     private IHousesService housesService;
+
+    @Autowired
+    private IFinanceDomainService financeDomainService;
+
+    @Autowired
+    private IOrderFileService orderFileService;
 
     @Autowired
     private OrderBaseMapper orderBaseMapper;
@@ -98,10 +107,29 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
 
         if (StringUtils.isNotBlank(orderInfo.getStatus())) {
             orderInfo.setStatusName(this.staticDataService.getCodeName("ORDER_STATUS", orderInfo.getStatus()));
+            OrderStatusCfg statusCfg = this.orderStatusCfgService.getCfgByTypeStatus(orderBase.getType(), orderInfo.getStatus());
+            if (statusCfg != null) {
+                orderInfo.setTabShow(statusCfg.getOrderTabShow());
+            }
         }
 
         if (StringUtils.isNotBlank(orderInfo.getHouseLayout())) {
             orderInfo.setHouseLayoutName(this.staticDataService.getCodeName("HOUSE_MODE", orderInfo.getHouseLayout()));
+        }
+
+        List<OrderFeeInfoDTO> orderFees = this.feeDomainService.queryOrderFeeInfo(orderId);
+        if (ArrayUtils.isNotEmpty(orderFees)) {
+            orderInfo.setOrderFees(orderFees);
+        }
+
+        List<OrderPayInfoDTO> orderPays = this.financeDomainService.queryPayInfoByOrderId(orderId);
+        if (ArrayUtils.isNotEmpty(orderPays)) {
+            orderInfo.setOrderPays(orderPays);
+        }
+
+        List<OrderFileDTO> orderFiles = this.orderFileService.queryOrderFiles(orderId);
+        if (ArrayUtils.isNotEmpty(orderFiles)) {
+            orderInfo.setOrderFiles(orderFiles);
         }
         return orderInfo;
     }

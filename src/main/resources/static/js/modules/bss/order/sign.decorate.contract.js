@@ -136,7 +136,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     if (valid) {
                         let url = 'api/bss.order/order-contract/submitDecorateContract';
                         let data = this.decorateContract;
-                        this.yuanTransToFen(this.data)
+                        this.yuanTransToFen(data)
                         ajax.post(url, data);
                     } else {
                         return false;
@@ -181,33 +181,31 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 data.firstContractFee = Math.round(data.firstContractFee * 100);
             },
             saveDiscountItemList : function () {
-                let updateRecords = vm.$refs.discountItemTable.getUpdateRecords()
-                console.log("updateRecords: " + updateRecords);
-
-                axios({
-                    method: 'post',
-                    url: 'api/bss.order/order-discount-item/save',
-                    data: updateRecords
-                }).then(function (responseData) {
-                    if (0 == responseData.data.code) {
-
-                        Vue.prototype.$message({
-                            message: '保存成功！',
-                            type: 'success'
-                        });
-                    }
-                }).catch(function (error) {
-                    console.log(error);
-                    Vue.prototype.$message({
-                        message: '保存失败！',
-                        type: 'warning'
-                    });
-                });
+                let updateRecords = vm.$refs.discountItemTable.getUpdateRecords();
+                let list = JSON.parse(JSON.stringify(updateRecords));//值传递
+                for(let i = 0; i < list.length; i++) {
+                    list[i].contractDiscountFee = list[i].contractDiscountFee * 100;
+                    list[i].settleDiscountFee = list[i].settleDiscountFee * 100;
+                }
+                ajax.get('api/bss.order/order-discount-item/save', list);
+                // axios({
+                //     method: 'post',
+                //     url: 'api/bss.order/order-discount-item/save',
+                //     data: list
+                // }).then(function (responseData) {
+                //     if (0 == responseData.data.code) {
+                //         Vue.prototype.$message({
+                //             message: '保存成功！',
+                //             type: 'success'
+                //         });
+                //     }
+                // }).catch(function (error) {
+                //     Vue.prototype.$message({
+                //         message: '保存失败！',
+                //         type: 'warning'
+                //     });
+                // });
             },
-            selectRowChangeEvent ({ row }, evnt) {
-                debugger;
-                alert(evnt.target.value);
-            }
         }
     });
 

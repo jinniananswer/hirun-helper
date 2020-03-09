@@ -1,10 +1,10 @@
-require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'order-info', 'order-worker', 'order-selectemployee','cust-visit', 'order-search-employee'], function(Vue, element, axios, ajax, vueselect, util, custInfo, orderInfo, orderWorker, orderSelectEmployee,custVisit, orderSearchEmployee) {
+require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'order-info', 'order-worker', 'order-selectemployee','cust-visit', 'order-search-employee','order-discount-item'], function(Vue, element, axios, ajax, vueselect, util, custInfo, orderInfo, orderWorker, orderSelectEmployee,custVisit, orderSearchEmployee,orderDiscountItem) {
     let vm = new Vue({
         el: '#app',
         data() {
             return {
                 lastInstallment: {
-                    orderId:'30',
+                    orderId:'',
                     chargedAllFee:'0',
                     chargedLastFee:'0',
                     chargedMaterialFee:'0',
@@ -15,9 +15,10 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     taxFee:'0',
                     furnitureFee:'0',
                     otherFee:'0',
+                    financeEmployeeId:''
                 },
                 workerSalary: {
-                    orderId:'30',
+                    orderId:'',
                     hydropowerSalary: '',
                     hydropowerRemark: '',
                     woodworkerSalary: '',
@@ -29,8 +30,9 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     wallworkerSalary:'',
                     wallworkerRemark:'',
                 },
-                //orderId : util.getRequest('orderId'),
-                //orderStatus : util.getRequest('status'),
+                orderId : util.getRequest('orderId'),
+                custId : util.getRequest('custId'),
+
                 lastInstallmentRules : {
                     doorFee: [
                         {required: true, message: '请填写门总金额', trigger: 'blur'},
@@ -38,21 +40,24 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     furnitureFee: [
                         {required: true, message: '请填写家具总金额', trigger: 'blur'},
                     ],
+                    financeEmployeeId : [
+                        {required: true, message: '请选择财务人员', trigger: 'change'},
+                    ]
                 },
             }
         },
         computed: {
             getWoodProductFee: {
                 get() {
-                    let woodProductFee = parseFloat(this.lastInstallment.doorFee) + parseFloat(this.lastInstallment.furnitureFee)
+                    let woodProductFee = (parseFloat(this.lastInstallment.doorFee) + parseFloat(this.lastInstallment.furnitureFee)).toFixed(2)
                     this.lastInstallment.woodProductFee = woodProductFee;
                     return woodProductFee;
                 }
             },
             getBaseDecorationFee : {
                 get() {
-                    let baseDecorationFee = parseFloat(this.lastInstallment.chargedAllFee)-parseFloat(this.lastInstallment.woodProductFee)
-                        -parseFloat(this.lastInstallment.taxFee)-parseFloat(this.lastInstallment.otherFee);
+                    let baseDecorationFee = (parseFloat(this.lastInstallment.chargedAllFee)-parseFloat(this.lastInstallment.woodProductFee)
+                        -parseFloat(this.lastInstallment.taxFee)-parseFloat(this.lastInstallment.otherFee)).toFixed(2);
                     this.lastInstallment.baseDecorationFee = baseDecorationFee;
                     return baseDecorationFee;
                 }
@@ -60,6 +65,8 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
         },
 
         mounted: function() {
+            this.lastInstallment.orderId=this.orderId;
+            this.workerSalary.orderId=this.orderId;
             this.init();
         },
         methods: {
@@ -73,36 +80,26 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
             },
 
             save : function() {
-                axios({
-                    method: 'post',
-                    url: 'api/bss/order/order-fee/saveLastInstallmentCollect',
-                    data: {
-                        "lastInstallmentInfoDTO": this.lastInstallment,
-                        "workerSalaryDTO": this.workerSalary,
-                    }
-                }).then(function (responseData) {
-                    if (0 == responseData.data.code) {
-                        vm.$confirm('点击确定按钮刷新本页面，点击关闭按钮关闭本界面', '操作成功', {
-                            confirmButtonText: '确定',
-                            type: 'success',
-                            center: true
-                        }).then(() => {
-                            document.location.reload();
-                        }).catch(() => {
-                            top.layui.admin.closeThisTabs();
-                        });
-                    }
-                }).catch(function (error) {
-                    console.log(error);
-                    Vue.prototype.$message({
-                        message: '保存失败！',
-                        type: 'warning'
-                    });
-                });
 
-/*                this.$refs['lastInstallment'].validate((valid) => {
+                this.$refs['lastInstallment'].validate((valid) => {
                     if (valid) {
                         let url = 'api/bss/order/order-fee/saveLastInstallmentCollect';
+                        let data = {
+                            "lastInstallmentInfoDTO": this.lastInstallment,
+                            "workerSalaryDTO": this.workerSalary,
+                        };
+                        ajax.post(url, data,null,null,true);
+                    } else {
+                        return false;
+                    }
+                });
+
+            },
+
+            applyFinanceAuditLast:function () {
+                this.$refs['lastInstallment'].validate((valid) => {
+                    if (valid) {
+                        let url = 'api/bss/order/order-fee/applyFinanceAuditLast';
                         let data = {
                             "lastInstallmentInfoDTO": this.lastInstallment,
                             "workerSalaryDTO": this.workerSalary,
@@ -111,8 +108,9 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     } else {
                         return false;
                     }
-                });*/
-            },
+                });
+
+            }
 
         }
     });

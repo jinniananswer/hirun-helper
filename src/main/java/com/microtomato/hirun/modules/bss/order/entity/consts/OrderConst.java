@@ -44,6 +44,11 @@ public class OrderConst {
     public static final String OPER_RUN = "RUN";
 
     /**
+     * 订单确认操作
+     */
+    public static final String OPER_CONFIRM = "CONFIRM";
+
+    /**
      * 日志类型-创建订单
      */
     public static final String LOG_TYPE_CREATE = "1";

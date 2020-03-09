@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.bss.order.service;
 
 import com.microtomato.hirun.modules.bss.order.entity.dto.FeeDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeInfoDTO;
 
 import java.util.List;
 
@@ -14,9 +15,9 @@ public interface IFeeDomainService {
 
     void createOrderFee(Long orderId, String type, Integer period, List<FeeDTO> fees);
 
-    void changeOrderFee(Long orderId, String type, Integer period, List<FeeDTO> fees);
-
     Long getPayedMoney(Long orderId, String type, Integer period);
 
     Long getNeedPay(Long fee, Long orderId, String type, Integer period);
+
+    List<OrderFeeInfoDTO> queryOrderFeeInfo(Long orderId);
 }

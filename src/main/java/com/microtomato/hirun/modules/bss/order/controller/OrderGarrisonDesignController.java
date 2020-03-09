@@ -34,13 +34,13 @@ public class OrderGarrisonDesignController {
 
     @PostMapping("saveGarrisonDesignInfo")
     @RestResult
-    public void saveGarrisonDesignInfo(OrderGarrisonDesign orderGarrisonDesign){
+    public void saveGarrisonDesignInfo(@RequestBody OrderGarrisonDesign orderGarrisonDesign){
         orderGarrisonDesignServiceImpl.saveGarrisonDesignInfo(orderGarrisonDesign);
     }
 
     @PostMapping("submitBudget")
     @RestResult
-    public void submitBudget(OrderGarrisonDesign orderGarrisonDesign){
+    public void submitBudget(@RequestBody OrderGarrisonDesign orderGarrisonDesign){
         orderGarrisonDesignServiceImpl.submitBudget(orderGarrisonDesign);
     }
 }

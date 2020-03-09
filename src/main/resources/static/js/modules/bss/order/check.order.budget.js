@@ -67,7 +67,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
             let data = {
                 orderId : util.getRequest("orderId")
             }
-            ajax.post('api/bss.order/order-budget/getBudgetByOrderId', data, (responseData)=>{
+            ajax.get('api/bss.order/order-budget/getBudgetByOrderId', data, (responseData)=>{
                 Object.assign(this.budget, responseData);
             });
             this.budget.checkDate = util.getNowDate();

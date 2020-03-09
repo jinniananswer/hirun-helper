@@ -4,6 +4,7 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
 
         data : function(){
             return {
+                sOrderId: this.orderId,
                 workers: []
             }
         },
@@ -31,14 +32,22 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
         methods: {
             init() {
                 let that = this;
-                ajax.get('api/bss.order/order-base/getOrderWorkers', {orderId:this.orderId}, function(data) {
+                ajax.get('api/bss.order/order-base/getOrderWorkers', {orderId:this.sOrderId}, function(data) {
                     that.workers = data;
                 })
             }
         },
 
         watch: {
+            orderId(val) {
+                this.sOrderId = val;
+            },
 
+            sOrderId(val, oldValue) {
+                if (val != oldValue) {
+                    this.init();
+                }
+            }
         },
 
         mounted () {

@@ -5,6 +5,7 @@ import com.microtomato.hirun.modules.bss.order.entity.po.OrderWorkerSalary;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -37,4 +38,6 @@ public interface IOrderWorkerSalaryService extends IService<OrderWorkerSalary> {
      * @param dto
      */
     void updateWorkerSalary(Integer periods,OrderWorkerSalaryDTO dto);
+
+    Map<String,OrderWorkerSalaryDTO> queryAllWorkerSalary(Long orderId);
 }
