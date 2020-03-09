@@ -37,9 +37,9 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 let data = {
                     orderId : util.getRequest('orderId'),
                 }
-                /*ajax.get('api/bss.order/order-planSketch/getPlaneSketch', data, (responseData)=>{
+                ajax.get('api/bss.order/order-planSketch/getPlaneSketch', data, (responseData)=>{
                     Object.assign(this.planFigureInfos, responseData);
-                 });*/
+                 });
                 //alert(JSON.stringify(this.planFigureInfos));
                 if (this.orderStatus=='35') {
                     this.isBackToDesigner = true;
