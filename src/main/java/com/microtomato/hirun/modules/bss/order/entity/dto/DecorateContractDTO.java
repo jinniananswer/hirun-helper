@@ -52,4 +52,6 @@ public class DecorateContractDTO {
     private Integer firstContractFee;
 
     private Long financeEmployeeId;
+
+    private String financeEmployeeName;
 }

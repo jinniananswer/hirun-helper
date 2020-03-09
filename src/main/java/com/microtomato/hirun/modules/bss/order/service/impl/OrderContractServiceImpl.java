@@ -6,8 +6,10 @@ import com.microtomato.hirun.modules.bss.config.entity.consts.FeeConst;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.DecorateContractDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.FeeDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderContract;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFee;
+import com.microtomato.hirun.modules.bss.order.entity.po.OrderFeeItem;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderContractMapper;
 import com.microtomato.hirun.modules.bss.order.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -46,6 +48,9 @@ public class OrderContractServiceImpl extends ServiceImpl<OrderContractMapper, O
     @Autowired
     private IOrderFileService orderFileService;
 
+    @Autowired
+    private IOrderFeeItemService orderFeeItemService;
+
     public DecorateContractDTO getDecorateContractInfo(Long orderId) {
         DecorateContractDTO decorateContractDTO = new DecorateContractDTO();
         decorateContractDTO.setOrderId(orderId);
@@ -57,12 +62,30 @@ public class OrderContractServiceImpl extends ServiceImpl<OrderContractMapper, O
         }
         BeanUtils.copyProperties(orderContract, decorateContractDTO);
 
-        List<OrderFee> orderFeeList = orderFeeService.list(new QueryWrapper<OrderFee>().lambda()
-            .eq(OrderFee::getOrderId, orderId));
+        List<OrderFeeItem> secondOrderFeeItemLiist = orderFeeItemService.queryByOrderIdTypePeriod(orderId, FeeConst.FEE_TYPE_PROJECT, FeeConst.FEE_PERIOD_FIRST);
+        for(OrderFeeItem orderFeeItem : secondOrderFeeItemLiist) {
+            if(orderFeeItem.getFeeItemId() == 5L) {
+                decorateContractDTO.setBaseDecorationFee(orderFeeItem.getFee().intValue());
+            } else if(orderFeeItem.getFeeItemId() == 7L) {
+                decorateContractDTO.setDoorFee(orderFeeItem.getFee().intValue());
+            } else if(orderFeeItem.getFeeItemId() == 8L) {
+                decorateContractDTO.setFurnitureFee(orderFeeItem.getFee().intValue());
+            } else if(orderFeeItem.getFeeItemId() == 14L) {
+                decorateContractDTO.setReturnDesignFee(orderFeeItem.getFee().intValue());
+            } else if(orderFeeItem.getFeeItemId() == 15L) {
+                decorateContractDTO.setTaxFee(orderFeeItem.getFee().intValue());
+            }
+        }
 
-        //填充费用到DTO
-        for(OrderFee orderFee : orderFeeList) {
-
+        //财务审核人员
+        List<OrderWorkerDTO> orderWorkersDTO = orderWorkerService.queryByOrderId(orderId);
+        if(orderWorkersDTO != null) {
+            for(OrderWorkerDTO orderWorkerDTO : orderWorkersDTO) {
+                if(orderWorkerDTO.getRoleId() == 35L) {
+                    decorateContractDTO.setFinanceEmployeeId(orderWorkerDTO.getEmployeeId());
+                    decorateContractDTO.setFinanceEmployeeName(orderWorkerDTO.getName());
+                }
+            }
         }
 
         return decorateContractDTO;
@@ -70,7 +93,7 @@ public class OrderContractServiceImpl extends ServiceImpl<OrderContractMapper, O
 
     public void submitDecorateContract(DecorateContractDTO decorateContractDTO) {
         //校验规则
-        if(orderFileService.getOrderFile(decorateContractDTO.getOrderId(), 23) == null) {
+        if(orderFileService.getOrderFile(decorateContractDTO.getOrderId(), 16) == null) {
             throw new NotFoundException("请先上传合同附件", -1);
         }
 

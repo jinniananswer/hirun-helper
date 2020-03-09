@@ -1,4 +1,4 @@
-require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'order-info', 'order-worker', 'order-selectemployee','cust-visit', 'vxe-table', 'order-search-employee', 'order-file-upload'], function(Vue, element, axios, ajax, vueselect, util, custInfo, orderInfo, orderWorker, orderSelectEmployee,custVisit, vxetable, orderSearchEmployee) {
+require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'order-info', 'order-worker', 'order-selectemployee','cust-visit', 'vxe-table', 'order-search-employee', 'order-file-upload', 'xe-utils'], function(Vue, element, axios, ajax, vueselect, util, custInfo, orderInfo, orderWorker, orderSelectEmployee,custVisit, vxetable, orderSearchEmployee, xeUtils) {
     Vue.use(vxetable);
     let vm = new Vue({
         el: '#app',
@@ -24,6 +24,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     remark : '',
                     firstContractFee : '0',
                     financeEmployeeId : '',
+                    financeEmployeeName : '',
                 },
                 discountItemDetailList : [],
                 orderId : util.getRequest('orderId'),
@@ -111,6 +112,15 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
         mounted: function() {
             this.decorateContract.orderId = this.orderId;
 
+            ajax.get('api/bss.order/order-contract/getDecorateContractInfo', {orderId : this.orderId}, (responseData)=>{
+                Object.assign(this.decorateContract, responseData);
+                this.decorateContract.baseDecorationFee = responseData.baseDecorationFee ? responseData.baseDecorationFee / 100 : 0;
+                this.decorateContract.furnitureFee = responseData.furnitureFee ? responseData.furnitureFee / 100 : 0;
+                this.decorateContract.doorFee = responseData.doorFee ? responseData.doorFee / 100 : 0;
+                this.decorateContract.taxFee = responseData.taxFee ? responseData.taxFee / 100 : 0;
+                this.decorateContract.returnDesignFee = responseData.returnDesignFee ? -1 * responseData.returnDesignFee / 100 : 0;
+            });
+
             // let arr = this.approveEmployeeList;
             ajax.get('api/bss.order/order-base/selectRoleEmployee', {roleId:19,isSelf:false}, (responseData)=>{
                 let arr = [];
@@ -187,7 +197,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     list[i].contractDiscountFee = list[i].contractDiscountFee * 100;
                     list[i].settleDiscountFee = list[i].settleDiscountFee * 100;
                 }
-                ajax.get('api/bss.order/order-discount-item/save', list);
+                ajax.post('api/bss.order/order-discount-item/save', list);
                 // axios({
                 //     method: 'post',
                 //     url: 'api/bss.order/order-discount-item/save',
@@ -206,6 +216,15 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 //     });
                 // });
             },
+            approveEmployeeChangeEvent : function() {
+                // let { fullData } = this.$refs.discountItemTable.getTableData();
+                // this.approveEmployeeList.forEach(item => {
+                //     if (item.value) {
+                //         如果当前选项已经被选过，则禁用
+                        // item.disabled = fullData.some(row => row.approveEmployeeId === item.value)
+                    // }
+                // })
+            }
         }
     });
 
