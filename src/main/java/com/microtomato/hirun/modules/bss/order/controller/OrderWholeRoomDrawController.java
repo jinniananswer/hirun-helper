@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 @RestController
@@ -28,7 +29,7 @@ public class OrderWholeRoomDrawController {
     @PostMapping("/submitWholeRoomDrawing")
     @Transactional(rollbackFor = Exception.class)
     @RestResult
-    public void submit(OrderWholeRoomDraw orderWholeRoomDraw) {
+    public void submit(@RequestBody OrderWholeRoomDraw orderWholeRoomDraw) {
         iOrderWholeRoomDrawService.save(orderWholeRoomDraw);
     }
 
@@ -41,56 +42,56 @@ public class OrderWholeRoomDrawController {
     @PostMapping("/submitToAuditPicturesFlow")
     @Transactional(rollbackFor = Exception.class)
     @RestResult
-    public void submitToDelayTimeFlow(OrderWholeRoomDraw orderWholeRoomDraw) {
+    public void submitToDelayTimeFlow(@RequestBody OrderWholeRoomDraw orderWholeRoomDraw) {
         iOrderWholeRoomDrawService.submitToAuditPicturesFlow(orderWholeRoomDraw.getOrderId());
     }
 
     @PostMapping("/submitToConfirmFlow")
     @Transactional(rollbackFor = Exception.class)
     @RestResult
-    public void submitToConfirmFlow(OrderWholeRoomDraw orderWholeRoomDraw) {
+    public void submitToConfirmFlow(@RequestBody OrderWholeRoomDraw orderWholeRoomDraw) {
         iOrderWholeRoomDrawService.submitToConfirmFlow(orderWholeRoomDraw.getOrderId());
     }
 
     @PostMapping("/submitCancelDesignExpensesFlow")
     @Transactional(rollbackFor = Exception.class)
     @RestResult
-    public void submitCancelDesignExpensesFlow(OrderWholeRoomDraw orderWholeRoomDraw) {
+    public void submitCancelDesignExpensesFlow(@RequestBody OrderWholeRoomDraw orderWholeRoomDraw) {
         iOrderWholeRoomDrawService.submitCancelDesignExpensesFlow(orderWholeRoomDraw.getOrderId());
     }
 
     @PostMapping("/submitToWholeRoomDelayTimeFlow")
     @Transactional(rollbackFor = Exception.class)
     @RestResult
-    public void submitToWholeRoomDelayTimeFlow(OrderWholeRoomDraw orderWholeRoomDraw) {
+    public void submitToWholeRoomDelayTimeFlow(@RequestBody OrderWholeRoomDraw orderWholeRoomDraw) {
         iOrderWholeRoomDrawService.submitToWholeRoomDelayTimeFlow(orderWholeRoomDraw.getOrderId());
     }
 
     @PostMapping("/submitToCustomerLeaderFlow")
     @Transactional(rollbackFor = Exception.class)
     @RestResult
-    public void submitToCustomerLeaderFlow(OrderWholeRoomDraw orderWholeRoomDraw) {
+    public void submitToCustomerLeaderFlow(@RequestBody OrderWholeRoomDraw orderWholeRoomDraw) {
         iOrderWholeRoomDrawService.submitToCustomerLeaderFlow(orderWholeRoomDraw.getOrderId());
     }
 
     @PostMapping("/submitToBackWholeRoomFlow")
     @Transactional(rollbackFor = Exception.class)
     @RestResult
-    public void submitToBackWholeRoomFlow(OrderWholeRoomDraw orderWholeRoomDraw) {
+    public void submitToBackWholeRoomFlow(@RequestBody OrderWholeRoomDraw orderWholeRoomDraw) {
         iOrderWholeRoomDrawService.submitToBackWholeRoomFlow(orderWholeRoomDraw.getOrderId());
     }
 
     @PostMapping("/submitToTwoLevelActuarialCalculationFlow")
     @Transactional(rollbackFor = Exception.class)
     @RestResult
-    public void submitToTwoLevelActuarialCalculationFlow(OrderWholeRoomDraw orderWholeRoomDraw) {
+    public void submitToTwoLevelActuarialCalculationFlow(@RequestBody OrderWholeRoomDraw orderWholeRoomDraw) {
         iOrderWholeRoomDrawService.submitToTwoLevelActuarialCalculationFlow(orderWholeRoomDraw.getOrderId());
     }
 
     @PostMapping("/submitToBackToDesignerFlow")
     @Transactional(rollbackFor = Exception.class)
     @RestResult
-    public void submitToBackToDesignerFlow(OrderWholeRoomDraw orderWholeRoomDraw) {
+    public void submitToBackToDesignerFlow(@RequestBody OrderWholeRoomDraw orderWholeRoomDraw) {
         iOrderWholeRoomDrawService.submitToBackToDesignerFlow(orderWholeRoomDraw.getOrderId());
     }
 

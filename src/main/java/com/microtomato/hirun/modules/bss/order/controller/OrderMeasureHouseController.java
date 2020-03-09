@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,7 +31,7 @@ public class OrderMeasureHouseController {
     @PostMapping("/submitToPlanesketchFlow")
     @Transactional(rollbackFor = Exception.class)
     @RestResult
-    public void submitToPlanesketchFlow(OrderMeasureHouse orderMeasureHouse) {
+    public void submitToPlanesketchFlow(@RequestBody OrderMeasureHouse orderMeasureHouse) {
         log.debug("getOrderId"+orderMeasureHouse.getOrderId());
         orderMeasureHouseServiceImpl.submitToPlanesketchFlow(orderMeasureHouse.getOrderId());
     }
@@ -38,19 +39,19 @@ public class OrderMeasureHouseController {
     @PostMapping("/saveMeasureHouseInfos")
     @Transactional(rollbackFor = Exception.class)
     @RestResult
-    public void save(OrderMeasureHouse orderMeasureHouse) {
+    public void save(@RequestBody OrderMeasureHouse orderMeasureHouse) {
         orderMeasureHouseServiceImpl.save(orderMeasureHouse);
     }
 
     @PostMapping("/submitToSneakFlow")
     @RestResult
-    public void submitToSneakFlow(OrderMeasureHouse orderMeasureHouse) {
+    public void submitToSneakFlow(@RequestBody OrderMeasureHouse orderMeasureHouse) {
         orderMeasureHouseServiceImpl.submitToSneakFlow(orderMeasureHouse.getOrderId());
     }
 
     @PostMapping("/submitToMeasureSuspendFlow")
     @RestResult
-    public void submitToMeasureSuspendFlow(OrderMeasureHouse orderMeasureHouse) {
+    public void submitToMeasureSuspendFlow(@RequestBody OrderMeasureHouse orderMeasureHouse) {
         orderMeasureHouseServiceImpl.submitToMeasureSuspendFlow(orderMeasureHouse.getOrderId());
     }
 }
