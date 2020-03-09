@@ -4,10 +4,15 @@ import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.microtomato.hirun.framework.config.JsonLocalDateTimeDeserializer;
+import com.microtomato.hirun.framework.config.JsonLocalDateTimeSerializer;
 import com.microtomato.hirun.framework.data.BaseEntity;
 import lombok.*;
 import lombok.experimental.Accessors;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -40,19 +45,19 @@ public class OrderWholeRoomDraw extends BaseEntity {
      * 开始时间
      */
     @TableField(value = "start_time")
-    private LocalDateTime startTime;
+    private LocalDate startTime;
 
     /**
      * 结束时间
      */
     @TableField(value = "end_time")
-    private LocalDateTime endTime;
+    private LocalDate endTime;
 
     /**
      * 预约看图时间
      */
     @TableField(value = "pre_time")
-    private LocalDateTime preTime;
+    private LocalDate preTime;
 
     /**
      * 助理设计师
@@ -99,6 +104,8 @@ public class OrderWholeRoomDraw extends BaseEntity {
     /**
      * 创建时间
      */
+    @JsonSerialize(using = JsonLocalDateTimeSerializer.class)
+    @JsonDeserialize(using = JsonLocalDateTimeDeserializer.class)
     @TableField(value = "create_time", fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
