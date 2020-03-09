@@ -18,6 +18,7 @@ import com.microtomato.hirun.modules.bss.order.service.*;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.expression.spel.ast.NullLiteral;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,6 +60,9 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
     @Autowired
     private IFeeDomainService feeDomainService;
 
+
+
+
     @Override
     public OrderFee queryOrderCollectFee(Long orderId) {
         OrderFee orderFee = null;
@@ -94,7 +98,7 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
     public void submitAudit(OrderFeeDTO dto) {
         //1是审核通过，2是审核不通过
         String auditStatus = dto.getAuditStatus();
-
+        Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
         if (auditStatus.equals("1")) {
             orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_NEXT_STEP);
         } else {
@@ -107,7 +111,26 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
         if (orderStatus.equals("18") && auditStatus.equals("1")) {
             workerService.updateOrderWorker(dto.getOrderId(), 32L, dto.getEngineeringClerk());
         }
-        //
+        //处理orderFee的审核人与审核备注
+        String type ="";
+        int periods =0;
+        if(orderStatus.equals("8")){
+            type="1";
+        }
+        else if(orderStatus.equals("18")||orderStatus.equals("25")||orderStatus.equals("30")){
+            type="2";
+            if (orderStatus.equals("18")){
+                periods=1;
+            }
+           else if (orderStatus.equals("25")){
+                periods=2;
+            }
+           else {
+                periods=3;
+            }
+        }
+        LocalDateTime auditTime = RequestTimeHolder.getRequestTime();
+        this.updateByOrderId(dto.getOrderId(),type,periods,auditStatus,employeeId,dto.getAuditRemark(),auditTime);
     }
 
     /**
@@ -182,5 +205,21 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
         return this.getOne(new QueryWrapper<OrderFee>().lambda().eq(OrderFee::getOrderId, orderId)
             .gt(OrderFee::getEndDate, now)
             .eq(period !=null, OrderFee::getPeriods, period));
+    }
+
+    /**
+     * 根据订单ID与收费类型，期数更新orderfee状态
+     * @param orderId
+     * @return
+     */
+    @Override
+    public void updateByOrderId(Long orderId,String type, Integer periods,String auditStatus,Long employeeId,String auditRemark,LocalDateTime auditTime) {
+        if(type.equals("1")){
+            this.update(new UpdateWrapper<OrderFee>().lambda().eq(OrderFee::getOrderId, orderId).eq(OrderFee::getType, type).gt(OrderFee::getEndDate, LocalDateTime.now()).set(OrderFee::getAuditStatus, auditStatus).set(OrderFee::getAuditEmployeeId, employeeId).set(OrderFee::getAuditComment, auditRemark).set(OrderFee::getAuditTime, auditTime));
+        }
+        else{
+            this.update(new UpdateWrapper<OrderFee>().lambda().eq(OrderFee::getOrderId, orderId).eq(OrderFee::getType, type).eq(OrderFee::getPeriods, periods).gt(OrderFee::getEndDate, LocalDateTime.now()).set(OrderFee::getAuditStatus, auditStatus).set(OrderFee::getAuditEmployeeId, employeeId).set(OrderFee::getAuditComment, auditRemark).set(OrderFee::getAuditTime, auditTime));
+        }
+
     }
 }

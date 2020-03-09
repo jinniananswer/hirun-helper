@@ -17,7 +17,7 @@
             <el-row :gutter="12">
                 <el-col :span="6">
                     <div class="grid-content bg-purple">
-                        <cust-info :cust-id="uploadGarrisonDesign.custId"></cust-info>
+                        <cust-info :cust-id="custId"></cust-info>
 
                         <order-worker :order-id="uploadGarrisonDesign.orderId"></order-worker>
                     </div>
@@ -58,7 +58,7 @@
                             </el-form>
                         </el-card>
                         <div>
-                            <cust-visit :cust-id="uploadGarrisonDesign.custId"></cust-visit>
+                            <cust-visit :cust-id="custId"></cust-visit>
                         </div>
                         </el-card>
                     </div>

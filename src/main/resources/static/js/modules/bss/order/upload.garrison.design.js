@@ -7,12 +7,14 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                     startDate: util.getNowDate(),
                     endDate: util.getNowDate(),
                     designEmployeeId:'',
-                    orderId:'30',
+                    orderId:'',
                     id:'',
-                    custId:'13465',
+                    custId:'',
                 },
                 progress: [-10, 70],
                 activeTab: 'orderInfo',
+                orderId : util.getRequest('orderId'),
+                custId : util.getRequest('custId'),
 
                 rules: {
                     designEmployeeId: [
@@ -26,15 +28,15 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                     ],
                 },
 
-                avatarUrl: 'static/img/male.jpg'
             }
         },
 
         methods: {
             init:function(){
                 let that = this;
+                that.uploadGarrisonDesign.orderId=that.orderId;
                 ajax.get('api/bss.order/order-garrison-design/queryGarrisonDesignInfo', {orderId:this.uploadGarrisonDesign.orderId}, function(data) {
-                    Object.assign(that.uploadGarrisonDesign, data);
+                    that.uploadGarrisonDesign=data;
                 })
             },
 

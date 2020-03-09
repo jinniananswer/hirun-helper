@@ -53,4 +53,10 @@ public class OrderBudgetController {
         return orderBudgetServiceImpl.getBudgetByOrderId(orderId);
     }
 
+    @PostMapping("/submitWoodContract")
+    @Transactional(rollbackFor = Exception.class)
+    @RestResult
+    public void submitWoodContract(@RequestBody OrderBudgetDTO dto) {
+        orderBudgetServiceImpl.submitWoodContract(dto);
+    }
 }

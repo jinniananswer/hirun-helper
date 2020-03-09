@@ -24,7 +24,7 @@
                 </el-col>
                 <el-col :span="18">
                     <div class="grid-content bg-purple-light">
-                        <order-info order-id="1"></order-info>
+                        <order-info :order-id="orderId"></order-info>
                         <el-form :inline="false" :model="customerSettlement" label-width="130px"
                                  ref="customerSettlement" :rules="customerSettlementRules">
                             <el-card class="box-card">
@@ -141,7 +141,7 @@
                                 <el-divider content-position="left">客户未购买产品及其他原因</el-divider>
                                 <el-row>
                                     <el-col :span="24">
-                                        <el-form-item label="备注" prop="remark" label-width="130px">
+                                        <el-form-item label="备注" prop="remark" >
                                             <el-input type="textarea" v-model="customerSettlement.remark"></el-input>
                                         </el-form-item>
                                     </el-col>
@@ -153,8 +153,6 @@
                                             <el-button type="primary" @click="collectLastFee">已结算收取尾款</el-button>
                                             <el-button type="primary" @click="orderNoSettlement">客户不结算</el-button>
                                         </el-col>
-                                        <!--                                        <el-button @click="uploadDecorateContract">导出收款明细</el-button>
-                                                                                <el-button @click="uploadDecorateContract">申请开票</el-button>-->
                                     </div>
                                 </el-row>
                             </el-card>
@@ -163,63 +161,198 @@
                     <div>
                         <cust-visit :cust-id="custId"></cust-visit>
                     </div>
-                    <el-dialog title="工人工资" :visible.sync="workSalaryShow"  fullscreen="true">
-                        <el-row>
-                            <el-col :span="4">
-                                <el-form-item label="水电工资" prop="hydropowerSalary" label-width="100px">
-                                    <el-input v-model="workerSalary.hydropowerSalary" placeholder="水电工资" ></el-input>
-                                </el-form-item>
-                            </el-col>
-                            <el-col :span="10">
-                                <el-form-item label="水电备注" prop="hydropowerRemark" label-width="100px">
-                                    <el-input v-model="workerSalary.hydropowerRemark" placeholder="水电备注" ></el-input>
-                                </el-form-item>
-                            </el-col>
-                            <el-col :span="4">
-                                <el-form-item label="木工工资" prop="woodworkerSalary" label-width="100px">
-                                    <el-input v-model="workerSalary.woodworkerSalary" placeholder="水电工资" ></el-input>
-                                </el-form-item>
-                            </el-col>
-                            <el-col :span="10">
-                                <el-form-item label="木工备注" prop="woodworkerRemark" label-width="100px">
-                                    <el-input v-model="workerSalary.woodworkerRemark" placeholder="水电备注" ></el-input>
-                                </el-form-item>
-                            </el-col>
-                        </el-row>
-                        <el-row>
-                            <el-col :span="4">
-                                <el-form-item label="泥工工资" prop="tilerSalary" label-width="100px">
-                                    <el-input v-model="workerSalary.tilerSalary" placeholder="泥工工资" ></el-input>
-                                </el-form-item>
-                            </el-col>
-                            <el-col :span="10">
-                                <el-form-item label="镶贴备注" prop="tilerRemark" label-width="100px">
-                                    <el-input v-model="workerSalary.tilerRemark" placeholder="镶贴备注" ></el-input>
-                                </el-form-item>
-                            </el-col>
-                            <el-col :span="4">
-                                <el-form-item label="油工工资" prop="painterSalary" label-width="100px">
-                                    <el-input v-model="workerSalary.painterSalary" placeholder="油工工资" ></el-input>
-                                </el-form-item>
-                            </el-col>
-                            <el-col :span="10">
-                                <el-form-item label="涂裱备注" prop="painterRemark" label-width="100px">
-                                    <el-input v-model="workerSalary.painterRemark" placeholder="涂裱备注" ></el-input>
-                                </el-form-item>
-                            </el-col>
-                        </el-row>
-                        <el-row>
-                            <el-col :span="4">
-                                <el-form-item label="墙工工资" prop="wallworkerSalary" label-width="100px">
-                                    <el-input v-model="workerSalary.wallworkerSalary" placeholder="墙工工资" ></el-input>
-                                </el-form-item>
-                            </el-col>
-                            <el-col :span="10">
-                                <el-form-item label="敲墙备注" prop="wallworkerRemark" label-width="100px">
-                                    <el-input v-model="workerSalary.wallworkerRemark" placeholder="敲墙备注" ></el-input>
-                                </el-form-item>
-                            </el-col>
-                        </el-row>
+                    <el-dialog title="工人工资" :visible.sync="workSalaryShow" fullscreen="true">
+                        <el-form>
+                            <el-card>
+                                <el-divider content-position="left">首期工人工资</el-divider>
+                                <el-row>
+                                    <el-col :span="8">
+                                        <el-form-item label="水电工资" prop="" label-width="100px">
+                                            <el-input v-model="workerSalary_1.hydropowerSalary" readonly ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="16">
+                                        <el-form-item label="水电备注" prop="" label-width="100px">
+                                            <el-input v-model="workerSalary_1.hydropowerRemark" readonly ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row>
+                                    <el-col :span="8">
+                                        <el-form-item label="木工工资" prop="" label-width="100px">
+                                            <el-input v-model="workerSalary_1.woodworkerSalary" readonly ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="16">
+                                        <el-form-item label="木工备注" prop="" label-width="100px">
+                                            <el-input v-model="workerSalary_1.woodworkerRemark" readonly ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row>
+                                    <el-col :span="8">
+                                        <el-form-item label="泥工工资" prop="" label-width="100px">
+                                            <el-input v-model="workerSalary_1.tilerSalary" readonly ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="16">
+                                        <el-form-item label="镶贴备注" prop="" label-width="100px">
+                                            <el-input v-model="workerSalary_1.tilerRemark" readonly ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row>
+                                    <el-col :span="8">
+                                        <el-form-item label="油工工资" prop="" label-width="100px">
+                                            <el-input v-model="workerSalary_1.painterSalary" readonly ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="16">
+                                        <el-form-item label="涂裱备注" prop="" label-width="100px">
+                                            <el-input v-model="workerSalary_1.painterRemark" readonly ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row>
+                                    <el-col :span="8">
+                                        <el-form-item label="墙工工资" prop="" label-width="100px">
+                                            <el-input v-model="workerSalary_1.wallworkerSalary" readonly ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="16">
+                                        <el-form-item label="敲墙备注" prop="" label-width="100px">
+                                            <el-input v-model="workerSalary_1.wallworkerRemark" readonly ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                            </el-card>
+                            <el-card>
+                                <el-divider content-position="left">二期工人工资</el-divider>
+                                <el-row>
+                                    <el-col :span="8">
+                                        <el-form-item label="水电工资" prop="" label-width="100px">
+                                            <el-input v-model="workerSalary_2.hydropowerSalary" readonly ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="16">
+                                        <el-form-item label="水电备注" prop="" label-width="100px">
+                                            <el-input v-model="workerSalary_2.hydropowerRemark" readonly ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row>
+                                    <el-col :span="8">
+                                        <el-form-item label="木工工资" prop="" label-width="100px">
+                                            <el-input v-model="workerSalary_2.woodworkerSalary" readonly ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="16">
+                                        <el-form-item label="木工备注" prop="" label-width="100px">
+                                            <el-input v-model="workerSalary_2.woodworkerRemark" readonly ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row>
+                                    <el-col :span="8">
+                                        <el-form-item label="泥工工资" prop="" label-width="100px">
+                                            <el-input v-model="workerSalary_2.tilerSalary" readonly ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="16">
+                                        <el-form-item label="镶贴备注" prop="" label-width="100px">
+                                            <el-input v-model="workerSalary_2.tilerRemark" readonly ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row>
+                                    <el-col :span="8">
+                                        <el-form-item label="油工工资" prop="" label-width="100px">
+                                            <el-input v-model="workerSalary_2.painterSalary" readonly ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="16">
+                                        <el-form-item label="涂裱备注" prop="" label-width="100px">
+                                            <el-input v-model="workerSalary_2.painterRemark" readonly ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row>
+                                    <el-col :span="8">
+                                        <el-form-item label="墙工工资" prop="" label-width="100px">
+                                            <el-input v-model="workerSalary_2.wallworkerSalary" readonly ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="16">
+                                        <el-form-item label="敲墙备注" prop="" label-width="100px">
+                                            <el-input v-model="workerSalary_2.wallworkerRemark" readonly ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                            </el-card>
+                            <el-card>
+                                <el-divider content-position="left">结算工人工资</el-divider>
+                                <el-row>
+                                    <el-col :span="8">
+                                        <el-form-item label="水电工资" prop="" label-width="100px">
+                                            <el-input v-model="workerSalary_3.hydropowerSalary" readonly ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="16">
+                                        <el-form-item label="水电备注" prop="" label-width="100px">
+                                            <el-input v-model="workerSalary_3.hydropowerRemark" readonly ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row>
+                                    <el-col :span="8">
+                                        <el-form-item label="木工工资" prop="" label-width="100px">
+                                            <el-input v-model="workerSalary_3.woodworkerSalary" readonly ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="16">
+                                        <el-form-item label="木工备注" prop="" label-width="100px">
+                                            <el-input v-model="workerSalary_3.woodworkerRemark" readonly ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row>
+                                    <el-col :span="8">
+                                        <el-form-item label="泥工工资" prop="" label-width="100px">
+                                            <el-input v-model="workerSalary_3.tilerSalary" readonly ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="16">
+                                        <el-form-item label="镶贴备注" prop="" label-width="100px">
+                                            <el-input v-model="workerSalary_3.tilerRemark" readonly ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row>
+                                    <el-col :span="8">
+                                        <el-form-item label="油工工资" prop="" label-width="100px">
+                                            <el-input v-model="workerSalary_3.painterSalary" readonly ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="16">
+                                        <el-form-item label="涂裱备注" prop="" label-width="100px">
+                                            <el-input v-model="workerSalary_3.painterRemark" readonly ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row>
+                                    <el-col :span="8">
+                                        <el-form-item label="墙工工资" prop="" label-width="100px">
+                                            <el-input v-model="workerSalary_3.wallworkerSalary" readonly ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="16">
+                                        <el-form-item label="敲墙备注" prop="" label-width="100px">
+                                            <el-input v-model="workerSalary_3.wallworkerRemark" readonly ></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                            </el-card>
+                        </el-form>
                     </el-dialog>
                 </el-col>
             </el-row>

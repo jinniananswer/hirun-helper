@@ -1,6 +1,9 @@
 package com.microtomato.hirun.modules.bss.customer.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.microtomato.hirun.modules.bss.customer.entity.dto.CustInfoDTO;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.CustPreparationDTO;
+import com.microtomato.hirun.modules.bss.customer.entity.dto.CustQueryCondDTO;
 import com.microtomato.hirun.modules.bss.customer.entity.po.CustPreparation;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -69,5 +72,8 @@ public interface ICustPreparationService extends IService<CustPreparation> {
      * @return
      */
     List<CustPreparationDTO> queryPrepareByCustIdAndStatus(Long custId,String status);
+
+    IPage<CustInfoDTO> queryPreparationInfo(CustQueryCondDTO condDTO);
+
 
 }

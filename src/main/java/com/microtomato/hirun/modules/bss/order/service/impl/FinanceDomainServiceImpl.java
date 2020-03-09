@@ -525,7 +525,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
                     String payItemName = payItemCfg.getName();
 
                     Long parentPayItemId = orderPayItem.getParentPayItemId();
-                    if (parentPayItemId != null) {
+                    if (parentPayItemId != null &&parentPayItemId != -1) {
                         PayItemCfg parentPayItemCfg = this.payItemCfgService.getPayItem(parentPayItemId);
                         payItemName = parentPayItemCfg.getName() + "-" + payItemName;
                     }

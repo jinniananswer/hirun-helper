@@ -4,7 +4,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
         data() {
             return {
                 customerSettlement: {
-                    orderId:'30',
+                    orderId:'',
                     deferReason:'',
                     expectCheckDate:'',
                     expectLastfeeDate:'',
@@ -21,7 +21,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     id:'',
                 },
 
-                workerSalary: {
+                workerSalary_1: {
                     hydropowerSalary: '',
                     hydropowerRemark: '',
                     woodworkerSalary: '',
@@ -32,13 +32,35 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     painterRemark:'',
                     wallworkerSalary:'',
                     wallworkerRemark:'',
-                    orderId:'29',
-                    id:'',
-                    custId:'18163',
                 },
 
-                orderId : '30',
-                custId : '18164',
+                workerSalary_2: {
+                    hydropowerSalary: '',
+                    hydropowerRemark: '',
+                    woodworkerSalary: '',
+                    woodworkerRemark:'',
+                    tilerSalary: '',
+                    tilerRemark: '',
+                    painterSalary:'',
+                    painterRemark:'',
+                    wallworkerSalary:'',
+                    wallworkerRemark:'',
+                },
+                workerSalary_3: {
+                    hydropowerSalary: '',
+                    hydropowerRemark: '',
+                    woodworkerSalary: '',
+                    woodworkerRemark:'',
+                    tilerSalary: '',
+                    tilerRemark: '',
+                    painterSalary:'',
+                    painterRemark:'',
+                    wallworkerSalary:'',
+                    wallworkerRemark:'',
+                },
+
+                orderId : util.getRequest("orderId"),
+                custId : util.getRequest("custId"),
                 workSalaryShow:false,
                 customerSettlementRules : {
                     expectCheckDate: [
@@ -61,16 +83,28 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
         },
 
         mounted: function() {
-            this.init();
+            this.customerSettlement.orderId=this.orderId;
+            this.initOrderSettlement();
+            this.initOrderWorkerSalary();
         },
         methods: {
 
-            init:function(){
+            initOrderSettlement:function(){
                 let that = this;
                 ajax.get('api/bss.order/order-settlement/queryOrderSettlement', {orderId:this.customerSettlement.orderId}, function(data) {
                     Object.assign(that.customerSettlement, data);
                 })
             },
+
+            initOrderWorkerSalary:function(){
+                let that=this;
+                ajax.get('api/bss.order/order-worker-salary/queryAllWorkerSalary', {orderId:this.orderId}, function(data) {
+                        Object.assign(that.workerSalary_1, data.workerSalary_1);
+                        Object.assign(that.workerSalary_2, data.workerSalary_2);
+                        Object.assign(that.workerSalary_3, data.workerSalary_3);
+                })
+            },
+
 
             save : function() {
 
@@ -92,7 +126,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                         type: 'warning'
                     }).then(() => {
                         let url = 'api/bss.order/order-settlement/submitCollectLastFee';
-                        ajax.post(url,this.customerSettlement,null,null,true);
+                        ajax.post(url,this.customerSettlement);
                     })
                 });
             },
@@ -104,7 +138,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                         cancelButtonText: '取消',
                         type: 'warning'
                     }).then(() => {
-                        //客户不结算，单子发往管理员
+                        //todo 客户不结算，单子发往管理员
                         return false;
                     })
                 });
@@ -112,7 +146,6 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
 
             showWorkerSalary:function () {
                 this.workSalaryShow=true;
-
             }
 
         }

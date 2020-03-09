@@ -2,6 +2,7 @@ package com.microtomato.hirun.modules.bss.order.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerSalaryDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderWorkerSalary;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderWorkerSalaryMapper;
@@ -17,7 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -96,5 +99,18 @@ public class OrderWorkerSalaryServiceImpl extends ServiceImpl<OrderWorkerSalaryM
             this.baseMapper.update(orderWorkerSalary, new UpdateWrapper<OrderWorkerSalary>().lambda().eq(OrderWorkerSalary::getOrderId, dto.getOrderId())
                     .eq(OrderWorkerSalary::getPeriods,periods));
         }
+    }
+
+    @Override
+    public Map<String, OrderWorkerSalaryDTO> queryAllWorkerSalary(Long orderId) {
+        List<OrderWorkerSalaryDTO> list=this.queryOrderWorkerSalary(null,orderId);
+        Map<String,OrderWorkerSalaryDTO> map= new HashMap<>();
+        if(ArrayUtils.isEmpty(list)){
+            return map;
+        }
+        for(OrderWorkerSalaryDTO workerSalary:list){
+            map.put("workerSalary_"+workerSalary.getPeriods(),workerSalary);
+        }
+        return map;
     }
 }
