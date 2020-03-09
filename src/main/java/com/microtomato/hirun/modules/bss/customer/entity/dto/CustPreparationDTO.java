@@ -1,5 +1,9 @@
 package com.microtomato.hirun.modules.bss.customer.entity.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.microtomato.hirun.framework.config.JsonLocalDateTimeDeserializer;
+import com.microtomato.hirun.framework.config.JsonLocalDateTimeSerializer;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -35,6 +39,8 @@ public class CustPreparationDTO {
 
     private String prepareEmployeeName;
 
+    @JsonSerialize(using = JsonLocalDateTimeSerializer.class)
+    @JsonDeserialize(using = JsonLocalDateTimeDeserializer.class)
     private LocalDateTime prepareTime;
 
     private Long enterEmployeeId;

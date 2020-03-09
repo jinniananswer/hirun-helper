@@ -181,7 +181,7 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
         }
         OrderBase order = new OrderBase();
         BeanUtils.copyProperties(newOrder, order);
-        if (StringUtils.isNotBlank(newOrder.getStatus())) {
+        if (StringUtils.isBlank(newOrder.getStatus())) {
             order.setStatus(OrderConst.ORDER_STATUS_ASKING);
         }
 

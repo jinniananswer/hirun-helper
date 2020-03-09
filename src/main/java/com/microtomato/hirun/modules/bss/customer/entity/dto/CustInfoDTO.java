@@ -118,4 +118,32 @@ public class CustInfoDTO {
     private String prepareStatusName;
 
     private Long orderId;
+
+    private String informationSource;
+
+    private String ployType;
+
+    private String orderStatus;
+
+    private String orderStatusName;
+
+    private String ployName;
+
+    private LocalDateTime ployTime;
+
+    private LocalDateTime telConsultTime;
+
+    private Long custServiceEmployeeId;
+
+    private String customerServiceName;
+
+    private Long designEmployeeId;
+
+    private String designEmployeeName;
+
+    private String refereeInfo;
+
+    private String remark;
+
+    private String prepareExpireStatus;
 }

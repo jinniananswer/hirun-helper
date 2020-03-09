@@ -5,6 +5,10 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.microtomato.hirun.framework.config.JsonLocalDateTimeDeserializer;
+import com.microtomato.hirun.framework.config.JsonLocalDateTimeSerializer;
 import com.microtomato.hirun.framework.data.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
@@ -66,6 +70,8 @@ public class PartyVisit extends BaseEntity {
     @TableField("visit_content")
     private String visitContent;
 
+    @JsonSerialize(using = JsonLocalDateTimeSerializer.class)
+    @JsonDeserialize(using = JsonLocalDateTimeDeserializer.class)
     @TableField(value = "visit_time")
     private LocalDateTime visitTime;
 

@@ -81,8 +81,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
             save(task) {
                 this.$refs.task.validate((valid) => {
                     if (valid) {
-                        alert("orderStatus===22======"+util.getRequest('status'));
-                        let url = 'api/bss.order/order-construction/saveAssignInfo';
+                       let url = 'api/bss.order/order-construction/saveAssignInfo';
                         let orderStatus=util.getRequest('status');
                         if(orderStatus=='17'){
                             url='api/bss.order/order-construction/saveProjectManagerInfo';

@@ -1,7 +1,12 @@
 package com.microtomato.hirun.modules.bss.customer.entity.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.microtomato.hirun.framework.config.JsonLocalDateTimeDeserializer;
+import com.microtomato.hirun.framework.config.JsonLocalDateTimeSerializer;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -29,9 +34,13 @@ public class CustQueryCondDTO {
 
     private String timeType;
 
-    private LocalDateTime startTime;
+    @JsonSerialize(using = JsonLocalDateTimeSerializer.class)
+    @JsonDeserialize(using = JsonLocalDateTimeDeserializer.class)
+    private LocalDate startTime;
 
-    private LocalDateTime endTime;
+    @JsonSerialize(using = JsonLocalDateTimeSerializer.class)
+    @JsonDeserialize(using = JsonLocalDateTimeDeserializer.class)
+    private LocalDate endTime;
 
     private String houseMode;
 
@@ -43,4 +52,7 @@ public class CustQueryCondDTO {
 
     private Long houseId;
 
+    private String orderStatus;
+
+    private String prepareStatus;
 }
