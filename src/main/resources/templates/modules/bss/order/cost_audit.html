@@ -25,38 +25,38 @@
                 <el-col :span="18">
                     <div class="grid-content bg-purple-light">
                         <order-info :order-id="collectFee.orderId"></order-info>
-                        <el-card class="box-card">
-                            <div slot="header">
-                                <span>费用展示区</span>
-                            </div>
-                            <template>
-                                <el-table
-                                        :data="payItems"
-                                        stripe="true"
-                                        border
-                                        style="width: 100%">
-                                    <el-table-column
-                                            prop="payItemName"
-                                            label="款项"
-                                            fixed
-                                            min-width>
-                                    </el-table-column>
-                                    <el-table-column
-                                            prop="periodName"
-                                            label="期数"
-                                            fixed
-                                            min-width>
-                                    </el-table-column>
-                                    <el-table-column
-                                            prop="money"
-                                            label="应付金额（单位：元）"
-                                            fixed
-                                            min-width>
-                                    </el-table-column>
-                                </el-table>
-                            </template>
-                            <el-divider></el-divider>
-                        </el-card>
+<!--                        <el-card class="box-card">-->
+<!--                            <div slot="header">-->
+<!--                                <span>费用展示区</span>-->
+<!--                            </div>-->
+<!--                            <template>-->
+<!--                                <el-table-->
+<!--                                        :data="payItems"-->
+<!--                                        stripe="true"-->
+<!--                                        border-->
+<!--                                        style="width: 100%">-->
+<!--                                    <el-table-column-->
+<!--                                            prop="payItemName"-->
+<!--                                            label="款项"-->
+<!--                                            fixed-->
+<!--                                            min-width>-->
+<!--                                    </el-table-column>-->
+<!--                                    <el-table-column-->
+<!--                                            prop="periodName"-->
+<!--                                            label="期数"-->
+<!--                                            fixed-->
+<!--                                            min-width>-->
+<!--                                    </el-table-column>-->
+<!--                                    <el-table-column-->
+<!--                                            prop="money"-->
+<!--                                            label="应付金额（单位：元）"-->
+<!--                                            fixed-->
+<!--                                            min-width>-->
+<!--                                    </el-table-column>-->
+<!--                                </el-table>-->
+<!--                            </template>-->
+<!--                            <el-divider></el-divider>-->
+<!--                        </el-card>-->
                         <el-card class="box-card">
                             <div slot="header">
                                 <span>操作区</span>
