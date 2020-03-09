@@ -72,7 +72,9 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 		List<Menu> menuList = menuServiceImpl.list(
 			Wrappers.<Menu>lambdaQuery()
 				.select(Menu::getMenuId)
+				.ne(Menu::getDisabled, true)
 				.in(Menu::getType, "P", "H")
+
 		);
 		menuList.forEach(menu -> rtn.add(menu.getMenuId()));
 		return rtn;
@@ -107,7 +109,8 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 
 		List<Menu> menuList = this.list(
 			Wrappers.<Menu>lambdaQuery()
-			.in(Menu::getType, "P", "H")
+				.ne(Menu::getDisabled, true)
+				.in(Menu::getType, "P", "H")
 		);
 
 		// 转换成 menuid 为 key 的 Map
@@ -131,6 +134,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 			Wrappers.<Menu>lambdaQuery()
 				.select(Menu::getMenuId)
 				.eq(Menu::getMenuUrl, menuUrl)
+				.ne(Menu::getDisabled, true)
 		);
 		if (null == one) {
 			return -1L;
