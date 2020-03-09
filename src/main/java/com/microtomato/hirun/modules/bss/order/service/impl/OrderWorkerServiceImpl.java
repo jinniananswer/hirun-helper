@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.exception.ErrorKind;
 import com.microtomato.hirun.framework.exception.cases.NotFoundException;
+import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderWorker;
@@ -43,7 +44,7 @@ public class OrderWorkerServiceImpl extends ServiceImpl<OrderWorkerMapper, Order
         }
         OrderWorker orderWorker = this.orderWorkerMapper.selectOne(new QueryWrapper<OrderWorker>().lambda()
                 .eq(OrderWorker::getOrderId, orderId).eq(OrderWorker::getRoleId, roleId)
-                .apply("now() between start_date and end_date"));
+                .gt(OrderWorker::getEndDate, RequestTimeHolder.getRequestTime()));
 
         if (orderWorker != null) {
             //如果Employee一样，则不更新
@@ -57,7 +58,7 @@ public class OrderWorkerServiceImpl extends ServiceImpl<OrderWorkerMapper, Order
         newOrderWork.setOrderId(orderId);
         newOrderWork.setRoleId(roleId);
         newOrderWork.setEmployeeId(employeeId);
-        newOrderWork.setStartDate(LocalDateTime.now());
+        newOrderWork.setStartDate(RequestTimeHolder.getRequestTime());
         newOrderWork.setEndDate(TimeUtils.getForeverTime());
         this.orderWorkerMapper.insert(newOrderWork);
 
