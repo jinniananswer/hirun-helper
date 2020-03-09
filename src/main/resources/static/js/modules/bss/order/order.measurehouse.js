@@ -35,8 +35,12 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 this.quantityRoomInfos.measureArea = value;
             },
             init:function(){
-                alert(this.custId);
-                alert(this.quantityRoomInfos.orderId);
+                let data = {
+                    orderId : util.getRequest('orderId'),
+                }
+                ajax.get('api/bss.order/order-measurehouse/getMeasureHouse', data, (responseData)=>{
+                    Object.assign(this.quantityRoomInfos, responseData);
+                });
                 if (this.orderStatus=='4') {
                     this.isShow = false;
                 }

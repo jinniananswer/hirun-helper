@@ -7,9 +7,7 @@ import com.microtomato.hirun.modules.bss.order.service.IOrderPlaneSketchService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author ：mmzs
@@ -29,7 +27,7 @@ public class OrderPlaneSketchController {
     @PostMapping("/submitPlaneSketch")
     @Transactional(rollbackFor = Exception.class)
     @RestResult
-    public void submit(OrderPlaneSketch orderPlaneSketch) {
+    public void submit(@RequestBody OrderPlaneSketch orderPlaneSketch) {
         log.debug("OrderPlaneSketchController"+orderPlaneSketch.toString());
         orderPlaneSketchServiceImpl.save(orderPlaneSketch);
     }
@@ -37,7 +35,7 @@ public class OrderPlaneSketchController {
     @PostMapping("/submitToConfirmFlow")
     @Transactional(rollbackFor = Exception.class)
     @RestResult
-    public void submitToConfirmFlow(OrderPlaneSketch orderPlaneSketch) {
+    public void submitToConfirmFlow(@RequestBody OrderPlaneSketch orderPlaneSketch) {
         log.debug("orderPlaneSketch"+orderPlaneSketch.getOrderId());
         orderPlaneSketchServiceImpl.submitToConfirmFlow(orderPlaneSketch.getOrderId());
     }
@@ -45,12 +43,11 @@ public class OrderPlaneSketchController {
     @PostMapping("/submitToSignContractFlow")
     @Transactional(rollbackFor = Exception.class)
     @RestResult
-    public void submitToSignContractFlow(OrderPlaneSketch orderPlaneSketch) {
-        log.debug("orderPlaneSketch"+orderPlaneSketch.getOrderId());
+    public void submitToSignContractFlow(@RequestBody OrderPlaneSketch orderPlaneSketch) {
         orderPlaneSketchServiceImpl.submitToSignContractFlow(orderPlaneSketch.getOrderId());
     }
 
-    @PostMapping("/updateOrderWork")
+    @GetMapping("/updateOrderWork")
     @Transactional(rollbackFor = Exception.class)
     @RestResult
     public void updateOrderWork(Long orderId,Long roleId,Long employeeId) {
@@ -58,10 +55,17 @@ public class OrderPlaneSketchController {
         orderPlaneSketchServiceImpl.updateOrderWork(orderId,roleId,employeeId);
     }
 
+    @GetMapping("/getPlaneSketch")
+    @RestResult
+    public OrderPlaneSketch getPlaneSketch(Long orderId) {
+        log.debug("orderPlaneSketchServiceImpl"+orderPlaneSketchServiceImpl.getPlaneSketch(orderId));
+        return orderPlaneSketchServiceImpl.getPlaneSketch(orderId);
+    }
+
     @PostMapping("/submitToDelayTimeFlow")
     @Transactional(rollbackFor = Exception.class)
     @RestResult
-    public void submitToDelayTimeFlow(OrderPlaneSketch orderPlaneSketch) {
+    public void submitToDelayTimeFlow(@RequestBody OrderPlaneSketch orderPlaneSketch) {
         log.debug("orderPlaneSketch"+orderPlaneSketch.getOrderId());
         orderPlaneSketchServiceImpl.submitToDelayTimeFlow(orderPlaneSketch.getOrderId());
     }
@@ -69,7 +73,7 @@ public class OrderPlaneSketchController {
     @PostMapping("/submitToBackToDesignerFlow")
     @Transactional(rollbackFor = Exception.class)
     @RestResult
-    public void submitToBackToDesignerFlow(OrderPlaneSketch orderPlaneSketch) {
+    public void submitToBackToDesignerFlow(@RequestBody OrderPlaneSketch orderPlaneSketch) {
         orderPlaneSketchServiceImpl.submitToBackToDesignerFlow(orderPlaneSketch.getOrderId());
     }
 }

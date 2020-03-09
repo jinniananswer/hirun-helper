@@ -1,7 +1,9 @@
 package com.microtomato.hirun.modules.bss.order.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
+import com.microtomato.hirun.modules.bss.order.entity.po.OrderPlaneSketch;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderWholeRoomDraw;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderWholeRoomDrawMapper;
 import com.microtomato.hirun.modules.bss.order.service.IOrderDomainService;
@@ -64,5 +66,19 @@ public class OrderWholeRoomDrawServiceImpl extends ServiceImpl<OrderWholeRoomDra
     @Override
     public void submitToBackToDesignerFlow(Long orderId) {
         orderDomainService.orderStatusTrans(orderId, OrderConst.OPER_NEXT_STEP);
+    }
+
+    @Override
+    public OrderWholeRoomDraw getOrderWholeRoomDrawByOrderId(Long orderId) {
+        OrderWholeRoomDraw orderWholeRoomDraw = this.getOne(
+                Wrappers.<OrderWholeRoomDraw>lambdaQuery()
+                        .eq(OrderWholeRoomDraw::getOrderId, orderId)
+                        .orderByDesc(OrderWholeRoomDraw::getCreateTime)
+        );
+        if (orderWholeRoomDraw != null) {
+            orderWholeRoomDraw.setCreateTime(null);
+            orderWholeRoomDraw.setUpdateTime(null);
+        }
+        return orderWholeRoomDraw;
     }
 }

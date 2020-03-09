@@ -2,6 +2,10 @@ package com.microtomato.hirun.modules.bss.order.entity.po;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.microtomato.hirun.framework.config.JsonLocalDateTimeDeserializer;
+import com.microtomato.hirun.framework.config.JsonLocalDateTimeSerializer;
 import com.microtomato.hirun.framework.data.BaseEntity;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -42,7 +46,7 @@ public class OrderMeasureHouse extends BaseEntity {
      * 量房时间
      */
     @TableField(value = "measure_time")
-    private LocalDateTime measureTime;
+    private LocalDate measureTime;
 
     /**
      * 客户意见
@@ -59,6 +63,8 @@ public class OrderMeasureHouse extends BaseEntity {
     /**
      * 创建时间
      */
+    @JsonSerialize(using = JsonLocalDateTimeSerializer.class)
+    @JsonDeserialize(using = JsonLocalDateTimeDeserializer.class)
     @TableField(value = "create_time", fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 

@@ -23,10 +23,10 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
 
         mounted: function() {
             let data = {
-                id : util.getRequest('id'),
+                orderId : util.getRequest('orderId'),
             }
-            alert(JSON.stringify(data));
-            ajax.post('api/bss.order/order-wholeRoomDrawing/getWholeRoomDraw', data, (responseData)=>{
+            //alert(JSON.stringify(data));
+            ajax.get('api/bss.order/order-wholeRoomDrawing/getWholeRoomDraw', data, (responseData)=>{
                 Object.assign(this.wholeRoomDrawing, responseData);
             });
         },

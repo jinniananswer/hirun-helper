@@ -1,7 +1,9 @@
 package com.microtomato.hirun.modules.bss.order.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
+import com.microtomato.hirun.modules.bss.order.entity.po.OrderFile;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPlaneSketch;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderPlaneSketchMapper;
 import com.microtomato.hirun.modules.bss.order.service.IOrderDomainService;
@@ -41,6 +43,20 @@ public class OrderPlaneSketchServiceImpl extends ServiceImpl<OrderPlaneSketchMap
     @Override
     public void submitToBackToDesignerFlow(Long orderId) {
         orderDomainService.orderStatusTrans(orderId, OrderConst.OPER_NEXT_STEP);
+    }
+
+    @Override
+    public OrderPlaneSketch getPlaneSketch(Long orderId) {
+        OrderPlaneSketch orderPlaneSketch = this.getOne(
+                Wrappers.<OrderPlaneSketch>lambdaQuery()
+                        .eq(OrderPlaneSketch::getOrderId, orderId)
+                        .orderByDesc(OrderPlaneSketch::getCreateTime)
+        );
+        if (orderPlaneSketch != null) {
+            orderPlaneSketch.setCreateTime(null);
+            orderPlaneSketch.setUpdateTime(null);
+        }
+        return orderPlaneSketch;
     }
 
     @Override

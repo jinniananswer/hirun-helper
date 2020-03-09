@@ -17,4 +17,6 @@ public interface IOrderMeasureHouseService extends IService<OrderMeasureHouse> {
     void submitToPlanesketchFlow(Long orderId);
 
     void submitToMeasureSuspendFlow(Long orderId);
+
+    OrderMeasureHouse getMeasureHouse(Long orderId);
 }
