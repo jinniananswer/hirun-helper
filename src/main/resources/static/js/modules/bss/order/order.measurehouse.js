@@ -35,8 +35,6 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 this.quantityRoomInfos.measureArea = value;
             },
             init:function(){
-                alert(this.custId);
-                alert(this.quantityRoomInfos.orderId);
                 if (this.orderStatus=='4') {
                     this.isShow = false;
                 }
