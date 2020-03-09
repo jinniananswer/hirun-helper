@@ -21,4 +21,6 @@ public interface IOrderBudgetService extends IService<OrderBudget> {
 
     public void submitBudgetCheckedResult(OrderBudgetCheckedDTO dto);
 
+    void submitWoodContract(OrderBudgetDTO dto);
+
 }

@@ -79,4 +79,9 @@ public class OrderBudgetServiceImpl extends ServiceImpl<OrderBudgetMapper, Order
             orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_AUDIT_NO);
         }
     }
+
+    @Override
+    public void submitWoodContract(OrderBudgetDTO dto) {
+        orderDomainService.orderStatusTrans(dto.getOrderId(),"NEXT");
+    }
 }
