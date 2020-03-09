@@ -69,6 +69,18 @@ public class OrderFee extends BaseEntity {
     private Long orgId;
 
 
+    /** 0-未审核 1-审核通过 2-审核不通过 */
+    @TableField(value = "audit_status")
+    private String auditStatus;
+
+    /** 审核员工ID */
+    @TableField(value = "audit_employee_id")
+    private Long auditEmployeeId;
+
+    /** 审核意见 */
+    @TableField(value = "audit_comment")
+    private String auditComment;
+
     @TableField(value = "start_date")
     private LocalDateTime startDate;
 

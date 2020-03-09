@@ -59,6 +59,9 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
     @Autowired
     private IFeeDomainService feeDomainService;
 
+
+
+
     @Override
     public OrderFee queryOrderCollectFee(Long orderId) {
         OrderFee orderFee = null;
@@ -94,7 +97,7 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
     public void submitAudit(OrderFeeDTO dto) {
         //1是审核通过，2是审核不通过
         String auditStatus = dto.getAuditStatus();
-
+        Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
         if (auditStatus.equals("1")) {
             orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_NEXT_STEP);
         } else {
@@ -107,7 +110,27 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
         if (orderStatus.equals("18") && auditStatus.equals("1")) {
             workerService.updateOrderWorker(dto.getOrderId(), 32L, dto.getEngineeringClerk());
         }
-        //
+        //处理orderFee的审核人与审核备注
+        String type ="";
+        int periods =0;
+        if(orderStatus.equals("8")){
+            type="1";
+            this.update(new UpdateWrapper<OrderFee>().lambda().eq(OrderFee::getOrderId, dto.getOrderId()).eq(OrderFee::getType, type).gt(OrderFee::getEndDate, LocalDateTime.now()).set(OrderFee::getAuditStatus, auditStatus).set(OrderFee::getAuditEmployeeId, employeeId).set(OrderFee::getAuditComment, dto.getAuditRemark()));
+        }
+        else if(orderStatus.equals("18")||orderStatus.equals("25")||orderStatus.equals("30")){
+            type="2";
+            if (orderStatus.equals("18")){
+                periods=1;
+            }
+           else if (orderStatus.equals("25")){
+                periods=2;
+            }
+           else {
+                periods=3;
+            }
+            this.update(new UpdateWrapper<OrderFee>().lambda().eq(OrderFee::getOrderId, dto.getOrderId()).eq(OrderFee::getType, type).eq(OrderFee::getPeriods, periods).gt(OrderFee::getEndDate, LocalDateTime.now()).set(OrderFee::getAuditStatus, auditStatus).set(OrderFee::getAuditEmployeeId, employeeId).set(OrderFee::getAuditComment, dto.getAuditRemark()));
+        }
+
     }
 
     /**
