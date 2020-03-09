@@ -1,9 +1,11 @@
 package com.microtomato.hirun.modules.bss.order.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.CustConsultDTO;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderMeasureHouse;
+import com.microtomato.hirun.modules.bss.order.entity.po.OrderPlaneSketch;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderMeasureHouseMapper;
 import com.microtomato.hirun.modules.bss.order.service.IOrderDomainService;
 import com.microtomato.hirun.modules.bss.order.service.IOrderMeasureHouseService;
@@ -38,5 +40,19 @@ public class OrderMeasureHouseServiceImpl extends ServiceImpl<OrderMeasureHouseM
     @Override
     public void submitToMeasureSuspendFlow(Long orderId) {
         orderDomainService.orderStatusTrans(orderId, OrderConst.OPER_DELAY);
+    }
+
+    @Override
+    public OrderMeasureHouse getMeasureHouse(Long orderId) {
+        OrderMeasureHouse orderMeasureHouse = this.getOne(
+                Wrappers.<OrderMeasureHouse>lambdaQuery()
+                        .eq(OrderMeasureHouse::getOrderId, orderId)
+                        .orderByDesc(OrderMeasureHouse::getCreateTime)
+        );
+        if (orderMeasureHouse != null) {
+            orderMeasureHouse.setCreateTime(null);
+            orderMeasureHouse.setUpdateTime(null);
+        }
+        return orderMeasureHouse;
     }
 }
