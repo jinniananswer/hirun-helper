@@ -156,7 +156,14 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
             orderBase.setFloorage(dto.getHouseArea());
             orderBase.setType("H");
             orderBase.setStatus("1");
-            orderBase.setDecorateAddress(dto.getHouseBuilding() + dto.getHouseRoomNo());
+            String decorateAddress=housesService.queryHouseName(dto.getHouseId());
+            if(StringUtils.isNotEmpty(dto.getHouseBuilding())){
+                decorateAddress=decorateAddress+dto.getHouseBuilding()+"栋";
+            }
+            if(StringUtils.isNotEmpty(dto.getHouseRoomNo())){
+                decorateAddress=decorateAddress+dto.getHouseRoomNo();
+            }
+            orderBase.setDecorateAddress(decorateAddress);
             domainService.createNewOrder(orderBase);
         }
     }

@@ -101,7 +101,13 @@ public class CustBaseServiceImpl extends ServiceImpl<CustBaseMapper, CustBase> i
         queryWrapper.eq(condDTO.getHouseId() != null, "c.house_id", condDTO.getHouseId());
         queryWrapper.eq(StringUtils.isNotEmpty(condDTO.getHouseMode()), "c.house_mode", condDTO.getHouseMode());
         queryWrapper.eq(condDTO.getReportEmployeeId() != null, "b.prepare_employee_id", condDTO.getHouseMode());
+        queryWrapper.eq(StringUtils.isNotEmpty(condDTO.getInformationSource()), "c.information_source", condDTO.getInformationSource());
+        queryWrapper.eq(StringUtils.isNotEmpty(condDTO.getOrderStatus()), "d.status", condDTO.getOrderStatus());
+        queryWrapper.eq(StringUtils.isNotEmpty(condDTO.getCustomerType()), "a.cust_type", condDTO.getCustomerType());
+        queryWrapper.eq(condDTO.getDesignEmployeeId()!=null,"f.design_employee_id",condDTO.getDesignEmployeeId());
+
         queryWrapper.apply(" a.cust_id=c.party_id");
+        queryWrapper.apply(" a.cust_id=d.cust_id");
         queryWrapper.orderByDesc("a.create_time");
 
         IPage<CustInfoDTO> iPage = this.baseMapper.queryCustomerInfo(page, queryWrapper);
@@ -110,7 +116,6 @@ public class CustBaseServiceImpl extends ServiceImpl<CustBaseMapper, CustBase> i
         }
         List<CustInfoDTO> custInfoDTOList = iPage.getRecords();
         for (CustInfoDTO dto : custInfoDTOList) {
-            dto.setPrepareEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getPrepareEmployeeId()));
             if (StringUtils.equals(dto.getCustProperty(), "6")) {
                 dto.setCustPropertyName("主管补备");
             } else {
@@ -121,6 +126,13 @@ public class CustBaseServiceImpl extends ServiceImpl<CustBaseMapper, CustBase> i
             dto.setHouseAddress(housesService.queryHouseName(dto.getHouseId()) + " |" + dto.getHouseBuilding() + " |" + dto.getHouseRoomNo());
             dto.setRulingEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getRulingEmployeeId()));
             dto.setPrepareStatusName(staticDataService.getCodeName("PREPARATION_STATUS", dto.getPrepareStatus() + ""));
+            dto.setCustTypeName(staticDataService.getCodeName("CUSTOMER_TYPE",dto.getCustType()));
+            dto.setPrepareStatusName(staticDataService.getCodeName("PREPARATION_STATUS",dto.getPrepareStatus()+""));
+            dto.setInformationSource(staticDataService.getCodeName("INFORMATIONSOURCE",dto.getInformationSource()+""));
+            dto.setPloyType(staticDataService.getCodeName("MARKETING_TYPE",dto.getPloyType()+""));
+            dto.setOrderStatusName(staticDataService.getCodeName("ORDER_STATUS",dto.getOrderStatus()));
+            dto.setCustomerServiceName(employeeService.getEmployeeNameEmployeeId(dto.getCustServiceEmployeeId()));
+            dto.setDesignEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getDesignEmployeeId()));
         }
         return iPage;
     }

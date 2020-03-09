@@ -29,7 +29,7 @@ public class CustPreparationController {
 
     @PostMapping("/addCustomerPreparation")
     @RestResult
-    public void addCustomerPreparation(CustPreparationDTO custPreparation) {
+    public void addCustomerPreparation(@RequestBody CustPreparationDTO custPreparation) {
         log.debug(custPreparation.toString());
         custPreparationServiceImpl.addCustomerPreparation(custPreparation);
     }
@@ -43,7 +43,7 @@ public class CustPreparationController {
 
     @PostMapping("/customerRuling")
     @RestResult
-    public void customerRuling(CustPreparationDTO custPreparation) {
+    public void customerRuling(@RequestBody CustPreparationDTO custPreparation) {
         log.debug(custPreparation.toString());
         custPreparationServiceImpl.customerRuling(custPreparation);
     }

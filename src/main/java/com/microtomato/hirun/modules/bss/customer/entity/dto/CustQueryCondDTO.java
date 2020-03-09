@@ -43,4 +43,6 @@ public class CustQueryCondDTO {
 
     private Long houseId;
 
+    private String orderStatus;
+
 }
