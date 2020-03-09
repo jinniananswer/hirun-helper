@@ -122,7 +122,7 @@ public class CustBaseServiceImpl extends ServiceImpl<CustBaseMapper, CustBase> i
                 dto.setCustPropertyName(staticDataService.getCodeName("CUSTOMER_PROPERTY", dto.getCustProperty()));
             }
             dto.setPrepareEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getPrepareEmployeeId()));
-            dto.setHouseModeName(staticDataService.getCodeName("HOUSE_MODE", dto.getHouseModeName()));
+            dto.setHouseModeName(staticDataService.getCodeName("HOUSE_MODE", dto.getHouseMode()));
             dto.setHouseAddress(housesService.queryHouseName(dto.getHouseId()) + " |" + dto.getHouseBuilding() + " |" + dto.getHouseRoomNo());
             dto.setRulingEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getRulingEmployeeId()));
             dto.setPrepareStatusName(staticDataService.getCodeName("PREPARATION_STATUS", dto.getPrepareStatus() + ""));

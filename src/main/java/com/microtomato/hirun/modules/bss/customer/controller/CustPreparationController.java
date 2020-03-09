@@ -1,7 +1,10 @@
 package com.microtomato.hirun.modules.bss.customer.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.microtomato.hirun.framework.annotation.RestResult;
+import com.microtomato.hirun.modules.bss.customer.entity.dto.CustInfoDTO;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.CustPreparationDTO;
+import com.microtomato.hirun.modules.bss.customer.entity.dto.CustQueryCondDTO;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +16,7 @@ import java.util.Map;
 
 /**
  * <p>
- *  前端控制器
+ * 前端控制器
  * </p>
  *
  * @author liuhui
@@ -36,7 +39,7 @@ public class CustPreparationController {
 
     @GetMapping("/loadPreparationHistory")
     @RestResult
-    public List<CustPreparationDTO> loadPreparationHistory(String mobileNo){
+    public List<CustPreparationDTO> loadPreparationHistory(String mobileNo) {
         log.debug(mobileNo);
         return custPreparationServiceImpl.loadPreparationHistory(mobileNo);
     }
@@ -50,21 +53,28 @@ public class CustPreparationController {
 
     @GetMapping("/queryFailPreparation")
     @RestResult
-    public List<CustPreparationDTO> queryFailPreparation(Long custId){
+    public List<CustPreparationDTO> queryFailPreparation(Long custId) {
         log.debug(custId.toString());
-        return custPreparationServiceImpl.queryPrepareByCustIdAndStatus(custId,"1");
+        return custPreparationServiceImpl.queryPrepareByCustIdAndStatus(custId, "1");
     }
 
     @GetMapping("/getCustomerNoAndSec")
     @RestResult
-    public Map<String,String> getCustomerNoAndSec(){
+    public Map<String, String> getCustomerNoAndSec() {
         return custPreparationServiceImpl.getCustomerNoAndSec();
     }
 
     @GetMapping("/validIsNetOrg")
     @RestResult
-    public Boolean validIsNetOrg(Long prepareEmployeeId){
+    public Boolean validIsNetOrg(Long prepareEmployeeId) {
         log.debug(prepareEmployeeId.toString());
         return false;
+    }
+
+    @GetMapping("/queryPreparationInfo")
+    @RestResult
+    public IPage<CustInfoDTO> queryPreparationInfo(CustQueryCondDTO custQueryCond) {
+        log.debug(custQueryCond.toString());
+        return custPreparationServiceImpl.queryPreparationInfo(custQueryCond);
     }
 }

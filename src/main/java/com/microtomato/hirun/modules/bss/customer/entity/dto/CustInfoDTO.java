@@ -140,4 +140,10 @@ public class CustInfoDTO {
     private Long designEmployeeId;
 
     private String designEmployeeName;
+
+    private String refereeInfo;
+
+    private String remark;
+
+    private String prepareExpireStatus;
 }

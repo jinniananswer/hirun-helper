@@ -20,7 +20,7 @@ import java.util.List;
 
 /**
  * <p>
- *  Mapper 接口
+ * Mapper 接口
  * </p>
  *
  * @author liuhui
@@ -31,6 +31,7 @@ import java.util.List;
 public interface CustPreparationMapper extends BaseMapper<CustPreparation> {
     /**
      * 根据报备号码查询报备历史记录
+     *
      * @param mobileNo
      * @return
      */
@@ -54,7 +55,7 @@ public interface CustPreparationMapper extends BaseMapper<CustPreparation> {
             " and a.mobile_no=#{mobileNo}" +
             " and b.prepare_time > #{limitTime}"
     )
-    List<CustPreparationDTO> queryPrepareByTime(@Param("mobileNo")String mobileNo, @Param("limitTime") LocalDateTime limitTime);
+    List<CustPreparationDTO> queryPrepareByTime(@Param("mobileNo") String mobileNo, @Param("limitTime") LocalDateTime limitTime);
 
     @Select("select  b.id, a.cust_id,a.cust_name,a.mobile_no,b.prepare_employee_id,b.prepare_time,b.cust_property,b.status as prepare_status,b.preparation_expire_time," +
             " b.ruling_employee_id,b.ruling_time,b.ruling_remark,b.referee_info,c.house_id,c.house_building,c.house_room_no,c.house_area, c.house_mode," +
@@ -65,5 +66,14 @@ public interface CustPreparationMapper extends BaseMapper<CustPreparation> {
             " and b.status=#{status}" +
             " order by b.update_time desc"
     )
-    List<CustPreparationDTO> queryPrepareByCustIdAndStatus(@Param("custId")Long custId, @Param("status") String status);
+    List<CustPreparationDTO> queryPrepareByCustIdAndStatus(@Param("custId") Long custId, @Param("status") String status);
+
+    @Select("select a.cust_no,a.cust_id,a.cust_name,a.mobile_no,a.cust_status,a.consult_time,b.prepare_employee_id,b.prepare_time,b.cust_property,b.status as prepare_status,b.preparation_expire_time," +
+            " b.ruling_employee_id,b.ruling_time,b.ruling_remark,c.house_id,c.house_mode,c.house_building,c.house_room_no," +
+            " c.house_area,b.referee_info,b.enter_employee_id,b.enter_time,b.remark ," +
+            " f.cust_service_employee_id,f.design_employee_id " +
+            " from cust_base a , cust_preparation b , ins_project c,order_base d LEFT JOIN order_consult f on(d.order_id=f.order_id) " +
+            " ${ew.customSqlSegment}"
+    )
+    IPage<CustInfoDTO> queryPreparationInfo(Page<CustQueryCondDTO> page, @Param(Constants.WRAPPER) Wrapper wrapper);
 }
