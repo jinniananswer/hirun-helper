@@ -52,6 +52,10 @@ public class OrderPlaneSketchServiceImpl extends ServiceImpl<OrderPlaneSketchMap
                         .eq(OrderPlaneSketch::getOrderId, orderId)
                         .orderByDesc(OrderPlaneSketch::getCreateTime)
         );
+        if (orderPlaneSketch != null) {
+            orderPlaneSketch.setCreateTime(null);
+            orderPlaneSketch.setUpdateTime(null);
+        }
         return orderPlaneSketch;
     }
 
