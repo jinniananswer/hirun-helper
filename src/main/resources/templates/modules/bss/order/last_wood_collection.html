@@ -33,27 +33,32 @@
                                     <el-divider content-position="left">尾款信息</el-divider>
                                     <el-col :span="12">
                                         <el-form-item label="工程结算金额" required="true">
-                                            <el-input v-model="getContractFee" :disabled="true"></el-input>
+                                            <el-input v-model="getContractFee" ></el-input>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="12">
                                         <el-form-item label="已收工程尾款" required="true">
-                                            <el-input v-model="getContractFee" :disabled="true"></el-input>
+                                            <el-input v-model="getContractFee" ></el-input>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="12">
                                         <el-form-item label="橱柜结算" required="true">
-                                            <el-input v-model="getContractFee" :disabled="true"></el-input>
+                                            <el-input v-model="getContractFee"></el-input>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="12">
                                         <el-form-item label="家具结算" required="true">
-                                            <el-input v-model="getContractFee" :disabled="true"></el-input>
+                                            <el-input v-model="getContractFee" ></el-input>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="12">
                                         <el-form-item label="门结算" required="true">
-                                            <el-input v-model="getContractFee" :disabled="true"></el-input>
+                                            <el-input v-model="getContractFee"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="12">
+                                        <el-form-item label="财务人员" required="true" prop="financeEmployeeId">
+                                            <order-search-employee :employee-id.sync="woodContract.financeEmployeeId"></order-search-employee>
                                         </el-form-item>
                                     </el-col>
                                 </el-row>

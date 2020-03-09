@@ -27,4 +27,10 @@ public interface IInstallmentCollectDomainService {
     void applyFinanceAuditLast(LastInstallmentCollectionDTO dto);
 
     void submitWoodContract(WoodContractDTO dto);
+
+    void auditWoodFirstCollect(WoodContractDTO dto);
+
+    void submitWoodLastCollect(WoodContractDTO dto);
+
+    void auditWoodLastCollect(WoodContractDTO dto);
 }

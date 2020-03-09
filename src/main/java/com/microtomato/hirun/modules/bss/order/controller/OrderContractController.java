@@ -50,4 +50,25 @@ public class OrderContractController {
     public void submitWoodContract(@RequestBody WoodContractDTO woodContractDTO) {
         collectDomainService.submitWoodContract(woodContractDTO);
     }
+
+    @PostMapping("/auditWoodFirstCollect")
+    @RestResult
+    @Transactional(rollbackFor = Exception.class)
+    public void auditWoodFirstCollect(@RequestBody WoodContractDTO woodContractDTO) {
+        collectDomainService.submitWoodContract(woodContractDTO);
+    }
+
+    @PostMapping("/submitWoodLastCollect")
+    @RestResult
+    @Transactional(rollbackFor = Exception.class)
+    public void submitWoodLastCollect(@RequestBody WoodContractDTO woodContractDTO) {
+        collectDomainService.submitWoodLastCollect(woodContractDTO);
+    }
+
+    @PostMapping("/auditWoodLastCollect")
+    @RestResult
+    @Transactional(rollbackFor = Exception.class)
+    public void auditWoodLastCollect(@RequestBody WoodContractDTO woodContractDTO) {
+        collectDomainService.auditWoodLastCollect(woodContractDTO);
+    }
 }

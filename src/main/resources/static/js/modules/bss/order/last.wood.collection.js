@@ -90,7 +90,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
             submit : function() {
                 this.$refs['woodContract'].validate((valid) => {
                     if (valid) {
-                        let url = 'api/bss.order/order-contract/submitWoodContract';
+                        let url = 'api/bss.order/order-contract/submitWoodLastCollect';
                         let data = this.woodContract;
                         ajax.post(url, data);
                     } else {

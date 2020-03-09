@@ -91,10 +91,10 @@ public class InstallmentCollectDomainServiceImpl implements IInstallmentCollectD
         Long chargedAllFee = feeDomainService.getPayedMoney(orderId, "2", null);
         lastInstallmentInfoDTO.setChargedAllFee((chargedAllFee.doubleValue() / 100));
         //已付橱柜
-        Long chargedCupboardFee = feeDomainService.getPayedMoney(orderId, "3", null);
+        Long chargedCupboardFee = feeDomainService.getPayedMoney(orderId, "4", null);
         lastInstallmentInfoDTO.setChargedCupboardFee((chargedCupboardFee.doubleValue() / 100));
         //已付主材
-        Long chargedMaterFee = feeDomainService.getPayedMoney(orderId, "4", null);
+        Long chargedMaterFee = feeDomainService.getPayedMoney(orderId, "3", null);
         lastInstallmentInfoDTO.setChargedMaterialFee((chargedMaterFee.doubleValue() / 100));
 
         this.queryOrderPayItemToDTO(orderId, lastInstallmentInfoDTO);
@@ -135,6 +135,21 @@ public class InstallmentCollectDomainServiceImpl implements IInstallmentCollectD
             workerService.updateOrderWorker(dto.getOrderId(), 34L, dto.getFinanceEmployeeId());
         }
         //状态转换
+        orderDomainService.orderStatusTrans(dto.getOrderId(), "NEXT");
+    }
+
+    @Override
+    public void auditWoodFirstCollect(WoodContractDTO dto) {
+        orderDomainService.orderStatusTrans(dto.getOrderId(), "NEXT");
+    }
+
+    @Override
+    public void submitWoodLastCollect(WoodContractDTO dto) {
+        orderDomainService.orderStatusTrans(dto.getOrderId(), "NEXT");
+    }
+
+    @Override
+    public void auditWoodLastCollect(WoodContractDTO dto) {
         orderDomainService.orderStatusTrans(dto.getOrderId(), "NEXT");
     }
 
