@@ -21,4 +21,6 @@ public interface IOrderPlaneSketchService extends IService<OrderPlaneSketch> {
     void updateOrderWork(Long orderId,Long roleId,Long employeeId);
 
     void submitToBackToDesignerFlow(Long orderId);
+
+    OrderPlaneSketch getPlaneSketch(Long orderId);
 }
