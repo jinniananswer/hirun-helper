@@ -14,12 +14,14 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                     painterRemark:'',
                     wallworkerSalary:'',
                     wallworkerRemark:'',
-                    orderId:'29',
+                    orderId:'',
                     id:'',
-                    custId:'18163',
+                    custId:'',
                 },
                 progress: [-10, 70],
                 activeTab: 'orderInfo',
+                orderId:util.getRequest("orderId"),
+                custId:util.getRequest("custId"),
 
                 rules: {
                     hydropowerSalary: [
@@ -61,6 +63,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
         methods: {
             init:function(){
                 let that = this;
+                that.workerSalary.orderId=that.orderId;
                 ajax.get('api/bss.order/order-worker-salary/queryWorkerSalary', {orderId:this.workerSalary.orderId}, function(data) {
                     Object.assign(that.workerSalary, data);
                 })

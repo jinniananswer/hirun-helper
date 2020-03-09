@@ -29,6 +29,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     financeEmployeeName : ''
                 },
                 orderId : util.getRequest('orderId'),
+                custId : util.getRequest('custId'),
                 orderStatus : util.getRequest('status'),
                 secondInstallmentRules : {
                     financeEmployeeId: [
