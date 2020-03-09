@@ -36,7 +36,7 @@ public class PartyVisitController {
 
     @PostMapping("/addCustomerVisit")
     @RestResult
-    public void addCustomerVisit(PartyVisit customerVisit) {
+    public void addCustomerVisit(@RequestBody PartyVisit customerVisit) {
         log.debug(customerVisit.toString());
         partyVisitServiceImpl.addCustomerVisit(customerVisit);
     }

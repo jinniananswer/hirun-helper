@@ -2,6 +2,8 @@ package com.microtomato.hirun.modules.bss.customer.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.exception.ErrorKind;
 import com.microtomato.hirun.framework.exception.cases.AlreadyExistException;
 import com.microtomato.hirun.framework.exception.cases.NotFoundException;
@@ -14,7 +16,9 @@ import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.bss.config.entity.po.PrepareConfig;
 import com.microtomato.hirun.modules.bss.config.service.IPrepareConfigService;
+import com.microtomato.hirun.modules.bss.customer.entity.dto.CustInfoDTO;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.CustPreparationDTO;
+import com.microtomato.hirun.modules.bss.customer.entity.dto.CustQueryCondDTO;
 import com.microtomato.hirun.modules.bss.customer.entity.po.CustBase;
 import com.microtomato.hirun.modules.bss.customer.entity.po.CustPreparation;
 import com.microtomato.hirun.modules.bss.customer.entity.po.Project;
@@ -98,7 +102,6 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
     private IDualService dualService;
 
 
-
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void addCustomerPreparation(CustPreparationDTO dto) {
@@ -112,7 +115,7 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
         preparation.setEnterEmployeeId(userContext.getEmployeeId());
         preparation.setEnterTime(LocalDateTime.now());
         preparation.setPreparationExpireTime(TimeUtils.addTime(dto.getPrepareTime(), ChronoUnit.DAYS, 5));
-        preparation.setRefereeInfo(dto.getRefereeName()+":"+dto.getRefereeMobileNo()+":"+dto.getRefereeFixPlace());
+        preparation.setRefereeInfo(dto.getRefereeName() + ":" + dto.getRefereeMobileNo() + ":" + dto.getRefereeFixPlace());
 
         if (preparation.getPrepareOrgId() == null) {
             EmployeeJobRole employeeJobRole = jobRoleService.queryValidMain(preparation.getPrepareEmployeeId());
@@ -122,8 +125,8 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
         if (dto.getCustId() != null) {
             preparation.setCustId(dto.getCustId());
             this.preparationMapper.insert(preparation);
-            this.preparationMapper.update(null,new UpdateWrapper<CustPreparation>().lambda().eq(CustPreparation::getId,dto.getPrepareId())
-                    .set(CustPreparation::getStatus,"2"));
+            this.preparationMapper.update(null, new UpdateWrapper<CustPreparation>().lambda().eq(CustPreparation::getId, dto.getPrepareId())
+                    .set(CustPreparation::getStatus, "2"));
             baseService.update(new UpdateWrapper<CustBase>().lambda().eq(CustBase::getCustId, dto.getCustId()).set(CustBase::getPrepareId, preparation.getId()));
         } else {
             CustBase custBase = new CustBase();
@@ -156,7 +159,14 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
             orderBase.setFloorage(dto.getHouseArea());
             orderBase.setType("H");
             orderBase.setStatus("1");
-            orderBase.setDecorateAddress(dto.getHouseBuilding() + dto.getHouseRoomNo());
+            String decorateAddress = housesService.queryHouseName(dto.getHouseId());
+            if (StringUtils.isNotEmpty(dto.getHouseBuilding())) {
+                decorateAddress = decorateAddress + dto.getHouseBuilding() + "栋";
+            }
+            if (StringUtils.isNotEmpty(dto.getHouseRoomNo())) {
+                decorateAddress = decorateAddress + dto.getHouseRoomNo();
+            }
+            orderBase.setDecorateAddress(decorateAddress);
             domainService.createNewOrder(orderBase);
         }
     }
@@ -182,18 +192,18 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
         UserContext userContext = WebContextUtils.getUserContext();
         CustPreparation addPreparation = new CustPreparation();
         CustPreparation updatePreparation = new CustPreparation();
-        Long prepareOrgId=null;
+        Long prepareOrgId = null;
         BeanUtils.copyProperties(custPreparation, addPreparation);
 
         if (custPreparation.getPrepareOrgId() == null) {
             EmployeeJobRole employeeJobRole = jobRoleService.queryValidMain(custPreparation.getPrepareEmployeeId());
-            prepareOrgId=employeeJobRole.getOrgId();
-        }else {
-            prepareOrgId=custPreparation.getPrepareOrgId();
+            prepareOrgId = employeeJobRole.getOrgId();
+        } else {
+            prepareOrgId = custPreparation.getPrepareOrgId();
         }
 
         //如果点的为系统自动补录,设置客户属性为主管报备
-        if(custPreparation.getIsAddNewPrepareFlag()){
+        if (custPreparation.getIsAddNewPrepareFlag()) {
             addPreparation.setPrepareOrgId(prepareOrgId);
             addPreparation.setCustProperty("6");
             addPreparation.setPrepareTime(LocalDateTime.now());
@@ -203,16 +213,16 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
             addPreparation.setStatus(2);
             this.baseMapper.insert(addPreparation);
             //获取客户原来的prepareId,根据该id将之前的报备信息改成报备失败,然后回填cust表的prepareId为新的报备id
-            CustBase custBase=baseService.getById(custPreparation.getCustId());
-            if(custBase.getPrepareId()!=null){
+            CustBase custBase = baseService.getById(custPreparation.getCustId());
+            if (custBase.getPrepareId() != null) {
                 updatePreparation.setStatus(1);
                 updatePreparation.setId(custBase.getPrepareId());
                 this.baseMapper.updateById(updatePreparation);
             }
 
             this.baseService.update(new UpdateWrapper<CustBase>().lambda()
-                    .eq(CustBase::getCustId,custPreparation.getCustId()).set(CustBase::getPrepareId,addPreparation.getId()));
-        }else{
+                    .eq(CustBase::getCustId, custPreparation.getCustId()).set(CustBase::getPrepareId, addPreparation.getId()));
+        } else {
             //如果选择为裁定，则更新选择的报备信息
             BeanUtils.copyProperties(custPreparation, updatePreparation);
             updatePreparation.setPrepareOrgId(prepareOrgId);
@@ -221,18 +231,17 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
             this.baseMapper.updateById(updatePreparation);
 
             //防止原来的prepareId与选择的id不一致，多做一步更新cust对应的prepareId
-            CustBase custBase=baseService.getById(custPreparation.getCustId());
-            if(custBase.getPrepareId()!=null){
-                CustPreparation updateSource=new CustPreparation();
+            CustBase custBase = baseService.getById(custPreparation.getCustId());
+            if (custBase.getPrepareId() != null) {
+                CustPreparation updateSource = new CustPreparation();
                 updateSource.setStatus(1);
                 updateSource.setId(custBase.getPrepareId());
                 this.baseMapper.updateById(updateSource);
             }
 
             this.baseService.update(new UpdateWrapper<CustBase>().lambda()
-                    .eq(CustBase::getCustId,custPreparation.getCustId()).set(CustBase::getPrepareId,custPreparation.getId()));
+                    .eq(CustBase::getCustId, custPreparation.getCustId()).set(CustBase::getPrepareId, custPreparation.getId()));
         }
-
 
 
     }
@@ -260,7 +269,7 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
             dto.setHouseModeName(staticDataService.getCodeName("HOUSE_MODE", dto.getHouseMode()));
             dto.setHouseAddress(housesService.queryHouseName(dto.getHouseId()) + dto.getHouseBuilding() + dto.getHouseRoomNo());
             dto.setRulingEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getRulingEmployeeId()));
-            dto.setPreparationStatusName(staticDataService.getCodeName("PREPARATION_STATUS",dto.getPrepareStatus()+""));
+            dto.setPreparationStatusName(staticDataService.getCodeName("PREPARATION_STATUS", dto.getPrepareStatus() + ""));
         }
         return list;
     }
@@ -344,22 +353,70 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
 
     @Override
     public List<CustPreparationDTO> queryPrepareByCustIdAndStatus(Long custId, String status) {
-        List<CustPreparationDTO> list = this.baseMapper.queryPrepareByCustIdAndStatus(custId,status);
+        List<CustPreparationDTO> list = this.baseMapper.queryPrepareByCustIdAndStatus(custId, status);
         if (ArrayUtils.isEmpty(list)) {
             return list;
         }
         for (CustPreparationDTO dto : list) {
             dto.setPrepareEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getPrepareEmployeeId()));
             dto.setEnterEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getEnterEmployeeId()));
-            if(StringUtils.equals(dto.getCustProperty(),"6")){
+            if (StringUtils.equals(dto.getCustProperty(), "6")) {
                 dto.setCustPropertyName("主管补备");
-            }else{
+            } else {
                 dto.setCustPropertyName(staticDataService.getCodeName("CUSTOMER_PROPERTY", dto.getCustProperty()));
             }
             dto.setHouseModeName(staticDataService.getCodeName("HOUSE_MODE", dto.getHouseMode()));
             dto.setHouseAddress(housesService.queryHouseName(dto.getHouseId()) + dto.getHouseBuilding() + dto.getHouseRoomNo());
         }
         return list;
+    }
+
+    @Override
+    public IPage<CustInfoDTO> queryPreparationInfo(CustQueryCondDTO condDTO) {
+        QueryWrapper<CustQueryCondDTO> queryWrapper = new QueryWrapper<>();
+        Page<CustQueryCondDTO> page = new Page<>(condDTO.getPage(), condDTO.getSize());
+        queryWrapper.apply(" a.cust_id=c.party_id");
+        queryWrapper.apply(" a.cust_id=d.cust_id");
+        queryWrapper.apply(" a.cust_id=b.cust_id");
+        queryWrapper.orderByDesc("b.create_time");
+        queryWrapper.eq(condDTO.getReportEmployeeId() != null, "b.prepare_employee_id", condDTO.getHouseMode());
+        queryWrapper.eq(condDTO.getHouseId() != null, "c.house_id", condDTO.getHouseId());
+        queryWrapper.eq(StringUtils.isNotEmpty(condDTO.getHouseMode()), "c.house_mode", condDTO.getHouseMode());
+        queryWrapper.eq(StringUtils.isNotEmpty(condDTO.getPrepareStatus()), "b.status", condDTO.getPrepareStatus());
+        //queryWrapper.apply(condDTO.getStartTime()!=null,"b.prepare_time > "+condDTO.getStartTime());
+        //queryWrapper.apply(condDTO.getEndTime()!=null,"b.prepare_time < "+condDTO.getEndTime().plusDays(1L));
+
+        IPage<CustInfoDTO> iPage = this.baseMapper.queryPreparationInfo(page, queryWrapper);
+
+        if (iPage.getRecords().size() <= 0) {
+            return iPage;
+        }
+        List<CustInfoDTO> custInfoDTOList = iPage.getRecords();
+        for (CustInfoDTO dto : custInfoDTOList) {
+            if (StringUtils.equals(dto.getCustProperty(), "6")) {
+                dto.setCustPropertyName("主管补备");
+            } else {
+                dto.setCustPropertyName(staticDataService.getCodeName("CUSTOMER_PROPERTY", dto.getCustProperty()));
+            }
+            dto.setPrepareEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getPrepareEmployeeId()));
+            dto.setHouseModeName(staticDataService.getCodeName("HOUSE_MODE", dto.getHouseMode()));
+            dto.setHouseAddress(housesService.queryHouseName(dto.getHouseId()) + " |" + dto.getHouseBuilding() + " |" + dto.getHouseRoomNo());
+            dto.setRulingEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getRulingEmployeeId()));
+            dto.setCustTypeName(staticDataService.getCodeName("CUSTOMER_TYPE", dto.getCustType()));
+            dto.setPrepareStatusName(staticDataService.getCodeName("PREPARATION_STATUS", dto.getPrepareStatus() + ""));
+            dto.setCustomerServiceName(employeeService.getEmployeeNameEmployeeId(dto.getCustServiceEmployeeId()));
+            dto.setDesignEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getDesignEmployeeId()));
+            dto.setEnterEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getEnterEmployeeId()));
+
+            if (dto.getPreparationExpireTime() == null) {
+                dto.setPrepareStatusName("报备已过期");
+            } else if (TimeUtils.compareTwoTime(dto.getPreparationExpireTime(), LocalDateTime.now()) == 1) {
+                dto.setPrepareExpireStatus("有效期内");
+            } else {
+                dto.setPrepareStatusName("报备已过期");
+            }
+        }
+        return iPage;
     }
 
 
