@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.microtomato.hirun.modules.organization.entity.dto.*;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
-import com.microtomato.hirun.modules.organization.entity.po.StatEmployeeQuantityMonth;
 
 import java.util.List;
 import java.util.Map;
@@ -97,4 +96,10 @@ public interface IEmployeeService extends IService<Employee> {
      */
     IPage<EmployeeInfoDTO> queryEmployee4BatchChange(Long parentEmployeeId,String orgLine, Page<EmployeeQueryConditionDTO> employeePage);
 
+    /**
+     * 根据某部门获取该部门归属门店或者公司某一角色的员工信息
+     * @param orgId
+     * @return
+     */
+    List<SimpleEmployeeDTO> querySimpleEmployeeInfo(Long orgId, Long roleId,Boolean isSelf);
 }

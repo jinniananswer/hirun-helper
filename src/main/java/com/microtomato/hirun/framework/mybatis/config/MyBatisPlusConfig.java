@@ -75,7 +75,7 @@ public class MyBatisPlusConfig {
 
     @Bean(name = "sqlSessionTemplate")
     public MySqlSessionTemplate customSqlSessionTemplate() throws Exception {
-        Map<String, SqlSessionFactory> sqlSessionFactoryMap = new HashMap<String, SqlSessionFactory>() {{
+        Map<String, SqlSessionFactory> sqlSessionFactoryMap = new HashMap<String, SqlSessionFactory>(16) {{
             put(DataSourceKey.SYS, createSqlSessionFactory(sysDataSource()));
             put(DataSourceKey.INS, createSqlSessionFactory(insDataSource()));
         }};

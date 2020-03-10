@@ -13,5 +13,4 @@ import java.lang.annotation.*;
 @Documented
 public @interface DataSource {
     String value();
-    //DataSourceKeyEnum value();
 }

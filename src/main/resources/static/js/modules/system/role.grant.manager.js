@@ -1,281 +1,211 @@
-layui.extend({}).define(['ajax', 'table', 'element', 'layer', 'tree', 'form'], function (exports) {
-    let $ = layui.$;
-    let element = layui.element;
-    let table = layui.table;
-    let layer = layui.layer;
-    let tree = layui.tree;
-    let form = layui.form;
+let vm = new Vue({
+    el: '#app',
+    data() {
+        return {
+            employeeOptions: [],
+            roleOptions: [],
+            selectedEmployee: '',
+            selectedRole: '',
+            revoke: false,
+            employeeTableData: [],
+            roleTableData: [],
+            employeeDialogVisible: false,
+            employeeDialogTitle: '',
+            haveRoleTableData: [],
+            roleDetailDialogVisible: false,
+            menuData: [],
+            menuCheckedKeys: [],
+            defaultProps: {
+                children: 'children',
+                label: 'title'
+            },
+            haveFuncTableData: [],
+        }
+    },
+    methods: {
+        loadEmployee: function () {
+            axios.get('api/organization/employee/loadEmployee').then(function (res) {
+                vm.employeeOptions = res.data.rows;
+            }).catch(function (error) {
+                console.log(error);
+            });
+        },
 
-    form.render();
-
-    // 让表格根据属性 checked 来判断是否勾选 checkbox
-    table = $.extend(table, {config: {checkName: 'checked'}});
-
-    // 全局变量
-    let selectedEmployeeIds = new Set([]);
-    let selectedRoleIds = new Set([]);
-
-    let roleGrantManager = {
-
-        init: function () {
-
-            $(document).on('click', '#grantRoleBtn', function () {
-                let userIds = roleGrantManager.selectUserIds();
-                let roleIds = roleGrantManager.selectRoleIds();
-
-                let params = {
-                    "userIds": userIds,
-                    "roleIds": roleIds
-                };
-
-                $.ajax({
-                    type: "post",
-                    url: "api/user/user-role/grantRole",
-                    dataType: "json",
-                    contentType: "application/json",
-                    data: JSON.stringify(params),
-                    success: function (data) {
-                        if (0 == data.code) {
-                            layer.msg("保存成功！", {time: 3000, icon: 6});
-                        } else {
-                            layer.alert("保存失败！" + data.message);
-                        }
-                    },
-                    error: function (data) {
-                        layer.alert("保存失败！");
-                    }
+        selectEmployeeChange: function (item) {
+            let spans = item.split('-');
+            let isExist = false;
+            vm.employeeTableData.forEach(function (element, index, array) {
+                if (spans[0] == element.userId) {
+                    isExist = true;
+                }
+            });
+            if (!isExist) {
+                vm.employeeTableData.push({
+                    userId: spans[0],
+                    employeeName: spans[1],
+                    employeeMobileNo: spans[2],
                 });
+            }
+        },
 
+        handleEmployeeTableDelete: function (index) {
+            vm.employeeTableData.splice(index, 1);
+        },
+
+        handleEmployeeRoleView: function (index, row) {
+            vm.employeeDialogTitle = '已分配给【' + row.employeeName + '】的角色';
+            axios.get('api/user/user-role/listRole', {params: {userId: row.userId}}).then(function (res) {
+                vm.haveRoleTableData = res.data.rows;
+            }).catch(function (error) {
+                console.log(error);
+            });
+            vm.employeeDialogVisible = true;
+        },
+
+        loadRole: function () {
+            axios.get('api/user/role/loadRole').then(function (res) {
+                vm.roleOptions = res.data.rows;
+            }).catch(function (error) {
+                console.log(error);
             });
 
-            $(document).on('click', '#revokeRoleBtn', function () {
-                let userIds = roleGrantManager.selectUserIds();
-                let roleIds = roleGrantManager.selectRoleIds();
+        },
 
-                let params = {
-                    "userIds": userIds,
-                    "roleIds": roleIds
-                };
+        selectRoleChange: function (item) {
+            let spans = item.split('-');
+            let isExist = false;
+            vm.roleTableData.forEach(function (element, index, array) {
+                if (spans[0] == element.roleId) {
+                    isExist = true;
+                }
+            });
 
-                $.ajax({
-                    type: "post",
-                    url: "api/user/user-role/revokeRole",
-                    dataType: "json",
-                    contentType: "application/json",
-                    data: JSON.stringify(params),
-                    success: function (data) {
-                        if (0 == data.code) {
-                            layer.msg("保存成功！", {time: 3000, icon: 6});
-                        } else {
-                            layer.alert("保存失败！" + data.message);
-                        }
-                    },
-                    error: function (data) {
-                        layer.alert("保存失败！");
-                    }
+            if (!isExist) {
+                vm.roleTableData.push({
+                    roleId: spans[0],
+                    roleName: spans[1],
                 });
+            }
+        },
+
+        handleRoleTableDelete: function (index) {
+            vm.roleTableData.splice(index, 1);
+        },
+
+        handleRoleFuncView: function (index, row) {
+
+            // 查角色能看到的菜单Id
+            axios.get('api/system/menu/role-menu', {params: {roleId: row.roleId}}).then(function (res) {
+                vm.menuCheckedKeys = res.data.rows;
+            }).catch(function (error) {
+                console.log(error);
             });
 
-            $('body').on('click', '.del', function () {
-                let userId = $(this).closest('tr').find('td:eq(0)').text();
-                selectedEmployeeIds.delete(userId);
-                // 删除当前按钮所在的tr
-                $(this).closest('tr').remove();
+            // 查全量菜单信息用于展示
+            axios.get('api/system/menu/all-menu', {params: {roleId: row.roleId}}).then(function (res) {
+                vm.menuData = res.data.rows;
+            }).catch(function (error) {
+                console.log(error);
             });
 
-            $('body').on('click', '.del', function () {
-                let roleId = $(this).closest('tr').find('td:eq(0)').text();
-                selectedRoleIds.delete(roleId);
-                // 删除当前按钮所在的tr
-                $(this).closest('tr').remove();
+            // 查角色可用的功能权限信息
+            axios.get('api/system/func/func-list', {params: {roleId: row.roleId}}).then(function (res) {
+                vm.haveFuncTableData = res.data.rows;
+            }).catch(function (error) {
+                console.log(error);
             });
 
-            $('body').on('click', '.seeGrantedRoles', function () {
-                let userId = $(this).closest('tr').find('td:eq(0)').text();
-                let employeeName = $(this).closest('tr').find('td:eq(1)').text();
-                layui.ajax.get('api/user/user-role/listRole', 'userId=' + userId, function (data) {
-                    let roles = data.rows;
-                    let index = layer.open({
-                        type: 0,
-                        id: 'Layer',
-                        title: '已分配给【' + employeeName + '】的角色',
-                        area: ['500px', '450px'],
-                        shade: 0,
-                        anim: -1,
-                        content: '<div class="table"></div>',
-                        btn: ['我知道了'],
-                        skin: 'layui-layer-molv',
-                        success: function (layero, index) {
-                            let colsList = [[
-                                {field: 'roleId', title: 'ID', width: 80, align: 'center'},
-                                {field: 'roleName', title: '角色名'}
-                            ]];
-                            let datas = [];
-                            for (let i = 0; i < roles.length; i++) {
-                                datas.push({
-                                    roleId: roles[i].roleId,
-                                    roleName: roles[i].roleName,
-                                });
-                            }
+            vm.roleDetailDialogVisible = true;
+        },
 
-                            table.render({
-                                elem: layero.find('.table'),
-                                id: 'Message',
-                                data: datas,
-                                cols: colsList,
-                                limit: 8,
-                                page: false,
-                            });
-                        },
-                        yes: function (index, layero) {
-                            layer.close(index);
-                        }
+        prepareSubmitData: function (userIds, roleIds) {
+            vm.employeeTableData.map((e, index) => {
+                userIds.push(e.userId);
+            });
+            if (userIds.length <= 0) {
+                this.$message({
+                    message: '请至少选择一个员工！',
+                    type: 'warning'
+                });
+                return false;
+            }
+
+            vm.roleTableData.map((e, index) => {
+                roleIds.push(e.roleId);
+            });
+
+            if (roleIds.length <= 0) {
+                this.$message({
+                    message: '请至少选择一个角色！',
+                    type: 'warning'
+                });
+                return false;
+            }
+
+            return true;
+        },
+
+        grantRoleBtn: function () {
+            let userIds = [];
+            let roleIds = [];
+            if (vm.prepareSubmitData(userIds, roleIds)) {
+
+                axios({
+                    method: 'post',
+                    url: 'api/user/user-role/grantRole',
+                    data: {
+                        "userIds": userIds,
+                        "roleIds": roleIds,
+                    }
+                }).then(function (responseData) {
+                    if (0 == responseData.data.code) {
+
+                        Vue.prototype.$message({
+                            message: '角色分配成功！',
+                            type: 'success'
+                        });
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                    Vue.prototype.$message({
+                        message: '角色分配失败！',
+                        type: 'warning'
                     });
                 });
-
-            });
-
-            $('body').on('click', '.seeDetails', function () {
-                let roleId = $(this).closest('tr').find('td:eq(0)').text();
-
-                let index = layer.open({
-                    type: 2,
-                    title: '角色权限',
-                    content: 'openUrl?url=modules/system/role_detail',
-                    maxmin: false,
-                    skin: 'layui-layer-molv',
-                    success: function (layero, index) {
-                        let body = layer.getChildFrame('body', index);
-                        body.find('#roleId').val(roleId);
-                    },
-                    yes: function (index, layero) {
-                        layer.close(index);
-                    }
-                });
-                layer.full(index);
-            });
-
-            form.on('select(employeeOptions)', function (data) {
-                if ("" == data.value) {
-                    return;
-                }
-
-                if (selectedEmployeeIds.has(data.value)) {
-                    return;
-                } else {
-                    selectedEmployeeIds.add(data.value);
-                }
-
-                let text = $("#employeeOptions option:selected").text();
-                let i = text.indexOf('-');
-                let employeeName = text.substring(0, i);
-                let employeeMobileNo = text.substring(i + 1);
-                //你要添加的html
-                let html =
-                    '<tr>' +
-                    '  <td style="display:none">' + data.value + '</td>' +
-                    '  <td align="center">' + employeeName + '</td>' +
-                    '  <td align="center">' + employeeMobileNo + '</td>' +
-                    '  <td align="center"> ' +
-                    '    <a class="layui-btn layui-btn-danger layui-btn-xs del"><i class="layui-icon layui-icon-delete"></i>删除</a> ' +
-                    '    <a class="layui-btn layui-btn-normal layui-btn-xs seeGrantedRoles"><i class="layui-icon layui-icon-read"></i>查看</a>' +
-                    '  </td>' +
-                    '</tr>';
-
-                //添加到表格最后
-                $(html).appendTo($('#employee-table tbody:last'));
-                form.render();
-
-            });
-
-            form.on('select(roleOptions)', function (data) {
-                if ("" == data.value) {
-                    return;
-                }
-
-                if (selectedRoleIds.has(data.value)) {
-                    return;
-                } else {
-                    selectedRoleIds.add(data.value);
-                }
-
-                let roleName = $("#roleOptions option:selected").text();
-
-                let html =
-                    '<tr>' +
-                    '  <td align="center">' + data.value + '</td>' +
-                    '  <td align="center">' + roleName + '</td>' +
-                    '  <td align="center"> ' +
-                    '    <a class="layui-btn layui-btn-danger layui-btn-xs del"><i class="layui-icon layui-icon-delete"></i>删除</a> ' +
-                    '    <a class="layui-btn layui-btn-normal layui-btn-xs seeDetails"><i class="layui-icon layui-icon-read"></i>查看</a>' +
-                    '  </td>' +
-                    '</tr>';
-
-                // 添加到表格最后
-                $(html).appendTo($('#role-table tbody:last'));
-                form.render();
-
-            });
-
-            // 加载员工数据
-            layui.ajax.get('api/organization/employee/loadEmployee', '', function (data) {
-                let employees = data.rows;
-                if (employees == null || employees.length <= 0) {
-                    return;
-                }
-
-                let length = employees.length;
-                let datas = ''; //'<option value="-1">输入姓名或手机号搜索</option>';
-                for (let i = 0; i < length; i++) {
-                    let employee = employees[i];
-                    datas += "<option value='" + employee.userId + "'>" + (employee.name + '-' + employee.mobileNo) + "</option>";
-                }
-                $('#employeeOptions').append(datas);
-                form.render('select');
-            });
-
-            // 加载角色数据
-            layui.ajax.get('api/user/role/loadRole', '', function (data) {
-                let roles = data.rows;
-                if (roles == null || roles.length <= 0) {
-                    return;
-                }
-
-                let length = roles.length;
-                let datas = '';
-                for (let i = 0; i < length; i++) {
-                    let role = roles[i];
-                    datas += "<option value='" + role.roleId + "'>" + role.roleName + "</option>";
-                }
-                $('#roleOptions').append(datas);
-                form.render('select');
-            });
-
+            }
         },
 
-        selectUserIds: function() {
+        revokeRoleBtn: function () {
             let userIds = [];
-            $('#employee-table tr').each(function () {
-                let userId = $(this).find('td').eq(0).text();
-                if (userId != "ID") {
-                    userIds.push(parseInt(userId));
-                }
-            });
-            return userIds;
-        },
-
-        selectRoleIds: function() {
             let roleIds = [];
-            $('#role-table tr').each(function () {
-                let roleId = $(this).find('td').eq(0).text();
-                if (roleId != "ID") {
-                    roleIds.push(parseInt(roleId));
-                }
-            });
-            return roleIds;
+            if (vm.prepareSubmitData(userIds, roleIds)) {
+                axios({
+                    method: 'post',
+                    url: 'api/user/user-role/revokeRole',
+                    data: {
+                        "userIds": userIds,
+                        "roleIds": roleIds,
+                    }
+                }).then(function (responseData) {
+                    if (0 == responseData.data.code) {
+                        Vue.prototype.$message({
+                            message: '角色回收成功！',
+                            type: 'success'
+                        });
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                    Vue.prototype.$message({
+                        message: '角色回收失败！',
+                        type: 'warning'
+                    });
+                });
+            }
         },
 
-    };
-
-    exports('roleGrantManager', roleGrantManager);
-})
+    },
+    created: function () {
+        this.loadEmployee();
+        this.loadRole();
+    },
+});

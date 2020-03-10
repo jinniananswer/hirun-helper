@@ -68,6 +68,8 @@ public class NotifyQueueController {
     public void markReadedAll(@PathVariable Integer notifyType) {
         if (notifyType == INotifyService.NotifyType.ANNOUNCE.value()) {
             notifyQueueServiceImpl.markReadedAll(INotifyService.NotifyType.ANNOUNCE);
+        } else if (notifyType == INotifyService.NotifyType.NOTICE.value()) {
+            notifyQueueServiceImpl.markReadedAll(INotifyService.NotifyType.NOTICE);
         } else if (notifyType == INotifyService.NotifyType.MESSAGE.value()) {
             notifyQueueServiceImpl.markReadedAll(INotifyService.NotifyType.MESSAGE);
         }
