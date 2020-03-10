@@ -55,4 +55,9 @@ public class OrderMeasureHouseServiceImpl extends ServiceImpl<OrderMeasureHouseM
         }
         return orderMeasureHouse;
     }
+
+    @Override
+    public void submitToOnlyWoodworkFlow(Long orderId) {
+        orderDomainService.orderStatusTrans(orderId, OrderConst.OPER_NEXT_STEP);
+    }
 }

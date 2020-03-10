@@ -44,12 +44,6 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 let data = {
                     orderId : util.getRequest('orderId'),
                 }
-/*                ajax.get('api/bss.order/order-base/getEmployeeIdByOrderIdAndRole', data, function(responseData) {
-                    //alert(JSON.stringify(responseData));
-                    if (responseData.employee) {
-                        that.quantityRoomInfos.designer = responseData.get("EMPLOYEE_ID");
-                    }
-                })*/
                 ajax.get('api/bss.order/order-measurehouse/getMeasureHouse', data, (responseData)=>{
                     Object.assign(this.quantityRoomInfos, responseData);
                 });
@@ -101,6 +95,8 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     if (this.orderStatus='4') {
                         this.isShow = false;
                     }
+                } else if (command == 'submitToOnlyWoodworkFlow') {
+                    this.submitToOnlyWoodworkFlow();
                 }
             },
             save : function () {
@@ -112,6 +108,9 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     return false;
                 }
                 ajax.post('api/bss.order/order-measurehouse/saveMeasureHouseInfos', this.quantityRoomInfos,null,null,true);
+            },
+            submitToOnlyWoodworkFlow : function() {
+                ajax.post('api/bss.order/order-measurehouse/submitToOnlyWoodworkFlow', this.quantityRoomInfos);
             },
             submitToPlanesketchFlow : function() {
                 ajax.post('api/bss.order/order-measurehouse/submitToPlanesketchFlow', this.quantityRoomInfos);
