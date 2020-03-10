@@ -42,11 +42,11 @@ public class DataSourceMonitorServiceImpl implements ApplicationContextAware {
             while (true) {
                 try {
                     Thread.sleep(60000);
-                    AtomikosNonXADataSourceBean sysDataSource = (AtomikosNonXADataSourceBean) ctx.getBean("sysDataSource");
-                    AtomikosNonXADataSourceBean insDataSource = (AtomikosNonXADataSourceBean) ctx.getBean("insDataSource");
-
-                    keepAlive(sysDataSource);
-                    keepAlive(insDataSource);
+//                    AtomikosNonXADataSourceBean sysDataSource = (AtomikosNonXADataSourceBean) ctx.getBean("sysDataSource");
+//                    AtomikosNonXADataSourceBean insDataSource = (AtomikosNonXADataSourceBean) ctx.getBean("insDataSource");
+//
+//                    keepAlive(sysDataSource);
+//                    keepAlive(insDataSource);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
