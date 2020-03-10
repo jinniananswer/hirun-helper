@@ -9,10 +9,15 @@ package com.microtomato.hirun.modules.bss.order.controller;
  */
 
 import com.microtomato.hirun.framework.annotation.RestResult;
+import com.microtomato.hirun.framework.security.UserContext;
+import com.microtomato.hirun.framework.util.WebContextUtils;
+import com.microtomato.hirun.modules.bss.order.entity.dto.OrderPlaneSketchDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWholeRoomDrawDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPlaneSketch;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderWholeRoomDraw;
 import com.microtomato.hirun.modules.bss.order.service.IOrderWholeRoomDrawService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -33,8 +38,16 @@ public class OrderWholeRoomDrawController {
 
     @GetMapping("/getWholeRoomDraw")
     @RestResult
-    public OrderWholeRoomDraw getWholeRoomDraw(Long orderId) {
-        return iOrderWholeRoomDrawService.getOrderWholeRoomDrawByOrderId(orderId);
+    public OrderWholeRoomDrawDTO getWholeRoomDraw(Long orderId) {
+        UserContext userContext = WebContextUtils.getUserContext();
+        Long employeeId = userContext.getEmployeeId();
+        OrderWholeRoomDraw orderWholeRoomDraw =  iOrderWholeRoomDrawService.getOrderWholeRoomDrawByOrderId(orderId);
+        OrderWholeRoomDrawDTO orderWholeRoomDrawDTO = new OrderWholeRoomDrawDTO();
+        if (orderWholeRoomDraw != null) {
+            BeanUtils.copyProperties(orderWholeRoomDraw,orderWholeRoomDrawDTO);
+        }
+        orderWholeRoomDrawDTO.setDesigner(employeeId);
+        return orderWholeRoomDrawDTO;
     }
 
     @PostMapping("/submitToAuditPicturesFlow")
