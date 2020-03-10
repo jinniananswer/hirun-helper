@@ -19,21 +19,21 @@
                     <div class="grid-content bg-purple">
                         <cust-info :cust-id="custId"></cust-info>
 
-                        <order-worker :order-id="uploadGarrisonDesign.orderId"></order-worker>
+                        <order-worker :order-id="orderId"></order-worker>
                     </div>
                 </el-col>
                 <el-col :span="18">
                     <div class="grid-content bg-purple-light">
-                        <order-info :order-id="uploadGarrisonDesign.orderId"></order-info>
+                        <order-info :order-id="orderId"></order-info>
                         <el-card class="box-card">
                             <div slot="header">
                                 <span>驻点设计信息</span>
                             </div>
-                            <el-form :inline="false" :rules="rules" label-position="right" label-width="80px" :model="uploadGarrisonDesign" ref="uploadGarrisonDesign">
+                            <el-form :inline="false" :rules="uploadGarrisonDesignRules" label-position="right" label-width="80px" :model="uploadGarrisonDesign" ref="uploadGarrisonDesign">
                                 <el-row>
                                     <el-col :span="8">
                                         <el-form-item label="设计师" prop="designEmployeeId" label-width="100px">
-                                            <order-selectemployee role-id="30" v-model="uploadGarrisonDesign.designEmployeeId" ></order-selectemployee>
+                                            <order-selectemployee role-id="30" v-model="uploadGarrisonDesign.designEmployeeId"></order-selectemployee>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="8">
