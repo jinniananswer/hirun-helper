@@ -55,8 +55,7 @@ public class InstallmentCollectDomainServiceImpl implements IInstallmentCollectD
         //保存费用
         LastInstallmentInfoDTO lastInstallmentInfoDTO = dto.getLastInstallmentInfoDTO();
         List<FeeDTO> feeDTOList = new ArrayList<>();
-        //木制品费
-        this.buildFeeList(6L, lastInstallmentInfoDTO.getWoodProductFee(), feeDTOList);
+
         //门费用
         this.buildFeeList(7L, lastInstallmentInfoDTO.getDoorFee(), feeDTOList);
         //家具费用
@@ -96,10 +95,22 @@ public class InstallmentCollectDomainServiceImpl implements IInstallmentCollectD
         //已付主材
         Long chargedMaterFee = feeDomainService.getPayedMoney(orderId, "3", null);
         lastInstallmentInfoDTO.setChargedMaterialFee((chargedMaterFee.doubleValue() / 100));
-
+        //尾款项
         this.queryOrderPayItemToDTO(orderId, lastInstallmentInfoDTO);
+        //财务人员
+        List<OrderWorkerDTO> orderWorkersDTO = workerService.queryByOrderId(orderId);
+        if(orderWorkersDTO != null) {
+            for(OrderWorkerDTO orderWorkerDTO : orderWorkersDTO) {
+                if(orderWorkerDTO.getRoleId() == 35L) {
+                    lastInstallmentInfoDTO.setFinanceEmployeeId(orderWorkerDTO.getEmployeeId());
+                    lastInstallmentInfoDTO.setFinanceEmployeeName(orderWorkerDTO.getName());
+                }
+            }
+        }
 
         lastInstallmentCollectionDTO.setLastInstallmentInfoDTO(lastInstallmentInfoDTO);
+
+
 
         return lastInstallmentCollectionDTO;
     }

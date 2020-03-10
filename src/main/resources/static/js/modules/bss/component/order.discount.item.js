@@ -13,7 +13,7 @@ define(['vue', 'ELEMENT', 'ajax','vxe-table','axios'], function (Vue, element, a
 
         template: `
             <div>
-                <el-button type="primary" @click="discountItemDetail = true">优惠项目录入</el-button>
+                <el-button type="primary" @click="discountItemDetail = true" style="width: 120px" >优惠项目录入</el-button>
                 <el-dialog title="优惠明细" :visible.sync="discountItemDetail" @open="openDiscountItemDetailDialog" fullscreen="true">
                     <vxe-table
                     :data="discountItemDetailList"
@@ -34,7 +34,7 @@ define(['vue', 'ELEMENT', 'ajax','vxe-table','axios'], function (Vue, element, a
                         <vxe-table-column align="center" field="discountItemName" title="优惠项目"></vxe-table-column>
                         <vxe-table-column align="center" field="contractDiscountFee" title="合同优惠金额" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
                         <vxe-table-column align="center" field="settleDiscountFee" title="结算优惠金额" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                        <vxe-table-column align="center" field="approveEmployeeName" title="优惠审批人" :edit-render="{name: 'select', options: approveEmployeeList, events: {change: selectRowChangeEvent}}"></vxe-table-column>
+                        <vxe-table-column align="center" field="approveEmployeeId" title="优惠审批人" :edit-render="{name: 'select', options: approveEmployeeList, events: {change: selectRowChangeEvent}}"></vxe-table-column>
                         <vxe-table-column align="center" field="approveDate" title="审批时间"></vxe-table-column>
                         <vxe-table-column align="center" field="statusName" title="状态"></vxe-table-column>
                         <vxe-table-column align="center" field="remark" title="备注" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
@@ -48,7 +48,6 @@ define(['vue', 'ELEMENT', 'ajax','vxe-table','axios'], function (Vue, element, a
 
             selectRowChangeEvent ({ row }, evnt) {
                 debugger;
-                alert(evnt.target.value);
             },
 
             openDiscountItemDetailDialog : function() {
