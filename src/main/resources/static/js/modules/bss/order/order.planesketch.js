@@ -92,11 +92,6 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     });
                     return false;
                 }
-/*
-                ajax.get('api/bss.order/order-planSketch/getPlaneSketch', data, (responseData)=>{
-                    Object.assign(this.planFigureInfos, responseData);
-                });
-*/
 
                 ajax.post('api/bss.order/order-planSketch/submitPlaneSketch', this.planFigureInfos,null,null,true);
             },
@@ -117,27 +112,9 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     });
                     return false;
                 }
-                /*let url = 'api/bss.order/order-file/view/' + util.getRequest("orderId") + "/456";
-                let rn = false;
-                ajax.get(url, null,function(data){
-                    if (data == null) {
 
-                        Vue.prototype.$message({
-                            message: '请先上传平面图！',
-                            type: 'error'
-                        });
-                        return;
-                    }
-
-                });*/
                 this.planFigureInfos.employeeId = this.eid;
                 ajax.post('api/bss.order/order-planSketch/submitToSignContractFlow', this.planFigureInfos,null);
-
-/*                ajax.get('api/bss.order/order-planSketch/updateOrderWork', {
-                    orderId : this.planFigureInfos.orderId,
-                    roleId : '34',
-                    employeeId : this.eid,
-                });*/
             },
             toSignContractFlow : function () {
                 this.planFigureInfos.employeeId = this.eid;
