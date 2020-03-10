@@ -30,12 +30,12 @@
                             <el-form :inline="false" :model="planFigureInfos" label-position="right" label-width="140px">
                                 <el-row>
                                     <el-col :span="11">
-                                        <el-form-item label="设计师">
+                                        <el-form-item label="设计师" required="true" prop="designer">
                                             <order-selectemployee role-id="30" v-model="planFigureInfos.designer"></order-selectemployee>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="11">
-                                        <el-form-item label="设计方案数(个)">
+                                        <el-form-item label="设计方案数(个)" required="true" prop="designerPlanNum">
                                             <el-input-number v-model="planFigureInfos.designerPlanNum" controls-position="right" @change="handleChangePlanNum" style="width:100%" :min="1" :max="10"></el-input-number>
                                         </el-form-item>
                                     </el-col>
@@ -47,26 +47,26 @@
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="11">
-                                        <el-form-item label="套内面积">
+                                        <el-form-item label="套内面积" required="true" prop="indoorArea">
                                             <el-input-number v-model="planFigureInfos.indoorArea" controls-position="right" @change="handleChangeInJacketAreaNum" style="width:100%" :precision="2" :step="0.1" :min="1" :max="1000"></el-input-number>
                                         </el-form-item>
                                     </el-col>
                                 </el-row>
                                 <el-row>
                                     <el-col :span="11">
-                                        <el-form-item label="设计费标准">
+                                        <el-form-item label="设计费标准" required="true" prop="designFeeStandard">
                                             <vue-select code-type="designFeeStandard" v-model="planFigureInfos.designFeeStandard" style="width:100%" @change="changeDesignFeeStandard"></vue-select>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="11">
-                                        <el-form-item label="设计主题">
+                                        <el-form-item label="设计主题" required="true" prop="designTheme">
                                             <vue-select code-type="DESIGN_THEME" v-model="planFigureInfos.designTheme" @change="changeDefaultDesignTheme"></vue-select>
                                         </el-form-item>
                                     </el-col>
                                 </el-row>
                                 <el-row>
                                     <el-col :span="11">
-                                        <el-form-item label="合同设计费(元)">
+                                        <el-form-item label="合同设计费(元)" required="true" prop="contractDesignFee">
                                             <el-input v-model="planFigureInfos.contractDesignFee" placeholder="合同设计费"></el-input>
                                         </el-form-item>
                                     </el-col>
@@ -120,7 +120,7 @@
 
                                     </el-col>
                                     <el-col v-if="true" :span="22">
-                                        <el-form-item label="请选择财务人员">
+                                        <el-form-item label="请选择财务人员" required="true">
                                             <order-search-employee :employee-id.sync="eid" :employee-name.sync="employeeName"></order-search-employee>
                                         </el-form-item>
                                     </el-col>

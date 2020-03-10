@@ -29,7 +29,7 @@
                             <el-form :inline="false" :model="wholeRoomDrawing" label-position="right" label-width="140px">
                                 <el-row>
                                     <el-col :span="11">
-                                        <el-form-item label="设计师">
+                                        <el-form-item label="设计师" required="true" prop="designer">
                                             <order-selectemployee role-id="30" v-model="wholeRoomDrawing.designer"></order-selectemployee>
                                         </el-form-item>
                                     </el-col>
@@ -71,7 +71,7 @@
                                 </el-row>
                                 <el-row>
                                     <el-col :span="11">
-                                        <el-form-item label="制作组长">
+                                        <el-form-item label="制作组长" required="true" prop="designer">
                                             <order-selectemployee role-id="42" v-model="wholeRoomDrawing.productionLeader"></order-selectemployee>
                                         </el-form-item>
                                     </el-col>
@@ -112,7 +112,7 @@
                                         </el-form-item>
                                     </el-col>
                                     <el-col v-if="true" :span="22">
-                                        <el-form-item label="请选图纸审核人员">
+                                        <el-form-item label="请选图纸审核人员" required="true" >
                                             <order-search-employee :employee-id.sync="eid" :employee-name.sync="employeeName"></order-search-employee>
                                         </el-form-item>
                                     </el-col>
