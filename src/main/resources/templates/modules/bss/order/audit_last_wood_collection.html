@@ -15,14 +15,14 @@
             <el-row :gutter="12">
                 <el-col :span="6">
                     <div class="grid-content bg-purple">
-                        <cust-info :cust-id="woodContract.custId"></cust-info>
+                        <cust-info :cust-id="custId"></cust-info>
 
-                        <order-worker :order-id="woodContract.orderId"></order-worker>
+                        <order-worker :order-id="orderId"></order-worker>
                     </div>
                 </el-col>
                 <el-col :span="18">
                     <div class="grid-content bg-purple-light">
-                        <order-info :order-id="woodContract.orderId"></order-info>
+                        <order-info :order-id="orderId"></order-info>
                         <el-form :rules="woodContractRules" :inline="false" :model="woodContract"
                                  ref="woodContract" label-width="130px">
                             <el-card class="box-card">
