@@ -15,7 +15,12 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 custId: util.getRequest('custId'),
                 isShow : true,
                 id : util.getRequest('id'),
-                orderStatus : util.getRequest('orderStatus')
+                orderStatus : util.getRequest('orderStatus'),
+                quantityRoomInfosRules : {
+                    measureArea: [
+                        { required: true, message: '请填写量房面积', trigger: 'change' }
+                    ],
+                }
             }
         },
 
@@ -35,9 +40,16 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 this.quantityRoomInfos.measureArea = value;
             },
             init:function(){
+                let that = this;
                 let data = {
                     orderId : util.getRequest('orderId'),
                 }
+/*                ajax.get('api/bss.order/order-base/getEmployeeIdByOrderIdAndRole', data, function(responseData) {
+                    //alert(JSON.stringify(responseData));
+                    if (responseData.employee) {
+                        that.quantityRoomInfos.designer = responseData.get("EMPLOYEE_ID");
+                    }
+                })*/
                 ajax.get('api/bss.order/order-measurehouse/getMeasureHouse', data, (responseData)=>{
                     Object.assign(this.quantityRoomInfos, responseData);
                 });

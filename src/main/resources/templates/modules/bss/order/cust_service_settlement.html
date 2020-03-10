@@ -152,6 +152,11 @@
                                             <el-button type="primary" @click="save">保存</el-button>
                                             <el-button type="primary" @click="collectLastFee">已结算收取尾款</el-button>
                                             <el-button type="primary" @click="orderNoSettlement">客户不结算</el-button>
+                                            <el-button>
+                                                <order-file-upload ref="upload" button-name="上传结算表"
+                                                                   accept=".xls,.xlsx" :order-id="orderId" stage="14">
+                                                </order-file-upload>
+                                            </el-button>
                                         </el-col>
                                     </div>
                                 </el-row>

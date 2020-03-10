@@ -18,7 +18,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 startTime: '',
                 endTime: '',
                 firstLookTime: util.getNowDate(),
-                employeeId : ''
+                financeEmployeeId : ''
             },
             accountingInfos: [],
             isShow: false,
@@ -39,8 +39,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 }
                 ajax.get('api/bss.order/order-planSketch/getPlaneSketch', data, (responseData)=>{
                     Object.assign(this.planFigureInfos, responseData);
-                 });
-                //alert(JSON.stringify(this.planFigureInfos));
+                });
                 if (this.orderStatus=='35') {
                     this.isBackToDesigner = true;
                 }
@@ -49,6 +48,8 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 }
                 this.downloadFileUrl = 'api/bss.order/order-file/download/' + util.getRequest("orderId") + "/456";
             },
+
+
             checkBeforeOrder : function () {
             },
             changeDesignFeeStandard: function(newVal) {
@@ -91,6 +92,12 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     });
                     return false;
                 }
+/*
+                ajax.get('api/bss.order/order-planSketch/getPlaneSketch', data, (responseData)=>{
+                    Object.assign(this.planFigureInfos, responseData);
+                });
+*/
+
                 ajax.post('api/bss.order/order-planSketch/submitPlaneSketch', this.planFigureInfos,null,null,true);
             },
             //修改平面图时间
@@ -110,7 +117,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     });
                     return false;
                 }
-                let url = 'api/bss.order/order-file/view/' + util.getRequest("orderId") + "/456";
+                /*let url = 'api/bss.order/order-file/view/' + util.getRequest("orderId") + "/456";
                 let rn = false;
                 ajax.get(url, null,function(data){
                     if (data == null) {
@@ -122,15 +129,15 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                         return;
                     }
 
-                });
+                });*/
                 this.planFigureInfos.employeeId = this.eid;
-                ajax.post('api/bss.order/order-planSketch/submitToSignContractFlow', this.planFigureInfos,null,null,true);
-                ajax.get('api/bss.order/order-planSketch/updateOrderWork', {
+                ajax.post('api/bss.order/order-planSketch/submitToSignContractFlow', this.planFigureInfos,null);
+
+/*                ajax.get('api/bss.order/order-planSketch/updateOrderWork', {
                     orderId : this.planFigureInfos.orderId,
                     roleId : '34',
                     employeeId : this.eid,
-                });
-                return false;
+                });*/
             },
             toSignContractFlow : function () {
                 this.planFigureInfos.employeeId = this.eid;
@@ -140,7 +147,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
             },
             backOrderWork : function () {
                 //回写订单状态
-                ajax.post('api/bss.order/order-planSketch/updateOrderWork', {
+                ajax.get('api/bss.order/order-planSketch/updateOrderWork', {
                     orderId : this.planFigureInfos.orderId,
                     roleId : '34',
                     employeeId : this.eid,

@@ -113,6 +113,16 @@ public class OrderDetailDTO {
     private Long activityId;
 
     /**
+     * 上一步状态
+     */
+    private String previousStatus;
+
+    /**
+     * 上一步状态
+     */
+    private String previousStatusName;
+
+    /**
      * 订单费用信息
      */
     private List<OrderFeeInfoDTO> orderFees;

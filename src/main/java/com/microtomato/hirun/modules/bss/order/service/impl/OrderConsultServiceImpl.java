@@ -107,6 +107,7 @@ public class OrderConsultServiceImpl extends ServiceImpl<OrderConsultMapper, Ord
 
     @Override
     public void submitSneak(CustConsultDTO dto) {
+        this.saveCustomerConsultInfo(dto);
         orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_RUN);
     }
 

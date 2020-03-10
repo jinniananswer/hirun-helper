@@ -5,10 +5,12 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
+import com.microtomato.hirun.modules.bss.config.entity.consts.FeeConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.*;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderContract;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFeeItem;
 import com.microtomato.hirun.modules.bss.order.service.*;
+import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +48,9 @@ public class InstallmentCollectDomainServiceImpl implements IInstallmentCollectD
     @Autowired
     private IOrderContractService orderContractService;
 
+    @Autowired
+    private IEmployeeService employeeService;
+
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void saveLastCollectionFee(LastInstallmentCollectionDTO dto) {
@@ -55,8 +60,7 @@ public class InstallmentCollectDomainServiceImpl implements IInstallmentCollectD
         //保存费用
         LastInstallmentInfoDTO lastInstallmentInfoDTO = dto.getLastInstallmentInfoDTO();
         List<FeeDTO> feeDTOList = new ArrayList<>();
-        //木制品费
-        this.buildFeeList(6L, lastInstallmentInfoDTO.getWoodProductFee(), feeDTOList);
+
         //门费用
         this.buildFeeList(7L, lastInstallmentInfoDTO.getDoorFee(), feeDTOList);
         //家具费用
@@ -96,10 +100,22 @@ public class InstallmentCollectDomainServiceImpl implements IInstallmentCollectD
         //已付主材
         Long chargedMaterFee = feeDomainService.getPayedMoney(orderId, "3", null);
         lastInstallmentInfoDTO.setChargedMaterialFee((chargedMaterFee.doubleValue() / 100));
-
+        //尾款项
         this.queryOrderPayItemToDTO(orderId, lastInstallmentInfoDTO);
+        //财务人员
+        List<OrderWorkerDTO> orderWorkersDTO = workerService.queryByOrderId(orderId);
+        if(orderWorkersDTO != null) {
+            for(OrderWorkerDTO orderWorkerDTO : orderWorkersDTO) {
+                if(orderWorkerDTO.getRoleId() == 35L) {
+                    lastInstallmentInfoDTO.setFinanceEmployeeId(orderWorkerDTO.getEmployeeId());
+                    lastInstallmentInfoDTO.setFinanceEmployeeName(orderWorkerDTO.getName());
+                }
+            }
+        }
 
         lastInstallmentCollectionDTO.setLastInstallmentInfoDTO(lastInstallmentInfoDTO);
+
+
 
         return lastInstallmentCollectionDTO;
     }
@@ -114,19 +130,30 @@ public class InstallmentCollectDomainServiceImpl implements IInstallmentCollectD
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void submitWoodContract(WoodContractDTO dto) {
         UserContext userContext = WebContextUtils.getUserContext();
-        //保存合同信息
         OrderContract orderContract = new OrderContract();
         BeanUtils.copyProperties(dto, orderContract);
-        orderContract.setContractType("1");
-        orderContract.setOrgId(userContext.getOrgId());
-        orderContractService.save(orderContract);
-        //保存费用信息
+
+        //保存合同信息
+        if(dto.getId()!=null){
+            this.orderContractService.updateById(orderContract);
+        }else{
+            orderContract.setContractType("1");
+            orderContract.setOrgId(userContext.getOrgId());
+            orderContractService.save(orderContract);
+        }
+
+        //保存工程款费用信息
         List<FeeDTO> feeDTOList = new ArrayList<>();
-        this.buildFeeList(6L, dto.getContractFee(), feeDTOList);
         this.buildFeeList(7L, dto.getDoorFee(), feeDTOList);
         this.buildFeeList(8L, dto.getFurnitureFee(), feeDTOList);
+        this.buildFeeList(14L, dto.getReturnDesignFee(), feeDTOList);
         this.buildFeeList(15L, dto.getTaxFee(), feeDTOList);
         feeDomainService.createOrderFee(dto.getOrderId(), "2", 1, feeDTOList);
+        //保存橱柜总费用
+        List<FeeDTO> cupFeeDTOList = new ArrayList<>();
+        this.buildFeeList(4L, dto.getCupboardFee(), cupFeeDTOList);
+        feeDomainService.createOrderFee(dto.getOrderId(), "4", 1, feeDTOList);
+
         //保存orderWorker
         if (dto.getProjectEmployeeId() != null) {
             workerService.updateOrderWorker(dto.getOrderId(), 33L, dto.getProjectEmployeeId());
@@ -198,17 +225,35 @@ public class InstallmentCollectDomainServiceImpl implements IInstallmentCollectD
         return lastInstallmentInfoDTO;
     }
 
+    @Override
     public WoodContractDTO queryWoodContract(Long orderId) {
         WoodContractDTO dto = new WoodContractDTO();
         //拼装合同信息
         OrderContract orderContract = orderContractService.getOne(new QueryWrapper<OrderContract>().lambda().eq(OrderContract::getOrderId, orderId)
                 .eq(OrderContract::getContractType, "1"));
-        BeanUtils.copyProperties(orderContract, dto);
+        if(orderContract!=null){
+            BeanUtils.copyProperties(orderContract, dto);
+        }
         //拼装已收木制品信息
-        Long chargedWoodFee = feeDomainService.getPayedMoney(orderId, "3", null);
+        Long chargedWoodFee = feeDomainService.getPayedMoney(orderId, "2", null);
         dto.setChargedWoodFee(chargedWoodFee.doubleValue() / 100);
-        //拼装合同费用信息 todo
-        feeItemService.queryByOrderIdTypePeriod(orderId, "2", 1);
+        //拼装合同费用信息
+        List<OrderFeeItem> woodFeeItemList = feeItemService.queryByOrderIdTypePeriod(orderId, FeeConst.FEE_TYPE_PROJECT, FeeConst.FEE_PERIOD_FIRST);
+        if(ArrayUtils.isNotEmpty(woodFeeItemList)){
+            for(OrderFeeItem orderFeeItem:woodFeeItemList){
+                if(orderFeeItem.getFeeItemId() == 7L) {
+                    dto.setDoorFee(orderFeeItem.getFee().doubleValue()/100);
+                } else if(orderFeeItem.getFeeItemId() == 8L) {
+                    dto.setFurnitureFee(orderFeeItem.getFee().doubleValue()/100);
+                } else if(orderFeeItem.getFeeItemId() == 15L) {
+                    dto.setTaxFee(orderFeeItem.getFee().doubleValue()/100);
+                }
+            }
+        }
+        List<OrderFeeItem> cupFeeItemList = feeItemService.queryByOrderIdTypePeriod(orderId, "4", FeeConst.FEE_PERIOD_FIRST);
+        if(ArrayUtils.isNotEmpty(cupFeeItemList)){
+            dto.setCupboardFee(cupFeeItemList.get(0).getFee().doubleValue()/100);
+        }
         //拼装参与人业务的人员信息
         List<OrderWorkerDTO> workerList = workerService.queryByOrderId(orderId);
         if (ArrayUtils.isEmpty(workerList)) {
@@ -218,8 +263,10 @@ public class InstallmentCollectDomainServiceImpl implements IInstallmentCollectD
         for (OrderWorkerDTO workerDTO : workerList) {
             if (workerDTO.getRoleId().equals(33L)) {
                 dto.setProjectEmployeeId(workerDTO.getEmployeeId());
+                dto.setProjectEmployeeName(workerDTO.getName());
             } else if (workerDTO.getRoleId().equals(34L)) {
                 dto.setFinanceEmployeeId(workerDTO.getEmployeeId());
+                dto.setFinanceEmployeeName(workerDTO.getName());
             }
         }
         return dto;

@@ -32,6 +32,14 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
         methods: {
 
             init:function(){
+                let data = {
+                    orderId : util.getRequest('orderId'),
+                }
+                //alert(JSON.stringify(data));
+                ajax.get('api/bss.order/order-wholeRoomDrawing/getWholeRoomDraw', data, (responseData)=>{
+                    Object.assign(this.wholeRoomDrawing, responseData);
+                });
+
                 this.wholeRoomDrawing.orderId = util.getRequest('orderId');
                 if (this.orderStatus=='36') {
                     this.isShow = false;
@@ -100,7 +108,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     return false;
                 }
                 ajax.post('api/bss.order/order-wholeRoomDrawing/submitToAuditPicturesFlow', this.wholeRoomDrawing);
-                ajax.post('api/bss.order/order-planSketch/updateOrderWork', {
+                ajax.get('api/bss.order/order-planSketch/updateOrderWork', {
                     orderId : this.wholeRoomDrawing.orderId,
                     roleId : '44',
                     employeeId : this.eid,

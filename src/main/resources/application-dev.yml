@@ -12,6 +12,7 @@ logging:
   level:
     root: info
     #com.atomikos.jdbc.nonxa.AtomikosThreadLocalConnection: debug
+    com.atomikos: debug
     com.baomidou.dynamic.datasource: debug
     com.baomidou.mybatisplus: info
     com.microtomato.hirun: debug
@@ -33,6 +34,7 @@ spring:
         maxPoolSize: 5
         maxIdleTime: 60
         maxLifetime: 1200
+        testQuery: SELECT 1
         maintenanceInterval: 60
 
       ins:
@@ -45,6 +47,7 @@ spring:
         maxPoolSize: 5
         maxIdleTime: 60
         maxLifetime: 1200
+        testQuery: SELECT 1
         maintenanceInterval: 60
 
   cache:

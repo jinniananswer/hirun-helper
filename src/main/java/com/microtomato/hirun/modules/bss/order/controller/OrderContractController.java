@@ -71,4 +71,10 @@ public class OrderContractController {
     public void auditWoodLastCollect(@RequestBody WoodContractDTO woodContractDTO) {
         collectDomainService.auditWoodLastCollect(woodContractDTO);
     }
+
+    @GetMapping("/queryWoodContract")
+    @RestResult
+    public WoodContractDTO queryWoodContract(Long orderId) {
+        return collectDomainService.queryWoodContract(orderId);
+    }
 }

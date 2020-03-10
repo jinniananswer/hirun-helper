@@ -25,25 +25,31 @@ public class WoodContractDTO {
 
     private String environmentalTestingAgency;
 
-    private Double contractFee;
+    private Double contractFee=0.0;
 
-    private Double doorFee;
+    private Double doorFee=0.0;
 
-    private Double furnitureFee;
+    private Double furnitureFee=0.0;
 
-    private Integer chargedDesignFee;
+    private Double chargedDesignFee;
 
-    private Double returnDesignFee;
+    private Double returnDesignFee=0.0;
 
-    private Double taxFee;
+    private Double taxFee=0.0;
 
     private String remark;
 
-    private Double firstContractFee;
+    private Double firstContractFee=0.0;
 
     private Long financeEmployeeId;
 
+    private String financeEmployeeName;
+
     private Long projectEmployeeId;
 
-    private Double chargedWoodFee;
+    private String projectEmployeeName;
+
+    private Double chargedWoodFee=0.0;
+
+    private Double cupboardFee=0.0;
 }
