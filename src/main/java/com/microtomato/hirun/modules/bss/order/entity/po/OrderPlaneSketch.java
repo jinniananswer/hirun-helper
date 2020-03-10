@@ -4,10 +4,15 @@ import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.microtomato.hirun.framework.config.JsonLocalDateTimeDeserializer;
+import com.microtomato.hirun.framework.config.JsonLocalDateTimeSerializer;
 import com.microtomato.hirun.framework.data.BaseEntity;
 import lombok.*;
 import lombok.experimental.Accessors;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -71,19 +76,20 @@ public class OrderPlaneSketch extends BaseEntity {
      * 开始时间
      */
     @TableField("start_time")
-    private LocalDateTime startTime;
+    private LocalDate startTime;
 
     /**
      * 结束时间
      */
+
     @TableField("end_time")
-    private LocalDateTime endTime;
+    private LocalDate endTime;
 
     /**
      * 第一次看图时间
      */
     @TableField("first_look_time")
-    private LocalDateTime firstLookTime;
+    private LocalDate firstLookTime;
 
     /**
      * 客户意见
@@ -94,6 +100,8 @@ public class OrderPlaneSketch extends BaseEntity {
     /**
      * 创建时间
      */
+    @JsonSerialize(using = JsonLocalDateTimeSerializer.class)
+    @JsonDeserialize(using = JsonLocalDateTimeDeserializer.class)
     @TableField(value = "create_time", fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 

@@ -1,49 +1,49 @@
-require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'order-info', 'order-worker', 'order-selectemployee','cust-visit', 'vxe-table', 'order-search-employee'], function(Vue, element, axios, ajax, vueselect, util, custInfo, orderInfo, orderWorker, orderSelectEmployee,custVisit, vxetable, orderSearchEmployee) {
+require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'order-info', 'order-worker', 'order-selectemployee', 'cust-visit', 'vxe-table', 'order-search-employee'], function (Vue, element, axios, ajax, vueselect, util, custInfo, orderInfo, orderWorker, orderSelectEmployee, custVisit, vxetable, orderSearchEmployee) {
     Vue.use(vxetable);
     let vm = new Vue({
         el: '#app',
         data() {
             return {
                 woodContract: {
-                    orderId : '39',
-                    custId:'18349',
-                    signDate : '',
-                    startDate : '',
-                    endDate : '',
+                    orderId: '',
+                    custId: '',
+                    signDate: '',
+                    startDate: '',
+                    endDate: '',
                     environmentalTestingAgency: '',
-                    contractFee : '0',
-                    doorFee : '0',
-                    furnitureFee : '0',
-                    returnDesignFee : '0',
-                    taxFee : '0',
-                    remark : '',
-                    financeEmployeeId : '',
-                    projectEmployeeId:'',
-                    cupboardFee:'0',
-                    firstCupboardFee:'0',
-                    firstContractFee:'0',
-                    chargedWoodFee:'0',
-                    operatorEmployeeId:'',
-                    payedTime:'',
+                    contractFee: '0',
+                    doorFee: '0',
+                    furnitureFee: '0',
+                    returnDesignFee: '0',
+                    taxFee: '0',
+                    remark: '',
+                    financeEmployeeId: '',
+                    projectEmployeeId: '',
+                    cupboardFee: '0',
+                    firstCupboardFee: '0',
+                    firstContractFee: '0',
+                    chargedWoodFee: '0',
+                    operatorEmployeeId: '',
+                    payedTime: '',
                 },
-                orderId : util.getRequest('orderId'),
-                woodContractRules : {
+                orderId: util.getRequest('orderId'),
+                woodContractRules: {
                     signDate: [
-                        { required: true, message: '请选择签订合同时间', trigger: 'change' }
+                        {required: true, message: '请选择签订合同时间', trigger: 'change'}
                     ],
                     startDate: [
-                        { required: true, message: '请选择合同开始时间', trigger: 'change' }
+                        {required: true, message: '请选择合同开始时间', trigger: 'change'}
                     ],
                     endDate: [
-                        { required: true, message: '请填写合同结束时间', trigger: 'change' }
+                        {required: true, message: '请填写合同结束时间', trigger: 'change'}
                     ],
                     environmentalTestingAgency: [
                         {required: true, message: '请选择环保检测机构', trigger: 'change'},
                     ],
-                    financeEmployeeId : [
+                    financeEmployeeId: [
                         {required: true, message: '请选择财务人员', trigger: 'change'},
                     ],
-                    projectEmployeeId : [
+                    projectEmployeeId: [
                         {required: true, message: '请选择财务人员', trigger: 'change'},
                     ]
                 },
@@ -57,7 +57,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                         - parseFloat(this.woodContract.returnDesignFee)
                         + parseFloat(this.woodContract.taxFee)
                         + parseFloat(this.woodContract.cupboardFee);
-                    this.woodContract.contractFee = Math.round(contractFee*100) / 100;
+                    this.woodContract.contractFee = Math.round(contractFee * 100) / 100;
                     return this.woodContract.contractFee;
                 }
             },
@@ -69,7 +69,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                         - parseFloat(this.woodContract.returnDesignFee)
                         + parseFloat(this.woodContract.taxFee) * 0.95
                         + parseFloat(this.woodContract.cupboardFee) * 0.95;
-                    this.woodContract.firstContractFee = Math.round(firstContractFee*100) / 100;
+                    this.woodContract.firstContractFee = Math.round(firstContractFee * 100) / 100;
                     return this.woodContract.firstContractFee;
                 }
             },
@@ -77,28 +77,23 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
             getFirstCupBoardFee: {
                 get() {
                     let firstCupBoardFee = this.woodContract.cupboardFee;
-                    this.woodContract.firstCupboardFee=firstCupBoardFee;
+                    this.woodContract.firstCupboardFee = firstCupBoardFee;
                     return this.woodContract.firstCupboardFee;
                 }
             }
         },
-        mounted: function() {
+        mounted: function () {
             this.woodContract.orderId = this.orderId;
         },
 
         methods: {
-            submit : function() {
-                this.$refs['woodContract'].validate((valid) => {
-                    if (valid) {
-                        let url = 'api/bss.order/order-contract/submitWoodContract';
-                        let data = this.woodContract;
-                        ajax.post(url, data);
-                    } else {
-                        return false;
-                    }
-                });
+            submit: function () {
+                let url = 'api/bss.order/order-contract/submitWoodLastCollect';
+                let data = this.woodContract;
+                ajax.post(url, data);
+
             },
-            uploadDecorateContract : function () {
+            uploadDecorateContract: function () {
                 alert('上传合同附件')
             },
 

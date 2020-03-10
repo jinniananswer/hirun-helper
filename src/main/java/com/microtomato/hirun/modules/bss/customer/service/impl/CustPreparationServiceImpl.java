@@ -409,11 +409,11 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
             dto.setEnterEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getEnterEmployeeId()));
 
             if (dto.getPreparationExpireTime() == null) {
-                dto.setPrepareStatusName("报备已过期");
+                dto.setPrepareExpireStatus("报备已过期");
             } else if (TimeUtils.compareTwoTime(dto.getPreparationExpireTime(), LocalDateTime.now()) == 1) {
                 dto.setPrepareExpireStatus("有效期内");
             } else {
-                dto.setPrepareStatusName("报备已过期");
+                dto.setPrepareExpireStatus("报备已过期");
             }
         }
         return iPage;

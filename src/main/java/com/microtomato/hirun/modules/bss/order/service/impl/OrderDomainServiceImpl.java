@@ -96,7 +96,7 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
         }
 
         BeanUtils.copyProperties(orderBase, orderInfo);
-
+        orderInfo.setTypeName(this.staticDataService.getCodeName("ORDER_TYPE", orderBase.getType()));
         Long housesId = orderBase.getHousesId();
         if (housesId != null) {
             //查询楼盘信息

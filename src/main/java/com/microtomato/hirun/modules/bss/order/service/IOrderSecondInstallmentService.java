@@ -5,4 +5,6 @@ import com.microtomato.hirun.modules.bss.order.entity.dto.SecondInstallmentColle
 public interface IOrderSecondInstallmentService {
 
     public void secondInstallmentCollect(SecondInstallmentCollectionDTO dto);
+
+    public SecondInstallmentCollectionDTO getSecondInstallment(Long orderId);
 }

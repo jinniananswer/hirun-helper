@@ -31,14 +31,14 @@
                                 </div>
                                 <el-row>
                                     <el-col :span="12">
-                                        <el-form-item label="经办人" required="true" prop="operatorEmployeeId" disabled>
+                                        <el-form-item label="经办人" required="true" prop="operatorEmployeeId">
                                             <order-search-employee :employee-id.sync="woodContract.operatorEmployeeId"></order-search-employee>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="12">
-                                        <el-form-item label="收款时间" prop="payedTime" required="true" disabled>
+                                        <el-form-item label="收款时间" prop="" required="true">
                                             <el-date-picker v-model="woodContract.payedTime" align="right" type="date" value-format="yyyy-MM-dd" placeholder="选择日期"
-                                                            :disabled = "true" style="width: 100%;">
+                                                             style="width: 100%;">
                                             </el-date-picker>
                                         </el-form-item>
                                     </el-col>
@@ -52,68 +52,68 @@
                             <el-card class="box-card">
                                 <el-row :gutter="20">
                                     <el-col :span="12">
-                                        <el-form-item label="签订合同时间" required="true" prop="signDate" :disabled="true" >
+                                        <el-form-item label="签订合同时间"  prop="" :disabled="true" >
                                             <el-date-picker v-model="woodContract.signDate" align="right" type="date" value-format="yyyy-MM-dd"
                                                             placeholder="选择日期" :disabled = "false" style="width: 100%;">
                                             </el-date-picker>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="12">
-                                        <el-form-item label="合同开始时间" required="true" prop="startDate" :disabled="true">
+                                        <el-form-item label="合同开始时间"  prop="" :disabled="true">
                                             <el-date-picker v-model="woodContract.startDate" align="right" type="date" value-format="yyyy-MM-dd" placeholder="选择日期"
                                                     :disabled = "true" style="width: 100%;">
                                             </el-date-picker>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="12">
-                                        <el-form-item label="合同结束时间" prop="endDate" required="true" :disabled="true">
+                                        <el-form-item label="合同结束时间"  :disabled="true">
                                             <el-date-picker v-model="woodContract.endDate" align="right" type="date" value-format="yyyy-MM-dd" placeholder="选择日期"
                                                             :disabled = "true" style="width: 100%;">
                                             </el-date-picker>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="12">
-                                        <el-form-item label="环保检测机构" required="true" prop="environmentalTestingAgency" :disabled="true">
+                                        <el-form-item label="环保检测机构"  prop="" :disabled="true">
                                             <vue-select code-type="environmentalTestingAgency" v-model="woodContract.environmentalTestingAgency"></vue-select>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="12">
-                                        <el-form-item label="合同总金额" required="true" :disabled="true">
+                                        <el-form-item label="合同总金额"  :disabled="true">
                                             <el-input v-model="getContractFee" :disabled="true"></el-input>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="12">
-                                        <el-form-item label="橱柜总金额" required="true" :disabled="true">
+                                        <el-form-item label="橱柜总金额"  :disabled="true">
                                             <el-input v-model="woodContract.cupboardFee"></el-input>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="12">
-                                        <el-form-item label="门总金额" prop="doorFee" :disabled="true">
+                                        <el-form-item label="门总金额"  :disabled="true">
                                             <el-input v-model="woodContract.doorFee" ></el-input>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="12">
-                                        <el-form-item label="家具总金额" prop="furnitureFee" :disabled="true">
+                                        <el-form-item label="家具总金额"  :disabled="true">
                                             <el-input v-model="woodContract.furnitureFee"></el-input>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="12">
-                                        <el-form-item label="返设计费" prop="returnDesignFee" :disabled="true">
+                                        <el-form-item label="返设计费" :disabled="true">
                                             <el-input v-model="woodContract.returnDesignFee"></el-input>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="12">
-                                        <el-form-item label="税金" prop="taxFee" :disabled="true">
+                                        <el-form-item label="税金"  :disabled="true">
                                             <el-input v-model="woodContract.taxFee"></el-input>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="12">
-                                        <el-form-item label="财务人员" required="true" prop="financeEmployeeId" :disabled="true">
+                                        <el-form-item label="财务人员"  prop="" :disabled="true">
                                             <order-search-employee :employee-id.sync="woodContract.financeEmployeeId"></order-search-employee>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="12">
-                                        <el-form-item label="项目经理" required="true" prop="projectEmployeeId" :disabled="true">
+                                        <el-form-item label="项目经理"  prop="" :disabled="true">
                                             <order-search-employee :employee-id.sync="woodContract.projectEmployeeId"></order-search-employee>
                                         </el-form-item>
                                     </el-col>

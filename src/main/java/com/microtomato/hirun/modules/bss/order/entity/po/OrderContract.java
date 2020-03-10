@@ -68,6 +68,9 @@ public class OrderContract extends BaseEntity {
     @TableField("environmental_testing_agency")
     private String environmentalTestingAgency;
 
+    @TableField("cash_discount")
+    private Integer cashDiscount;
+
     /**
      * 归属分公司
      */

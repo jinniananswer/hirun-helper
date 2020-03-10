@@ -84,6 +84,9 @@ public class OrderFee extends BaseEntity {
     @TableField(value = "start_date")
     private LocalDateTime startDate;
 
+    @TableField(value = "audit_time")
+    private LocalDateTime auditTime;
+
 
     @TableField(value = "end_date")
     private LocalDateTime endDate;

@@ -28,8 +28,13 @@ public class OrderGarrisonDesignController {
     @GetMapping("queryGarrisonDesignInfo")
     @RestResult
     public OrderGarrisonDesign queryGarrisonDesignInfo(Long orderId){
-        return orderGarrisonDesignServiceImpl.getOne(new QueryWrapper<OrderGarrisonDesign>().lambda()
+        OrderGarrisonDesign orderGarrisonDesign=orderGarrisonDesignServiceImpl.getOne(new QueryWrapper<OrderGarrisonDesign>().lambda()
                 .eq(OrderGarrisonDesign::getOrderId,orderId));
+        if(orderGarrisonDesign!=null){
+            orderGarrisonDesign.setCreateTime(null);
+            orderGarrisonDesign.setUpdateTime(null);
+        }
+        return orderGarrisonDesign;
     }
 
     @PostMapping("saveGarrisonDesignInfo")

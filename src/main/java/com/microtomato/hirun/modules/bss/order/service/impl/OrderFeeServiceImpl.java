@@ -18,6 +18,7 @@ import com.microtomato.hirun.modules.bss.order.service.*;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.expression.spel.ast.NullLiteral;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -115,7 +116,6 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
         int periods =0;
         if(orderStatus.equals("8")){
             type="1";
-            this.update(new UpdateWrapper<OrderFee>().lambda().eq(OrderFee::getOrderId, dto.getOrderId()).eq(OrderFee::getType, type).gt(OrderFee::getEndDate, LocalDateTime.now()).set(OrderFee::getAuditStatus, auditStatus).set(OrderFee::getAuditEmployeeId, employeeId).set(OrderFee::getAuditComment, dto.getAuditRemark()));
         }
         else if(orderStatus.equals("18")||orderStatus.equals("25")||orderStatus.equals("30")){
             type="2";
@@ -128,9 +128,9 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
            else {
                 periods=3;
             }
-            this.update(new UpdateWrapper<OrderFee>().lambda().eq(OrderFee::getOrderId, dto.getOrderId()).eq(OrderFee::getType, type).eq(OrderFee::getPeriods, periods).gt(OrderFee::getEndDate, LocalDateTime.now()).set(OrderFee::getAuditStatus, auditStatus).set(OrderFee::getAuditEmployeeId, employeeId).set(OrderFee::getAuditComment, dto.getAuditRemark()));
         }
-
+        LocalDateTime auditTime = RequestTimeHolder.getRequestTime();
+        this.updateByOrderId(dto.getOrderId(),type,periods,auditStatus,employeeId,dto.getAuditRemark(),auditTime);
     }
 
     /**
@@ -205,5 +205,21 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
         return this.getOne(new QueryWrapper<OrderFee>().lambda().eq(OrderFee::getOrderId, orderId)
             .gt(OrderFee::getEndDate, now)
             .eq(period !=null, OrderFee::getPeriods, period));
+    }
+
+    /**
+     * 根据订单ID与收费类型，期数更新orderfee状态
+     * @param orderId
+     * @return
+     */
+    @Override
+    public void updateByOrderId(Long orderId,String type, Integer periods,String auditStatus,Long employeeId,String auditRemark,LocalDateTime auditTime) {
+        if(type.equals("1")){
+            this.update(new UpdateWrapper<OrderFee>().lambda().eq(OrderFee::getOrderId, orderId).eq(OrderFee::getType, type).gt(OrderFee::getEndDate, LocalDateTime.now()).set(OrderFee::getAuditStatus, auditStatus).set(OrderFee::getAuditEmployeeId, employeeId).set(OrderFee::getAuditComment, auditRemark).set(OrderFee::getAuditTime, auditTime));
+        }
+        else{
+            this.update(new UpdateWrapper<OrderFee>().lambda().eq(OrderFee::getOrderId, orderId).eq(OrderFee::getType, type).eq(OrderFee::getPeriods, periods).gt(OrderFee::getEndDate, LocalDateTime.now()).set(OrderFee::getAuditStatus, auditStatus).set(OrderFee::getAuditEmployeeId, employeeId).set(OrderFee::getAuditComment, auditRemark).set(OrderFee::getAuditTime, auditTime));
+        }
+
     }
 }

@@ -15,19 +15,21 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     taxFee: '0',
                     furnitureFee : '0',
                     otherFee : '0',
-                    HydropowerWages : '0',
-                    HydropowerRemark : '',
-                    WoodworkingWages : '0',
-                    WoodworkingRemark : '',
-                    MasonWages : '0',
-                    MasonWRemark : '',
-                    oilWorkerWages : '0',
-                    oilWorkerRemark : '',
-                    wallKnockingWorkerWages : '0',
-                    wallKnockingWorkerRemark : '',
-                    financeEmployeeId : ''
+                    hydropowerSalary : '0',
+                    hydropowerRemark : '',
+                    woodworkerSalary : '0',
+                    woodworkerRemark : '',
+                    tilerSalary : '0',
+                    tilerRemark : '',
+                    painterSalary : '0',
+                    painterRemark : '',
+                    wallworkerSalary : '0',
+                    wallworkerRemark : '',
+                    financeEmployeeId : '',
+                    financeEmployeeName : ''
                 },
                 orderId : util.getRequest('orderId'),
+                custId : util.getRequest('custId'),
                 orderStatus : util.getRequest('status'),
                 secondInstallmentRules : {
                     financeEmployeeId: [
@@ -88,20 +90,24 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
         mounted: function() {
             this.secondInstallment.orderId = this.orderId;
             let data = {
-                orderId : this.orderId,
-                type : "2",
-                period : 1
+                orderId : this.orderId
             }
-            ajax.get('api/bss/order/order-fee/getByOrderIdTypePeriod', data, (responseData)=>{
-                this.secondInstallment.chargedDecorateFee = parseFloat(responseData.needPay)/100;
+            ajax.get('api/bss.order/order-second-installment/getSecondInstallment', data, (responseData)=>{
+                Object.assign(this.secondInstallment, responseData);
+                this.secondInstallment.chargedDecorateFee = responseData.chargedDecorateFee ? responseData.chargedDecorateFee / 100 : 0;
+                this.secondInstallment.baseDecorationFee = responseData.baseDecorationFee ? responseData.baseDecorationFee / 100 : 0;
+                this.secondInstallment.furnitureFee = responseData.furnitureFee ? responseData.furnitureFee / 100 : 0;
+                this.secondInstallment.doorFee = responseData.doorFee ? responseData.doorFee / 100 : 0;
+                this.secondInstallment.taxFee = responseData.taxFee ? responseData.taxFee / 100 : 0;
+                this.secondInstallment.otherFee = responseData.otherFee ? responseData.otherFee / 100 : 0;
             });
         },
         methods: {
             submit : function() {
                 this.$refs['secondInstallment'].validate((valid) => {
                     if (valid) {
-                        let url = 'api/bss/order/order-fee/secondInstallmentCollect';
-                        let data = this.secondInstallment;
+                        let url = 'api/bss.order/order-second-installment/secondInstallmentCollect';
+                        let data = JSON.parse(JSON.stringify(this.secondInstallment));
                         this.yuanTransToFen(data);
                         ajax.post(url, data);
                     } else {
@@ -128,7 +134,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 data.furnitureFee = Math.round(data.furnitureFee * 100);
                 data.otherFee = Math.round(data.otherFee * 100);
                 data.taxFee = Math.round(data.taxFee * 100);
-            },
+            }
         }
     });
 

@@ -7,6 +7,7 @@ import com.microtomato.hirun.modules.bss.order.entity.dto.SecondInstallmentColle
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFee;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayNo;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -58,4 +59,10 @@ public interface IOrderFeeService extends IService<OrderFee> {
      * @return
      */
     OrderFee getByOrderIdTypePeriod(Long orderId, String type, Integer period);
+
+    /**
+     * 更新审核费用信息
+     * @param orderId
+     */
+    void updateByOrderId(Long orderId, String type, Integer periods, String auditStatus, Long employeeId, String auditRemark, LocalDateTime auditTime);
 }

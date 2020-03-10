@@ -27,4 +27,7 @@ public interface IOrderWholeRoomDrawService extends IService<OrderWholeRoomDraw>
     void submitToBackWholeRoomFlow(Long orderId);
 
     void submitToBackToDesignerFlow(Long orderId);
+
+    OrderWholeRoomDraw getOrderWholeRoomDrawByOrderId(Long orderId);
+
 }

@@ -26,9 +26,9 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     checkEmployeeId : ''
                 },
                 orderId : util.getRequest('orderId'),
-                orderStatus : util.getRequest('status'),
+                custId : util.getRequest('custId'),
                 activities : [],
-                submitButtonName : '提交对审',
+                submitButtonName : '签订木制品合同',
                 checkedFail : false,
                 budgetRules : {
                     fee: [
@@ -46,29 +46,14 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
         },
         mounted: function() {
             this.budget.orderId = this.orderId;
-            if(this.orderStatus == '15') {
-                this.checkedFail = true;
-                let data = {
-                    orderId : this.orderId
-                }
-                ajax.post('api/bss.order/order-budget/getBudgetByOrderId', data, (responseData)=>{
-                    Object.assign(this.budget, responseData);
-                    this.budget.fee = this.budget.fee/100;
-                });
-                this.submitButtonName = '重新提交二级精算';
-            }
-            this.activities = [
-                {value : "1", name : "活动3"},
-                {value : "2", name : "活动4"}
-            ];
         },
         methods: {
             submit : function() {
                 this.$refs['budget'].validate((valid) => {
                     if (valid) {
-                        let data = JSON.parse(JSON.stringify(this.budget));
+                        let data = this.budget;
                         data.fee = data.fee * 100;
-                        let url = 'api/bss.order/order-budget/submitBudget';
+                        let url = 'api/bss.order/order-budget/submitWoodContract';
                         ajax.post(url, data);
                     } else {
                         return false;
