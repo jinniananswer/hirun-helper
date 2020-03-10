@@ -29,8 +29,8 @@ define(['vue', 'ELEMENT', 'ajax'], function (Vue, element, ajax) {
     :on-exceed="handleExceed"
     :on-success="handleSuccess"
     :on-remove="handleRemove">
-<el-button size="small" type="primary">{{buttonName}}</el-button>
-<el-tag>文件类型: {{accept}}，文件个数: {{limit}}</el-tag>
+<el-button type="primary">{{buttonName}}</el-button>
+<el-tag>文件类型: {{accept}}</el-tag>
 </el-upload>
 </div>
 `,
