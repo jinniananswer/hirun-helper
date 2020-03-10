@@ -19,6 +19,9 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     numberConsistenceCheckResult : '',
                     checkDate : '',
                 },
+                orderId:util.getRequest("orderId"),
+                custId:util.getRequest("custId"),
+
                 budgetRules : {
                     checkDate: [
                         {required: true, message: '请选择对审时间', trigger: 'change'}

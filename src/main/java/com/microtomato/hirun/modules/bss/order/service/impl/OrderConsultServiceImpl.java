@@ -117,4 +117,14 @@ public class OrderConsultServiceImpl extends ServiceImpl<OrderConsultMapper, Ord
         this.saveCustomerConsultInfo(dto);
         orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_NEXT_STEP);
     }
+
+    @Override
+    public CustConsultDTO queryOrderConsultForTrans(Long orderId) {
+        OrderConsult orderConsult=this.queryOrderConsult(orderId);
+        CustConsultDTO dto=new CustConsultDTO();
+        BeanUtils.copyProperties(orderConsult,dto);
+        OrderBase orderBase=this.orderBaseService.getById(orderId);
+        dto.setCustId(orderBase.getCustId());
+        return dto;
+    }
 }
