@@ -10,10 +10,7 @@ import com.microtomato.hirun.modules.bss.order.entity.po.OrderFile;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderMeasureHouse;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPlaneSketch;
 import com.microtomato.hirun.modules.bss.order.exception.OrderException;
-import com.microtomato.hirun.modules.bss.order.service.IFeeDomainService;
-import com.microtomato.hirun.modules.bss.order.service.IOrderBaseService;
-import com.microtomato.hirun.modules.bss.order.service.IOrderFileService;
-import com.microtomato.hirun.modules.bss.order.service.IOrderPlaneSketchService;
+import com.microtomato.hirun.modules.bss.order.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,12 +44,27 @@ public class OrderPlaneSketchController {
     @Autowired
     private IOrderPlaneSketchService orderPlaneSketchServiceImpl;
 
+    @Autowired
+    private IOrderWorkerService orderWorkerService;
+
     @PostMapping("/submitPlaneSketch")
     @Transactional(rollbackFor = Exception.class)
     @RestResult
-    public void submit(@RequestBody OrderPlaneSketch orderPlaneSketch) {
-        log.debug("OrderPlaneSketchController"+orderPlaneSketch.toString());
-        orderPlaneSketchServiceImpl.save(orderPlaneSketch);
+    public void submit(@RequestBody OrderPlaneSketchDTO dto) {
+        log.debug("OrderPlaneSketchController"+dto.toString());
+        OrderPlaneSketch orderPlaneSketch=new OrderPlaneSketch();
+        BeanUtils.copyProperties(dto,orderPlaneSketch);
+
+        if(orderPlaneSketch.getId()==null){
+            orderPlaneSketchServiceImpl.save(orderPlaneSketch);
+        }else{
+            orderPlaneSketchServiceImpl.updateById(orderPlaneSketch);
+        }
+        this.updateIndorrArea(orderPlaneSketch.getOrderId(),orderPlaneSketch.getIndoorArea());
+
+        this.orderWorkerService.updateOrderWorker(dto.getOrderId(),34L,dto.getFinanceEmployeeId());
+        this.orderWorkerService.updateOrderWorker(dto.getOrderId(),30L,dto.getDesigner());
+
     }
 
     @PostMapping("/submitToConfirmFlow")
@@ -61,41 +73,58 @@ public class OrderPlaneSketchController {
     public void submitToConfirmFlow(@RequestBody OrderPlaneSketch orderPlaneSketch) {
         log.debug("orderPlaneSketch"+orderPlaneSketch.getOrderId());
         orderPlaneSketchServiceImpl.submitToConfirmFlow(orderPlaneSketch.getOrderId());
+
+        OrderBase order = this.orderBaseService.queryByOrderId(orderPlaneSketch.getOrderId());
+        if (order == null) {
+            throw new OrderException(OrderException.OrderExceptionEnum.ORDER_FEE_NOT_FOUND);
+        }
+        order.setIndoorArea(orderPlaneSketch.getIndoorArea());
+        this.orderBaseService.updateById(order);
+    }
+
+    private void updateIndorrArea(Long orderId,String indoorArea){
+        OrderBase order = this.orderBaseService.queryByOrderId(orderId);
+        if (order == null) {
+            throw new OrderException(OrderException.OrderExceptionEnum.ORDER_FEE_NOT_FOUND);
+        }
+        order.setIndoorArea(indoorArea);
+        this.orderBaseService.updateById(order);
     }
 
     @PostMapping("/submitToSignContractFlow")
     @Transactional(rollbackFor = Exception.class)
     @RestResult
-    public void submitToSignContractFlow(@RequestBody OrderPlaneSketch orderPlaneSketch) {
+    public void submitToSignContractFlow(@RequestBody OrderPlaneSketchDTO dto) {
+        this.submit(dto);
         /**
         * 判斷文件是否上傳
         * */
-        OrderFile orderFile = orderFileService.getOrderFile(orderPlaneSketch.getOrderId(), 456);
+        OrderFile orderFile = orderFileService.getOrderFile(dto.getOrderId(), 456);
         if (orderFile == null) {
             throw new OrderException(OrderException.OrderExceptionEnum.FILE_NOT_FOUND);
         }
         /**
          * 回写套内面积
          * */
-        OrderBase order = this.orderBaseService.queryByOrderId(orderPlaneSketch.getOrderId());
+        OrderBase order = this.orderBaseService.queryByOrderId(dto.getOrderId());
         if (order == null) {
             throw new OrderException(OrderException.OrderExceptionEnum.ORDER_FEE_NOT_FOUND);
         }
-        order.setIndoorArea(orderPlaneSketch.getIndoorArea());
-        this.orderBaseService.updateOrderBase(order);
+        order.setIndoorArea(dto.getIndoorArea());
+        this.orderBaseService.updateById(order);
          /**
          * 回写费用
          * */
         List<FeeDTO> FeeDTOs = new ArrayList();
         FeeDTO fee  = new FeeDTO();
         fee.setFeeItemId(1L);
-        fee.setMoney(Double.valueOf(orderPlaneSketch.getContractDesignFee()));
+        fee.setMoney(Double.valueOf(dto.getContractDesignFee()));
         FeeDTOs.add(fee);
-        ifeeDomainService.createOrderFee(orderPlaneSketch.getOrderId(),"1",null,FeeDTOs);
+        ifeeDomainService.createOrderFee(dto.getOrderId(),"1",null,FeeDTOs);
         /**
          * 状态扭转
          * */
-        orderPlaneSketchServiceImpl.submitToSignContractFlow(orderPlaneSketch.getOrderId());
+        orderPlaneSketchServiceImpl.submitToSignContractFlow(dto.getOrderId());
     }
 
     @GetMapping("/updateOrderWork")

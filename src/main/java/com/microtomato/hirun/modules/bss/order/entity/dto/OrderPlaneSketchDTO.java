@@ -94,4 +94,10 @@ public class OrderPlaneSketchDTO {
     private Long updateUserId;
 
     private Long designer;
+
+    private String designerName;
+
+    private Long financeEmployeeId;
+
+    private String financeEmployeeName;
 }

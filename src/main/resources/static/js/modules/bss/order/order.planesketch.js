@@ -18,7 +18,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 startTime: '',
                 endTime: '',
                 firstLookTime: util.getNowDate(),
-                employeeId : ''
+                financeEmployeeId : ''
             },
             accountingInfos: [],
             isShow: false,
@@ -40,7 +40,6 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 ajax.get('api/bss.order/order-planSketch/getPlaneSketch', data, (responseData)=>{
                     Object.assign(this.planFigureInfos, responseData);
                 });
-                alert(JSON.stringify(this.planFigureInfos));
                 if (this.orderStatus=='35') {
                     this.isBackToDesigner = true;
                 }
@@ -49,6 +48,8 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 }
                 this.downloadFileUrl = 'api/bss.order/order-file/download/' + util.getRequest("orderId") + "/456";
             },
+
+
             checkBeforeOrder : function () {
             },
             changeDesignFeeStandard: function(newVal) {
@@ -91,9 +92,11 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     });
                     return false;
                 }
+/*
                 ajax.get('api/bss.order/order-planSketch/getPlaneSketch', data, (responseData)=>{
                     Object.assign(this.planFigureInfos, responseData);
                 });
+*/
 
                 ajax.post('api/bss.order/order-planSketch/submitPlaneSketch', this.planFigureInfos,null,null,true);
             },
@@ -128,16 +131,13 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
 
                 });*/
                 this.planFigureInfos.employeeId = this.eid;
-                ajax.post('api/bss.order/order-planSketch/submitToSignContractFlow', this.planFigureInfos,(responseData)=>{
+                ajax.post('api/bss.order/order-planSketch/submitToSignContractFlow', this.planFigureInfos,null);
 
-                });
-
-                ajax.get('api/bss.order/order-planSketch/updateOrderWork', {
+/*                ajax.get('api/bss.order/order-planSketch/updateOrderWork', {
                     orderId : this.planFigureInfos.orderId,
                     roleId : '34',
                     employeeId : this.eid,
-                });
-                return false;
+                });*/
             },
             toSignContractFlow : function () {
                 this.planFigureInfos.employeeId = this.eid;
