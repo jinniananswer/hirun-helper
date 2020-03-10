@@ -33,6 +33,13 @@ public class OrderMeasureHouseController {
     @Transactional(rollbackFor = Exception.class)
     @RestResult
     public void submitToPlanesketchFlow(@RequestBody OrderMeasureHouse orderMeasureHouse) {
+        orderMeasureHouseServiceImpl.submitToPlanesketchFlow(orderMeasureHouse.getOrderId());
+    }
+
+    @PostMapping("/submitToOnlyWoodworkFlow")
+    @Transactional(rollbackFor = Exception.class)
+    @RestResult
+    public void submitToOnlyWoodworkFlow(@RequestBody OrderMeasureHouse orderMeasureHouse) {
         log.debug("getOrderId"+orderMeasureHouse.getOrderId());
         orderMeasureHouseServiceImpl.submitToPlanesketchFlow(orderMeasureHouse.getOrderId());
     }
