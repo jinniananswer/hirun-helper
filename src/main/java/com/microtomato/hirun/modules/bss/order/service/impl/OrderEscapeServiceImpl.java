@@ -70,8 +70,8 @@ public class OrderEscapeServiceImpl extends ServiceImpl<OrderEscapeMapper, Order
 
         if (orderEscape == null) {
             OrderDetailDTO infoDTO = domainService.getOrderDetail(orderId);
-            dto.setEscapeNode(infoDTO.getStatus());
-            dto.setEscapeNodeName(infoDTO.getStatusName());
+            dto.setEscapeNode(infoDTO.getPreviousStatus());
+            dto.setEscapeNodeName(staticDataService.getCodeName("ORDER_STATUS",infoDTO.getPreviousStatus()));
         } else {
             BeanUtils.copyProperties(orderEscape, dto);
             dto.setEscapeNodeName(staticDataService.getCodeName("ORDER_STATUS", dto.getEscapeNode()));

@@ -16,8 +16,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                     id: '',
                     status: ''
                 },
-                progress: [-10, 70],
-                activeTab: 'orderInfo',
+
 
                 rules: {
                     escapeType: [
@@ -34,22 +33,6 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                     ],
                 },
 
-                marks: {
-                    0: '酝酿',
-                    10: '初选',
-                    30: '初步决策',
-                    50: '决策',
-                    60: '施工',
-                    95: '维护'
-                },
-
-                requirement: {
-                    title: '客户需求信息',
-                    style: '白色简约',
-                    func: '功能列表'
-                },
-
-                avatarUrl: 'static/img/male.jpg'
             }
         },
 
@@ -64,7 +47,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
             save(escape) {
                 this.$refs.escape.validate((valid) => {
                     if (valid) {
-                        ajax.post('api/order/order-escape/save', this.escape);
+                        ajax.post('api/order/order-escape/save', this.escape,null,null,true);
                     }
                 })
             },
