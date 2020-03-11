@@ -17,6 +17,12 @@ logging:
     com.baomidou.mybatisplus: info
     com.microtomato.hirun: debug
     com.microtomato.hirun.framework.interceptor: info
+    # 开启XA事务调试日志，方便查找问题。
+    org.springframework.transaction.jta.JtaTransactionManager: debug
+    org.mybatis.spring.transaction.SpringManagedTransaction: debug
+    com.atomikos.jdbc.AtomikosConnectionProxy: debug
+    com.atomikos.icatch.imp.CompositeTransactionImp: debug
+    com.atomikos.datasource.xa.XAResourceTransaction: debug
 
 # 是否为生产模式
 production.mode: false
