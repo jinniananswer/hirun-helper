@@ -10,8 +10,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <link rel="stylesheet" href="/static/layui/css/layui.css" th:href="@{static/layui/css/layui.css(v=${version})}" media="all">
     <link rel="stylesheet" href="/static/css/admin.css" th:href="@{static/css/admin.css(v=${version})}" media="all">
+    <link rel="stylesheet" href="/static/js/extend/selects/formSelects-v4.css" th:href="@{static/js/extend/selects/formSelects-v4.css(v=${version})}" media="all" />
     <script src="../static/layui/layui.js" th:src="@{static/layui/layui.js(v=${version})}"></script>
     <script src="../static/js/base.js" th:src="@{static/js/base.js(v=${version})}"></script>
+
 </head>
 <body>
 <div class="layui-fluid">
@@ -77,7 +79,7 @@
                         <label class="layui-form-label">岗位</label>
                         <div class="layui-input-inline">
                             <div class="layui-form" lay-filter="jobRole">
-                                <select id="jobRole" name="jobRole" lay-verify="required" lay-search>
+                                <select id="jobRole" name="jobRole" lay-verify="required" lay-search xm-select="jobRole" xm-select-search>
 
                                 </select>
                             </div>
@@ -87,7 +89,7 @@
                         <label class="layui-form-label">岗位性质</label>
                         <div class="layui-input-inline">
                             <div class="layui-form" lay-filter="jobRoleNature">
-                                <select id="jobRoleNature" name="jobRoleNature" lay-verify="required" lay-filter="jobRoleNature">
+                                <select id="jobRoleNature" name="jobRoleNature" lay-verify="required" lay-filter="jobRoleNature" >
 
                                 </select>
                             </div>
