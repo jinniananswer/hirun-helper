@@ -10,7 +10,7 @@ server:
 # 日志
 logging:
   level:
-    root: debug
+    root: info
     #com.atomikos.jdbc.nonxa.AtomikosThreadLocalConnection: debug
     com.atomikos: debug
     com.baomidou.dynamic.datasource: debug

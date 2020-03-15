@@ -32,6 +32,7 @@ public class DemoServiceImpl implements IDemoService {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     @Override
     public void testSave() {
+
         List<Steven> stevenList = new ArrayList<>();
         List<Zhoulin> zhoulinList = new ArrayList<>();
         for (int i = 0; i < 2; i++) {
