@@ -6,18 +6,15 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                 uploadGarrisonDesign: {
                     startDate: util.getNowDate(),
                     endDate: util.getNowDate(),
-                    designEmployeeId:'',
                     orderId:'',
                     id:'',
-                    custId:'',
+                    designEmployeeId:''
                 },
-                progress: [-10, 70],
-                activeTab: 'orderInfo',
                 orderId : util.getRequest('orderId'),
                 custId : util.getRequest('custId'),
 
-                rules: {
-                    designEmployeeId: [
+                uploadGarrisonDesignRules: {
+                    aa: [
                         {required: true, message: '请选择设计师', trigger: 'change'}
                     ],
                     startDate: [
@@ -34,9 +31,9 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
         methods: {
             init:function(){
                 let that = this;
-                that.uploadGarrisonDesign.orderId=that.orderId;
+                that.uploadGarrisonDesign.orderId=this.orderId;
                 ajax.get('api/bss.order/order-garrison-design/queryGarrisonDesignInfo', {orderId:this.uploadGarrisonDesign.orderId}, function(data) {
-                    that.uploadGarrisonDesign=data;
+                    Object.assign(that.uploadGarrisonDesign, data);
                 })
             },
 

@@ -33,4 +33,6 @@ public interface IInstallmentCollectDomainService {
     void submitWoodLastCollect(WoodContractDTO dto);
 
     void auditWoodLastCollect(WoodContractDTO dto);
+
+    WoodContractDTO queryWoodContract(Long orderId);
 }

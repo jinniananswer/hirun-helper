@@ -35,4 +35,5 @@ public class LastInstallmentInfoDTO {
 
     private Long financeEmployeeId;
 
+    private String financeEmployeeName;
 }

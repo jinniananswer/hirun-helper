@@ -1,4 +1,4 @@
-require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'order-info', 'order-worker', 'order-selectemployee','cust-visit', 'order-search-employee','order-discount-item'], function(Vue, element, axios, ajax, vueselect, util, custInfo, orderInfo, orderWorker, orderSelectEmployee,custVisit, orderSearchEmployee,orderDiscountItem) {
+require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'order-info', 'order-worker', 'order-selectemployee','cust-visit', 'order-search-employee','order-discount-item','order-file-upload'], function(Vue, element, axios, ajax, vueselect, util, custInfo, orderInfo, orderWorker, orderSelectEmployee,custVisit, orderSearchEmployee,orderDiscountItem,orderFileUpload) {
     let vm = new Vue({
         el: '#app',
         data() {
@@ -15,7 +15,8 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     taxFee:'0',
                     furnitureFee:'0',
                     otherFee:'0',
-                    financeEmployeeId:''
+                    financeEmployeeId:'',
+                    financeEmployeeName:'',
                 },
                 workerSalary: {
                     orderId:'',

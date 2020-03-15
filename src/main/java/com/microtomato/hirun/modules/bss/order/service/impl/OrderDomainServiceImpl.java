@@ -89,6 +89,7 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
     @Override
     public OrderDetailDTO getOrderDetail(Long orderId) {
         OrderDetailDTO orderInfo = new OrderDetailDTO();
+
         OrderBase orderBase = this.orderBaseService.queryByOrderId(orderId);
         
         if (orderBase == null) {

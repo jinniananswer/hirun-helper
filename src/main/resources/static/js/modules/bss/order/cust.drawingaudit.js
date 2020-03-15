@@ -5,7 +5,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
             wholeRoomDrawing: {
                 id : util.getRequest('id'),
                 orderId : util.getRequest('orderId'),
-                designer: '測試一',
+                designer: '',
                 preTime: '',//预约看图时间
                 startTime: '',
                 endTime: '',
@@ -26,7 +26,6 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
             let data = {
                 orderId : util.getRequest('orderId'),
             }
-            alert(this.wholeRoomDrawing.orderId);
             ajax.get('api/bss.order/order-wholeRoomDrawing/getWholeRoomDraw', data, (responseData)=>{
                 Object.assign(this.wholeRoomDrawing, responseData);
             });
@@ -58,7 +57,6 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 }
             },
             save: function() {
-                alert(JSON.stringify(this.wholeRoomDrawing));
                 ajax.post('api/bss.order/order-wholeRoomDrawing/submitWholeRoomDrawing', this.wholeRoomDrawing,null,null,true);
             },
             submitToCustomerLeaderFlow : function () {
@@ -70,7 +68,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     return false;
                 }
                 ajax.post('api/bss.order/order-wholeRoomDrawing/submitToCustomerLeaderFlow', this.wholeRoomDrawing);
-                ajax.post('api/bss.order/order-planSketch/updateOrderWork', {
+                ajax.get('api/bss.order/order-planSketch/updateOrderWork', {
                     orderId : this.wholeRoomDrawing.orderId,
                     roleId : '19',
                     employeeId : this.eid,

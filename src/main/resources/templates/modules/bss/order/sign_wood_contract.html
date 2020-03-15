@@ -2,7 +2,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>二级精算</title>
+    <title>签订木制品合同</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <script src="static/js/framework/requirejs/require.min.js" th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
@@ -15,14 +15,14 @@
             <el-row :gutter="12">
                 <el-col :span="6">
                     <div class="grid-content bg-purple">
-                        <cust-info :cust-id="woodContract.custId"></cust-info>
+                        <cust-info :cust-id="custId"></cust-info>
 
-                        <order-worker :order-id="woodContract.orderId"></order-worker>
+                        <order-worker :order-id="orderId"></order-worker>
                     </div>
                 </el-col>
                 <el-col :span="18">
                     <div class="grid-content bg-purple-light">
-                        <order-info :order-id="woodContract.orderId"></order-info>
+                        <order-info :order-id="orderId"></order-info>
                         <el-form :rules="woodContractRules" :inline="false" :model="woodContract"
                                  ref="woodContract" label-width="130px">
                             <el-card class="box-card">
@@ -109,12 +109,14 @@
                                     </el-col>
                                     <el-col :span="12">
                                         <el-form-item label="财务人员" required="true" prop="financeEmployeeId">
-                                            <order-search-employee :employee-id.sync="woodContract.financeEmployeeId"></order-search-employee>
+                                            <order-search-employee :employee-id.sync="woodContract.financeEmployeeId"
+                                                                   :employee-name.sync="woodContract.financeEmployeeName"></order-search-employee>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="12">
                                         <el-form-item label="项目经理" required="true" prop="projectEmployeeId">
-                                            <order-search-employee :employee-id.sync="woodContract.projectEmployeeId"></order-search-employee>
+                                            <order-search-employee :employee-id.sync="woodContract.projectEmployeeId"
+                                                                   :employee-name.sync="woodContract.projectEmployeeName"></order-search-employee>
                                         </el-form-item>
                                     </el-col>
                                 </el-row>

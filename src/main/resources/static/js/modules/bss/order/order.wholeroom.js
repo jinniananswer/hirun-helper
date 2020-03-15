@@ -11,11 +11,11 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 preTime: util.getNowDate(),//预约看图时间
                 startTime: '',
                 endTime: '',
-                productionLeader: '制作组长测试一',//制作组长
-                assistantDesigner: '助理设计师测试一',//助理设计师
-                hydropowerDesigner: '水电设计师测试一',//水电设计师
-                drawingAssistant: '绘图助理测试一',//绘图助理
-                adminAssistant: '行政助理测试一',//行政助理
+                productionLeader: '金念',//制作组长
+                assistantDesigner: '',//助理设计师
+                hydropowerDesigner: '',//水电设计师
+                drawingAssistant: '',//绘图助理
+                adminAssistant: '',//行政助理
                 designerRemarks: '',//设计师备注
                 reviewedComments: ''//审核意见
             },
@@ -32,6 +32,14 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
         methods: {
 
             init:function(){
+                let data = {
+                    orderId : util.getRequest('orderId'),
+                }
+                //alert(JSON.stringify(data));
+                ajax.get('api/bss.order/order-wholeRoomDrawing/getWholeRoomDraw', data, (responseData)=>{
+                    Object.assign(this.wholeRoomDrawing, responseData);
+                });
+
                 this.wholeRoomDrawing.orderId = util.getRequest('orderId');
                 if (this.orderStatus=='36') {
                     this.isShow = false;
@@ -40,7 +48,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 } else if (this.orderStatus=='12') {
                     this.isAudit = true;
                 }
-                this.downloadFileUrl = 'api/bss.order/order-file/download/' + util.getRequest("orderId") + "/456";
+                this.downloadFileUrl = 'api/bss.order/order-file/download/' + util.getRequest("orderId") + "/567";
             },
 
             checkBeforeOrder: function () {
@@ -100,7 +108,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     return false;
                 }
                 ajax.post('api/bss.order/order-wholeRoomDrawing/submitToAuditPicturesFlow', this.wholeRoomDrawing);
-                ajax.post('api/bss.order/order-planSketch/updateOrderWork', {
+                ajax.get('api/bss.order/order-planSketch/updateOrderWork', {
                     orderId : this.wholeRoomDrawing.orderId,
                     roleId : '44',
                     employeeId : this.eid,

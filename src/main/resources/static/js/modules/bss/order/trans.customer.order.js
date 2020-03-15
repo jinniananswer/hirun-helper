@@ -59,7 +59,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
             selectedCustomer: function (row, column, cell, event) {
                 console.log(row);
                 let that = this;
-                ajax.get('api/order/order-consult/queryOrderConsult', {orderId: row.orderId}, function (data) {
+                ajax.get('api/order/order-consult/queryOrderConsultForTrans', {orderId: row.orderId}, function (data) {
                     Object.assign(that.customerConsult, data);
                 })
                 this.dialogTableVisible = false;

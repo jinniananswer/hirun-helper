@@ -5,8 +5,8 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
         data() {
             return {
                 woodContract: {
-                    orderId : '39',
-                    custId:'18349',
+                    id:'',
+                    orderId : '',
                     signDate : '',
                     startDate : '',
                     endDate : '',
@@ -23,8 +23,12 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     firstCupboardFee:'0',
                     firstContractFee:'0',
                     chargedWoodFee:'0',
+                    projectEmployeeName:'',
+                    financeEmployeeName:'',
                 },
                 orderId : util.getRequest('orderId'),
+                custId:util.getRequest('custId'),
+
                 woodContractRules : {
                     signDate: [
                         { required: true, message: '请选择签订合同时间', trigger: 'change' }
@@ -80,7 +84,9 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 }
             }
         },
+
         mounted: function() {
+            //this.init();
             this.woodContract.orderId = this.orderId;
         },
 
@@ -96,8 +102,20 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     }
                 });
             },
+
+            save:function(){
+
+            },
+
             uploadDecorateContract : function () {
                 alert('上传合同附件')
+            },
+
+            init(){
+                let that = this;
+                ajax.get('api/bss.order/order-contract/queryWoodContract', {orderId:this.orderId}, function(data) {
+                    that.woodContract=data;
+                })
             },
 
         }

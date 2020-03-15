@@ -15,86 +15,92 @@
     <el-container>
         <el-main>
             <el-card class="box-card">
-                <div slot="header" class="clearfix">
-                    <span>查询条件区</span>
-                </div>
-                <el-form :inline="false" :model="custQueryCond" label-position="right" label-width="80px">
-                    <el-row>
-                        <el-col :span="6">
-                            <el-form-item label="客户姓名">
-                                <el-input v-model="custQueryCond.custName" placeholder="客户姓名"></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="6">
-                            <el-form-item label="楼盘">
-                                <house-select v-model="custQueryCond.houseId"></house-select>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="6">
-                            <el-form-item label="户型">
-                                <vue-select code-type="HOUSE_MODE" v-model="custQueryCond.houseMode"></vue-select>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="6">
-                            <el-form-item label="申报状态">
-                                <vue-select code-type="PREPARATION_STATUS"
-                                            v-model="custQueryCond.prepareStatus"></vue-select>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-row>
-                        <el-col :span="6">
-                            <el-form-item label="申报人">
-                                <order-selectemployee role-id="-1"
-                                                      v-model="custQueryCond.reportEmployeeId"></order-selectemployee>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="6">
-                            <el-form-item label="开始时间">
-                                <el-date-picker
-                                        v-model="custQueryCond.startTime"
-                                        type="date"
-                                        value-format="yyyy-MM-dd"
-                                        placeholder="选择日期"
-                                        style="width:100%">
-                                </el-date-picker>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="6">
-                            <el-form-item label="结束时间">
-                                <el-date-picker
-                                        v-model="custQueryCond.endTime"
-                                        type="date"
-                                        value-format="yyyy-MM-dd"
-                                        placeholder="选择日期"
-                                        style="width:100%">
-                                </el-date-picker>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-row >
-                        <el-col :span="20" >
-                            <el-form-item style="text-align: right">
-                                <el-button type="primary" @click="queryCustomer">查询</el-button>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                </el-form>
+
+                <el-collapse value="1" accordion>
+                    <el-collapse-item title="查询条件" name="1">
+                        <el-form :inline="false" :model="custQueryCond" label-position="right" label-width="80px">
+                            <el-row>
+                                <el-col :span="6">
+                                    <el-form-item label="客户姓名">
+                                        <el-input v-model="custQueryCond.custName" placeholder="客户姓名"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="楼盘">
+                                        <house-select v-model="custQueryCond.houseId"></house-select>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="户型">
+                                        <vue-select code-type="HOUSE_MODE"
+                                                    v-model="custQueryCond.houseMode"></vue-select>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="申报状态">
+                                        <vue-select code-type="PREPARATION_STATUS"
+                                                    v-model="custQueryCond.prepareStatus"></vue-select>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="6">
+                                    <el-form-item label="申报人">
+                                        <order-selectemployee role-id="-1"
+                                                              v-model="custQueryCond.reportEmployeeId"></order-selectemployee>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="开始时间">
+                                        <el-date-picker
+                                                v-model="custQueryCond.startTime"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                placeholder="选择日期"
+                                                style="width:100%">
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="结束时间">
+                                        <el-date-picker
+                                                v-model="custQueryCond.endTime"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                placeholder="选择日期"
+                                                style="width:100%">
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="20">
+                                    <el-form-item style="text-align: right">
+                                        <el-button type="primary" @click="queryCustomer">查询</el-button>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                        </el-form>
+                    </el-collapse-item>
+                </el-collapse>
             </el-card>
 
             <template>
                 <el-table :data="customerInfo" stripe="true" style="width: 100%" fit="true" border height="400px">
-                    <el-table-column prop="custNo" label="客户编号" fixed align="center"  width="180" ></el-table-column>
-                    <el-table-column prop="custName" label="客户姓名" fixed align="center"  width="100" ></el-table-column>
+                    <el-table-column prop="custNo" label="客户编号" fixed align="center" width="180"></el-table-column>
+                    <el-table-column prop="custName" label="客户姓名" fixed align="center" width="100"></el-table-column>
                     <el-table-column prop="mobileNo" label="客户电话" align="center" width="180"></el-table-column>
-                    <el-table-column prop="refereeInfo" label="老客户施工地址" align="center" fixed width="280"></el-table-column>
+                    <el-table-column prop="refereeInfo" label="老客户施工地址" align="center" fixed
+                                     width="280"></el-table-column>
                     <el-table-column prop="houseAddress" label="楼盘" align="center" fixed width="200"></el-table-column>
                     <el-table-column prop="houseModeName" label="户型" align="center" width="100"></el-table-column>
-                    <el-table-column prop="prepareEmployeeName" label="申报人" align="center" width="180"></el-table-column>
+                    <el-table-column prop="prepareEmployeeName" label="申报人" align="center"
+                                     width="180"></el-table-column>
                     <el-table-column prop="customerServiceName" label="客户代表" align="center"></el-table-column>
                     <el-table-column prop="designEmployeeName" label="设计师" align="center" width="180"></el-table-column>
                     <el-table-column prop="prepareStatusName" label="是否成功" align="center" width="150"></el-table-column>
-                    <el-table-column prop="prepareExpireStatus" label="申报状态" align="center" width="120"></el-table-column>
+                    <el-table-column prop="prepareExpireStatus" label="申报状态" align="center"
+                                     width="120"></el-table-column>
                     <el-table-column prop="prepareTime" label="申报时间" align="center" width="180"></el-table-column>
                     <el-table-column prop="enterEmployeeName" label="录入人" align="center"></el-table-column>
                     <el-table-column prop="consultTime" label="上门时间" align="center" width="180"></el-table-column>

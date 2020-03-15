@@ -69,7 +69,7 @@
                                     </el-col>
                                     <el-col :span="12">
                                         <el-form-item label="基础装修结算" required="true" prop="baseDecorationFee">
-                                            <el-input v-model="getBaseDecorationFee" :disabled="true">
+                                            <el-input v-model="lastInstallment.baseDecorationFee" >
                                                 <template slot="append">元</template>
                                             </el-input>
                                         </el-form-item>
@@ -106,7 +106,9 @@
                                 <el-row>
                                     <el-col :span="12">
                                         <el-form-item label="财务人员" required="true" prop="financeEmployeeId">
-                                            <order-search-employee :employee-id.sync="lastInstallment.financeEmployeeId"></order-search-employee>
+                                            <order-search-employee :employee-id.sync="lastInstallment.financeEmployeeId"
+                                                                   :employee-name="lastInstallment.financeEmployeeName">
+                                            </order-search-employee>
                                         </el-form-item>
                                     </el-col>
                                 </el-row>
@@ -176,11 +178,17 @@
 
                                 <el-row>
                                     <div style="text-align: center">
-                                        <el-col>
                                             <el-button type="primary" @click="save">保存</el-button>
                                             <el-button type="primary" @click="applyFinanceAuditLast">提交财务审核尾款</el-button>
-                                            <order-discount-item order-id="18"></order-discount-item>
-                                        </el-col>
+                                            <el-button>
+                                                <order-discount-item :order-id="orderId"></order-discount-item>
+                                            </el-button>
+                                            <el-button>
+                                                <order-file-upload ref="upload" button-name="上传最终结算表"
+                                                                   accept=".xls,.xlsx" :order-id="orderId" stage="16">
+                                                </order-file-upload>
+                                            </el-button>
+
                                     </div>
                                 </el-row>
                             </el-card>

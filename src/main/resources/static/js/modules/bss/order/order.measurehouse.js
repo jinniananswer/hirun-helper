@@ -15,7 +15,12 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 custId: util.getRequest('custId'),
                 isShow : true,
                 id : util.getRequest('id'),
-                orderStatus : util.getRequest('orderStatus')
+                orderStatus : util.getRequest('orderStatus'),
+                quantityRoomInfosRules : {
+                    measureArea: [
+                        { required: true, message: '请填写量房面积', trigger: 'change' }
+                    ],
+                }
             }
         },
 
@@ -35,6 +40,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 this.quantityRoomInfos.measureArea = value;
             },
             init:function(){
+                let that = this;
                 let data = {
                     orderId : util.getRequest('orderId'),
                 }
@@ -89,6 +95,8 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     if (this.orderStatus='4') {
                         this.isShow = false;
                     }
+                } else if (command == 'submitToOnlyWoodworkFlow') {
+                    this.submitToOnlyWoodworkFlow();
                 }
             },
             save : function () {
@@ -100,6 +108,9 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     return false;
                 }
                 ajax.post('api/bss.order/order-measurehouse/saveMeasureHouseInfos', this.quantityRoomInfos,null,null,true);
+            },
+            submitToOnlyWoodworkFlow : function() {
+                ajax.post('api/bss.order/order-measurehouse/submitToOnlyWoodworkFlow', this.quantityRoomInfos);
             },
             submitToPlanesketchFlow : function() {
                 ajax.post('api/bss.order/order-measurehouse/submitToPlanesketchFlow', this.quantityRoomInfos);

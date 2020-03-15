@@ -26,22 +26,22 @@
                             <div slot="header">
                                 <span>量房信息</span>
                             </div>
-                            <el-form :inline="false"  :model="quantityRoomInfos" label-position="right" label-width="140px">
+                            <el-form :inline="false" :rules="quantityRoomInfosRules"  :model="quantityRoomInfos" label-position="right" label-width="140px">
                                 <el-row>
                                     <el-col :span="11">
-                                        <el-form-item label="设计师" prop="designer">
+                                        <el-form-item label="设计师"  required="true" prop="designer">
                                             <order-selectemployee role-id="30" v-model="quantityRoomInfos.designer"></order-selectemployee>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="11">
-                                        <el-form-item label="量房面积">
+                                        <el-form-item label="量房面积" required="true" prop="measureArea">
                                             <el-input-number v-model="quantityRoomInfos.measureArea" controls-position="right" @change="handleChangeMeasureAreaNum" style="width:100%" :precision="2" :step="0.1" :min="0" :max="1000"></el-input-number>
                                         </el-form-item>
                                     </el-col>
                                 </el-row>
                                 <el-row>
                                     <el-col :span="11">
-                                        <el-form-item label="量房时间">
+                                        <el-form-item label="量房时间" >
                                             <el-date-picker
                                                     v-model="quantityRoomInfos.measureTime"
                                                     type="date"
@@ -79,6 +79,7 @@
                                             <el-dropdown-item command="submitToPlanesketchFlow">已量房，设计平面图</el-dropdown-item>
                                             <el-dropdown-item v-if="isShow" command="submitToDelayTimeFlow">暂时不能去量房</el-dropdown-item>
                                             <el-dropdown-item command="submitToSneakFlow">量房跑单</el-dropdown-item>
+                                            <el-dropdown-item command="submitToOnlyWoodworkFlow">单独木制品，上传木制品图纸</el-dropdown-item>
                                         </el-dropdown-menu>
                                     </el-dropdown>
                                 </el-form-item>

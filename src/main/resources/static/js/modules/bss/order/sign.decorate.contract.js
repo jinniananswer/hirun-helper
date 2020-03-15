@@ -28,6 +28,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 },
                 discountItemDetailList : [],
                 orderId : util.getRequest('orderId'),
+                custId : util.getRequest('custId'),
                 orderStatus : util.getRequest('status'),
                 activities : [],
                 discountItemDetail: false,
