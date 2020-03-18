@@ -162,7 +162,12 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
      * @param employeeId
      * @return
      */
-    @Select("select a.employee_id,a.user_id,a.name,a.sex,a.identity_no,a.birthday_type,a.birthday,a.mobile_no,a.home_prov,a.home_city,a.home_region,a.home_address,a.native_prov,a.native_city,a.native_region,a.native_address,a.in_date,a.regular_date,a.destroy_date,a.destroy_way,a.destroy_reason,a.destroy_times,a.job_date,a.work_nature,a.workplace,a.education_level,a.first_education_level,a.major,a.school,a.school_type,a.tech_title,a.certificate_no,a.before_hirun_year,a.status,b.job_role_id,b.employee_id,b.job_role,b.discount_rate,b.is_main,b.job_role_nature,b.org_id,b.parent_employee_id,c.name orgName from ins_employee a, ins_employee_job_role b, ins_org c \n" +
+    @Select(" select a.employee_id,a.user_id,a.name,a.sex,a.identity_no,a.birthday_type,a.birthday,a.mobile_no,a.home_prov,a.home_city,a.home_region,a.home_address,a.native_prov,a.native_city,a.native_region,a.native_address,a.in_date,a.regular_date,a.destroy_date," +
+            " a.destroy_way,a.destroy_reason,a.destroy_times,a.job_date,a.work_nature,a.workplace," +
+            " a.education_level,a.first_education_level,a.major,a.school,a.school_type,a.tech_title," +
+            " a.certificate_no,a.before_hirun_year,a.status,b.job_role_id,b.employee_id,b.job_role,b.discount_rate," +
+            " b.is_main,b.job_role_nature,b.org_id,b.parent_employee_id,c.name orgName,b.job_grade,c.nature as org_nature " +
+            " from ins_employee a, ins_employee_job_role b, ins_org c \n" +
             " where a.employee_id =#{employeeId} \n" +
             " and a.status = '0' \n" +
             " and b.employee_id = a.employee_id\n" +

@@ -182,4 +182,10 @@ public class EmployeeInfoDTO implements Serializable {
 
     @ExcelIgnore
     private Long jobRoleId;
+
+    @ExcelIgnore
+    private String jobGrade;
+
+    @ExcelIgnore
+    private String orgNature;
 }
