@@ -142,6 +142,8 @@ public class UserDO {
 
         String originalUsername = this.user.getUsername();
         this.user.setUsername(username);
+        this.user.setMobileNo(username);
+
         if (StringUtils.isNotBlank(status)) {
             this.user.setStatus(status);
         }
