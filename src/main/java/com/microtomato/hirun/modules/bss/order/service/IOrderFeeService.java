@@ -28,9 +28,9 @@ public interface IOrderFeeService extends IService<OrderFee> {
 
     /**
      * 审核费用信息
-     * @param orderId
+     * @param orderId,orderStatus
      */
-    PayComponentDTO initCostAudit(Long orderId);
+    PayComponentDTO initCostAudit(Long orderId, String orderStatus);
 
     /**
      * 审核费用信息
