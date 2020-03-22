@@ -40,7 +40,7 @@ public interface IStatEmployeeQuantityMonthService extends IService<StatEmployee
      * @param orgId
      * @return
      */
-    List<Map<String,String>> queryEmployeeTrendsStat(String time,String orgId,String orgNature);
+    List<Map<String,String>> queryEmployeeTrendsStat(String time,String orgId,String orgNature) throws Exception;
 
     /**
      *家装分公司四大业务类人员汇总情况

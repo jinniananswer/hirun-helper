@@ -6,11 +6,14 @@ import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.microtomato.hirun.framework.annotation.Storage;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeHolidayDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeQuantityStatDTO;
 import com.microtomato.hirun.modules.organization.entity.po.StatEmployeeQuantityMonth;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -69,7 +72,7 @@ public interface StatEmployeeQuantityMonthMapper extends BaseMapper<StatEmployee
      */
     @Select("select a.org_nature,a.job_role,CAST(b.enterprise_id as char) as enterprise_id,CAST(sum(a.employee_num) AS char) as employee_num from stat_employee_quantity_month a,ins_org b  " +
             "where a.org_nature in (${orgNature})  and a.org_id in (${orgId}) and a.year=${year} and a.month=${month} and a.job_role in (${jobRole})" +
-            " and a.org_id=b.org_id" +
+            " and a.org_id=b.org_id and a.job_role_nature='2' " +
             " GROUP BY a.org_nature ,a.job_role, b.enterprise_id ")
     List<Map<String, String>> companyCountByOrgNatureAndJobRoleAndCity(@Param("year") String year, @Param("month") String month, @Param("orgId") String orgId,@Param("orgNature") String orgNature,@Param("jobRole") String jobRole);
 
@@ -88,7 +91,7 @@ public interface StatEmployeeQuantityMonthMapper extends BaseMapper<StatEmployee
             "from stat_employee_quantity_month a " +
             "LEFT JOIN stat_employee_transition b " +
             "on (a.job_role=b.job_role and a.org_nature=b.org_nature and a.`month`=b.`month` and a.job_role_nature=b.job_role_nature and a.job_grade=b.job_grade and a.org_id=b.org_id and a.`year`=b.`year`) " +
-            "where a.org_id in (${orgId}) and a.year=${year} and a.org_nature in (${orgNature}) " +
+            "where a.org_id in (${orgId}) and a.year=${year} and a.org_nature in (${orgNature}) and a.job_role_nature='2' " +
             "group by a.org_nature,a.job_role,a.`month`")
     List<Map<String, String>> busiCountByOrgNatureAndJobRole(@Param("year") String year, @Param("orgNature") String orgNature, @Param("orgId") String orgId);
 
@@ -115,4 +118,29 @@ public interface StatEmployeeQuantityMonthMapper extends BaseMapper<StatEmployee
             " where x.org_id in (${orgId}) ")
     List<Map<String, String>> busiAndAllCountTrend(@Param("year") String year, @Param("orgId") String orgId);
 
+    /**
+     * 统计休假员工信息
+     *
+     * @param endTime
+     * @return
+     */
+    @Select("select b.employee_id,c.org_id," +
+            " case " +
+            "    when TIMESTAMPDIFF(MONTH, b.in_date, NOW()) BETWEEN 0 AND 9 then 'less9Month' else 'more9Month' " +
+            " end as employee_in_month," +
+            " case" +
+            "    when ISNULL(c.job_role)=1 ||  LENGTH(trim(c.job_role))<1  then 9999 else c.job_role " +
+            " end as job_role," +
+            " case " +
+            "  when ISNULL(c.job_grade)=1 ||  LENGTH(trim(c.job_grade))<1  then 0 else c.job_grade " +
+            " end as job_grade," +
+            " IFNULL(c.job_role_nature, 0) as job_role_nature," +
+            " IFNULL(d.nature, 0) as org_nature" +
+            " from ins_employee_holiday a,ins_employee b,ins_employee_job_role c,ins_org d " +
+            " where a.employee_id=b.employee_id and b.employee_id=c.employee_id and c.org_id=d.org_id " +
+            " and b.`status`='0' and c.is_main='1' and NOW() BETWEEN c.start_date and c.end_date" +
+            " and NOW() BETWEEN c.start_date and c.end_date " +
+            " and a.end_time > #{endTime} " +
+            " GROUP BY b.employee_id,c.job_role,c.job_grade,c.job_role_nature,d.nature,c.org_id ")
+    List<EmployeeHolidayDTO> countEmployeeHolidayInfo(@Param("endTime") String endTime);
 }
