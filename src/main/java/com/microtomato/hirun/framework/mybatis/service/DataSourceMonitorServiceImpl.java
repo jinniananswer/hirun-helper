@@ -1,6 +1,6 @@
 package com.microtomato.hirun.framework.mybatis.service;
 
-import com.atomikos.jdbc.nonxa.AtomikosNonXADataSourceBean;
+import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.baomidou.mybatisplus.core.toolkit.IOUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -42,18 +42,18 @@ public class DataSourceMonitorServiceImpl implements ApplicationContextAware {
             while (true) {
                 try {
                     Thread.sleep(60000);
-//                    AtomikosNonXADataSourceBean sysDataSource = (AtomikosNonXADataSourceBean) ctx.getBean("sysDataSource");
-//                    AtomikosNonXADataSourceBean insDataSource = (AtomikosNonXADataSourceBean) ctx.getBean("insDataSource");
-//
-//                    keepAlive(sysDataSource);
-//                    keepAlive(insDataSource);
+                    AtomikosDataSourceBean sysDataSource = (AtomikosDataSourceBean) ctx.getBean("sysDataSource");
+                    AtomikosDataSourceBean insDataSource = (AtomikosDataSourceBean) ctx.getBean("insDataSource");
+
+                    keepAlive(sysDataSource);
+                    keepAlive(insDataSource);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }
 
-        private void keepAlive(AtomikosNonXADataSourceBean ds) {
+        private void keepAlive(AtomikosDataSourceBean ds) {
             int poolAvailableSize = ds.poolAvailableSize();
             for (int i = 0; i < poolAvailableSize; i++) {
                 Connection conn = null;
