@@ -1,6 +1,7 @@
 package com.microtomato.hirun.framework.mybatis;
 
 import com.baomidou.mybatisplus.core.config.GlobalConfig;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ public class MyGlobalConfig extends GlobalConfig {
 
     private static MySqlSessionTemplate mySqlSessionTemplate;
 
+    @Getter
     @Autowired
     private MySqlSessionTemplate sqlSessionTemplate;
 
