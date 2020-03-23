@@ -138,9 +138,10 @@ public interface StatEmployeeQuantityMonthMapper extends BaseMapper<StatEmployee
             " IFNULL(a.org_nature, 0) as org_nature" +
             " from ins_employee_holiday a,ins_employee b " +
             " where a.employee_id=b.employee_id  " +
-            " and a.start_time < #{endTime} " +
+            " and b.status ='0' " +
             " and a.start_time < a.end_time " +
             " and a.end_time > #{endTime} " +
+            " and a.start_time < #{endTime} " +
             " GROUP BY b.employee_id,a.job_role,a.job_grade,a.job_role_nature,a.org_nature,a.org_id ")
     List<EmployeeHolidayDTO> countEmployeeHolidayInfo(@Param("endTime") String endTime);
 }
