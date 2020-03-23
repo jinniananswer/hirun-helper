@@ -380,6 +380,8 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
         Calendar nowDate = Calendar.getInstance();
         String nowYear = String.valueOf(nowDate.get(Calendar.YEAR));
         String nowMonth = String.valueOf(nowDate.get(Calendar.MONTH) + 1);
+        Date endDate = null;
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM");
 
         if (StringUtils.isNotEmpty(time)) {
             year = time.split("-")[0];
@@ -388,25 +390,24 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
                 month = month.substring(1, 2);
             }
             //2020/03/20新增
-            if (StringUtils.equals(year, nowYear) && StringUtils.equals(month, nowMonth)) {
-                endTime = LocalDate.now();
-            } else {
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM");
-                Date date = simpleDateFormat.parse(time);
-                endTime = TimeUtils.lastThisMonth(date).plusDays(1L);
-            }
+            Date date = simpleDateFormat.parse(time);
+            endTime = TimeUtils.lastThisMonth(date);
 
         } else {
             Calendar date = Calendar.getInstance();
             year = String.valueOf(date.get(Calendar.YEAR));
             month = String.valueOf(date.get(Calendar.MONTH) + 1);
-            endTime = LocalDate.now();
+            if (Integer.parseInt(month) < 10) {
+                endDate = simpleDateFormat.parse(year + "-0" + month);
+            }
+            if (Integer.parseInt(month) >= 10) {
+                endDate = simpleDateFormat.parse(year + "-" + month);
+            }
+            endTime = TimeUtils.lastThisMonth(endDate);
         }
         if (StringUtils.isEmpty(orgId)) {
             orgLine = orgService.listOrgSecurityLine();
         } else {
-/*            OrgDO orgDo = SpringContextUtils.getBean(OrgDO.class, orgId);
-            orgLine = orgDo.getOrgLine(orgId);*/
             orgLine = orgId;
         }
         if (StringUtils.isEmpty(orgNature)) {
@@ -454,21 +455,16 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
             }
         }
         //2020/03/20新增
-        List<EmployeeHolidayDTO> holidayList = this.baseMapper.countEmployeeHolidayInfo(endTime + "");
+        List<EmployeeHolidayDTO> holidayList = this.baseMapper.countEmployeeHolidayInfo(endTime + " 23:59:59");
         if (holidayList.size() <= 0) {
             return resultList;
         }
         for (EmployeeHolidayDTO holidayDTO : holidayList) {
             String holidayJobRole = holidayDTO.getJobRole();
-            String holidayJobGrade = holidayDTO.getJobGrade();
-            String holidayJobRoleNature = holidayDTO.getJobRoleNature();
             String holidayOrgNature = holidayDTO.getOrgNature();
-            String monthFlag = holidayDTO.getEmployeeInMonth();
 
             for (int i = 0; i < resultList.size(); i++) {
                 String resultJobRole = resultList.get(i).get("job_role");
-/*                String resultJobGrade=resultList.get(i).get("job_grade");
-                String resultJobRoleNature=resultList.get(i).get("job_role_nature");*/
                 String resultOrgNature = resultList.get(i).get("org_nature");
                 if (StringUtils.equals(holidayJobRole, resultJobRole)
                         && StringUtils.equals(holidayOrgNature, resultOrgNature)) {
@@ -912,7 +908,7 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
             }
             endTime = TimeUtils.lastThisMonth(transDate);
 
-            List<EmployeeHolidayDTO> holidayList = this.baseMapper.countEmployeeHolidayInfo(endTime + "");
+            List<EmployeeHolidayDTO> holidayList = this.baseMapper.countEmployeeHolidayInfo(endTime + " 23:59:59");
             if (ArrayUtils.isEmpty(holidayList)) {
                 continue;
             }

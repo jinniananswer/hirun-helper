@@ -61,7 +61,7 @@ public interface StatEmployeeQuantityMonthMapper extends BaseMapper<StatEmployee
             " and a.job_role=b.job_role and a.org_nature=b.org_nature and a.job_role_nature=b.job_role_nature and a.job_grade=b.job_grade) " +
             " where a.org_nature in (${orgNature}) and a.org_id in (${orgId}) and a.year=${year} and a.month=${month} " +
             " GROUP BY a.org_nature,a.job_role ")
-    List<Map<String, String>> countByOrgNatureAndJobRole(@Param("year") String year, @Param("month") String month, @Param("orgId") String orgId,@Param("orgNature") String orgNature);
+    List<Map<String, String>> countByOrgNatureAndJobRole(@Param("year") String year, @Param("month") String month, @Param("orgId") String orgId, @Param("orgNature") String orgNature);
 
     /**
      * 统计分公司四大业务线人员
@@ -74,7 +74,7 @@ public interface StatEmployeeQuantityMonthMapper extends BaseMapper<StatEmployee
             "where a.org_nature in (${orgNature})  and a.org_id in (${orgId}) and a.year=${year} and a.month=${month} and a.job_role in (${jobRole})" +
             " and a.org_id=b.org_id and a.job_role_nature='2' " +
             " GROUP BY a.org_nature ,a.job_role, b.enterprise_id ")
-    List<Map<String, String>> companyCountByOrgNatureAndJobRoleAndCity(@Param("year") String year, @Param("month") String month, @Param("orgId") String orgId,@Param("orgNature") String orgNature,@Param("jobRole") String jobRole);
+    List<Map<String, String>> companyCountByOrgNatureAndJobRoleAndCity(@Param("year") String year, @Param("month") String month, @Param("orgId") String orgId, @Param("orgNature") String orgNature, @Param("jobRole") String jobRole);
 
     /**
      * 按照岗位，部门性质统计年度人员趋势
@@ -124,23 +124,23 @@ public interface StatEmployeeQuantityMonthMapper extends BaseMapper<StatEmployee
      * @param endTime
      * @return
      */
-    @Select("select b.employee_id,c.org_id," +
+    @Select("select b.employee_id,a.org_id," +
             " case " +
             "    when TIMESTAMPDIFF(MONTH, b.in_date, NOW()) BETWEEN 0 AND 9 then 'less9Month' else 'more9Month' " +
             " end as employee_in_month," +
             " case" +
-            "    when ISNULL(c.job_role)=1 ||  LENGTH(trim(c.job_role))<1  then 9999 else c.job_role " +
+            "    when ISNULL(a.job_role)=1 ||  LENGTH(trim(a.job_role))<1  then 9999 else a.job_role " +
             " end as job_role," +
             " case " +
-            "  when ISNULL(c.job_grade)=1 ||  LENGTH(trim(c.job_grade))<1  then 0 else c.job_grade " +
+            "  when ISNULL(a.job_grade)=1 ||  LENGTH(trim(a.job_grade))<1  then 0 else a.job_grade " +
             " end as job_grade," +
-            " IFNULL(c.job_role_nature, 0) as job_role_nature," +
-            " IFNULL(d.nature, 0) as org_nature" +
-            " from ins_employee_holiday a,ins_employee b,ins_employee_job_role c,ins_org d " +
-            " where a.employee_id=b.employee_id and b.employee_id=c.employee_id and c.org_id=d.org_id " +
-            " and b.`status`='0' and c.is_main='1' and NOW() BETWEEN c.start_date and c.end_date" +
-            " and NOW() BETWEEN c.start_date and c.end_date " +
+            " IFNULL(a.job_role_nature, 0) as job_role_nature," +
+            " IFNULL(a.org_nature, 0) as org_nature" +
+            " from ins_employee_holiday a,ins_employee b " +
+            " where a.employee_id=b.employee_id  " +
+            " and a.start_time < #{endTime} " +
+            " and a.start_time < a.end_time " +
             " and a.end_time > #{endTime} " +
-            " GROUP BY b.employee_id,c.job_role,c.job_grade,c.job_role_nature,d.nature,c.org_id ")
+            " GROUP BY b.employee_id,a.job_role,a.job_grade,a.job_role_nature,a.org_nature,a.org_id ")
     List<EmployeeHolidayDTO> countEmployeeHolidayInfo(@Param("endTime") String endTime);
 }
