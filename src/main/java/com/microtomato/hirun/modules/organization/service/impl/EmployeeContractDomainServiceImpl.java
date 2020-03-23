@@ -1,10 +1,12 @@
 package com.microtomato.hirun.modules.organization.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.exception.BaseException;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
+import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.organization.entity.consts.EmployeeConst;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeContract;
@@ -46,22 +48,34 @@ public class EmployeeContractDomainServiceImpl implements IEmployeeContractDomai
         }
         //如果合同类型为保密协议或者培训协议，在后台提交时设置开始时间和结束时间
         if (StringUtils.equals(EmployeeConst.CONTRACT_TYPE_TRAIN, contractType)
-            || StringUtils.equals(EmployeeConst.CONTRACT_TYPE_SECRET, contractType)) {
+                || StringUtils.equals(EmployeeConst.CONTRACT_TYPE_SECRET, contractType)) {
             employeeContract.setContractStartTime(employeeContract.getContractSignTime());
             employeeContract.setContractEndTime(TimeUtils.stringToLocalDateTime("2099-12-31 23:59:59", "yyyy-MM-dd HH:mm:ss"));
         } else if (StringUtils.equals(EmployeeConst.CONTRACT_TYPE_CHANGE_ROLE, contractType)
-            || StringUtils.equals(EmployeeConst.CONTRACT_TYPE_CHANGE_PLACE, contractType)
-            || StringUtils.equals(EmployeeConst.CONTRACT_TYPE_CHANGE_PROBLATION, contractType)
-            || StringUtils.equals(EmployeeConst.CONTRACT_TYPE_OTHER, contractType)) {
+                || StringUtils.equals(EmployeeConst.CONTRACT_TYPE_CHANGE_PLACE, contractType)
+                || StringUtils.equals(EmployeeConst.CONTRACT_TYPE_CHANGE_PROBLATION, contractType)
+                || StringUtils.equals(EmployeeConst.CONTRACT_TYPE_OTHER, contractType)) {
             //如果变更类型为合同变更设置变更协议的结束时间为当前合同的结束时间，如果未找到则设置时间为2099年
             employeeContract.setContractStartTime(employeeContract.getContractSignTime());
 
-            EmployeeContract validContract = employeeContractService.getById(employeeContract.getParentContractId());
-            if (validContract == null) {
-                employeeContract.setContractEndTime(TimeUtils.stringToLocalDateTime("2099-12-31 23:59:59", "yyyy-MM-dd HH:mm:ss"));
+            List<EmployeeContract> timeContracts = employeeContractService.list(new QueryWrapper<EmployeeContract>().lambda()
+                    .eq(EmployeeContract::getParentContractId, employeeContract.getParentContractId())
+                    .eq(EmployeeContract::getContractType, EmployeeConst.CONTRACT_TYPE_POSTPONE)
+                    .gt(EmployeeContract::getContractEndTime,LocalDateTime.now()));
+
+            if (ArrayUtils.isNotEmpty(timeContracts)) {
+                EmployeeContract timeContract = timeContracts.get(0);
+                employeeContract.setContractEndTime(timeContract.getContractEndTime());
             } else {
-                employeeContract.setContractEndTime(validContract.getContractEndTime());
+
+                EmployeeContract validContract = employeeContractService.getById(employeeContract.getParentContractId());
+                if (validContract == null) {
+                    employeeContract.setContractEndTime(TimeUtils.stringToLocalDateTime("2099-12-31 23:59:59", "yyyy-MM-dd HH:mm:ss"));
+                } else {
+                    employeeContract.setContractEndTime(validContract.getContractEndTime());
+                }
             }
+
 
         }
         employeeContract.setStatus(EmployeeConst.CONTRACT_STATUS_NORMAL);
