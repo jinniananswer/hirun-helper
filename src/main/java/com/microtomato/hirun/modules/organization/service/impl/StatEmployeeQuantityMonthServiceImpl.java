@@ -455,7 +455,7 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
             }
         }
         //2020/03/20新增
-        List<EmployeeHolidayDTO> holidayList = this.baseMapper.countEmployeeHolidayInfo(endTime + " 23:59:59",orgLine);
+        List<EmployeeHolidayDTO> holidayList = this.baseMapper.countEmployeeHolidayInfo(endTime + "",orgLine);
         if (holidayList.size() <= 0) {
             return resultList;
         }
@@ -908,7 +908,7 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
             }
             endTime = TimeUtils.lastThisMonth(transDate);
 
-            List<EmployeeHolidayDTO> holidayList = this.baseMapper.countEmployeeHolidayInfo(endTime + " 23:59:59",orgLine);
+            List<EmployeeHolidayDTO> holidayList = this.baseMapper.countEmployeeHolidayInfo(endTime + "",orgLine);
             if (ArrayUtils.isEmpty(holidayList)) {
                 continue;
             }
