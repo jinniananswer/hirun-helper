@@ -24,5 +24,12 @@ public interface IDecoratorService extends IService<Decorator> {
      */
     List<Decorator> queryDecoratorInfo(Long orgId, Long type);
 
+    /**
+     * 查询所有
+     * @param
+     * @return
+     */
+    List<Decorator> queryAllInfo();
+
 
 }
