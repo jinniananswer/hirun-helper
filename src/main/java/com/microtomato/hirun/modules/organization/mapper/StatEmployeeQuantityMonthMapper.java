@@ -142,6 +142,7 @@ public interface StatEmployeeQuantityMonthMapper extends BaseMapper<StatEmployee
             " and a.start_time < a.end_time " +
             " and a.end_time > #{endTime} " +
             " and a.start_time < #{endTime} " +
+            " and a.org_id in (${orgLine}) " +
             " GROUP BY b.employee_id,a.job_role,a.job_grade,a.job_role_nature,a.org_nature,a.org_id ")
-    List<EmployeeHolidayDTO> countEmployeeHolidayInfo(@Param("endTime") String endTime);
+    List<EmployeeHolidayDTO> countEmployeeHolidayInfo(@Param("endTime") String endTime,@Param("orgLine") String orgLine);
 }

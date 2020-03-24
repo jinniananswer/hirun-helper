@@ -133,7 +133,7 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
 
         //2020/03/23新增.核减休假人数
         try {
-            this.cutHolidayEmployee(recordList, year);
+            this.cutHolidayEmployee(recordList, year,orgLine);
         } catch (Exception e) {
             log.info(e.getMessage());
         }
@@ -455,7 +455,7 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
             }
         }
         //2020/03/20新增
-        List<EmployeeHolidayDTO> holidayList = this.baseMapper.countEmployeeHolidayInfo(endTime + " 23:59:59");
+        List<EmployeeHolidayDTO> holidayList = this.baseMapper.countEmployeeHolidayInfo(endTime + " 23:59:59",orgLine);
         if (holidayList.size() <= 0) {
             return resultList;
         }
@@ -890,7 +890,7 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
      * @param dtos
      * @return
      */
-    public List<EmployeeQuantityStatDTO> cutHolidayEmployee(List<EmployeeQuantityStatDTO> dtos, String year) throws Exception {
+    public List<EmployeeQuantityStatDTO> cutHolidayEmployee(List<EmployeeQuantityStatDTO> dtos, String year,String orgLine) throws Exception {
         if (ArrayUtils.isEmpty(dtos)) {
             return dtos;
         }
@@ -908,7 +908,7 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
             }
             endTime = TimeUtils.lastThisMonth(transDate);
 
-            List<EmployeeHolidayDTO> holidayList = this.baseMapper.countEmployeeHolidayInfo(endTime + " 23:59:59");
+            List<EmployeeHolidayDTO> holidayList = this.baseMapper.countEmployeeHolidayInfo(endTime + " 23:59:59",orgLine);
             if (ArrayUtils.isEmpty(holidayList)) {
                 continue;
             }
