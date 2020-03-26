@@ -28,6 +28,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 },
                 discountItemDetailList : [],
                 orderId : util.getRequest('orderId'),
+                custId : util.getRequest('custId'),
                 orderStatus : util.getRequest('status'),
                 activities : [],
                 discountItemDetail: false,
@@ -79,10 +80,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     ]
                 },
                 statusList : [],
-                approveEmployeeList : [
-                    // {'label': '女', 'value': '0'},
-                    // {'label': '1', 'value': '2'},
-                    ]
+                approveEmployeeList : []
             }
         },
         computed: {
@@ -192,38 +190,25 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
             },
             saveDiscountItemList : function () {
                 let updateRecords = vm.$refs.discountItemTable.getUpdateRecords();
+                if(updateRecords.length == 0) {
+                    this.$alert('没有任何修改', '提示', {
+                        confirmButtonText: '确定',
+                    });
+                    return;
+                }
                 let list = JSON.parse(JSON.stringify(updateRecords));//值传递
                 for(let i = 0; i < list.length; i++) {
                     list[i].contractDiscountFee = list[i].contractDiscountFee * 100;
                     list[i].settleDiscountFee = list[i].settleDiscountFee * 100;
                 }
-                ajax.post('api/bss.order/order-discount-item/save', list);
-                // axios({
-                //     method: 'post',
-                //     url: 'api/bss.order/order-discount-item/save',
-                //     data: list
-                // }).then(function (responseData) {
-                //     if (0 == responseData.data.code) {
-                //         Vue.prototype.$message({
-                //             message: '保存成功！',
-                //             type: 'success'
-                //         });
-                //     }
-                // }).catch(function (error) {
-                //     Vue.prototype.$message({
-                //         message: '保存失败！',
-                //         type: 'warning'
-                //     });
-                // });
-            },
-            approveEmployeeChangeEvent : function() {
-                // let { fullData } = this.$refs.discountItemTable.getTableData();
-                // this.approveEmployeeList.forEach(item => {
-                //     if (item.value) {
-                //         如果当前选项已经被选过，则禁用
-                        // item.disabled = fullData.some(row => row.approveEmployeeId === item.value)
-                    // }
-                // })
+                ajax.post('api/bss.order/order-discount-item/save', list, (responseData)=>{
+                    this.$alert('保存成功', '提示', {
+                        confirmButtonText: '确定',
+                        callback: action => {
+                            this.discountItemDetail = false;
+                        }
+                    });
+                });
             }
         }
     });

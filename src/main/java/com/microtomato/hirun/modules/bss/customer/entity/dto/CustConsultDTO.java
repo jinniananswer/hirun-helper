@@ -33,6 +33,8 @@ public class CustConsultDTO {
 
     private Long designEmployeeId;
 
+    private Long custId;
+
     @JsonSerialize(using = JsonLocalDateTimeSerializer.class)
     @JsonDeserialize(using = JsonLocalDateTimeDeserializer.class)
     private LocalDateTime consultTime;

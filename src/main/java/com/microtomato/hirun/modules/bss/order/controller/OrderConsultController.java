@@ -31,6 +31,12 @@ public class OrderConsultController {
         return orderConsultServiceImpl.queryOrderConsult(orderId);
     }
 
+    @GetMapping("/queryOrderConsultForTrans")
+    @RestResult
+    public CustConsultDTO queryOrderConsultForTrans(Long orderId){
+        return orderConsultServiceImpl.queryOrderConsultForTrans(orderId);
+    }
+
     @PostMapping("/saveCustomerConsultInfo")
     @RestResult
     public void saveCustomerConsultInfo(@RequestBody CustConsultDTO dto) {

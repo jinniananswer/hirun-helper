@@ -15,14 +15,14 @@
             <el-row :gutter="12">
                 <el-col :span="6">
                     <div class="grid-content bg-purple">
-                        <cust-info cust-id="263"></cust-info>
+                        <cust-info :cust-id="custId"></cust-info>
 
-                        <order-worker order-id="1"></order-worker>
+                        <order-worker :order-id="orderId"></order-worker>
                     </div>
                 </el-col>
                 <el-col :span="18">
                     <div class="grid-content bg-purple-light">
-                        <order-info order-id="1"></order-info>
+                        <order-info :order-id="orderId"></order-info>
                         <el-card class="box-card">
                             <div slot="header" class="clearfix">
                                 <span>操作区域</span>

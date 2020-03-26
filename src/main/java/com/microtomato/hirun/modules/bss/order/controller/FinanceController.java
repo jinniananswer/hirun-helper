@@ -3,7 +3,9 @@ package com.microtomato.hirun.modules.bss.order.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
+
 import com.microtomato.hirun.modules.bss.order.entity.dto.CollectFeeDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.CollectionComponentDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.PayComponentDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.CustOrderInfoDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.CustOrderQueryDTO;
@@ -36,6 +38,12 @@ public class FinanceController {
     public IPage<CustOrderInfoDTO> queryCustOrderInfo(CustOrderQueryDTO queryCond) {
         Page<CustOrderQueryDTO> page = new Page<>(queryCond.getPage(), queryCond.getLimit());
         return this.domainService.queryCustOrderInfos(queryCond, page);
+    }
+
+    @GetMapping("/initCollectionComponent")
+    @RestResult
+    public CollectionComponentDTO initCollectionComponent() {
+        return this.domainService.initCollectionComponent();
     }
 
     @GetMapping("/initPayComponent")

@@ -24,5 +24,7 @@ public class CollectionComponentDTO {
 
     private List<PayItemDTO> payItems;
 
+    private Double needPay;
+
     private List<CascadeDTO<CollectionItemCfg>> collectionItemOption;
 }

@@ -43,8 +43,8 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
             init() {
                 let that = this;
                 let url = 'api/bss/order/order-fee/initCostAudit';
-                if (this.collectFee.orderId != null) {
-                    url += '?orderId=' + this.collectFee.orderId;
+                if (this.collectFee.orderId != null&& this.collectFee.orderStatus != null) {
+                    url += '?orderId=' + this.collectFee.orderId+ '&orderStatus=' + this.collectFee.orderStatus;
                 }
                 ajax.get(url, null, function(data) {
                     if (data.payItems) {
@@ -64,7 +64,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
 
             submitAudit(collectFee) {
                 this.collectFee['auditStatus'] = "1";
-                if(this.collectFee.engineeringClerk=="18"){
+                if(this.collectFee.orderStatus=="18"){
                     if(this.collectFee.engineeringClerk==""){
                         this.$message.error('工程文员没有选择，请亲重新选择哦~~~~~~~！');
                         return ;

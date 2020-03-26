@@ -1,4 +1,5 @@
-require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'order-info', 'order-worker', 'order-selectemployee','cust-visit', 'order-search-employee'], function(Vue, element, axios, ajax, vueselect, util, custInfo, orderInfo, orderWorker, orderSelectEmployee,custVisit, orderSearchEmployee) {
+require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'order-info', 'order-worker', 'order-selectemployee','cust-visit', 'order-search-employee', 'vxe-table'], function(Vue, element, axios, ajax, vueselect, util, custInfo, orderInfo, orderWorker, orderSelectEmployee,custVisit, orderSearchEmployee, vxetable) {
+    Vue.use(vxetable);
     let vm = new Vue({
         el: '#app',
         data() {
@@ -28,6 +29,9 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     financeEmployeeId : '',
                     financeEmployeeName : ''
                 },
+                discountItemDetailList : [],
+                approveEmployeeList : [],
+                discountItemDetail: false,
                 orderId : util.getRequest('orderId'),
                 custId : util.getRequest('custId'),
                 orderStatus : util.getRequest('status'),
@@ -101,6 +105,17 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 this.secondInstallment.taxFee = responseData.taxFee ? responseData.taxFee / 100 : 0;
                 this.secondInstallment.otherFee = responseData.otherFee ? responseData.otherFee / 100 : 0;
             });
+
+            ajax.get('api/bss.order/order-base/selectRoleEmployee', {roleId:19,isSelf:false}, (responseData)=>{
+                let arr = [];
+                for(let i = 0; i < responseData.length; i++) {
+                    arr.push({
+                        label: responseData[i].name,
+                        value: responseData[i].employeeId
+                    });
+                }
+                this.approveEmployeeList = arr;
+            })
         },
         methods: {
             submit : function() {
@@ -115,8 +130,17 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     }
                 });
             },
-            openDiscntItemWindow : function () {
-                alert('优惠项目录入')
+            openDiscountItemDetailDialog : function () {
+                let data = {
+                    orderId : this.orderId
+                }
+                ajax.get('api/bss.order/order-discount-item/list', data, (responseData)=>{
+                    for(let i = 0; i < responseData.length; i++) {
+                        responseData[i].contractDiscountFee = responseData[i].contractDiscountFee / 100;
+                        responseData[i].settleDiscountFee = responseData[i].settleDiscountFee / 100;
+                    }
+                    this.discountItemDetailList = responseData;
+                });
             },
             uploadDecorateContract : function () {
                 alert('上传合同附件')
@@ -134,6 +158,28 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 data.furnitureFee = Math.round(data.furnitureFee * 100);
                 data.otherFee = Math.round(data.otherFee * 100);
                 data.taxFee = Math.round(data.taxFee * 100);
+            },
+            saveDiscountItemList : function () {
+                let updateRecords = vm.$refs.discountItemTable.getUpdateRecords();
+                if(updateRecords.length == 0) {
+                    this.$alert('没有任何修改', '提示', {
+                        confirmButtonText: '确定',
+                    });
+                    return;
+                }
+                let list = JSON.parse(JSON.stringify(updateRecords));//值传递
+                for(let i = 0; i < list.length; i++) {
+                    list[i].contractDiscountFee = list[i].contractDiscountFee * 100;
+                    list[i].settleDiscountFee = list[i].settleDiscountFee * 100;
+                }
+                ajax.post('api/bss.order/order-discount-item/save', list, (responseData)=>{
+                    this.$alert('保存成功', '提示', {
+                        confirmButtonText: '确定',
+                        callback: action => {
+                            this.discountItemDetail = false;
+                        }
+                    });
+                });
             }
         }
     });

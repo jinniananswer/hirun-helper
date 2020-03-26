@@ -1,6 +1,8 @@
 package com.microtomato.hirun.framework.mybatis.config;
 
-import com.atomikos.jdbc.nonxa.AtomikosNonXADataSourceBean;
+import com.alibaba.druid.support.http.StatViewServlet;
+import com.alibaba.druid.support.http.WebStatFilter;
+import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.baomidou.mybatisplus.autoconfigure.SpringBootVFS;
 import com.baomidou.mybatisplus.core.MybatisConfiguration;
 import com.baomidou.mybatisplus.core.parser.ISqlParser;
@@ -23,6 +25,8 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -63,14 +67,14 @@ public class MyBatisPlusConfig {
     @Primary
     @Bean
     @ConfigurationProperties(prefix = "spring.datasource.atomikos.sys")
-    public AtomikosNonXADataSourceBean sysDataSource() {
-        return DataSourceBuilder.create().type(AtomikosNonXADataSourceBean.class).build();
+    public AtomikosDataSourceBean sysDataSource() {
+        return DataSourceBuilder.create().type(AtomikosDataSourceBean.class).build();
     }
 
     @Bean
     @ConfigurationProperties(prefix = "spring.datasource.atomikos.ins")
-    public AtomikosNonXADataSourceBean insDataSource() {
-        return DataSourceBuilder.create().type(AtomikosNonXADataSourceBean.class).build();
+    public AtomikosDataSourceBean insDataSource() {
+        return DataSourceBuilder.create().type(AtomikosDataSourceBean.class).build();
     }
 
     @Bean(name = "sqlSessionTemplate")
@@ -90,9 +94,16 @@ public class MyBatisPlusConfig {
      * @param dataSource
      * @return
      */
-    private SqlSessionFactory createSqlSessionFactory(AtomikosNonXADataSourceBean dataSource) throws Exception {
+    private SqlSessionFactory createSqlSessionFactory(AtomikosDataSourceBean dataSource) throws Exception {
 
-        log.info("初始化数据源: {}", dataSource.getUser());
+//        SqlSessionFactoryBean factoryBean = new SqlSessionFactoryBean();
+//        factoryBean.setDataSource(dataSource);
+//        // 指定 xml 文件路径
+//        factoryBean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath*:/mapper/**/*.xml"));
+//        return factoryBean.getObject();
+
+
+        log.info("初始化数据源: {}", dataSource.toString());
         dataSource.init();
 
         MybatisSqlSessionFactoryBean sqlSessionFactory = new MybatisSqlSessionFactoryBean();
@@ -199,6 +210,32 @@ public class MyBatisPlusConfig {
         // SQL 告警时间，超过在控制台以红色打印，单位毫秒
         sqlPerformanceInterceptor.setWarnTime(80);
         return sqlPerformanceInterceptor;
+    }
+
+    @Bean
+    public ServletRegistrationBean druidServlet() {
+        log.info("Init Druid Servlet Configuration ");
+        ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean(new StatViewServlet(), "/druid/*");
+        // IP白名单，不设默认都可以
+//        servletRegistrationBean.addInitParameter("allow", "192.168.2.25,127.0.0.1");
+        // IP黑名单(共同存在时，deny优先于allow)
+        servletRegistrationBean.addInitParameter("deny", "192.168.1.100");
+        //控制台管理用户
+        servletRegistrationBean.addInitParameter("loginUsername", "root");
+        servletRegistrationBean.addInitParameter("loginPassword", "root");
+        //是否能够重置数据 禁用HTML页面上的“Reset All”功能
+        servletRegistrationBean.addInitParameter("resetEnable", "false");
+        return servletRegistrationBean;
+    }
+
+    @Bean
+    public FilterRegistrationBean filterRegistrationBean() {
+        FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean(new WebStatFilter());
+        //添加过滤规则
+        filterRegistrationBean.addUrlPatterns("/*");
+        //添加不需要忽略的格式信息
+        filterRegistrationBean.addInitParameter("exclusions", "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*");
+        return filterRegistrationBean;
     }
 
 }

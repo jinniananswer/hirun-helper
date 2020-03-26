@@ -13,6 +13,7 @@ import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFee;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayItem;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayNo;
+import com.microtomato.hirun.modules.bss.order.exception.OrderException;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderFeeMapper;
 import com.microtomato.hirun.modules.bss.order.service.*;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
@@ -61,8 +62,6 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
     private IFeeDomainService feeDomainService;
 
 
-
-
     @Override
     public OrderFee queryOrderCollectFee(Long orderId) {
         OrderFee orderFee = null;
@@ -98,8 +97,47 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
     public void submitAudit(OrderFeeDTO dto) {
         //1是审核通过，2是审核不通过
         String auditStatus = dto.getAuditStatus();
+        String orderStatus = dto.getOrderStatus();
         Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
         if (auditStatus.equals("1")) {
+            List<OrderPayItem> payItems = orderPayItemService.queryByOrderId(dto.getOrderId());
+            if (ArrayUtils.isEmpty(payItems)) {
+                //只有设计费不需要判断是否已经收取费用，其他工程款都需要判断
+                if ("18".equals(orderStatus) || "25".equals(orderStatus) || "30".equals(orderStatus)) {
+                    throw new OrderException(OrderException.OrderExceptionEnum.ORDER_COSTFEE_NOT_FOUND);
+                }
+
+            }
+            else {
+                String firstFalg ="";
+                String secondFalg ="";
+                String thirdFalg ="";
+                for (OrderPayItem payItem : payItems) {
+                    Integer payPeriod =payItem.getPeriods();
+                    if (1==payPeriod){
+                        firstFalg="1";
+                    }
+                    else if (2==payPeriod){
+                        secondFalg="1";
+                    }
+                    else if (3==payPeriod){
+                        thirdFalg="1";
+                    }
+                }
+                //判断是否收取了对应的款项
+                if("18".equals(orderStatus)&&"".equals(firstFalg)){
+                    throw new OrderException(OrderException.OrderExceptionEnum.ORDER_COSTFEE_NOT_FOUND);
+                }
+                //判断是否收取了对应的款项
+                if("25".equals(orderStatus)&&"".equals(secondFalg)){
+                    throw new OrderException(OrderException.OrderExceptionEnum.ORDER_COSTFEE_NOT_FOUND);
+                }
+                //判断是否收取了对应的款项
+                if("30".equals(orderStatus)&&"".equals(thirdFalg)){
+                    throw new OrderException(OrderException.OrderExceptionEnum.ORDER_COSTFEE_NOT_FOUND);
+                }
+
+            }
             orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_NEXT_STEP);
         } else {
             orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_AUDIT_NO);
@@ -107,30 +145,27 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
 
         //如果需要流转到指定人，才需要处理worker记录 首期款需要选择工程文员
         //判断当前状态，处理worker表
-        String orderStatus = dto.getOrderStatus();
+
         if (orderStatus.equals("18") && auditStatus.equals("1")) {
             workerService.updateOrderWorker(dto.getOrderId(), 32L, dto.getEngineeringClerk());
         }
         //处理orderFee的审核人与审核备注
-        String type ="";
-        int periods =0;
-        if(orderStatus.equals("8")){
-            type="1";
-        }
-        else if(orderStatus.equals("18")||orderStatus.equals("25")||orderStatus.equals("30")){
-            type="2";
-            if (orderStatus.equals("18")){
-                periods=1;
-            }
-           else if (orderStatus.equals("25")){
-                periods=2;
-            }
-           else {
-                periods=3;
+        String type = "";
+        int periods = 0;
+        if (orderStatus.equals("8")) {
+            type = "1";
+        } else if (orderStatus.equals("18") || orderStatus.equals("25") || orderStatus.equals("30")) {
+            type = "2";
+            if (orderStatus.equals("18")) {
+                periods = 1;
+            } else if (orderStatus.equals("25")) {
+                periods = 2;
+            } else {
+                periods = 3;
             }
         }
         LocalDateTime auditTime = RequestTimeHolder.getRequestTime();
-        this.updateByOrderId(dto.getOrderId(),type,periods,auditStatus,employeeId,dto.getAuditRemark(),auditTime);
+        this.updateByOrderId(dto.getOrderId(), type, periods, auditStatus, employeeId, dto.getAuditRemark(), auditTime);
     }
 
     /**
@@ -151,11 +186,11 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
      * @return
      */
     @Override
-    public PayComponentDTO initCostAudit(Long orderId) {
+    public PayComponentDTO initCostAudit(Long orderId, String orderStatus) {
         PayComponentDTO componentData = new PayComponentDTO();
         if (orderId != null) {
             List<OrderPayItem> payItems = orderPayItemService.queryByOrderId(orderId);
-           if (ArrayUtils.isNotEmpty(payItems)) {
+            if (ArrayUtils.isNotEmpty(payItems)) {
                 List<PayItemDTO> payItemDTOs = new ArrayList<>();
                 for (OrderPayItem payItem : payItems) {
                     PayItemDTO payItemDTO = new PayItemDTO();
@@ -183,6 +218,7 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
 
     /**
      * 根据订单ID查询订单费用
+     *
      * @param orderId
      * @return
      */
@@ -194,6 +230,7 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
 
     /**
      * 根据订单ID、类型、期数查询订单费用
+     *
      * @param orderId
      * @param type
      * @param period
@@ -203,21 +240,21 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
     public OrderFee getByOrderIdTypePeriod(Long orderId, String type, Integer period) {
         LocalDateTime now = RequestTimeHolder.getRequestTime();
         return this.getOne(new QueryWrapper<OrderFee>().lambda().eq(OrderFee::getOrderId, orderId)
-            .gt(OrderFee::getEndDate, now)
-            .eq(period !=null, OrderFee::getPeriods, period));
+                .gt(OrderFee::getEndDate, now)
+                .eq(period != null, OrderFee::getPeriods, period));
     }
 
     /**
      * 根据订单ID与收费类型，期数更新orderfee状态
+     *
      * @param orderId
      * @return
      */
     @Override
-    public void updateByOrderId(Long orderId,String type, Integer periods,String auditStatus,Long employeeId,String auditRemark,LocalDateTime auditTime) {
-        if(type.equals("1")){
+    public void updateByOrderId(Long orderId, String type, Integer periods, String auditStatus, Long employeeId, String auditRemark, LocalDateTime auditTime) {
+        if (type.equals("1")) {
             this.update(new UpdateWrapper<OrderFee>().lambda().eq(OrderFee::getOrderId, orderId).eq(OrderFee::getType, type).gt(OrderFee::getEndDate, LocalDateTime.now()).set(OrderFee::getAuditStatus, auditStatus).set(OrderFee::getAuditEmployeeId, employeeId).set(OrderFee::getAuditComment, auditRemark).set(OrderFee::getAuditTime, auditTime));
-        }
-        else{
+        } else {
             this.update(new UpdateWrapper<OrderFee>().lambda().eq(OrderFee::getOrderId, orderId).eq(OrderFee::getType, type).eq(OrderFee::getPeriods, periods).gt(OrderFee::getEndDate, LocalDateTime.now()).set(OrderFee::getAuditStatus, auditStatus).set(OrderFee::getAuditEmployeeId, employeeId).set(OrderFee::getAuditComment, auditRemark).set(OrderFee::getAuditTime, auditTime));
         }
 

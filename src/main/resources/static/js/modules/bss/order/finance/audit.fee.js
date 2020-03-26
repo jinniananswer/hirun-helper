@@ -36,7 +36,7 @@ require(['vue', 'ELEMENT','ajax', 'vueselect', 'util','cust-info', 'order-info',
                     ajax.post('api/bss/order/order-fee/costReview', this.auditData);
 
             },
-            auditFailed(data) {
+            auditFailed:  function() {
                 this.auditData['auditStatus'] = "2";
                     ajax.post('api/bss/order/order-fee/costReview', this.auditData);
 

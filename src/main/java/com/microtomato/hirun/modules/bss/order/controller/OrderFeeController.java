@@ -49,8 +49,8 @@ public class OrderFeeController {
      */
     @GetMapping("/initCostAudit")
     @RestResult
-    public PayComponentDTO initCostAudit(Long orderId) {
-        return this.orderFeeServiceImpl.initCostAudit(orderId);
+    public PayComponentDTO initCostAudit(Long orderId, String orderStatus) {
+        return this.orderFeeServiceImpl.initCostAudit(orderId,orderStatus);
     }
 
     /**

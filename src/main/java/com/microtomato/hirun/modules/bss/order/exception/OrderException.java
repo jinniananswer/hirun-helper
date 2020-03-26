@@ -43,6 +43,9 @@ public class OrderException extends BaseException {
 
         @Error(code = ErrorKind.NOT_FOUND, message = "未找到订单基本信息")
         ORDER_BASE_NOT_FOUND,
+
+        @Error(code = ErrorKind.NOT_FOUND, message = "未进行费用收取，不能审核")
+        ORDER_COSTFEE_NOT_FOUND,
     }
 
     public OrderException(String message, int code) {
