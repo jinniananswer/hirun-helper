@@ -38,5 +38,11 @@ public class DecoratorServiceImpl extends ServiceImpl<DecoratorMapper, Decorator
                 .eq(Decorator::getStatus, "0"));
     }
 
+    @Override
+    public List<Decorator> queryAllInfo() {
+        return this.list(new QueryWrapper<Decorator>().lambda()
+                .eq(Decorator::getStatus, "0"));
+    }
+
 
 }

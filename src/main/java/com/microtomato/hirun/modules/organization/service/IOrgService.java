@@ -41,6 +41,8 @@ public interface IOrgService extends IService<Org> {
 
     List<Org> findChildren(Org parent);
 
+    List<Org> listByType(String type);
+
     void buildMap(List<TreeNode> nodeList, Map<String, TreeNode> nodeMap);
 
     /**

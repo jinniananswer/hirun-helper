@@ -16,6 +16,8 @@ public interface IFinanceDomainService {
 
     PayComponentDTO initPayComponent(Long orderId, Long payNo);
 
+    CollectionComponentDTO initCollectionComponent();
+
     void collectFee(CollectFeeDTO feeData);
 
     void changePay(CollectFeeDTO feeData);
