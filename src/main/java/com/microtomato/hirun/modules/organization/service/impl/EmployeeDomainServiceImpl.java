@@ -303,7 +303,7 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         List<EmployeeKeyman> keyMen = new ArrayList<>();
 
         EmployeeContactManDTO contactManDTO = employeeDTO.getContactMan();
-        if (contactManDTO != null && StringUtils.isNotBlank(contactManDTO.getName())) {
+        if (contactManDTO != null && (StringUtils.isNotBlank(contactManDTO.getName()) || StringUtils.isNotBlank(contactManDTO.getContactNo()))) {
             EmployeeKeyman keyMan = new EmployeeKeyman();
             BeanUtils.copyProperties(contactManDTO, keyMan);
             keyMan.setType(EmployeeConst.KEYMAN_TYPE_CONTACT);
@@ -567,7 +567,7 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         archive.setStatusName(this.staticDataService.getCodeName("EMPLOYEE_STATUS", employee.getStatus()));
         archive.setIsSocialSecurityName(this.staticDataService.getCodeName("YES_NO", employee.getIsSocialSecurity() + ""));
         archive.setSocialSecurityStatusName(this.staticDataService.getCodeName("SOCIAL_SECURITY_STATUS", employee.getSocialSecurityStatus()));
-        archive.setCompanyAge(employeeDO.getCompanyAge()+"");
+        archive.setCompanyAge(employeeDO.getCompanyAge() + "");
         archive.setJobRoleName(this.staticDataService.getCodeName("JOB_ROLE", jobRole.getJobRole()));
         archive.setJobGradeName(this.staticDataService.getCodeName("JOB_GRADE", jobRole.getJobGrade()));
 
@@ -619,9 +619,9 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         Map<String, String> resultMap = new HashMap<>();
         //获取离职员工的是否有下级
         List<EmployeeInfoDTO> list = employeeService.findSubordinate(employeeId);
-        if(list.size()<=0){
+        if (list.size() <= 0) {
             resultMap.put("hasChildEmployee", "NO");
-        }else{
+        } else {
             resultMap.put("hasChildEmployee", "YES");
         }
         //获取员工离职次数 1、离职员工未做复职做的员工新增，存在多条身份证一致的信息 2、做复职处理判断之前记录的离职次数
@@ -643,16 +643,16 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
     @Override
     public IPage<EmployeeInfoDTO> queryEmployee4BatchChange(Long parentEmployeeId, Long orgId, Page<EmployeeQueryConditionDTO> page) {
         String orgLine = "";
-        if (null==orgId) {
+        if (null == orgId) {
             UserContext userContext = WebContextUtils.getUserContext();
             orgId = userContext.getOrgId();
             orgLine = orgService.listOrgSecurityLine();
         } else {
-           OrgDO conditionOrgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
-           orgLine = conditionOrgDO.getOrgLine(orgId);
+            OrgDO conditionOrgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+            orgLine = conditionOrgDO.getOrgLine(orgId);
         }
 
-        IPage<EmployeeInfoDTO> iPage=employeeService.queryEmployee4BatchChange(parentEmployeeId,orgLine,page);
+        IPage<EmployeeInfoDTO> iPage = employeeService.queryEmployee4BatchChange(parentEmployeeId, orgLine, page);
         if (iPage == null) {
             return null;
         }
