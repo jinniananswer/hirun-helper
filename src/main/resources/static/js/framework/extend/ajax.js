@@ -14,7 +14,6 @@ define(['vue','ELEMENT','axios'], function(Vue,element,axios){
             let loading = vm.$loading({
                 lock: true,
                 text: '拼命加载中……',
-                spinner: 'el-icon-loading',
                 background: 'rgba(0, 0, 0, 0.7)'
             });
 
