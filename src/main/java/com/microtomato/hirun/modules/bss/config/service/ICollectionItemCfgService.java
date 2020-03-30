@@ -18,7 +18,7 @@ public interface ICollectionItemCfgService extends IService<CollectionItemCfg> {
 
     List<CollectionItemCfg> queryAll();
 
-    //CollectionItemCfg getPayItem(Long payItemId);
+    CollectionItemCfg getFeeItem(Long collectionId);
 
     List<CollectionItemCfg> queryPlusCollectionyItems();
 

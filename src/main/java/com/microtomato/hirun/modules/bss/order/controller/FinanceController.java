@@ -4,12 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
 
-import com.microtomato.hirun.modules.bss.order.entity.dto.CollectFeeDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.CollectionComponentDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.PayComponentDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.CustOrderInfoDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.CustOrderQueryDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.FinancePendingTaskDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.*;
 import com.microtomato.hirun.modules.bss.order.service.IFinanceDomainService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +51,13 @@ public class FinanceController {
     @RestResult
     public Map collectFee(@RequestBody  CollectFeeDTO collectFee) {
         this.domainService.collectFee(collectFee);
+        return new HashMap();
+    }
+
+    @PostMapping("/nonCollectFee")
+    @RestResult
+    public Map nonCollectFee(@RequestBody NonCollectFeeDTO nonCollectFee) {
+        this.domainService.nonCollectFee(nonCollectFee);
         return new HashMap();
     }
 

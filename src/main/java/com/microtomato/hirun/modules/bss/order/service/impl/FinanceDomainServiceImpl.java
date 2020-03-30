@@ -19,10 +19,7 @@ import com.microtomato.hirun.modules.bss.config.service.IPayItemCfgService;
 import com.microtomato.hirun.modules.bss.house.service.IHousesService;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.*;
-import com.microtomato.hirun.modules.bss.order.entity.po.Decorator;
-import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayItem;
-import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayMoney;
-import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayNo;
+import com.microtomato.hirun.modules.bss.order.entity.po.*;
 import com.microtomato.hirun.modules.bss.order.exception.OrderException;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderBaseMapper;
 import com.microtomato.hirun.modules.bss.order.service.*;
@@ -93,6 +90,19 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
 
     @Autowired
     private IOrgService orgService;
+
+    @Autowired
+    private ISupplierBrandService supplierBrandService;
+
+    @Autowired
+    private INormalPayItemService normalPayItemService;
+
+    @Autowired
+    private INormalPayMoneyService normalPayMoneyService;
+
+    @Autowired
+    private INormalPayNoService normalPayNoService;
+
 
 
     /**
@@ -703,30 +713,39 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
         String id = children.getValue();
         //查询品牌信息
         if (StringUtils.equals("pay_12", id)) {
-
+            List<CascadeDTO<SupplierBrand>> grandChildrens = new ArrayList<>();
+            List<SupplierBrand> supplierBrands = this.supplierBrandService.queryAllInfo();
+            for (SupplierBrand supplierBrand : supplierBrands) {
+                CascadeDTO<SupplierBrand> child = new CascadeDTO<>();
+                child.setLabel(supplierBrand.getName());
+                child.setValue("pay_" + supplierBrand.getId());
+                child.setSelf(supplierBrand);
+                grandChildrens.add(child);
+            }
+            if (ArrayUtils.isNotEmpty(grandChildrens)) {
+                children.setChildren(grandChildrens);
+            }
         }
         //查询工人信息
-//        if (StringUtils.equals("pay_16", id) || StringUtils.equals("pay_25", id) || StringUtils.equals("pay_28", id) || StringUtils.equals("pay_33", id)|| StringUtils.equals("pay_34", id)) {
-//            List<CascadeDTO<Decorator>> grandChildrens = new ArrayList<>();
-//            List<Decorator> decorators = this.decoratorService.queryAllInfo();
-//            log.debug("decorators===========" + decorators);
-//            for (Decorator decorator : decorators) {
-//                CascadeDTO<Decorator> child = new CascadeDTO<>();
-//                child.setLabel(decorator.getName());
-//                child.setValue("pay_" + decorator.getDecoratorId());
-//                child.setSelf(decorator);
-//                grandChildrens.add(child);
-//            }
-//            if (ArrayUtils.isNotEmpty(grandChildrens)) {
-//                children.setChildren(grandChildrens);
-//            }
-//        }
+        if (StringUtils.equals("pay_16", id) || StringUtils.equals("pay_25", id) || StringUtils.equals("pay_28", id) || StringUtils.equals("pay_33", id)|| StringUtils.equals("pay_34", id)) {
+            List<CascadeDTO<Decorator>> grandChildrens = new ArrayList<>();
+            List<Decorator> decorators = this.decoratorService.queryAllInfo();
+            for (Decorator decorator : decorators) {
+                CascadeDTO<Decorator> child = new CascadeDTO<>();
+                child.setLabel(decorator.getName());
+                child.setValue("pay_" + decorator.getDecoratorId());
+                child.setSelf(decorator);
+                grandChildrens.add(child);
+            }
+            if (ArrayUtils.isNotEmpty(grandChildrens)) {
+                children.setChildren(grandChildrens);
+            }
+        }
 
         //查询用户信息
         if (StringUtils.equals("pay_20", id)) {
             List<Employee> employees = this.employeeService.loadEmployee();
             List<CascadeDTO<Employee>> grandChildrens = new ArrayList<>();
-            log.debug("employees===========" + employees);
             for (Employee employee : employees) {
                 CascadeDTO<Employee> child = new CascadeDTO<>();
                 child.setLabel(employee.getName());
@@ -739,39 +758,140 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
             }
         }
         //查询公司信息
-//        if (StringUtils.equals("pay_19", id)) {
-//            List<Enterprise> enterprises = this.enterpriseService.queryAll();
-//            List<CascadeDTO<Enterprise>> grandChildrens = new ArrayList<>();
-//            log.debug("enterprises===========" + enterprises);
-//            for (Enterprise enterprise : enterprises) {
-//                CascadeDTO<Enterprise> child = new CascadeDTO<>();
-//                child.setLabel(enterprise.getName());
-//                child.setValue("pay_" + enterprise.getEnterpriseId());
-//                child.setSelf(enterprise);
-//                grandChildrens.add(child);
-//            }
-//            if (ArrayUtils.isNotEmpty(grandChildrens)) {
-//                children.setChildren(grandChildrens);
-//            }
-//        }
+        if (StringUtils.equals("pay_19", id)) {
+            List<Enterprise> enterprises = this.enterpriseService.queryAll();
+            List<CascadeDTO<Enterprise>> grandChildrens = new ArrayList<>();
+            for (Enterprise enterprise : enterprises) {
+                CascadeDTO<Enterprise> child = new CascadeDTO<>();
+                child.setLabel(enterprise.getName());
+                child.setValue("pay_" + enterprise.getEnterpriseId());
+                child.setSelf(enterprise);
+                grandChildrens.add(child);
+            }
+            if (ArrayUtils.isNotEmpty(grandChildrens)) {
+                children.setChildren(grandChildrens);
+            }
+        }
         //查询门店信息
-//        if (StringUtils.equals("pay_13", id) || StringUtils.equals("pay_14", id) || StringUtils.equals("pay_15", id) || StringUtils.equals("pay_18", id)
-//                || StringUtils.equals("pay_21", id) || StringUtils.equals("pay_22", id)|| StringUtils.equals("pay_23", id) || StringUtils.equals("pay_26", id)
-//                || StringUtils.equals("pay_27", id)|| StringUtils.equals("pay_29", id) || StringUtils.equals("pay_30", id) || StringUtils.equals("pay_31", id)
-//                || StringUtils.equals("pay_32", id)|| StringUtils.equals("pay_35", id)|| StringUtils.equals("pay_36", id)) {
-//            List<Org> orgs = this.orgService.listByType("4");
-//            List<CascadeDTO<Org>> grandChildrens = new ArrayList<>();
-//            log.debug("orgs===========" + orgs);
-//            for (Org org : orgs) {
-//                CascadeDTO<Org> child = new CascadeDTO<>();
-//                child.setLabel(org.getName());
-//                child.setValue("pay_" + org.getOrgId());
-//                child.setSelf(org);
-//                grandChildrens.add(child);
-//            }
-//            if (ArrayUtils.isNotEmpty(grandChildrens)) {
-//                children.setChildren(grandChildrens);
-//            }
-//        }
+        if (StringUtils.equals("pay_13", id) || StringUtils.equals("pay_14", id) || StringUtils.equals("pay_15", id) || StringUtils.equals("pay_18", id)
+                || StringUtils.equals("pay_21", id) || StringUtils.equals("pay_22", id)|| StringUtils.equals("pay_23", id) || StringUtils.equals("pay_26", id)
+                || StringUtils.equals("pay_27", id)|| StringUtils.equals("pay_29", id) || StringUtils.equals("pay_30", id) || StringUtils.equals("pay_31", id)
+                || StringUtils.equals("pay_32", id)|| StringUtils.equals("pay_35", id)|| StringUtils.equals("pay_36", id)) {
+            List<Org> orgs = this.orgService.listByType("4");
+            List<CascadeDTO<Org>> grandChildrens = new ArrayList<>();
+            for (Org org : orgs) {
+                CascadeDTO<Org> child = new CascadeDTO<>();
+                child.setLabel(org.getName());
+                child.setValue("pay_" + org.getOrgId());
+                child.setSelf(org);
+                grandChildrens.add(child);
+            }
+            if (ArrayUtils.isNotEmpty(grandChildrens)) {
+                children.setChildren(grandChildrens);
+            }
+        }
+    }
+
+    /**
+     * 非主营业务收款
+     *
+     * @param feeData
+     */
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    @Override
+    public void nonCollectFee(NonCollectFeeDTO feeData) {
+        List<NormalPayItemDTO> payItems = feeData.getPayItems();
+        Long payNo = this.dualService.nextval(PayNoCycleSeq.class);
+        Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
+        LocalDate payDate = feeData.getPayDate();
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+        LocalDateTime forever = TimeUtils.getForeverTime();
+
+        Double needPayDouble = feeData.getNeedPay();
+
+        if (needPayDouble == null || needPayDouble <= 0.001) {
+            throw new OrderException(OrderException.OrderExceptionEnum.PAY_MUST_MORE_THAN_ZERO);
+        }
+
+        Long needPay = new Long(Math.round(needPayDouble * 100));
+        Long payItemTotal = 0L;
+        List<NormalPayItem> normalPayItems = new ArrayList<>();
+
+        if (ArrayUtils.isNotEmpty(payItems)) {
+            for (NormalPayItemDTO payItem : payItems) {
+                Double money = payItem.getMoney();
+                if (money == null || money <= 0.001) {
+                    continue;
+                }
+
+                Long fee = new Long(Math.round(money * 100));
+
+                Long payItemId = new Long(payItem.getPayItemId());
+                Long subjectId = new Long(payItem.getSubjectId());
+                Long projectId = new Long(payItem.getProjectId());
+                CollectionItemCfg payItemCfg = this.collectionItemCfgService.getFeeItem(subjectId);
+                if (payItemCfg == null) {
+                    throw new OrderException(OrderException.OrderExceptionEnum.PAY_ITEM_NOT_FOUND, payItem.getSubjectId());
+                }
+                NormalPayItem normalPayItem = new NormalPayItem();
+                normalPayItem.setPayItemId(subjectId);
+                normalPayItem.setParentPayItemId(payItemId);
+                normalPayItem.setProject(projectId);
+                normalPayItem.setFee(fee);
+                normalPayItem.setPayNo(payNo);
+                normalPayItem.setStartDate(now);
+                normalPayItem.setEndDate(forever);
+                normalPayItems.add(normalPayItem);
+                payItemTotal += fee;
+            }
+        }
+        List<PaymentDTO> payments = feeData.getPayments();
+        List<NormalPayMoney> payMonies = new ArrayList<>();
+
+        Long totalMoney = 0L;
+
+        if (ArrayUtils.isNotEmpty(payments)) {
+            for (PaymentDTO payment : payments) {
+                NormalPayMoney payMoney = new NormalPayMoney();
+                payMoney.setPaymentType(payment.getPaymentType());
+
+                Double money = payment.getMoney();
+                if (money == null || money <= 0.001) {
+                    continue;
+                }
+                Long fee = new Long(Math.round(money * 100));
+                payMoney.setMoney(fee);
+                payMoney.setPayNo(payNo);
+                payMoney.setStartDate(now);
+                payMoney.setEndDate(forever);
+                payMonies.add(payMoney);
+                totalMoney += fee;
+            }
+        }
+        if (!payItemTotal.equals(needPay)) {
+            throw new OrderException(OrderException.OrderExceptionEnum.PAY_MUST_EQUAL_PAYITEM);
+        }
+        if (!payItemTotal.equals(totalMoney)) {
+            throw new OrderException(OrderException.OrderExceptionEnum.PAY_MUST_EQUAL_PAYITEM);
+        }
+
+        NormalPayNo normalPayNo = new NormalPayNo();
+        normalPayNo.setPayDate(payDate);
+        normalPayNo.setPayNo(payNo);
+        //待审核状态
+        normalPayNo.setAuditStatus(OrderConst.AUDIT_STATUS_INIT);
+        normalPayNo.setStartDate(now);
+        normalPayNo.setEndDate(forever);
+        normalPayNo.setTotalMoney(needPay);
+        normalPayNo.setPayEmployeeId(employeeId);
+        normalPayNo.setOrgId(WebContextUtils.getUserContext().getOrgId());
+        this.normalPayNoService.save(normalPayNo);
+
+        if (ArrayUtils.isNotEmpty(normalPayItems)) {
+            //this.normalPayItemService.saveBatch(normalPayItems);
+        }
+        if (ArrayUtils.isNotEmpty(payMonies)) {
+            this.normalPayMoneyService.saveBatch(payMonies);
+        }
     }
 }

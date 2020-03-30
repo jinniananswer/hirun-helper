@@ -1,23 +1,23 @@
-require(['vue', 'ELEMENT', 'axios', 'ajax',  'vxe-table','vueselect', 'util'], function (Vue, element, axios, ajax, table,vueselect, util) {
+require(['vue', 'ELEMENT', 'axios', 'ajax', 'vxe-table', 'vueselect', 'util'], function (Vue, element, axios, ajax, table, vueselect, util) {
     Vue.use(table);
     let vm = new Vue({
             el: '#app',
             data: function () {
                 return {
                     payItems: [],
-                    payItem:{},
-                    payForm:{
+                    payItem: {},
+                    payForm: {
                         needPay: null,
                         payDate: util.getNowDate()
                     },
                     periodDisabled: true,
                     payments: [],
-                    payItemOptions:[],
+                    payItemOptions: [],
                     dialogVisible: false,
                     validRules: {
                         money: [
-                            {type:'number', message: '金额必须为数字'},
-                            {pattern:/^[0-9]+(\.\d+)?$/, message: '金额必须为正数'}
+                            {type: 'number', message: '金额必须为数字'},
+                            {pattern: /^[0-9]+(\.\d+)?$/, message: '金额必须为正数'}
                         ]
                     },
                     checkPay: (rule, value, callback) => {
@@ -41,18 +41,18 @@ require(['vue', 'ELEMENT', 'axios', 'ajax',  'vxe-table','vueselect', 'util'], f
                 init() {
                     let that = this;
                     let url = 'api/bss.order/finance/initCollectionComponent';
-                    ajax.get(url, null, function(data) {
+                    ajax.get(url, null, function (data) {
                         that.payments = data.payments;
                         that.payItemOptions = data.collectionItemOption;
                     });
                 },
 
-                footerMethod ({ columns, data }) {
+                footerMethod({columns, data}) {
                     return [
                         columns.map((column, columnIndex) => {
                             if (['money'].includes(column.property)) {
                                 let total = 0;
-                                data.forEach(function(v, k) {
+                                data.forEach(function (v, k) {
                                     total += parseFloat(v.money);
                                 })
                                 return "合计: " + total.toFixed(2) + "元"
@@ -70,40 +70,46 @@ require(['vue', 'ELEMENT', 'axios', 'ajax',  'vxe-table','vueselect', 'util'], f
                         let payItemName = this.findPayItemName(items, this.payItemOptions, '', 0);
 
                         let payItemValue = '';
-                        let periodName = '';
+                        let subjectName = '';
                         let projectName = '';
-                        let periodValue = null;
+                        let subjectValue = null;
                         let projectValue = null;
                         // if (items[items.length-1].indexOf('period') < 0) {
                         //     payItemValue = items[items.length - 1];
                         //     periodName = '-';
                         // } else {
-                            let payItemNames = payItemName.split("-");
-                            payItemName = '';
-                            for (let i=0;i<payItemNames.length - 1;i++) {
-                                payItemName += payItemNames[i] + "-";
-                            }
-                            payItemName = payItemNames[payItemNames.length - 3];//payItemName.substring(0, payItemName.length - 3);
-                            periodName = payItemNames[payItemNames.length - 2];
-                            projectName = payItemNames[payItemNames.length - 1];
-                            payItemValue = items[items.length - 2];
-                            periodValue = items[items.length - 1];
-                            projectValue = items[items.length - 3];
-                       // }
+                        let payItemNames = payItemName.split("-");
+                        payItemName = '';
+                        for (let i = 0; i < payItemNames.length - 1; i++) {
+                            payItemName += payItemNames[i] + "-";
+                        }
+                        payItemName = payItemNames[payItemNames.length - 3];//payItemName.substring(0, payItemName.length - 3);
+                        subjectName = payItemNames[payItemNames.length - 2];
+                        projectName = payItemNames[payItemNames.length - 1];
+                        payItemValue = items[items.length - 3];
+                        subjectValue = items[items.length - 2];
+                        projectValue = items[items.length - 1];
+                        alert("payItemValue======"+payItemValue);
+                        alert("payItemName======"+payItemName);
+                        alert("subjectValue======"+subjectValue);
+                        alert("subjectName======"+subjectName);
+                        alert("projectValue======"+projectValue);
+                        alert("projectName======"+projectName);
+                        // }
                         let payItem = {
-                            payItemName : payItemName,
-                            periodName : periodName,
+                            payItemName: payItemName,
+                            subjectName: subjectName,
                             payItemId: payItemValue,
                             projectName: projectName,
-                            period: periodValue,
-                            project: projectValue,
-                            money:0
+                            subjectId: subjectValue,
+                            projectId: projectValue,
+                            money: 0
                         };
 
                         let isFind = false;
                         if (this.payItems.length > 0) {
                             for (let payItem of this.payItems) {
-                                if (payItem.payItemId == payItemValue&&payItem.period==periodValue&&payItem.project==projectValue) {
+                                if (payItem.payItemId == payItemValue && payItem.subjectId == subjectValue && payItem.projectId == projectValue) {
                                     isFind = true;
                                     break;
                                 }
@@ -122,9 +128,9 @@ require(['vue', 'ELEMENT', 'axios', 'ajax',  'vxe-table','vueselect', 'util'], f
                         if (item.value == payItems[initValue]) {
                             initValue++;
 
-                            payItemName += item.label+"-";
+                            payItemName += item.label + "-";
                             if (initValue == payItems.length) {
-                                return payItemName.substring(0, payItemName.length-1);
+                                return payItemName.substring(0, payItemName.length - 1);
                             } else {
                                 return this.findPayItemName(payItems, item.children, payItemName, initValue)
                             }
@@ -141,8 +147,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax',  'vxe-table','vueselect', 'util'], f
 
                 handleFeeTableDelete: function (index) {
                     vm.employeeTableData.splice(index, 1);
-                }
-                ,
+                },
 
                 handleSelectionChange(val) {
                     this.multipleSelection = val;
@@ -152,12 +157,113 @@ require(['vue', 'ELEMENT', 'axios', 'ajax',  'vxe-table','vueselect', 'util'], f
                     vm.feeTableData.splice(index, 1);
                     console.log(JSON.stringify(this.feeTableData))
                 },
-                submit : async function() {
-                    let isValid = await this.$refs.pay.valid().then(isValid=>isValid);
+                async valid() {
+                    let isFormValid = false;
+                    this.$refs['payForm'].validate(valid => {
+                        isFormValid = valid;
+                    });
+
+                    if (!isFormValid) {
+                        this.$message.error('填写信息不完整，请亲仔细检查哦~~~~~~~！');
+                        return false;
+                    }
+
+                    if (this.payForm.needPay == 0) {
+                        this.$message.error('收款金额不能为0~~~~~~~！');
+                        return false;
+                    }
+
+                    const payMoneyError = await this.$refs.payMoney.fullValidate().catch(errMap => errMap);
+                    const payItemError = await this.$refs.payItem.fullValidate().catch(errMap => errMap);
+                    if (payMoneyError || payItemError) {
+                        return false;
+                    }
+
+                    let totalPay = 0.00;
+                    if (this.payments) {
+                        for (let payment of this.payments) {
+                            totalPay += parseFloat(payment.money);
+                        }
+                    }
+                    totalPay = totalPay.toFixed(2);
+
+                    let totalFee = 0.00;
+                    if (this.payItems) {
+                        for (let item of this.payItems) {
+                            totalFee += parseFloat(item.money);
+                        }
+                    }
+                    totalFee = totalFee.toFixed(2);
+
+                    this.payForm.needPay = parseFloat(this.payForm.needPay).toFixed(2);
+                    if (this.payForm.needPay != totalFee) {
+                        this.$message.error('收款金额与款项金额的合计不一致，请亲仔细检查哦~~~~~~~！');
+                        return false;
+                    }
+
+                    if (totalPay != totalFee) {
+                        this.$message.error('款项金额与付款金额不一致，请亲仔细检查哦~~~~~~~！');
+                        return false;
+                    }
+                    return true;
+                },
+                deletePayItem(row) {
+                    this.$confirm('此操作将删除款项, 是否继续?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        this.$refs.payItem.remove(row);
+                        this.$refs.payItem.updateFooter();
+
+                        for (let i=0;i<this.payItems.length;i++) {
+                            let item = this.payItems[i];
+                            if (item.payItemId == row.payItemId) {
+                                this.payItems.splice(i,1);
+                                break;
+                            }
+                        }
+                    });
+                },
+
+                getSubmitData() {
+                    let payDate = this.payForm.payDate;
+                    let needPay = this.payForm.needPay;
+                    let data = {
+                        payDate : payDate,
+                        needPay : needPay,
+                        payItems:[],
+                        payments:[]
+                    };
+                    for (let i=0;i<this.payItems.length;i++) {
+                        let payItem = {};
+                        alert("project==========1========"+this.payItems[i].projectId);
+                        alert("subject==========1========"+this.payItems[i].subjectId);
+                        alert("payItemId========1=========="+this.payItems[i].payItemId);
+                        alert("payItemId========2=========="+this.payItems[i].payItemId.split("_")[1]);
+                        alert("subject===========2======="+this.payItems[i].subjectId.split("_")[1]);
+                        alert("project=========2========="+this.payItems[i].projectId.split("_")[1]);
+                        payItem.payItemId = this.payItems[i].payItemId.split("_")[1];
+                        payItem.subjectId = this.payItems[i].subjectId.split("_")[1];
+                        payItem.projectId = this.payItems[i].projectId.split("_")[1];
+                        payItem.money = this.payItems[i].money;
+                        data.payItems.push(payItem);
+                    }
+
+                    for (let i=0;i<this.payments.length;i++) {
+                        let payment = {};
+                        payment.paymentType = this.payments[i].paymentType;
+                        payment.money = this.payments[i].money;
+                        data.payments.push(payment);
+                    }
+                    return data;
+                },
+                submit: async function () {
+                    let isValid = await this.valid().then(isValid => isValid);
                     if (isValid) {
-                        let data = this.$refs.pay.getSubmitData();
+                        let data = this.getSubmitData();
                         data['orderId'] = this.orderId;
-                        ajax.post('api/bss.order/finance/collectFee', data);
+                        ajax.post('api/bss.order/finance/nonCollectFee', data);
                     }
                 }
             }
