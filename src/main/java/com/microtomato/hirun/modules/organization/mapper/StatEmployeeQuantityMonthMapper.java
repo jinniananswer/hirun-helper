@@ -107,12 +107,12 @@ public interface StatEmployeeQuantityMonthMapper extends BaseMapper<StatEmployee
             "CAST(y.busi_employee_entry_quantity AS char) as busi_employee_entry_quantity, " +
             "CAST(y.busi_employee_destroy_quantity AS char) as busi_employee_destroy_quantity from\n " +
             "(select a.org_id ,a.parent_org_id,b.`month`,IFNULL(SUM(b.employee_entry_quantity),0) as all_employee_entry_quantity ,IFNULL(SUM(b.employee_destroy_quantity),0) as all_employee_destroy_quantity\n " +
-            "from ins_org a , stat_employee_transition b where (a.org_id=b.org_id and b.`year`=${year} and a.job_role_nature='2' )" +
+            "from ins_org a , stat_employee_transition b where (a.org_id=b.org_id and b.`year`=${year} )" +
             "GROUP BY a.org_id,b.`month`,a.parent_org_id) x " +
             "LEFT JOIN " +
             "(select c.org_id,c.parent_org_id,d.`month`,IFNULL(SUM(d.employee_entry_quantity),0) as busi_employee_entry_quantity ,IFNULL(SUM(d.employee_destroy_quantity),0) as busi_employee_destroy_quantity " +
             "from ins_org c , stat_employee_transition d " +
-            "where (c.org_id=d.org_id and d.`year`=${year} and d.org_nature in ('2','3','4','5','6','7')) " +
+            "where (c.org_id=d.org_id and d.`year`=${year} and d.org_nature in ('2','3','4','5','6','7') and d.job_role_nature='2' ) " +
             "GROUP BY c.org_id,d.`month`,c.parent_org_id) y " +
             " on (x.org_id=y.org_id and x.month=y.month) " +
             " where x.org_id in (${orgId}) ")
