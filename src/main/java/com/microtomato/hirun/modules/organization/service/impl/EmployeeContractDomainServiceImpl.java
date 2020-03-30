@@ -187,7 +187,7 @@ public class EmployeeContractDomainServiceImpl implements IEmployeeContractDomai
         List<EmployeeContract> changeRoleContracts = employeeContractService.list(new QueryWrapper<EmployeeContract>().lambda()
                 .eq(EmployeeContract::getParentContractId, employeeContract.getParentContractId())
                 .eq(EmployeeContract::getContractType, EmployeeConst.CONTRACT_TYPE_CHANGE_ROLE)
-                .gt(EmployeeContract::getContractEndTime, LocalDateTime.now()));
+                .orderByDesc(EmployeeContract::getContractEndTime));
 
         if (ArrayUtils.isNotEmpty(changeRoleContracts)) {
             EmployeeContract changeRoleContract = changeRoleContracts.get(0);
