@@ -16,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -37,6 +39,7 @@ public class EmployeeContractDomainServiceImpl implements IEmployeeContractDomai
 
     @Override
     @DataSource(DataSourceKey.INS)
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void createEmployeeContract(EmployeeContract employeeContract) {
         String contractType = employeeContract.getContractType();
         //时间变更协议只允许新增一次
@@ -50,7 +53,7 @@ public class EmployeeContractDomainServiceImpl implements IEmployeeContractDomai
         if (StringUtils.equals(EmployeeConst.CONTRACT_TYPE_TRAIN, contractType)
                 || StringUtils.equals(EmployeeConst.CONTRACT_TYPE_SECRET, contractType)) {
             employeeContract.setContractStartTime(employeeContract.getContractSignTime());
-            employeeContract.setContractEndTime(TimeUtils.stringToLocalDateTime("2099-12-31 23:59:59", "yyyy-MM-dd HH:mm:ss"));
+            employeeContract.setContractEndTime(TimeUtils.getForeverTime());
         } else if (StringUtils.equals(EmployeeConst.CONTRACT_TYPE_CHANGE_ROLE, contractType)
                 || StringUtils.equals(EmployeeConst.CONTRACT_TYPE_CHANGE_PLACE, contractType)
                 || StringUtils.equals(EmployeeConst.CONTRACT_TYPE_CHANGE_PROBLATION, contractType)
@@ -61,23 +64,35 @@ public class EmployeeContractDomainServiceImpl implements IEmployeeContractDomai
             List<EmployeeContract> timeContracts = employeeContractService.list(new QueryWrapper<EmployeeContract>().lambda()
                     .eq(EmployeeContract::getParentContractId, employeeContract.getParentContractId())
                     .eq(EmployeeContract::getContractType, EmployeeConst.CONTRACT_TYPE_POSTPONE)
-                    .gt(EmployeeContract::getContractEndTime,LocalDateTime.now()));
+                    .gt(EmployeeContract::getContractEndTime, LocalDateTime.now()));
 
             if (ArrayUtils.isNotEmpty(timeContracts)) {
                 EmployeeContract timeContract = timeContracts.get(0);
                 employeeContract.setContractEndTime(timeContract.getContractEndTime());
             } else {
-
                 EmployeeContract validContract = employeeContractService.getById(employeeContract.getParentContractId());
                 if (validContract == null) {
-                    employeeContract.setContractEndTime(TimeUtils.stringToLocalDateTime("2099-12-31 23:59:59", "yyyy-MM-dd HH:mm:ss"));
+                    employeeContract.setContractEndTime(TimeUtils.getForeverTime());
                 } else {
                     employeeContract.setContractEndTime(validContract.getContractEndTime());
                 }
             }
+            //如果原来有相应的协议，自动结束
+            List<EmployeeContract> existContracts = employeeContractService.list(new QueryWrapper<EmployeeContract>().lambda()
+                    .eq(EmployeeContract::getParentContractId, employeeContract.getParentContractId())
+                    .eq(EmployeeContract::getContractType, contractType)
+                    .gt(EmployeeContract::getContractEndTime, LocalDateTime.now()));
 
+            if(ArrayUtils.isNotEmpty(existContracts)){
+                EmployeeContract existContract=existContracts.get(0);
+                existContract.setContractEndTime(employeeContract.getContractSignTime());
+                this.employeeContractService.updateById(existContract);
+            }
 
         }
+        //处理时间由时间变更协议带来的其他协议结束时间变更
+        this.modifyEndTimeByPostpone(employeeContract);
+
         employeeContract.setStatus(EmployeeConst.CONTRACT_STATUS_NORMAL);
         employeeContractService.save(employeeContract);
     }
@@ -123,19 +138,86 @@ public class EmployeeContractDomainServiceImpl implements IEmployeeContractDomai
         }
         if (StringUtils.equals(EmployeeConst.CONTRACT_TYPE_TRAIN, contractType) || StringUtils.equals(EmployeeConst.CONTRACT_TYPE_SECRET, contractType)) {
             employeeContract.setContractStartTime(employeeContract.getContractSignTime());
-            employeeContract.setContractEndTime(TimeUtils.stringToLocalDateTime("2099-12-31 23:59:59", "yyyy-MM-dd HH:mm:ss"));
+            employeeContract.setContractEndTime(TimeUtils.getForeverTime());
         }
+
+        //处理时间由时间变更协议带来的其他协议结束时间变更
+        this.modifyEndTimeByPostpone(employeeContract);
+
         return employeeContractService.updateById(employeeContract);
     }
 
     @Override
     public IPage<EmployeeContract> queryContractByParentId(Long parentContractId, Page<EmployeeContract> page) {
-        return employeeContractService.queryContractByParentId(parentContractId, page);
+
+        IPage<EmployeeContract> employeeContractIPage = employeeContractService.queryContractByParentId(parentContractId, page);
+        if (employeeContractIPage.getRecords().size() <= 0) {
+            return employeeContractIPage;
+        }
+        List<EmployeeContract> contractList = new ArrayList<>();
+        //1、比较结束时间与当前时间，如果结束时间小于当前时间则更改状态
+        for (EmployeeContract employeeContract : employeeContractIPage.getRecords()) {
+            LocalDateTime contractEndTime = employeeContract.getContractEndTime();
+            LocalDateTime now = TimeUtils.getCurrentLocalDateTime();
+            if (TimeUtils.compareTwoTime(contractEndTime, now) == -1) {
+                employeeContract.setStatus(EmployeeConst.CONTRACT_STATUS_END);
+            }
+            contractList.add(employeeContract);
+        }
+        return employeeContractIPage.setRecords(contractList);
     }
 
     @Override
     public boolean stopEmployeeContract(EmployeeContract employeeContract) {
         employeeContract.setStatus(EmployeeConst.CONTRACT_STATUS_END);
         return employeeContractService.updateById(employeeContract);
+    }
+
+    /**
+     * 时间变更协议变更，引发其他变更协议结束时间变更
+     *
+     * @param employeeContract
+     */
+    private void modifyEndTimeByPostpone(EmployeeContract employeeContract) {
+        if (!StringUtils.equals(employeeContract.getContractType(), EmployeeConst.CONTRACT_TYPE_POSTPONE)) {
+            return;
+        }
+
+        //如果时间变更协议在岗位变更之后，则需要根据时间变更协议时间修改岗位变更协议结束时间
+        List<EmployeeContract> changeRoleContracts = employeeContractService.list(new QueryWrapper<EmployeeContract>().lambda()
+                .eq(EmployeeContract::getParentContractId, employeeContract.getParentContractId())
+                .eq(EmployeeContract::getContractType, EmployeeConst.CONTRACT_TYPE_CHANGE_ROLE)
+                .gt(EmployeeContract::getContractEndTime, LocalDateTime.now()));
+
+        if (ArrayUtils.isNotEmpty(changeRoleContracts)) {
+            EmployeeContract changeRoleContract = changeRoleContracts.get(0);
+            changeRoleContract.setContractEndTime(employeeContract.getContractEndTime());
+            employeeContractService.updateById(changeRoleContract);
+        }
+
+        //如果地点协议在时间变更之之前，则需要根据时间变更协议时间修改地点变更协议结束时间
+        List<EmployeeContract> changePlaceContracts = employeeContractService.list(new QueryWrapper<EmployeeContract>().lambda()
+                .eq(EmployeeContract::getParentContractId, employeeContract.getParentContractId())
+                .eq(EmployeeContract::getContractType, EmployeeConst.CONTRACT_TYPE_CHANGE_PLACE)
+                .gt(EmployeeContract::getContractEndTime, LocalDateTime.now()));
+
+        if (ArrayUtils.isNotEmpty(changePlaceContracts)) {
+            EmployeeContract changePlaceContract = changePlaceContracts.get(0);
+            changePlaceContract.setContractEndTime(employeeContract.getContractEndTime());
+            employeeContractService.updateById(changePlaceContract);
+        }
+
+        //如果其他协议变更在岗位变更之后，则需要根据时间变更协议时间修改其他变更协议结束时间
+        List<EmployeeContract> otherContracts = employeeContractService.list(new QueryWrapper<EmployeeContract>().lambda()
+                .eq(EmployeeContract::getParentContractId, employeeContract.getParentContractId())
+                .eq(EmployeeContract::getContractType, EmployeeConst.CONTRACT_TYPE_OTHER)
+                .gt(EmployeeContract::getContractEndTime, LocalDateTime.now()));
+
+        if (ArrayUtils.isNotEmpty(otherContracts)) {
+            EmployeeContract otherContract = otherContracts.get(0);
+            otherContract.setContractEndTime(employeeContract.getContractEndTime());
+            employeeContractService.updateById(otherContract);
+        }
+
     }
 }
