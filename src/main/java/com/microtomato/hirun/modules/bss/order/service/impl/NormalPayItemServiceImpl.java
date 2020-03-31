@@ -1,5 +1,7 @@
 package com.microtomato.hirun.modules.bss.order.service.impl;
 
+import com.microtomato.hirun.framework.mybatis.DataSourceKey;
+import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 import com.microtomato.hirun.modules.bss.order.entity.po.NormalPayItem;
 import com.microtomato.hirun.modules.bss.order.mapper.NormalPayItemMapper;
 import com.microtomato.hirun.modules.bss.order.service.INormalPayItemService;
@@ -17,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Service
+@DataSource(DataSourceKey.INS)
 public class NormalPayItemServiceImpl extends ServiceImpl<NormalPayItemMapper, NormalPayItem> implements INormalPayItemService {
 
 }

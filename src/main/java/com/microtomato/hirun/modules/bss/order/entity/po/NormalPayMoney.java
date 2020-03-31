@@ -1,11 +1,10 @@
 package com.microtomato.hirun.modules.bss.order.entity.po;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.*;
+
 import java.time.LocalDateTime;
-import com.baomidou.mybatisplus.annotation.FieldFill;
+
 import com.microtomato.hirun.framework.data.BaseEntity;
-import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -27,6 +26,7 @@ import lombok.NoArgsConstructor;
 @Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@TableName("normal_pay_money")
 public class NormalPayMoney extends BaseEntity {
 
     private static final long serialVersionUID = 1L;

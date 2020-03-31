@@ -104,7 +104,6 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
     private INormalPayNoService normalPayNoService;
 
 
-
     /**
      * 初始化支付组件
      *
@@ -628,8 +627,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
             }
             componentData.setPayments(payments);
         }
-        log.debug("payments================"+payments);
-         componentData.setNeedPay(new Double(0));
+        componentData.setNeedPay(new Double(0));
 
         List<CollectionItemCfg> collectionItemCfgs = this.collectionItemCfgService.queryPlusCollectionyItems();
         List<CascadeDTO<CollectionItemCfg>> collectionItems = this.buildPayItemCollectionCascade(collectionItemCfgs);
@@ -727,7 +725,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
             }
         }
         //查询工人信息
-        if (StringUtils.equals("pay_16", id) || StringUtils.equals("pay_25", id) || StringUtils.equals("pay_28", id) || StringUtils.equals("pay_33", id)|| StringUtils.equals("pay_34", id)) {
+        if (StringUtils.equals("pay_16", id) || StringUtils.equals("pay_25", id) || StringUtils.equals("pay_28", id) || StringUtils.equals("pay_33", id) || StringUtils.equals("pay_34", id)) {
             List<CascadeDTO<Decorator>> grandChildrens = new ArrayList<>();
             List<Decorator> decorators = this.decoratorService.queryAllInfo();
             for (Decorator decorator : decorators) {
@@ -774,9 +772,9 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
         }
         //查询门店信息
         if (StringUtils.equals("pay_13", id) || StringUtils.equals("pay_14", id) || StringUtils.equals("pay_15", id) || StringUtils.equals("pay_18", id)
-                || StringUtils.equals("pay_21", id) || StringUtils.equals("pay_22", id)|| StringUtils.equals("pay_23", id) || StringUtils.equals("pay_26", id)
-                || StringUtils.equals("pay_27", id)|| StringUtils.equals("pay_29", id) || StringUtils.equals("pay_30", id) || StringUtils.equals("pay_31", id)
-                || StringUtils.equals("pay_32", id)|| StringUtils.equals("pay_35", id)|| StringUtils.equals("pay_36", id)) {
+                || StringUtils.equals("pay_21", id) || StringUtils.equals("pay_22", id) || StringUtils.equals("pay_23", id) || StringUtils.equals("pay_26", id)
+                || StringUtils.equals("pay_27", id) || StringUtils.equals("pay_29", id) || StringUtils.equals("pay_30", id) || StringUtils.equals("pay_31", id)
+                || StringUtils.equals("pay_32", id) || StringUtils.equals("pay_35", id) || StringUtils.equals("pay_36", id)) {
             List<Org> orgs = this.orgService.listByType("4");
             List<CascadeDTO<Org>> grandChildrens = new ArrayList<>();
             for (Org org : orgs) {
@@ -847,7 +845,6 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
         }
         List<PaymentDTO> payments = feeData.getPayments();
         List<NormalPayMoney> payMonies = new ArrayList<>();
-
         Long totalMoney = 0L;
 
         if (ArrayUtils.isNotEmpty(payments)) {
@@ -888,7 +885,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
         this.normalPayNoService.save(normalPayNo);
 
         if (ArrayUtils.isNotEmpty(normalPayItems)) {
-            //this.normalPayItemService.saveBatch(normalPayItems);
+           this.normalPayItemService.saveBatch(normalPayItems);
         }
         if (ArrayUtils.isNotEmpty(payMonies)) {
             this.normalPayMoneyService.saveBatch(payMonies);

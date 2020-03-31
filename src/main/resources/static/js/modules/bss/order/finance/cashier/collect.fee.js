@@ -89,12 +89,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vxe-table', 'vueselect', 'util'], f
                         payItemValue = items[items.length - 3];
                         subjectValue = items[items.length - 2];
                         projectValue = items[items.length - 1];
-                        alert("payItemValue======"+payItemValue);
-                        alert("payItemName======"+payItemName);
-                        alert("subjectValue======"+subjectValue);
-                        alert("subjectName======"+subjectName);
-                        alert("projectValue======"+projectValue);
-                        alert("projectName======"+projectName);
+
                         // }
                         let payItem = {
                             payItemName: payItemName,
@@ -237,12 +232,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vxe-table', 'vueselect', 'util'], f
                     };
                     for (let i=0;i<this.payItems.length;i++) {
                         let payItem = {};
-                        alert("project==========1========"+this.payItems[i].projectId);
-                        alert("subject==========1========"+this.payItems[i].subjectId);
-                        alert("payItemId========1=========="+this.payItems[i].payItemId);
-                        alert("payItemId========2=========="+this.payItems[i].payItemId.split("_")[1]);
-                        alert("subject===========2======="+this.payItems[i].subjectId.split("_")[1]);
-                        alert("project=========2========="+this.payItems[i].projectId.split("_")[1]);
+
                         payItem.payItemId = this.payItems[i].payItemId.split("_")[1];
                         payItem.subjectId = this.payItems[i].subjectId.split("_")[1];
                         payItem.projectId = this.payItems[i].projectId.split("_")[1];
