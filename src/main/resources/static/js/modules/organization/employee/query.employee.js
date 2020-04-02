@@ -313,6 +313,8 @@ layui.extend({
         },
 
         export: function () {
+            let jobRole = formSelects.value('jobRole', 'valStr');
+
             var param = '?name=' + $("input[name='name']").val() + '&orgId=' + $("input[name='orgId']").val() + '&sex=' + $("select[name='sex']").val() + '&type=' + $("select[name='type']").val() +
                 '&mobile=' + $("input[name='mobileNo']").val() + '&employeeStatus=' + $("select[name='employeeStatus']").val() + '&isBlackList=' + $("#isBlackList").val() + '&otherStatus=' + $("select[name='otherStatus']").val() +
                 '&jobRole=' + jobRole + '&jobRoleNature=' + $("select[name='jobRoleNature']").val() + '&discountRate=' + $("select[name='discountRate']").val() +
