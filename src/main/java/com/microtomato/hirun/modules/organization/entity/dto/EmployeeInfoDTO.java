@@ -31,8 +31,7 @@ public class EmployeeInfoDTO implements Serializable {
     @ExcelProperty("员工姓名")
     private String name;
 
-    @ColumnWidth(20)
-    @ExcelProperty("员工电话")
+    @ExcelIgnore
     private String mobileNo;
 
     @ColumnWidth(20)
