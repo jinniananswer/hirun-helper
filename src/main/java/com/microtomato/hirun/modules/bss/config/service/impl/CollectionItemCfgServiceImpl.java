@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.modules.bss.config.entity.po.CollectionItemCfg;
+import com.microtomato.hirun.modules.bss.config.entity.po.FeeItemCfg;
 import com.microtomato.hirun.modules.bss.config.entity.po.PayItemCfg;
 import com.microtomato.hirun.modules.bss.config.mapper.CollectionItemCfgMapper;
 import com.microtomato.hirun.modules.bss.config.service.ICollectionItemCfgService;
@@ -60,4 +61,24 @@ public class CollectionItemCfgServiceImpl extends ServiceImpl<CollectionItemCfgM
         return result;
     }
 
+    /**
+     * 根据费用项ID查询费用项配置数据
+     * @param feeItemId
+     * @return
+     */
+    @Override
+    @springfox.documentation.annotations.Cacheable(value = "sys_collection_item_cfg-feeItemId")
+    public CollectionItemCfg getFeeItem(Long feeItemId) {
+        List<CollectionItemCfg> feeItems = this.queryAll();
+        if (ArrayUtils.isEmpty(feeItems)) {
+            return null;
+        }
+
+        for (CollectionItemCfg feeItem : feeItems) {
+            if (feeItem.getId().equals(feeItemId)) {
+                return feeItem;
+            }
+        }
+        return null;
+    }
 }
