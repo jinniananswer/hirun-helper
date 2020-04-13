@@ -10,11 +10,15 @@ import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.organization.entity.consts.EmployeeConst;
 import com.microtomato.hirun.modules.organization.entity.domain.EmployeeDO;
+import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
 import com.microtomato.hirun.modules.organization.entity.dto.*;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
 import com.microtomato.hirun.modules.organization.mapper.EmployeeMapper;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
+import com.microtomato.hirun.modules.organization.service.IOrgService;
+import com.microtomato.hirun.modules.system.entity.domain.AddressDO;
+import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +26,9 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -38,6 +45,13 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
 
     @Autowired
     private EmployeeMapper employeeMapper;
+
+    @Autowired
+    private IOrgService orgService;
+
+    @Autowired
+    private IStaticDataService staticDataService;
+
 
     @Override
     public Employee queryByIdentityNo(String identityNo) {
@@ -158,6 +172,47 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         queryWrapper.apply("now() between b.start_date and b.end_date and c.status='0' ");
         IPage<EmployeeInfoDTO> iPage = employeeMapper.queryEmployee4BatchChange(employeePage, queryWrapper);
         return iPage;
+    }
+
+    /**
+     * 查询员工转正信息
+     * @param inDate
+     * @param orgLine
+     * @param isSign
+     * @return
+     */
+    @Override
+    public List<EmployeeInfoDTO> queryEmployeeRegularInfo(LocalDate inDate, String orgLine, String isSign) {
+        List<EmployeeInfoDTO> employeeList=null;
+        if(StringUtils.isBlank(orgLine)){
+            orgLine=orgService.listOrgSecurityLine();
+        }
+        if(inDate==null){
+            inDate= LocalDate.now().minusDays(90);
+        }
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        if(StringUtils.equals(isSign,"1")){
+             employeeList=this.employeeMapper.queryEmployeeRegular(orgLine,inDate);
+        }
+
+        if(StringUtils.equals(isSign,"0")){
+            employeeList=this.employeeMapper.queryEmployeeExistsExam(orgLine,inDate);
+        }
+
+        if (ArrayUtils.isEmpty(employeeList)) {
+            return new ArrayList<EmployeeInfoDTO>();
+        }
+        for (EmployeeInfoDTO employeeInfo : employeeList) {
+            employeeInfo.setJobRoleName(staticDataService.getCodeName("JOB_ROLE", employeeInfo.getJobRole()));
+            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, employeeInfo.getOrgId());
+            employeeInfo.setOrgPath(orgDO.getCompanyLinePath());
+            employeeInfo.setHrEmployeeName(this.getEmployeeNameEmployeeId(employeeInfo.getHrEmployeeId()));
+            employeeInfo.setEmployeeStatusName(this.staticDataService.getCodeName("EMPLOYEE_STATUS", employeeInfo.getEmployeeStatus()));
+            employeeInfo.setJobRoleNatureName(this.staticDataService.getCodeName("JOB_NATURE", employeeInfo.getJobRoleNature()));
+        }
+
+        return employeeList;
     }
 
     /**

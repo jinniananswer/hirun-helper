@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.*;
 
 /**
@@ -191,5 +192,12 @@ public class EmployeeController extends AbstractExcelHarbour  {
     @RestResult
     public void applyEmployeeBlackList(Long employeeId, String reason) {
         hrPendingDomainService.addEmployeeBlackListApply(employeeId,reason);
+    }
+
+    @GetMapping("/queryEmployeeRegularInfo")
+    @RestResult
+    public List<EmployeeInfoDTO> queryEmployeeRegularInfo(LocalDate queryTime , String orgLine,String isSign) {
+        List<EmployeeInfoDTO> employeeList = employeeServiceImpl.queryEmployeeRegularInfo(queryTime,orgLine,isSign);
+        return employeeList;
     }
 }

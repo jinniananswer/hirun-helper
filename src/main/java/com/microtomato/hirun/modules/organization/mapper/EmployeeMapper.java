@@ -13,6 +13,7 @@ import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -296,4 +297,44 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
             " ${ew.customSqlSegment}"
     )
     IPage<EmployeeInfoDTO> queryEmployee4BatchChange(Page<EmployeeQueryConditionDTO> page, @Param(Constants.WRAPPER) Wrapper wrapper);
+
+    /**
+     * 查询岗前考试未报名的员工信息
+     * @param orgId
+     * @param inDate
+     * @return
+     */
+    @Select("select a.name,a.employee_id, date_format(a.in_date,'%Y-%m-%d') in_date, date_format(a.regular_date,'%Y-%m-%d') regular_date," +
+            " b.job_role,b.org_id,b.job_role_nature,c.archive_manager_employee_id hr_employee_id from " +
+            " ins_employee a, ins_employee_job_role b , ins_org_hr_rel c " +
+            " where a.employee_id=b.employee_id " +
+            " and a.status='0' and b.is_main='1' " +
+            " and now() between b.start_date and b.end_date " +
+            " and b.org_id=c.org_id" +
+            " and now() between c.start_time and c.end_time " +
+            " and b.org_id in (${orgId})" +
+            " and a.in_date>'${inDate}'" +
+            " and not exists(select 1 from ins_train_sign f where f.employee_id = a.employee_id  and f.status = '0')"
+    )
+    List<EmployeeInfoDTO> queryEmployeeRegular(@Param("orgId")String orgId,@Param("inDate") LocalDate inDate);
+
+    /**
+     * 查询岗前考试已报名的员工信息
+     * @param orgId
+     * @param inDate
+     * @return
+     */
+    @Select("select a.name,a.employee_id, date_format(a.in_date,'%Y-%m-%d') in_date, date_format(a.regular_date,'%Y-%m-%d') regular_date," +
+            " b.job_role,b.org_id,b.job_role_nature,c.archive_manager_employee_id hr_employee_id from " +
+            " ins_employee a, ins_employee_job_role b , ins_org_hr_rel c " +
+            " where a.employee_id=b.employee_id " +
+            " and a.status='0' and b.is_main='1' " +
+            " and now() between b.start_date and b.end_date " +
+            " and b.org_id=c.org_id" +
+            " and now() between c.start_time and c.end_time " +
+            " and b.org_id in (${orgId})" +
+            " and a.in_date>'${inDate}'" +
+            " and exists(select 1 from ins_train_sign f where f.employee_id = a.employee_id  and f.status = '0')"
+    )
+    List<EmployeeInfoDTO> queryEmployeeExistsExam(@Param("orgId")String orgId,@Param("inDate") LocalDate inDate);
 }
