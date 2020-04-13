@@ -11,6 +11,7 @@ import com.microtomato.hirun.modules.organization.mapper.HrPendingMapper;
 import com.microtomato.hirun.modules.organization.service.IHrPendingService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.modules.system.service.impl.StaticDataServiceImpl;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -60,7 +61,17 @@ public class HrPendingServiceImpl extends ServiceImpl<HrPendingMapper, HrPending
         queryWrapper.apply("a.start_time < now() and a.end_time > a.start_time ");
         queryWrapper.eq("a.pending_execute_id", hrPending.getPendingExecuteId());
         queryWrapper.orderByDesc("a.create_time");
-        return this.hrPendingMapper.queryPendingByExecuteId(pendingPage, queryWrapper);
+
+        IPage<HrPendingInfoDTO> hrPendingPages=this.hrPendingMapper.queryPendingByExecuteId(pendingPage, queryWrapper);
+
+        if(hrPendingPages==null){
+            return null;
+        }
+        for(HrPendingInfoDTO dto:hrPendingPages.getRecords()){
+            dto.setPendingTypeName(staticDataService.getCodeName("PENDING_TYPE",dto.getPendingType()));
+        }
+
+        return hrPendingPages;
     }
 
     @Override

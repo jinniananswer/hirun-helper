@@ -58,4 +58,6 @@ public class HrPendingInfoDTO implements Serializable {
     private Integer homeRegion;
 
     private String homeAddress;
+
+    private String pendingTypeName;
 }

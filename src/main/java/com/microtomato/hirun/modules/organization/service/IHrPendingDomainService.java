@@ -7,6 +7,9 @@ import com.microtomato.hirun.modules.organization.entity.dto.EmployeeTransDetail
 import com.microtomato.hirun.modules.organization.entity.dto.HrPendingInfoDTO;
 import com.microtomato.hirun.modules.organization.entity.po.HrPending;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 
 /**
  * @program: hirun-helper
@@ -63,4 +66,12 @@ public interface IHrPendingDomainService {
      * @param approveStatus
      */
     void approveEmployeeBlackListPending(Long employeeId,Long id,String approveStatus);
+
+    /**
+     * 修改员工转正时间待办任务确认
+     * @param employeeId
+     * @param regularDate
+     * @param id
+     */
+    void updateEmployeeRegularDate(Long employeeId, LocalDateTime regularDate, Long id);
 }

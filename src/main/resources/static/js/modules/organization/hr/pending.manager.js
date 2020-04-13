@@ -28,19 +28,7 @@ layui.extend({
                 cols: [
                     [
                         {field: 'employeeName', title: '姓名', width: 120, fixed: 'left', align: 'center'},
-                        {
-                            field: 'pendingType', title: '待办类型', align: 'center', width: 120, templet: function (d) {
-                                if (d.pendingType == 1) {
-                                    return '借调';
-                                } else if (d.pendingType == 2) {
-                                    return '调出';
-                                }else if (d.pendingType == 3) {
-                                    return '员工借调归还确认';
-                                }else if (d.pendingType == 5) {
-                                    return '员工永不录用';
-                                }
-                            }
-                        },
+                        {field: 'pendingTypeName', title: '待办类型', align: 'center', width: 150},
                         {field: 'startTime', title: '开始时间', align: 'center', width: 200},
                         {field: 'endTime', title: '结束时间', width: 200, align: 'center'},
                         {
@@ -98,6 +86,8 @@ layui.extend({
                     pendingManager.confirmReturn(data);
                 }else if(layEvent==='approve'){
                     pendingManager.approve(data);
+                }else if (layEvent==='updateEmployeeRegularDate'){
+                    pendingManager.updateEmployeeRegularDate(data);
                 }
             });
 
@@ -180,7 +170,7 @@ layui.extend({
         },
 
         confirmReturn: function (data) {
-            var index = layer.open({
+            let index = layer.open({
                 type: 2,
                 title: '员工归还确认',
                 content: 'openUrl?url=modules/organization/hr/transorg_return_confirm',
@@ -213,18 +203,44 @@ layui.extend({
                 area: ['450px', '600px'],
                 skin: 'layui-layer-molv',
                 success: function (layero, index) {
-                    var body = layer.getChildFrame('body', index);
+                    let body = layer.getChildFrame('body', index);
                     body.find('#employeeId').val(data.employeeId);
                     body.find('#id').val(data.id);
                     form.render();
                 },
                 yes: function (index, layero) {
-                    var body = layer.getChildFrame('body', index);
-                    var submit = body.find("#confirm-submit");
+                    let body = layer.getChildFrame('body', index);
+                    let submit = body.find("#confirm-submit");
                     submit.click();
                 }
             });
-        }
+        },
+
+        updateEmployeeRegularDate:function (data) {
+            let index = layer.open({
+                type: 2,
+                title: '员工转正时间处理',
+                content: 'openUrl?url=modules/organization/hr/update_employee_regular_date',
+                maxmin: true,
+                btn: ['确定', '取消'],
+                area: ['450px', '600px'],
+                skin: 'layui-layer-molv',
+                success: function (layero, index) {
+                    let body = layer.getChildFrame('body', index);
+                    body.find('#employeeId').val(data.employeeId);
+                    body.find('#id').val(data.id);
+                    form.render();
+                },
+                yes: function (index, layero) {
+                    let body = layer.getChildFrame('body', index);
+                    let submit = body.find("#confirm-submit");
+                    submit.click();
+                }
+            });
+            layer.full(index);
+        },
+
+
 
     };
     exports('pendingManager', pendingManager);

@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -138,13 +139,14 @@ public class HrPendingDomainServiceImpl implements IHrPendingDomainService {
         boolean result = hrPendingDO.delete(hrPending);
 
         //发送消息告知人资调动申请已删除
-
-        String content = employeeService.getEmployeeNameEmployeeId(originalHrPending.getPendingExecuteId()) + ",你好。"
-                + employeeService.getEmployeeNameEmployeeId(originalHrPending.getPendingCreateId()) + "发起的员工【"
-                + employeeService.getEmployeeNameEmployeeId(originalHrPending.getEmployeeId()) + "】的调动申请，已删除，请知悉。删除时间为"
-                + LocalDateTime.now();
-
-        notifyService.sendMessage(originalHrPending.getPendingExecuteId(),content,originalHrPending.getPendingCreateId());
+        //如果是转正删除则不需要发消息
+        if(!StringUtils.equals(originalHrPending.getPendingType(),"6")) {
+            String content = employeeService.getEmployeeNameEmployeeId(originalHrPending.getPendingExecuteId()) + ",你好。"
+                    + employeeService.getEmployeeNameEmployeeId(originalHrPending.getPendingCreateId()) + "发起的员工【"
+                    + employeeService.getEmployeeNameEmployeeId(originalHrPending.getEmployeeId()) + "】的调动申请，已删除，请知悉。删除时间为"
+                    + LocalDateTime.now();
+            notifyService.sendMessage(originalHrPending.getPendingExecuteId(), content, originalHrPending.getPendingCreateId());
+        }
         return result;
     }
 
@@ -268,6 +270,19 @@ public class HrPendingDomainServiceImpl implements IHrPendingDomainService {
 
         hrPending.setPendingStatus("2");
         this.hrPendingService.updateById(hrPending);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    public void updateEmployeeRegularDate(Long employeeId, LocalDateTime regularDate, Long id) {
+        Employee employee=new Employee();
+        employee.setEmployeeId(employeeId);
+        employee.setRegularDate(regularDate);
+        employeeService.updateById(employee);
+
+        HrPending hrPending = hrPendingService.getById(id);
+        hrPending.setPendingStatus(HrPendingConst.PENDING_STATUS_2);
+        hrPendingService.updateById(hrPending);
     }
 
 

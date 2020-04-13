@@ -55,7 +55,8 @@ public interface HrPendingMapper extends BaseMapper<HrPending> {
     @Select("select d.type as name,IFNULL(j.num,0) as num from \n" +
             "(select 1 as type from dual " +
             "union select 2 as type from DUAL " +
-            "union select 3 as type from DUAL) d LEFT JOIN ( " +
+            "union select 3 as type from DUAL " +
+            "union select 6 as type from DUAL) d LEFT JOIN ( " +
             "select f.pending_type,count(*) as num from ins_hr_pending f where f.pending_status=1 and f.start_time < now() " +
             "and end_time > start_time and pending_execute_id=#{employeeId} group by f.pending_type ) j " +
             "on (j.pending_type=d.type) order by d.type ")
