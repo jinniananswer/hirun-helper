@@ -28,7 +28,8 @@ require.config({
         'house-select': 'static/js/modules/bss/component/house.select',
         'order-search-employee':'static/js/modules/bss/component/order.search.employee',
         'order-file-upload':'static/js/modules/bss/component/order.file.upload',
-        'order-discount-item':'static/js/modules/bss/component/order.discount.item'
+        'order-discount-item':'static/js/modules/bss/component/order.discount.item',
+        'org-orgtree':'static/js/modules/organization/component/org.orgtree'
 
     },
     shim: {
