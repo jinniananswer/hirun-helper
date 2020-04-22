@@ -39,4 +39,29 @@ public class NonCollectFeeDTO {
      * 付款方式明细
      */
     private List<PaymentDTO> payments;
+
+    /**
+     * 备注
+     */
+    private String auditRemark;
+
+    /**
+     * 收款人
+     */
+    private String employeeName;
+
+    /**
+     * 状态名称
+     */
+    private String auditStatusName;
+
+    /**
+     * 单据状态
+     */
+    private String auditStatus;
+
+    /**
+     * 应付总金额
+     */
+    private Double totalMoney;
 }

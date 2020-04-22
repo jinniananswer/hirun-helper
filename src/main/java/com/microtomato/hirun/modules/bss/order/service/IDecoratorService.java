@@ -1,9 +1,7 @@
 package com.microtomato.hirun.modules.bss.order.service;
 
-import com.microtomato.hirun.modules.bss.order.entity.dto.ConstructionDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.Decorator;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayNo;
 
 import java.util.List;
 
@@ -30,6 +28,13 @@ public interface IDecoratorService extends IService<Decorator> {
      * @return
      */
     List<Decorator> queryAllInfo();
+
+    /**
+     * 根据工人ID查询工人信息
+     * @param decoratorId
+     * @return
+     */
+    Decorator getDecorator(Long decoratorId);
 
 
 }

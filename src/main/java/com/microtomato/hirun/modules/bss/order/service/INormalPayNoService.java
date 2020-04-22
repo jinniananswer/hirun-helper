@@ -13,4 +13,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface INormalPayNoService extends IService<NormalPayNo> {
 
+    NormalPayNo getByPayNo(Long payNo);
+
 }

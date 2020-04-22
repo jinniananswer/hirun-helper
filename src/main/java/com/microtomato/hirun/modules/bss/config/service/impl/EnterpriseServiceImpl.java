@@ -35,4 +35,15 @@ public class EnterpriseServiceImpl extends ServiceImpl<EnterpriseMapper, Enterpr
         return datas;
     }
 
+    /**
+     * 根据公司ID查询公司信息
+     * @param getEnterpriseId
+     * @return
+     */
+    @Override
+    public Enterprise getEnterpriseId(Long getEnterpriseId) {
+        Enterprise enterprise = this.getById(getEnterpriseId);
+        return enterprise;
+    }
+
 }

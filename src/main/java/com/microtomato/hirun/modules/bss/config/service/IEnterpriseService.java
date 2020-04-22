@@ -17,4 +17,11 @@ public interface IEnterpriseService extends IService<Enterprise> {
 
    List<Enterprise> queryAll() ;
 
+   /**
+    * 根据公司ID查询公司信息
+    * @param enterpriseId
+    * @return
+    */
+    Enterprise getEnterpriseId(Long enterpriseId);
+
 }

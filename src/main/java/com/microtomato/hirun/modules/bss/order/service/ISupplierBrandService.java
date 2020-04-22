@@ -22,4 +22,11 @@ public interface ISupplierBrandService extends IService<SupplierBrand> {
      */
     List<SupplierBrand> queryAllInfo();
 
+    /**
+     * 根据供应商ID查询供应商信息
+     * @param supplierId
+     * @return
+     */
+   SupplierBrand getSupplierBrand(Long supplierId);
+
 }
