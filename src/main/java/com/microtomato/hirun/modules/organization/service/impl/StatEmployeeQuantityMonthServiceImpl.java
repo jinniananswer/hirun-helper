@@ -508,8 +508,10 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
             month = String.valueOf(date.get(Calendar.MONTH) + 1);
         }
         //只统计家装分公司，所以加上了事业部限制
+        orgLine = orgService.listOrgSecurityLine();
+/*
         OrgDO orgDo = SpringContextUtils.getBean(OrgDO.class, 7L);
-        orgLine = orgDo.getOrgLine(7L);
+        orgLine = orgDo.getOrgLine(7L);*/
         //支持按照部门性质以及岗位进行统计
         if (StringUtils.isEmpty(orgNature)) {
             orgNature = "2,3,4,5,6,7";
