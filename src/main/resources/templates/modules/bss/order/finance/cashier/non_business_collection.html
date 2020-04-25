@@ -144,12 +144,12 @@
                                     <el-col :span="8" v-if="auditStatus == ''">
                                         <el-button type="primary" @click="submit">提交审核</el-button>
                                     </el-col>
-                                    <el-col :span="8" v-if="auditStatus == '0'">
+                                    <el-col :span="12" v-if="auditStatus == '0'">
+                                        <el-button type="primary" @click="submitForUpdate">保存</el-button>
                                         <el-button type="primary" @click="submitForAudit">审核通过</el-button>
                                         <el-button type="warning" @click="submitForNo">审核不通过</el-button>
-                                        <el-button type="primary" @click="submitForUpdate">保存</el-button>
                                     </el-col>
-                                    <el-col :span="8" v-if="auditStatus == '2'">
+                                    <el-col :span="12" v-if="auditStatus == '2'">
                                         <el-button type="primary" @click="submitForReview">重新审核</el-button>
                                         <el-button type="primary" @click="submitForUpdate">保存</el-button>
                                     </el-col>

@@ -16,15 +16,17 @@ import java.util.List;
 @Data
 public class CollectionComponentDTO {
 
-    private LocalDate collectionDate;
+    private LocalDate payDate;
 
     private Double needCollection;
 
     private List<PaymentDTO> payments;
 
-    private List<PayItemDTO> payItems;
+    private List<NormalPayItemDTO> payItems;
 
     private Double needPay;
 
     private List<CascadeDTO<CollectionItemCfg>> collectionItemOption;
+
+    private String auditStatus;
 }

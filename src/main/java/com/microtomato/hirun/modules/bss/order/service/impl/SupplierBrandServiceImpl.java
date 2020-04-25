@@ -1,7 +1,6 @@
 package com.microtomato.hirun.modules.bss.order.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.microtomato.hirun.modules.bss.order.entity.po.Decorator;
 import com.microtomato.hirun.modules.bss.order.entity.po.SupplierBrand;
 import com.microtomato.hirun.modules.bss.order.mapper.SupplierBrandMapper;
 import com.microtomato.hirun.modules.bss.order.service.ISupplierBrandService;
@@ -27,5 +26,16 @@ public class SupplierBrandServiceImpl extends ServiceImpl<SupplierBrandMapper, S
     public List<SupplierBrand> queryAllInfo() {
         return this.list(new QueryWrapper<SupplierBrand>().lambda()
                 .eq(SupplierBrand::getStatus, "0"));
+    }
+
+    /**
+     * 根据供应商ID查询供应商信息
+     * @param supplierId
+     * @return
+     */
+    @Override
+    public SupplierBrand getSupplierBrand(Long supplierId) {
+        SupplierBrand supplierBrand = this.getById(supplierId);
+        return supplierBrand;
     }
 }

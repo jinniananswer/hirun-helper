@@ -16,11 +16,15 @@ public interface IFinanceDomainService {
 
     PayComponentDTO initPayComponent(Long orderId, Long payNo);
 
-    CollectionComponentDTO initCollectionComponent();
+    CollectionComponentDTO initCollectionComponent(Long payNo);
 
     void collectFee(CollectFeeDTO feeData);
 
     void nonCollectFee(NonCollectFeeDTO feeData);
+
+    void nonCollectFeeUpdate(NonCollectFeeDTO feeData);
+
+    void nonCollectFeeForAudit(NonCollectFeeDTO feeData);
 
     void changePay(CollectFeeDTO feeData);
 
@@ -29,4 +33,6 @@ public interface IFinanceDomainService {
     List<FinancePendingTaskDTO> queryFinancePendingTask();
 
     List<OrderPayInfoDTO> queryPayInfoByOrderId(Long orderId);
+
+    List<NonCollectFeeDTO> queryPayInfoByCond(NonCollectFeeQueryDTO queryCondition);
 }
