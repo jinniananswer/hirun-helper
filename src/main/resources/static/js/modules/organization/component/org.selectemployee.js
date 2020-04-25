@@ -25,6 +25,9 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
         methods: {
             init() {
                 let that = this;
+                if (this.mode == null) {
+                    this.mode = 'priv';
+                }
                 ajax.get('api/organization/employee/queryEmployeeBySelectMode', {roleId:this.roleId,mode:this.mode}, function(data) {
                     that.options = data;
                     if(that.self){
