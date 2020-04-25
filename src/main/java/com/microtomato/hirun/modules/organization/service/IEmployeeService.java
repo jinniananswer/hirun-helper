@@ -102,4 +102,6 @@ public interface IEmployeeService extends IService<Employee> {
      * @return
      */
     List<SimpleEmployeeDTO> querySimpleEmployeeInfo(Long orgId, Long roleId,Boolean isSelf);
+
+    List<SimpleEmployeeDTO> queryEmployeeBySelectMode(EmployeeSelectDTO select);
 }
