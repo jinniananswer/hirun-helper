@@ -192,4 +192,10 @@ public class EmployeeController extends AbstractExcelHarbour  {
     public void applyEmployeeBlackList(Long employeeId, String reason) {
         hrPendingDomainService.addEmployeeBlackListApply(employeeId,reason);
     }
+
+    @RequestMapping("/queryEmployeeBySelectMode")
+    @RestResult
+    public List<SimpleEmployeeDTO> queryEmployeeBySelectMode(EmployeeSelectDTO selectDTO) {
+        return this.employeeServiceImpl.queryEmployeeBySelectMode(selectDTO);
+    }
 }
