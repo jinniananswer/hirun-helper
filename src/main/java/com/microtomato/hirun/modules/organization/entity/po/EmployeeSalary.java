@@ -8,7 +8,7 @@ import lombok.experimental.Accessors;
 import java.time.LocalDateTime;
 
 /**
- * 员工固定工资表(EmployeeSalary)表实体类
+ * 员工月工资总表(EmployeeSalary)表实体类
  *
  * @author Jinnian
  * @version 1.0.0
@@ -92,11 +92,23 @@ public class EmployeeSalary extends BaseEntity {
     @TableField(value = "tax")
     private Long tax;
 
+    /** 工资卡1发放金额 */
+    @TableField(value = "acct_one_money")
+    private Long acctOneMoney;
+
+    /** 工资卡2发放金额 */
+    @TableField(value = "acct_two_money")
+    private Long acctTwoMoney;
+
+    /** 工资卡3发放金额 */
+    @TableField(value = "acct_three_money")
+    private Long acctThreeMoney;
+
     /** 备注 */
     @TableField(value = "remark")
     private String remark;
 
-    /** 审核状态， 0-初始保存 1-待审核 2-审核通过 3-审核不通过 4-已发放 */
+    /** 审核状态， 0-初始保存 1-待审核 2-审核通过 3-审核不通过 4-提交发放 5-已发放 */
     @TableField(value = "audit_status")
     private String auditStatus;
 
