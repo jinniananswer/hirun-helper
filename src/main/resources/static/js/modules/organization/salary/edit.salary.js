@@ -25,6 +25,10 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'util'
                 ajax.post('api/organization/employee-salary/submitSalaries', this.employees);
             },
 
+            audit : function() {
+                ajax.post('api/organization/employee-salary/auditSalaries', this.employees);
+            },
+
             isModify: function(obj) {
                 if (obj.row.isModified == '1') {
                     return "modify_row";
@@ -32,7 +36,7 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'util'
             },
 
             activeRowMethod ({ row, rowIndex }) {
-                if (row.auditStatus ==  '1' || row.auditStatus == '2') {
+                if (row.auditStatus ==  '1' || row.auditStatus == '2' || row.auditStatus == '4') {
                     return false;
                 }
 
