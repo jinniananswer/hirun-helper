@@ -152,6 +152,7 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
     }
 
     @Override
+    @Cacheable("org-orgId")
     public Org queryByOrgId(Long orgId) {
         List<Org> orgs = this.listAllOrgs();
         if (ArrayUtils.isEmpty(orgs)) {
