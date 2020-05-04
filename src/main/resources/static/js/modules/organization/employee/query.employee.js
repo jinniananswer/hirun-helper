@@ -177,6 +177,7 @@ layui.extend({
                         regularDateStart: $('#regularDateStart').val(),
                         regularDateEnd: $('#regularDateEnd').val(),
                         isRegular: $("#isRegular").val(),
+                        createType: $("select[name='createType']").val(),
                     }
                 })
             });
@@ -320,7 +321,8 @@ layui.extend({
                 '&jobRole=' + jobRole + '&jobRoleNature=' + $("select[name='jobRoleNature']").val() + '&discountRate=' + $("select[name='discountRate']").val() +
                 '&jobYearStart=' + $("input[name='jobYearStart']").val() + '&jobYearEnd=' + $("input[name='jobYearEnd']").val() + '&ageStart=' + $("input[name='ageStart']").val() + '&ageEnd=' + $("input[name='ageEnd']").val() +
                 '&companyAgeStart=' + $("input[name='companyAgeStart']").val() + '&companyAgeEnd=' + $("input[name='companyAgeEnd']").val() + '&inDateStart=' + $("input[name='inDateStart']").val() + '&inDateEnd=' + $("input[name='inDateEnd']").val() +
-                '&destroyDateStart=' + $("input[name='destroyDateStart']").val() + '&destroyDateEnd=' + $("input[name='destroyDateEnd']").val() + '&isRegular=' + $("#isRegular").val() + "&regularDateStart=" + $("input[name='regularDateStart']").val() + "&regularDateEnd=" + $("input[name='regularDateEnd']").val();
+                '&destroyDateStart=' + $("input[name='destroyDateStart']").val() + '&destroyDateEnd=' + $("input[name='destroyDateEnd']").val() + '&isRegular=' + $("#isRegular").val() +
+                "&regularDateStart=" + $("input[name='regularDateStart']").val() + "&regularDateEnd=" + $("input[name='regularDateEnd']").val()+ "&createType=" + $("select[name='createType']").val();
 
             window.location.href = "api/organization/employee/queryEmployeeList4Export" + param;
         },

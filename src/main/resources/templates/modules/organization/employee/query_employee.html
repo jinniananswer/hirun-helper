@@ -104,9 +104,12 @@
                                 <select name="otherStatus" id="otherStatus">
                                     <option value="">请选择</option>
                                     <option value="1">休假</option>
-                                    <option value="2">借调</option>
-                                    <option value="3">调出</option>
-                                    <option value="4">内部调动</option>
+                                    <option value="2">借调(入)</option>
+                                    <option value="3">借调(出)</option>
+                                    <option value="4">调动(入)</option>
+                                    <option value="5">调动(出)</option>
+                                    <option value="6">内部调动(入)</option>
+                                    <option value="7">内部调动(出)</option>
                                 </select>
                             </div>
                         </div>
@@ -207,6 +210,16 @@
                                 <div class="layui-input-inline" style="width: 82px;">
                                     <input type="text" name="regularDateEnd" id="regularDateEnd" autocomplete="off" class="layui-input">
                                 </div>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">入职类型</label>
+                            <div class="layui-input-inline">
+                                <select name="createType" id="createType">
+                                    <option value="">请选择</option>
+                                    <option value="2">复职</option>
+                                    <option value="3">返聘</option>
+                                </select>
                             </div>
                         </div>
                     </div>

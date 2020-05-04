@@ -81,4 +81,6 @@ public class EmployeeQueryConditionDTO implements Serializable {
 
     private LocalDate regularDateEnd;
 
+    private String createType;
+
 }

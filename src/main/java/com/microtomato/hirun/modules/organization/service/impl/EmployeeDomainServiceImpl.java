@@ -95,6 +95,9 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
     @Autowired
     private IStatEmployeeTransitionService transitionService;
 
+    @Autowired
+    private IEmployeeTagService employeeTagService;
+
     @Override
     public List<EmployeeInfoDTO> searchEmployee(String searchText) {
         List<EmployeeInfoDTO> employees = employeeMapper.searchByNameMobileNo(searchText);
@@ -354,6 +357,8 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
                 transitionService.addEmployeeEntryTransition(employeeDTO.getEmployeeJobRole().getOrgId(), employeeDTO.getEmployeeId(), employeeDTO.getInDate().toLocalDate());
                 //分配默认权限
                 this.userRoleService.createRole(userId, jobRole.getOrgId(), jobRole.getJobRole(), org.getNature());
+                //2020/05/04 新增员工标签
+                this.employeeTagService.addEmployeeTag(EmployeeConst.CREATE_TYPE_REHIRE,employeeDTO.getEmployeeId(),"复职");
             } else if (StringUtils.equals(createType, EmployeeConst.CREATE_TYPE_REHELLORING)) {
                 userDO.modify(employeeDTO.getMobileNo(), UserConst.INIT_PASSWORD, UserConst.STATUS_NORMAL);
                 employeeDO.rehelloring(employee, jobRole, workExperiences, keyMen);
@@ -361,6 +366,8 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
                 transitionService.addEmployeeEntryTransition(employeeDTO.getEmployeeJobRole().getOrgId(), employeeDTO.getEmployeeId(), employeeDTO.getInDate().toLocalDate());
                 //分配默认权限
                 this.userRoleService.createRole(userId, jobRole.getOrgId(), org.getNature(), jobRole.getJobRole());
+                //2020/05/04 新增员工标签
+                this.employeeTagService.addEmployeeTag(EmployeeConst.CREATE_TYPE_REHELLORING,employeeDTO.getEmployeeId(),"返聘");
             } else {
                 EmployeeJobRole oldJobRole = this.employeeJobRoleService.queryLast(employeeDTO.getEmployeeId());
 
