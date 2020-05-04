@@ -10,7 +10,7 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
         },
 
         template: `
-            <el-select v-model="sValue" placeholder="请选择" filterable :disabled="this.disabled===true?true:false" style="width:100%" @change="handle">
+            <el-select v-model="sValue" placeholder="请选择" clearable filterable :disabled="this.disabled===true?true:false" style="width:100%" @change="handle">
                 <el-option
                     v-for="item in options"
                     :key="item.codeValue"
