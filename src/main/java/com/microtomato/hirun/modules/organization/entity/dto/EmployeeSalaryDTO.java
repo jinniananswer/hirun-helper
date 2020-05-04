@@ -75,6 +75,8 @@ public class EmployeeSalaryDTO {
 
     private String auditStatus;
 
+    private String auditStatusName;
+
     private String auditRemark;
 
     private Long auditEmployeeId;

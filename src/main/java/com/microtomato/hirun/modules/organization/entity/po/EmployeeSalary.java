@@ -96,7 +96,7 @@ public class EmployeeSalary extends BaseEntity {
     @TableField(value = "remark")
     private String remark;
 
-    /** 审核状态， 0-初始保存 1-待审核 2-审核通过 3-审核不通过 */
+    /** 审核状态， 0-初始保存 1-待审核 2-审核通过 3-审核不通过 4-已发放 */
     @TableField(value = "audit_status")
     private String auditStatus;
 

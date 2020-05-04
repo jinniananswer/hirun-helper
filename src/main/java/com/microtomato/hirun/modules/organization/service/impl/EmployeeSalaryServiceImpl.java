@@ -59,6 +59,7 @@ public class EmployeeSalaryServiceImpl extends ServiceImpl<EmployeeSalaryMapper,
                 .eq(StringUtils.isNotBlank(param.getMobileNo()), "a.mobile_no", param.getMobileNo())
                 .in(ArrayUtils.isNotEmpty(param.getOrgIds()), "b.org_id", param.getOrgIds())
                 .eq(StringUtils.isNotBlank(param.getType()), "a.type", param.getType())
+                .eq(StringUtils.isNotBlank(param.getAuditStatus()), "d.audit_status", param.getAuditStatus())
                 .eq(StringUtils.isNotBlank(param.getStatus()), "a.status", param.getStatus());
 
         List<EmployeeSalaryDTO> salaries = this.employeeSalaryMapper.queryEmployeeSalaries(wrapper, param.getSalaryMonth());
@@ -79,6 +80,7 @@ public class EmployeeSalaryServiceImpl extends ServiceImpl<EmployeeSalaryMapper,
                 salary.setTypeName(this.staticDataService.getCodeName("EMPLOYEE_TYPE", salary.getType()));
                 salary.setJobRoleName(this.staticDataService.getCodeName("JOB_ROLE", salary.getJobRole()));
                 salary.setStatusName(this.staticDataService.getCodeName("EMPLOYEE_STATUS", salary.getStatus()));
+                salary.setAuditStatusName(this.staticDataService.getCodeName("SALARY_AUDIT_STATUS", salary.getAuditStatus()));
 
                 if (salary.getId() == null) {
                     //如果没有查到数据，则自动将上月的工资数据带过来
@@ -110,7 +112,7 @@ public class EmployeeSalaryServiceImpl extends ServiceImpl<EmployeeSalaryMapper,
      * @param salaries
      */
     @Override
-    public void saveSalaries(List<EmployeeSalaryDTO> salaries) {
+    public void saveSalaries(List<EmployeeSalaryDTO> salaries, boolean isAudit) {
         if (ArrayUtils.isEmpty(salaries)) {
             return;
         }
@@ -128,7 +130,7 @@ public class EmployeeSalaryServiceImpl extends ServiceImpl<EmployeeSalaryMapper,
                 if (this.isEmpty(salary)) {
                     return;
                 }
-                EmployeeSalary employeeSalary = this.fillNewSalary(salary);
+                EmployeeSalary employeeSalary = this.fillNewSalary(salary, isAudit);
                 createEmployeeSalaries.add(employeeSalary);
             } else {
                 //ID不为空，表示为修改后的数据
@@ -152,7 +154,7 @@ public class EmployeeSalaryServiceImpl extends ServiceImpl<EmployeeSalaryMapper,
                     employeeSalary.setEndTime(now);
                     modifyEmployeeSalaries.add(employeeSalary);
                     salary.setId(null);
-                    EmployeeSalary newEmployeeSalary = this.fillNewSalary(salary);
+                    EmployeeSalary newEmployeeSalary = this.fillNewSalary(salary, isAudit);
                     //设置为1表示这条记录是修改原来的
                     newEmployeeSalary.setIsModified("1");
                     createEmployeeSalaries.add(newEmployeeSalary);
@@ -212,7 +214,7 @@ public class EmployeeSalaryServiceImpl extends ServiceImpl<EmployeeSalaryMapper,
      * @param salary
      * @return
      */
-    private EmployeeSalary fillNewSalary(EmployeeSalaryDTO salary) {
+    private EmployeeSalary fillNewSalary(EmployeeSalaryDTO salary, boolean isAudit) {
         UserContext userContext = WebContextUtils.getUserContext();
         Long employeeId = userContext.getEmployeeId();
         LocalDateTime now = RequestTimeHolder.getRequestTime();
@@ -222,7 +224,11 @@ public class EmployeeSalaryServiceImpl extends ServiceImpl<EmployeeSalaryMapper,
         employeeSalary.setStartTime(now);
         employeeSalary.setEndTime(TimeUtils.getForeverTime());
         employeeSalary.setCreateEmployeeId(employeeId);
-        employeeSalary.setAuditStatus("0");
+        if (isAudit) {
+            employeeSalary.setAuditStatus("1");
+        } else {
+            employeeSalary.setAuditStatus("0");
+        }
         this.moneyUnitTransfer(salary, employeeSalary);
         return employeeSalary;
     }

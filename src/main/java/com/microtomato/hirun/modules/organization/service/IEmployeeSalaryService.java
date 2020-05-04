@@ -20,5 +20,5 @@ public interface IEmployeeSalaryService extends IService<EmployeeSalary> {
 
     List<EmployeeSalary> queryByMonth(Integer salaryMonth);
 
-    void saveSalaries(List<EmployeeSalaryDTO> salaries);
+    void saveSalaries(List<EmployeeSalaryDTO> salaries, boolean isAudit);
 }

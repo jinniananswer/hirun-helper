@@ -53,12 +53,12 @@ public class EmployeeSalaryController {
     @PostMapping("/submitSalaries")
     @RestResult
     public void submitSalaries(@RequestBody List<EmployeeSalaryDTO> employeeSalaries) {
-        this.employeeSalaryService.saveSalaries(employeeSalaries);
+        this.employeeSalaryService.saveSalaries(employeeSalaries, false);
     }
 
     @PostMapping("/auditSalaries")
     @RestResult
     public void auditSalaries(@RequestBody List<EmployeeSalaryDTO> employeeSalaries) {
-        this.employeeSalaryService.saveSalaries(employeeSalaries);
+        this.employeeSalaryService.saveSalaries(employeeSalaries, true);
     }
 }

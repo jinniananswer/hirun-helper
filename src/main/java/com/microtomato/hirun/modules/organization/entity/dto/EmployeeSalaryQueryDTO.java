@@ -25,5 +25,7 @@ public class EmployeeSalaryQueryDTO {
 
     private String status;
 
+    private String auditStatus;
+
     private Integer salaryMonth;
 }
