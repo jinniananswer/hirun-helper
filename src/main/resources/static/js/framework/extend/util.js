@@ -8,6 +8,10 @@ define(['moment'], function(moment){
             return moment(new Date()).add('year',0).format("YYYY-MM-DD");
         },
 
+        getNowMonth: function() {
+            return moment(new Date()).add('year',0).format("YYYYMM");
+        },
+
         getNowTime: function() {
             return moment(new Date()).add('year',0).format("YYYY-MM-DD HH:mm:ss");
         },

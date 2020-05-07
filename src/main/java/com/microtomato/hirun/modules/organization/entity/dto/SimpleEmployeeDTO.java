@@ -19,6 +19,8 @@ public class SimpleEmployeeDTO {
 
     private String jobRole;
 
+    private String jobRoleName;
+
     /**
      * 完整部门路径
      */

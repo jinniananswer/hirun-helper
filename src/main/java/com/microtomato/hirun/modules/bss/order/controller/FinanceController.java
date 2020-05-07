@@ -35,10 +35,16 @@ public class FinanceController {
         return this.domainService.queryCustOrderInfos(queryCond, page);
     }
 
+    @GetMapping("/queryPayInfoByCond")
+    @RestResult
+    public List<NonCollectFeeDTO> queryPayInfoByCond(NonCollectFeeQueryDTO queryCondition) {
+        return this.domainService.queryPayInfoByCond(queryCondition);
+    }
+
     @GetMapping("/initCollectionComponent")
     @RestResult
-    public CollectionComponentDTO initCollectionComponent() {
-        return this.domainService.initCollectionComponent();
+    public CollectionComponentDTO initCollectionComponent( Long payNo) {
+        return this.domainService.initCollectionComponent(payNo);
     }
 
     @GetMapping("/initPayComponent")
@@ -51,6 +57,20 @@ public class FinanceController {
     @RestResult
     public Map collectFee(@RequestBody  CollectFeeDTO collectFee) {
         this.domainService.collectFee(collectFee);
+        return new HashMap();
+    }
+
+    @PostMapping("/nonCollectFeeUpdate")
+    @RestResult
+    public Map nonCollectFeeUpdate(@RequestBody NonCollectFeeDTO nonCollectFee) {
+        this.domainService.nonCollectFeeUpdate(nonCollectFee);
+        return new HashMap();
+    }
+
+    @PostMapping("/nonCollectFeeForAudit")
+    @RestResult
+    public Map nonCollectFeeForAudit(@RequestBody NonCollectFeeDTO nonCollectFee) {
+        this.domainService.nonCollectFeeForAudit(nonCollectFee);
         return new HashMap();
     }
 

@@ -1,4 +1,4 @@
-require(['vue', 'ELEMENT', 'axios', 'ajax', 'vxe-table', 'vueselect', 'util'], function (Vue, element, axios, ajax, table, vueselect, util) {
+require(['vue', 'ELEMENT', 'axios', 'ajax', 'vxe-table', 'vueselect', 'order-selectemployee', 'util'], function (Vue, element, axios, ajax, table, vueselect, orderSelectEmployee, util) {
     Vue.use(table);
     let vm = new Vue({
             el: '#app',
@@ -10,10 +10,20 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vxe-table', 'vueselect', 'util'], f
                         needPay: null,
                         payDate: util.getNowDate()
                     },
+                    payNo: util.getRequest("payNo"),
+                    queryCond: {
+                        auditStatus: '',
+                        employeeId: '',
+                        startDate: '',
+                        endDate: '',
+                    },
+                    normalPayInfos: [],
                     periodDisabled: true,
                     payments: [],
                     payItemOptions: [],
                     dialogVisible: false,
+                    auditRemark: "",
+                    auditStatus: "",
                     validRules: {
                         money: [
                             {type: 'number', message: '金额必须为数字'},
@@ -41,9 +51,23 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vxe-table', 'vueselect', 'util'], f
                 init() {
                     let that = this;
                     let url = 'api/bss.order/finance/initCollectionComponent';
+                    if (this.payNo != null) {
+                        url += '?payNo=' + this.payNo;
+                    } else {
+                        url += '?payNo=0';
+                    }
                     ajax.get(url, null, function (data) {
                         that.payments = data.payments;
                         that.payItemOptions = data.collectionItemOption;
+                        if (data.payItems) {
+                            that.payItems = data.payItems;
+                        }
+                        that.auditStatus = data.auditStatus;
+                        that.payForm.needPay = data.needPay;
+
+                        if (data.payDate) {
+                            that.payForm.payDate = data.payDate;
+                        }
                     });
                 },
 
@@ -211,26 +235,40 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vxe-table', 'vueselect', 'util'], f
                         this.$refs.payItem.remove(row);
                         this.$refs.payItem.updateFooter();
 
-                        for (let i=0;i<this.payItems.length;i++) {
+                        for (let i = 0; i < this.payItems.length; i++) {
                             let item = this.payItems[i];
                             if (item.payItemId == row.payItemId) {
-                                this.payItems.splice(i,1);
+                                this.payItems.splice(i, 1);
                                 break;
                             }
                         }
                     });
                 },
+                queryPayInfoByCond: function () {
+                    let that = this;
+                    ajax.get('api/bss.order/finance/queryPayInfoByCond', this.queryCond, function (responseData) {
 
+                        that.normalPayInfos = responseData;
+                    });
+                },
+                toPayDetail(payNo) {
+                    util.openPage('openUrl?url=modules/bss/order/finance/cashier/non_business_collection&payNo='+payNo, '非主营收款详情');
+                },
                 getSubmitData() {
                     let payDate = this.payForm.payDate;
                     let needPay = this.payForm.needPay;
                     let data = {
-                        payDate : payDate,
-                        needPay : needPay,
-                        payItems:[],
-                        payments:[]
+                        payDate: payDate,
+                        needPay: needPay,
+                        payItems: [],
+                        payments: [],
+                        auditRemark: this.auditRemark,
+                        auditStatus: this.auditStatus,
+                        payNo: this.payNo
+
+
                     };
-                    for (let i=0;i<this.payItems.length;i++) {
+                    for (let i = 0; i < this.payItems.length; i++) {
                         let payItem = {};
 
                         payItem.payItemId = this.payItems[i].payItemId.split("_")[1];
@@ -240,7 +278,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vxe-table', 'vueselect', 'util'], f
                         data.payItems.push(payItem);
                     }
 
-                    for (let i=0;i<this.payments.length;i++) {
+                    for (let i = 0; i < this.payments.length; i++) {
                         let payment = {};
                         payment.paymentType = this.payments[i].paymentType;
                         payment.money = this.payments[i].money;
@@ -252,10 +290,40 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vxe-table', 'vueselect', 'util'], f
                     let isValid = await this.valid().then(isValid => isValid);
                     if (isValid) {
                         let data = this.getSubmitData();
-                        data['orderId'] = this.orderId;
                         ajax.post('api/bss.order/finance/nonCollectFee', data);
                     }
-                }
+                },
+                submitForUpdate: async function () {
+                    let isValid = await this.valid().then(isValid => isValid);
+                    if (isValid) {
+                        let data = this.getSubmitData();
+                        ajax.post('api/bss.order/finance/nonCollectFeeUpdate', data);
+                    }
+                },
+                submitForAudit: async function () {
+                    let isValid = await this.valid().then(isValid => isValid);
+                    if (isValid) {
+                        let data = this.getSubmitData();
+                        data.auditStatus = "1";
+                        ajax.post('api/bss.order/finance/nonCollectFeeForAudit', data);
+                    }
+                },
+                submitForNo: async function () {
+                    let isValid = await this.valid().then(isValid => isValid);
+                    if (isValid) {
+                        let data = this.getSubmitData();
+                        data.auditStatus = "2";
+                        ajax.post('api/bss.order/finance/nonCollectFeeForAudit', data);
+                    }
+                },
+                submitForReview: async function () {
+                    let isValid = await this.valid().then(isValid => isValid);
+                    if (isValid) {
+                        let data = this.getSubmitData();
+                        data.auditStatus = "0";
+                        ajax.post('api/bss.order/finance/nonCollectFeeForAudit', data);
+                    }
+                },
             }
         })
     ;

@@ -21,6 +21,7 @@ import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.*;
 import com.microtomato.hirun.modules.bss.order.entity.po.*;
 import com.microtomato.hirun.modules.bss.order.exception.OrderException;
+import com.microtomato.hirun.modules.bss.order.mapper.NormalPayNoMapper;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderBaseMapper;
 import com.microtomato.hirun.modules.bss.order.service.*;
 import com.microtomato.hirun.modules.organization.entity.domain.EmployeeDO;
@@ -102,6 +103,9 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
 
     @Autowired
     private INormalPayNoService normalPayNoService;
+
+    @Autowired
+    private NormalPayNoMapper normalPayNoMapper;
 
 
     /**
@@ -613,7 +617,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
      * @return
      */
     @Override
-    public CollectionComponentDTO initCollectionComponent() {
+    public CollectionComponentDTO initCollectionComponent(Long payNo) {
         CollectionComponentDTO componentData = new CollectionComponentDTO();
         List<PaymentDTO> payments = new ArrayList<>();
 
@@ -633,6 +637,88 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
         List<CascadeDTO<CollectionItemCfg>> collectionItems = this.buildPayItemCollectionCascade(collectionItemCfgs);
         if (ArrayUtils.isNotEmpty(collectionItems)) {
             componentData.setCollectionItemOption(collectionItems);
+        }
+
+        if (payNo != null&&payNo !=0L) {
+            NormalPayNo normalPayNo = this.normalPayNoService.getByPayNo(payNo);
+            if (normalPayNo != null) {
+                Long totalMoney = normalPayNo.getTotalMoney();
+                if (totalMoney != null) {
+                    //存储用分为单位，到界面上转换成元
+                    componentData.setNeedPay(totalMoney.doubleValue() / 100);
+                }
+                componentData.setPayDate(normalPayNo.getPayDate());
+                componentData.setAuditStatus(normalPayNo.getAuditStatus());
+            }
+
+            List<NormalPayItem> payItems = this.normalPayItemService.queryByPayNo(payNo);
+            if (ArrayUtils.isNotEmpty(payItems)) {
+                List<NormalPayItemDTO> normalPayItemDTOS = new ArrayList<>();
+                for (NormalPayItem payItem : payItems) {
+                    NormalPayItemDTO normalPayItemDTO = new NormalPayItemDTO();
+                    String payItemId = payItem.getPayItemId().toString();
+                    Long projectId = payItem.getProject();
+                    normalPayItemDTO.setPayItemId("pay_" + payItem.getParentPayItemId());
+                    normalPayItemDTO.setSubjectId("pay_" + payItem.getPayItemId());
+                    normalPayItemDTO.setProjectId("pay_" + projectId);
+                    normalPayItemDTO.setMoney(payItem.getFee().doubleValue() / 100);
+
+                    String payItemName = this.collectionItemCfgService.getFeeItem(payItem.getParentPayItemId()).getName();
+                    String subjectName = this.collectionItemCfgService.getFeeItem(payItem.getPayItemId()).getName();
+                    String projectName = "";
+                    //根据不同的收费小类信息区分项目信息
+                    //查询品牌信息
+                    if (StringUtils.equals("12", payItemId)) {
+                        SupplierBrand supplierBrands = this.supplierBrandService.getSupplierBrand(projectId);
+                        projectName = supplierBrands.getName();
+                    }
+                    //查询工人信息
+                    if (StringUtils.equals("16", payItemId) || StringUtils.equals("25", payItemId) || StringUtils.equals("28", payItemId) || StringUtils.equals("33", payItemId) || StringUtils.equals("34", payItemId)) {
+                        Decorator decorators = this.decoratorService.getDecorator(projectId);
+                        projectName = decorators.getName();
+                    }
+
+                    //查询用户信息
+                    if (StringUtils.equals("20", payItemId)) {
+                        Employee employees = this.employeeService.queryByUserId(projectId);
+                        projectName = employees.getName();
+                    }
+                    //查询公司信息
+                    if (StringUtils.equals("19", payItemId)) {
+                        Enterprise enterprises = this.enterpriseService.getEnterpriseId(projectId);
+                        projectName = enterprises.getName();
+                    }
+                    //查询门店信息
+                    if (StringUtils.equals("13", payItemId) || StringUtils.equals("14", payItemId) || StringUtils.equals("15", payItemId) || StringUtils.equals("18", payItemId)
+                            || StringUtils.equals("21", payItemId) || StringUtils.equals("22", payItemId) || StringUtils.equals("23", payItemId) || StringUtils.equals("26", payItemId)
+                            || StringUtils.equals("27", payItemId) || StringUtils.equals("29", payItemId) || StringUtils.equals("30", payItemId) || StringUtils.equals("31", payItemId)
+                            || StringUtils.equals("32", payItemId) || StringUtils.equals("35", payItemId) || StringUtils.equals("36", payItemId)) {
+                        Org orgs = this.orgService.queryByOrgId(projectId);
+                        projectName = orgs.getName();
+
+                    }
+
+                    normalPayItemDTO.setPayItemName(payItemName);
+                    normalPayItemDTO.setSubjectName(subjectName);
+                    normalPayItemDTO.setProjectName(projectName);
+
+                    normalPayItemDTOS.add(normalPayItemDTO);
+                }
+                componentData.setPayItems(normalPayItemDTOS);
+            }
+
+            List<NormalPayMoney> payMonies = this.normalPayMoneyService.queryByPayNo(payNo);
+            if (ArrayUtils.isNotEmpty(payMonies)) {
+                for (NormalPayMoney payMoney : payMonies) {
+                    for (PaymentDTO payment : payments) {
+                        if (StringUtils.equals(payment.getPaymentType(), payMoney.getPaymentType())) {
+                            payment.setMoney(payMoney.getMoney().doubleValue() / 100);
+                            break;
+                        }
+                    }
+                }
+            }
+
         }
 
 
@@ -798,97 +884,210 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @Override
     public void nonCollectFee(NonCollectFeeDTO feeData) {
+
         List<NormalPayItemDTO> payItems = feeData.getPayItems();
-        Long payNo = this.dualService.nextval(PayNoCycleSeq.class);
-        Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
-        LocalDate payDate = feeData.getPayDate();
+        Long payNo = feeData.getPayNo();
+
+            payNo = this.dualService.nextval(PayNoCycleSeq.class);
+            Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
+            LocalDate payDate = feeData.getPayDate();
+            LocalDateTime now = RequestTimeHolder.getRequestTime();
+            LocalDateTime forever = TimeUtils.getForeverTime();
+
+            Double needPayDouble = feeData.getNeedPay();
+
+            if (needPayDouble == null || needPayDouble <= 0.001) {
+                throw new OrderException(OrderException.OrderExceptionEnum.PAY_MUST_MORE_THAN_ZERO);
+            }
+
+            Long needPay = new Long(Math.round(needPayDouble * 100));
+            Long payItemTotal = 0L;
+            List<NormalPayItem> normalPayItems = new ArrayList<>();
+
+            if (ArrayUtils.isNotEmpty(payItems)) {
+                for (NormalPayItemDTO payItem : payItems) {
+                    Double money = payItem.getMoney();
+                    if (money == null || money <= 0.001) {
+                        continue;
+                    }
+
+                    Long fee = new Long(Math.round(money * 100));
+
+                    Long payItemId = new Long(payItem.getPayItemId());
+                    Long subjectId = new Long(payItem.getSubjectId());
+                    Long projectId = new Long(payItem.getProjectId());
+                    CollectionItemCfg payItemCfg = this.collectionItemCfgService.getFeeItem(subjectId);
+                    if (payItemCfg == null) {
+                        throw new OrderException(OrderException.OrderExceptionEnum.PAY_ITEM_NOT_FOUND, payItem.getSubjectId());
+                    }
+                    NormalPayItem normalPayItem = new NormalPayItem();
+                    normalPayItem.setPayItemId(subjectId);
+                    normalPayItem.setParentPayItemId(payItemId);
+                    normalPayItem.setProject(projectId);
+                    normalPayItem.setFee(fee);
+                    normalPayItem.setPayNo(payNo);
+                    normalPayItem.setStartDate(now);
+                    normalPayItem.setEndDate(forever);
+                    normalPayItems.add(normalPayItem);
+                    payItemTotal += fee;
+                }
+            }
+            List<PaymentDTO> payments = feeData.getPayments();
+            List<NormalPayMoney> payMonies = new ArrayList<>();
+            Long totalMoney = 0L;
+
+            if (ArrayUtils.isNotEmpty(payments)) {
+                for (PaymentDTO payment : payments) {
+                    NormalPayMoney payMoney = new NormalPayMoney();
+                    payMoney.setPaymentType(payment.getPaymentType());
+
+                    Double money = payment.getMoney();
+                    if (money == null || money <= 0.001) {
+                        continue;
+                    }
+                    Long fee = new Long(Math.round(money * 100));
+                    payMoney.setMoney(fee);
+                    payMoney.setPayNo(payNo);
+                    payMoney.setStartDate(now);
+                    payMoney.setEndDate(forever);
+                    payMonies.add(payMoney);
+                    totalMoney += fee;
+                }
+            }
+            if (!payItemTotal.equals(needPay)) {
+                throw new OrderException(OrderException.OrderExceptionEnum.PAY_MUST_EQUAL_PAYITEM);
+            }
+            if (!payItemTotal.equals(totalMoney)) {
+                throw new OrderException(OrderException.OrderExceptionEnum.PAY_MUST_EQUAL_PAYITEM);
+            }
+
+            NormalPayNo normalPayNo = new NormalPayNo();
+            normalPayNo.setPayDate(payDate);
+            normalPayNo.setPayNo(payNo);
+            //待审核状态
+            normalPayNo.setAuditStatus(OrderConst.AUDIT_STATUS_INIT);
+            normalPayNo.setStartDate(now);
+            normalPayNo.setEndDate(forever);
+            normalPayNo.setTotalMoney(needPay);
+            normalPayNo.setPayEmployeeId(employeeId);
+            normalPayNo.setOrgId(WebContextUtils.getUserContext().getOrgId());
+            normalPayNo.setAuditComment(feeData.getAuditRemark());
+            this.normalPayNoService.save(normalPayNo);
+
+            if (ArrayUtils.isNotEmpty(normalPayItems)) {
+                this.normalPayItemService.saveBatch(normalPayItems);
+            }
+            if (ArrayUtils.isNotEmpty(payMonies)) {
+                this.normalPayMoneyService.saveBatch(payMonies);
+            }
+
+    }
+
+    /**
+     * 查询非主营收费信息
+     *
+     * @param queryCondition
+     * @return
+     */
+    @Override
+    public List<NonCollectFeeDTO> queryPayInfoByCond(NonCollectFeeQueryDTO queryCondition) {
+
+        QueryWrapper<NormalPayNo> queryWrapper = new QueryWrapper<>();
+        if(null!=queryCondition.getStartDate()&&null!=queryCondition.getEndDate()){
+            queryWrapper.between("pay_date", queryCondition.getStartDate(), queryCondition.getEndDate());
+        }
+        queryWrapper.eq(StringUtils.isNotEmpty(queryCondition.getAuditStatus()), "audit_status", queryCondition.getAuditStatus());
+        queryWrapper.eq(queryCondition.getEmployeeId() != null, "pay_employee_id", queryCondition.getEmployeeId());
+        queryWrapper.ge("end_date", RequestTimeHolder.getRequestTime());
+        List<NormalPayNo> normalPayNos = this.normalPayNoMapper.queryPayNoInfo(queryWrapper);
+
+//        if (ArrayUtils.isEmpty(normalPayNos)) {
+//            return null;
+//        }
+
+        List<NonCollectFeeDTO> normalPayInfos = new ArrayList<>();
+        for (NormalPayNo normalPayNo : normalPayNos) {
+            NonCollectFeeDTO normalPayInfo = new NonCollectFeeDTO();
+            normalPayInfo.setPayDate(normalPayNo.getPayDate());
+            normalPayInfo.setPayNo(normalPayNo.getPayNo());
+            Long employeeId = normalPayNo.getPayEmployeeId();
+            if (employeeId != null) {
+                EmployeeDO employeeDO = SpringContextUtils.getBean(EmployeeDO.class, employeeId);
+                normalPayInfo.setEmployeeName(employeeDO.getEmployee().getName());
+            }
+            normalPayInfo.setAuditStatusName(this.staticDataService.getCodeName("AUDIT_STATUS", normalPayNo.getAuditStatus()));
+
+
+            if (normalPayNo.getTotalMoney() != null) {
+                normalPayInfo.setTotalMoney(normalPayNo.getTotalMoney().doubleValue() / 100);
+            } else {
+                normalPayInfo.setTotalMoney(0d);
+            }
+            normalPayInfos.add(normalPayInfo);
+        }
+        return normalPayInfos;
+    }
+
+    /**
+     * 更改收费项目或者付款方式
+     *
+     * @param feeData
+     */
+    @Override
+    public void nonCollectFeeUpdate(NonCollectFeeDTO feeData) {
+        Long payNo = feeData.getPayNo();
+        if (payNo == null) {
+            throw new OrderException(OrderException.OrderExceptionEnum.ARGUMENT_NOT_FOUND, "payNo");
+        }
+
         LocalDateTime now = RequestTimeHolder.getRequestTime();
-        LocalDateTime forever = TimeUtils.getForeverTime();
-
-        Double needPayDouble = feeData.getNeedPay();
-
-        if (needPayDouble == null || needPayDouble <= 0.001) {
-            throw new OrderException(OrderException.OrderExceptionEnum.PAY_MUST_MORE_THAN_ZERO);
+        //先终止原来的收款记录
+        NormalPayNo normalPayNo = this.normalPayNoService.getByPayNo(payNo);
+        if (normalPayNo != null) {
+            normalPayNo.setEndDate(now);
+            this.normalPayNoService.updateById(normalPayNo);
         }
 
-        Long needPay = new Long(Math.round(needPayDouble * 100));
-        Long payItemTotal = 0L;
-        List<NormalPayItem> normalPayItems = new ArrayList<>();
-
-        if (ArrayUtils.isNotEmpty(payItems)) {
-            for (NormalPayItemDTO payItem : payItems) {
-                Double money = payItem.getMoney();
-                if (money == null || money <= 0.001) {
-                    continue;
-                }
-
-                Long fee = new Long(Math.round(money * 100));
-
-                Long payItemId = new Long(payItem.getPayItemId());
-                Long subjectId = new Long(payItem.getSubjectId());
-                Long projectId = new Long(payItem.getProjectId());
-                CollectionItemCfg payItemCfg = this.collectionItemCfgService.getFeeItem(subjectId);
-                if (payItemCfg == null) {
-                    throw new OrderException(OrderException.OrderExceptionEnum.PAY_ITEM_NOT_FOUND, payItem.getSubjectId());
-                }
-                NormalPayItem normalPayItem = new NormalPayItem();
-                normalPayItem.setPayItemId(subjectId);
-                normalPayItem.setParentPayItemId(payItemId);
-                normalPayItem.setProject(projectId);
-                normalPayItem.setFee(fee);
-                normalPayItem.setPayNo(payNo);
-                normalPayItem.setStartDate(now);
-                normalPayItem.setEndDate(forever);
-                normalPayItems.add(normalPayItem);
-                payItemTotal += fee;
-            }
-        }
-        List<PaymentDTO> payments = feeData.getPayments();
-        List<NormalPayMoney> payMonies = new ArrayList<>();
-        Long totalMoney = 0L;
-
-        if (ArrayUtils.isNotEmpty(payments)) {
-            for (PaymentDTO payment : payments) {
-                NormalPayMoney payMoney = new NormalPayMoney();
-                payMoney.setPaymentType(payment.getPaymentType());
-
-                Double money = payment.getMoney();
-                if (money == null || money <= 0.001) {
-                    continue;
-                }
-                Long fee = new Long(Math.round(money * 100));
-                payMoney.setMoney(fee);
-                payMoney.setPayNo(payNo);
-                payMoney.setStartDate(now);
-                payMoney.setEndDate(forever);
-                payMonies.add(payMoney);
-                totalMoney += fee;
-            }
-        }
-        if (!payItemTotal.equals(needPay)) {
-            throw new OrderException(OrderException.OrderExceptionEnum.PAY_MUST_EQUAL_PAYITEM);
-        }
-        if (!payItemTotal.equals(totalMoney)) {
-            throw new OrderException(OrderException.OrderExceptionEnum.PAY_MUST_EQUAL_PAYITEM);
-        }
-
-        NormalPayNo normalPayNo = new NormalPayNo();
-        normalPayNo.setPayDate(payDate);
-        normalPayNo.setPayNo(payNo);
-        //待审核状态
-        normalPayNo.setAuditStatus(OrderConst.AUDIT_STATUS_INIT);
-        normalPayNo.setStartDate(now);
-        normalPayNo.setEndDate(forever);
-        normalPayNo.setTotalMoney(needPay);
-        normalPayNo.setPayEmployeeId(employeeId);
-        normalPayNo.setOrgId(WebContextUtils.getUserContext().getOrgId());
-        this.normalPayNoService.save(normalPayNo);
-
+        List<NormalPayItem> normalPayItems = this.normalPayItemService.queryByPayNo( payNo);
         if (ArrayUtils.isNotEmpty(normalPayItems)) {
-           this.normalPayItemService.saveBatch(normalPayItems);
+            for (NormalPayItem normalPayItem : normalPayItems) {
+                normalPayItem.setEndDate(now);
+            }
+
+            this.normalPayItemService.updateBatchById(normalPayItems);
         }
-        if (ArrayUtils.isNotEmpty(payMonies)) {
-            this.normalPayMoneyService.saveBatch(payMonies);
+
+        List<NormalPayMoney> normalPayMonies = this.normalPayMoneyService.queryByPayNo(payNo);
+        if (ArrayUtils.isNotEmpty(normalPayMonies)) {
+            for (NormalPayMoney normalPayMoney : normalPayMonies) {
+                normalPayMoney.setEndDate(now);
+            }
+            this.normalPayMoneyService.updateBatchById(normalPayMonies);
+        }
+
+        this.nonCollectFee(feeData);
+    }
+
+    /**
+     * 状态更新
+     *
+     * @param feeData
+     */
+    @Override
+    public void nonCollectFeeForAudit(NonCollectFeeDTO feeData) {
+        Long payNo = feeData.getPayNo();
+        String auditStatus=feeData.getAuditStatus();
+        if (payNo == null) {
+            throw new OrderException(OrderException.OrderExceptionEnum.ARGUMENT_NOT_FOUND, "payNo");
+        }
+
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+        //更新payNo表记录
+        NormalPayNo normalPayNo = this.normalPayNoService.getByPayNo(payNo);
+        if (normalPayNo != null) {
+            normalPayNo.setAuditStatus(auditStatus);
+            normalPayNo.setAuditEmployeeId(WebContextUtils.getUserContext().getEmployeeId());
+            this.normalPayNoService.updateById(normalPayNo);
         }
     }
 }

@@ -13,7 +13,7 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
                     10: '初选',
                     30: '初步决策',
                     50: '决策',
-                    60: '施工',
+                    60: '实现',
                     95: '维护'
                 },
                 activeTab:'orderInfo',

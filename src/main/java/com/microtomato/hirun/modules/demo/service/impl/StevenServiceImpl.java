@@ -3,6 +3,8 @@ package com.microtomato.hirun.modules.demo.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
+import com.microtomato.hirun.framework.mybatis.annotation.Shard;
+import com.microtomato.hirun.framework.mybatis.dynamic.policy.impl.ShardTableYearPolicy;
 import com.microtomato.hirun.modules.demo.entity.po.Steven;
 import com.microtomato.hirun.modules.demo.mapper.StevenMapper;
 import com.microtomato.hirun.modules.demo.service.IStevenService;
@@ -26,6 +28,7 @@ public class StevenServiceImpl extends ServiceImpl<StevenMapper, Steven> impleme
     @Autowired
     private StevenMapper stevenMapper;
 
+    @Shard(policy = ShardTableYearPolicy.class)
     @Override
     public int insert(Steven steven) {
         return stevenMapper.insert(steven);

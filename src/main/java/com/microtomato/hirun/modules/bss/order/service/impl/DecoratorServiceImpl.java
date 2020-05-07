@@ -44,5 +44,14 @@ public class DecoratorServiceImpl extends ServiceImpl<DecoratorMapper, Decorator
                 .eq(Decorator::getStatus, "0"));
     }
 
-
+    /**
+     * 根据工人ID查询工人信息
+     * @param decoratorId
+     * @return
+     */
+    @Override
+    public Decorator getDecorator(Long decoratorId) {
+        Decorator decorator = this.getById(decoratorId);
+        return decorator;
+    }
 }

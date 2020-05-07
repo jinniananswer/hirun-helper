@@ -1,7 +1,9 @@
 package com.microtomato.hirun.modules.demo.controller;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.microtomato.hirun.modules.demo.entity.po.Steven;
 import com.microtomato.hirun.modules.demo.service.IDemoService;
+import com.microtomato.hirun.modules.demo.service.IStevenService;
 import com.microtomato.hirun.modules.user.entity.po.FuncTemp;
 import com.microtomato.hirun.modules.user.service.IFuncTempService;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +33,20 @@ public class DemoController {
 
     @Autowired
     private IFuncTempService funcTempService;
+
+    @Autowired
+    private IStevenService stevenService;
+
+    @GetMapping("testShardTable")
+    public void testShardTable() {
+        stevenService.insert(
+            Steven.builder()
+                .createTime(LocalDateTime.now())
+                .name("asiainfo")
+                .id(1010L)
+                .build()
+        );
+    }
 
     @GetMapping("/save")
     public void testSave() {

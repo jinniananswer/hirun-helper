@@ -25,7 +25,6 @@
                             <div slot="header">
                                 <span>收费操作区</span>
                             </div>
-                            <order-payment :order-id="50" :pay-no="20200301000001" ref="pay"></order-payment>
                             <div>
                                 <el-form ref="payForm" :model="payForm" label-width="80px">
                                     <el-row :gutter="12">
@@ -128,13 +127,33 @@
                                         :footer-method="footerMethod"
                                         :edit-config="{trigger: 'click', mode: 'cell'}">
                                     <vxe-table-column field="paymentName" title="付款方式"></vxe-table-column>
-                                    <vxe-table-column field="money" title="付款金额（单位：元）" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+                                    <vxe-table-column field="money" title="付款金额（单位：元）"
+                                                      :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
                                 </vxe-table>
                                 <br/>
                             </div>
                             <el-row>
+                                <el-col :span="24">
+                                    <el-form-item label="备注" prop="auditRemark" label-width="100px">
+                                        <el-input type="textarea" v-model="auditRemark"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
                                 <div style="text-align: center">
-                                    <el-button type="primary" @click="submit">提交</el-button>
+                                    <el-col :span="8" v-if="auditStatus == ''">
+                                        <el-button type="primary" @click="submit">提交审核</el-button>
+                                    </el-col>
+                                    <el-col :span="12" v-if="auditStatus == '0'">
+                                        <el-button type="primary" @click="submitForUpdate">保存</el-button>
+                                        <el-button type="primary" @click="submitForAudit">审核通过</el-button>
+                                        <el-button type="warning" @click="submitForNo">审核不通过</el-button>
+                                    </el-col>
+                                    <el-col :span="12" v-if="auditStatus == '2'">
+                                        <el-button type="primary" @click="submitForReview">重新审核</el-button>
+                                        <el-button type="primary" @click="submitForUpdate">保存</el-button>
+                                    </el-col>
+
                                 </div>
                             </el-row>
                         </el-card>

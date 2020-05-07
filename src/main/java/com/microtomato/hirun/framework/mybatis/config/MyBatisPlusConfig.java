@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.autoconfigure.SpringBootVFS;
 import com.baomidou.mybatisplus.core.MybatisConfiguration;
 import com.baomidou.mybatisplus.core.parser.ISqlParser;
 import com.baomidou.mybatisplus.extension.parsers.BlockAttackSqlParser;
+import com.baomidou.mybatisplus.extension.parsers.DynamicTableNameParser;
+import com.baomidou.mybatisplus.extension.parsers.ITableNameHandler;
 import com.baomidou.mybatisplus.extension.plugins.OptimisticLockerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.SqlExplainInterceptor;
@@ -16,8 +18,10 @@ import com.microtomato.hirun.framework.interceptor.SqlPerformanceInterceptor;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.MyGlobalConfig;
 import com.microtomato.hirun.framework.mybatis.MySqlSessionTemplate;
+import com.microtomato.hirun.framework.mybatis.threadlocal.ShardTableContextHolder;
 import com.microtomato.hirun.framework.util.PackageUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.type.JdbcType;
@@ -34,10 +38,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Steven
@@ -177,7 +178,28 @@ public class MyBatisPlusConfig {
     @Bean
     public PaginationInterceptor paginationInterceptor() {
         PaginationInterceptor paginationInterceptor = new PaginationInterceptor();
+        paginationInterceptor.setSqlParserList(Collections.singletonList(shardTableParser()));
         return paginationInterceptor;
+    }
+
+    /**
+     * 分表解析器
+     *
+     * @return
+     */
+    private ISqlParser shardTableParser() {
+
+        log.info("配置分表解析器...");
+
+        DynamicTableNameParser dynamicTableNameParser = new DynamicTableNameParser();
+        Map<String, ITableNameHandler> tableNameHandlerMap = new HashMap<>(16);
+        dynamicTableNameParser.setTableNameHandlerMap(tableNameHandlerMap);
+
+        // 指定要分表的表名
+        tableNameHandlerMap.put("sys_steven", (metaObject, sql, tableName) -> StringUtils.joinWith("_", tableName, ShardTableContextHolder.peek()));
+
+        tableNameHandlerMap.keySet().forEach(tableName -> log.info("  分表: {} ", tableName));
+        return dynamicTableNameParser;
     }
 
     /**

@@ -263,7 +263,17 @@ public class OrgDO {
      */
     private Org findSelf(Long orgId) {
         IOrgService service = SpringContextUtils.getBean(OrgServiceImpl.class);
-        return service.queryByOrgId(orgId);
+        List<Org> orgs = service.listAllOrgs();
+        if (ArrayUtils.isEmpty(orgs)) {
+            return null;
+        }
+
+        for (Org org : orgs) {
+            if (org.getOrgId().equals(orgId)) {
+                return org;
+            }
+        }
+        return null;
     }
 
     /**
