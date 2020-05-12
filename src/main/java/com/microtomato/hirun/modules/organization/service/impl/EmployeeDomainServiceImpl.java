@@ -617,6 +617,8 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             employeeInfo.setParentEmployeeName(employeeService.getEmployeeNameEmployeeId(employeeInfo.getParentEmployeeId()));
             employeeInfo.setEmployeeStatusName(this.staticDataService.getCodeName("EMPLOYEE_STATUS", employeeInfo.getEmployeeStatus()));
             employeeInfo.setJobRoleNatureName(this.staticDataService.getCodeName("JOB_NATURE", employeeInfo.getJobRoleNature()));
+            employeeInfo.setDestroyWay(this.staticDataService.getCodeName("DESTROY_WAY", employeeInfo.getDestroyWay()));
+
         }
         return list;
     }

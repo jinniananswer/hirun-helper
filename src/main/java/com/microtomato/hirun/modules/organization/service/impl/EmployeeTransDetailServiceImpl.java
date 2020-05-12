@@ -167,7 +167,7 @@ public class EmployeeTransDetailServiceImpl extends ServiceImpl<EmployeeTransDet
             }
 
             //如果是内部调动需要设置开始时间与结束时间
-            transDetail.setStartTime(LocalDateTime.now());
+            transDetail.setStartTime(transDetail.getStartTime());
             transDetail.setEndTime(TimeUtils.getForeverTime());
         }
 
@@ -214,7 +214,7 @@ public class EmployeeTransDetailServiceImpl extends ServiceImpl<EmployeeTransDet
             HrPending insideTransPending=new HrPending();
             insideTransPending.setEmployeeId(transDetail.getEmployeeId());
             insideTransPending.setPendingType(HrPendingConst.PENDING_TYPE_INSIDE_TRANS);
-            insideTransPending.setStartTime(LocalDateTime.now());
+            insideTransPending.setStartTime(transDetail.getStartTime());
             insideTransPending.setEndTime(TimeUtils.getForeverTime());
             insideTransPending.setPendingStatus(HrPendingConst.PENDING_STATUS_2);
             insideTransPending.setPendingExecuteId(userContext.getEmployeeId());

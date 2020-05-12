@@ -3,6 +3,7 @@ package com.microtomato.hirun.modules.organization.entity.dto;
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.annotation.write.style.ColumnWidth;
+import com.microtomato.hirun.framework.harbour.excel.convert.LocalDateConvert;
 import com.microtomato.hirun.framework.harbour.excel.convert.LocalDateTimeConvert;
 import lombok.*;
 
@@ -94,6 +95,10 @@ public class EmployeeInfoDTO implements Serializable {
     @ColumnWidth(20)
     @ExcelProperty(value = "入职时间", converter = LocalDateTimeConvert.class)
     private LocalDateTime inDate;
+
+    @ColumnWidth(20)
+    @ExcelProperty(value = "转正时间", converter = LocalDateTimeConvert.class)
+    private LocalDateTime regularDate;
 
     @ColumnWidth(20)
     @ExcelProperty("司龄")
@@ -194,6 +199,20 @@ public class EmployeeInfoDTO implements Serializable {
     @ExcelIgnore
     private String hrEmployeeName;
 
-    @ExcelIgnore
-    private LocalDate regularDate;
+    @ColumnWidth(20)
+    @ExcelProperty(value = "离职时间",converter = LocalDateTimeConvert.class)
+    private LocalDateTime destroyDate;
+
+    @ColumnWidth(20)
+    @ExcelProperty("离职方式")
+    private String destroyWay;
+
+    @ColumnWidth(20)
+    @ExcelProperty("离职原因")
+    private String destroyReason;
+
+    @ColumnWidth(20)
+    @ExcelProperty(value = "社保停买日期",converter = LocalDateConvert.class)
+    private LocalDate socialSecurityEnd;
+
 }
