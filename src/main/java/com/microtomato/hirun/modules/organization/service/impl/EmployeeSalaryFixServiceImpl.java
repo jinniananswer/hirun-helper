@@ -11,11 +11,12 @@ import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
-import com.microtomato.hirun.modules.organization.entity.dto.EmployeeSalaryDTO;
-import com.microtomato.hirun.modules.organization.entity.dto.EmployeeSalaryQueryDTO;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeSalaryFixDTO;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeSalaryFixQueryDTO;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeSalary;
-import com.microtomato.hirun.modules.organization.mapper.EmployeeSalaryMapper;
-import com.microtomato.hirun.modules.organization.service.IEmployeeSalaryService;
+import com.microtomato.hirun.modules.organization.entity.po.EmployeeSalaryFix;
+import com.microtomato.hirun.modules.organization.mapper.EmployeeSalaryFixMapper;
+import com.microtomato.hirun.modules.organization.service.IEmployeeSalaryFixService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -28,19 +29,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 员工固定工资表(EmployeeSalary)表服务实现类
+ * 员工固定工资表(EmployeeSalaryFix)表服务实现类
  *
  * @author Jinnian
  * @version 1.0.0
- * @date 2020-05-02 00:25:10
+ * @date 2020-05-04 23:52:25
  */
 @Service
 @DataSource(DataSourceKey.INS)
 @Slf4j
-public class EmployeeSalaryServiceImpl extends ServiceImpl<EmployeeSalaryMapper, EmployeeSalary> implements IEmployeeSalaryService {
+public class EmployeeSalaryFixServiceImpl extends ServiceImpl<EmployeeSalaryFixMapper, EmployeeSalaryFix> implements IEmployeeSalaryFixService {
 
     @Autowired
-    private EmployeeSalaryMapper employeeSalaryMapper;
+    private EmployeeSalaryFixMapper employeeSalaryFixMapper;
 
     @Autowired
     private IStaticDataService staticDataService;
@@ -51,10 +52,9 @@ public class EmployeeSalaryServiceImpl extends ServiceImpl<EmployeeSalaryMapper,
      * @return
      */
     @Override
-    public List<EmployeeSalaryDTO> queryEmployeeSalaries(EmployeeSalaryQueryDTO param) {
-        QueryWrapper<EmployeeSalaryQueryDTO> wrapper = new QueryWrapper<>();
+    public List<EmployeeSalaryFixDTO> queryEmployeeSalaries(EmployeeSalaryFixQueryDTO param) {
+        QueryWrapper<EmployeeSalaryFixDTO> wrapper = new QueryWrapper<>();
         wrapper.apply("c.org_id = b.org_id ")
-                .apply("(a.destroy_date is null or a.destroy_date >= date_sub(date_sub(date_format('"+param.getSalaryMonth()+"01','%y%m%d'),interval extract(day from date_format('"+param.getSalaryMonth()+"01','%y%m%d'))-1 day),interval 1 month)) ")
                 .like(StringUtils.isNotBlank(param.getName()), "a.name", param.getName())
                 .eq(StringUtils.isNotBlank(param.getMobileNo()), "a.mobile_no", param.getMobileNo())
                 .in(ArrayUtils.isNotEmpty(param.getOrgIds()), "b.org_id", param.getOrgIds())
@@ -62,18 +62,10 @@ public class EmployeeSalaryServiceImpl extends ServiceImpl<EmployeeSalaryMapper,
                 .eq(StringUtils.isNotBlank(param.getAuditStatus()), "d.audit_status", param.getAuditStatus())
                 .eq(StringUtils.isNotBlank(param.getStatus()), "a.status", param.getStatus());
 
-        List<EmployeeSalaryDTO> salaries = this.employeeSalaryMapper.queryEmployeeSalaries(wrapper, param.getSalaryMonth());
-        String lastMonth = TimeUtils.addMonths(param.getSalaryMonth()+"01", TimeUtils.DATE_FMT_0, -1);
-        lastMonth = lastMonth.substring(0, 6);
-
-        //todo 需要改成查询固定工资项目数据
-        List<EmployeeSalary> lastSalaries = this.queryByMonth(Integer.parseInt(lastMonth));
+        List<EmployeeSalaryFixDTO> salaries = this.employeeSalaryFixMapper.queryEmployeeFixSalaries(wrapper);
 
         if (ArrayUtils.isNotEmpty(salaries)) {
             salaries.forEach((salary) -> {
-                if (param.getSalaryMonth() != null) {
-                    salary.setSalaryMonth(param.getSalaryMonth());
-                }
                 if (salary.getOrgId() != null) {
                     OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, salary.getOrgId());
                     salary.setOrgPath(orgDO.getCompanyLinePath());
@@ -82,32 +74,22 @@ public class EmployeeSalaryServiceImpl extends ServiceImpl<EmployeeSalaryMapper,
                 salary.setJobRoleName(this.staticDataService.getCodeName("JOB_ROLE", salary.getJobRole()));
                 salary.setStatusName(this.staticDataService.getCodeName("EMPLOYEE_STATUS", salary.getStatus()));
                 salary.setAuditStatusName(this.staticDataService.getCodeName("SALARY_AUDIT_STATUS", salary.getAuditStatus()));
-
-                if (salary.getId() == null) {
-                    //如果没有查到数据，则自动将上月的工资数据带过来
-                    EmployeeSalary lastSalary = this.findByEmployeeId(lastSalaries, salary.getEmployeeId());
-                    if (lastSalary != null) {
-                        this.copyLastMonthSalary(salary, lastSalary);
-                    }
-                }
             });
         }
         return salaries;
     }
 
     /**
-     * 查询员工某月工资总表审核数据
+     * 查询员工固定工资项目审核的数据
      * @param param
      * @return
      */
     @Override
-    public List<EmployeeSalaryDTO> queryAuditEmployeeSalaries(EmployeeSalaryQueryDTO param) {
-        QueryWrapper<EmployeeSalaryDTO> wrapper = new QueryWrapper<>();
+    public List<EmployeeSalaryFixDTO> queryAuditEmployeeSalaries(EmployeeSalaryFixQueryDTO param) {
+        QueryWrapper<EmployeeSalaryFixDTO> wrapper = new QueryWrapper<>();
         wrapper.apply("c.org_id = b.org_id ")
                 .apply("d.employee_id = a.employee_id ")
                 .apply("d.end_time > now() ")
-                .apply("d.salary_month = " + param.getSalaryMonth())
-                .apply("(a.destroy_date is null or a.destroy_date >= date_sub(date_sub(date_format('"+param.getSalaryMonth()+"01','%y%m%d'),interval extract(day from date_format('"+param.getSalaryMonth()+"01','%y%m%d'))-1 day),interval 1 month)) ")
                 .like(StringUtils.isNotBlank(param.getName()), "a.name", param.getName())
                 .eq(StringUtils.isNotBlank(param.getMobileNo()), "a.mobile_no", param.getMobileNo())
                 .in(ArrayUtils.isNotEmpty(param.getOrgIds()), "b.org_id", param.getOrgIds())
@@ -115,7 +97,7 @@ public class EmployeeSalaryServiceImpl extends ServiceImpl<EmployeeSalaryMapper,
                 .eq(StringUtils.isNotBlank(param.getAuditStatus()), "d.audit_status", param.getAuditStatus())
                 .eq(StringUtils.isNotBlank(param.getStatus()), "a.status", param.getStatus());
 
-        List<EmployeeSalaryDTO> salaries = this.employeeSalaryMapper.queryAuditEmployeeSalaries(wrapper);
+        List<EmployeeSalaryFixDTO> salaries = this.employeeSalaryFixMapper.queryAuditEmployeeFixSalaries(wrapper);
 
         if (ArrayUtils.isNotEmpty(salaries)) {
             salaries.forEach((salary) -> {
@@ -133,33 +115,30 @@ public class EmployeeSalaryServiceImpl extends ServiceImpl<EmployeeSalaryMapper,
     }
 
     /**
-     * 根据发薪月份查询有效发薪信息
-     * @param salaryMonth
+     * 查询所有有效的员工固定工资项目
      * @return
      */
     @Override
-    public List<EmployeeSalary> queryByMonth(Integer salaryMonth) {
+    public List<EmployeeSalaryFix> queryAllValid() {
         LocalDateTime now = RequestTimeHolder.getRequestTime();
-        return this.list(new QueryWrapper<EmployeeSalary>().lambda()
-                .eq(EmployeeSalary::getSalaryMonth, salaryMonth)
-                .ge(EmployeeSalary::getEndTime, now));
+        return this.list(new QueryWrapper<EmployeeSalaryFix>().lambda()
+                .ge(EmployeeSalaryFix::getEndTime, now));
     }
 
     /**
-     * 保存员工月工资
+     * 保存员工月工资固定项目
      * @param salaries
      */
     @Override
-    public void saveSalaries(List<EmployeeSalaryDTO> salaries, boolean isAudit) {
+    public void saveSalaries(List<EmployeeSalaryFixDTO> salaries, boolean isAudit) {
         if (ArrayUtils.isEmpty(salaries)) {
             return;
         }
 
-        Integer salaryMonth = salaries.get(0).getSalaryMonth();
-        List<EmployeeSalary> employeeSalaries = this.queryByMonth(salaryMonth);
+        List<EmployeeSalaryFix> employeeSalaries = this.queryAllValid();
 
-        List<EmployeeSalary> createEmployeeSalaries = new ArrayList<>();
-        List<EmployeeSalary> modifyEmployeeSalaries = new ArrayList<>();
+        List<EmployeeSalaryFix> createEmployeeSalaries = new ArrayList<>();
+        List<EmployeeSalaryFix> modifyEmployeeSalaries = new ArrayList<>();
         LocalDateTime now = RequestTimeHolder.getRequestTime();
 
         salaries.forEach((salary) -> {
@@ -168,21 +147,21 @@ public class EmployeeSalaryServiceImpl extends ServiceImpl<EmployeeSalaryMapper,
                 if (this.isEmpty(salary)) {
                     return;
                 }
-                EmployeeSalary employeeSalary = this.fillNewSalary(salary, isAudit);
+                EmployeeSalaryFix employeeSalary = this.fillNewSalary(salary, isAudit);
                 createEmployeeSalaries.add(employeeSalary);
             } else {
                 //ID不为空，表示为修改后的数据
-                EmployeeSalary employeeSalary = this.findById(employeeSalaries, salary.getId());
+                EmployeeSalaryFix employeeSalary = this.findById(employeeSalaries, salary.getId());
                 if (employeeSalary == null) {
                     return;
                 }
 
-                String auditStatus = employeeSalary.getAuditStatus();
-                if (this.equals(salary, employeeSalary) && !isAudit) {
-                    //金额没有发生变化，则不做处理
+                if (this.equals(salary, employeeSalary)) {
+                    //没有发生变化，则不做处理
                     return;
                 }
 
+                String auditStatus = employeeSalary.getAuditStatus();
                 if (StringUtils.equals("0", auditStatus)) {
                     //如果还未提交审核的数据，则保存的话直接修改原记录
                     this.moneyUnitTransfer(salary, employeeSalary);
@@ -196,9 +175,7 @@ public class EmployeeSalaryServiceImpl extends ServiceImpl<EmployeeSalaryMapper,
                     employeeSalary.setEndTime(now);
                     modifyEmployeeSalaries.add(employeeSalary);
                     salary.setId(null);
-                    EmployeeSalary newEmployeeSalary = this.fillNewSalary(salary, isAudit);
-                    //设置为1表示这条记录是修改原来的
-                    newEmployeeSalary.setIsModified("1");
+                    EmployeeSalaryFix newEmployeeSalary = this.fillNewSalary(salary, isAudit);
                     createEmployeeSalaries.add(newEmployeeSalary);
                 }
             }
@@ -214,39 +191,37 @@ public class EmployeeSalaryServiceImpl extends ServiceImpl<EmployeeSalaryMapper,
     }
 
     /**
-     * 审核员工某月工资总表数据
+     * 审核员工工资固定项目
      * @param employeeSalaries
      * @param isPass
      */
     @Override
-    public void audit(List<EmployeeSalaryDTO> employeeSalaries, boolean isPass) {
+    public void audit(List<EmployeeSalaryFixDTO> employeeSalaries, boolean isPass) {
         if (ArrayUtils.isEmpty(employeeSalaries)) {
             return;
         }
-
-        Integer salaryMonth = employeeSalaries.get(0).getSalaryMonth();
-        List<EmployeeSalary> modifyEmployeeSalaries = new ArrayList<>();
-        List<EmployeeSalary> all = this.queryByMonth(salaryMonth);
+        List<EmployeeSalaryFix> modifyEmployeeSalaryFixes = new ArrayList<>();
+        List<EmployeeSalaryFix> all = this.queryAllValid();
 
         employeeSalaries.forEach((employeeSalary -> {
             Long id = employeeSalary.getId();
             if (id != null) {
-                EmployeeSalary originalEmployeeSalary = this.findById(all, id);
-                if (originalEmployeeSalary != null) {
+                EmployeeSalaryFix employeeSalaryFix = this.findById(all, id);
+                if (employeeSalaryFix != null) {
                     if (isPass) {
-                        originalEmployeeSalary.setAuditStatus("2");
+                        employeeSalaryFix.setAuditStatus("2");
                     } else {
-                        originalEmployeeSalary.setAuditStatus("3");
-                        originalEmployeeSalary.setAuditRemark(employeeSalary.getAuditRemark());
+                        employeeSalaryFix.setAuditStatus("3");
+                        employeeSalaryFix.setAuditRemark(employeeSalary.getAuditRemark());
                     }
 
-                    modifyEmployeeSalaries.add(originalEmployeeSalary);
+                    modifyEmployeeSalaryFixes.add(employeeSalaryFix);
                 }
             }
         }));
 
-        if (ArrayUtils.isNotEmpty(modifyEmployeeSalaries)) {
-            this.updateBatchById(modifyEmployeeSalaries);
+        if (ArrayUtils.isNotEmpty(modifyEmployeeSalaryFixes)) {
+            this.updateBatchById(modifyEmployeeSalaryFixes);
         }
     }
 
@@ -256,12 +231,12 @@ public class EmployeeSalaryServiceImpl extends ServiceImpl<EmployeeSalaryMapper,
      * @param id
      * @return
      */
-    private EmployeeSalary findById(List<EmployeeSalary> salaries, Long id) {
+    private EmployeeSalaryFix findById(List<EmployeeSalaryFix> salaries, Long id) {
         if (ArrayUtils.isEmpty(salaries)) {
             return null;
         }
 
-        for (EmployeeSalary salary : salaries) {
+        for (EmployeeSalaryFix salary : salaries) {
             if (id.equals(salary.getId())) {
                 return salary;
             }
@@ -293,12 +268,12 @@ public class EmployeeSalaryServiceImpl extends ServiceImpl<EmployeeSalaryMapper,
      * @param salary
      * @return
      */
-    private EmployeeSalary fillNewSalary(EmployeeSalaryDTO salary, boolean isAudit) {
+    private EmployeeSalaryFix fillNewSalary(EmployeeSalaryFixDTO salary, boolean isAudit) {
         UserContext userContext = WebContextUtils.getUserContext();
         Long employeeId = userContext.getEmployeeId();
         LocalDateTime now = RequestTimeHolder.getRequestTime();
 
-        EmployeeSalary employeeSalary = new EmployeeSalary();
+        EmployeeSalaryFix employeeSalary = new EmployeeSalaryFix();
         BeanUtils.copyProperties(salary, employeeSalary);
         employeeSalary.setStartTime(now);
         employeeSalary.setEndTime(TimeUtils.getForeverTime());
@@ -317,7 +292,7 @@ public class EmployeeSalaryServiceImpl extends ServiceImpl<EmployeeSalaryMapper,
      * @param salary
      * @param dto
      */
-    private void moneyUnitTransfer(EmployeeSalaryDTO dto, EmployeeSalary salary) {
+    private void moneyUnitTransfer(EmployeeSalaryFixDTO dto, EmployeeSalaryFix salary) {
         if (dto.getBasic() != null) {
             salary.setBasic(new Long(Math.round(dto.getBasic() * 100)));
         }
@@ -350,10 +325,6 @@ public class EmployeeSalaryServiceImpl extends ServiceImpl<EmployeeSalaryMapper,
             salary.setBackPay(new Long(Math.round(dto.getBackPay() * 100)));
         }
 
-        if (dto.getRoyalties() != null) {
-            salary.setRoyalties(new Long(Math.round(dto.getRoyalties() * 100)));
-        }
-
         if (dto.getMedical() != null) {
             salary.setMedical(new Long(Math.round(dto.getMedical() * 100)));
         }
@@ -380,21 +351,23 @@ public class EmployeeSalaryServiceImpl extends ServiceImpl<EmployeeSalaryMapper,
      * @param dto
      * @return
      */
-    private boolean isEmpty(EmployeeSalaryDTO dto) {
+    private boolean isEmpty(EmployeeSalaryFixDTO dto) {
         if (dto.getBasic() == null &&
-            dto.getRank() == null &&
-            dto.getPerformance() == null &&
-            dto.getDuty() == null &&
-            dto.getOvertime() == null &&
-            dto.getFloatAward() == null &&
-            dto.getOther() == null &&
-            dto.getBackPay() == null &&
-            dto.getRoyalties() == null &&
-            dto.getMedical() == null &&
-            dto.getOverage() == null &&
-            dto.getUnemployment() == null &&
-            dto.getSeriousIll() == null &&
-            dto.getTax() == null) {
+                dto.getRank() == null &&
+                dto.getPerformance() == null &&
+                dto.getDuty() == null &&
+                dto.getOvertime() == null &&
+                dto.getFloatAward() == null &&
+                dto.getOther() == null &&
+                dto.getBackPay() == null &&
+                dto.getMedical() == null &&
+                dto.getOverage() == null &&
+                dto.getUnemployment() == null &&
+                dto.getSeriousIll() == null &&
+                dto.getTax() == null &&
+                dto.getBankAcctOne() == null &&
+                dto.getBankAcctTwo() == null &&
+                dto.getBankAcctThree() == null) {
             return true;
         }
 
@@ -407,7 +380,7 @@ public class EmployeeSalaryServiceImpl extends ServiceImpl<EmployeeSalaryMapper,
      * @param salary
      * @return
      */
-    private boolean equals(EmployeeSalaryDTO dto, EmployeeSalary salary) {
+    private boolean equals(EmployeeSalaryFixDTO dto, EmployeeSalaryFix salary) {
         if (salary.getId() != null && !salary.getId().equals(dto.getId())) {
             return false;
         }
@@ -415,13 +388,14 @@ public class EmployeeSalaryServiceImpl extends ServiceImpl<EmployeeSalaryMapper,
         if (!salary.getEmployeeId().equals(dto.getEmployeeId())) {
             return false;
         }
-        EmployeeSalary tempSalary = new EmployeeSalary();
+        EmployeeSalaryFix tempSalary = new EmployeeSalaryFix();
+        BeanUtils.copyProperties(dto, tempSalary);
         this.moneyUnitTransfer(dto, tempSalary);
-        this.setDefaultZero(tempSalary);
+        this.setDefaultValue(tempSalary);
 
-        EmployeeSalary copySalary = new EmployeeSalary();
+        EmployeeSalaryFix copySalary = new EmployeeSalaryFix();
         BeanUtils.copyProperties(salary, copySalary);
-        this.setDefaultZero(copySalary);
+        this.setDefaultValue(copySalary);
 
         if (!copySalary.getBasic().equals(tempSalary.getBasic()) ||
                 !copySalary.getRank().equals(tempSalary.getRank()) ||
@@ -431,12 +405,14 @@ public class EmployeeSalaryServiceImpl extends ServiceImpl<EmployeeSalaryMapper,
                 !copySalary.getFloatAward().equals(tempSalary.getFloatAward()) ||
                 !copySalary.getOther().equals(tempSalary.getOther()) ||
                 !copySalary.getBackPay().equals(tempSalary.getBackPay()) ||
-                !copySalary.getRoyalties().equals(tempSalary.getRoyalties()) ||
                 !copySalary.getMedical().equals(tempSalary.getMedical()) ||
                 !copySalary.getOverage().equals(tempSalary.getOverage()) ||
                 !copySalary.getUnemployment().equals(tempSalary.getUnemployment()) ||
                 !copySalary.getSeriousIll().equals(tempSalary.getSeriousIll()) ||
-                !copySalary.getTax().equals(tempSalary.getTax())) {
+                !copySalary.getTax().equals(tempSalary.getTax()) ||
+                !copySalary.getBankAcctOne().equals(tempSalary.getBankAcctOne()) ||
+                !copySalary.getBankAcctTwo().equals(tempSalary.getBankAcctTwo()) ||
+                !copySalary.getBankAcctThree().equals(tempSalary.getBankAcctThree())) {
             return false;
         }
 
@@ -447,7 +423,7 @@ public class EmployeeSalaryServiceImpl extends ServiceImpl<EmployeeSalaryMapper,
      * 将为Null值的设置为0
      * @param salary
      */
-    private void setDefaultZero(EmployeeSalary salary) {
+    private void setDefaultValue(EmployeeSalaryFix salary) {
         if (salary.getBasic() == null) {
             salary.setBasic(0L);
         }
@@ -480,10 +456,6 @@ public class EmployeeSalaryServiceImpl extends ServiceImpl<EmployeeSalaryMapper,
             salary.setBackPay(0L);
         }
 
-        if (salary.getRoyalties() == null) {
-            salary.setRoyalties(0L);
-        }
-
         if (salary.getMedical() == null) {
             salary.setMedical(0L);
         }
@@ -503,64 +475,17 @@ public class EmployeeSalaryServiceImpl extends ServiceImpl<EmployeeSalaryMapper,
         if (salary.getTax() == null) {
             salary.setTax(0L);
         }
-    }
 
-    /**
-     * 将上月的工资复制过来做初始值，除了提成数据
-     * @param now
-     * @param last
-     */
-    public void copyLastMonthSalary(EmployeeSalaryDTO now, EmployeeSalary last) {
-        if (now.getBasic() == null && last.getBasic() != null) {
-            now.setBasic(last.getBasic().doubleValue()/100);
+        if (salary.getBankAcctOne() == null) {
+            salary.setBankAcctOne("");
         }
 
-        if (now.getRank() == null && last.getRank() != null) {
-            now.setRank(last.getRank().doubleValue()/100);
+        if (salary.getBankAcctTwo() == null) {
+            salary.setBankAcctTwo("");
         }
 
-        if (now.getPerformance() == null && last.getPerformance() != null) {
-            now.setPerformance(last.getPerformance().doubleValue()/100);
-        }
-
-        if (now.getDuty() == null && last.getDuty() != null) {
-            now.setDuty(last.getDuty().doubleValue()/100);
-        }
-
-        if (now.getOvertime() == null && last.getOvertime() != null) {
-            now.setOvertime(last.getOvertime().doubleValue()/100);
-        }
-
-        if (now.getFloatAward() == null && last.getFloatAward() != null) {
-            now.setFloatAward(last.getFloatAward().doubleValue()/100);
-        }
-
-        if (now.getOther() == null && last.getOther() != null) {
-            now.setOther(last.getOther().doubleValue()/100);
-        }
-
-        if (now.getBackPay() == null && last.getBackPay() != null) {
-            now.setBackPay(last.getBackPay().doubleValue()/100);
-        }
-
-        if (now.getMedical() == null && last.getMedical() != null) {
-            now.setMedical(last.getMedical().doubleValue()/100);
-        }
-
-        if (now.getOverage() == null && last.getOverage() != null) {
-            now.setOverage(last.getOverage().doubleValue()/100);
-        }
-
-        if (now.getUnemployment() == null && last.getUnemployment() != null) {
-            now.setUnemployment(last.getUnemployment().doubleValue()/100);
-        }
-
-        if (now.getSeriousIll() == null && last.getSeriousIll() != null) {
-            now.setSeriousIll(last.getSeriousIll().doubleValue()/100);
-        }
-
-        if (now.getTax() == null && last.getTax() != null) {
-            now.setTax(last.getTax().doubleValue()/100);
+        if (salary.getBankAcctThree() == null) {
+            salary.setBankAcctThree("");
         }
     }
 }

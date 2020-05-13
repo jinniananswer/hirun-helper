@@ -18,7 +18,11 @@ public interface IEmployeeSalaryService extends IService<EmployeeSalary> {
 
     List<EmployeeSalaryDTO> queryEmployeeSalaries(EmployeeSalaryQueryDTO param);
 
+    List<EmployeeSalaryDTO> queryAuditEmployeeSalaries(EmployeeSalaryQueryDTO param);
+
     List<EmployeeSalary> queryByMonth(Integer salaryMonth);
 
     void saveSalaries(List<EmployeeSalaryDTO> salaries, boolean isAudit);
+
+    void audit(List<EmployeeSalaryDTO> employeeSalaries, boolean isPass);
 }

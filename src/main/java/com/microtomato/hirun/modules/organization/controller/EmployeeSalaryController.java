@@ -50,6 +50,25 @@ public class EmployeeSalaryController {
         return this.employeeSalaryService.queryEmployeeSalaries(param);
     }
 
+    /**
+     * 审核界面查询员工某月工资数据
+     * @param param
+     * @return
+     */
+    @GetMapping("/queryAuditSalary")
+    @RestResult
+    public List<EmployeeSalaryDTO> queryAuditFixSalary(EmployeeSalaryQueryDTO param) {
+        if (StringUtils.isNotBlank(param.getOrgId())) {
+            String[] orgIdArray = param.getOrgId().split(",");
+            List<Long> orgIds = new ArrayList<>();
+            for (String s : orgIdArray) {
+                orgIds.add(Long.parseLong(s));
+            }
+            param.setOrgIds(orgIds);
+        }
+        return this.employeeSalaryService.queryAuditEmployeeSalaries(param);
+    }
+
     @PostMapping("/submitSalaries")
     @RestResult
     public void submitSalaries(@RequestBody List<EmployeeSalaryDTO> employeeSalaries) {
@@ -60,5 +79,17 @@ public class EmployeeSalaryController {
     @RestResult
     public void auditSalaries(@RequestBody List<EmployeeSalaryDTO> employeeSalaries) {
         this.employeeSalaryService.saveSalaries(employeeSalaries, true);
+    }
+
+    @PostMapping("/auditPass")
+    @RestResult
+    public void auditPass(@RequestBody List<EmployeeSalaryDTO> employeeSalaries) {
+        this.employeeSalaryService.audit(employeeSalaries, true);
+    }
+
+    @PostMapping("/auditNo")
+    @RestResult
+    public void auditNo(@RequestBody List<EmployeeSalaryDTO> employeeSalaries) {
+        this.employeeSalaryService.audit(employeeSalaries, false);
     }
 }
