@@ -195,7 +195,7 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         EmployeeJobRole jobRole = null;
         String status = employee.getStatus();
         if (StringUtils.equals(EmployeeConst.STATUS_NORMAL, status)) {
-            jobRole = this.employeeJobRoleService.queryValidMain(employeeId);
+            jobRole = this.employeeJobRoleService.queryLast(employeeId);
         } else {
             jobRole = this.employeeJobRoleService.queryLast(employeeId);
         }
