@@ -23,7 +23,7 @@ public class LimitInterceptor implements Interceptor {
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
         Object[] args = invocation.getArgs();
-        args[2] = new RowBounds(0, 120);
+        args[2] = new RowBounds(0, 100000);
         return invocation.proceed();
     }
 
