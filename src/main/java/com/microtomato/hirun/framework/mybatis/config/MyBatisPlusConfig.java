@@ -16,7 +16,7 @@ import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
 import com.microtomato.hirun.framework.aop.AutoSetMetaObjectAdvice;
 import com.microtomato.hirun.framework.interceptor.SqlPerformanceInterceptor;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
-import com.microtomato.hirun.framework.mybatis.LimitInterceptor;
+import com.microtomato.hirun.framework.mybatis.aop.LimitInterceptor;
 import com.microtomato.hirun.framework.mybatis.MyGlobalConfig;
 import com.microtomato.hirun.framework.mybatis.MySqlSessionTemplate;
 import com.microtomato.hirun.framework.mybatis.threadlocal.ShardTableContextHolder;
