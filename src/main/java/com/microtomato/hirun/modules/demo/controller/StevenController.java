@@ -1,5 +1,6 @@
 package com.microtomato.hirun.modules.demo.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.mybatis.sequence.impl.CustIdMaxCycleSeq;
 import com.microtomato.hirun.framework.mybatis.service.IDualService;
@@ -19,7 +20,7 @@ import java.util.List;
 
 /**
  * <p>
- *  前端控制器
+ * 前端控制器
  * </p>
  *
  * @author Steven
@@ -53,8 +54,14 @@ public class StevenController {
 
     @GetMapping("list")
     public void list() {
-        List<City> list = cityService.list();
-        log.info("list.size() = {}", list.size());
+
+        for (int i = 0; i < 5; i++) {
+            Page<City> page = cityService.page(new Page<>(i + 1, 5));
+            List<City> records = page.getRecords();
+            records.forEach(System.out::println);
+            System.out.println("====================================");
+        }
+
     }
 
 }

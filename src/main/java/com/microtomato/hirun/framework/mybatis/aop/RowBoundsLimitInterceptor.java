@@ -15,6 +15,7 @@ import javax.annotation.PostConstruct;
 
 /**
  * 查询结果集数量限制，防止 SQL 漏条件导致服务宕机。
+ * 该限制在 DefaultResultSetHandler.shouldProcessMoreRows(ResultContext<?> context, RowBounds rowBounds) 中生效。
  *
  * @author Steven
  * @date 2020-05-14
