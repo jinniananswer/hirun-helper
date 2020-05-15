@@ -16,7 +16,7 @@ import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
 import com.microtomato.hirun.framework.aop.AutoSetMetaObjectAdvice;
 import com.microtomato.hirun.framework.interceptor.SqlPerformanceInterceptor;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
-import com.microtomato.hirun.framework.mybatis.aop.LimitInterceptor;
+import com.microtomato.hirun.framework.mybatis.aop.RowBoundsLimitInterceptor;
 import com.microtomato.hirun.framework.mybatis.MyGlobalConfig;
 import com.microtomato.hirun.framework.mybatis.MySqlSessionTemplate;
 import com.microtomato.hirun.framework.mybatis.threadlocal.ShardTableContextHolder;
@@ -67,7 +67,7 @@ public class MyBatisPlusConfig {
     private AutoSetMetaObjectAdvice autoSetMetaObjectAdvice;
 
     @Autowired
-    private LimitInterceptor limitInterceptor;
+    private RowBoundsLimitInterceptor rowBoundsLimitInterceptor;
 
     @Primary
     @Bean
@@ -158,8 +158,8 @@ public class MyBatisPlusConfig {
             interceptors.add(sqlPerformanceInterceptor);
         }
 
-        if (null != limitInterceptor) {
-            interceptors.add(limitInterceptor);
+        if (null != rowBoundsLimitInterceptor) {
+            interceptors.add(rowBoundsLimitInterceptor);
         }
 
         for (Interceptor interceptor : interceptors) {

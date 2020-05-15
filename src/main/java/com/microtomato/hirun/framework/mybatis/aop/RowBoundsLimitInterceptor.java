@@ -21,7 +21,7 @@ import javax.annotation.PostConstruct;
  */
 @Component
 @Intercepts(@Signature(type = Executor.class, method = "query", args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class}))
-public class LimitInterceptor implements Interceptor {
+public class RowBoundsLimitInterceptor implements Interceptor {
 
     @Value("${row.bounds.limit:100000}")
     private int limit;
