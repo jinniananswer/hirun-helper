@@ -32,6 +32,14 @@ public class EmployeeSalaryFix extends BaseEntity {
     @TableField(value = "employee_id")
     private Long employeeId;
 
+    /** 部门ID */
+    @TableField(value = "org_id")
+    private Long orgId;
+
+    /** 工作岗位 */
+    @TableField(value = "job_role")
+    private String jobRole;
+
     /** 工资卡1卡号 */
     @TableField(value = "bank_acct_one")
     private String bankAcctOne;
@@ -116,7 +124,7 @@ public class EmployeeSalaryFix extends BaseEntity {
     @TableField(value = "end_time")
     private LocalDateTime endTime;
 
-    /** 税金，单位分 */
+    /** 创建员工 */
     @TableField(value = "create_employee_id")
     private Long createEmployeeId;
 
