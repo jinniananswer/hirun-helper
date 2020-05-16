@@ -18,13 +18,13 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'util'
         methods: {
             query: function() {
                 let that = this;
-                ajax.get('api/organization/employee-salary/queryAuditSalary', this.queryCond, function(data){
+                ajax.get('api/bss.salary/salary-monthly/queryAuditSalary', this.queryCond, function(data){
                     that.employees = data;
                 });
             },
 
             auditPass : function() {
-                ajax.post('api/organization/employee-salary/auditPass', this.$refs.employeeSalary.getCheckboxRecords());
+                ajax.post('api/bss.salary/salary-monthly/auditPass', this.$refs.employeeSalary.getCheckboxRecords());
             },
 
             auditNo : function() {
@@ -52,7 +52,7 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'util'
                     salaries.forEach((salary) => {
                         salary.auditRemark = this.auditNoReason;
                     })
-                    ajax.post('api/organization/employee-salary/auditNo', this.$refs.employeeSalary.getCheckboxRecords());
+                    ajax.post('api/bss.salary/salary-monthly/auditNo', this.$refs.employeeSalary.getCheckboxRecords());
                 }
 
             },

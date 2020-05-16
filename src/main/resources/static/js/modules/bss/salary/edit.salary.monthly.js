@@ -16,17 +16,17 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'util'
         methods: {
             query: function() {
                 let that = this;
-                ajax.get('api/organization/employee-salary/querySalary', this.queryCond, function(data){
+                ajax.get('api/bss.salary/salary-monthly/querySalary', this.queryCond, function(data){
                     that.employees = data;
                 });
             },
 
             submit : function() {
-                ajax.post('api/organization/employee-salary/submitSalaries', this.employees);
+                ajax.post('api/bss.salary/salary-monthly/submitSalaries', this.employees);
             },
 
             audit : function() {
-                ajax.post('api/organization/employee-salary/auditSalaries', this.employees);
+                ajax.post('api/bss.salary/salary-monthly/auditSalaries', this.employees);
             },
 
             isModify: function(obj) {

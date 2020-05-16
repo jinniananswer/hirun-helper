@@ -8,24 +8,26 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'util'
                     page : 1,
                     limit : -1
                 },
-                employees: []
+                employees: [],
+                auditNoReason: '',
+                dialogVisible: false
             }
         },
 
         methods: {
             query: function() {
                 let that = this;
-                ajax.get('api/organization/employee-salary-fix/queryFixSalary', this.queryCond, function(data){
+                ajax.get('api/bss.salary/salary-fix/queryAuditFixSalary', this.queryCond, function(data){
                     that.employees = data;
                 });
             },
 
-            submit : function() {
-                ajax.post('api/organization/employee-salary-fix/submitFixSalaries', this.employees);
+            auditPass : function() {
+                ajax.post('api/bss.salary/salary-fix/auditPass', this.$refs.employeeSalary.getCheckboxRecords());
             },
 
-            audit : function() {
-                ajax.post('api/organization/employee-salary-fix/auditFixSalaries', this.employees);
+            auditNo : function() {
+                this.dialogVisible = true;
             },
 
             isModify: function(obj) {
@@ -40,6 +42,22 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'util'
                 }
 
                 return true;
+            },
+
+            confirmAuditNoReason: function() {
+                let salaries = this.$refs.employeeSalary.getCheckboxRecords();
+                this.dialogVisible = false;
+                if (salaries && salaries.length > 0) {
+                    salaries.forEach((salary) => {
+                        salary.auditRemark = this.auditNoReason;
+                    })
+                    ajax.post('api/bss.salary/salary-fix/auditNo', this.$refs.employeeSalary.getCheckboxRecords());
+                }
+
+            },
+
+            checkMethod: function({row}) {
+                return row.auditStatus == '1';
             }
         },
 
