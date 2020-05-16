@@ -1,11 +1,10 @@
-package com.microtomato.hirun.modules.organization.controller;
+package com.microtomato.hirun.modules.bss.salary.controller;
 
 
 import com.microtomato.hirun.framework.annotation.RestResult;
-import com.microtomato.hirun.modules.organization.entity.dto.EmployeeSalaryFixDTO;
-import com.microtomato.hirun.modules.organization.entity.dto.EmployeeSalaryFixQueryDTO;
-import com.microtomato.hirun.modules.organization.service.IEmployeeSalaryFixService;
-import lombok.extern.slf4j.Slf4j;
+import com.microtomato.hirun.modules.bss.salary.entity.dto.SalaryFixDTO;
+import com.microtomato.hirun.modules.bss.salary.entity.dto.SalaryFixQueryDTO;
+import com.microtomato.hirun.modules.bss.salary.service.ISalaryFixService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -14,22 +13,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 员工固定工资表(EmployeeSalaryFix)表控制层
+ * 员工固定工资表(SalaryFix)表控制层
  *
  * @author Jinnian
  * @version 1.0.0
- * @date 2020-05-05 00:32:09
+ * @date 2020-05-17 00:26:30
  */
 @RestController
-@Slf4j
-@RequestMapping("/api/organization/employee-salary-fix")
-public class EmployeeSalaryFixController {
+@RequestMapping("/api/bss.salary/salary-fix")
+public class SalaryFixController {
 
     /**
      * 服务对象
      */
     @Autowired
-    private IEmployeeSalaryFixService employeeSalaryFixService;
+    private ISalaryFixService salaryFixService;
 
     /**
      * 界面查询员工固定工资数据，如果固定工资还未录入，也需要能查询出员工数据来，以供数据录入
@@ -38,7 +36,7 @@ public class EmployeeSalaryFixController {
      */
     @GetMapping("/queryFixSalary")
     @RestResult
-    public List<EmployeeSalaryFixDTO> queryFixSalary(EmployeeSalaryFixQueryDTO param) {
+    public List<SalaryFixDTO> queryFixSalary(SalaryFixQueryDTO param) {
         if (StringUtils.isNotBlank(param.getOrgId())) {
             String[] orgIdArray = param.getOrgId().split(",");
             List<Long> orgIds = new ArrayList<>();
@@ -47,7 +45,7 @@ public class EmployeeSalaryFixController {
             }
             param.setOrgIds(orgIds);
         }
-        return this.employeeSalaryFixService.queryEmployeeSalaries(param);
+        return this.salaryFixService.queryEmployeeSalaries(param);
     }
 
     /**
@@ -57,7 +55,7 @@ public class EmployeeSalaryFixController {
      */
     @GetMapping("/queryAuditFixSalary")
     @RestResult
-    public List<EmployeeSalaryFixDTO> queryAuditFixSalary(EmployeeSalaryFixQueryDTO param) {
+    public List<SalaryFixDTO> queryAuditFixSalary(SalaryFixQueryDTO param) {
         if (StringUtils.isNotBlank(param.getOrgId())) {
             String[] orgIdArray = param.getOrgId().split(",");
             List<Long> orgIds = new ArrayList<>();
@@ -66,32 +64,30 @@ public class EmployeeSalaryFixController {
             }
             param.setOrgIds(orgIds);
         }
-        return this.employeeSalaryFixService.queryAuditEmployeeSalaries(param);
+        return this.salaryFixService.queryAuditEmployeeSalaries(param);
     }
 
     @PostMapping("/submitFixSalaries")
     @RestResult
-    public void submitFixSalaries(@RequestBody List<EmployeeSalaryFixDTO> employeeSalaries) {
-        this.employeeSalaryFixService.saveSalaries(employeeSalaries, false);
+    public void submitFixSalaries(@RequestBody List<SalaryFixDTO> employeeSalaries) {
+        this.salaryFixService.saveSalaries(employeeSalaries, false);
     }
 
     @PostMapping("/auditFixSalaries")
     @RestResult
-    public void auditFixSalaries(@RequestBody List<EmployeeSalaryFixDTO> employeeSalaries) {
-        this.employeeSalaryFixService.saveSalaries(employeeSalaries, true);
+    public void auditFixSalaries(@RequestBody List<SalaryFixDTO> employeeSalaries) {
+        this.salaryFixService.saveSalaries(employeeSalaries, true);
     }
 
     @PostMapping("/auditPass")
     @RestResult
-    public void auditPass(@RequestBody List<EmployeeSalaryFixDTO> employeeSalaries) {
-        this.employeeSalaryFixService.audit(employeeSalaries, true);
+    public void auditPass(@RequestBody List<SalaryFixDTO> employeeSalaries) {
+        this.salaryFixService.audit(employeeSalaries, true);
     }
 
     @PostMapping("/auditNo")
     @RestResult
-    public void auditNo(@RequestBody List<EmployeeSalaryFixDTO> employeeSalaries) {
-        this.employeeSalaryFixService.audit(employeeSalaries, false);
+    public void auditNo(@RequestBody List<SalaryFixDTO> employeeSalaries) {
+        this.salaryFixService.audit(employeeSalaries, false);
     }
-
-
 }

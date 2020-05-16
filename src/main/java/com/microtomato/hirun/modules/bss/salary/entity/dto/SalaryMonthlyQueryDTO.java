@@ -1,4 +1,4 @@
-package com.microtomato.hirun.modules.organization.entity.dto;
+package com.microtomato.hirun.modules.bss.salary.entity.dto;
 
 import lombok.Data;
 
@@ -11,7 +11,7 @@ import java.util.List;
  * @create: 2020-05-02 14:38
  **/
 @Data
-public class EmployeeSalaryQueryDTO {
+public class SalaryMonthlyQueryDTO {
 
     private String name;
 

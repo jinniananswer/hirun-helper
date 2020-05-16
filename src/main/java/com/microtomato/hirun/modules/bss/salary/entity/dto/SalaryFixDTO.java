@@ -1,4 +1,4 @@
-package com.microtomato.hirun.modules.organization.entity.dto;
+package com.microtomato.hirun.modules.bss.salary.entity.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmployeeSalaryFixDTO {
+public class SalaryFixDTO {
 
     private Long employeeId;
 
