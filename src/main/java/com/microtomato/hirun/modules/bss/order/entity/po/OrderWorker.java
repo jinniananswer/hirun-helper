@@ -1,17 +1,14 @@
 package com.microtomato.hirun.modules.bss.order.entity.po;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.microtomato.hirun.framework.data.BaseEntity;
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
-import lombok.Data;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.microtomato.hirun.framework.data.BaseEntity;
+import lombok.*;
 import lombok.experimental.Accessors;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -42,6 +39,18 @@ public class OrderWorker extends BaseEntity {
 
     @TableField("employee_id")
     private Long employeeId;
+
+    /**
+     * 当前归属部门
+     */
+    @TableField("org_id")
+    private Long orgId;
+
+    /**
+     * 当前岗位
+     */
+    @TableField("job_role")
+    private String jobRole;
 
     /**
      * 开始时间
