@@ -10,6 +10,8 @@ import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderWorker;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderWorkerMapper;
 import com.microtomato.hirun.modules.bss.order.service.IOrderWorkerService;
+import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
+import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,9 @@ public class OrderWorkerServiceImpl extends ServiceImpl<OrderWorkerMapper, Order
 
     @Autowired
     private OrderWorkerMapper orderWorkerMapper;
+
+    @Autowired
+    private IEmployeeJobRoleService employeeJobRoleService;
 
     @Override
     public List<OrderWorkerDTO> queryByOrderId(Long orderId) {
@@ -54,13 +59,21 @@ public class OrderWorkerServiceImpl extends ServiceImpl<OrderWorkerMapper, Order
             orderWorker.setEndDate(LocalDateTime.now());
             this.orderWorkerMapper.updateById(orderWorker);
         }
-        OrderWorker newOrderWork = new OrderWorker();
-        newOrderWork.setOrderId(orderId);
-        newOrderWork.setRoleId(roleId);
-        newOrderWork.setEmployeeId(employeeId);
-        newOrderWork.setStartDate(RequestTimeHolder.getRequestTime());
-        newOrderWork.setEndDate(TimeUtils.getForeverTime());
-        this.orderWorkerMapper.insert(newOrderWork);
+        OrderWorker newOrderWorker = new OrderWorker();
+        newOrderWorker.setOrderId(orderId);
+        newOrderWorker.setRoleId(roleId);
+        newOrderWorker.setEmployeeId(employeeId);
+        newOrderWorker.setStartDate(RequestTimeHolder.getRequestTime());
+        newOrderWorker.setEndDate(TimeUtils.getForeverTime());
+
+        //补充当前归属部门与当前岗位信息
+        EmployeeJobRole jobRole = this.employeeJobRoleService.queryLast(employeeId);
+        if (jobRole != null) {
+            newOrderWorker.setJobRole(jobRole.getJobRole());
+            newOrderWorker.setOrgId(jobRole.getOrgId());
+        }
+
+        this.orderWorkerMapper.insert(newOrderWorker);
 
     }
 }
