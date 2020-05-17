@@ -203,6 +203,12 @@ public class OrderBase extends BaseEntity {
     private LocalDateTime doneDate;
 
     /**
+     * 归属店面
+     */
+    @TableField("shop_id")
+    private Long shopId;
+
+    /**
      * 是否测试订单 0-非测试订单 1-测试订单
      */
     private Integer isTest;
