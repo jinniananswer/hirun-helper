@@ -1,18 +1,26 @@
-package com.microtomato.hirun.modules.organization.entity.po;
-
-import com.baomidou.mybatisplus.annotation.*;
-import com.microtomato.hirun.framework.data.BaseEntity;
-import lombok.*;
-import lombok.experimental.Accessors;
+package com.microtomato.hirun.modules.bss.salary.entity.po;
 
 import java.time.LocalDateTime;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.microtomato.hirun.framework.data.BaseEntity;
+import com.baomidou.mybatisplus.annotation.TableField;
+
+import lombok.Data;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 /**
- * 员工月工资总表(EmployeeSalary)表实体类
+ * 员工月工资总表(SalaryMonthly)表实体类
  *
  * @author Jinnian
  * @version 1.0.0
- * @date 2020-05-02 00:25:10
+ * @date 2020-05-17 00:26:31
  */
 @Data
 @Builder
@@ -20,8 +28,8 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("employee_salary")
-public class EmployeeSalary extends BaseEntity {
+@TableName("salary_monthly")
+public class SalaryMonthly extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
     
@@ -36,7 +44,7 @@ public class EmployeeSalary extends BaseEntity {
     @TableField(value = "org_id")
     private Long orgId;
 
-    /** 工作岗位 */
+    /** 岗位 */
     @TableField(value = "job_role")
     private String jobRole;
 
@@ -132,7 +140,7 @@ public class EmployeeSalary extends BaseEntity {
     @TableField(value = "end_time")
     private LocalDateTime endTime;
 
-    /** 创建员工 */
+    /** 税金，单位分 */
     @TableField(value = "create_employee_id")
     private Long createEmployeeId;
 
@@ -140,7 +148,7 @@ public class EmployeeSalary extends BaseEntity {
     @TableField(value = "audit_employee_id")
     private Long auditEmployeeId;
 
-    /** 是否被修改 1-被修改 其它值或null表示未被修改 */
+    /** 是否被修改过 1-被修改 其它值或null未被修改 */
     @TableField(value = "is_modified")
     private String isModified;
 

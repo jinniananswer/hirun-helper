@@ -1,4 +1,4 @@
-package com.microtomato.hirun.modules.organization.entity.dto;
+package com.microtomato.hirun.modules.bss.salary.entity.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,21 +7,25 @@ import lombok.NoArgsConstructor;
 
 /**
  * @program: hirun-helper
- * @description: 员工工资表数据传输对象
+ * @description: 员工工资固定项数据传输对象
  * @author: jinnian
- * @create: 2020-05-02 01:10
+ * @create: 2020-05-05 00:00
  **/
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmployeeSalaryDTO {
+public class SalaryFixDTO {
 
     private Long employeeId;
 
     private Long id;
 
-    private Integer salaryMonth;
+    private String bankAcctOne;
+
+    private String bankAcctTwo;
+
+    private String bankAcctThree;
 
     private String name;
 
@@ -58,8 +62,6 @@ public class EmployeeSalaryDTO {
     private Double other;
 
     private Double backPay;
-
-    private Double royalties;
 
     private Double medical;
 

@@ -8,11 +8,11 @@ import lombok.experimental.Accessors;
 import java.time.LocalDateTime;
 
 /**
- * 员工月工资总表(EmployeeSalary)表实体类
+ * 员工固定工资表(EmployeeSalaryFix)表实体类
  *
  * @author Jinnian
  * @version 1.0.0
- * @date 2020-05-02 00:25:10
+ * @date 2020-05-04 23:52:25
  */
 @Data
 @Builder
@@ -20,8 +20,8 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("employee_salary")
-public class EmployeeSalary extends BaseEntity {
+@TableName("employee_salary_fix")
+public class EmployeeSalaryFix extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
     
@@ -40,9 +40,17 @@ public class EmployeeSalary extends BaseEntity {
     @TableField(value = "job_role")
     private String jobRole;
 
-    /** 工资年月 */
-    @TableField(value = "salary_month")
-    private Integer salaryMonth;
+    /** 工资卡1卡号 */
+    @TableField(value = "bank_acct_one")
+    private String bankAcctOne;
+
+    /** 工资卡2卡号 */
+    @TableField(value = "bank_acct_two")
+    private String bankAcctTwo;
+
+    /** 工资卡3卡号 */
+    @TableField(value = "bank_acct_three")
+    private String bankAcctThree;
 
     /** 基本工资，单位分 */
     @TableField(value = "basic")
@@ -76,10 +84,6 @@ public class EmployeeSalary extends BaseEntity {
     @TableField(value = "back_pay")
     private Long backPay;
 
-    /** 提成费，单位分 */
-    @TableField(value = "royalties")
-    private Long royalties;
-
     /** 医疗保险，单位分 */
     @TableField(value = "medical")
     private Long medical;
@@ -100,23 +104,11 @@ public class EmployeeSalary extends BaseEntity {
     @TableField(value = "tax")
     private Long tax;
 
-    /** 工资卡1发放金额 */
-    @TableField(value = "acct_one_money")
-    private Long acctOneMoney;
-
-    /** 工资卡2发放金额 */
-    @TableField(value = "acct_two_money")
-    private Long acctTwoMoney;
-
-    /** 工资卡3发放金额 */
-    @TableField(value = "acct_three_money")
-    private Long acctThreeMoney;
-
     /** 备注 */
     @TableField(value = "remark")
     private String remark;
 
-    /** 审核状态， 0-初始保存 1-待审核 2-审核通过 3-审核不通过 4-提交发放 5-已发放 */
+    /** 审核状态， 0-已保存 1-待审核 2-审核通过 3-审核不通过 */
     @TableField(value = "audit_status")
     private String auditStatus;
 
@@ -139,10 +131,6 @@ public class EmployeeSalary extends BaseEntity {
     /** 审核员工 */
     @TableField(value = "audit_employee_id")
     private Long auditEmployeeId;
-
-    /** 是否被修改 1-被修改 其它值或null表示未被修改 */
-    @TableField(value = "is_modified")
-    private String isModified;
 
 
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)
