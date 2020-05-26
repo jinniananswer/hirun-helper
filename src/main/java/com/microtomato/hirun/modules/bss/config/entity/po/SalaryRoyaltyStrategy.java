@@ -72,6 +72,10 @@ public class SalaryRoyaltyStrategy extends BaseEntity {
     @TableField(value = "is_split")
     private String isSplit;
 
+    /** 店面 -1表示通配 精装房部和优仕馆配置具体的店面ID */
+    @TableField(value = "shop_id")
+    private Long shopId;
+
     /** 角色编码 */
     @TableField(value = "role_id")
     private Long roleId;
