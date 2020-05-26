@@ -203,6 +203,12 @@ public class OrderBase extends BaseEntity {
     private LocalDateTime doneDate;
 
     /**
+     * 创建店面
+     */
+    @TableField("create_shop_id")
+    private Long createShopId;
+
+    /**
      * 归属店面
      */
     @TableField("shop_id")
