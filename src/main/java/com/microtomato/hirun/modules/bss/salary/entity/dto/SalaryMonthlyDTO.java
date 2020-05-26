@@ -59,7 +59,7 @@ public class SalaryMonthlyDTO {
 
     private Double backPay;
 
-    private Double royalties;
+    private Double royalty;
 
     private Double medical;
 

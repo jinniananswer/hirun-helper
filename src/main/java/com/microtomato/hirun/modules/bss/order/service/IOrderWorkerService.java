@@ -18,6 +18,8 @@ public interface IOrderWorkerService extends IService<OrderWorker> {
 
     List<OrderWorkerDTO> queryByOrderId(Long orderId);
 
+    List<OrderWorker> queryValidByOrderId(Long orderId);
+
     /**
      *更新订单参与人
      * @param orderId

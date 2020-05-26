@@ -6,10 +6,12 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
-import com.microtomato.hirun.modules.bss.config.entity.consts.FeeConst;
-import com.microtomato.hirun.modules.bss.order.entity.dto.*;
 import com.microtomato.hirun.modules.bss.config.service.IPayItemCfgService;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
+import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.PayComponentDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.PayItemDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFee;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayItem;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayNo;
@@ -19,7 +21,6 @@ import com.microtomato.hirun.modules.bss.order.service.*;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.expression.spel.ast.NullLiteral;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -239,7 +240,9 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
     @Override
     public OrderFee getByOrderIdTypePeriod(Long orderId, String type, Integer period) {
         LocalDateTime now = RequestTimeHolder.getRequestTime();
-        return this.getOne(new QueryWrapper<OrderFee>().lambda().eq(OrderFee::getOrderId, orderId)
+        return this.getOne(new QueryWrapper<OrderFee>().lambda()
+                .eq(OrderFee::getOrderId, orderId)
+                .eq(OrderFee::getType, type)
                 .gt(OrderFee::getEndDate, now)
                 .eq(period != null, OrderFee::getPeriods, period));
     }

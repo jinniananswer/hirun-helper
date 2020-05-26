@@ -10,6 +10,7 @@ import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
+import com.microtomato.hirun.modules.bss.salary.entity.domain.SalaryDO;
 import com.microtomato.hirun.modules.bss.salary.entity.dto.SalaryMonthlyDTO;
 import com.microtomato.hirun.modules.bss.salary.entity.dto.SalaryMonthlyQueryDTO;
 import com.microtomato.hirun.modules.bss.salary.entity.po.SalaryMonthly;
@@ -92,6 +93,9 @@ public class SalaryMonthlyServiceImpl extends ServiceImpl<SalaryMonthlyMapper, S
                 }
             });
         }
+
+        SalaryDO salaryDO = SpringContextUtils.getBean(SalaryDO.class);
+        salaryDO.createRoyalties(51L, "32");
         return salaries;
     }
 
@@ -350,8 +354,8 @@ public class SalaryMonthlyServiceImpl extends ServiceImpl<SalaryMonthlyMapper, S
             salary.setBackPay(new Long(Math.round(dto.getBackPay() * 100)));
         }
 
-        if (dto.getRoyalties() != null) {
-            salary.setRoyalties(new Long(Math.round(dto.getRoyalties() * 100)));
+        if (dto.getRoyalty() != null) {
+            salary.setRoyalty(new Long(Math.round(dto.getRoyalty() * 100)));
         }
 
         if (dto.getMedical() != null) {
@@ -389,7 +393,7 @@ public class SalaryMonthlyServiceImpl extends ServiceImpl<SalaryMonthlyMapper, S
                 dto.getFloatAward() == null &&
                 dto.getOther() == null &&
                 dto.getBackPay() == null &&
-                dto.getRoyalties() == null &&
+                dto.getRoyalty() == null &&
                 dto.getMedical() == null &&
                 dto.getOverage() == null &&
                 dto.getUnemployment() == null &&
@@ -431,7 +435,7 @@ public class SalaryMonthlyServiceImpl extends ServiceImpl<SalaryMonthlyMapper, S
                 !copySalary.getFloatAward().equals(tempSalary.getFloatAward()) ||
                 !copySalary.getOther().equals(tempSalary.getOther()) ||
                 !copySalary.getBackPay().equals(tempSalary.getBackPay()) ||
-                !copySalary.getRoyalties().equals(tempSalary.getRoyalties()) ||
+                !copySalary.getRoyalty().equals(tempSalary.getRoyalty()) ||
                 !copySalary.getMedical().equals(tempSalary.getMedical()) ||
                 !copySalary.getOverage().equals(tempSalary.getOverage()) ||
                 !copySalary.getUnemployment().equals(tempSalary.getUnemployment()) ||
@@ -480,8 +484,8 @@ public class SalaryMonthlyServiceImpl extends ServiceImpl<SalaryMonthlyMapper, S
             salary.setBackPay(0L);
         }
 
-        if (salary.getRoyalties() == null) {
-            salary.setRoyalties(0L);
+        if (salary.getRoyalty() == null) {
+            salary.setRoyalty(0L);
         }
 
         if (salary.getMedical() == null) {

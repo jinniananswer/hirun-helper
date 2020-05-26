@@ -196,6 +196,8 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
             order.setStage(orderStatusCfg.getOrderStage());
         }
 
+        //todo 待补充归属店面信息 order.setShopId();
+
         this.orderBaseService.save(order);
         this.orderOperLogService.createOrderOperLog(order.getOrderId(), OrderConst.LOG_TYPE_CREATE, order.getStage(), order.getStatus(), OrderConst.OPER_LOG_CONTENT_CREATE);
     }
