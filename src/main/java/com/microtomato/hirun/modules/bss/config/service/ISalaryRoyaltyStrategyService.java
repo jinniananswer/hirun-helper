@@ -1,7 +1,7 @@
-package com.microtomato.hirun.modules.bss.salary.service;
+package com.microtomato.hirun.modules.bss.config.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.microtomato.hirun.modules.bss.salary.entity.po.SalaryRoyaltyStrategy;
+import com.microtomato.hirun.modules.bss.config.entity.po.SalaryRoyaltyStrategy;
 
 import java.util.List;
 

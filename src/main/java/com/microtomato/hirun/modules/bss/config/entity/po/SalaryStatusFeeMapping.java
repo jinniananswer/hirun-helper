@@ -1,4 +1,4 @@
-package com.microtomato.hirun.modules.bss.salary.entity.po;
+package com.microtomato.hirun.modules.bss.config.entity.po;
 
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;

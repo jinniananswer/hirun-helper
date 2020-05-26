@@ -1,10 +1,10 @@
-package com.microtomato.hirun.modules.bss.salary.service.impl;
+package com.microtomato.hirun.modules.bss.config.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.microtomato.hirun.modules.bss.salary.entity.po.SalaryStatusFeeMapping;
-import com.microtomato.hirun.modules.bss.salary.mapper.SalaryStatusFeeMappingMapper;
-import com.microtomato.hirun.modules.bss.salary.service.ISalaryStatusFeeMappingService;
+import com.microtomato.hirun.modules.bss.config.entity.po.SalaryStatusFeeMapping;
+import com.microtomato.hirun.modules.bss.config.mapper.SalaryStatusFeeMappingMapper;
+import com.microtomato.hirun.modules.bss.config.service.ISalaryStatusFeeMappingService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

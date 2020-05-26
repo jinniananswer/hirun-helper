@@ -1,7 +1,7 @@
-package com.microtomato.hirun.modules.bss.salary.service;
+package com.microtomato.hirun.modules.bss.config.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.microtomato.hirun.modules.bss.salary.entity.po.SalaryStatusFeeMapping;
+import com.microtomato.hirun.modules.bss.config.entity.po.SalaryStatusFeeMapping;
 
 /**
  * 订单状态与费用映射关系配置(SalaryStatusFeeMapping)表服务接口

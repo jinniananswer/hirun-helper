@@ -1,10 +1,10 @@
-package com.microtomato.hirun.modules.bss.salary.mapper;
+package com.microtomato.hirun.modules.bss.config.mapper;
 
 import com.microtomato.hirun.framework.annotation.Storage;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.microtomato.hirun.modules.bss.salary.entity.po.SalaryRoyaltyStrategy;
+import com.microtomato.hirun.modules.bss.config.entity.po.SalaryRoyaltyStrategy;
 
 /**
  * 员工提成策略配置(SalaryRoyaltyStrategy)表数据库访问层
