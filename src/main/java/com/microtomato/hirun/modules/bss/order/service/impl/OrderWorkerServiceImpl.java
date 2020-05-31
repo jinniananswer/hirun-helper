@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.bss.order.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.exception.ErrorKind;
 import com.microtomato.hirun.framework.exception.cases.NotFoundException;
@@ -40,6 +41,16 @@ public class OrderWorkerServiceImpl extends ServiceImpl<OrderWorkerMapper, Order
     @Override
     public List<OrderWorkerDTO> queryByOrderId(Long orderId) {
         return this.orderWorkerMapper.queryByOrderId(orderId);
+    }
+
+    @Override
+    public List<OrderWorker> queryValidByOrderId(Long orderId) {
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+        List<OrderWorker> orderWorkers = this.list(Wrappers.<OrderWorker>lambdaQuery()
+                .eq(OrderWorker::getOrderId, orderId)
+                .le(OrderWorker::getStartDate, now)
+                .ge(OrderWorker::getEndDate, now));
+        return orderWorkers;
     }
 
     @Override

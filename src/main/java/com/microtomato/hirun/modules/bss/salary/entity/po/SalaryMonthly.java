@@ -1,19 +1,11 @@
 package com.microtomato.hirun.modules.bss.salary.entity.po;
 
-import java.time.LocalDateTime;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.*;
 import com.microtomato.hirun.framework.data.BaseEntity;
-import com.baomidou.mybatisplus.annotation.TableField;
-
-import lombok.Data;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import lombok.experimental.Accessors;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 /**
  * 员工月工资总表(SalaryMonthly)表实体类
@@ -85,8 +77,8 @@ public class SalaryMonthly extends BaseEntity {
     private Long backPay;
 
     /** 提成费，单位分 */
-    @TableField(value = "royalties")
-    private Long royalties;
+    @TableField(value = "royalty")
+    private Long royalty;
 
     /** 医疗保险，单位分 */
     @TableField(value = "medical")

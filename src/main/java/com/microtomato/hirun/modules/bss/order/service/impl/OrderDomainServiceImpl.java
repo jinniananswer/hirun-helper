@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.security.Role;
+import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.bss.config.entity.po.OrderRoleCfg;
 import com.microtomato.hirun.modules.bss.config.entity.po.OrderStatusCfg;
@@ -21,6 +23,9 @@ import com.microtomato.hirun.modules.bss.order.entity.po.OrderBase;
 import com.microtomato.hirun.modules.bss.order.exception.OrderException;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderBaseMapper;
 import com.microtomato.hirun.modules.bss.order.service.*;
+import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
+import com.microtomato.hirun.modules.organization.entity.po.Org;
+import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -76,6 +81,9 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
 
     @Autowired
     private IOrderFileService orderFileService;
+
+    @Autowired
+    private IEmployeeJobRoleService employeeJobRoleService;
 
     @Autowired
     private OrderBaseMapper orderBaseMapper;
@@ -194,6 +202,18 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
 
         if (orderStatusCfg != null) {
             order.setStage(orderStatusCfg.getOrderStage());
+        }
+
+        UserContext userContext = WebContextUtils.getUserContext();
+        Long orgId = userContext.getOrgId();
+        if (orgId != null) {
+            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+            Org shop = orgDO.getBelongShop();
+            if (shop != null) {
+                order.setCreateShopId(shop.getOrgId());
+                //归属店面在创建的时候与员工归属的店面保持一致，后面根据收设计费归属的店面进行修改，归属店面是以设计费收的店面为准
+                order.setShopId(shop.getOrgId());
+            }
         }
 
         this.orderBaseService.save(order);
