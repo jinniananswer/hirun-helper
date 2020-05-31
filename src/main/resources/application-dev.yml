@@ -50,7 +50,7 @@ spring:
         borrow-connection-timeout: 10000
         xa-data-source-class-name: com.alibaba.druid.pool.xa.DruidXADataSource
         xa-properties:
-          url: jdbc:mysql://39.106.228.124:3306/sys?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=GMT%2B8
+          url: jdbc:mysql://39.106.228.124:3306/sys?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
           username: sys
           password: ENC(kOszr+P7A1igBzGeAY/bpx0ZLffsMGc/)
           driverClassName: com.mysql.cj.jdbc.Driver
@@ -91,7 +91,7 @@ spring:
         borrow-connection-timeout: 10000
         xa-data-source-class-name: com.alibaba.druid.pool.xa.DruidXADataSource
         xa-properties:
-          url: jdbc:mysql://39.106.228.124:3306/ins?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=GMT%2B8
+          url: jdbc:mysql://39.106.228.124:3306/ins?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
           username: ins
           password: ENC(iLNwZcUXiXjVM2TOiymyEwsRUeZMnFKY)
           driverClassName: com.mysql.cj.jdbc.Driver
