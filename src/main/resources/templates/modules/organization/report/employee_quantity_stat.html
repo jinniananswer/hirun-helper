@@ -10,32 +10,38 @@
     <link rel="stylesheet" href="/static/css/admin.css" th:href="@{static/css/admin.css(v=${version})}" media="all">
     <script src="../static/layui/layui.js" th:src="@{static/layui/layui.js(v=${version})}"></script>
     <script src="../static/js/base.js" th:src="@{static/js/base.js(v=${version})}"></script>
+
+    <style>
+        .layui-form-label.layui-required:before{
+            content:"*";
+            color:#FF5722;
+        }
+
+    </style>
 </head>
 <body>
 <div class="layui-fluid">
     <div class="layui-card">
         <div class="layui-card-header">在岗人数统计报表</div>
         <div class="layui-card-body">
-            <form class="layui-form" id="query_form">
+            <form class="layui-form" id="query_form" lay-filter="query_form">
                 <div class="layui-form-item">
                     <div class="layui-inline">
-                        <label class="layui-form-label">部门：</label>
+                        <label class="layui-form-label layui-required">部门：</label>
                         <div class="layui-input-block">
-                            <input type="text" id="orgPath" name="orgPath" style="width: 300px"
-                                   onclick="layui.employeeQuantityStat.selectOrg();" placeholder="请点击选择部门"
-                                   autocomplete="off" class="layui-input"/>
-                            <input type="hidden" id="orgId" name="orgId" />
+                            <input type="text" id="orgPath" name="orgPath" style="width: 300px" required  lay-verify="required" onclick="layui.employeeQuantityStat.selectOrg();" placeholder="请点击选择部门" class="layui-input"/>
+                            <input type="hidden" id="orgId" name="orgId" required  lay-verify="required"/>
                         </div>
                     </div>
                     <div class="layui-inline">
                         <label class="layui-form-label">年份</label>
                         <div class="layui-input-block">
-                            <input style="width: 300px" type="text" id="year" name="year" lay-verify="required" readonly autocomplete="off" class="layui-input"/>
+                            <input style="width: 300px" type="text" id="year" name="year" readonly autocomplete="off" class="layui-input"/>
                         </div>
                     </div>
                     <div class="layui-inline">
                         <label class="layui-form-label">
-                            <button class="layui-btn" type="button" id="queryEmployee"><i
+                            <button class="layui-btn" type="button" lay-submit id="queryEmployee" lay-filter="queryEmployee"><i
                                     class="layui-icon">&#xe615;</i>查询
                             </button>
                         </label>

@@ -10,8 +10,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <link rel="stylesheet" href="/static/layui/css/layui.css" th:href="@{static/layui/css/layui.css(v=${version})}" media="all">
     <link rel="stylesheet" href="/static/css/admin.css" th:href="@{static/css/admin.css(v=${version})}" media="all">
+    <link rel="stylesheet" href="/static/js/extend/selects/formSelects-v4.css" th:href="@{static/js/extend/selects/formSelects-v4.css(v=${version})}" media="all" />
     <script src="../static/layui/layui.js" th:src="@{static/layui/layui.js(v=${version})}"></script>
     <script src="../static/js/base.js" th:src="@{static/js/base.js(v=${version})}"></script>
+
 </head>
 <body>
 <div class="layui-fluid">
@@ -77,7 +79,7 @@
                         <label class="layui-form-label">岗位</label>
                         <div class="layui-input-inline">
                             <div class="layui-form" lay-filter="jobRole">
-                                <select id="jobRole" name="jobRole" lay-verify="required" lay-search>
+                                <select id="jobRole" name="jobRole" lay-verify="required" lay-search xm-select="jobRole" xm-select-search>
 
                                 </select>
                             </div>
@@ -87,7 +89,7 @@
                         <label class="layui-form-label">岗位性质</label>
                         <div class="layui-input-inline">
                             <div class="layui-form" lay-filter="jobRoleNature">
-                                <select id="jobRoleNature" name="jobRoleNature" lay-verify="required" lay-filter="jobRoleNature">
+                                <select id="jobRoleNature" name="jobRoleNature" lay-verify="required" lay-filter="jobRoleNature" >
 
                                 </select>
                             </div>
@@ -102,9 +104,12 @@
                                 <select name="otherStatus" id="otherStatus">
                                     <option value="">请选择</option>
                                     <option value="1">休假</option>
-                                    <option value="2">借调</option>
-                                    <option value="3">调出</option>
-                                    <option value="4">内部调动</option>
+                                    <option value="2">借调(入)</option>
+                                    <option value="3">借调(出)</option>
+                                    <option value="4">调动(入)</option>
+                                    <option value="5">调动(出)</option>
+                                    <option value="6">内部调动(入)</option>
+                                    <option value="7">内部调动(出)</option>
                                 </select>
                             </div>
                         </div>
@@ -184,6 +189,40 @@
                             </div>
                         </div>
                     </div>
+                    <div class="layui-form-item" style="">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">是否转正</label>
+                            <div class="layui-input-inline">
+                                <div class="layui-form" lay-filter="isRegular">
+                                    <select id="isRegular" name="isRegular">
+
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">转正时间</label>
+                                <div class="layui-input-inline" style="width: 82px;">
+                                    <input type="text" name="regularDateStart" id="regularDateStart" autocomplete="off" class="layui-input">
+                                </div>
+                                <div class="layui-form-mid">-</div>
+                                <div class="layui-input-inline" style="width: 82px;">
+                                    <input type="text" name="regularDateEnd" id="regularDateEnd" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">入职类型</label>
+                            <div class="layui-input-inline">
+                                <select name="createType" id="createType">
+                                    <option value="">请选择</option>
+                                    <option value="2">复职</option>
+                                    <option value="3">返聘</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="layui-form-item" style="">
                     <div class="layui-inline">
@@ -227,6 +266,7 @@
         <button class="layui-btn" style="background-color:#13227a;" lay-event="transOrg" sec:authorize="hasAuthority('EMPLOYEE_TRANS')"><i class="layui-icon">&#x21c4;</i>调动</button>
         <button class="layui-btn " style="background-color:#e87233;" lay-event="contract" sec:authorize="hasAuthority('EMPLOYEE_CONTRACT')"><i class="layui-icon layui-icon-templeate-1"></i>合同</button>
         <button class="layui-btn" lay-event="export" sec:authorize="hasAuthority('EXPORT_EMPLOYEE')"><i class="layui-icon layui-icon-download-circle"></i>导出</button>
+        <button class="layui-btn" lay-event="applyBlackList" sec:authorize="hasAuthority('EMPLOYEE_DESTORY')"><i class="layui-icon layui-icon-friends"></i>黑名单申请</button>
     </div>
 </script>
 

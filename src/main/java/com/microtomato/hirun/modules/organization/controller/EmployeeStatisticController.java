@@ -3,7 +3,9 @@ package com.microtomato.hirun.modules.organization.controller;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.data.PieChart;
 import com.microtomato.hirun.framework.data.PieData;
+import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeePieStatisticDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.StatisticBarDTO;
 import com.microtomato.hirun.modules.organization.service.IEmployeeStatisticService;
@@ -32,7 +34,7 @@ public class EmployeeStatisticController {
 
     @PostMapping("/countBySex")
     @RestResult
-    public PieChart countBySex(Long orgId) {
+    public PieChart countBySex(String orgId) {
         List<EmployeePieStatisticDTO> sexStatistics = this.employeeStatisticService.countBySex(orgId);
 
         if (ArrayUtils.isEmpty(sexStatistics)) {
@@ -40,8 +42,8 @@ public class EmployeeStatisticController {
         }
 
         PieChart pie = new PieChart();
-        String chartTitle = this.employeeStatisticService.getChartOrgTitle(orgId);
-        pie.setTitle(chartTitle + "员工数量分布（按性别）");
+        String chartTitle = this.employeeStatisticService.getChartOrgTitle(null);
+        pie.setTitle("员工数量分布（按性别）");
         pie.setItemTitle("性别");
 
         List<PieData> datas = this.getPieData(sexStatistics);
@@ -52,7 +54,7 @@ public class EmployeeStatisticController {
 
     @PostMapping("/countByAge")
     @RestResult
-    public PieChart countByAge(Long orgId) {
+    public PieChart countByAge(String orgId) {
         List<EmployeePieStatisticDTO> ageStatistics = this.employeeStatisticService.countByAge(orgId);
 
         if (ArrayUtils.isEmpty(ageStatistics)) {
@@ -60,8 +62,8 @@ public class EmployeeStatisticController {
         }
 
         PieChart pie = new PieChart();
-        String chartTitle = this.employeeStatisticService.getChartOrgTitle(orgId);
-        pie.setTitle(chartTitle + "员工数量分布（按年龄段）");
+        String chartTitle = this.employeeStatisticService.getChartOrgTitle(null);
+        pie.setTitle("员工数量分布（按年龄段）");
         pie.setItemTitle("年龄段");
 
         List<PieData> datas = this.getPieData(ageStatistics);
@@ -72,7 +74,7 @@ public class EmployeeStatisticController {
 
     @PostMapping("/countByJobRoleNature")
     @RestResult
-    public PieChart countByJobRoleNature(Long orgId) {
+    public PieChart countByJobRoleNature(String orgId) {
         List<EmployeePieStatisticDTO> jobRoleNatureStatistics = this.employeeStatisticService.countByJobRoleNature(orgId);
 
         if (ArrayUtils.isEmpty(jobRoleNatureStatistics)) {
@@ -80,8 +82,8 @@ public class EmployeeStatisticController {
         }
 
         PieChart pie = new PieChart();
-        String chartTitle = this.employeeStatisticService.getChartOrgTitle(orgId);
-        pie.setTitle(chartTitle + "员工数量分布（按岗位性质）");
+        String chartTitle = this.employeeStatisticService.getChartOrgTitle(null);
+        pie.setTitle("员工数量分布（按岗位性质）");
         pie.setItemTitle("岗位性质");
 
         List<PieData> datas = this.getPieData(jobRoleNatureStatistics);
@@ -92,7 +94,7 @@ public class EmployeeStatisticController {
 
     @PostMapping("/countByCompanyAge")
     @RestResult
-    public PieChart countByCompanyAge(Long orgId) {
+    public PieChart countByCompanyAge(String orgId) {
         List<EmployeePieStatisticDTO> companyAgeStatistics = this.employeeStatisticService.countByCompanyAge(orgId);
 
         if (ArrayUtils.isEmpty(companyAgeStatistics)) {
@@ -100,8 +102,8 @@ public class EmployeeStatisticController {
         }
 
         PieChart pie = new PieChart();
-        String chartTitle = this.employeeStatisticService.getChartOrgTitle(orgId);
-        pie.setTitle(chartTitle + "员工数量分布（按司龄）");
+        String chartTitle = this.employeeStatisticService.getChartOrgTitle(null);
+        pie.setTitle("员工数量分布（按司龄）");
         pie.setItemTitle("司龄");
 
         List<PieData> datas = this.getPieData(companyAgeStatistics);
@@ -112,7 +114,7 @@ public class EmployeeStatisticController {
 
     @PostMapping("/countByEducationLevel")
     @RestResult
-    public PieChart countByEducationLevel(Long orgId) {
+    public PieChart countByEducationLevel(String orgId) {
         List<EmployeePieStatisticDTO> educationLevelStatistics = this.employeeStatisticService.countByEducationLevel(orgId);
 
         if (ArrayUtils.isEmpty(educationLevelStatistics)) {
@@ -120,8 +122,8 @@ public class EmployeeStatisticController {
         }
 
         PieChart pie = new PieChart();
-        String chartTitle = this.employeeStatisticService.getChartOrgTitle(orgId);
-        pie.setTitle(chartTitle + "员工数量分布（按学历）");
+        String chartTitle = this.employeeStatisticService.getChartOrgTitle(null);
+        pie.setTitle("员工数量分布（按学历）");
         pie.setItemTitle("学历");
 
         List<PieData> datas = this.getPieData(educationLevelStatistics);
@@ -132,7 +134,7 @@ public class EmployeeStatisticController {
 
     @PostMapping("/countByType")
     @RestResult
-    public PieChart countByType(Long orgId) {
+    public PieChart countByType(String orgId) {
         List<EmployeePieStatisticDTO> typeStatistics = this.employeeStatisticService.countByType(orgId);
 
         if (ArrayUtils.isEmpty(typeStatistics)) {
@@ -140,8 +142,8 @@ public class EmployeeStatisticController {
         }
 
         PieChart pie = new PieChart();
-        String chartTitle = this.employeeStatisticService.getChartOrgTitle(orgId);
-        pie.setTitle(chartTitle + "员工数量分布（按类型）");
+        String chartTitle = this.employeeStatisticService.getChartOrgTitle(null);
+        pie.setTitle("员工数量分布（按类型）");
         pie.setItemTitle("类型");
 
         List<PieData> datas = this.getPieData(typeStatistics);

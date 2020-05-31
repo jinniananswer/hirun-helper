@@ -82,6 +82,7 @@ layui.extend({
             laydate.render({
                 elem: '#startTime',
                 type: 'datetime',
+                max: maxDate(),
                 done: function(value,date){
                     this.dateTime.hours=0;
                     this.dateTime.minutes=0;
@@ -89,14 +90,19 @@ layui.extend({
                 },
             });
 
+            function maxDate(){
+                let now = new Date();
+                return now.getFullYear()+"-" + (now.getMonth()+1) + "-" + now.getDate();
+            }
+
             laydate.render({
                 elem: '#endTime',
                 type: 'datetime',
                 format: 'yyyy-MM-dd HH:mm:ss',
                 done: function(value,date){
-                    this.dateTime.hours=23;
-                    this.dateTime.minutes=59;
-                    this.dateTime.seconds=59;
+                    this.dateTime.hours=0;
+                    this.dateTime.minutes=0;
+                    this.dateTime.seconds=0;
                 },
             });
 

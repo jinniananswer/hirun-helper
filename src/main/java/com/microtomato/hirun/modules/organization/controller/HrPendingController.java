@@ -8,7 +8,9 @@ import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeePieStatisticDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeTransDetailDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.HrPendingInfoDTO;
+import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.entity.po.HrPending;
+import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeTransDetailService;
 import com.microtomato.hirun.modules.organization.service.IHrPendingDomainService;
 import com.microtomato.hirun.modules.organization.service.IHrPendingService;
@@ -16,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -41,6 +45,9 @@ public class HrPendingController {
 
     @Autowired
     private IEmployeeTransDetailService transDetailService;
+
+    @Autowired
+    private IEmployeeService employeeService;
 
     @GetMapping("/queryTransPendingByEmployeeId")
     @RestResult
@@ -120,6 +127,30 @@ public class HrPendingController {
         }
         List<EmployeePieStatisticDTO> list = hrPendingService.countPending(employeeId);
         return list;
+    }
+
+    /**
+     * 确认员工黑名单待办
+     */
+    @PostMapping("/approveEmployeeBlackListPending")
+    @RestResult
+    public void approveEmployeeBlackListPending(Long employeeId,String approveStatus,Long id) {
+        hrPendingDomainService.approveEmployeeBlackListPending(employeeId,id,approveStatus);
+    }
+
+    @GetMapping("/queryEmployeeInfo4UpdateRegularDate")
+    @RestResult
+    public Employee queryEmployeeInfo4UpdateRegularDate(Long employeeId) {
+        return employeeService.getById(employeeId);
+    }
+
+    /**
+     * 待办任务修改员工转正时间
+     */
+    @PostMapping("/updateEmployeeRegularDate")
+    @RestResult
+    public void updateEmployeeRegularDate(Long employeeId, LocalDateTime regularDate, Long id) {
+        hrPendingDomainService.updateEmployeeRegularDate(employeeId,regularDate,id);
     }
 
 }

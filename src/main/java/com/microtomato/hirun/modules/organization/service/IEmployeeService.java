@@ -7,6 +7,7 @@ import com.microtomato.hirun.modules.organization.entity.dto.*;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.entity.po.StatEmployeeQuantityMonth;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -96,5 +97,14 @@ public interface IEmployeeService extends IService<Employee> {
      * @return
      */
     IPage<EmployeeInfoDTO> queryEmployee4BatchChange(Long parentEmployeeId,String orgLine, Page<EmployeeQueryConditionDTO> employeePage);
+
+    /**
+     * 查询员工转正信息
+     * @param inDate
+     * @param orgLine
+     * @param isSign
+     * @return
+     */
+    List<EmployeeInfoDTO> queryEmployeeRegularInfo(LocalDate inDate , String orgLine, String isSign);
 
 }

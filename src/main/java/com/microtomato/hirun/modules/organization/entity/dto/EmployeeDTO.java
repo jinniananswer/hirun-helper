@@ -96,6 +96,8 @@ public class EmployeeDTO implements Serializable {
 
     private Integer jobYear;
 
+    private Integer companyAge;
+
     private String status;
 
     private EmployeeJobRoleDTO employeeJobRole;

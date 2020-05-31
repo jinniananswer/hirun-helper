@@ -8,8 +8,11 @@ import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
+import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.framework.util.TreeUtils;
 import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeHistoryDTO;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeHolidayDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeQuantityStatDTO;
 import com.microtomato.hirun.modules.organization.entity.po.Org;
 import com.microtomato.hirun.modules.organization.entity.po.StatEmployeeQuantityMonth;
@@ -23,9 +26,13 @@ import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -124,6 +131,13 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
 
         List<EmployeeQuantityStatDTO> recordList = this.mapper.countByOrgId(year, orgLine);
 
+        //2020/03/23新增.核减休假人数
+        try {
+            this.cutHolidayEmployee(recordList, year,orgLine);
+        } catch (Exception e) {
+            log.info(e.getMessage());
+        }
+
         if (ArrayUtils.isEmpty(recordList)) {
             return new ArrayList<>();
         }
@@ -162,6 +176,13 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
         List<TreeNode> treeNodeList = this.getTreeList(list);
         List<EmployeeQuantityStatDTO> lastList = new ArrayList<>();
         last(treeNodeList, lastList);
+        if (lastList.size() <= 0) {
+            return null;
+        }
+        for (EmployeeQuantityStatDTO dto : lastList) {
+            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, dto.getOrgId());
+            dto.setOrgName(orgDO.getCompanyLinePath());
+        }
         Collections.reverse(lastList);
         return lastList;
     }
@@ -351,25 +372,43 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
      * @return
      */
     @Override
-    public List<Map<String, String>> queryEmployeeTrendsStat(String time, String orgId, String orgNature) {
+    public List<Map<String, String>> queryEmployeeTrendsStat(String time, String orgId, String orgNature) throws Exception {
         String year = "";
         String month = "";
         String orgLine = "";
+        LocalDate endTime = null;
+        Calendar nowDate = Calendar.getInstance();
+        String nowYear = String.valueOf(nowDate.get(Calendar.YEAR));
+        String nowMonth = String.valueOf(nowDate.get(Calendar.MONTH) + 1);
+        Date endDate = null;
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM");
 
         if (StringUtils.isNotEmpty(time)) {
             year = time.split("-")[0];
             month = time.split("-")[1];
+            if (month.contains("0")) {
+                month = month.substring(1, 2);
+            }
+            //2020/03/20新增
+            Date date = simpleDateFormat.parse(time);
+            endTime = TimeUtils.lastThisMonth(date);
+
         } else {
             Calendar date = Calendar.getInstance();
             year = String.valueOf(date.get(Calendar.YEAR));
             month = String.valueOf(date.get(Calendar.MONTH) + 1);
+            if (Integer.parseInt(month) < 10) {
+                endDate = simpleDateFormat.parse(year + "-0" + month);
+            }
+            if (Integer.parseInt(month) >= 10) {
+                endDate = simpleDateFormat.parse(year + "-" + month);
+            }
+            endTime = TimeUtils.lastThisMonth(endDate);
         }
         if (StringUtils.isEmpty(orgId)) {
             orgLine = orgService.listOrgSecurityLine();
         } else {
-/*            OrgDO orgDo = SpringContextUtils.getBean(OrgDO.class, orgId);
-            orgLine = orgDo.getOrgLine(orgId);*/
-            orgLine=orgId;
+            orgLine = orgId;
         }
         if (StringUtils.isEmpty(orgNature)) {
             orgNature = "1,2,3,4,5,6,7,8,9";
@@ -382,7 +421,7 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
         //将查询结果按照部门性质分类
         LinkedHashMap<String, List<Map<String, String>>> tempMap = new LinkedHashMap<>();
         for (Map<String, String> trndsMap : trndsList) {
-            if (StringUtils.isEmpty(trndsMap.get("job_role"))||StringUtils.equals(trndsMap.get("job_role"),"9999")) {
+            if (StringUtils.isEmpty(trndsMap.get("job_role")) || StringUtils.equals(trndsMap.get("job_role"), "9999")) {
                 continue;
             }
             if (!tempMap.containsKey(trndsMap.get("org_nature"))) {
@@ -406,7 +445,7 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
                 resultMap.put("org_nature_name", this.staticDataService.getCodeName("ORG_NATURE", resultMap.get("org_nature")));
                 resultMap.put("job_role_name", this.staticDataService.getCodeName("JOB_ROLE", resultMap.get("job_role")));
                 resultMap.put("destroyEmployeeName", this.transEmployeeName(resultMap.get("destroy_employee_ids")));
-                resultMap.put("holidayEmployeeName", this.transEmployeeName(resultMap.get("holiday_employee_ids")));
+                //resultMap.put("holidayEmployeeName", this.transEmployeeName(resultMap.get("holiday_employee_ids")));
                 resultMap.put("entryEmployeeName", this.transEmployeeName(resultMap.get("entry_employee_ids")));
                 resultMap.put("transInEmployeeName", this.transEmployeeName(resultMap.get("trans_in_employee_ids")));
                 resultMap.put("transOutEmployeeName", this.transEmployeeName(resultMap.get("trans_out_employee_ids")));
@@ -415,7 +454,33 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
                 resultList.add(resultMap);
             }
         }
+        //2020/03/20新增
+        List<EmployeeHolidayDTO> holidayList = this.baseMapper.countEmployeeHolidayInfo(endTime + "",orgLine);
+        if (holidayList.size() <= 0) {
+            return resultList;
+        }
+        for (EmployeeHolidayDTO holidayDTO : holidayList) {
+            String holidayJobRole = holidayDTO.getJobRole();
+            String holidayOrgNature = holidayDTO.getOrgNature();
 
+            for (int i = 0; i < resultList.size(); i++) {
+                String resultJobRole = resultList.get(i).get("job_role");
+                String resultOrgNature = resultList.get(i).get("org_nature");
+                if (StringUtils.equals(holidayJobRole, resultJobRole)
+                        && StringUtils.equals(holidayOrgNature, resultOrgNature)) {
+                    if (StringUtils.isBlank(resultList.get(i).get("employee_holiday_quantity_last"))) {
+                        resultList.get(i).put("employee_holiday_quantity_last", "1");
+                    } else {
+                        resultList.get(i).put("employee_holiday_quantity_last", (Integer.parseInt(resultList.get(i).get("employee_holiday_quantity_last")) + 1) + "");
+                    }
+                    if (StringUtils.isBlank(resultList.get(i).get("holidayEmployeeName"))) {
+                        resultList.get(i).put("holidayEmployeeName", employeeService.getEmployeeNameEmployeeId(holidayDTO.getEmployeeId()));
+                    } else {
+                        resultList.get(i).put("holidayEmployeeName", employeeService.getEmployeeNameEmployeeId(holidayDTO.getEmployeeId()) + "," + resultList.get(i).get("holidayEmployeeName"));
+                    }
+                }
+            }
+        }
         return resultList;
     }
 
@@ -426,7 +491,7 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
      * @return
      */
     @Override
-    public List<Map<String, String>> queryEmployeeCompanyStat(String time,String orgNature,String jobRole) {
+    public List<Map<String, String>> queryEmployeeCompanyStat(String time, String orgNature, String jobRole) {
         String year = "";
         String month = "";
         String orgLine = "";
@@ -434,28 +499,33 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
         if (StringUtils.isNotEmpty(time)) {
             year = time.split("-")[0];
             month = time.split("-")[1];
+            if (month.contains("0")) {
+                month = month.substring(1, 2);
+            }
         } else {
             Calendar date = Calendar.getInstance();
             year = String.valueOf(date.get(Calendar.YEAR));
             month = String.valueOf(date.get(Calendar.MONTH) + 1);
         }
         //只统计家装分公司，所以加上了事业部限制
+        orgLine = orgService.listOrgSecurityLine();
+/*
         OrgDO orgDo = SpringContextUtils.getBean(OrgDO.class, 7L);
-        orgLine = orgDo.getOrgLine(7L);
+        orgLine = orgDo.getOrgLine(7L);*/
         //支持按照部门性质以及岗位进行统计
-        if(StringUtils.isEmpty(orgNature)){
-             orgNature="2,3,4,5,6,7";
+        if (StringUtils.isEmpty(orgNature)) {
+            orgNature = "2,3,4,5,6,7";
         }
 
-        if(StringUtils.isEmpty(jobRole)){
-            List<StaticData> dataList=staticDataService.getStaticDatas("JOB_ROLE");
-            for(StaticData staticData:dataList){
-                jobRole+=staticData.getCodeValue()+",";
+        if (StringUtils.isEmpty(jobRole)) {
+            List<StaticData> dataList = staticDataService.getStaticDatas("JOB_ROLE");
+            for (StaticData staticData : dataList) {
+                jobRole += staticData.getCodeValue() + ",";
             }
-            jobRole=jobRole.substring(0,jobRole.length()-1);
+            jobRole = jobRole.substring(0, jobRole.length() - 1);
         }
 
-        List<Map<String, String>> companyCountList = this.mapper.companyCountByOrgNatureAndJobRoleAndCity(year, month, orgLine,orgNature,jobRole);
+        List<Map<String, String>> companyCountList = this.mapper.companyCountByOrgNatureAndJobRoleAndCity(year, month, orgLine, orgNature, jobRole);
         if (ArrayUtils.isEmpty(companyCountList)) {
             return new ArrayList<>();
         }
@@ -463,7 +533,7 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
         LinkedHashMap<String, List<Map<String, String>>> tempMap = new LinkedHashMap<>();
         for (Map<String, String> companyMap : companyCountList) {
 
-            if (StringUtils.isEmpty(companyMap.get("job_role"))||StringUtils.equals(companyMap.get("job_role"),"9999")) {
+            if (StringUtils.isEmpty(companyMap.get("job_role")) || StringUtils.equals(companyMap.get("job_role"), "9999")) {
                 continue;
             }
 
@@ -484,63 +554,63 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
             List<Map<String, String>> resultMapList = tempMap.get(key);
 
             Map<String, String> resultMap = new HashMap<>();
-            float employeeSum=0f;
+            float employeeSum = 0f;
             for (int i = 0; i < resultMapList.size(); i++) {
-                employeeSum+=Float.parseFloat(resultMapList.get(i).get("employee_num"));
-                resultMap.put("city_count_" + resultMapList.get(i).get("city"), resultMapList.get(i).get("employee_num"));
+                employeeSum += Float.parseFloat(resultMapList.get(i).get("employee_num"));
+                resultMap.put("city_count_" + resultMapList.get(i).get("enterprise_id"), resultMapList.get(i).get("employee_num"));
                 resultMap.put("org_nature_name", this.staticDataService.getCodeName("ORG_NATURE", resultMapList.get(i).get("org_nature")));
                 resultMap.put("job_role_name", this.staticDataService.getCodeName("JOB_ROLE", resultMapList.get(i).get("job_role")));
             }
-            resultMap.put("employee_sum",employeeSum+"");
+            resultMap.put("employee_sum", employeeSum + "");
             resultList.add(resultMap);
         }
         //将数据为空的全部改成0
-        for(int i=0;i<resultList.size();i++){
-            Map<String,String> lastMap=resultList.get(i);
-            if(lastMap.get("city_count_1")==null){
-                lastMap.put("city_count_1","0");
+        for (int i = 0; i < resultList.size(); i++) {
+            Map<String, String> lastMap = resultList.get(i);
+            if (lastMap.get("city_count_1") == null) {
+                lastMap.put("city_count_1", "0");
             }
-            if(lastMap.get("city_count_2")==null){
-                lastMap.put("city_count_2","0");
+            if (lastMap.get("city_count_2") == null) {
+                lastMap.put("city_count_2", "0");
             }
-            if(lastMap.get("city_count_3")==null){
-                lastMap.put("city_count_3","0");
+            if (lastMap.get("city_count_3") == null) {
+                lastMap.put("city_count_3", "0");
             }
-            if(lastMap.get("city_count_1")==null){
-                lastMap.put("city_count_1","0");
+            if (lastMap.get("city_count_16") == null) {
+                lastMap.put("city_count_16", "0");
             }
-            if(lastMap.get("city_count_4")==null){
-                lastMap.put("city_count_4","0");
+            if (lastMap.get("city_count_4") == null) {
+                lastMap.put("city_count_4", "0");
             }
-            if(lastMap.get("city_count_5")==null){
-                lastMap.put("city_count_5","0");
+            if (lastMap.get("city_count_5") == null) {
+                lastMap.put("city_count_5", "0");
             }
-            if(lastMap.get("city_count_6")==null){
-                lastMap.put("city_count_6","0");
+            if (lastMap.get("city_count_6") == null) {
+                lastMap.put("city_count_6", "0");
             }
-            if(lastMap.get("city_count_7")==null){
-                lastMap.put("city_count_7","0");
+            if (lastMap.get("city_count_7") == null) {
+                lastMap.put("city_count_7", "0");
             }
-            if(lastMap.get("city_count_8")==null){
-                lastMap.put("city_count_8","0");
+            if (lastMap.get("city_count_8") == null) {
+                lastMap.put("city_count_8", "0");
             }
-            if(lastMap.get("city_count_9")==null){
-                lastMap.put("city_count_9","0");
+            if (lastMap.get("city_count_9") == null) {
+                lastMap.put("city_count_9", "0");
             }
-            if(lastMap.get("city_count_10")==null){
-                lastMap.put("city_count_10","0");
+            if (lastMap.get("city_count_10") == null) {
+                lastMap.put("city_count_10", "0");
             }
-            if(lastMap.get("city_count_11")==null){
-                lastMap.put("city_count_11","0");
+            if (lastMap.get("city_count_11") == null) {
+                lastMap.put("city_count_11", "0");
             }
-            if(lastMap.get("city_count_12")==null){
-                lastMap.put("city_count_12","0");
+            if (lastMap.get("city_count_12") == null) {
+                lastMap.put("city_count_12", "0");
             }
-            if(lastMap.get("city_count_13")==null){
-                lastMap.put("city_count_13","0");
+            if (lastMap.get("city_count_13") == null) {
+                lastMap.put("city_count_13", "0");
             }
-            if(lastMap.get("city_count_15")==null){
-                lastMap.put("city_count_15","0");
+            if (lastMap.get("city_count_15") == null) {
+                lastMap.put("city_count_15", "0");
             }
 
         }
@@ -555,7 +625,7 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
      * @return
      */
     @Override
-    public List<Map<String, String>> busiCountByOrgNatureAndJobRole(String time, String orgId,String orgNature) {
+    public List<Map<String, String>> busiCountByOrgNatureAndJobRole(String time, String orgId, String orgNature) {
         if (StringUtils.isEmpty(time)) {
             Calendar date = Calendar.getInstance();
             time = String.valueOf(date.get(Calendar.YEAR));
@@ -568,11 +638,11 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
         } else {
 /*            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
             orgLine = orgDO.getOrgLine(orgId);*/
-            orgLine=orgId;
+            orgLine = orgId;
         }
 
-        if(StringUtils.isEmpty(orgNature)){
-            orgNature="2,3,4,5,6,7";
+        if (StringUtils.isEmpty(orgNature)) {
+            orgNature = "2,3,4,5,6,7";
         }
 
         List<Map<String, String>> busiCountList = this.mapper.busiCountByOrgNatureAndJobRole(time, orgNature, orgLine);
@@ -583,7 +653,7 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
 
         LinkedHashMap<String, List<Map<String, String>>> tempMap = new LinkedHashMap<>();
         for (Map<String, String> companyMap : busiCountList) {
-            if(StringUtils.isEmpty(companyMap.get("job_role")) ||StringUtils.equals(companyMap.get("job_role"),"9999")){
+            if (StringUtils.isEmpty(companyMap.get("job_role")) || StringUtils.equals(companyMap.get("job_role"), "9999")) {
                 continue;
             }
             if (!tempMap.containsKey(companyMap.get("org_nature") + companyMap.get("job_role"))) {
@@ -606,9 +676,21 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
             for (int i = 0; i < resultMapList.size(); i++) {
                 resultMap.put("org_nature_name", this.staticDataService.getCodeName("ORG_NATURE", resultMapList.get(i).get("org_nature")));
                 resultMap.put("job_role_name", this.staticDataService.getCodeName("JOB_ROLE", resultMapList.get(i).get("job_role")));
-                resultMap.put("employee_num_" + resultMapList.get(i).get("month"), resultMapList.get(i).get("employee_num"));
-                resultMap.put("employee_entry_num_" + resultMapList.get(i).get("month"), resultMapList.get(i).get("employee_entry_quantity"));
-                resultMap.put("employee_destroy_num_" + resultMapList.get(i).get("month"), resultMapList.get(i).get("employee_destroy_quantity"));
+                if (StringUtils.isEmpty(resultMapList.get(i).get("employee_num") + "")) {
+                    resultMap.put("employee_num_" + resultMapList.get(i).get("month"), "0");
+                } else {
+                    resultMap.put("employee_num_" + resultMapList.get(i).get("month"), resultMapList.get(i).get("employee_num"));
+                }
+                if (StringUtils.isEmpty(resultMapList.get(i).get("employee_entry_quantity") + "")) {
+                    resultMap.put("employee_entry_num_" + resultMapList.get(i).get("month"), "0");
+                } else {
+                    resultMap.put("employee_entry_num_" + resultMapList.get(i).get("month"), resultMapList.get(i).get("employee_entry_quantity"));
+                }
+                if (StringUtils.isEmpty(resultMapList.get(i).get("employee_destroy_quantity") + "")) {
+                    resultMap.put("employee_destroy_num_" + resultMapList.get(i).get("month"), "0");
+                } else {
+                    resultMap.put("employee_destroy_num_" + resultMapList.get(i).get("month"), resultMapList.get(i).get("employee_destroy_quantity"));
+                }
             }
             resultList.add(resultMap);
         }
@@ -628,8 +710,8 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
         if (StringUtils.isEmpty(time)) {
             Calendar date = Calendar.getInstance();
             year = String.valueOf(date.get(Calendar.YEAR));
-        }else{
-            year=time;
+        } else {
+            year = time;
         }
 
         //选择部门为空，则根据权限计算默认可查询的部门数据
@@ -639,7 +721,7 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
         } else {
 /*            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
             orgLine = orgDO.getOrgLine(orgId);*/
-            orgLine=orgId;
+            orgLine = orgId;
         }
 
         List<Map<String, String>> busiAndAllCountTrendList = this.mapper.busiAndAllCountTrend(year, orgLine);
@@ -689,7 +771,7 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
         List<Map<String, String>> shopList = new ArrayList<>();
         for (Org org : shopOrgList) {
 
-            LinkedHashMap<String,String> shopMap=new LinkedHashMap<>();
+            LinkedHashMap<String, String> shopMap = new LinkedHashMap<>();
             shopMap.put("org_name", org.getName());
 
             for (int i = 0; i < busiAndAllCountTrendList.size(); i++) {
@@ -714,6 +796,9 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
                         shopMap.put("busi_employee_entry_" + resultRecord.get("month"), resultRecord.get("busi_employee_entry_quantity"));
                     } else {
                         float shopCount = Float.parseFloat(shopMap.get("busi_employee_entry_" + resultRecord.get("month")));
+                        if (resultRecord.get("busi_employee_entry_quantity") == null) {
+                            resultRecord.put("busi_employee_entry_quantity", "0.0");
+                        }
                         float recordCount = Float.parseFloat(resultRecord.get("busi_employee_entry_quantity"));
                         shopMap.put("busi_employee_entry_" + resultRecord.get("month"), shopCount + recordCount + "");
                     }
@@ -722,6 +807,9 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
                         shopMap.put("busi_employee_destroy_" + resultRecord.get("month"), resultRecord.get("busi_employee_destroy_quantity"));
                     } else {
                         float shopCount = Float.parseFloat(shopMap.get("busi_employee_destroy_" + resultRecord.get("month")));
+                        if (resultRecord.get("busi_employee_destroy_quantity") == null) {
+                            resultRecord.put("busi_employee_destroy_quantity", "0.0");
+                        }
                         float recordCount = Float.parseFloat(resultRecord.get("busi_employee_destroy_quantity"));
                         shopMap.put("busi_employee_destroy_" + resultRecord.get("month"), shopCount + recordCount + "");
                     }
@@ -796,6 +884,50 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
         if (ArrayUtils.isNotEmpty(addList)) {
             statEmployeeQuantityMonthService.saveBatch(addList);
         }
+    }
 
+    /**
+     * 在岗人数=在编人数-休假人数
+     *
+     * @param dtos
+     * @return
+     */
+    public List<EmployeeQuantityStatDTO> cutHolidayEmployee(List<EmployeeQuantityStatDTO> dtos, String year,String orgLine) throws Exception {
+        if (ArrayUtils.isEmpty(dtos)) {
+            return dtos;
+        }
+        Calendar date = Calendar.getInstance();
+        int month = date.get(Calendar.MONTH) + 1;
+        for (int i = 1; i <= month; i++) {
+            LocalDate endTime = null;
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM");
+            Date transDate = null;
+            if (i < 10) {
+                transDate = simpleDateFormat.parse(year + "-0" + i);
+            }
+            if (i >= 10) {
+                transDate = simpleDateFormat.parse(year + "-" + i);
+            }
+            endTime = TimeUtils.lastThisMonth(transDate);
+
+            List<EmployeeHolidayDTO> holidayList = this.baseMapper.countEmployeeHolidayInfo(endTime + "",orgLine);
+            if (ArrayUtils.isEmpty(holidayList)) {
+                continue;
+            }
+            for (EmployeeHolidayDTO employeeHolidayDTO : holidayList) {
+                Long orgId = employeeHolidayDTO.getOrgId();
+                for (EmployeeQuantityStatDTO employeeQuantityStatDTO : dtos) {
+                    Long statOrgId = employeeQuantityStatDTO.getOrgId();
+                    String statMonth = employeeQuantityStatDTO.getMonth();
+                    Float statEmployeeNum = employeeQuantityStatDTO.getEmployeeNum();
+                    if (orgId.equals(statOrgId) && StringUtils.equals(statMonth, i + "")) {
+                        employeeQuantityStatDTO.setEmployeeNum(statEmployeeNum - 1);
+                    }
+                }
+            }
+
+        }
+
+        return dtos;
     }
 }

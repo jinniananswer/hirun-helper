@@ -64,7 +64,7 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
     public List<Org> listAllOrgs() {
         List<Org> orgs = this.list(
             Wrappers.<Org>lambdaQuery()
-                .select(Org::getOrgId, Org::getParentOrgId, Org::getName, Org::getType, Org::getEnterpriseId, Org::getCity, Org::getStatus)
+                .select(Org::getOrgId, Org::getParentOrgId, Org::getName, Org::getType, Org::getEnterpriseId, Org::getCity, Org::getStatus,Org::getNature,Org::getCompanyNature)
                 .eq(Org::getStatus, "0")
 
         );

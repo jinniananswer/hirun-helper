@@ -3,6 +3,7 @@ package com.microtomato.hirun.modules.organization.entity.dto;
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.annotation.write.style.ColumnWidth;
+import com.microtomato.hirun.framework.harbour.excel.convert.LocalDateConvert;
 import com.microtomato.hirun.framework.harbour.excel.convert.LocalDateTimeConvert;
 import lombok.*;
 
@@ -31,13 +32,24 @@ public class EmployeeInfoDTO implements Serializable {
     @ExcelProperty("员工姓名")
     private String name;
 
+    @ExcelIgnore
+    private String mobileNo;
+
+    @ColumnWidth(20)
+    @ExcelProperty("岗位")
+    private String jobRoleName;
+
+    @ColumnWidth(20)
+    @ExcelProperty("岗位性质")
+    private String jobRoleNatureName;
+
+    @ColumnWidth(20)
+    @ExcelProperty("业务折算比例")
+    private String discountRate;
+
     @ColumnWidth(20)
     @ExcelProperty("员工类型")
     private String typeName;
-
-    @ColumnWidth(20)
-    @ExcelProperty("员工电话")
-    private String mobileNo;
 
     @ColumnWidth(20)
     @ExcelProperty("员工证件")
@@ -85,6 +97,10 @@ public class EmployeeInfoDTO implements Serializable {
     private LocalDateTime inDate;
 
     @ColumnWidth(20)
+    @ExcelProperty(value = "转正时间", converter = LocalDateTimeConvert.class)
+    private LocalDateTime regularDate;
+
+    @ColumnWidth(20)
     @ExcelProperty("司龄")
     private String companyAge;
 
@@ -117,10 +133,6 @@ public class EmployeeInfoDTO implements Serializable {
     @ExcelIgnore
     private String jobRole;
 
-    @ColumnWidth(20)
-    @ExcelProperty("岗位")
-    private String jobRoleName;
-
     @ExcelIgnore
     private Long parentEmployeeId;
 
@@ -130,14 +142,6 @@ public class EmployeeInfoDTO implements Serializable {
 
     @ExcelIgnore
     private String jobRoleNature;
-
-    @ColumnWidth(20)
-    @ExcelProperty("岗位性质")
-    private String jobRoleNatureName;
-
-    @ColumnWidth(20)
-    @ExcelProperty("业务折算比例")
-    private String discountRate;
 
     @ExcelIgnore
     private String isMain;
@@ -182,4 +186,33 @@ public class EmployeeInfoDTO implements Serializable {
 
     @ExcelIgnore
     private Long jobRoleId;
+
+    @ExcelIgnore
+    private String jobGrade;
+
+    @ExcelIgnore
+    private String orgNature;
+
+    @ExcelIgnore
+    private Long hrEmployeeId;
+
+    @ExcelIgnore
+    private String hrEmployeeName;
+
+    @ColumnWidth(20)
+    @ExcelProperty(value = "离职时间",converter = LocalDateTimeConvert.class)
+    private LocalDateTime destroyDate;
+
+    @ColumnWidth(20)
+    @ExcelProperty("离职方式")
+    private String destroyWay;
+
+    @ColumnWidth(20)
+    @ExcelProperty("离职原因")
+    private String destroyReason;
+
+    @ColumnWidth(20)
+    @ExcelProperty(value = "社保停买日期",converter = LocalDateConvert.class)
+    private LocalDate socialSecurityEnd;
+
 }

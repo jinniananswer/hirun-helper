@@ -95,6 +95,9 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
     @Autowired
     private IStatEmployeeTransitionService transitionService;
 
+    @Autowired
+    private IEmployeeTagService employeeTagService;
+
     @Override
     public List<EmployeeInfoDTO> searchEmployee(String searchText) {
         List<EmployeeInfoDTO> employees = employeeMapper.searchByNameMobileNo(searchText);
@@ -180,6 +183,9 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         int jobYear = employeeDO.getJobYear();
 
         employeeDTO.setJobYear(new Integer(jobYear));
+
+        int companyAge = employeeDO.getCompanyAge();
+        employeeDTO.setCompanyAge(new Integer(companyAge));
 
         AddressDO addressDO = SpringContextUtils.getBean(AddressDO.class);
         employeeDTO.setNatives(addressDO.getFullName(employee.getNativeRegion()));
@@ -300,7 +306,7 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         List<EmployeeKeyman> keyMen = new ArrayList<>();
 
         EmployeeContactManDTO contactManDTO = employeeDTO.getContactMan();
-        if (contactManDTO != null && StringUtils.isNotBlank(contactManDTO.getName())) {
+        if (contactManDTO != null && (StringUtils.isNotBlank(contactManDTO.getName()) || StringUtils.isNotBlank(contactManDTO.getContactNo()))) {
             EmployeeKeyman keyMan = new EmployeeKeyman();
             BeanUtils.copyProperties(contactManDTO, keyMan);
             keyMan.setType(EmployeeConst.KEYMAN_TYPE_CONTACT);
@@ -348,20 +354,25 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
                 userDO.modify(employeeDTO.getMobileNo(), UserConst.INIT_PASSWORD, UserConst.STATUS_NORMAL);
                 employeeDO.rehire(employee, jobRole, workExperiences, keyMen);
                 //新增部门异动记录
-                transitionService.addEmployeeEntryTransition(employeeDTO.getEmployeeJobRole().getOrgId(), employeeDTO.getEmployeeId(), LocalDate.now());
+                transitionService.addEmployeeEntryTransition(employeeDTO.getEmployeeJobRole().getOrgId(), employeeDTO.getEmployeeId(), employeeDTO.getInDate().toLocalDate());
                 //分配默认权限
                 this.userRoleService.createRole(userId, jobRole.getOrgId(), jobRole.getJobRole(), org.getNature());
+                //2020/05/04 新增员工标签
+                this.employeeTagService.addEmployeeTag(EmployeeConst.CREATE_TYPE_REHIRE,employeeDTO.getEmployeeId(),"复职");
             } else if (StringUtils.equals(createType, EmployeeConst.CREATE_TYPE_REHELLORING)) {
                 userDO.modify(employeeDTO.getMobileNo(), UserConst.INIT_PASSWORD, UserConst.STATUS_NORMAL);
                 employeeDO.rehelloring(employee, jobRole, workExperiences, keyMen);
                 //新增部门异动记录
-                transitionService.addEmployeeEntryTransition(employeeDTO.getEmployeeJobRole().getOrgId(), employeeDTO.getEmployeeId(), LocalDate.now());
+                transitionService.addEmployeeEntryTransition(employeeDTO.getEmployeeJobRole().getOrgId(), employeeDTO.getEmployeeId(), employeeDTO.getInDate().toLocalDate());
                 //分配默认权限
                 this.userRoleService.createRole(userId, jobRole.getOrgId(), org.getNature(), jobRole.getJobRole());
+                //2020/05/04 新增员工标签
+                this.employeeTagService.addEmployeeTag(EmployeeConst.CREATE_TYPE_REHELLORING,employeeDTO.getEmployeeId(),"返聘");
             } else {
+                EmployeeJobRole oldJobRole = this.employeeJobRoleService.queryLast(employeeDTO.getEmployeeId());
+
                 userDO.modify(employeeDTO.getMobileNo(), null, null);
 
-                EmployeeJobRole oldJobRole = this.employeeJobRoleService.queryLast(employeeDTO.getEmployeeId());
                 if (oldJobRole != null && (!StringUtils.equals(oldJobRole.getJobRole(), jobRole.getJobRole()) || !jobRole.getOrgId().equals(oldJobRole.getOrgId()) || !StringUtils.equals(oldJobRole.getJobGrade(), jobRole.getJobGrade()))) {
                     this.employeeHistoryService.createChangeJobRole(employeeDTO.getEmployeeId(), jobRole, null);
                 }
@@ -550,11 +561,11 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         archive.setSexName(this.staticDataService.getCodeName("SEX", employee.getSex()));
         archive.setAge(employeeDO.getAge() + "");
         archive.setTypeName(this.staticDataService.getCodeName("EMPLOYEE_TYPE", employee.getType()));
+        archive.setDestroyWayName(this.staticDataService.getCodeName("DESTROY_WAY", employee.getDestroyWay()));
 
         AddressDO addressDO = SpringContextUtils.getBean(AddressDO.class);
         archive.setNativeArea(addressDO.getFullName(employee.getNativeRegion()));
         archive.setHomeArea(addressDO.getFullName(employee.getHomeRegion()));
-        archive.setCompanyAge(employeeDO.getJobYear() + "");
         archive.setEducationLevelName(this.staticDataService.getCodeName("EDUCATION_LEVEL", employee.getEducationLevel()));
         archive.setFirstEducationLevelName(this.staticDataService.getCodeName("EDUCATION_LEVEL", employee.getFirstEducationLevel()));
         archive.setSchoolTypeName(this.staticDataService.getCodeName("SCHOOL_TYPE", employee.getSchoolType()));
@@ -563,7 +574,7 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         archive.setStatusName(this.staticDataService.getCodeName("EMPLOYEE_STATUS", employee.getStatus()));
         archive.setIsSocialSecurityName(this.staticDataService.getCodeName("YES_NO", employee.getIsSocialSecurity() + ""));
         archive.setSocialSecurityStatusName(this.staticDataService.getCodeName("SOCIAL_SECURITY_STATUS", employee.getSocialSecurityStatus()));
-
+        archive.setCompanyAge(employeeDO.getCompanyAge() + "");
         archive.setJobRoleName(this.staticDataService.getCodeName("JOB_ROLE", jobRole.getJobRole()));
         archive.setJobGradeName(this.staticDataService.getCodeName("JOB_GRADE", jobRole.getJobGrade()));
 
@@ -606,6 +617,8 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             employeeInfo.setParentEmployeeName(employeeService.getEmployeeNameEmployeeId(employeeInfo.getParentEmployeeId()));
             employeeInfo.setEmployeeStatusName(this.staticDataService.getCodeName("EMPLOYEE_STATUS", employeeInfo.getEmployeeStatus()));
             employeeInfo.setJobRoleNatureName(this.staticDataService.getCodeName("JOB_NATURE", employeeInfo.getJobRoleNature()));
+            employeeInfo.setDestroyWay(this.staticDataService.getCodeName("DESTROY_WAY", employeeInfo.getDestroyWay()));
+
         }
         return list;
     }
@@ -615,9 +628,9 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         Map<String, String> resultMap = new HashMap<>();
         //获取离职员工的是否有下级
         List<EmployeeInfoDTO> list = employeeService.findSubordinate(employeeId);
-        if(list.size()<=0){
+        if (list.size() <= 0) {
             resultMap.put("hasChildEmployee", "NO");
-        }else{
+        } else {
             resultMap.put("hasChildEmployee", "YES");
         }
         //获取员工离职次数 1、离职员工未做复职做的员工新增，存在多条身份证一致的信息 2、做复职处理判断之前记录的离职次数
@@ -639,16 +652,16 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
     @Override
     public IPage<EmployeeInfoDTO> queryEmployee4BatchChange(Long parentEmployeeId, Long orgId, Page<EmployeeQueryConditionDTO> page) {
         String orgLine = "";
-        if (null==orgId) {
+        if (null == orgId) {
             UserContext userContext = WebContextUtils.getUserContext();
             orgId = userContext.getOrgId();
             orgLine = orgService.listOrgSecurityLine();
         } else {
-           OrgDO conditionOrgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
-           orgLine = conditionOrgDO.getOrgLine(orgId);
+            OrgDO conditionOrgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+            orgLine = conditionOrgDO.getOrgLine(orgId);
         }
 
-        IPage<EmployeeInfoDTO> iPage=employeeService.queryEmployee4BatchChange(parentEmployeeId,orgLine,page);
+        IPage<EmployeeInfoDTO> iPage = employeeService.queryEmployee4BatchChange(parentEmployeeId, orgLine, page);
         if (iPage == null) {
             return null;
         }

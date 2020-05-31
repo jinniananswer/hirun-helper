@@ -61,7 +61,7 @@ layui.extend({
                         },
                         {field: 'destroyEmployeeName', title: '离职员工', width: 110, align: 'center'},
                         {
-                            field: 'employee_holiday_quantity',
+                            field: 'employee_holiday_quantity_last',
                             title: '休假人数',
                             width: 110,
                             align: 'center',

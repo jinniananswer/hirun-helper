@@ -10,11 +10,15 @@ import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.organization.entity.consts.EmployeeConst;
 import com.microtomato.hirun.modules.organization.entity.domain.EmployeeDO;
+import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
 import com.microtomato.hirun.modules.organization.entity.dto.*;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
 import com.microtomato.hirun.modules.organization.mapper.EmployeeMapper;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
+import com.microtomato.hirun.modules.organization.service.IOrgService;
+import com.microtomato.hirun.modules.system.entity.domain.AddressDO;
+import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +26,9 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -38,6 +45,13 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
 
     @Autowired
     private EmployeeMapper employeeMapper;
+
+    @Autowired
+    private IOrgService orgService;
+
+    @Autowired
+    private IStaticDataService staticDataService;
+
 
     @Override
     public Employee queryByIdentityNo(String identityNo) {
@@ -161,6 +175,47 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
     }
 
     /**
+     * 查询员工转正信息
+     * @param inDate
+     * @param orgLine
+     * @param isSign
+     * @return
+     */
+    @Override
+    public List<EmployeeInfoDTO> queryEmployeeRegularInfo(LocalDate inDate, String orgLine, String isSign) {
+        List<EmployeeInfoDTO> employeeList=null;
+        if(StringUtils.isBlank(orgLine)){
+            orgLine=orgService.listOrgSecurityLine();
+        }
+        if(inDate==null){
+            inDate= LocalDate.now().minusDays(90);
+        }
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        if(StringUtils.equals(isSign,"1")){
+             employeeList=this.employeeMapper.queryEmployeeRegular(orgLine,inDate);
+        }
+
+        if(StringUtils.equals(isSign,"0")){
+            employeeList=this.employeeMapper.queryEmployeeExistsExam(orgLine,inDate);
+        }
+
+        if (ArrayUtils.isEmpty(employeeList)) {
+            return new ArrayList<EmployeeInfoDTO>();
+        }
+        for (EmployeeInfoDTO employeeInfo : employeeList) {
+            employeeInfo.setJobRoleName(staticDataService.getCodeName("JOB_ROLE", employeeInfo.getJobRole()));
+            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, employeeInfo.getOrgId());
+            employeeInfo.setOrgPath(orgDO.getCompanyLinePath());
+            employeeInfo.setHrEmployeeName(this.getEmployeeNameEmployeeId(employeeInfo.getHrEmployeeId()));
+            employeeInfo.setEmployeeStatusName(this.staticDataService.getCodeName("EMPLOYEE_STATUS", employeeInfo.getEmployeeStatus()));
+            employeeInfo.setJobRoleNatureName(this.staticDataService.getCodeName("JOB_NATURE", employeeInfo.getJobRoleNature()));
+        }
+
+        return employeeList;
+    }
+
+    /**
      * 递归查找所有下级员工
      *
      * @param parentEmployeeId
@@ -209,7 +264,7 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         queryWrapper.likeRight(StringUtils.isNotEmpty(conditionDTO.getMobileNo()), "a.mobile_no", conditionDTO.getMobileNo());
         queryWrapper.eq(StringUtils.isNotEmpty(conditionDTO.getEmployeeStatus()), "a.status", conditionDTO.getEmployeeStatus());
         queryWrapper.eq(StringUtils.isNotEmpty(conditionDTO.getType()), "a.type", conditionDTO.getType());
-        queryWrapper.eq(StringUtils.isNotEmpty(conditionDTO.getJobRole()), "b.job_role", conditionDTO.getJobRole());
+        queryWrapper.in(StringUtils.isNotEmpty(conditionDTO.getJobRole()), "b.job_role", Arrays.asList(conditionDTO.getJobRole().split(",")));
         queryWrapper.eq(StringUtils.isNotEmpty(conditionDTO.getJobRoleNature()), "b.job_role_nature", conditionDTO.getJobRoleNature());
         queryWrapper.eq(StringUtils.isNotEmpty(conditionDTO.getDiscountRate()), "b.discount_rate", conditionDTO.getDiscountRate());
         queryWrapper.ge(conditionDTO.getInDateStart() != null, "a.in_date", conditionDTO.getInDateStart());
@@ -223,9 +278,20 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         queryWrapper.ge(StringUtils.isNotEmpty(conditionDTO.getCompanyAgeStart()), "x.company_age", conditionDTO.getCompanyAgeStart());
         queryWrapper.le(StringUtils.isNotEmpty(conditionDTO.getCompanyAgeEnd()), "x.company_age", conditionDTO.getCompanyAgeEnd());
 
+        //新增查询条件是否转正以及转正时间判断
+        if (StringUtils.equals(conditionDTO.getIsRegular(), EmployeeConst.YES)) {
+            queryWrapper.apply("a.regular_date<now()");
+        }
+
+        if (StringUtils.equals(conditionDTO.getIsRegular(), EmployeeConst.NO)) {
+            queryWrapper.apply("a.regular_date > now()");
+        }
+
+        queryWrapper.ge(conditionDTO.getRegularDateStart() != null, "a.regular_date", conditionDTO.getRegularDateStart());
+        queryWrapper.le(conditionDTO.getRegularDateEnd() != null, "a.regular_date", conditionDTO.getRegularDateEnd());
+
         queryWrapper.apply(StringUtils.isNotBlank(conditionDTO.getEmployeeIds()), "a.employee_id in (" + conditionDTO.getEmployeeIds() + ")");
 
-        queryWrapper.orderByAsc("a.employee_id");
         //如果为查询调动信息的情况不判断现归属部门
         if (!StringUtils.equals(conditionDTO.getOtherStatus(), EmployeeConst.EMPLOYEE_BORROW_STATUS) &&
                 !StringUtils.equals(conditionDTO.getOtherStatus(), EmployeeConst.EMPLOYEE_TRANS_STATUS)) {
@@ -236,24 +302,43 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         if (StringUtils.equals(conditionDTO.getOtherStatus(), EmployeeConst.EMPLOYEE_HOLIDAY_STATUS)) {
             queryWrapper.exists("select * from ins_employee_holiday ieh where a.employee_id=ieh.employee_id and (now() between ieh.start_time and ieh.end_time)");
         }
-        //借调
+        //借调（入）
         if (StringUtils.equals(conditionDTO.getOtherStatus(), EmployeeConst.EMPLOYEE_BORROW_STATUS)) {
             queryWrapper.exists("select * from ins_employee_trans_detail iep where a.employee_id=iep.employee_id  " +
                     "and iep.trans_type='1' and (now() between iep.start_time and iep.end_time)" +
-                    "and (iep.source_org_id in(" + conditionDTO.getOrgLine() + ") or iep.org_id in (" + conditionDTO.getOrgLine() + "))");
+                    "and (iep.org_id in (" + conditionDTO.getOrgLine() + "))");
         }
-        //调出
-        if (StringUtils.equals(conditionDTO.getOtherStatus(), EmployeeConst.EMPLOYEE_TRANS_STATUS)) {
+        //借调（出）
+        if (StringUtils.equals(conditionDTO.getOtherStatus(),"3")) {
+            queryWrapper.exists("select * from ins_employee_trans_detail iep where a.employee_id=iep.employee_id  " +
+                    "and iep.trans_type='1' and (now() between iep.start_time and iep.end_time)" +
+                    "and (iep.source_org_id in(" + conditionDTO.getOrgLine() + "))");
+        }
+        //调动(入)
+        if (StringUtils.equals(conditionDTO.getOtherStatus(), "4")) {
             queryWrapper.exists("select * from ins_employee_trans_detail iep where a.employee_id=iep.employee_id  " +
                     "and iep.trans_type='2' and (now() between iep.start_time and iep.end_time)" +
-                    "and (iep.source_org_id in(" + conditionDTO.getOrgLine() + ") or iep.org_id in (" + conditionDTO.getOrgLine() + "))");
+                    "and (iep.org_id in (" + conditionDTO.getOrgLine() + "))");
+        }
+        //调动(出)
+        if (StringUtils.equals(conditionDTO.getOtherStatus(), "5")) {
+            queryWrapper.exists("select * from ins_employee_trans_detail iep where a.employee_id=iep.employee_id  " +
+                    "and iep.trans_type='2' and (now() between iep.start_time and iep.end_time)" +
+                    "and (iep.source_org_id in(" + conditionDTO.getOrgLine() + "))");
         }
 
-        //内部调动
-        if (StringUtils.equals(conditionDTO.getOtherStatus(), EmployeeConst.EMPLOYEE_INSIDE_TRANS_STATUS)) {
+        //内部调动（入）
+        if (StringUtils.equals(conditionDTO.getOtherStatus(), "6")) {
             queryWrapper.exists("select * from ins_employee_trans_detail iep where a.employee_id=iep.employee_id  " +
                     "and iep.trans_type='4' and (now() between iep.start_time and iep.end_time)" +
-                    "and (iep.source_org_id in(" + conditionDTO.getOrgLine() + ") or iep.org_id in (" + conditionDTO.getOrgLine() + "))");
+                    "and (iep.org_id in (" + conditionDTO.getOrgLine() + "))");
+        }
+
+        //内部调动（出）
+        if (StringUtils.equals(conditionDTO.getOtherStatus(), "7")) {
+            queryWrapper.exists("select * from ins_employee_trans_detail iep where a.employee_id=iep.employee_id  " +
+                    "and iep.trans_type='4' and (now() between iep.start_time and iep.end_time)" +
+                    "and (iep.source_org_id in(" + conditionDTO.getOrgLine() + "))");
         }
 
         //是黑名单
@@ -264,6 +349,14 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         if (StringUtils.equals(conditionDTO.getIsBlackList(), EmployeeConst.NO)) {
             queryWrapper.notExists("select * from ins_employee_blacklist ieb where a.identity_no=ieb.identity_no  and (now() between ieb.start_time and ieb.end_time)");
         }
+        //根据入职类型筛选
+        if(StringUtils.isNotBlank(conditionDTO.getCreateType())){
+            queryWrapper.exists("select * from ins_employee_tag iet where a.employee_id=iet.employee_id and iet.tag_type= "+ conditionDTO.getCreateType()
+                    +" and (now() between iet.start_time and iet.end_time)");
+        }
+
+        queryWrapper.orderByAsc("c.nature,c.org_id,a.employee_id,a.status");
+
         return queryWrapper;
     }
 

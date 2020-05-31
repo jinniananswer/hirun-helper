@@ -13,6 +13,7 @@ import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -83,7 +84,9 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
      */
     @Select("select a.name,a.employee_id,a.sex,a.mobile_no ,a.identity_no,a.status employee_status, date_format(a.in_date,'%Y-%m-%d') in_date," +
             " b.job_role,b.org_id, c.name org_name,a.type,a.job_date,b.discount_rate,a.education_level,a.first_education_level,a.school_type," +
-            " a.tech_title,a.native_prov,a.native_city,a.native_region,a.native_address,a.home_prov,a.home_city,a.home_region,a.home_address,b.parent_employee_id,b.job_role_nature,x.age, x.company_age,a.birthday,x.job_age from " +
+            " a.tech_title,a.native_prov,a.native_city,a.native_region,a.native_address,a.home_prov,a.home_city,a.home_region," +
+            " a.home_address,b.parent_employee_id,b.job_role_nature,x.age, x.company_age,a.birthday,x.job_age," +
+            " a.destroy_date,a.regular_date,a.destroy_reason,a.destroy_way,a.social_security_end from " +
             " ins_org c, ins_employee a " +
             " LEFT JOIN ( select * from ins_employee_job_role k where k.job_role_id in(select max(i.job_role_id) from (select * from ins_employee_job_role h where is_main='1' order by h.start_date desc) i\n" +
             " group by i.employee_id)) b on (a.employee_id=b.employee_id) " +
@@ -162,7 +165,12 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
      * @param employeeId
      * @return
      */
-    @Select("select a.employee_id,a.user_id,a.name,a.sex,a.identity_no,a.birthday_type,a.birthday,a.mobile_no,a.home_prov,a.home_city,a.home_region,a.home_address,a.native_prov,a.native_city,a.native_region,a.native_address,a.in_date,a.regular_date,a.destroy_date,a.destroy_way,a.destroy_reason,a.destroy_times,a.job_date,a.work_nature,a.workplace,a.education_level,a.first_education_level,a.major,a.school,a.school_type,a.tech_title,a.certificate_no,a.before_hirun_year,a.status,b.job_role_id,b.employee_id,b.job_role,b.discount_rate,b.is_main,b.job_role_nature,b.org_id,b.parent_employee_id,c.name orgName from ins_employee a, ins_employee_job_role b, ins_org c \n" +
+    @Select(" select a.employee_id,a.user_id,a.name,a.sex,a.identity_no,a.birthday_type,a.birthday,a.mobile_no,a.home_prov,a.home_city,a.home_region,a.home_address,a.native_prov,a.native_city,a.native_region,a.native_address,a.in_date,a.regular_date,a.destroy_date," +
+            " a.destroy_way,a.destroy_reason,a.destroy_times,a.job_date,a.work_nature,a.workplace," +
+            " a.education_level,a.first_education_level,a.major,a.school,a.school_type,a.tech_title," +
+            " a.certificate_no,a.before_hirun_year,a.status,b.job_role_id,b.employee_id,b.job_role,b.discount_rate," +
+            " b.is_main,b.job_role_nature,b.org_id,b.parent_employee_id,c.name orgName,b.job_grade,c.nature as org_nature " +
+            " from ins_employee a, ins_employee_job_role b, ins_org c \n" +
             " where a.employee_id =#{employeeId} \n" +
             " and a.status = '0' \n" +
             " and b.employee_id = a.employee_id\n" +
@@ -219,25 +227,51 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
      * 按部门统计员工数量
      * @return
      */
-    @Select("SELECT y.org_id,IFNULL(x.job_role,9999) as job_role,IFNULL(x.job_role_nature,0) as job_role_nature,IFNULL(y.nature,0) as org_nature,IFNULL(x.job_grade,0) as job_grade ,IFNULL(x.less_month_num,0) as less_month_num,IFNULL(x.more_month_num,0) as more_month_num,IFNULL(x.employee_sum,0) as employee_num,y.city,y.type as org_type  " +
-            " from ins_org y LEFT JOIN" +
-            " (select k.org_id,k.job_role,k.job_role_nature,k.nature,sum(less_num) as less_month_num,sum(more_num) as more_month_num,SUM(employee_num) as employee_sum,k.job_grade from ( " +
-            " select case when TIMESTAMPDIFF(MONTH,in_date,NOW()) between 0 and 9 and exists(select 1 from ins_employee_job_role c where c.employee_id = b.employee_id and now() between c.start_date and c.end_date group by c.employee_id having count(1) > 1) then '0.5' " +
-            "             when TIMESTAMPDIFF(MONTH,in_date,NOW()) between 0 and 9 and exists(select 1 from ins_employee_job_role c where c.employee_id = b.employee_id and now() between c.start_date and c.end_date group by c.employee_id having count(1) <= 1) then '1' " +
-            "             else '0' "+
-            " end as less_num, "+
-            "        case when  TIMESTAMPDIFF(MONTH,in_date,NOW()) > 9 and exists(select 1 from ins_employee_job_role c where c.employee_id = b.employee_id and now() between c.start_date and c.end_date group by c.employee_id having count(1) > 1) then '0.5' "+
-            "             when  TIMESTAMPDIFF(MONTH,in_date,NOW()) > 9 and exists(select 1 from ins_employee_job_role c where c.employee_id = b.employee_id and now() between c.start_date and c.end_date group by c.employee_id having count(1) <= 1) then '1' " +
-            "              else '0' "+
-            " end as more_num," +
-            "        case when exists(select 1 from ins_employee_job_role c where c.employee_id = b.employee_id and now() between c.start_date and c.end_date group by c.employee_id having count(1) > 1) then '0.5' else '1' " +
-            " end as employee_num," +
-            " b.org_id,b.job_role,b.job_role_nature,a.nature,b.job_grade " +
-            " from ins_employee c, ins_org a ,ins_employee_job_role b " +
-            " where b.employee_id=c.employee_id and b.org_id=a.org_id and now() BETWEEN b.start_date and b.end_date and c.`status`='0' and a.`status`='0' ) k" +
-            " GROUP BY k.org_id , k.job_role,k.job_role_nature,k.nature,k.job_grade) x " +
-            " on (x.org_id=y.org_id)"
-            )
+    @Select("SELECT y.org_id,IFNULL(y.job_role, 9999) AS job_role,IFNULL(y.job_role_nature, 0) AS job_role_nature,IFNULL(y.nature, 0) AS org_nature," +
+            " IFNULL(y.job_grade, 0) AS job_grade,IFNULL(x.less_month_num, 0) AS less_month_num,IFNULL(x.more_month_num, 0) AS more_month_num," +
+            " IFNULL(x.employee_sum, 0) AS employee_num,y.city,y.type AS org_type" +
+            " FROM (" +
+            "  SELECT DISTINCT g.org_id,IFNULL(h.job_role_nature, 0) as job_role_nature," +
+            "  IFNULL(g.nature, 0) as nature,g.city as city,g.type as type," +
+            "  case when ISNULL(h.job_grade)=1 ||  LENGTH(trim(h.job_grade))<1  then 0 else h.job_grade " +
+            "  end as job_grade," +
+            "  case when ISNULL(h.job_role)=1 ||  LENGTH(trim(h.job_role))<1  then 9999 else h.job_role" +
+            "  end as job_role" +
+            " FROM ins_org g" +
+            " LEFT JOIN ins_employee_job_role h ON (g.org_id = h.org_id) " +
+            " ) y" +
+            " LEFT JOIN (" +
+            " SELECT k.org_id,IFNULL(k.job_role,9999) as job_role,IFNULL(k.job_role_nature,0) as job_role_nature," +
+            " IFNULL(k.nature,0) as nature,sum(less_num) AS less_month_num,sum(more_num) AS more_month_num," +
+            " SUM(employee_num) AS employee_sum,k.job_grade" +
+            " FROM (" +
+            " SELECT" +
+            "    CASE WHEN TIMESTAMPDIFF(MONTH, in_date, NOW()) BETWEEN 0 AND 9 AND EXISTS (SELECT 1 FROM ins_employee_job_role c WHERE c.employee_id = b.employee_id AND now() BETWEEN c.start_date AND c.end_date" +
+            "              GROUP BY c.employee_id HAVING count(1) > 1 ) THEN '0.5'" +
+            "         WHEN TIMESTAMPDIFF(MONTH, in_date, NOW()) BETWEEN 0 AND 9 AND EXISTS (SELECT 1 FROM ins_employee_job_role c WHERE c.employee_id = b.employee_id AND now() BETWEEN c.start_date AND c.end_date" +
+            "              GROUP BY c.employee_id HAVING count(1) <= 1 ) THEN '1'" +
+            "         ELSE '0'" +
+            "    END AS less_num," +
+            "    CASE WHEN TIMESTAMPDIFF(MONTH, in_date, NOW()) > 9 AND EXISTS (SELECT 1 FROM ins_employee_job_role c WHERE c.employee_id = b.employee_id AND now() BETWEEN c.start_date AND c.end_date" +
+            "              GROUP BY c.employee_id HAVING count(1) > 1 ) THEN '0.5'" +
+            "         WHEN TIMESTAMPDIFF(MONTH, in_date, NOW()) > 9 AND EXISTS (SELECT 1 FROM ins_employee_job_role c WHERE c.employee_id = b.employee_id AND now() BETWEEN c.start_date AND c.end_date" +
+            "              GROUP BY c.employee_id HAVING count(1) <= 1) THEN '1'" +
+            "         ELSE '0'" +
+            "    END AS more_num, " +
+            "    CASE WHEN EXISTS (SELECT 1 FROM ins_employee_job_role c WHERE c.employee_id = b.employee_id AND now() BETWEEN c.start_date AND c.end_date" +
+            "              GROUP BY c.employee_id HAVING count(1) > 1 ) THEN '0.5'" +
+            "         ELSE '1'" +
+            "    END AS employee_num," +
+            " b.org_id,b.job_role_nature,a.nature," +
+            "    case when ISNULL(b.job_grade)=1 ||  LENGTH(trim(b.job_grade))<1  then 0 else b.job_grade" +
+            "    end as job_grade," +
+            "    case when ISNULL(b.job_role)=1 ||  LENGTH(trim(b.job_role))<1  then 9999 else b.job_role" +
+            "    end as job_role" +
+            " FROM ins_employee c,ins_org a,ins_employee_job_role b" +
+            " WHERE b.employee_id = c.employee_id AND b.org_id = a.org_id AND now() BETWEEN b.start_date AND b.end_date AND c.`status` = '0' AND a.`status` = '0') k" +
+            " GROUP BY k.org_id,k.job_role,k.job_role_nature,k.nature,k.job_grade ) x" +
+            " ON (x.org_id = y.org_id and x.job_role=y.job_role and x.job_role_nature=y.job_role_nature" +
+            " and x.job_grade=y.job_grade and x.nature=y.nature)")
     List<EmployeeQuantityStatDTO> countEmployeeQuantityByOrgId();
 
 
@@ -265,4 +299,44 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
             " ${ew.customSqlSegment}"
     )
     IPage<EmployeeInfoDTO> queryEmployee4BatchChange(Page<EmployeeQueryConditionDTO> page, @Param(Constants.WRAPPER) Wrapper wrapper);
+
+    /**
+     * 查询岗前考试未报名的员工信息
+     * @param orgId
+     * @param inDate
+     * @return
+     */
+    @Select("select a.name,a.employee_id, date_format(a.in_date,'%Y-%m-%d') in_date, date_format(a.regular_date,'%Y-%m-%d') regular_date," +
+            " b.job_role,b.org_id,b.job_role_nature,c.archive_manager_employee_id hr_employee_id from " +
+            " ins_employee a, ins_employee_job_role b , ins_org_hr_rel c " +
+            " where a.employee_id=b.employee_id " +
+            " and a.status='0' and b.is_main='1' " +
+            " and now() between b.start_date and b.end_date " +
+            " and b.org_id=c.org_id" +
+            " and now() between c.start_time and c.end_time " +
+            " and b.org_id in (${orgId})" +
+            " and a.in_date>'${inDate}'" +
+            " and not exists(select 1 from ins_train_sign f where f.employee_id = a.employee_id  and f.status = '0')"
+    )
+    List<EmployeeInfoDTO> queryEmployeeRegular(@Param("orgId")String orgId,@Param("inDate") LocalDate inDate);
+
+    /**
+     * 查询岗前考试已报名的员工信息
+     * @param orgId
+     * @param inDate
+     * @return
+     */
+    @Select("select a.name,a.employee_id, date_format(a.in_date,'%Y-%m-%d') in_date, date_format(a.regular_date,'%Y-%m-%d') regular_date," +
+            " b.job_role,b.org_id,b.job_role_nature,c.archive_manager_employee_id hr_employee_id from " +
+            " ins_employee a, ins_employee_job_role b , ins_org_hr_rel c " +
+            " where a.employee_id=b.employee_id " +
+            " and a.status='0' and b.is_main='1' " +
+            " and now() between b.start_date and b.end_date " +
+            " and b.org_id=c.org_id" +
+            " and now() between c.start_time and c.end_time " +
+            " and b.org_id in (${orgId})" +
+            " and a.in_date>'${inDate}'" +
+            " and exists(select 1 from ins_train_sign f where f.employee_id = a.employee_id  and f.status = '0')"
+    )
+    List<EmployeeInfoDTO> queryEmployeeExistsExam(@Param("orgId")String orgId,@Param("inDate") LocalDate inDate);
 }

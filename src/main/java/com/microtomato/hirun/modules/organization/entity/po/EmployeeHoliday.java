@@ -50,6 +50,21 @@ public class EmployeeHoliday extends BaseEntity {
     @TableField("end_time")
     private LocalDateTime endTime;
 
+    @TableField("org_id")
+    private Long orgId;
+
+    @TableField("job_role")
+    private String jobRole;
+
+    @TableField("job_role_nature")
+    private String jobRoleNature;
+
+    @TableField("org_nature")
+    private String orgNature;
+
+    @TableField("job_grade")
+    private String jobGrade;
+
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)
     private Long createUserId;
 

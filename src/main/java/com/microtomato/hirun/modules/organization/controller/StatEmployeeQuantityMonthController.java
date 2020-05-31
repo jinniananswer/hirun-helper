@@ -39,7 +39,7 @@ public class StatEmployeeQuantityMonthController {
 
     @GetMapping("/queryEmployeeTrendsStat")
     @RestResult
-    public List<Map<String,String>> queryEmployeeTrendsStat(String queryTime, String orgId,String orgNature){
+    public List<Map<String,String>> queryEmployeeTrendsStat(String queryTime, String orgId,String orgNature) throws Exception{
         return statEmployeeQuantityMonthServiceImpl.queryEmployeeTrendsStat(queryTime,orgId,orgNature);
     }
 

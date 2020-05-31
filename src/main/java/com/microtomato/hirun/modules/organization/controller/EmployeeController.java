@@ -13,6 +13,7 @@ import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.service.IEmployeeDomainService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
+import com.microtomato.hirun.modules.organization.service.IHrPendingDomainService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.*;
 
 /**
@@ -45,6 +47,9 @@ public class EmployeeController extends AbstractExcelHarbour  {
 
     @Autowired
     private IEmployeeJobRoleService jobRoleService;
+
+    @Autowired
+    private IHrPendingDomainService hrPendingDomainService;
 
 
     @PostMapping("/create")
@@ -181,5 +186,18 @@ public class EmployeeController extends AbstractExcelHarbour  {
     @RestResult
     public boolean batchUpdateParentEmployee(String ids, Long parentEmployeeId) {
         return jobRoleService.batchUpdateParentEmployee(ids,parentEmployeeId);
+    }
+
+    @PostMapping("/applyEmployeeBlackList")
+    @RestResult
+    public void applyEmployeeBlackList(Long employeeId, String reason) {
+        hrPendingDomainService.addEmployeeBlackListApply(employeeId,reason);
+    }
+
+    @GetMapping("/queryEmployeeRegularInfo")
+    @RestResult
+    public List<EmployeeInfoDTO> queryEmployeeRegularInfo(LocalDate queryTime , String orgLine,String isSign) {
+        List<EmployeeInfoDTO> employeeList = employeeServiceImpl.queryEmployeeRegularInfo(queryTime,orgLine,isSign);
+        return employeeList;
     }
 }
