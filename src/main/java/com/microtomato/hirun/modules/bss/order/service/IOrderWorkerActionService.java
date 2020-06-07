@@ -16,4 +16,8 @@ import java.util.List;
 public interface IOrderWorkerActionService extends IService<OrderWorkerAction> {
 
     List<OrderWorkerActionDTO> queryByOrderId(Long orderId);
+
+    List<OrderWorkerAction> queryByOrderIdAction(Long orderId, String action);
+
+    void createOrderWorkerAction(Long orderId, Long employeeId, Long workerId, String currentOrderStatus, String action);
 }

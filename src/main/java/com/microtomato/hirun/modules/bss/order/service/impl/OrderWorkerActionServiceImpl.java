@@ -51,6 +51,7 @@ public class OrderWorkerActionServiceImpl extends ServiceImpl<OrderWorkerActionM
      * @param action
      * @return
      */
+    @Override
     public List<OrderWorkerAction> queryByOrderIdAction(Long orderId, String action) {
         LocalDateTime now = RequestTimeHolder.getRequestTime();
         return this.list(Wrappers.<OrderWorkerAction>lambdaQuery()
@@ -66,6 +67,7 @@ public class OrderWorkerActionServiceImpl extends ServiceImpl<OrderWorkerActionM
      * @param workerId
      * @param action
      */
+    @Override
     public void createOrderWorkerAction(Long orderId, Long employeeId, Long workerId, String currentOrderStatus, String action) {
         //先终止原来的数据
         LocalDateTime now = RequestTimeHolder.getRequestTime();
