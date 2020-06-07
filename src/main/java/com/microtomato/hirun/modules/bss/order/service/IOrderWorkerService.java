@@ -26,5 +26,5 @@ public interface IOrderWorkerService extends IService<OrderWorker> {
      * @param roleId
      * @param employeeId
      */
-    void updateOrderWorker(Long orderId,Long roleId,Long employeeId);
+    Long updateOrderWorker(Long orderId,Long roleId,Long employeeId);
 }

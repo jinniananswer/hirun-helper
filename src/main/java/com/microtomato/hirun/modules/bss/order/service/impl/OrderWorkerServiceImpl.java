@@ -11,7 +11,6 @@ import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderWorker;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderWorkerMapper;
 import com.microtomato.hirun.modules.bss.order.service.IOrderWorkerService;
-import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
 import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +53,7 @@ public class OrderWorkerServiceImpl extends ServiceImpl<OrderWorkerMapper, Order
     }
 
     @Override
-    public void updateOrderWorker(Long orderId, Long roleId, Long employeeId) {
+    public Long updateOrderWorker(Long orderId, Long roleId, Long employeeId) {
         if (orderId == null || roleId == null || employeeId == null) {
             throw new NotFoundException("参数缺失", ErrorKind.NOT_FOUND.getCode());
         }
@@ -65,7 +64,7 @@ public class OrderWorkerServiceImpl extends ServiceImpl<OrderWorkerMapper, Order
         if (orderWorker != null) {
             //如果Employee一样，则不更新
             if (orderWorker.getEmployeeId().equals(employeeId)) {
-                return;
+                return null;
             }
             orderWorker.setEndDate(LocalDateTime.now());
             this.orderWorkerMapper.updateById(orderWorker);
@@ -76,15 +75,8 @@ public class OrderWorkerServiceImpl extends ServiceImpl<OrderWorkerMapper, Order
         newOrderWorker.setEmployeeId(employeeId);
         newOrderWorker.setStartDate(RequestTimeHolder.getRequestTime());
         newOrderWorker.setEndDate(TimeUtils.getForeverTime());
-
-        //补充当前归属部门与当前岗位信息
-        EmployeeJobRole jobRole = this.employeeJobRoleService.queryLast(employeeId);
-        if (jobRole != null) {
-            newOrderWorker.setJobRole(jobRole.getJobRole());
-            newOrderWorker.setOrgId(jobRole.getOrgId());
-        }
-
         this.orderWorkerMapper.insert(newOrderWorker);
+        return newOrderWorker.getId();
 
     }
 }
