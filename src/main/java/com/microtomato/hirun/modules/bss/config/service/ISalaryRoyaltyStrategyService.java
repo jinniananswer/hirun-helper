@@ -14,9 +14,7 @@ import java.util.List;
  */
 public interface ISalaryRoyaltyStrategyService extends IService<SalaryRoyaltyStrategy> {
 
-    List<SalaryRoyaltyStrategy> queryByEmployeeIdRoleIdOrderStatus(Long employeeId, Long roleId, String orderStatus);
-
-    List<SalaryRoyaltyStrategy> getPriorityByEmployeeIdRoleIdOrderStatus(Long employeeId, Long roleId, String orderStatus);
+    List<SalaryRoyaltyStrategy> queryByEmployeeIdRoleIdStatusAction(Long employeeId, Long roleId, String orderStatus, String action);
 
     boolean isNeedCompute(String orderStatus);
 }

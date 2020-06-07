@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,42 +35,13 @@ public class SalaryRoyaltyStrategyServiceImpl extends ServiceImpl<SalaryRoyaltyS
      * @return
      */
     @Override
-    public List<SalaryRoyaltyStrategy> queryByEmployeeIdRoleIdOrderStatus(Long employeeId, Long roleId, String orderStatus) {
+    public List<SalaryRoyaltyStrategy> queryByEmployeeIdRoleIdStatusAction(Long employeeId, Long roleId, String orderStatus, String action) {
         List<SalaryRoyaltyStrategy> strategies =this.list(new QueryWrapper<SalaryRoyaltyStrategy>().lambda()
             .eq(SalaryRoyaltyStrategy::getStatus, "U")
-            .and(v->v.eq(SalaryRoyaltyStrategy::getEmployeeId, employeeId).or().eq(SalaryRoyaltyStrategy::getEmployeeId, -1L))
-            .and(v->v.eq(SalaryRoyaltyStrategy::getRoleId, roleId).or().eq(SalaryRoyaltyStrategy::getRoleId, -1L))
+            .and(v -> v.eq(SalaryRoyaltyStrategy::getEmployeeId, employeeId).or().eq(SalaryRoyaltyStrategy::getEmployeeId, -1L))
+            .and(v -> v.eq(SalaryRoyaltyStrategy::getRoleId, roleId).or().eq(SalaryRoyaltyStrategy::getRoleId, -1L))
+            .and(v -> v.eq(SalaryRoyaltyStrategy::getAction, action))
             .eq(SalaryRoyaltyStrategy::getOrderStatus, orderStatus));
-        return strategies;
-    }
-
-    /**
-     * 根据员工ID，角色编码，订单状态查询提成配置策略,选出优先级最高的一条，优先级最高的是指定employeeId的
-     * @param employeeId
-     * @param roleId
-     * @param orderStatus
-     * @return
-     */
-    @Override
-    public List<SalaryRoyaltyStrategy> getPriorityByEmployeeIdRoleIdOrderStatus(Long employeeId, Long roleId, String orderStatus) {
-        List<SalaryRoyaltyStrategy> strategies = this.queryByEmployeeIdRoleIdOrderStatus(employeeId, roleId, orderStatus);
-
-        if (ArrayUtils.isEmpty(strategies)) {
-            return null;
-        }
-
-        List<SalaryRoyaltyStrategy> result = new ArrayList<>();
-        for (SalaryRoyaltyStrategy strategy : strategies) {
-            if (employeeId.equals(strategy.getEmployeeId())) {
-                result.add(strategy);
-            }
-        }
-
-        if (ArrayUtils.isNotEmpty(result)) {
-            //证明按员工ID已经匹配出数据了，这是最高优先级的，且员工ID与角色ID的配置是冲突的，如果匹配到了员工的，就不要再匹配角色的了
-            return result;
-        }
-
         return strategies;
     }
 

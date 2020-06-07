@@ -51,11 +51,6 @@ public class FeeFact {
     private Long pay;
 
     /**
-     * 设计费标准
-     */
-    private Integer designFeeStandard;
-
-    /**
      * 获取设计费
      * @return
      */

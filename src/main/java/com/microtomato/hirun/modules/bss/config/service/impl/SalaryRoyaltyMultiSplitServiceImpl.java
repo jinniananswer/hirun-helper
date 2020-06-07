@@ -23,6 +23,14 @@ public class SalaryRoyaltyMultiSplitServiceImpl extends ServiceImpl<SalaryRoyalt
     @Autowired
     private SalaryRoyaltyMultiSplitMapper salaryRoyaltyMultiSplitMapper;
 
+    /**
+     * 根据提成大类，提成小类，参与人数查询多人拆分的配置
+     * @param type
+     * @param item
+     * @param num
+     * @return
+     */
+    @Override
     public SalaryRoyaltyMultiSplit getMultiSplit(String type, String item, Integer num) {
         return this.getOne(Wrappers.<SalaryRoyaltyMultiSplit>lambdaQuery()
                 .eq(SalaryRoyaltyMultiSplit::getType, type)

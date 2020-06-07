@@ -32,7 +32,7 @@ public interface OrderBaseMapper extends BaseMapper<OrderBase> {
 
     @Select("select a.cust_id, a.order_id, a.status,a.decorate_address, b.cust_name, b.mobile_no, a.create_time from order_base a, cust_base b, (select distinct x.order_id from order_worker x, order_base y where y.order_id = x.order_id and x.employee_id = #{employeeId} and y.status in (${statuses})) c " +
             " where b.cust_id = a.cust_id and a.order_id = c.order_id and a.status in (${statuses}) " +
-            " order by status, create_time desc;"
+            " order by status, create_time desc"
     )
     List<PendingOrderDTO> queryAttentionStatusOrders(@Param("statuses")String statuses, @Param("employeeId") Long employeeId);
 
@@ -43,7 +43,7 @@ public interface OrderBaseMapper extends BaseMapper<OrderBase> {
 
     @Select("select a.cust_id, a.order_id, a.status,a.decorate_address, b.cust_name, b.mobile_no, a.create_time, c.total_money/100 total_money, c.pay_no, c.audit_status,c.pay_date from order_base a, cust_base b, order_pay_no c " +
             " where b.cust_id = a.cust_id and a.order_id = c.order_id and c.order_id = a.order_id and c.audit_status in (${statuses}) " +
-            " order by status, create_time desc;"
+            " order by status, create_time desc"
     )
     List<FinancePendingOrderDTO> queryFinancePendingOrders(@Param("employeeId") Long employeeId, @Param("statuses")String statuses);
 }

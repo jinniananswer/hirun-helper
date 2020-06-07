@@ -12,4 +12,5 @@ import com.microtomato.hirun.modules.bss.config.entity.po.SalaryRoyaltyMultiSpli
  */
 public interface ISalaryRoyaltyMultiSplitService extends IService<SalaryRoyaltyMultiSplit> {
 
+    SalaryRoyaltyMultiSplit getMultiSplit(String type, String item, Integer num);
 }
