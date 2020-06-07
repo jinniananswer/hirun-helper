@@ -42,7 +42,7 @@ public class OrderWorkerActionServiceImpl extends ServiceImpl<OrderWorkerActionM
      */
     @Override
     public List<OrderWorkerActionDTO> queryByOrderId(Long orderId) {
-        return this.queryByOrderId(orderId);
+        return this.orderWorkerActionMapper.queryByOrderId(orderId);
     }
 
     /**
