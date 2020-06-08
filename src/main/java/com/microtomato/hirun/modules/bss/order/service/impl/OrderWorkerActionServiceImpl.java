@@ -87,6 +87,7 @@ public class OrderWorkerActionServiceImpl extends ServiceImpl<OrderWorkerActionM
         workerAction.setEndDate(TimeUtils.getForeverTime());
         workerAction.setWorkerId(workerId);
         workerAction.setAction(action);
+        workerAction.setJobRole(employeeJobRole.getJobRole());
         workerAction.setJobGrade(employeeJobRole.getJobGrade());
         workerAction.setOrgId(employeeJobRole.getOrgId());
         workerAction.setOrderStatus(currentOrderStatus);
