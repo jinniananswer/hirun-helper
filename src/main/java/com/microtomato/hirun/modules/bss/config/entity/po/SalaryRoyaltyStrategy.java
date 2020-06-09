@@ -64,17 +64,29 @@ public class SalaryRoyaltyStrategy extends BaseEntity {
     @TableField(value = "formula")
     private String formula;
 
-    /** 是否减掉已发 */
+    /** 是否减掉已发 1-减掉 */
     @TableField(value = "is_minus_send")
     private String isMinusSend;
+
+    /** 减掉哪些提成细项的已发，多个以逗号分隔 **/
+    @TableField(value = "minus_item")
+    private String minusItem;
 
     /** 多人参与是否拆分 */
     @TableField(value = "is_split")
     private String isSplit;
 
-    /** 店面 -1表示通配 精装房部和优仕馆配置具体的店面ID */
+    /** 公司ID */
+    @TableField(value = "company_id")
+    private Long companyId;
+
+    /** 店面 -1表示通配（精装房优仕馆除外） -2表示所有 0表示所有店（精装房除外） 精装房部和优仕馆配置具体的店面ID */
     @TableField(value = "shop_id")
     private Long shopId;
+
+    /** 员工归属部门ID 最细粒度的部门匹配条件 */
+    @TableField(value = "orgId")
+    private Long orgId;
 
     /** 角色编码 */
     @TableField(value = "role_id")
@@ -88,9 +100,17 @@ public class SalaryRoyaltyStrategy extends BaseEntity {
     @TableField(value = "employee_id")
     private Long employeeId;
 
+    /** 人员是否在订单工作人员内，0表示在订单外，其它表示在订单内 */
+    @TableField(value = "in_order")
+    private String inOrder;
+
     /** 作用方式 1-作用于角色 2-作用在固定的员工身上 */
     @TableField(value = "effect_mode")
     private String effectMode;
+
+    /** 款项是否付齐 1-需要付齐 */
+    @TableField(value = "pay_complete")
+    private String payComplete;
 
     /** 匹配条件，基于spring spel的动态表达式 */
     @TableField(value = "match_condition")

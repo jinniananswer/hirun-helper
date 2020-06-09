@@ -27,12 +27,22 @@ public class RoyaltyMatchFact {
 
     private Set<Long> roleIds;
 
+    /**
+     * 参与角色
+     */
+    private Long roleId;
+
     private Long orgId;
 
     /**
      * 部门性质 市场部 客户部 设计部
      */
     private String nature;
+
+    /**
+     * 预算总金额
+     */
+    private Long budget;
 
     /**
      * 优惠后合同金额
@@ -48,4 +58,24 @@ public class RoyaltyMatchFact {
      * 是否优仕馆
      */
     private boolean isExcellent;
+
+    /**
+     * 户型
+     */
+    private String houseMode;
+
+    /**
+     * 已收取的量房费
+     */
+    private Long measurePayed;
+
+    /**
+     * 套内面积
+     */
+    private Long indoorArea;
+
+    /**
+     * 流程所做动作
+     */
+    private String action;
 }

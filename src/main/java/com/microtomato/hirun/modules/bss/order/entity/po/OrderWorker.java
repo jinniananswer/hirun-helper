@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- * 
+ * 订单参与的工作人员
  * </p>
  *
  * @author jinnian
@@ -39,18 +39,6 @@ public class OrderWorker extends BaseEntity {
 
     @TableField("employee_id")
     private Long employeeId;
-
-    /**
-     * 当前归属部门
-     */
-    @TableField("org_id")
-    private Long orgId;
-
-    /**
-     * 当前岗位
-     */
-    @TableField("job_role")
-    private String jobRole;
 
     /**
      * 开始时间

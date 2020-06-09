@@ -3,6 +3,8 @@ package com.microtomato.hirun.modules.bss.salary.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.microtomato.hirun.modules.bss.salary.entity.po.SalaryRoyaltyDetail;
 
+import java.util.List;
+
 /**
  * 员工工资提成明细(SalaryRoyaltyDetail)表服务接口
  *
@@ -12,4 +14,5 @@ import com.microtomato.hirun.modules.bss.salary.entity.po.SalaryRoyaltyDetail;
  */
 public interface ISalaryRoyaltyDetailService extends IService<SalaryRoyaltyDetail> {
 
+    List<SalaryRoyaltyDetail> queryByOrderIdEmployeeIdItems(Long orderId, Long employeeId, List<String> items);
 }

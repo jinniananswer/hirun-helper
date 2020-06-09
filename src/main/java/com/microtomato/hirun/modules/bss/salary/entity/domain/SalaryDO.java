@@ -1,24 +1,21 @@
 package com.microtomato.hirun.modules.bss.salary.entity.domain;
 
+import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.SPELUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
-import com.microtomato.hirun.modules.bss.order.entity.po.OrderFee;
-import com.microtomato.hirun.modules.bss.order.entity.po.OrderFeeItem;
-import com.microtomato.hirun.modules.bss.order.entity.po.OrderPlaneSketch;
-import com.microtomato.hirun.modules.bss.order.entity.po.OrderWorker;
-import com.microtomato.hirun.modules.bss.order.service.IOrderFeeItemService;
-import com.microtomato.hirun.modules.bss.order.service.IOrderFeeService;
-import com.microtomato.hirun.modules.bss.order.service.IOrderPlaneSketchService;
-import com.microtomato.hirun.modules.bss.order.service.IOrderWorkerService;
-import com.microtomato.hirun.modules.bss.salary.entity.po.SalaryRoyaltyDetail;
+import com.microtomato.hirun.modules.bss.config.entity.po.SalaryRoyaltyMultiSplit;
 import com.microtomato.hirun.modules.bss.config.entity.po.SalaryRoyaltyStrategy;
 import com.microtomato.hirun.modules.bss.config.entity.po.SalaryStatusFeeMapping;
-import com.microtomato.hirun.modules.bss.salary.exception.SalaryException;
-import com.microtomato.hirun.modules.bss.salary.service.ISalaryRoyaltyDetailService;
+import com.microtomato.hirun.modules.bss.config.service.ISalaryRoyaltyMultiSplitService;
 import com.microtomato.hirun.modules.bss.config.service.ISalaryRoyaltyStrategyService;
 import com.microtomato.hirun.modules.bss.config.service.ISalaryStatusFeeMappingService;
-import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
+import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerActionDTO;
+import com.microtomato.hirun.modules.bss.order.entity.po.*;
+import com.microtomato.hirun.modules.bss.order.service.*;
+import com.microtomato.hirun.modules.bss.salary.entity.po.SalaryRoyaltyDetail;
+import com.microtomato.hirun.modules.bss.salary.exception.SalaryException;
+import com.microtomato.hirun.modules.bss.salary.service.ISalaryRoyaltyDetailService;
 import com.microtomato.hirun.modules.organization.entity.po.Org;
 import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
 import com.microtomato.hirun.modules.organization.service.IOrgService;
@@ -32,6 +29,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -46,16 +44,22 @@ import java.util.List;
 public class SalaryDO {
 
     @Autowired
-    private IOrderWorkerService orderWorkerService;
+    private IOrderWorkerActionService orderWorkerActionService;
 
     @Autowired
     private ISalaryRoyaltyStrategyService salaryRoyaltyStrategyService;
+
+    @Autowired
+    private ISalaryRoyaltyMultiSplitService salaryRoyaltyMultiSplitService;
 
     @Autowired
     private ISalaryRoyaltyDetailService salaryRoyaltyDetailService;
 
     @Autowired
     private IOrderFeeService orderFeeService;
+
+    @Autowired
+    private IOrderBaseService orderBaseService;
 
     @Autowired
     private IOrderFeeItemService orderFeeItemService;
@@ -84,9 +88,15 @@ public class SalaryDO {
             return;
         }
 
-        //1.先查询订单目前有哪些参与人，只有该笔订单的参与人才能参与这笔订单的提成计算
-        List<OrderWorker> workers = this.orderWorkerService.queryValidByOrderId(orderId);
-        if (ArrayUtils.isEmpty(workers)) {
+        //1. 查询订单基本信息
+        OrderBase orderBase = this.orderBaseService.queryByOrderId(orderId);
+        if (orderBase == null) {
+            return;
+        }
+
+        //1.1 先查询订单目前有哪些参与人,参与人做了哪些动作，只有该笔订单的参与人才能参与这笔订单的提成计算
+        List<OrderWorkerActionDTO> workerActions = this.orderWorkerActionService.queryByOrderId(orderId);
+        if (ArrayUtils.isEmpty(workerActions)) {
             return;
         }
 
@@ -105,7 +115,10 @@ public class SalaryDO {
         }
 
         LocalDateTime now = LocalDateTime.now();
+        RoyaltyComputeFact computeFact = new RoyaltyComputeFact();
         FeeFact feeFact = new FeeFact();
+
+        computeFact.setFeeFact(feeFact);
         BeanUtils.copyProperties(orderFee, feeFact);
         //2.3 如果是工程款，查询费用明细信息
         if (StringUtils.equals("2", statusFeeMapping.getType())) {
@@ -126,65 +139,171 @@ public class SalaryDO {
         Integer designFeeStandard = 0;
         if (planeSketch != null) {
             designFeeStandard = planeSketch.getDesignFeeStandard();
-            feeFact.setDesignFeeStandard(designFeeStandard);
         } else {
             throw new SalaryException(SalaryException.SalaryExceptionEnum.DESIGN_FEE_STANDARD_NOT_FOUND, String.valueOf(orderId));
         }
 
         //3 找到参与人对应的策略配置，再根据费用相关信息进行计算
         Integer salaryMonth = Integer.parseInt(TimeUtils.formatLocalDateTimeToString(now, TimeUtils.DATE_FMT_14));
-        SPELUtils executor = new SPELUtils();
-        Integer finalDesignFee = designFeeStandard;
 
+        Integer finalDesignFee = designFeeStandard;
         List<SalaryRoyaltyDetail> royaltyDetails = new ArrayList<>();
-        workers.forEach(worker -> {
-            List<SalaryRoyaltyStrategy> strategies = this.salaryRoyaltyStrategyService.getPriorityByEmployeeIdRoleIdOrderStatus(worker.getEmployeeId(), worker.getRoleId(), orderStatus);
+        workerActions.forEach(workerAction -> {
+
+            List<SalaryRoyaltyStrategy> strategies = this.salaryRoyaltyStrategyService.queryByEmployeeIdRoleIdStatusAction(workerAction.getEmployeeId(), workerAction.getRoleId(), orderStatus, workerAction.getAction());
             if (ArrayUtils.isEmpty(strategies)) {
                 //没有找到匹配的策略，则返回
                 return;
             }
 
             //构造匹配条件变量
-            EmployeeJobRole jobRole = this.employeeJobRoleService.queryLast(worker.getEmployeeId());
             RoyaltyMatchFact matchFact = RoyaltyMatchFact.builder()
-                    .employeeId(worker.getEmployeeId())
-                    .jobRole(jobRole.getJobRole())
-                    .jobGrade(jobRole.getJobGrade())
-                    .orgId(jobRole.getOrgId())
+                    .employeeId(workerAction.getEmployeeId())
+                    .roleId(workerAction.getRoleId())
+                    .jobRole(workerAction.getJobRole())
+                    .jobGrade(workerAction.getJobGrade())
+                    .orgId(workerAction.getOrgId())
                     .designFeeStandard(finalDesignFee)
                     .build();
 
-            Org org = this.orgService.queryByOrgId(jobRole.getOrgId());
+            Org org = this.orgService.queryByOrgId(workerAction.getOrgId());
             matchFact.setNature(org.getNature());
 
-            //找到完全匹配的那一条
-            SalaryRoyaltyStrategy matchStrategy = null;
-            for (SalaryRoyaltyStrategy strategy : strategies) {
-                boolean isMatch = false;
-                isMatch = executor.executeBool(strategy.getMatchCondition(), matchFact);
-                if (isMatch) {
-                    matchStrategy = strategy;
-                    break;
+            List<SalaryRoyaltyStrategy> matchStrategies = this.match(matchFact, computeFact, strategies);
+            List<SalaryRoyaltyDetail> details = this.generateRoyaltyDetail(matchStrategies, computeFact, matchFact, orderId, salaryMonth, orderStatus);
+
+        });
+
+        if (ArrayUtils.isNotEmpty(royaltyDetails)) {
+            this.salaryRoyaltyDetailService.saveBatch(royaltyDetails);
+        }
+    }
+
+    /**
+     * 找出匹配的提成策略
+     * @param matchFact
+     * @param computeFact
+     * @param strategies
+     * @return
+     */
+    private List<SalaryRoyaltyStrategy> match(RoyaltyMatchFact matchFact, RoyaltyComputeFact computeFact, List<SalaryRoyaltyStrategy> strategies) {
+        if (ArrayUtils.isEmpty(strategies)) {
+            return null;
+        }
+
+        List<SalaryRoyaltyStrategy> temp = new ArrayList<>();
+        //初步筛选，看员工ID，roleId, job_role shopId 是否匹配
+        strategies.forEach(strategy -> {
+            //看费用是否付齐
+            if (StringUtils.equals("1", strategy.getPayComplete())) {
+                Long needPay = computeFact.getFeeFact().getNeedPay();
+                Long payed = computeFact.getFeeFact().getPay();
+                if (!needPay.equals(payed)) {
+                    //未付齐，返回
+                    return;
                 }
             }
 
-            if (matchStrategy == null) {
+            //如果配置了员工ID，则为最高优先级
+            if (strategy.getEmployeeId() != null && matchFact.getEmployeeId().equals(strategy.getEmployeeId())) {
+                temp.add(strategy);
+                return;
+            } else if (strategy.getEmployeeId() != null && !matchFact.getEmployeeId().equals(strategy.getEmployeeId())) {
+                //员工不匹配，则无需进行下面的筛选了
                 return;
             }
 
+            //如果员工ID为null
+            Long shopId = strategy.getShopId();
+            switch (shopId + "") {
+                case "-2" :
+                    break;
+                case "-1":
+                    if (matchFact.getOrgId().equals(46L) || matchFact.getOrgId().equals(98L) || matchFact.getOrgId().equals(40L)) {
+                        return;
+                    }
+                    break;
+                case "0" :
+                    if (matchFact.getOrgId().equals(40L)) {
+                        return;
+                    }
+                    break;
+                default :
+                    if (!shopId.equals(matchFact.getOrgId())) {
+                        return;
+                    }
+                    break;
+            }
+
+            String jobRole = strategy.getJobRole();
+            if (StringUtils.isNotBlank(jobRole) && !StringUtils.equals(matchFact.getJobRole(), jobRole)) {
+                return;
+            }
+
+            temp.add(strategy);
+        });
+
+        if (ArrayUtils.isEmpty(temp)) {
+            return null;
+        }
+
+        //第二步，根据条件表达式精确筛选
+        List<SalaryRoyaltyStrategy> result = new ArrayList<>();
+        SPELUtils executor = new SPELUtils();
+        temp.forEach(strategy -> {
+            boolean isMatch = executor.executeBool(strategy.getMatchCondition());
+            if (isMatch) {
+                result.add(strategy);
+            }
+        });
+
+        return result;
+    }
+
+    public List<SalaryRoyaltyDetail> generateRoyaltyDetail(List<SalaryRoyaltyStrategy> strategies, RoyaltyComputeFact computeFact, RoyaltyMatchFact matchFact, Long orderId, Integer salaryMonth, String orderStatus) {
+        if (ArrayUtils.isEmpty(strategies)) {
+            return null;
+        }
+
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+        SPELUtils executor = new SPELUtils();
+        List<SalaryRoyaltyDetail> royaltyDetails = new ArrayList<>();
+        strategies.forEach(matchStrategy -> {
+
             //根据匹配的配置，开始进行提成金额的计算
             String formula = matchStrategy.getFormula();
-            Long value = executor.executeLong(formula, feeFact);
+            Long value = executor.executeLong(formula, computeFact);
 
             //todo 多人拆分的计算
+            SalaryRoyaltyMultiSplit multiSplit = this.salaryRoyaltyMultiSplitService.getMultiSplit(matchStrategy.getType(), matchStrategy.getItem(), 0);
 
-            //todo 本月可提和已提的计算
+
+            //本月可提和已提的计算
+            String isMinusSend = matchStrategy.getIsMinusSend();
+
+            if (StringUtils.equals("1", isMinusSend)) {
+                //表示要减掉已发
+                String minusItem = matchStrategy.getMinusItem();
+                if (StringUtils.isNotBlank(minusItem)) {
+                    List<String> items = Arrays.asList(StringUtils.split(","));
+                    List<SalaryRoyaltyDetail> sendRoyaltyDetails = this.salaryRoyaltyDetailService.queryByOrderIdEmployeeIdItems(orderId, matchFact.getEmployeeId(), items);
+
+                    if (ArrayUtils.isNotEmpty(sendRoyaltyDetails)) {
+                        Long sendValue = sendRoyaltyDetails.stream().filter(sendRoyaltyDetail -> sendRoyaltyDetail.getAlreadyFetch() != null)
+                                .mapToLong(SalaryRoyaltyDetail::getAlreadyFetch)
+                                .sum();
+
+                        //减掉已发放的
+                        value -= sendValue;
+                    }
+                }
+            }
 
             SalaryRoyaltyDetail royaltyDetail = new SalaryRoyaltyDetail();
-            royaltyDetail.setEmployeeId(worker.getEmployeeId());
-            royaltyDetail.setOrgId(jobRole.getOrgId());
-            royaltyDetail.setJobRole(jobRole.getJobRole());
-            royaltyDetail.setRoleId(worker.getRoleId());
+            royaltyDetail.setEmployeeId(matchFact.getEmployeeId());
+            royaltyDetail.setOrgId(matchFact.getOrgId());
+            royaltyDetail.setJobRole(matchFact.getJobRole());
+            royaltyDetail.setRoleId(matchFact.getRoleId());
             royaltyDetail.setSalaryMonth(salaryMonth);
             royaltyDetail.setOrderId(orderId);
             royaltyDetail.setOrderStatus(orderStatus);
@@ -197,24 +316,11 @@ public class SalaryDO {
             royaltyDetail.setThisMonthFetch(value);
             royaltyDetail.setAuditStatus("0");
             royaltyDetail.setStartTime(now);
+            royaltyDetail.setStrategyId(matchStrategy.getId());
             royaltyDetail.setEndTime(TimeUtils.getForeverTime());
             royaltyDetails.add(royaltyDetail);
         });
 
-        if (ArrayUtils.isNotEmpty(royaltyDetails)) {
-            this.salaryRoyaltyDetailService.saveBatch(royaltyDetails);
-        }
-    }
-
-    /**
-     * 根据订单ID构造工资提成条件匹配对象
-     * @param orderId
-     */
-    public RoyaltyMatchFact buildRoyaltyMatchFact(Long orderId) {
-        return null;
-    }
-
-    public List<FeeFact> buildFeeFact(Long orderId) {
-        return null;
+        return royaltyDetails;
     }
 }
