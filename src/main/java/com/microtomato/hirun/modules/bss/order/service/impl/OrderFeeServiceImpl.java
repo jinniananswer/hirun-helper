@@ -89,7 +89,7 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
 
     /**
      * 财务审核
-     *
+     *orderStatus:8(审核设计费)，18（审核首期款），25（二期款审核），30（尾款审核）
      * @param dto
      */
 
@@ -101,43 +101,41 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
         String orderStatus = dto.getOrderStatus();
         Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
         if (auditStatus.equals("1")) {
-            List<OrderPayItem> payItems = orderPayItemService.queryByOrderId(dto.getOrderId());
-            if (ArrayUtils.isEmpty(payItems)) {
-                //只有设计费不需要判断是否已经收取费用，其他工程款都需要判断
-                if ("18".equals(orderStatus) || "25".equals(orderStatus) || "30".equals(orderStatus)) {
+            //只有设计费不需要判断是否已经收取费用，其他工程款都需要判断
+            if ("18".equals(orderStatus) || "25".equals(orderStatus) || "30".equals(orderStatus)) {
+                List<OrderPayItem> payItems = orderPayItemService.queryByOrderId(dto.getOrderId());
+                if (ArrayUtils.isEmpty(payItems)) {
                     throw new OrderException(OrderException.OrderExceptionEnum.ORDER_COSTFEE_NOT_FOUND);
-                }
+                } else {
+                    String firstFalg = "";
+                    String secondFalg = "";
+                    String thirdFalg = "";
 
-            }
-            else {
-                String firstFalg ="";
-                String secondFalg ="";
-                String thirdFalg ="";
-                for (OrderPayItem payItem : payItems) {
-                    Integer payPeriod =payItem.getPeriods();
-                    if (1==payPeriod){
-                        firstFalg="1";
+                    for (OrderPayItem payItem : payItems) {
+                        Integer payPeriod = payItem.getPeriods();
+                        if (1 == payPeriod) {
+                            firstFalg = "1";
+                        } else if (2 == payPeriod) {
+                            secondFalg = "1";
+                        } else if (3 == payPeriod) {
+                            thirdFalg = "1";
+                        }
                     }
-                    else if (2==payPeriod){
-                        secondFalg="1";
-                    }
-                    else if (3==payPeriod){
-                        thirdFalg="1";
-                    }
-                }
-                //判断是否收取了对应的款项
-                if("18".equals(orderStatus)&&"".equals(firstFalg)){
-                    throw new OrderException(OrderException.OrderExceptionEnum.ORDER_COSTFEE_NOT_FOUND);
-                }
-                //判断是否收取了对应的款项
-                if("25".equals(orderStatus)&&"".equals(secondFalg)){
-                    throw new OrderException(OrderException.OrderExceptionEnum.ORDER_COSTFEE_NOT_FOUND);
-                }
-                //判断是否收取了对应的款项
-                if("30".equals(orderStatus)&&"".equals(thirdFalg)){
-                    throw new OrderException(OrderException.OrderExceptionEnum.ORDER_COSTFEE_NOT_FOUND);
-                }
 
+                    //判断首期是否收取了对应的款项
+                    if ("18".equals(orderStatus) && "".equals(firstFalg)) {
+                        throw new OrderException(OrderException.OrderExceptionEnum.ORDER_COSTFEE_NOT_FOUND);
+                    }
+                    //判断2期是否收取了对应的款项
+                    if ("25".equals(orderStatus) && "".equals(secondFalg)) {
+                        throw new OrderException(OrderException.OrderExceptionEnum.ORDER_COSTFEE_NOT_FOUND);
+                    }
+                    //判断尾款是否收取了对应的款项
+                    if ("30".equals(orderStatus) && "".equals(thirdFalg)) {
+                        throw new OrderException(OrderException.OrderExceptionEnum.ORDER_COSTFEE_NOT_FOUND);
+                    }
+
+                }
             }
             orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_NEXT_STEP);
         } else {
