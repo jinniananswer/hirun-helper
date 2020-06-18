@@ -9,15 +9,11 @@ package com.microtomato.hirun.modules.bss.order.controller;
  */
 
 import com.microtomato.hirun.framework.annotation.RestResult;
-import com.microtomato.hirun.framework.security.UserContext;
-import com.microtomato.hirun.framework.util.WebContextUtils;
-import com.microtomato.hirun.modules.bss.order.entity.dto.OrderPlaneSketchDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWholeRoomDrawDTO;
-import com.microtomato.hirun.modules.bss.order.entity.po.OrderPlaneSketch;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderWholeRoomDraw;
 import com.microtomato.hirun.modules.bss.order.service.IOrderWholeRoomDrawService;
+import com.microtomato.hirun.modules.bss.order.service.IOrderWorkerService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -29,32 +25,38 @@ public class OrderWholeRoomDrawController {
     @Autowired
     private IOrderWholeRoomDrawService iOrderWholeRoomDrawService;
 
+    @Autowired
+    private IOrderWorkerService orderWorkerService;
+
     @PostMapping("/submitWholeRoomDrawing")
     @Transactional(rollbackFor = Exception.class)
     @RestResult
-    public void submit(@RequestBody OrderWholeRoomDraw orderWholeRoomDraw) {
-        iOrderWholeRoomDrawService.save(orderWholeRoomDraw);
+    public void save(@RequestBody OrderWholeRoomDrawDTO dto) {
+        iOrderWholeRoomDrawService.submitWholeRoomDrawing(dto);
     }
 
     @GetMapping("/getWholeRoomDraw")
     @RestResult
     public OrderWholeRoomDrawDTO getWholeRoomDraw(Long orderId) {
-        UserContext userContext = WebContextUtils.getUserContext();
+        /*UserContext userContext = WebContextUtils.getUserContext();
         Long employeeId = userContext.getEmployeeId();
         OrderWholeRoomDraw orderWholeRoomDraw =  iOrderWholeRoomDrawService.getOrderWholeRoomDrawByOrderId(orderId);
         OrderWholeRoomDrawDTO orderWholeRoomDrawDTO = new OrderWholeRoomDrawDTO();
         if (orderWholeRoomDraw != null) {
             BeanUtils.copyProperties(orderWholeRoomDraw,orderWholeRoomDrawDTO);
         }
-        orderWholeRoomDrawDTO.setDesigner(employeeId);
-        return orderWholeRoomDrawDTO;
+        orderWholeRoomDrawDTO.setDesigner(employeeId);*/
+        return iOrderWholeRoomDrawService.getOrderWholeRoomDrawByOrderId(orderId);
     }
 
     @PostMapping("/submitToAuditPicturesFlow")
     @Transactional(rollbackFor = Exception.class)
     @RestResult
-    public void submitToDelayTimeFlow(@RequestBody OrderWholeRoomDraw orderWholeRoomDraw) {
-        iOrderWholeRoomDrawService.submitToAuditPicturesFlow(orderWholeRoomDraw.getOrderId());
+    public void submitToAuditPicturesFlow(@RequestBody OrderWholeRoomDrawDTO dto) {
+        iOrderWholeRoomDrawService.submitWholeRoomDrawing(dto);
+        iOrderWholeRoomDrawService.submitToAuditPicturesFlow(dto.getOrderId());
+        orderWorkerService.updateOrderWorker(dto.getOrderId(),30L,dto.getDesigner());
+        orderWorkerService.updateOrderWorker(dto.getOrderId(),44L,dto.getDrawingAuditor());
     }
 
     @PostMapping("/submitToConfirmFlow")
@@ -81,8 +83,9 @@ public class OrderWholeRoomDrawController {
     @PostMapping("/submitToCustomerLeaderFlow")
     @Transactional(rollbackFor = Exception.class)
     @RestResult
-    public void submitToCustomerLeaderFlow(@RequestBody OrderWholeRoomDraw orderWholeRoomDraw) {
-        iOrderWholeRoomDrawService.submitToCustomerLeaderFlow(orderWholeRoomDraw.getOrderId());
+    public void submitToCustomerLeaderFlow(@RequestBody OrderWholeRoomDrawDTO dto) {
+        iOrderWholeRoomDrawService.submitToCustomerLeaderFlow(dto.getOrderId());
+        orderWorkerService.updateOrderWorker(dto.getOrderId(),19L,dto.getCustomerLeader());
     }
 
     @PostMapping("/submitToBackWholeRoomFlow")
@@ -97,6 +100,9 @@ public class OrderWholeRoomDrawController {
     @RestResult
     public void submitToTwoLevelActuarialCalculationFlow(@RequestBody OrderWholeRoomDraw orderWholeRoomDraw) {
         iOrderWholeRoomDrawService.submitToTwoLevelActuarialCalculationFlow(orderWholeRoomDraw.getOrderId());
+        /**
+         * 需要提交二级精算角色？
+         * */
     }
 
     @PostMapping("/submitToBackToDesignerFlow")
