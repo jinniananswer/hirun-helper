@@ -1,7 +1,9 @@
 package com.microtomato.hirun.modules.bss.order.entity.po;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.microtomato.hirun.framework.config.JsonLocalDateTimeDeserializer;
@@ -29,6 +31,11 @@ import java.time.LocalDateTime;
 public class OrderMeasureHouse extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
+    /**
+     * 订单量全房图信息
+     */
+    @TableId(value = "id", type = IdType.AUTO)
+    private Long id;
 
     /**
      * 订单id
@@ -77,8 +84,22 @@ public class OrderMeasureHouse extends BaseEntity {
     /**
      * 更新时间
      */
+    @JsonSerialize(using = JsonLocalDateTimeSerializer.class)
+    @JsonDeserialize(using = JsonLocalDateTimeDeserializer.class)
     @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
+
+    /**
+     * 开始时间
+     */
+    @TableField("start_date")
+    private LocalDateTime startDate;
+
+    /**
+     * 结束时间
+     */
+    @TableField("end_date")
+    private LocalDateTime endDate;
 
     /**
      * 更新员工

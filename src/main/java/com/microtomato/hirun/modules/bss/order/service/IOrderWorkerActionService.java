@@ -17,7 +17,14 @@ public interface IOrderWorkerActionService extends IService<OrderWorkerAction> {
 
     List<OrderWorkerActionDTO> queryByOrderId(Long orderId);
 
+    List<OrderWorkerActionDTO> queryByOrderIdActionDto(Long orderId, String action);
+
     List<OrderWorkerAction> queryByOrderIdAction(Long orderId, String action);
 
+    List<OrderWorkerAction> queryByOrderIdEmployeeIdAction(Long orderId, Long employeeId,String action) ;
+
     void createOrderWorkerAction(Long orderId, Long employeeId, Long workerId, String currentOrderStatus, String action);
+
+    void deleteOrderWorkerAction(Long orderId,String action);
+
 }

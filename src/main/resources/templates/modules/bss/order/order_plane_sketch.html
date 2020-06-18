@@ -31,7 +31,7 @@
                                 <el-row>
                                     <el-col :span="11">
                                         <el-form-item label="设计师" required="true" prop="designer">
-                                            <order-selectemployee role-id="30" v-model="planFigureInfos.designer"></order-selectemployee>
+                                            <order-selectemployee role-id="30" v-model="planFigureInfos.designer" :disabled="true"></order-selectemployee>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="11">
@@ -95,14 +95,6 @@
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="11">
-                                        <el-form-item label="助理设计师">
-
-                                            <order-selectemployee role-id="30" v-model="planFigureInfos.assistantDesigner"></order-selectemployee>
-                                        </el-form-item>
-                                    </el-col>
-                                </el-row>
-                                <el-row>
-                                    <el-col :span="11">
                                         <el-form-item label="第一次看图时间">
                                             <el-date-picker
                                                     v-model="planFigureInfos.firstLookTime"
@@ -113,17 +105,72 @@
                                             </el-date-picker>
                                         </el-form-item>
                                     </el-col>
-                                    <el-col :span="11">
-                                        <el-form-item label="客户意见">
-                                            <el-input v-model="planFigureInfos.customerComments" placeholder="客户意见"></el-input>
-                                        </el-form-item>
+                                </el-row>
 
+                                <el-row>
+                                    <el-col :span="22">
+                                        <el-form-item label="客户意见">
+                                            <el-input
+                                                    type="textarea"
+                                                    :rows="2"
+                                                    placeholder="请输入内容"
+                                                    v-model="planFigureInfos.customerComments">
+                                            </el-input>
+                                        </el-form-item>
                                     </el-col>
+                                </el-row>
+
+                                <el-row>
+
                                     <el-col v-if="true" :span="22">
                                         <el-form-item label="请选择财务人员" required="true">
-                                            <order-search-employee :employee-id.sync="planFigureInfos.financeEmployeeId" :employee-name.sync="employeeName"></order-search-employee>
+                                            <order-search-employee :employee-id.sync="planFigureInfos.financeEmployeeId" :employee-name.sync="planFigureInfos.financeEmployeeName"></order-search-employee>
                                         </el-form-item>
                                     </el-col>
+
+
+                                </el-row>
+
+
+                                <el-row>
+                                    <el-col :span="11">
+                                        <el-form-item label="助理设计师">
+                                            <order-selectemployee role-id="30" v-model="planFigureInfos.assistantDesigner"></order-selectemployee>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="5">
+                                        <el-button type="success" @click="addSuccess" icon="el-icon-circle-plus-outline">添加</el-button>
+                                    </el-col>
+                                    <template>
+                                        <el-table
+                                                :data="orderWorkActions"
+                                                border
+                                                style="width: 100%">
+                                            <el-table-column
+                                                    prop="employeeName"
+                                                    label="助理设计师"
+                                                    width="280">
+                                            </el-table-column>
+                                            <el-table-column
+                                                    prop="action"
+                                                    label="员工事项"
+                                                    width="280">
+                                            </el-table-column>
+                                            <el-table-column
+                                                    fixed="right"
+                                                    label="操作"
+                                                    width="280">
+                                                <template slot-scope="scope">
+                                                    <el-button
+                                                            @click.native.prevent="deleteRow(scope.$index, orderWorkActions)"
+                                                            type="text"
+                                                            size="small">
+                                                        取消
+                                                    </el-button>
+                                                </template>
+                                            </el-table-column>
+                                        </el-table>
+                                    </template>
 
                                     <el-col>
                                         <el-form-item >
@@ -137,6 +184,7 @@
                                             </el-row>
                                         </el-form-item>
                                     </el-col>
+
                                 </el-row>
 
                                 <el-form-item>

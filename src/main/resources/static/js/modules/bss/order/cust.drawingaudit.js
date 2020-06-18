@@ -15,7 +15,8 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 drawingAssistant: '',//绘图助理
                 adminAssistant: '',//行政助理
                 designerRemarks: '',//设计师备注
-                reviewedComments: ''//审核意见
+                reviewedComments: '',//审核意见
+                customerLeader: ''//客户部主管
             },
             custId: util.getRequest('custId'),
             eid:null,
@@ -68,11 +69,11 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     return false;
                 }
                 ajax.post('api/bss.order/order-wholeRoomDrawing/submitToCustomerLeaderFlow', this.wholeRoomDrawing);
-                ajax.get('api/bss.order/order-planSketch/updateOrderWork', {
+                /*ajax.get('api/bss.order/order-planSketch/updateOrderWork', {
                     orderId : this.wholeRoomDrawing.orderId,
                     roleId : '19',
                     employeeId : this.eid,
-                });
+                });*/
             },
             submitToBackWholeRoomFlow : function () {
                 ajax.post('api/bss.order/order-wholeRoomDrawing/submitToBackWholeRoomFlow', this.wholeRoomDrawing);

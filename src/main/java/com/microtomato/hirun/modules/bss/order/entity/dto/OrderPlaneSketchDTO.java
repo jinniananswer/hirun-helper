@@ -6,6 +6,7 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @author ：mmzs
@@ -100,4 +101,8 @@ public class OrderPlaneSketchDTO {
     private Long financeEmployeeId;
 
     private String financeEmployeeName;
+
+    private List<OrderWorkerActionDTO> orderWorkActions;
+
+    private String employeeName;
 }

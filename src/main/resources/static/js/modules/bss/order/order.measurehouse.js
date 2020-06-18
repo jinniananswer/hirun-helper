@@ -12,6 +12,15 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     designer: '',
                     assistantDesigner :''
                 },
+                orderWorkActions: [],
+                orderWorkAction :{
+                    orderId : '',
+                    orderStatus : '',
+                    employeeId :'',
+                    employeeName : '',
+                    action:'',
+                    roleId : ''
+                },
                 custId: util.getRequest('custId'),
                 isShow : true,
                 id : util.getRequest('id'),
@@ -20,12 +29,51 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     measureArea: [
                         { required: true, message: '请填写量房面积', trigger: 'change' }
                     ],
-                }
+                },
             }
         },
 
         methods: {
+            getDatas : function() {
+                let orderId = this.quantityRoomInfos.orderId;
+                let measureArea = this.quantityRoomInfos.measureArea;
+                let designer = this.quantityRoomInfos.designer;
+                let orderWorkActions = this.orderWorkActions;
+                let data = {
+                    orderId: orderId,
+                    id: '',
+                    measureTime: util.getNowDate(),
+                    measureArea: measureArea,
+                    designer: designer,
+                    orderWorkActions: orderWorkActions
+                };
+                //alert(JSON.stringify(data));
+                return data;
+            },
+            addSuccess : function() {
+                this.orderWorkAction = {};
+                this.orderWorkAction.employeeId = this.quantityRoomInfos.assistantDesigner;
+                if (this.orderWorkAction.employeeId == '' || this.orderWorkAction.employeeId == null) {
+                    Vue.prototype.$message({
+                        message: '请先选择助理设计师再添加设计师！',
+                        type: 'error'
+                    });
+                    return false;
+                }
+                ajax.get('api/bss.order/order-measurehouse/getEmployeeNameEmployeeId', {employeeId:this.orderWorkAction.employeeId}, (responseData)=>{
+                    this.orderWorkAction.employeeName = responseData.employeeName ;
+                });
+                this.orderWorkAction.orderId = this.quantityRoomInfos.orderId;
+                this.orderWorkAction.action = 'measure';
+                this.orderWorkAction.roleId = '19';
+                this.orderWorkAction.orderStatus = this.orderStatus;
+                this.orderWorkActions.push(this.orderWorkAction);
+                //alert(JSON.stringify(this.orderWorkActions));
 
+            },
+            deleteRow : function(index, rows) {
+                rows.splice(index, 1);
+            },
             checkBeforeOrder : function () {
                 if (this.quantityRoomInfos.measureArea == '0' || this.quantityRoomInfos.measureArea == null) {
                     Vue.prototype.$message({
@@ -39,13 +87,15 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
             handleChangeMeasureAreaNum : function(value) {
                 this.quantityRoomInfos.measureArea = value;
             },
-            init:function(){
+            init:function() {
                 let that = this;
                 let data = {
                     orderId : util.getRequest('orderId'),
                 }
                 ajax.get('api/bss.order/order-measurehouse/getMeasureHouse', data, (responseData)=>{
+                    //alert(JSON.stringify(responseData));
                     Object.assign(this.quantityRoomInfos, responseData);
+                    this.orderWorkActions = responseData.orderWorkActions;
                 });
                 if (this.orderStatus=='4') {
                     this.isShow = false;
@@ -107,7 +157,8 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     });
                     return false;
                 }
-                ajax.post('api/bss.order/order-measurehouse/saveMeasureHouseInfos', this.quantityRoomInfos,null,null,true);
+                let data = this.getDatas();
+                ajax.post('api/bss.order/order-measurehouse/saveMeasureHouseInfos', data,null,null,true);
             },
             submitToOnlyWoodworkFlow : function() {
                 ajax.post('api/bss.order/order-measurehouse/submitToOnlyWoodworkFlow', this.quantityRoomInfos);

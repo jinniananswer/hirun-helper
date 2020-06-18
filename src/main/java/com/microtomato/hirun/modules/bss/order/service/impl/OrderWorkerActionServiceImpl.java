@@ -52,6 +52,27 @@ public class OrderWorkerActionServiceImpl extends ServiceImpl<OrderWorkerActionM
      * @return
      */
     @Override
+    public List<OrderWorkerAction> queryByOrderIdEmployeeIdAction(Long orderId, Long employeeId,String action) {
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+        return this.list(Wrappers.<OrderWorkerAction>lambdaQuery()
+                .eq(OrderWorkerAction::getOrderId, orderId)
+                .eq(OrderWorkerAction::getAction, action)
+                .eq(OrderWorkerAction::getEmployeeId, employeeId)
+                .ge(OrderWorkerAction::getEndDate, now));
+    }
+
+    /**
+     * 根据订单ID与动作查询动作记录
+     * @param orderId
+     * @param action
+     * @return
+     */
+    @Override
+    public List<OrderWorkerActionDTO> queryByOrderIdActionDto(Long orderId, String action) {
+        return this.orderWorkerActionMapper.queryByOrderIdAction(orderId,action);
+    }
+
+    @Override
     public List<OrderWorkerAction> queryByOrderIdAction(Long orderId, String action) {
         LocalDateTime now = RequestTimeHolder.getRequestTime();
         return this.list(Wrappers.<OrderWorkerAction>lambdaQuery()
@@ -59,6 +80,38 @@ public class OrderWorkerActionServiceImpl extends ServiceImpl<OrderWorkerActionM
                 .eq(OrderWorkerAction::getAction, action)
                 .ge(OrderWorkerAction::getEndDate, now));
     }
+
+    /**
+     * 先终止数据
+     * @param orderId
+     * @param action
+     */
+    @Override
+    public void deleteOrderWorkerAction(Long orderId,String action) {
+        //先终止原来的数据
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+        //List<OrderWorkerAction> oldActions = this.queryByOrderIdEmployeeIdAction(orderId,employeeId,action);
+        List<OrderWorkerAction> oldActions = this.queryByOrderIdAction(orderId,action);
+        if (ArrayUtils.isNotEmpty(oldActions)) {
+            oldActions.forEach(oldAction -> {
+                oldAction.setEndDate(now);
+                this.updateById(oldAction);
+            });
+        }
+    }
+
+    /*@Override
+    public void deleteOrderWorkerByOrderId(Long orderId) {
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+        List<OrderWorkerAction> oldActions = this.queryByOrderIdEmployeeIdAction(orderId,employeeId,action);
+        List<OrderWorkerAction> oldActions = this.queryByOrderIdAction(orderId,action);
+        if (ArrayUtils.isNotEmpty(oldActions)) {
+            oldActions.forEach(oldAction -> {
+                oldAction.setEndDate(now);
+                this.updateById(oldAction);
+            });
+        }
+    }*/
 
     /**
      * 创建订单参与工作人员动作数据
@@ -69,16 +122,7 @@ public class OrderWorkerActionServiceImpl extends ServiceImpl<OrderWorkerActionM
      */
     @Override
     public void createOrderWorkerAction(Long orderId, Long employeeId, Long workerId, String currentOrderStatus, String action) {
-        //先终止原来的数据
         LocalDateTime now = RequestTimeHolder.getRequestTime();
-        List<OrderWorkerAction> oldActions = this.queryByOrderIdAction(orderId, action);
-        if (ArrayUtils.isEmpty(oldActions)) {
-            oldActions.forEach(oldAction -> {
-                oldAction.setEndDate(now);
-                this.updateById(oldAction);
-            });
-        }
-
         //新增新的记录
         EmployeeJobRole employeeJobRole = this.employeeJobRoleService.queryLast(employeeId);
         OrderWorkerAction workerAction = new OrderWorkerAction();
@@ -88,6 +132,7 @@ public class OrderWorkerActionServiceImpl extends ServiceImpl<OrderWorkerActionM
         workerAction.setWorkerId(workerId);
         workerAction.setAction(action);
         workerAction.setJobRole(employeeJobRole.getJobRole());
+        workerAction.setEmployeeId(employeeId);
         workerAction.setJobGrade(employeeJobRole.getJobGrade());
         workerAction.setOrgId(employeeJobRole.getOrgId());
         workerAction.setOrderStatus(currentOrderStatus);

@@ -2,7 +2,9 @@ package com.microtomato.hirun.modules.bss.order.entity.dto;
 
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 /**
@@ -19,7 +21,7 @@ public class OrderMeasureHouseDTO  {
 
     private String measureArea;
 
-    private LocalDateTime measureTime;
+    private LocalDate measureTime;
 
     private String customerComments;
 
@@ -34,4 +36,8 @@ public class OrderMeasureHouseDTO  {
     private Long updateUserId;
 
     private Long designer;
+
+    private List<OrderWorkerActionDTO> orderWorkActions;
+
+    private String employeeName;
 }

@@ -16,9 +16,19 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 customerComments: '',
                 assistantDesigner: '',
                 startTime: '',
+                financeEmployeeName : '',
                 endTime: '',
                 firstLookTime: util.getNowDate(),
                 financeEmployeeId : ''
+            },
+            orderWorkActions: [],
+            orderWorkAction :{
+                orderId : '',
+                orderStatus : '',
+                employeeId :'',
+                employeeName : '',
+                action:'',
+                roleId : ''
             },
             accountingInfos: [],
             isShow: false,
@@ -39,6 +49,8 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 }
                 ajax.get('api/bss.order/order-planSketch/getPlaneSketch', data, (responseData)=>{
                     Object.assign(this.planFigureInfos, responseData);
+                    alert(JSON.stringify(this.planFigureInfos));
+                    this.orderWorkActions = responseData.orderWorkActions;
                 });
                 if (this.orderStatus=='35') {
                     this.isBackToDesigner = true;
@@ -48,11 +60,62 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 }
                 this.downloadFileUrl = 'api/bss.order/order-file/download/' + util.getRequest("orderId") + "/456";
             },
-
+            getDatas : function() {
+                let orderId = this.planFigureInfos.orderId;
+                let indoorArea = this.planFigureInfos.indoorArea;
+                let projectAssistant = this.planFigureInfos.projectAssistant;
+                let contractDesignFee = this.planFigureInfos.contractDesignFee ;
+                let designerPlanNum = this.planFigureInfos.designerPlanNum;
+                let designTheme = this.planFigureInfos.designTheme;
+                let designer = this.planFigureInfos.designer;
+                let designFeeStandard = this.planFigureInfos.designFeeStandard;
+                let customerComments = this.planFigureInfos.customerComments;
+                let orderWorkActions = this.orderWorkActions;
+                let financeEmployeeId = this.planFigureInfos.financeEmployeeId;
+                let data = {
+                    orderId: orderId,
+                    id: '',
+                    measureTime: util.getNowDate(),
+                    indoorArea: indoorArea,
+                    projectAssistant : projectAssistant,
+                    contractDesignFee : contractDesignFee,
+                    designerPlanNum : designerPlanNum,
+                    designTheme : designTheme,
+                    designFeeStandard : designFeeStandard,
+                    customerComments : customerComments,
+                    designer: designer,
+                    financeEmployeeId : financeEmployeeId,
+                    orderWorkActions: orderWorkActions
+                };
+                return data;
+            },
+            addSuccess : function() {
+                this.orderWorkAction = {};
+                this.orderWorkAction.employeeId = this.planFigureInfos.assistantDesigner;
+                if (this.orderWorkAction.employeeId == '' || this.orderWorkAction.employeeId == null) {
+                    Vue.prototype.$message({
+                        message: '请先选择助理设计师再添加设计师！',
+                        type: 'error'
+                    });
+                    return false;
+                }
+                ajax.get('api/bss.order/order-measurehouse/getEmployeeNameEmployeeId', {employeeId:this.orderWorkAction.employeeId}, (responseData)=>{
+                    this.orderWorkAction.employeeName = responseData.employeeName ;
+                });
+                this.orderWorkAction.orderId = this.planFigureInfos.orderId;
+                this.orderWorkAction.action = 'draw_plane';
+                this.orderWorkAction.roleId = '19';
+                this.orderWorkAction.orderStatus = this.orderStatus;
+                this.orderWorkActions.push(this.orderWorkAction);
+            },
+            deleteRow : function(index, rows) {
+                rows.splice(index, 1);
+            },
 
             checkBeforeOrder : function () {
             },
             changeDesignFeeStandard: function(newVal) {
+                //alert(newVal);
                 this.planFigureInfos.designFeeStandard = newVal;
             },
             changeDefaultDesignTheme: function(newVal) {
@@ -92,8 +155,9 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     });
                     return false;
                 }
-
-                ajax.post('api/bss.order/order-planSketch/submitPlaneSketch', this.planFigureInfos,null,null,true);
+                let data = this.getDatas();
+                //alert(JSON.stringify(data));
+                ajax.post('api/bss.order/order-planSketch/submitPlaneSketch', data,null,null,true);
             },
             //修改平面图时间
             submitToDelayTimeFlow : function() {
@@ -120,14 +184,6 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 this.planFigureInfos.employeeId = this.eid;
                 ajax.post('api/bss.order/order-planSketch/submitToSignContractFlow', this.planFigureInfos,(responseData)=>{
 
-                });
-            },
-            backOrderWork : function () {
-                //回写订单状态
-                ajax.get('api/bss.order/order-planSketch/updateOrderWork', {
-                    orderId : this.planFigureInfos.orderId,
-                    roleId : '34',
-                    employeeId : this.eid,
                 });
             },
             submitToBackToDesignerFlow : function () {

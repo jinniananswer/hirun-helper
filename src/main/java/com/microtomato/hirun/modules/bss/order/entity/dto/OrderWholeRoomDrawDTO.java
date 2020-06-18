@@ -94,5 +94,18 @@ public class OrderWholeRoomDrawDTO {
      */
     private Long updateUserId;
 
+    /**
+     * 设计师
+     */
     private Long designer;
+
+    /**
+     * 图纸审核员
+     */
+    private Long drawingAuditor;
+
+    /**
+     * 客戶不主管
+     */
+    private Long customerLeader;
 }

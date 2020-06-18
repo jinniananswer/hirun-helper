@@ -6,7 +6,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
             wholeRoomDrawing: {
                 id : util.getRequest('id'),
                 orderId : util.getRequest('orderId'),
-                designer: '測試一',
+                designer: '',
                 preTime: '',//预约看图时间
                 startTime: '',
                 endTime: '',
@@ -25,7 +25,6 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
             let data = {
                 orderId : util.getRequest('orderId'),
             }
-            //alert(JSON.stringify(data));
             ajax.get('api/bss.order/order-wholeRoomDrawing/getWholeRoomDraw', data, (responseData)=>{
                 Object.assign(this.wholeRoomDrawing, responseData);
             });

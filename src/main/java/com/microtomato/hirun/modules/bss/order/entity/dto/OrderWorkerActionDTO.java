@@ -17,6 +17,8 @@ public class OrderWorkerActionDTO {
 
     private Long employeeId;
 
+    private String employeeName;
+
     /**
      * 参与的订单状态
      */

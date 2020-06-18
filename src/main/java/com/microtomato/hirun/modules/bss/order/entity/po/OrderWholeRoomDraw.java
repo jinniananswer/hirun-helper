@@ -44,14 +44,14 @@ public class OrderWholeRoomDraw extends BaseEntity {
     /**
      * 开始时间
      */
-    @TableField(value = "start_time")
-    private LocalDate startTime;
+    @TableField("start_date")
+    private LocalDateTime startDate;
 
     /**
      * 结束时间
      */
-    @TableField(value = "end_time")
-    private LocalDate endTime;
+    @TableField("end_date")
+    private LocalDateTime endDate;
 
     /**
      * 预约看图时间

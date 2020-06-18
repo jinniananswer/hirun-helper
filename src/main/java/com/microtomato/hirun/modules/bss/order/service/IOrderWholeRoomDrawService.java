@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.bss.order.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWholeRoomDrawDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderWholeRoomDraw;
 
 /**
@@ -28,6 +29,8 @@ public interface IOrderWholeRoomDrawService extends IService<OrderWholeRoomDraw>
 
     void submitToBackToDesignerFlow(Long orderId);
 
-    OrderWholeRoomDraw getOrderWholeRoomDrawByOrderId(Long orderId);
+    OrderWholeRoomDrawDTO getOrderWholeRoomDrawByOrderId(Long orderId);
+
+    void submitWholeRoomDrawing(OrderWholeRoomDrawDTO dto);
 
 }

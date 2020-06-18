@@ -30,7 +30,7 @@
                                 <el-row>
                                     <el-col :span="11">
                                         <el-form-item label="设计师" required="true" prop="designer">
-                                            <order-selectemployee role-id="30" v-model="wholeRoomDrawing.designer"></order-selectemployee>
+                                            <order-selectemployee role-id="30" v-model="wholeRoomDrawing.designer" :disabled="true"></order-selectemployee>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="11">
@@ -113,7 +113,7 @@
                                     </el-col>
                                     <el-col v-if="true" :span="22">
                                         <el-form-item label="请选图纸审核人员" required="true" >
-                                            <order-search-employee :employee-id.sync="eid" :employee-name.sync="employeeName"></order-search-employee>
+                                            <order-search-employee :employee-id.sync="wholeRoomDrawing.drawingAuditor" :employee-name.sync="employeeName"></order-search-employee>
                                         </el-form-item>
                                     </el-col>
 

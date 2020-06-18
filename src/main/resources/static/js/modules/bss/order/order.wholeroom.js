@@ -11,6 +11,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 preTime: util.getNowDate(),//预约看图时间
                 startTime: '',
                 endTime: '',
+                drawingAuditor :'',
                 productionLeader: '金念',//制作组长
                 assistantDesigner: '',//助理设计师
                 hydropowerDesigner: '',//水电设计师
@@ -19,6 +20,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 designerRemarks: '',//设计师备注
                 reviewedComments: ''//审核意见
             },
+
             isShow : true,
             isBackToDesigner : false,
             isAudit : false,
@@ -108,11 +110,11 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     return false;
                 }
                 ajax.post('api/bss.order/order-wholeRoomDrawing/submitToAuditPicturesFlow', this.wholeRoomDrawing);
-                ajax.get('api/bss.order/order-planSketch/updateOrderWork', {
+                /*ajax.get('api/bss.order/order-planSketch/updateOrderWork', {
                     orderId : this.wholeRoomDrawing.orderId,
                     roleId : '44',
                     employeeId : this.eid,
-                });
+                });*/
             },
             submitToConfirmFlow : function () {
                 ajax.post('api/bss.order/order-wholeRoomDrawing/submitToConfirmFlow', this.wholeRoomDrawing);

@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.bss.order.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.microtomato.hirun.modules.bss.order.entity.dto.OrderMeasureHouseDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderMeasureHouse;
 
 /**
@@ -18,7 +19,9 @@ public interface IOrderMeasureHouseService extends IService<OrderMeasureHouse> {
 
     void submitToMeasureSuspendFlow(Long orderId);
 
-    OrderMeasureHouse getMeasureHouse(Long orderId);
+    OrderMeasureHouseDTO getMeasureHouse(Long orderId);
 
     void submitToOnlyWoodworkFlow(Long orderId);
+
+    void saveMeasureHouseInfos(OrderMeasureHouseDTO dto);
 }

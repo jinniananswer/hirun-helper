@@ -49,6 +49,12 @@ public class OrderWorkerAction extends BaseEntity {
     private Long orgId;
 
     /**
+     * 动作发生时的当前员工
+     */
+    @TableField("employee_id")
+    private Long employeeId;
+
+    /**
      * 动作发生时的当前岗位
      */
     @TableField("job_role")

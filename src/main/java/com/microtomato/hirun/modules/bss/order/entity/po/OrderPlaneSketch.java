@@ -75,15 +75,14 @@ public class OrderPlaneSketch extends BaseEntity {
     /**
      * 开始时间
      */
-    @TableField("start_time")
-    private LocalDate startTime;
+    @TableField("start_date")
+    private LocalDateTime startDate;
 
     /**
      * 结束时间
      */
-
-    @TableField("end_time")
-    private LocalDate endTime;
+    @TableField("end_date")
+    private LocalDateTime endDate;
 
     /**
      * 第一次看图时间
