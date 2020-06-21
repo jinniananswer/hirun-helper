@@ -16,6 +16,8 @@ import com.microtomato.hirun.modules.bss.config.service.IOrderRoleCfgService;
 import com.microtomato.hirun.modules.bss.config.service.IOrderStatusCfgService;
 import com.microtomato.hirun.modules.bss.config.service.IOrderStatusTransCfgService;
 import com.microtomato.hirun.modules.bss.config.service.IRoleAttentionStatusCfgService;
+import com.microtomato.hirun.modules.bss.customer.entity.dto.CustInfoDTO;
+import com.microtomato.hirun.modules.bss.customer.service.ICustBaseService;
 import com.microtomato.hirun.modules.bss.house.service.IHousesService;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.*;
@@ -48,6 +50,9 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
 
     @Autowired
     private IOrderBaseService orderBaseService;
+
+    @Autowired
+    private ICustBaseService custBaseService;
 
     @Autowired
     private IStaticDataService staticDataService;
@@ -103,6 +108,11 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
         if (orderBase == null) {
             return orderInfo;
         }
+
+        Long custId = orderBase.getCustId();
+        CustInfoDTO customer = this.custBaseService.queryByCustIdOrOrderId(custId, orderId);
+        orderInfo.setCustomer(customer);
+
 
         BeanUtils.copyProperties(orderBase, orderInfo);
         orderInfo.setTypeName(this.staticDataService.getCodeName("ORDER_TYPE", orderBase.getType()));

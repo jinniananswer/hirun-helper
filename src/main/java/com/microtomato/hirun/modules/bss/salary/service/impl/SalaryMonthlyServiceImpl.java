@@ -95,7 +95,7 @@ public class SalaryMonthlyServiceImpl extends ServiceImpl<SalaryMonthlyMapper, S
         }
 
         SalaryDO salaryDO = SpringContextUtils.getBean(SalaryDO.class);
-        salaryDO.createRoyalties(51L, "32");
+        salaryDO.createRoyalties(54L, "10");
         return salaries;
     }
 

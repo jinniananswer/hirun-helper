@@ -85,7 +85,7 @@ public class SalaryRoyaltyStrategy extends BaseEntity {
     private Long shopId;
 
     /** 员工归属部门ID 最细粒度的部门匹配条件 */
-    @TableField(value = "orgId")
+    @TableField(value = "org_id")
     private Long orgId;
 
     /** 角色编码 */

@@ -1,5 +1,6 @@
 package com.microtomato.hirun.modules.bss.order.entity.dto;
 
+import com.microtomato.hirun.modules.bss.customer.entity.dto.CustInfoDTO;
 import lombok.Data;
 
 import java.util.List;
@@ -121,6 +122,11 @@ public class OrderDetailDTO {
      * 上一步状态
      */
     private String previousStatusName;
+
+    /**
+     * 客户信息
+     */
+    private CustInfoDTO customer;
 
     /**
      * 订单费用信息

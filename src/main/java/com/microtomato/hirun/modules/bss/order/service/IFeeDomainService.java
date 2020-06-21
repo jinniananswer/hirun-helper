@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.bss.order.service;
 
 import com.microtomato.hirun.modules.bss.order.entity.dto.FeeDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeCompositeDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeInfoDTO;
 
 import java.util.List;
@@ -20,4 +21,6 @@ public interface IFeeDomainService {
     Long getNeedPay(Long fee, Long orderId, String type, Integer period);
 
     List<OrderFeeInfoDTO> queryOrderFeeInfo(Long orderId);
+
+    List<OrderFeeCompositeDTO> buildCompositeFee(Long orderId);
 }

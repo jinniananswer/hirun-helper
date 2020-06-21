@@ -1,4 +1,4 @@
-package com.microtomato.hirun.modules.bss.salary.entity.domain;
+package com.microtomato.hirun.modules.bss.order.entity.dto;
 
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import lombok.AllArgsConstructor;
@@ -11,15 +11,16 @@ import java.util.List;
 
 /**
  * @program: hirun-helper
- * @description: 费用数据类
+ * @description:
  * @author: jinnian
- * @create: 2020-05-17 23:12
+ * @create: 2020-06-14 22:10
  **/
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FeeFact {
+public class OrderFeeCompositeDTO {
 
     /**
      * 费用类型 设计费、工程款、主材、橱柜
@@ -32,9 +33,14 @@ public class FeeFact {
     private Integer periods;
 
     /**
+     * 费用编号
+     */
+    private Long feeNo;
+
+    /**
      * 费用子项
      */
-    private List<FeeItemFact> items;
+    private List<OrderFeeItemDTO> items;
 
     /**
      * 合同总金额
@@ -106,7 +112,7 @@ public class FeeFact {
                 return 0L;
             }
 
-            for (FeeItemFact item : items) {
+            for (OrderFeeItemDTO item : items) {
                 if (item.getFeeItemId().equals(feeItemId)) {
                     return item.getFee();
                 }

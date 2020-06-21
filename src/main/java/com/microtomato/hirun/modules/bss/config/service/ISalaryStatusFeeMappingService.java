@@ -2,6 +2,7 @@ package com.microtomato.hirun.modules.bss.config.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.microtomato.hirun.modules.bss.config.entity.po.SalaryStatusFeeMapping;
+import org.springframework.cache.annotation.Cacheable;
 
 /**
  * 订单状态与费用映射关系配置(SalaryStatusFeeMapping)表服务接口
@@ -13,4 +14,7 @@ import com.microtomato.hirun.modules.bss.config.entity.po.SalaryStatusFeeMapping
 public interface ISalaryStatusFeeMappingService extends IService<SalaryStatusFeeMapping> {
 
     SalaryStatusFeeMapping getStatusFeeMapping(String status);
+
+    @Cacheable("status-fee-mapping-strategy-id")
+    SalaryStatusFeeMapping getByStrategyId(Long strategyId);
 }

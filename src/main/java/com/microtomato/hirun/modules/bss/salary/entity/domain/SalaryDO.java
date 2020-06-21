@@ -4,14 +4,16 @@ import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.SPELUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
-import com.microtomato.hirun.modules.bss.config.entity.po.SalaryRoyaltyMultiSplit;
 import com.microtomato.hirun.modules.bss.config.entity.po.SalaryRoyaltyStrategy;
 import com.microtomato.hirun.modules.bss.config.entity.po.SalaryStatusFeeMapping;
 import com.microtomato.hirun.modules.bss.config.service.ISalaryRoyaltyMultiSplitService;
 import com.microtomato.hirun.modules.bss.config.service.ISalaryRoyaltyStrategyService;
 import com.microtomato.hirun.modules.bss.config.service.ISalaryStatusFeeMappingService;
+import com.microtomato.hirun.modules.bss.order.entity.dto.OrderPlaneSketchDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerActionDTO;
-import com.microtomato.hirun.modules.bss.order.entity.po.*;
+import com.microtomato.hirun.modules.bss.order.entity.po.OrderBase;
+import com.microtomato.hirun.modules.bss.order.entity.po.OrderFee;
+import com.microtomato.hirun.modules.bss.order.entity.po.OrderFeeItem;
 import com.microtomato.hirun.modules.bss.order.service.*;
 import com.microtomato.hirun.modules.bss.salary.entity.po.SalaryRoyaltyDetail;
 import com.microtomato.hirun.modules.bss.salary.exception.SalaryException;
@@ -100,42 +102,19 @@ public class SalaryDO {
             return;
         }
 
-        //2.组装订单的费用等相关信息，这些对象需要进行计算或者更细粒度的条件匹配
-        //2.1 查询状态对应要捞取的参与运算的费用配置
-        SalaryStatusFeeMapping statusFeeMapping = this.statusFeeMappingService.getStatusFeeMapping(orderStatus);
-        if (statusFeeMapping == null) {
-            return;
-        }
-
-        //2.2 根据状态对应的费用配置查询费用信息
-        OrderFee orderFee = this.orderFeeService.getByOrderIdTypePeriod(orderId, statusFeeMapping.getType(), statusFeeMapping.getPeriods());
-        if (orderFee == null) {
-            //没有查到费用信息，无法计算
+        //2.组装订单费用信息
+        FeeFact feeFact = this.buildFeeFact(orderId, orderStatus);
+        if (feeFact == null) {
+            //没有费用信息，无法计算，直接返回
             return;
         }
 
         LocalDateTime now = LocalDateTime.now();
         RoyaltyComputeFact computeFact = new RoyaltyComputeFact();
-        FeeFact feeFact = new FeeFact();
-
         computeFact.setFeeFact(feeFact);
-        BeanUtils.copyProperties(orderFee, feeFact);
-        //2.3 如果是工程款，查询费用明细信息
-        if (StringUtils.equals("2", statusFeeMapping.getType())) {
-            List<OrderFeeItem> orderFeeItems = this.orderFeeItemService.queryByOrderIdFeeNo(orderId, orderFee.getFeeNo());
-            if (ArrayUtils.isNotEmpty(orderFeeItems)) {
-                List<FeeItemFact> feeItemFacts = new ArrayList<>();
-                orderFeeItems.forEach((orderFeeItem -> {
-                    FeeItemFact feeItemFact = new FeeItemFact();
-                    BeanUtils.copyProperties(orderFeeItem, feeItemFact);
-                    feeItemFacts.add(feeItemFact);
-                }));
-                feeFact.setItems(feeItemFacts);
-            }
-        }
 
         //2.4 查询订单设计费标准
-        OrderPlaneSketch planeSketch = this.orderPlaneSketchService.getPlaneSketch(orderId);
+        OrderPlaneSketchDTO planeSketch = this.orderPlaneSketchService.getPlaneSketch(orderId);
         Integer designFeeStandard = 0;
         if (planeSketch != null) {
             designFeeStandard = planeSketch.getDesignFeeStandard();
@@ -171,12 +150,48 @@ public class SalaryDO {
 
             List<SalaryRoyaltyStrategy> matchStrategies = this.match(matchFact, computeFact, strategies);
             List<SalaryRoyaltyDetail> details = this.generateRoyaltyDetail(matchStrategies, computeFact, matchFact, orderId, salaryMonth, orderStatus);
+            if (ArrayUtils.isNotEmpty(details)) {
+                royaltyDetails.addAll(details);
+            }
 
         });
 
         if (ArrayUtils.isNotEmpty(royaltyDetails)) {
             this.salaryRoyaltyDetailService.saveBatch(royaltyDetails);
         }
+    }
+
+    private FeeFact buildFeeFact(Long orderId, String orderStatus) {
+        //1.组装订单的费用等相关信息，这些对象需要进行计算或者更细粒度的条件匹配
+        //1.1 查询状态对应要捞取的参与运算的费用配置
+        SalaryStatusFeeMapping statusFeeMapping = this.statusFeeMappingService.getStatusFeeMapping(orderStatus);
+        if (statusFeeMapping == null) {
+            return null;
+        }
+
+        //1.2 根据状态对应的费用配置查询费用信息
+        OrderFee orderFee = this.orderFeeService.getByOrderIdTypePeriod(orderId, statusFeeMapping.getType(), statusFeeMapping.getPeriods());
+        if (orderFee == null) {
+            //没有查到费用信息，无法计算
+            return null;
+        }
+        FeeFact feeFact = new FeeFact();
+        BeanUtils.copyProperties(orderFee, feeFact);
+
+        //1.3 如果是工程款，查询费用明细信息
+        if (StringUtils.equals("2", statusFeeMapping.getType())) {
+            List<OrderFeeItem> orderFeeItems = this.orderFeeItemService.queryByOrderIdFeeNo(orderId, orderFee.getFeeNo());
+            if (ArrayUtils.isNotEmpty(orderFeeItems)) {
+                List<FeeItemFact> feeItemFacts = new ArrayList<>();
+                orderFeeItems.forEach((orderFeeItem -> {
+                    FeeItemFact feeItemFact = new FeeItemFact();
+                    BeanUtils.copyProperties(orderFeeItem, feeItemFact);
+                    feeItemFacts.add(feeItemFact);
+                }));
+                feeFact.setItems(feeItemFacts);
+            }
+        }
+        return feeFact;
     }
 
     /**
@@ -250,8 +265,14 @@ public class SalaryDO {
         //第二步，根据条件表达式精确筛选
         List<SalaryRoyaltyStrategy> result = new ArrayList<>();
         SPELUtils executor = new SPELUtils();
+        executor.parse(matchFact);
         temp.forEach(strategy -> {
-            boolean isMatch = executor.executeBool(strategy.getMatchCondition());
+            boolean isMatch = false;
+            if (StringUtils.isBlank(strategy.getMatchCondition())) {
+                isMatch = true;
+            } else {
+                isMatch = executor.executeBool(strategy.getMatchCondition());
+            }
             if (isMatch) {
                 result.add(strategy);
             }
@@ -267,20 +288,21 @@ public class SalaryDO {
 
         LocalDateTime now = RequestTimeHolder.getRequestTime();
         SPELUtils executor = new SPELUtils();
+        executor.parse(computeFact);
         List<SalaryRoyaltyDetail> royaltyDetails = new ArrayList<>();
         strategies.forEach(matchStrategy -> {
-
             //根据匹配的配置，开始进行提成金额的计算
             String formula = matchStrategy.getFormula();
             Long value = executor.executeLong(formula, computeFact);
 
             //todo 多人拆分的计算
-            SalaryRoyaltyMultiSplit multiSplit = this.salaryRoyaltyMultiSplitService.getMultiSplit(matchStrategy.getType(), matchStrategy.getItem(), 0);
+            //SalaryRoyaltyMultiSplit multiSplit = this.salaryRoyaltyMultiSplitService.getMultiSplit(matchStrategy.getType(), matchStrategy.getItem(), 0);
 
 
             //本月可提和已提的计算
             String isMinusSend = matchStrategy.getIsMinusSend();
-
+            Long thisMonthFetch = new Long(value.longValue());
+            Long alreadyFetch = 0L;
             if (StringUtils.equals("1", isMinusSend)) {
                 //表示要减掉已发
                 String minusItem = matchStrategy.getMinusItem();
@@ -289,12 +311,12 @@ public class SalaryDO {
                     List<SalaryRoyaltyDetail> sendRoyaltyDetails = this.salaryRoyaltyDetailService.queryByOrderIdEmployeeIdItems(orderId, matchFact.getEmployeeId(), items);
 
                     if (ArrayUtils.isNotEmpty(sendRoyaltyDetails)) {
-                        Long sendValue = sendRoyaltyDetails.stream().filter(sendRoyaltyDetail -> sendRoyaltyDetail.getAlreadyFetch() != null)
+                        alreadyFetch = sendRoyaltyDetails.stream().filter(sendRoyaltyDetail -> sendRoyaltyDetail.getAlreadyFetch() != null)
                                 .mapToLong(SalaryRoyaltyDetail::getAlreadyFetch)
                                 .sum();
 
                         //减掉已发放的
-                        value -= sendValue;
+                        thisMonthFetch -= alreadyFetch;
                     }
                 }
             }
@@ -312,8 +334,8 @@ public class SalaryDO {
             royaltyDetail.setMode(matchStrategy.getMode());
             royaltyDetail.setValue(matchStrategy.getValue());
             royaltyDetail.setTotalRoyalty(value);
-            royaltyDetail.setAlreadyFetch(0L);
-            royaltyDetail.setThisMonthFetch(value);
+            royaltyDetail.setAlreadyFetch(alreadyFetch);
+            royaltyDetail.setThisMonthFetch(thisMonthFetch);
             royaltyDetail.setAuditStatus("0");
             royaltyDetail.setStartTime(now);
             royaltyDetail.setStrategyId(matchStrategy.getId());

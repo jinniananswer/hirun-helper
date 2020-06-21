@@ -14,7 +14,9 @@ import com.microtomato.hirun.modules.bss.config.service.IFeeItemCfgService;
 import com.microtomato.hirun.modules.bss.config.service.IFeeItemStageCfgService;
 import com.microtomato.hirun.modules.bss.config.service.IFeePayRelCfgService;
 import com.microtomato.hirun.modules.bss.order.entity.dto.FeeDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeCompositeDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeInfoDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeItemDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderBase;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFee;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFeeItem;
@@ -23,6 +25,8 @@ import com.microtomato.hirun.modules.bss.order.exception.OrderException;
 import com.microtomato.hirun.modules.bss.order.service.*;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -287,5 +291,64 @@ public class FeeDomainServiceImpl implements IFeeDomainService {
             orderFeeInfos.add(orderFeeInfo);
         }
         return orderFeeInfos;
+    }
+
+    /**
+     * 构建订单费用综合数据对象
+     * @param orderId
+     * @return
+     */
+    @Override
+    public List<OrderFeeCompositeDTO> buildCompositeFee(Long orderId) {
+        List<OrderFee> orderFees = this.orderFeeService.queryByOrderId(orderId);
+
+        if (ArrayUtils.isEmpty(orderFees)) {
+            return null;
+        }
+
+        List<OrderFeeCompositeDTO> compositeFees = new ArrayList<>();
+        orderFees.forEach(orderFee -> {
+            OrderFeeCompositeDTO compositeFee = new OrderFeeCompositeDTO();
+            BeanUtils.copyProperties(orderFee, compositeFee);
+            compositeFees.add(compositeFee);
+        });
+
+        List<OrderFeeItem> orderFeeItems = this.orderFeeItemService.queryByOrderId(orderId);
+        if (ArrayUtils.isEmpty(orderFeeItems)) {
+            return compositeFees;
+        }
+        compositeFees.forEach(compositeFee -> {
+            if (StringUtils.equals("2", compositeFee.getType())) {
+                List<OrderFeeItem> sameFeeNoItems = this.findFeeItems(compositeFee.getFeeNo(), orderFeeItems);
+                if (ArrayUtils.isNotEmpty(sameFeeNoItems)) {
+                    List<OrderFeeItemDTO> compositeFeeItems = new ArrayList<>();
+                    sameFeeNoItems.forEach(sameFeeNoItem -> {
+                        OrderFeeItemDTO compositeFeeItem = new OrderFeeItemDTO();
+                        BeanUtils.copyProperties(sameFeeNoItem, compositeFeeItem);
+                        compositeFeeItems.add(compositeFeeItem);
+                    });
+                    compositeFee.setItems(compositeFeeItems);
+                }
+
+            }
+        });
+        return compositeFees;
+    }
+
+    /**
+     * 找出费用编号相同的费用项
+     * @param feeNo
+     * @param orderFeeItems
+     * @return
+     */
+    private List<OrderFeeItem> findFeeItems(Long feeNo, List<OrderFeeItem> orderFeeItems) {
+        List<OrderFeeItem> result = new ArrayList<>();
+        orderFeeItems.forEach(orderFeeItem -> {
+            if (feeNo.equals(orderFeeItem.getFeeNo())) {
+                result.add(orderFeeItem);
+            }
+        });
+
+        return result;
     }
 }
