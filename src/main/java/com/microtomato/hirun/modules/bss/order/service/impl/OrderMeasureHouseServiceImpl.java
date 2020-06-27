@@ -7,6 +7,7 @@ import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
+import com.microtomato.hirun.modules.bss.order.entity.consts.DesignerConst;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderMeasureHouseDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerActionDTO;
@@ -84,7 +85,7 @@ public class OrderMeasureHouseServiceImpl extends ServiceImpl<OrderMeasureHouseM
             BeanUtils.copyProperties(orderMeasureHouse,orderMeasureHouseDTO);
         }
         orderMeasureHouseDTO.setDesigner(employeeId);
-        List<OrderWorkerActionDTO> orderWorkerActionDTOS = orderWorkerActionService.queryByOrderId(orderId);
+        List<OrderWorkerActionDTO> orderWorkerActionDTOS = orderWorkerActionService.queryByOrderIdActionDto(orderId,DesignerConst.OPER_MEASURE);
 
         if (ArrayUtils.isNotEmpty(orderWorkerActionDTOS)) {
             orderWorkerActionDTOS.forEach(action -> {
@@ -130,20 +131,7 @@ public class OrderMeasureHouseServiceImpl extends ServiceImpl<OrderMeasureHouseM
         /**
          *订单动作
          */
-        designerCommonService.dealOrderWorkerAction("measure",dto);
-        /*List<OrderWorkerActionDTO> orderWorkerActionDTO = dto.getOrderWorkActions();
-        boolean bDelete = false;
-        if (ArrayUtils.isNotEmpty(orderWorkerActionDTO)) {
-            for (OrderWorkerActionDTO actionDTO : orderWorkerActionDTO) {
-                if (!bDelete) {
-                    this.orderWorkerActionService.deleteOrderWorkerAction(actionDTO.getOrderId(),actionDTO.getAction());
-                    bDelete = true;
-                }
-                this.orderWorkerActionService.createOrderWorkerAction(actionDTO.getOrderId(),actionDTO.getEmployeeId(),1L,actionDTO.getOrderStatus(),actionDTO.getAction());
-            }
-        } else {
-            this.orderWorkerActionService.deleteOrderWorkerAction(orderId,"measure");
-        }*/
+        designerCommonService.dealOrderWorkerAction(DesignerConst.OPER_MEASURE,dto);
     }
 
 }
