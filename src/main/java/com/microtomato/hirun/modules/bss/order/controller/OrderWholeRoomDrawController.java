@@ -38,14 +38,6 @@ public class OrderWholeRoomDrawController {
     @GetMapping("/getWholeRoomDraw")
     @RestResult
     public OrderWholeRoomDrawDTO getWholeRoomDraw(Long orderId) {
-        /*UserContext userContext = WebContextUtils.getUserContext();
-        Long employeeId = userContext.getEmployeeId();
-        OrderWholeRoomDraw orderWholeRoomDraw =  iOrderWholeRoomDrawService.getOrderWholeRoomDrawByOrderId(orderId);
-        OrderWholeRoomDrawDTO orderWholeRoomDrawDTO = new OrderWholeRoomDrawDTO();
-        if (orderWholeRoomDraw != null) {
-            BeanUtils.copyProperties(orderWholeRoomDraw,orderWholeRoomDrawDTO);
-        }
-        orderWholeRoomDrawDTO.setDesigner(employeeId);*/
         return iOrderWholeRoomDrawService.getOrderWholeRoomDrawByOrderId(orderId);
     }
 
@@ -85,7 +77,6 @@ public class OrderWholeRoomDrawController {
     @RestResult
     public void submitToCustomerLeaderFlow(@RequestBody OrderWholeRoomDrawDTO dto) {
         iOrderWholeRoomDrawService.submitToCustomerLeaderFlow(dto.getOrderId());
-        orderWorkerService.updateOrderWorker(dto.getOrderId(),19L,dto.getCustomerLeader());
     }
 
     @PostMapping("/submitToBackWholeRoomFlow")
