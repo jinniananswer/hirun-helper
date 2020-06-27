@@ -75,16 +75,15 @@
                                             <order-selectemployee role-id="42" v-model="wholeRoomDrawing.productionLeader"></order-selectemployee>
                                         </el-form-item>
                                     </el-col>
-                                    <el-col :span="11">
-                                        <el-form-item label="助理设计师">
-                                            <order-selectemployee role-id="41" v-model="wholeRoomDrawing.assistantDesigner"></order-selectemployee>
-                                        </el-form-item>
-                                    </el-col>
+
                                 </el-row>
                                 <el-row>
                                     <el-col :span="11">
-                                        <el-form-item label="水电设计师">
+                                        <!--<el-form-item label="水电设计师">
                                             <order-selectemployee role-id="38" v-model="wholeRoomDrawing.hydropowerDesigner"></order-selectemployee>
+                                        </el-form-item>-->
+                                        <el-form-item label="水电设计师">
+                                            <order-selectemployee role-id="30" v-model="wholeRoomDrawing.hydropowerDesigner"></order-selectemployee>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="11">
@@ -112,6 +111,28 @@
                                         </el-form-item>
                                     </el-col>
                                 </el-row>
+                                <el-divider>助理设计师信息</el-divider>
+                                <el-row>
+                                    <template>
+                                        <el-table
+                                                :data="orderWorkActions"
+                                                border
+                                                style="width: 100%">
+                                            <el-table-column
+                                                    prop="employeeName"
+                                                    label="设计师"
+                                                    width="400">
+                                            </el-table-column>
+                                            <el-table-column
+                                                    prop="action"
+                                                    label="员工事项"
+                                                    width="400">
+                                            </el-table-column>
+                                        </el-table>
+                                    </template>
+                                </el-row>
+                                <el-divider></el-divider>
+
                                 <el-form-item>
                                     <el-button type="primary" @click="save">保存</el-button>
                                     <el-dropdown  @command="handleCommand">
