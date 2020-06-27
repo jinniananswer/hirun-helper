@@ -12,6 +12,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 startTime: '',
                 endTime: '',
                 drawingAuditor :'',
+                drawingAuditorName : '',
                 productionLeader: '金念',//制作组长
                 assistantDesigner: '',//助理设计师
                 hydropowerDesigner: '',//水电设计师
@@ -20,7 +21,15 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 designerRemarks: '',//设计师备注
                 reviewedComments: ''//审核意见
             },
-
+            orderWorkActions: [],
+            orderWorkAction :{
+                orderId : '',
+                orderStatus : '',
+                employeeId :'',
+                employeeName : '',
+                action:'',
+                roleId : ''
+            },
             isShow : true,
             isBackToDesigner : false,
             isAudit : false,
@@ -37,9 +46,11 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 let data = {
                     orderId : util.getRequest('orderId'),
                 }
-                //alert(JSON.stringify(data));
+
                 ajax.get('api/bss.order/order-wholeRoomDrawing/getWholeRoomDraw', data, (responseData)=>{
                     Object.assign(this.wholeRoomDrawing, responseData);
+                    //alert(JSON.stringify(this.wholeRoomDrawing));
+                this.orderWorkActions = responseData.orderWorkActions;
                 });
 
                 this.wholeRoomDrawing.orderId = util.getRequest('orderId');
@@ -52,7 +63,74 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 }
                 this.downloadFileUrl = 'api/bss.order/order-file/download/' + util.getRequest("orderId") + "/567";
             },
-
+            getDatas : function() {
+                let orderId = this.wholeRoomDrawing.orderId;
+                let reviewedComments = this.wholeRoomDrawing.reviewedComments;
+                let designerRemarks = this.wholeRoomDrawing.designerRemarks;
+                let adminAssistant = this.wholeRoomDrawing.adminAssistant ;
+                let drawingAssistant = this.wholeRoomDrawing.drawingAssistant;
+                let hydropowerDesigner = this.wholeRoomDrawing.hydropowerDesigner;
+                let productionLeader = this.wholeRoomDrawing.productionLeader;
+                let designer = this.wholeRoomDrawing.designer;
+                let drawingAuditor = this.wholeRoomDrawing.drawingAuditor;
+                let orderWorkActions = this.orderWorkActions;
+                let data = {
+                    orderId: orderId,
+                    id: '',
+                    measureTime: util.getNowDate(),
+                    reviewedComments: reviewedComments,
+                    designerRemarks : designerRemarks,
+                    adminAssistant : adminAssistant,
+                    drawingAssistant : drawingAssistant,
+                    productionLeader : productionLeader,
+                    hydropowerDesigner : hydropowerDesigner,
+                    drawingAuditor : drawingAuditor,
+                    designer: designer,
+                    orderWorkActions: orderWorkActions
+                };
+                return data;
+            },
+            addSuccessEmployeeName : function() {
+                this.orderWorkAction = {};
+                this.orderWorkAction.employeeId = this.wholeRoomDrawing.assistantDesigner;
+                if (this.orderWorkAction.employeeId == '' || this.orderWorkAction.employeeId == null) {
+                    Vue.prototype.$message({
+                        message: '请先选择助理设计师再添加设计师！',
+                        type: 'error'
+                    });
+                    return false;
+                }
+                ajax.get('api/bss.order/order-measurehouse/getEmployeeNameEmployeeId', {employeeId:this.orderWorkAction.employeeId}, (responseData)=>{
+                    this.orderWorkAction.employeeName = responseData.employeeName ;
+                });
+                this.orderWorkAction.orderId = this.wholeRoomDrawing.orderId;
+                this.orderWorkAction.action = 'draw_construct';
+                this.orderWorkAction.roleId = '19';
+                this.orderWorkAction.orderStatus = this.orderStatus;
+                this.orderWorkActions.push(this.orderWorkAction);
+            },
+            /*addSuccessHydropower : function() {
+                this.orderWorkAction = {};
+                this.orderWorkAction.employeeId = this.wholeRoomDrawing.hydropowerDesigner;
+                if (this.orderWorkAction.employeeId == '' || this.orderWorkAction.employeeId == null) {
+                    Vue.prototype.$message({
+                        message: '请先选择水电设计师再添加设计师！',
+                        type: 'error'
+                    });
+                    return false;
+                }
+                ajax.get('api/bss.order/order-measurehouse/getEmployeeNameEmployeeId', {employeeId:this.orderWorkAction.employeeId}, (responseData)=>{
+                    this.orderWorkAction.employeeName = responseData.employeeName ;
+                });
+                this.orderWorkAction.orderId = this.wholeRoomDrawing.orderId;
+                this.orderWorkAction.action = 'water_elec_design';
+                this.orderWorkAction.roleId = '19';
+                this.orderWorkAction.orderStatus = this.orderStatus;
+                this.orderWorkActions.push(this.orderWorkAction);
+            },*/
+            deleteRow : function(index, rows) {
+                rows.splice(index, 1);
+            },
             checkBeforeOrder: function () {
             },
             handleCommand : function(command) {
@@ -99,10 +177,11 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     });
                     return false;
                 }
-                ajax.post('api/bss.order/order-wholeRoomDrawing/submitWholeRoomDrawing', this.wholeRoomDrawing,null,null,true);
+                let data = this.getDatas();
+                ajax.post('api/bss.order/order-wholeRoomDrawing/submitWholeRoomDrawing', data,null,null,true);
             },
             submitToAuditPicturesFlow : function () {
-                if (this.employeeName == null || this.employeeName == '') {
+                if (this.wholeRoomDrawing.drawingAuditorName == null || this.wholeRoomDrawing.drawingAuditorName == '') {
                     Vue.prototype.$message({
                         message: '您正在提交订单至图纸审核阶段，请先选择图纸审核人员！',
                         type: 'error'
@@ -110,11 +189,6 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     return false;
                 }
                 ajax.post('api/bss.order/order-wholeRoomDrawing/submitToAuditPicturesFlow', this.wholeRoomDrawing);
-                /*ajax.get('api/bss.order/order-planSketch/updateOrderWork', {
-                    orderId : this.wholeRoomDrawing.orderId,
-                    roleId : '44',
-                    employeeId : this.eid,
-                });*/
             },
             submitToConfirmFlow : function () {
                 ajax.post('api/bss.order/order-wholeRoomDrawing/submitToConfirmFlow', this.wholeRoomDrawing);
