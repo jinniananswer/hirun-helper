@@ -18,6 +18,15 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 designerRemarks: '',//设计师备注
                 reviewedComments: ''//审核意见
             },
+            orderWorkActions: [],
+            orderWorkAction :{
+                orderId : '',
+                orderStatus : '',
+                employeeId :'',
+                employeeName : '',
+                action:'',
+                roleId : ''
+            },
             custId: util.getRequest('custId'),
         },
 
@@ -27,11 +36,39 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
             }
             ajax.get('api/bss.order/order-wholeRoomDrawing/getWholeRoomDraw', data, (responseData)=>{
                 Object.assign(this.wholeRoomDrawing, responseData);
+                this.orderWorkActions = responseData.orderWorkActions;
             });
         },
 
         methods: {
             checkBeforeOrder: function () {
+            },
+            getDatas : function() {
+                let orderId = this.wholeRoomDrawing.orderId;
+                let reviewedComments = this.wholeRoomDrawing.reviewedComments;
+                let designerRemarks = this.wholeRoomDrawing.designerRemarks;
+                let adminAssistant = this.wholeRoomDrawing.adminAssistant ;
+                let drawingAssistant = this.wholeRoomDrawing.drawingAssistant;
+                let hydropowerDesigner = this.wholeRoomDrawing.hydropowerDesigner;
+                let productionLeader = this.wholeRoomDrawing.productionLeader;
+                let designer = this.wholeRoomDrawing.designer;
+                let drawingAuditor = this.wholeRoomDrawing.drawingAuditor;
+                let orderWorkActions = this.orderWorkActions;
+                let data = {
+                    orderId: orderId,
+                    id: '',
+                    measureTime: util.getNowDate(),
+                    reviewedComments: reviewedComments,
+                    designerRemarks : designerRemarks,
+                    adminAssistant : adminAssistant,
+                    drawingAssistant : drawingAssistant,
+                    productionLeader : productionLeader,
+                    hydropowerDesigner : hydropowerDesigner,
+                    drawingAuditor : drawingAuditor,
+                    designer: designer,
+                    orderWorkActions: orderWorkActions
+                };
+                return data;
             },
             handleCommand : function(command) {
                 if ( command == 'submitToTwoLevelActuarialCalculationFlow') {
@@ -39,12 +76,8 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 }
             },
             save: function () {
-                this.wholeRoomDrawing.designer = this.valueDesigner;
-                this.wholeRoomDrawing.hydropowerDesigner = this.valueHydropowerDesigners;
-                this.wholeRoomDrawing.drawingAssistant = this.valueDrawingAssistant;
-                this.wholeRoomDrawing.adminAssistant = this.valueAdminAssistant;
-                alert(JSON.stringify(this.wholeRoomDrawing));
-                ajax.post('api/bss.order/order-wholeRoomDrawing/submitWholeRoomDrawing', this.wholeRoomDrawing,null,null,true);
+                let data = this.getDatas();
+                ajax.post('api/bss.order/order-wholeRoomDrawing/submitWholeRoomDrawing', data,null,null,true);
             },
             submitToTwoLevelActuarialCalculationFlow : function () {
                 ajax.post('api/bss.order/order-wholeRoomDrawing/submitToTwoLevelActuarialCalculationFlow', this.wholeRoomDrawing);

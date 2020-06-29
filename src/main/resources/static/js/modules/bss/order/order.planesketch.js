@@ -19,7 +19,8 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 financeEmployeeName : '',
                 endTime: '',
                 firstLookTime: util.getNowDate(),
-                financeEmployeeId : ''
+                financeEmployeeId : '' ,
+                employeeId : ''
             },
             orderWorkActions: [],
             orderWorkAction :{
@@ -49,7 +50,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 }
                 ajax.get('api/bss.order/order-planSketch/getPlaneSketch', data, (responseData)=>{
                     Object.assign(this.planFigureInfos, responseData);
-                    alert(JSON.stringify(this.planFigureInfos));
+                    //alert(JSON.stringify(this.planFigureInfos));
                     this.orderWorkActions = responseData.orderWorkActions;
                 });
                 if (this.orderStatus=='35') {
@@ -115,7 +116,6 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
             checkBeforeOrder : function () {
             },
             changeDesignFeeStandard: function(newVal) {
-                //alert(newVal);
                 this.planFigureInfos.designFeeStandard = newVal;
             },
             changeDefaultDesignTheme: function(newVal) {
@@ -169,7 +169,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
             },
             //签订设计合同
             submitToSignContractFlow : function () {
-                if (this.employeeName == null || this.employeeName == '') {
+                if (this.planFigureInfos.financeEmployeeName == null || this.planFigureInfos.financeEmployeeName == '') {
                     Vue.prototype.$message({
                         message: '您正在提交订单至财务签订设计合同，请先选择财务人员！',
                         type: 'error'
@@ -177,7 +177,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     return false;
                 }
 
-                this.planFigureInfos.employeeId = this.eid;
+                this.planFigureInfos.employeeId = this.planFigureInfos.financeEmployeeId;
                 ajax.post('api/bss.order/order-planSketch/submitToSignContractFlow', this.planFigureInfos,null);
             },
             toSignContractFlow : function () {

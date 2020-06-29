@@ -4,9 +4,10 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
- * @author ：mmzs
+ * @author ：xiaocl
  * @date ：Created in 2020/3/10
  * @description：1
  * @modified By：
@@ -52,7 +53,7 @@ public class OrderWholeRoomDrawDTO {
     /**
      * 水电设计师
      */
-    private String hydropowerDesigner;
+    private Long hydropowerDesigner;
 
     /**
      * 绘图助理
@@ -104,8 +105,16 @@ public class OrderWholeRoomDrawDTO {
      */
     private Long drawingAuditor;
 
+    private String drawingAuditorName;
+
     /**
      * 客戶不主管
      */
     private Long customerLeader;
+
+    private String customerLeaderName;
+
+    private List<OrderWorkerActionDTO> orderWorkActions;
+
+    private String employeeName;
 }

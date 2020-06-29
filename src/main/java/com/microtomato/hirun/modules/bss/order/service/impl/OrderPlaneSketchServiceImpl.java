@@ -7,6 +7,7 @@ import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
+import com.microtomato.hirun.modules.bss.order.entity.consts.DesignerConst;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.FeeDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderPlaneSketchDTO;
@@ -102,8 +103,7 @@ public class OrderPlaneSketchServiceImpl extends ServiceImpl<OrderPlaneSketchMap
             BeanUtils.copyProperties(orderPlaneSketch,orderPlaneSketchDTO);
         }
         orderPlaneSketchDTO.setDesigner(employeeId);
-
-        List<OrderWorkerActionDTO> orderWorkerActionDTOS = orderWorkerActionService.queryByOrderIdActionDto(orderId,"draw_plane");
+        List<OrderWorkerActionDTO> orderWorkerActionDTOS = orderWorkerActionService.queryByOrderIdActionDto(orderId,DesignerConst.OPER_DRAW_PLAN);
 
         if (ArrayUtils.isNotEmpty(orderWorkerActionDTOS)) {
             orderWorkerActionDTOS.forEach(action -> {
@@ -160,7 +160,7 @@ public class OrderPlaneSketchServiceImpl extends ServiceImpl<OrderPlaneSketchMap
         /**
          *订单动作
          */
-        designerCommonService.dealOrderWorkerAction("draw_plane",dto);
+        designerCommonService.dealOrderWorkerAction(DesignerConst.OPER_DRAW_PLAN,dto);
     }
 
 

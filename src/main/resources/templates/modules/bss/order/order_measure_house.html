@@ -66,17 +66,7 @@
                                     </el-col>
                                 </el-row>
 
-                                <el-row>
-                                    <el-col :span="11">
-                                        <el-form-item label="助理设计师">
-                                            <order-selectemployee role-id="30" v-model="quantityRoomInfos.assistantDesigner"></order-selectemployee>
-                                        </el-form-item>
-                                    </el-col>
-                                    <el-col :span="5">
-                                        <el-button type="success" @click="addSuccess" icon="el-icon-circle-plus-outline">添加</el-button>
-                                    </el-col>
-
-                                </el-row>
+                                <el-divider>助理设计师信息</el-divider>
 
                                 <el-row>
                                     <template>
@@ -87,17 +77,17 @@
                                             <el-table-column
                                                     prop="employeeName"
                                                     label="助理设计师"
-                                                    width="280">
+                                                    width="370">
                                             </el-table-column>
                                             <el-table-column
                                                     prop="action"
                                                     label="员工事项"
-                                                    width="280">
+                                                    width="370">
                                             </el-table-column>
                                             <el-table-column
                                                     fixed="right"
                                                     label="操作"
-                                                    width="280">
+                                                    width="60">
                                                 <template slot-scope="scope">
                                                     <el-button
                                                             @click.native.prevent="deleteRow(scope.$index, orderWorkActions)"
@@ -110,6 +100,18 @@
                                         </el-table>
                                     </template>
                                 </el-row>
+                                <el-row>
+                                    <el-col :span="11">
+                                        <el-form-item label="助理设计师">
+                                            <order-selectemployee role-id="30" v-model="quantityRoomInfos.assistantDesigner"></order-selectemployee>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="5">
+                                        <el-button type="info" @click="addSuccess" icon="el-icon-circle-plus-outline">添加助理设计师</el-button>
+                                    </el-col>
+                                </el-row>
+
+                                <el-divider></el-divider>
 
 
                                 <el-form-item>
