@@ -340,6 +340,7 @@ public class SalaryDO {
             royaltyDetail.setStartTime(now);
             royaltyDetail.setStrategyId(matchStrategy.getId());
             royaltyDetail.setEndTime(TimeUtils.getForeverTime());
+            royaltyDetail.setRemark(matchStrategy.getDescription()+"，由系统自动计算");
             royaltyDetails.add(royaltyDetail);
         });
 

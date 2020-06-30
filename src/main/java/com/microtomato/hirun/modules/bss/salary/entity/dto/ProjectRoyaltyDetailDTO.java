@@ -11,9 +11,15 @@ import lombok.Data;
 @Data
 public class ProjectRoyaltyDetailDTO {
 
+    private Long orderId;
+
+    private String orderStatus;
+
     private Long strategyId;
 
     private String nodeCondition;
+
+    private Long orgId;
 
     private String orgName;
 
@@ -21,35 +27,61 @@ public class ProjectRoyaltyDetailDTO {
 
     private String employeeName;
 
+    private String jobRole;
+
     private String jobRoleName;
 
     private String jobGrade;
 
+    private String jobGradeName;
+
     private String employeeStatus;
+
+    private String employeeStatusName;
 
     private Long contractFee;
 
+    private Integer periods;
+
+    private String periodName;
+
     private String value;
 
-    private Long basicFee;
+    private Long basicId;
 
-    private Long doorFee;
+    private Long doorId;
 
-    private Long furnitureFee;
+    private Long furnitureId;
 
-    private Long basicRoyalty;
+    private Double basicFee;
 
-    private Long doorRoyalty;
+    private Double doorFee;
 
-    private Long furnitureRoyalty;
+    private Double furnitureFee;
 
-    private Long basicAlreadyFetch;
+    private Double basicRoyalty;
 
-    private Long doorAlreadyFetch;
+    private Double doorRoyalty;
 
-    private Long furnitureAlreadyFetch;
+    private Double furnitureRoyalty;
 
-    private Long thisMonthFetch;
+    private Double basicAlreadyFetch;
+
+    private Double doorAlreadyFetch;
+
+    private Double furnitureAlreadyFetch;
+
+    private Double thisMonthFetch;
+
+    private Integer salaryMonth;
 
     private String remark;
+
+    private String auditStatus;
+
+    private String auditStatusName;
+
+    private String auditRemark;
+
+    private String isModified;
 }

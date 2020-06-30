@@ -1,6 +1,8 @@
 package com.microtomato.hirun.modules.bss.salary.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.microtomato.hirun.modules.bss.salary.entity.dto.DesignRoyaltyDetailDTO;
+import com.microtomato.hirun.modules.bss.salary.entity.dto.ProjectRoyaltyDetailDTO;
 import com.microtomato.hirun.modules.bss.salary.entity.dto.SalaryRoyaltyDetailDTO;
 import com.microtomato.hirun.modules.bss.salary.entity.po.SalaryRoyaltyDetail;
 
@@ -18,4 +20,16 @@ public interface ISalaryRoyaltyDetailService extends IService<SalaryRoyaltyDetai
     List<SalaryRoyaltyDetail> queryByOrderIdEmployeeIdItems(Long orderId, Long employeeId, List<String> items);
 
     SalaryRoyaltyDetailDTO queryByOrderId(Long orderId);
+
+    void saveDesignRoyaltyDetails(List<DesignRoyaltyDetailDTO> designRoyaltyDetails);
+
+    void auditDesignRoyaltyDetails(List<DesignRoyaltyDetailDTO> designRoyaltyDetails);
+
+    void saveProjectRoyaltyDetails(List<ProjectRoyaltyDetailDTO> projectRoyaltyDetails);
+
+    void auditProjectRoyaltyDetails(List<ProjectRoyaltyDetailDTO> projectRoyaltyDetails);
+
+    DesignRoyaltyDetailDTO afterCreateDesignDetail(DesignRoyaltyDetailDTO detail);
+
+    ProjectRoyaltyDetailDTO afterCreateProjectDetail(ProjectRoyaltyDetailDTO detail);
 }

@@ -18,7 +18,10 @@ public class SalaryException extends BaseException {
         ARGUMENT_NOT_FOUND,
 
         @Error(code = ErrorKind.NOT_FOUND, message = "未找到该笔订单【%s】的设计费用标准")
-        DESIGN_FEE_STANDARD_NOT_FOUND
+        DESIGN_FEE_STANDARD_NOT_FOUND,
+
+        @Error(code = ErrorKind.NOT_FOUND, message = "未找到该笔订单对应阶段【%s】的费用信息")
+        ORDER_FEE_NOT_FOUND
 
 
     }
