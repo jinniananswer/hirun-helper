@@ -46,6 +46,10 @@ dependencies {
     implementation 'com.baomidou:mybatis-plus:3.3.0'
 
 
+//  2020/04/28新增json依赖
+    implementation 'com.alibaba:fastjson:1.2.47'
+
+
     implementation 'com.alibaba:easyexcel:2.1.3'
 
     implementation 'commons-codec:commons-codec:1.13'

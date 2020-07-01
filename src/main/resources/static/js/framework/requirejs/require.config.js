@@ -30,7 +30,8 @@ require.config({
         'order-file-upload':'static/js/modules/bss/component/order.file.upload',
         'order-discount-item':'static/js/modules/bss/component/order.discount.item',
         'org-orgtree':'static/js/modules/organization/component/org.orgtree',
-        'org-selectemployee':'static/js/modules/organization/component/org.selectemployee'
+        'org-selectemployee':'static/js/modules/organization/component/org.selectemployee',
+        'echarts': 'static/js/framework/extend/chart/echarts'
 
     },
     shim: {

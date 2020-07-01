@@ -1,18 +1,13 @@
 package com.microtomato.hirun.modules.bss.plan.controller;
-
-
-
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.microtomato.hirun.modules.bss.plan.entity.dto.AgentMonthPlanDTO;
+import com.microtomato.hirun.modules.bss.plan.entity.dto.AgentMonthPlanQueryDTO;
+import com.microtomato.hirun.modules.bss.salary.entity.dto.SalaryMonthlyDTO;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.microtomato.hirun.modules.bss.plan.entity.po.PlanAgentMonth;
 import com.microtomato.hirun.modules.bss.plan.service.IPlanAgentMonthService;
 import com.microtomato.hirun.framework.annotation.RestResult;
-
-import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,61 +27,30 @@ public class PlanAgentMonthController {
     @Autowired
     private IPlanAgentMonthService planAgentMonthService;
 
+
     /**
-     * 分页查询所有数据
-     *
-     * @param page 分页对象
-     * @param planAgentMonth 查询实体
-     * @return 所有数据
+     * 界面查询客户代表月度报表数据，如果该月还未录入，也需要能查询出员工数据来，以供数据录入
+     * @param param
+     * @return
      */
-    @GetMapping("selectByPage")
+    @GetMapping("/queryAgentPlan")
     @RestResult
-    public IPage<PlanAgentMonth> selectByPage(Page<PlanAgentMonth> page, PlanAgentMonth planAgentMonth) {
-        return this.planAgentMonthService.page(page, new QueryWrapper<>(planAgentMonth));
+    public List<AgentMonthPlanDTO> queryAgentPlan(AgentMonthPlanQueryDTO param) {
+        if (StringUtils.isNotBlank(param.getOrgId())) {
+            String[] orgIdArray = param.getOrgId().split(",");
+            List<Long> orgIds = new ArrayList<>();
+            for (String s : orgIdArray) {
+                orgIds.add(Long.parseLong(s));
+            }
+            param.setOrgIds(orgIds);
+        }
+        return planAgentMonthService.queryAgentPlan(param);
     }
 
-    /**
-     * 通过主键查询单条数据
-     *
-     * @param id 主键
-     * @return 单条数据
-     */
-    @GetMapping("selectById/{id}")
+    @PostMapping("/saveAgentPlan")
     @RestResult
-    public PlanAgentMonth selectById(@PathVariable Serializable id) {
-        return this.planAgentMonthService.getById(id);
+    public void saveAgentPlan(@RequestBody List<AgentMonthPlanDTO> dtoList) {
+        this.planAgentMonthService.saveAgentPlan(dtoList);
     }
 
-    /**
-     * 新增数据
-     *
-     * @param planAgentMonth 实体对象
-     * @return 新增结果
-     */
-    @PostMapping("insert")
-    public boolean insert(@RequestBody PlanAgentMonth planAgentMonth) {
-        return this.planAgentMonthService.save(planAgentMonth);
-    }
-
-    /**
-     * 修改数据
-     *
-     * @param planAgentMonth 实体对象
-     * @return 修改结果
-     */
-    @PostMapping("update")
-    public boolean update(@RequestBody PlanAgentMonth planAgentMonth) {
-        return this.planAgentMonthService.updateById(planAgentMonth);
-    }
-
-    /**
-     * 删除数据
-     *
-     * @param idList 主键集合
-     * @return 删除结果
-     */
-    @GetMapping("deleteByIds")
-    public boolean deleteByIds(@RequestParam("idList") List<Long> idList) {
-        return this.planAgentMonthService.removeByIds(idList);
-    }
 }
