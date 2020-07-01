@@ -3,7 +3,8 @@ package com.microtomato.hirun.modules.bss.order.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderPlaneSketchDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPlaneSketch;
-import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.List;
 
 /**
  * @author ：mmzs
@@ -21,6 +22,10 @@ public interface IOrderPlaneSketchService extends IService<OrderPlaneSketch> {
     void submitToBackToDesignerFlow(Long orderId);
 
     OrderPlaneSketchDTO getPlaneSketch(Long orderId);
+
+    List<OrderPlaneSketch> queryByOrderIds(List<Long> orderId);
+
+    OrderPlaneSketch getByOrderId(Long orderId);
 
     void submitPlaneSketch(OrderPlaneSketchDTO dto);
 

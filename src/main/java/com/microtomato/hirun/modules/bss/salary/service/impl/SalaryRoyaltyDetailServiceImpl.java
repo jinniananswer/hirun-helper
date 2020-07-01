@@ -1,5 +1,6 @@
 package com.microtomato.hirun.modules.bss.salary.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
@@ -14,12 +15,10 @@ import com.microtomato.hirun.modules.bss.config.service.ISalaryRoyaltyStrategySe
 import com.microtomato.hirun.modules.bss.config.service.ISalaryStatusFeeMappingService;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeCompositeDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderPlaneSketchDTO;
+import com.microtomato.hirun.modules.bss.order.entity.po.OrderPlaneSketch;
 import com.microtomato.hirun.modules.bss.order.service.IFeeDomainService;
 import com.microtomato.hirun.modules.bss.order.service.IOrderPlaneSketchService;
-import com.microtomato.hirun.modules.bss.salary.entity.dto.DesignRoyaltyDetailDTO;
-import com.microtomato.hirun.modules.bss.salary.entity.dto.EmployeeSalaryRoyaltyDetailDTO;
-import com.microtomato.hirun.modules.bss.salary.entity.dto.ProjectRoyaltyDetailDTO;
-import com.microtomato.hirun.modules.bss.salary.entity.dto.SalaryRoyaltyDetailDTO;
+import com.microtomato.hirun.modules.bss.salary.entity.dto.*;
 import com.microtomato.hirun.modules.bss.salary.entity.po.SalaryRoyaltyDetail;
 import com.microtomato.hirun.modules.bss.salary.exception.SalaryException;
 import com.microtomato.hirun.modules.bss.salary.mapper.SalaryRoyaltyDetailMapper;
@@ -118,11 +117,13 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
         List<DesignRoyaltyDetailDTO> designRoyaltyDetails = new ArrayList<>();
 
         List<EmployeeSalaryRoyaltyDetailDTO> projectEmployeeRoyaltyDetails = new ArrayList<>();
+        OrderPlaneSketch planeSketch = this.orderPlaneSketchService.getByOrderId(orderId);
+
         employeeSalaryRoyaltyDetails.forEach(employeeSalaryRoyaltyDetail -> {
             String type = employeeSalaryRoyaltyDetail.getType();
             if (StringUtils.equals("1", type) || StringUtils.equals("2", type)) {
                 //设计提成与经营提成
-                designRoyaltyDetails.add(this.buildDesignRoyaltyDetail(employeeSalaryRoyaltyDetail, compositeFees, orderId));
+                designRoyaltyDetails.add(this.buildDesignRoyaltyDetail(employeeSalaryRoyaltyDetail, compositeFees, orderId, planeSketch));
             } else if (StringUtils.equals("3", type)) {
                 //工程提成
                 projectEmployeeRoyaltyDetails.add(employeeSalaryRoyaltyDetail);
@@ -149,7 +150,7 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
      * @param compositeFees
      * @return
      */
-    private DesignRoyaltyDetailDTO buildDesignRoyaltyDetail(EmployeeSalaryRoyaltyDetailDTO employeeSalaryRoyaltyDetail, List<OrderFeeCompositeDTO> compositeFees, Long orderId) {
+    private DesignRoyaltyDetailDTO buildDesignRoyaltyDetail(EmployeeSalaryRoyaltyDetailDTO employeeSalaryRoyaltyDetail, List<OrderFeeCompositeDTO> compositeFees, Long orderId, OrderPlaneSketch planeSketch) {
         DesignRoyaltyDetailDTO designRoyaltyDetail = new DesignRoyaltyDetailDTO();
         BeanUtils.copyProperties(employeeSalaryRoyaltyDetail, designRoyaltyDetail);
 
@@ -157,10 +158,12 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
         designRoyaltyDetail.setNodeCondition(this.staticDataService.getCodeName("NODE_CONDITION", designRoyaltyDetail.getOrderStatus()));
 
         OrderFeeCompositeDTO compositeFee = this.find(compositeFees, "1", null);
+        if (compositeFee == null) {
+            throw new SalaryException(SalaryException.SalaryExceptionEnum.ORDER_FEE_NOT_FOUND, "设计费");
+        }
         Double designFee = compositeFee.getTotalFee().longValue() * 1.00 / 100;
         designRoyaltyDetail.setDesignFee(designFee);
 
-        OrderPlaneSketchDTO planeSketch = this.orderPlaneSketchService.getPlaneSketch(orderId);
         Integer designFeeStandard = 0;
         if (planeSketch != null) {
             designFeeStandard = planeSketch.getDesignFeeStandard();
@@ -201,7 +204,7 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
      * @param compositeFees
      * @return
      */
-    private List<ProjectRoyaltyDetailDTO> buildProjectRoyaltyDetails(List<EmployeeSalaryRoyaltyDetailDTO> employeeSalaryRoyaltyDetails,
+    private List<ProjectRoyaltyDetailDTO> buildProjectRoyaltyDetails(List<? extends EmployeeSalaryRoyaltyDetailDTO> employeeSalaryRoyaltyDetails,
                                                                      List<OrderFeeCompositeDTO> compositeFees) {
         //第一步，将多行(主要是basic、door，furniture三条合成一条）数据变成一行，匹配条件，employee_id相同
         if (ArrayUtils.isEmpty(employeeSalaryRoyaltyDetails)) {
@@ -216,6 +219,9 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
             SalaryStatusFeeMapping statusFeeMapping = this.salaryStatusFeeMappingService.getStatusFeeMapping(employeeSalaryRoyaltyDetail.getOrderStatus());
             Integer periods = statusFeeMapping.getPeriods();
             OrderFeeCompositeDTO orderFee = this.find(compositeFees, "2", periods);
+            if (orderFee == null) {
+                throw new SalaryException(SalaryException.SalaryExceptionEnum.ORDER_FEE_NOT_FOUND, "工程款");
+            }
 
             if (temp.containsKey(key)) {
                 projectRoyaltyDetail = temp.get(key);
@@ -841,5 +847,270 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
         }
         detail.setContractFee(orderFee.getContractFee());
         return detail;
+    }
+
+    /**
+     * 按条件查询员工提成明细信息
+     * @param request
+     * @return
+     */
+    @Override
+    public SalaryRoyaltyDetailDTO queryRoyaltyDetails(QueryRoyaltyDetailDTO request) {
+        SalaryRoyaltyDetailDTO result = new SalaryRoyaltyDetailDTO();
+        QueryWrapper<QueryRoyaltyDetailDTO> queryWrapper = new QueryWrapper<>();
+        queryWrapper.apply(" b.employee_id = a.employee_id ");
+        queryWrapper.apply(" d.order_id = a.order_id ");
+        queryWrapper.apply(" c.cust_id = d.cust_id ");
+        queryWrapper.like(StringUtils.isNotBlank(request.getCustName()), "c.cust_name", request.getCustName());
+        queryWrapper.eq(StringUtils.isNotBlank(request.getMobileNo()), "c.mobile_no", request.getMobileNo());
+        queryWrapper.eq(request.getHouseId() != null, "d.houses_id", request.getHouseId());
+        queryWrapper.eq(StringUtils.isNotBlank(request.getAuditStatus()), "a.audit_status", request.getAuditStatus());
+        queryWrapper.exists(StringUtils.isNotBlank(request.getOrgIds()), "(select 1 from ins_employee_job_role r where r.employee_id = a.employee_id and r.org_id in ("+request.getOrgIds()+"))");
+        queryWrapper.orderByAsc("a.employee_id", "a.order_status", "a.type", "a.id");
+
+        List<OrderSalaryRoyaltyDetailDTO> orderRoyaltyDetails = this.salaryRoyaltyDetailMapper.queryOrderSalaryRoyaltyDetails(queryWrapper);
+        if (ArrayUtils.isEmpty(orderRoyaltyDetails)) {
+            return null;
+        }
+
+        List<OrderSalaryRoyaltyDetailDTO> designOrderRoyaltyDetails = new ArrayList<>();
+        List<OrderSalaryRoyaltyDetailDTO> projectOrderRoyaltyDetails = new ArrayList<>();
+        List<Long> orderIds = new ArrayList<>();
+
+        orderRoyaltyDetails.forEach(detail -> {
+            Long orderId = detail.getOrderId();
+            if (!orderIds.contains(orderId)) {
+                orderIds.add(orderId);
+            }
+        });
+
+        Map<Long, List<OrderFeeCompositeDTO>> feeCache = this.feeDomainService.buildMultiCompositeFee(orderIds);
+        orderRoyaltyDetails.forEach(detail -> {
+            String type = detail.getType();
+            Long orderId = detail.getOrderId();
+
+            List<OrderFeeCompositeDTO> compositeFees = feeCache.get(orderId);
+
+            if (StringUtils.equals("1", type) || StringUtils.equals("2", type)) {
+                //设计提成与经营提成
+                designOrderRoyaltyDetails.add(detail);
+            } else if (StringUtils.equals("3", type)) {
+                //工程提成
+                projectOrderRoyaltyDetails.add(detail);
+            } else if (StringUtils.equals("4", type)) {
+                //主材提成
+            }
+        });
+
+        if (ArrayUtils.isNotEmpty(projectOrderRoyaltyDetails)) {
+            Map<Long, List<OrderSalaryRoyaltyDetailDTO>> detailCache = new HashMap<>();
+
+            projectOrderRoyaltyDetails.forEach(detail -> {
+                Long orderId = detail.getOrderId();
+                List<OrderSalaryRoyaltyDetailDTO> temp = new ArrayList<>();
+                if (detailCache.containsKey(orderId)) {
+                    temp = detailCache.get(orderId);
+                } else {
+                    detailCache.put(orderId, temp);
+                }
+                temp.add(detail);
+            });
+            List<ProjectRoyaltyDetailDTO> projectRoyaltyDetails = new ArrayList<>();
+            detailCache.forEach((key, values) -> {
+                List<ProjectRoyaltyDetailDTO> projectDetails = this.buildProjectRoyaltyDetails(values, feeCache.get(key));
+                projectRoyaltyDetails.addAll(projectDetails);
+            });
+
+            if (ArrayUtils.isNotEmpty(projectRoyaltyDetails)) {
+                result.setProjectRoyaltyDetails(projectRoyaltyDetails);
+            }
+        }
+
+        if (ArrayUtils.isNotEmpty(designOrderRoyaltyDetails)) {
+            Map<Long, List<OrderSalaryRoyaltyDetailDTO>> detailCache = new HashMap<>();
+            designOrderRoyaltyDetails.forEach(detail -> {
+                Long orderId = detail.getOrderId();
+                List<OrderSalaryRoyaltyDetailDTO> temp = new ArrayList<>();
+                if (detailCache.containsKey(orderId)) {
+                    temp = detailCache.get(orderId);
+                } else {
+                    detailCache.put(orderId, temp);
+                }
+
+                temp.add(detail);
+            });
+
+            List<DesignRoyaltyDetailDTO> designRoyaltyDetails = new ArrayList<>();
+
+            List<OrderPlaneSketch> planeSketches = this.orderPlaneSketchService.queryByOrderIds(orderIds);
+            detailCache.forEach((key, values) -> {
+                values.forEach(detail -> {
+                    OrderPlaneSketch planeSketch = this.findPlanSketch(planeSketches, detail.getOrderId());
+                    DesignRoyaltyDetailDTO designDetail = this.buildDesignRoyaltyDetail(detail, feeCache.get(key), key, planeSketch);
+                    if (designDetail != null) {
+                        designRoyaltyDetails.add(designDetail);
+                    }
+                });
+            });
+            if (ArrayUtils.isNotEmpty(designRoyaltyDetails)) {
+                result.setDesignRoyaltyDetails(designRoyaltyDetails);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * 查找设计费信息
+     * @param planeSketches
+     * @param orderId
+     * @return
+     */
+    private OrderPlaneSketch findPlanSketch(List<OrderPlaneSketch> planeSketches, Long orderId) {
+        if (ArrayUtils.isEmpty(planeSketches)) {
+            return null;
+        }
+
+        for (OrderPlaneSketch planeSketch : planeSketches) {
+            if (orderId.equals(planeSketch.getOrderId())) {
+                return planeSketch;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * 设计费提成明细审核通过
+     * @param designDetails
+     */
+    @Override
+    public void auditDesignRoyaltyPass(List<DesignRoyaltyDetailDTO> designDetails) {
+        if (ArrayUtils.isEmpty(designDetails)) {
+            return;
+        }
+
+        Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
+
+        List<SalaryRoyaltyDetail> salaryRoyaltyDetails = new ArrayList<>();
+        designDetails.forEach(detail -> {
+            SalaryRoyaltyDetail salaryRoyaltyDetail = new SalaryRoyaltyDetail();
+            salaryRoyaltyDetail.setId(detail.getId());
+            salaryRoyaltyDetail.setAuditStatus("2");
+            salaryRoyaltyDetail.setAuditEmployeeId(employeeId);
+            salaryRoyaltyDetails.add(salaryRoyaltyDetail);
+        });
+
+        this.updateBatchById(salaryRoyaltyDetails);
+    }
+
+    /**
+     * 设计费提成明细审核不通过
+     * @param designDetails
+     */
+    @Override
+    public void auditDesignRoyaltyNo(List<DesignRoyaltyDetailDTO> designDetails) {
+        if (ArrayUtils.isEmpty(designDetails)) {
+            return;
+        }
+
+        Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
+
+        List<SalaryRoyaltyDetail> salaryRoyaltyDetails = new ArrayList<>();
+        designDetails.forEach(detail -> {
+            SalaryRoyaltyDetail salaryRoyaltyDetail = new SalaryRoyaltyDetail();
+            salaryRoyaltyDetail.setId(detail.getId());
+            salaryRoyaltyDetail.setAuditStatus("3");
+            salaryRoyaltyDetail.setAuditEmployeeId(employeeId);
+            salaryRoyaltyDetail.setAuditRemark(detail.getAuditRemark());
+            salaryRoyaltyDetails.add(salaryRoyaltyDetail);
+        });
+        this.updateBatchById(salaryRoyaltyDetails);
+    }
+
+    /**
+     * 工程提成明细审核通过
+     * @param projectDetails
+     */
+    @Override
+    public void auditProjectRoyaltyPass(List<ProjectRoyaltyDetailDTO> projectDetails) {
+        if (ArrayUtils.isEmpty(projectDetails)) {
+            return;
+        }
+
+        Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
+
+        List<SalaryRoyaltyDetail> salaryRoyaltyDetails = new ArrayList<>();
+        projectDetails.forEach(detail -> {
+            if (detail.getBasicId() != null) {
+                SalaryRoyaltyDetail salaryRoyaltyDetail = new SalaryRoyaltyDetail();
+                salaryRoyaltyDetail.setId(detail.getBasicId());
+                salaryRoyaltyDetail.setAuditStatus("2");
+                salaryRoyaltyDetail.setAuditEmployeeId(employeeId);
+                salaryRoyaltyDetails.add(salaryRoyaltyDetail);
+            }
+
+            if (detail.getDoorId() != null) {
+                SalaryRoyaltyDetail salaryRoyaltyDetail = new SalaryRoyaltyDetail();
+                salaryRoyaltyDetail.setId(detail.getDoorId());
+                salaryRoyaltyDetail.setAuditStatus("2");
+                salaryRoyaltyDetail.setAuditEmployeeId(employeeId);
+                salaryRoyaltyDetails.add(salaryRoyaltyDetail);
+            }
+
+            if (detail.getFurnitureId() != null) {
+                SalaryRoyaltyDetail salaryRoyaltyDetail = new SalaryRoyaltyDetail();
+                salaryRoyaltyDetail.setId(detail.getFurnitureId());
+                salaryRoyaltyDetail.setAuditStatus("2");
+                salaryRoyaltyDetail.setAuditEmployeeId(employeeId);
+                salaryRoyaltyDetails.add(salaryRoyaltyDetail);
+            }
+        });
+
+        this.updateBatchById(salaryRoyaltyDetails);
+    }
+
+    /**
+     * 工程提成明细审核不通过
+     * @param projectDetails
+     */
+    @Override
+    public void auditProjectRoyaltyNo(List<ProjectRoyaltyDetailDTO> projectDetails) {
+        if (ArrayUtils.isEmpty(projectDetails)) {
+            return;
+        }
+
+        Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
+
+        List<SalaryRoyaltyDetail> salaryRoyaltyDetails = new ArrayList<>();
+        projectDetails.forEach(detail -> {
+            if (detail.getBasicId() != null) {
+                SalaryRoyaltyDetail salaryRoyaltyDetail = new SalaryRoyaltyDetail();
+                salaryRoyaltyDetail.setId(detail.getBasicId());
+                salaryRoyaltyDetail.setAuditStatus("3");
+                salaryRoyaltyDetail.setAuditRemark(detail.getAuditRemark());
+                salaryRoyaltyDetail.setAuditEmployeeId(employeeId);
+                salaryRoyaltyDetails.add(salaryRoyaltyDetail);
+            }
+
+            if (detail.getDoorId() != null) {
+                SalaryRoyaltyDetail salaryRoyaltyDetail = new SalaryRoyaltyDetail();
+                salaryRoyaltyDetail.setId(detail.getDoorId());
+                salaryRoyaltyDetail.setAuditStatus("3");
+                salaryRoyaltyDetail.setAuditRemark(detail.getAuditRemark());
+                salaryRoyaltyDetail.setAuditEmployeeId(employeeId);
+                salaryRoyaltyDetails.add(salaryRoyaltyDetail);
+            }
+
+            if (detail.getFurnitureId() != null) {
+                SalaryRoyaltyDetail salaryRoyaltyDetail = new SalaryRoyaltyDetail();
+                salaryRoyaltyDetail.setId(detail.getFurnitureId());
+                salaryRoyaltyDetail.setAuditStatus("3");
+                salaryRoyaltyDetail.setAuditRemark(detail.getAuditRemark());
+                salaryRoyaltyDetail.setAuditEmployeeId(employeeId);
+                salaryRoyaltyDetails.add(salaryRoyaltyDetail);
+            }
+        });
+        this.updateBatchById(salaryRoyaltyDetails);
     }
 }

@@ -128,6 +128,28 @@ public class OrderPlaneSketchServiceImpl extends ServiceImpl<OrderPlaneSketchMap
         return orderPlaneSketchDTO;
     }
 
+    /**
+     * 根据多个订单ID查询设计费信息
+     * @param orderIds
+     * @return
+     */
+    @Override
+    public List<OrderPlaneSketch> queryByOrderIds(List<Long> orderIds) {
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+        return this.list(Wrappers.<OrderPlaneSketch>lambdaQuery().in(OrderPlaneSketch::getOrderId, orderIds).ge(OrderPlaneSketch::getEndDate, now));
+    }
+
+    /**
+     * 根据订单ID查询设计费信息
+     * @param orderId
+     * @return
+     */
+    @Override
+    public OrderPlaneSketch getByOrderId(Long orderId) {
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+        return this.getOne(Wrappers.<OrderPlaneSketch>lambdaQuery().eq(OrderPlaneSketch::getOrderId, orderId).ge(OrderPlaneSketch::getEndDate, now), false);
+    }
+
     @Override
     public void submitPlaneSketch(OrderPlaneSketchDTO dto) {
         LocalDateTime now = RequestTimeHolder.getRequestTime();

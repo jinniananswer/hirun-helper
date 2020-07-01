@@ -11,6 +11,12 @@ import lombok.Data;
 @Data
 public class ProjectRoyaltyDetailDTO {
 
+    private Long custId;
+
+    private String custName;
+
+    private String custNo;
+
     private Long orderId;
 
     private String orderStatus;

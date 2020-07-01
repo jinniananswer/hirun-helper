@@ -13,6 +13,12 @@ public class DesignRoyaltyDetailDTO {
 
     private Long id;
 
+    private Long custId;
+
+    private String custName;
+
+    private String custNo;
+
     private Long orderId;
 
     private Long strategyId;

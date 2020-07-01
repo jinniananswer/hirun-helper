@@ -3,6 +3,7 @@ package com.microtomato.hirun.modules.bss.salary.controller;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.modules.bss.salary.entity.dto.DesignRoyaltyDetailDTO;
 import com.microtomato.hirun.modules.bss.salary.entity.dto.ProjectRoyaltyDetailDTO;
+import com.microtomato.hirun.modules.bss.salary.entity.dto.QueryRoyaltyDetailDTO;
 import com.microtomato.hirun.modules.bss.salary.entity.dto.SalaryRoyaltyDetailDTO;
 import com.microtomato.hirun.modules.bss.salary.service.ISalaryRoyaltyDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,12 @@ public class SalaryRoyaltyDetailController {
     @RestResult
     public SalaryRoyaltyDetailDTO querySalary(Long orderId) {
         return this.salaryRoyaltyDetailService.queryByOrderId(orderId);
+    }
+
+    @GetMapping("/queryRoyaltyDetails")
+    @RestResult
+    public SalaryRoyaltyDetailDTO queryRoyaltyDetails(QueryRoyaltyDetailDTO condition) {
+        return this.salaryRoyaltyDetailService.queryRoyaltyDetails(condition);
     }
 
     @PostMapping("/saveDesignRoyaltyDetails")
@@ -63,5 +70,29 @@ public class SalaryRoyaltyDetailController {
     @RestResult
     public void auditProjectRoyaltyDetails(@RequestBody List<ProjectRoyaltyDetailDTO> projectRoyaltyDetails) {
         this.salaryRoyaltyDetailService.auditProjectRoyaltyDetails(projectRoyaltyDetails);
+    }
+
+    @PostMapping("/auditDesignRoyaltyPass")
+    @RestResult
+    public void auditDesignRoyaltyPass(@RequestBody List<DesignRoyaltyDetailDTO> designRoyaltyDetails) {
+        this.salaryRoyaltyDetailService.auditDesignRoyaltyPass(designRoyaltyDetails);
+    }
+
+    @PostMapping("/auditDesignRoyaltyNo")
+    @RestResult
+    public void auditDesignRoyaltyNo(@RequestBody List<DesignRoyaltyDetailDTO> designRoyaltyDetails) {
+        this.salaryRoyaltyDetailService.auditDesignRoyaltyNo(designRoyaltyDetails);
+    }
+
+    @PostMapping("/auditProjectRoyaltyPass")
+    @RestResult
+    public void auditProjectRoyaltyPass(@RequestBody List<ProjectRoyaltyDetailDTO> projectRoyaltyDetails) {
+        this.salaryRoyaltyDetailService.auditProjectRoyaltyPass(projectRoyaltyDetails);
+    }
+
+    @PostMapping("/auditProjectRoyaltyNo")
+    @RestResult
+    public void auditProjectRoyaltyNo(@RequestBody List<ProjectRoyaltyDetailDTO> projectRoyaltyDetails) {
+        this.salaryRoyaltyDetailService.auditProjectRoyaltyNo(projectRoyaltyDetails);
     }
 }
