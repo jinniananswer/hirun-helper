@@ -138,9 +138,13 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 ajax.get('api/bss.salary/salary-royalty-detail/queryRoyaltyByOrderId', {orderId: this.orderId}, function(responseData) {
                     if (responseData.designRoyaltyDetails) {
                         that.designRoyaltyDetails = responseData.designRoyaltyDetails;
+                    } else {
+                        that.designRoyaltyDetails = [];
                     }
                     if (responseData.projectRoyaltyDetails) {
                         that.projectRoyaltyDetails = responseData.projectRoyaltyDetails;
+                    } else {
+                        that.projectRoyaltyDetails = [];
                     }
                 });
             },
