@@ -11,11 +11,19 @@ import lombok.Data;
 @Data
 public class EmployeeSalaryRoyaltyDetailDTO {
 
+    private Long id;
+
+    private Long orderId;
+
+    private String orderStatus;
+
     private Long strategyId;
 
     private String type;
 
     private String item;
+
+    private String value;
 
     private Long employeeId;
 

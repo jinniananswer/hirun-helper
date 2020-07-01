@@ -50,6 +50,8 @@ public interface IOrderFeeService extends IService<OrderFee> {
      */
     List<OrderFee> queryByOrderId(Long orderId);
 
+    List<OrderFee> queryByOrderIds(List<Long> orderIds);
+
     /**
      * 根据订单ID、类型、期数查询订单费用
      * @param orderId

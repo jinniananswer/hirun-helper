@@ -5,6 +5,7 @@ import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeCompositeDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeInfoDTO;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @program: hirun-helper
@@ -23,4 +24,6 @@ public interface IFeeDomainService {
     List<OrderFeeInfoDTO> queryOrderFeeInfo(Long orderId);
 
     List<OrderFeeCompositeDTO> buildCompositeFee(Long orderId);
+
+    Map<Long, List<OrderFeeCompositeDTO>> buildMultiCompositeFee(List<Long> orderIds);
 }

@@ -23,6 +23,11 @@ import java.util.List;
 public class OrderFeeCompositeDTO {
 
     /**
+     * 订单编码
+     */
+    private Long orderId;
+
+    /**
      * 费用类型 设计费、工程款、主材、橱柜
      */
     private String type;

@@ -15,7 +15,7 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
         template: `
             <div>
                 <el-input v-model="sEmployeeName" placeholder="请选择员工" @focus="popupDialog"></el-input>
-                <el-dialog title="选择员工" :visible.sync="dialogVisible">
+                <el-dialog title="选择员工" append-to-body :visible.sync="dialogVisible">
                     <el-input v-model="searchText" placeholder="请输入员工姓名和电话" @keyup.enter.native="search"><template slot="append"><el-button type="primary" icon="el-icon-search" @click="search">搜索</el-button></template></el-input>
                     <el-table :data="datas" height="400">
                         <el-table-column property="name" label="姓名" width="80"></el-table-column>

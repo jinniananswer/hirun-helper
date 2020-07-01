@@ -1,10 +1,13 @@
 package com.microtomato.hirun.modules.bss.salary.mapper;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.microtomato.hirun.framework.annotation.Storage;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 import com.microtomato.hirun.modules.bss.salary.entity.dto.EmployeeSalaryRoyaltyDetailDTO;
+import com.microtomato.hirun.modules.bss.salary.entity.dto.OrderSalaryRoyaltyDetailDTO;
 import com.microtomato.hirun.modules.bss.salary.entity.po.SalaryRoyaltyDetail;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -22,14 +25,17 @@ import java.util.List;
 @DataSource(DataSourceKey.INS)
 public interface SalaryRoyaltyDetailMapper extends BaseMapper<SalaryRoyaltyDetail> {
 
-    @Select("select a.employee_id, a.strategy_id, a.type, a.item, a.total_royalty, a.already_fetch, a.this_month_fetch, a.salary_month, a.audit_status, a.remark, a.audit_remark, b.name employee_name, b.status employee_status, c.org_id, c.job_role, c.job_grade\n" +
-            "from salary_royalty_detail a, ins_employee b, ins_employee_job_role c\n" +
+    @Select("select a.id, a.order_id, a.employee_id, a.org_id, a.job_role, a.job_grade, a.strategy_id, a.order_status, a.type, a.item, a.value, a.total_royalty, a.already_fetch, a.this_month_fetch, a.salary_month, a.audit_status, a.remark, a.audit_remark, a.is_modified, b.name employee_name, b.status employee_status\n" +
+            "from salary_royalty_detail a, ins_employee b\n" +
             "where b.employee_id = a.employee_id\n" +
-            "and c.employee_id = a.employee_id\n" +
-            "and c.is_main = '1'\n" +
-            "and c.start_date = (select max(start_date) from ins_employee_job_role d where d.employee_id = c.employee_id)\n" +
             "and a.order_id = ${orderId}"
     )
     List<EmployeeSalaryRoyaltyDetailDTO> querySalaries(@Param("orderId")Long orderId);
 
+
+    @Select("select c.cust_id, c.cust_name, c.cust_no, a.id, a.order_id, a.employee_id, a.org_id, a.job_role, a.job_grade, a.strategy_id, a.order_status, a.type, a.item, a.value, a.total_royalty, a.already_fetch, a.this_month_fetch, a.salary_month, a.audit_status, a.remark, a.audit_remark, a.is_modified, b.name employee_name, b.status employee_status\n" +
+            "from salary_royalty_detail a, ins_employee b, cust_base c, order_base d\n" +
+            "${ew.customSqlSegment}"
+    )
+    List<OrderSalaryRoyaltyDetailDTO> queryOrderSalaryRoyaltyDetails(@Param(Constants.WRAPPER) Wrapper wrapper);
 }

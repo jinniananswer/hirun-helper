@@ -9,11 +9,11 @@ import com.microtomato.hirun.modules.bss.config.entity.po.SalaryStatusFeeMapping
 import com.microtomato.hirun.modules.bss.config.service.ISalaryRoyaltyMultiSplitService;
 import com.microtomato.hirun.modules.bss.config.service.ISalaryRoyaltyStrategyService;
 import com.microtomato.hirun.modules.bss.config.service.ISalaryStatusFeeMappingService;
-import com.microtomato.hirun.modules.bss.order.entity.dto.OrderPlaneSketchDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerActionDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderBase;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFee;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFeeItem;
+import com.microtomato.hirun.modules.bss.order.entity.po.OrderPlaneSketch;
 import com.microtomato.hirun.modules.bss.order.service.*;
 import com.microtomato.hirun.modules.bss.salary.entity.po.SalaryRoyaltyDetail;
 import com.microtomato.hirun.modules.bss.salary.exception.SalaryException;
@@ -114,7 +114,7 @@ public class SalaryDO {
         computeFact.setFeeFact(feeFact);
 
         //2.4 查询订单设计费标准
-        OrderPlaneSketchDTO planeSketch = this.orderPlaneSketchService.getPlaneSketch(orderId);
+        OrderPlaneSketch planeSketch = this.orderPlaneSketchService.getByOrderId(orderId);
         Integer designFeeStandard = 0;
         if (planeSketch != null) {
             designFeeStandard = planeSketch.getDesignFeeStandard();
@@ -340,6 +340,7 @@ public class SalaryDO {
             royaltyDetail.setStartTime(now);
             royaltyDetail.setStrategyId(matchStrategy.getId());
             royaltyDetail.setEndTime(TimeUtils.getForeverTime());
+            royaltyDetail.setRemark(matchStrategy.getDescription()+"，由系统自动计算");
             royaltyDetails.add(royaltyDetail);
         });
 

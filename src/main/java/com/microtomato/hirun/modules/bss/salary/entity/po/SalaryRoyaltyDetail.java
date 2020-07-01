@@ -40,6 +40,10 @@ public class SalaryRoyaltyDetail extends BaseEntity {
     @TableField(value = "job_role")
     private String jobRole;
 
+    /** 岗位等级 */
+    @TableField(value = "job_grade")
+    private String jobGrade;
+
     /** 角色ID */
     @TableField(value = "role_id")
     private Long roleId;
@@ -124,6 +128,9 @@ public class SalaryRoyaltyDetail extends BaseEntity {
     @TableField(value = "audit_employee_id")
     private Long auditEmployeeId;
 
+    /** 是否被修改过 1-被修改 其它值或null未被修改 */
+    @TableField(value = "is_modified")
+    private String isModified;
 
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)
     private Long createUserId;

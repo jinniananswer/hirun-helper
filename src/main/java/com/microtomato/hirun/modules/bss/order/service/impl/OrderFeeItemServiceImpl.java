@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.bss.order.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
@@ -39,6 +40,17 @@ public class OrderFeeItemServiceImpl extends ServiceImpl<OrderFeeItemMapper, Ord
     public List<OrderFeeItem> queryByOrderId(Long orderId) {
         LocalDateTime now = RequestTimeHolder.getRequestTime();
         return this.list(new QueryWrapper<OrderFeeItem>().lambda().eq(OrderFeeItem::getOrderId, orderId).gt(OrderFeeItem::getEndDate, now));
+    }
+
+    /**
+     * 根据传入的多个订单ID查询订单费用项信息
+     * @param orderIds
+     * @return
+     */
+    @Override
+    public List<OrderFeeItem> queryByOrderIds(List<Long> orderIds) {
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+        return this.list(Wrappers.<OrderFeeItem>lambdaQuery().in(OrderFeeItem::getOrderId, orderIds).gt(OrderFeeItem::getEndDate, now));
     }
 
     /**

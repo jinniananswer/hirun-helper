@@ -32,7 +32,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -349,6 +351,61 @@ public class FeeDomainServiceImpl implements IFeeDomainService {
             }
         });
 
+        return result;
+    }
+
+    /**
+     * 根据传入的多订单ID构建订单费用对象集
+     * @param orderIds
+     * @return
+     */
+    @Override
+    public Map<Long, List<OrderFeeCompositeDTO>> buildMultiCompositeFee(List<Long> orderIds) {
+        List<OrderFee> orderFees = this.orderFeeService.queryByOrderIds(orderIds);
+
+        if (ArrayUtils.isEmpty(orderFees)) {
+            return null;
+        }
+
+        List<OrderFeeCompositeDTO> compositeFees = new ArrayList<>();
+        orderFees.forEach(orderFee -> {
+            OrderFeeCompositeDTO compositeFee = new OrderFeeCompositeDTO();
+            BeanUtils.copyProperties(orderFee, compositeFee);
+            compositeFees.add(compositeFee);
+        });
+
+        List<OrderFeeItem> orderFeeItems = this.orderFeeItemService.queryByOrderIds(orderIds);
+        if (ArrayUtils.isNotEmpty(orderFeeItems)) {
+            compositeFees.forEach(compositeFee -> {
+                if (StringUtils.equals("2", compositeFee.getType())) {
+                    List<OrderFeeItem> sameFeeNoItems = this.findFeeItems(compositeFee.getFeeNo(), orderFeeItems);
+                    if (ArrayUtils.isNotEmpty(sameFeeNoItems)) {
+                        List<OrderFeeItemDTO> compositeFeeItems = new ArrayList<>();
+                        sameFeeNoItems.forEach(sameFeeNoItem -> {
+                            OrderFeeItemDTO compositeFeeItem = new OrderFeeItemDTO();
+                            BeanUtils.copyProperties(sameFeeNoItem, compositeFeeItem);
+                            compositeFeeItems.add(compositeFeeItem);
+                        });
+                        compositeFee.setItems(compositeFeeItems);
+                    }
+
+                }
+            });
+        }
+
+        Map<Long, List<OrderFeeCompositeDTO>> result = new HashMap<>();
+        compositeFees.forEach(compositeFee -> {
+            Long orderId = compositeFee.getOrderId();
+            List<OrderFeeCompositeDTO> temp = null;
+            if (result.containsKey(orderId)) {
+                temp = result.get(orderId);
+            } else {
+                temp = new ArrayList<>();
+                result.put(orderId, temp);
+            }
+
+            temp.add(compositeFee);
+        });
         return result;
     }
 }

@@ -1,6 +1,6 @@
 define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
     Vue.component('vue-select', {
-        props: ['code-type', 'value', 'disabled'],
+        props: ['code-type', 'value', 'disabled', 'disable-value'],
 
         data : function(){
             return {
@@ -15,7 +15,8 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
                     v-for="item in options"
                     :key="item.codeValue"
                     :label="item.codeName"
-                    :value="item.codeValue">
+                    :value="item.codeValue"
+                    :disabled="item.codeValue==this.disableValue">
                 </el-option>
             </el-select>
             `,
