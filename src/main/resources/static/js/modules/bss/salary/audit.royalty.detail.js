@@ -10,9 +10,14 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     housesId: null,
                     orgIds: null,
                     orgName: null,
-                    startDate: null,
-                    endDate: null,
-                    count: null
+                    salaryMonth: null,
+                    auditStatus: null,
+                    count: 0,
+                    limit: 1,
+                    page: 1,
+                    projectCount: 0,
+                    projectLimit: 1,
+                    projectPage: 1
                 },
                 designRoyaltyDetails: [],
                 projectRoyaltyDetails: [],
@@ -27,13 +32,35 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
 
             query: function() {
                 let that = this;
-                ajax.get('api/bss.salary/salary-royalty-detail/queryRoyaltyDetails', this.queryCond, function(responseData){
+                ajax.get('api/bss.salary/salary-royalty-detail/queryAuditDesignRoyaltyDetails', this.queryCond, function(responseData){
                     if (responseData) {
-                        that.designRoyaltyDetails = responseData.designRoyaltyDetails;
-                        that.projectRoyaltyDetails = responseData.projectRoyaltyDetails;
-                    } else {
-                        that.designRoyaltyDetails = [];
-                        that.projectRoyaltyDetails = [];
+                        that.designRoyaltyDetails = responseData.records;
+                        that.queryCond.page = responseData.current;
+                        that.queryCond.count = responseData.total;
+                    }
+
+                    that.queryProject();
+                });
+            },
+
+            queryDesign: function() {
+                let that = this;
+                ajax.get('api/bss.salary/salary-royalty-detail/queryAuditDesignRoyaltyDetails', this.queryCond, function(responseData){
+                    if (responseData) {
+                        that.designRoyaltyDetails = responseData.records;
+                        that.queryCond.page = responseData.current;
+                        that.queryCond.count = responseData.total;
+                    }
+                });
+            },
+
+            queryProject: function() {
+                let that = this;
+                ajax.get('api/bss.salary/salary-royalty-detail/queryAuditProjectRoyaltyDetails', this.queryCond, function(responseData){
+                    if (responseData) {
+                        that.projectRoyaltyDetails = responseData.records;
+                        that.queryCond.projectPage = responseData.current;
+                        that.queryCond.projectCount = responseData.total;
                     }
                 });
             },
