@@ -26,4 +26,16 @@ public class QueryRoyaltyDetailDTO {
     private LocalDate startDate;
 
     private LocalDate endDate;
+
+    private Integer page;
+
+    private Integer limit;
+
+    private Integer count;
+
+    private Integer projectPage;
+
+    private Integer projectLimit;
+
+    private Integer projectCount;
 }

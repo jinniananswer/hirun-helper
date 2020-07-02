@@ -1,7 +1,9 @@
 package com.microtomato.hirun.modules.bss.salary.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
@@ -850,34 +852,37 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
     }
 
     /**
-     * 按条件查询员工提成明细信息
+     * 审核时查询设计费提成明细
      * @param request
      * @return
      */
     @Override
-    public SalaryRoyaltyDetailDTO queryRoyaltyDetails(QueryRoyaltyDetailDTO request) {
-        SalaryRoyaltyDetailDTO result = new SalaryRoyaltyDetailDTO();
-        QueryWrapper<QueryRoyaltyDetailDTO> queryWrapper = new QueryWrapper<>();
-        queryWrapper.apply(" b.employee_id = a.employee_id ");
-        queryWrapper.apply(" d.order_id = a.order_id ");
-        queryWrapper.apply(" c.cust_id = d.cust_id ");
-        queryWrapper.like(StringUtils.isNotBlank(request.getCustName()), "c.cust_name", request.getCustName());
-        queryWrapper.eq(StringUtils.isNotBlank(request.getMobileNo()), "c.mobile_no", request.getMobileNo());
-        queryWrapper.eq(request.getHouseId() != null, "d.houses_id", request.getHouseId());
-        queryWrapper.eq(StringUtils.isNotBlank(request.getAuditStatus()), "a.audit_status", request.getAuditStatus());
-        queryWrapper.exists(StringUtils.isNotBlank(request.getOrgIds()), "(select 1 from ins_employee_job_role r where r.employee_id = a.employee_id and r.org_id in ("+request.getOrgIds()+"))");
-        queryWrapper.orderByAsc("a.employee_id", "a.order_status", "a.type", "a.id");
+    public IPage<DesignRoyaltyDetailDTO> queryAuditDesignRoyaltyDetails(QueryRoyaltyDetailDTO request) {
+        IPage<DesignRoyaltyDetailDTO> result = new Page<>(request.getPage(), request.getLimit());
+        QueryWrapper<QueryRoyaltyDetailDTO> designWrapper = new QueryWrapper<>();
+        Integer currentPage = request.getPage();
+        designWrapper.apply(" b.employee_id = a.employee_id ");
+        designWrapper.apply(" d.order_id = a.order_id ");
+        designWrapper.apply(" c.cust_id = d.cust_id ");
+        designWrapper.like(StringUtils.isNotBlank(request.getCustName()), "c.cust_name", request.getCustName());
+        designWrapper.eq(StringUtils.isNotBlank(request.getMobileNo()), "c.mobile_no", request.getMobileNo());
+        designWrapper.eq(request.getHouseId() != null, "d.houses_id", request.getHouseId());
+        designWrapper.eq(StringUtils.isNotBlank(request.getAuditStatus()), "a.audit_status", request.getAuditStatus());
+        designWrapper.in("a.type", "1", "2");
+        designWrapper.exists(StringUtils.isNotBlank(request.getOrgIds()), "(select 1 from ins_employee_job_role r where r.employee_id = a.employee_id and r.org_id in ("+request.getOrgIds()+"))");
+        designWrapper.orderByAsc("a.employee_id", "a.order_status", "a.type", "a.id");
 
-        List<OrderSalaryRoyaltyDetailDTO> orderRoyaltyDetails = this.salaryRoyaltyDetailMapper.queryOrderSalaryRoyaltyDetails(queryWrapper);
-        if (ArrayUtils.isEmpty(orderRoyaltyDetails)) {
-            return null;
+        IPage<QueryRoyaltyDetailDTO> designPage = new Page<>(currentPage, request.getLimit());
+        IPage<OrderSalaryRoyaltyDetailDTO> pageDesignRoyaltyDetails = this.salaryRoyaltyDetailMapper.queryOrderSalaryRoyaltyDetailPages(designPage, designWrapper);
+
+        List<OrderSalaryRoyaltyDetailDTO> designOrderRoyaltyDetails = pageDesignRoyaltyDetails.getRecords();
+        if (ArrayUtils.isEmpty(designOrderRoyaltyDetails)) {
+            return result;
         }
 
-        List<OrderSalaryRoyaltyDetailDTO> designOrderRoyaltyDetails = new ArrayList<>();
-        List<OrderSalaryRoyaltyDetailDTO> projectOrderRoyaltyDetails = new ArrayList<>();
         List<Long> orderIds = new ArrayList<>();
 
-        orderRoyaltyDetails.forEach(detail -> {
+        designOrderRoyaltyDetails.forEach(detail -> {
             Long orderId = detail.getOrderId();
             if (!orderIds.contains(orderId)) {
                 orderIds.add(orderId);
@@ -885,47 +890,6 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
         });
 
         Map<Long, List<OrderFeeCompositeDTO>> feeCache = this.feeDomainService.buildMultiCompositeFee(orderIds);
-        orderRoyaltyDetails.forEach(detail -> {
-            String type = detail.getType();
-            Long orderId = detail.getOrderId();
-
-            List<OrderFeeCompositeDTO> compositeFees = feeCache.get(orderId);
-
-            if (StringUtils.equals("1", type) || StringUtils.equals("2", type)) {
-                //设计提成与经营提成
-                designOrderRoyaltyDetails.add(detail);
-            } else if (StringUtils.equals("3", type)) {
-                //工程提成
-                projectOrderRoyaltyDetails.add(detail);
-            } else if (StringUtils.equals("4", type)) {
-                //主材提成
-            }
-        });
-
-        if (ArrayUtils.isNotEmpty(projectOrderRoyaltyDetails)) {
-            Map<Long, List<OrderSalaryRoyaltyDetailDTO>> detailCache = new HashMap<>();
-
-            projectOrderRoyaltyDetails.forEach(detail -> {
-                Long orderId = detail.getOrderId();
-                List<OrderSalaryRoyaltyDetailDTO> temp = new ArrayList<>();
-                if (detailCache.containsKey(orderId)) {
-                    temp = detailCache.get(orderId);
-                } else {
-                    detailCache.put(orderId, temp);
-                }
-                temp.add(detail);
-            });
-            List<ProjectRoyaltyDetailDTO> projectRoyaltyDetails = new ArrayList<>();
-            detailCache.forEach((key, values) -> {
-                List<ProjectRoyaltyDetailDTO> projectDetails = this.buildProjectRoyaltyDetails(values, feeCache.get(key));
-                projectRoyaltyDetails.addAll(projectDetails);
-            });
-
-            if (ArrayUtils.isNotEmpty(projectRoyaltyDetails)) {
-                result.setProjectRoyaltyDetails(projectRoyaltyDetails);
-            }
-        }
-
         if (ArrayUtils.isNotEmpty(designOrderRoyaltyDetails)) {
             Map<Long, List<OrderSalaryRoyaltyDetailDTO>> detailCache = new HashMap<>();
             designOrderRoyaltyDetails.forEach(detail -> {
@@ -953,11 +917,79 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
                 });
             });
             if (ArrayUtils.isNotEmpty(designRoyaltyDetails)) {
-                result.setDesignRoyaltyDetails(designRoyaltyDetails);
+                result.setRecords(designRoyaltyDetails);
+                result.setTotal(pageDesignRoyaltyDetails.getTotal());
+                result.setSize(pageDesignRoyaltyDetails.getSize());
             }
         }
-
         return result;
+    }
+
+    /**
+     * 审核时查询工程提成明细
+     * @param request
+     * @return
+     */
+    @Override
+    public IPage<ProjectRoyaltyDetailDTO> queryAuditProjectRoyaltyDetails(QueryRoyaltyDetailDTO request) {
+        QueryWrapper<QueryRoyaltyDetailDTO> projectWrapper = new QueryWrapper<>();
+        projectWrapper.apply(" b.employee_id = a.employee_id ");
+        projectWrapper.apply(" d.order_id = a.order_id ");
+        projectWrapper.apply(" c.cust_id = d.cust_id ");
+        projectWrapper.like(StringUtils.isNotBlank(request.getCustName()), "c.cust_name", request.getCustName());
+        projectWrapper.eq(StringUtils.isNotBlank(request.getMobileNo()), "c.mobile_no", request.getMobileNo());
+        projectWrapper.eq(request.getHouseId() != null, "d.houses_id", request.getHouseId());
+        projectWrapper.eq(StringUtils.isNotBlank(request.getAuditStatus()), "a.audit_status", request.getAuditStatus());
+        projectWrapper.in("a.type", "3");
+        projectWrapper.exists(StringUtils.isNotBlank(request.getOrgIds()), "(select 1 from ins_employee_job_role r where r.employee_id = a.employee_id and r.org_id in ("+request.getOrgIds()+"))");
+        projectWrapper.orderByAsc("a.employee_id", "a.order_status", "a.type", "a.id");
+
+        IPage<QueryRoyaltyDetailDTO> projectPage = new Page<>(request.getProjectPage(), request.getProjectLimit() * 3);
+        IPage<OrderSalaryRoyaltyDetailDTO> pageProjectRoyaltyDetails = this.salaryRoyaltyDetailMapper.queryOrderSalaryRoyaltyDetailPages(projectPage, projectWrapper);
+        List<OrderSalaryRoyaltyDetailDTO> projectOrderRoyaltyDetails = pageProjectRoyaltyDetails.getRecords();
+        if (ArrayUtils.isEmpty(projectOrderRoyaltyDetails)) {
+            return null;
+        }
+
+        List<Long> orderIds = new ArrayList<>();
+
+        projectOrderRoyaltyDetails.forEach(detail -> {
+            Long orderId = detail.getOrderId();
+            if (!orderIds.contains(orderId)) {
+                orderIds.add(orderId);
+            }
+        });
+
+        Map<Long, List<OrderFeeCompositeDTO>> feeCache = this.feeDomainService.buildMultiCompositeFee(orderIds);
+
+        if (ArrayUtils.isNotEmpty(projectOrderRoyaltyDetails)) {
+            Map<Long, List<OrderSalaryRoyaltyDetailDTO>> detailCache = new HashMap<>();
+
+            projectOrderRoyaltyDetails.forEach(detail -> {
+                Long orderId = detail.getOrderId();
+                List<OrderSalaryRoyaltyDetailDTO> temp = new ArrayList<>();
+                if (detailCache.containsKey(orderId)) {
+                    temp = detailCache.get(orderId);
+                } else {
+                    detailCache.put(orderId, temp);
+                }
+                temp.add(detail);
+            });
+            List<ProjectRoyaltyDetailDTO> projectRoyaltyDetails = new ArrayList<>();
+            detailCache.forEach((key, values) -> {
+                List<ProjectRoyaltyDetailDTO> projectDetails = this.buildProjectRoyaltyDetails(values, feeCache.get(key));
+                projectRoyaltyDetails.addAll(projectDetails);
+            });
+
+            if (ArrayUtils.isNotEmpty(projectRoyaltyDetails)) {
+                IPage<ProjectRoyaltyDetailDTO> pages = new Page<>(request.getProjectPage(), request.getProjectLimit());
+                pages.setRecords(projectRoyaltyDetails);
+                pages.setTotal(pageProjectRoyaltyDetails.getTotal() / 3);
+                pages.setSize(pageProjectRoyaltyDetails.getSize() / 3);
+                return pages;
+            }
+        }
+        return null;
     }
 
     /**
