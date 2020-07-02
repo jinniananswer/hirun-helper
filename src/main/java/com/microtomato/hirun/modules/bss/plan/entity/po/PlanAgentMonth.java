@@ -42,43 +42,43 @@ public class PlanAgentMonth extends BaseEntity {
 
 
     @TableField(value = "month")
-    private String month;
+    private Integer month;
 
     /** 计划咨询数 */
     @TableField(value = "plan_consult_count")
-    private Boolean planConsultCount;
+    private Integer planConsultCount;
 
     /** 计划绑定客户代表数 */
     @TableField(value = "plan_bind_agent_count")
-    private Boolean planBindAgentCount;
+    private Integer planBindAgentCount;
 
     /** 计划风格蓝图数 */
     @TableField(value = "plan_style_count")
-    private Boolean planStyleCount;
+    private Integer planStyleCount;
 
     /** 计划功能蓝图A */
     @TableField(value = "plan_funca_count")
-    private Boolean planFuncaCount;
+    private Integer planFuncaCount;
 
     /** 计划功能蓝图B */
     @TableField(value = "plan_funcb_count")
-    private Boolean planFuncbCount;
+    private Integer planFuncbCount;
 
     /** 计划功能蓝图C */
     @TableField(value = "plan_funcc_count")
-    private Boolean planFunccCount;
+    private Integer planFunccCount;
 
     /** 计划城市木屋 */
     @TableField(value = "plan_citycabin_count")
-    private Boolean planCitycabinCount;
+    private Integer planCitycabinCount;
 
     /** 计划量房数 */
     @TableField(value = "plan_measure_count")
-    private Boolean planMeasureCount;
+    private Integer planMeasureCount;
 
     /** 计划绑定设计师数 */
     @TableField(value = "plan_bind_design_count")
-    private Boolean planBindDesignCount;
+    private Integer planBindDesignCount;
 
     /** 部门id */
     @TableField(value = "org_id")
