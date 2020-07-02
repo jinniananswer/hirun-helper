@@ -868,6 +868,7 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
         designWrapper.eq(StringUtils.isNotBlank(request.getMobileNo()), "c.mobile_no", request.getMobileNo());
         designWrapper.eq(request.getHouseId() != null, "d.houses_id", request.getHouseId());
         designWrapper.eq(StringUtils.isNotBlank(request.getAuditStatus()), "a.audit_status", request.getAuditStatus());
+        designWrapper.eq(request.getSalaryMonth() != null, "a.salary_month", request.getSalaryMonth());
         designWrapper.in("a.type", "1", "2");
         designWrapper.exists(StringUtils.isNotBlank(request.getOrgIds()), "(select 1 from ins_employee_job_role r where r.employee_id = a.employee_id and r.org_id in ("+request.getOrgIds()+"))");
         designWrapper.orderByAsc("a.employee_id", "a.order_status", "a.type", "a.id");
@@ -932,6 +933,7 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
      */
     @Override
     public IPage<ProjectRoyaltyDetailDTO> queryAuditProjectRoyaltyDetails(QueryRoyaltyDetailDTO request) {
+        IPage<ProjectRoyaltyDetailDTO> pages = new Page<>(request.getProjectPage(), request.getProjectLimit());
         QueryWrapper<QueryRoyaltyDetailDTO> projectWrapper = new QueryWrapper<>();
         projectWrapper.apply(" b.employee_id = a.employee_id ");
         projectWrapper.apply(" d.order_id = a.order_id ");
@@ -939,6 +941,7 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
         projectWrapper.like(StringUtils.isNotBlank(request.getCustName()), "c.cust_name", request.getCustName());
         projectWrapper.eq(StringUtils.isNotBlank(request.getMobileNo()), "c.mobile_no", request.getMobileNo());
         projectWrapper.eq(request.getHouseId() != null, "d.houses_id", request.getHouseId());
+        projectWrapper.eq(request.getSalaryMonth() != null, "a.salary_month", request.getSalaryMonth());
         projectWrapper.eq(StringUtils.isNotBlank(request.getAuditStatus()), "a.audit_status", request.getAuditStatus());
         projectWrapper.in("a.type", "3");
         projectWrapper.exists(StringUtils.isNotBlank(request.getOrgIds()), "(select 1 from ins_employee_job_role r where r.employee_id = a.employee_id and r.org_id in ("+request.getOrgIds()+"))");
@@ -948,7 +951,7 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
         IPage<OrderSalaryRoyaltyDetailDTO> pageProjectRoyaltyDetails = this.salaryRoyaltyDetailMapper.queryOrderSalaryRoyaltyDetailPages(projectPage, projectWrapper);
         List<OrderSalaryRoyaltyDetailDTO> projectOrderRoyaltyDetails = pageProjectRoyaltyDetails.getRecords();
         if (ArrayUtils.isEmpty(projectOrderRoyaltyDetails)) {
-            return null;
+            return pages;
         }
 
         List<Long> orderIds = new ArrayList<>();
@@ -982,14 +985,13 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
             });
 
             if (ArrayUtils.isNotEmpty(projectRoyaltyDetails)) {
-                IPage<ProjectRoyaltyDetailDTO> pages = new Page<>(request.getProjectPage(), request.getProjectLimit());
                 pages.setRecords(projectRoyaltyDetails);
                 pages.setTotal(pageProjectRoyaltyDetails.getTotal() / 3);
                 pages.setSize(pageProjectRoyaltyDetails.getSize() / 3);
                 return pages;
             }
         }
-        return null;
+        return pages;
     }
 
     /**
