@@ -23,28 +23,80 @@ spring:
   datasource:
     atomikos:
       sys:
-        uniqueResourceName: sys
-        driverClassName: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://127.0.0.1:3306/sys?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=GMT%2B8
-        user: sys
-        password: ENC(viZyjCQosuNPI/YI5a/bkAjnKGT9R5zD)
-        minPoolSize: 20
-        maxPoolSize: 50
-        maxIdleTime: 60
-        maxLifetime: 1200
-        maintenanceInterval: 60
+#        uniqueResourceName: sys
+#        driverClassName: com.mysql.cj.jdbc.Driver
+#        url: jdbc:mysql://127.0.0.1:3306/sys?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=GMT%2B8
+#        user: sys
+#        password: ENC(viZyjCQosuNPI/YI5a/bkAjnKGT9R5zD)
+#        minPoolSize: 20
+#        maxPoolSize: 50
+#        maxIdleTime: 60
+#        maxLifetime: 1200
+#        maintenanceInterval: 60
+
+        unique-resource-name: sys
+        min-pool-size: 20
+        max-pool-size: 50
+        max-lifetime: 20000
+        borrow-connection-timeout: 10000
+        xa-data-source-class-name: com.alibaba.druid.pool.xa.DruidXADataSource
+        xa-properties:
+          url: jdbc:mysql://127.0.0.1:3306/sys?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
+          username: sys
+          password: ENC(viZyjCQosuNPI/YI5a/bkAjnKGT9R5zD)
+          driverClassName: com.mysql.cj.jdbc.Driver
+          initialSize: 20
+          minIdle: 8
+          maxActive: 50
+          maxWait: 60000
+          timeBetweenEvictionRunsMillis: 30000
+          minEvictableIdleTimeMillis: 300000
+          numTestsPerEvictionRun: 2
+          testWhileIdle: true
+          testOnBorrow: false
+          testOnReturn: false
+          poolPreparedStatements: true
+          validationQuery: select 1
+          maxPoolPreparedStatementPerConnectionSize: 20
+          filters: stat,slf4j,wall
 
       ins:
-        uniqueResourceName: ins
-        driverClassName: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://127.0.0.1:3306/ins?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=GMT%2B8
-        user: ins
-        password: ENC(EFtPlR9pOu98f6a1eLlznevxCmlBJH/S)
-        minPoolSize: 20
-        maxPoolSize: 50
-        maxIdleTime: 60
-        maxLifetime: 1200
-        maintenanceInterval: 60
+#        uniqueResourceName: ins
+#        driverClassName: com.mysql.cj.jdbc.Driver
+#        url: jdbc:mysql://127.0.0.1:3306/ins?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=GMT%2B8
+#        user: ins
+#        password: ENC(EFtPlR9pOu98f6a1eLlznevxCmlBJH/S)
+#        minPoolSize: 20
+#        maxPoolSize: 50
+#        maxIdleTime: 60
+#        maxLifetime: 1200
+#        maintenanceInterval: 60
+
+        unique-resource-name: ins
+        min-pool-size: 20
+        max-pool-size: 50
+        max-lifetime: 20000
+        borrow-connection-timeout: 10000
+        xa-data-source-class-name: com.alibaba.druid.pool.xa.DruidXADataSource
+        xa-properties:
+          url: jdbc:mysql://127.0.0.1:3306/ins?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
+          username: ins
+          password: ENC(EFtPlR9pOu98f6a1eLlznevxCmlBJH/S)
+          driverClassName: com.mysql.cj.jdbc.Driver
+          initialSize: 20
+          minIdle: 8
+          maxActive: 50
+          maxWait: 60000
+          timeBetweenEvictionRunsMillis: 30000
+          minEvictableIdleTimeMillis: 300000
+          numTestsPerEvictionRun: 2
+          testWhileIdle: true
+          testOnBorrow: false
+          testOnReturn: false
+          poolPreparedStatements: true
+          validationQuery: select 1
+          maxPoolPreparedStatementPerConnectionSize: 20
+          filters: stat,slf4j,wall
 
   cache:
     # 指定缓存类型: none(禁用缓存), simple(用于开发), redis（用于生产）
