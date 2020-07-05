@@ -6,12 +6,14 @@ import com.microtomato.hirun.framework.annotation.Storage;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.microtomato.hirun.modules.bss.plan.entity.dto.AgentMonthAcutalDTO;
 import com.microtomato.hirun.modules.bss.plan.entity.dto.AgentMonthPlanDTO;
 import com.microtomato.hirun.modules.bss.plan.entity.po.PlanAgentMonth;
 import com.microtomato.hirun.modules.bss.salary.entity.dto.SalaryMonthlyDTO;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -54,4 +56,37 @@ public interface PlanAgentMonthMapper extends BaseMapper<PlanAgentMonth> {
             " where month = ${month} and company_id = ${companyId}"
     )
     PlanAgentMonth queryAgentPlanByCompanyId(@Param("companyId")Long companyId, @Param("month")Integer month);
+
+    /**
+     * 查询实际完成情况
+     * @param employeeId
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    @Select(" select count(1) as acutal_consult_count,sum(v.sm_count) as acutal_bind_agent_count, " +
+            " SUM(city_Count) as acutal_citycabin_count,SUM(v.func_count) as acutal_funca_count," +
+            " SUM(style_count) as acutal_style_count " +
+            " from ( " +
+            " select link_employee_id as employee_id, " +
+            " case WHEN (d.`status`='1' and d.finish_time BETWEEN ${startTime} and ${endTime} ) then '1' else 0 " +
+            "    end as sm_count, "+
+            " case WHEN EXISTS (select 1 from ins_scan_citycabin x where b.project_id=x.project_id and x.employee_id=c.link_employee_id " +
+            "      and x.experience_Time BETWEEN ${startTime} and ${endTime} ) then '1' else 0 " +
+            "    end as city_count, " +
+            " case WHEN EXISTS (SELECT 1 FROM ins_blueprint_action m where m.open_id=a.open_id and c.link_employee_id=m.rel_employee_id" +
+            "      and m.funcprint_create_time BETWEEN ${startTime} and ${endTime} ) then '1' else 0" +
+            "    end as func_count," +
+            " case WHEN EXISTS (SELECT 1 FROM ins_blueprint_action n where n.open_id=a.open_id and c.link_employee_id=n.rel_employee_id" +
+            "      and n.styleprint_create_time BETWEEN ${startTime} and ${endTime} ) then '1' else 0 " +
+            "   end as style_count " +
+            " from ins_party a,ins_project b,ins_project_linkman c ,ins_project_original_action d" +
+            "  where a.party_id=b.party_id and b.project_id=c.project_id and a.party_status='0' " +
+            "  and b.project_id=d.project_id and d.action_code='SMJRLC' and c.ROLE_TYPE = 'CUSTOMERSERVICE' " +
+            "  and a.consult_time BETWEEN ${startTime} and ${endTime} " +
+            "  and c.link_employee_id= ${employeeId}" +
+            "  ) v " +
+            "  group by v.employee_id "
+    )
+    AgentMonthAcutalDTO queryAgentAcutalByEmployeeId(@Param("employeeId")Long employeeId, @Param("startTime") LocalDateTime startTime, @Param("endTime")LocalDateTime endTime);
 }

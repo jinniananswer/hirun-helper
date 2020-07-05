@@ -1,8 +1,10 @@
 package com.microtomato.hirun.modules.bss.customer.service.impl;
 
 
+import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.*;
 import com.microtomato.hirun.modules.bss.customer.service.*;
+import com.microtomato.hirun.modules.bss.plan.entity.dto.AgentMonthAcutalDTO;
 import com.microtomato.hirun.modules.bss.plan.entity.po.PlanAgentMonth;
 import com.microtomato.hirun.modules.bss.plan.service.IPlanAgentMonthService;
 import com.microtomato.hirun.modules.organization.service.IOrgService;
@@ -11,6 +13,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -65,7 +70,7 @@ public class CustomerServiceReportDomainServiceImpl implements ICustomerServiceR
     }
 
     @Override
-    public Map<String, List> queryAgentPlanAcutalReport(ReportQueryCondDTO param) {
+    public Map<String, List> queryAgentPlanAcutalReport(ReportQueryCondDTO param) throws Exception {
         String queryType = param.getQueryType();
         Long employeeId = param.getEmployeeId();
         Map<String, List> listMap = new HashMap<>();
@@ -75,6 +80,7 @@ public class CustomerServiceReportDomainServiceImpl implements ICustomerServiceR
         //按员工查询
         if (StringUtils.equals("1", queryType)) {
             listMap.put("planData", this.getEmployeePlanData(employeeId, param.getMonth()));
+            this.getEmployeeAcutalData(employeeId,param.getMonth());
         }
         //按门店查
         if(StringUtils.equals("2",queryType)){
@@ -150,4 +156,44 @@ public class CustomerServiceReportDomainServiceImpl implements ICustomerServiceR
 
         return planData;
     }
+
+    /**
+     *
+     * @param employeeId
+     * @param monthDate
+     * @return
+     */
+    private List<Integer> getEmployeeAcutalData(Long employeeId,Integer monthDate) throws Exception{
+        String startDate = "";
+        String endDate = "";
+        Date transDate = null;
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM");
+
+        if(monthDate==null){
+            Calendar date = Calendar.getInstance();
+            int year = date.get(Calendar.YEAR);
+            int month = date.get(Calendar.MONTH) + 1;
+
+            if (month < 10) {
+                transDate = simpleDateFormat.parse(year + "-0" + month);
+            }
+            if (month >= 10) {
+                transDate = simpleDateFormat.parse(year + "-" + month);
+            }
+        }else{
+            String queryYear=(monthDate+"").substring(0,4);
+            String queryMonth=(monthDate+"").substring(4,6);
+            transDate = simpleDateFormat.parse(queryYear + "-" + queryMonth);
+        }
+        startDate= TimeUtils.newThisMonth(transDate)+" 00:00:00";
+        endDate=TimeUtils.lastThisMonth(transDate)+" 23:59:59";
+
+        LocalDateTime startTime=TimeUtils.stringToLocalDateTime(startDate,"yyyy-MM-dd HH:mm:ss");
+        LocalDateTime endTime=TimeUtils.stringToLocalDateTime(endDate,"yyyy-MM-dd HH:mm:ss");
+
+        AgentMonthAcutalDTO planAgentMonth=this.planAgentMonthService.queryAgentAcutalByEmployeeId(employeeId,startTime,endTime);
+        return null;
+    }
+
+
 }

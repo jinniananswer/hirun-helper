@@ -11,11 +11,8 @@ import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderBase;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderConsult;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderConsultMapper;
-import com.microtomato.hirun.modules.bss.order.service.IOrderBaseService;
-import com.microtomato.hirun.modules.bss.order.service.IOrderConsultService;
+import com.microtomato.hirun.modules.bss.order.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.microtomato.hirun.modules.bss.order.service.IOrderDomainService;
-import com.microtomato.hirun.modules.bss.order.service.IOrderWorkerService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +47,9 @@ public class OrderConsultServiceImpl extends ServiceImpl<OrderConsultMapper, Ord
     @Autowired
     private ICustBaseService custBaseService;
 
+    @Autowired
+    private IOrderWorkerActionService workerActionService;
+
     @Override
     public OrderConsult queryOrderConsult(Long orderId) {
         OrderConsult orderConsult = null;
@@ -77,6 +77,7 @@ public class OrderConsultServiceImpl extends ServiceImpl<OrderConsultMapper, Ord
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void saveCustomerConsultInfo(CustConsultDTO dto) {
+        dto.setOrderId(54L);
 
         OrderConsult orderConsult = new OrderConsult();
         BeanUtils.copyProperties(dto, orderConsult);
@@ -86,8 +87,10 @@ public class OrderConsultServiceImpl extends ServiceImpl<OrderConsultMapper, Ord
         } else {
             this.baseMapper.updateById(orderConsult);
         }
-        workerService.updateOrderWorker(dto.getOrderId(), 15L, dto.getCustServiceEmployeeId());
-        workerService.updateOrderWorker(dto.getOrderId(), 45L, dto.getDesignCupboardEmployeeId());
+        Long customerServiceWorkerId=workerService.updateOrderWorker(dto.getOrderId(), 15L, dto.getCustServiceEmployeeId());
+        workerActionService.createOrderWorkerAction(dto.getOrderId(),dto.getCustServiceEmployeeId(),customerServiceWorkerId,"","consult");
+        Long designCupBoardWorkerId=workerService.updateOrderWorker(dto.getOrderId(), 45L, dto.getDesignCupboardEmployeeId());
+        workerActionService.createOrderWorkerAction(dto.getOrderId(),dto.getCupboardKeeperEmployeeId(),designCupBoardWorkerId,"","consult");
         workerService.updateOrderWorker(dto.getOrderId(), 46L, dto.getMainMaterialKeeperEmployeeId());
         workerService.updateOrderWorker(dto.getOrderId(), 47L, dto.getCupboardKeeperEmployeeId());
         if (dto.getDesignEmployeeId() != null) {

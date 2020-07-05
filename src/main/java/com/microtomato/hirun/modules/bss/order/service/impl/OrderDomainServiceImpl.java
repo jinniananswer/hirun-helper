@@ -194,9 +194,9 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
      * @param newOrder
      */
     @Override
-    public void createNewOrder(NewOrderDTO newOrder) {
+    public Long createNewOrder(NewOrderDTO newOrder) {
         if (newOrder == null) {
-            return;
+            return null;
         }
         OrderBase order = new OrderBase();
         BeanUtils.copyProperties(newOrder, order);
@@ -228,6 +228,7 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
 
         this.orderBaseService.save(order);
         this.orderOperLogService.createOrderOperLog(order.getOrderId(), OrderConst.LOG_TYPE_CREATE, order.getStage(), order.getStatus(), OrderConst.OPER_LOG_CONTENT_CREATE);
+        return order.getOrderId();
     }
 
     /**

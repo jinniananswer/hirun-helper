@@ -39,7 +39,7 @@ public class CustomerServiceReportController {
 
     @GetMapping("/queryAgentPlanAcutalReport")
     @RestResult
-    public Map<String, List> queryAgentPlanAcutalReport(ReportQueryCondDTO param) {
+    public Map<String, List> queryAgentPlanAcutalReport(ReportQueryCondDTO param) throws Exception {
         return  customerServiceReportDomainService.queryAgentPlanAcutalReport(param);
     }
 

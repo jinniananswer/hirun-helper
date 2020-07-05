@@ -35,6 +35,8 @@ import com.microtomato.hirun.modules.bss.house.service.IHousesService;
 import com.microtomato.hirun.modules.bss.order.entity.dto.NewOrderDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderBase;
 import com.microtomato.hirun.modules.bss.order.service.IOrderDomainService;
+import com.microtomato.hirun.modules.bss.order.service.IOrderWorkerActionService;
+import com.microtomato.hirun.modules.bss.order.service.IOrderWorkerService;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
 import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
@@ -101,6 +103,11 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
     @Autowired
     private IDualService dualService;
 
+    @Autowired
+    private IOrderWorkerService workerService;
+
+    @Autowired
+    private IOrderWorkerActionService workerActionService;
 
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
@@ -167,7 +174,10 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
                 decorateAddress = decorateAddress + dto.getHouseRoomNo();
             }
             orderBase.setDecorateAddress(decorateAddress);
-            domainService.createNewOrder(orderBase);
+            Long orderId=domainService.createNewOrder(orderBase);
+            //报备角色为一个通用的虚拟角色
+            Long reportWorkerId=workerService.updateOrderWorker(orderId,555L,dto.getPrepareEmployeeId());
+            workerActionService.createOrderWorkerAction(orderId,dto.getPrepareEmployeeId(),reportWorkerId,"","report");
         }
     }
 
