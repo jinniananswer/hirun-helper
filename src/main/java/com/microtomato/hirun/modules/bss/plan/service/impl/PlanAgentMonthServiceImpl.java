@@ -1,13 +1,12 @@
 package com.microtomato.hirun.modules.bss.plan.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
-import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
+import com.microtomato.hirun.modules.bss.plan.entity.dto.AgentMonthAcutalDTO;
 import com.microtomato.hirun.modules.bss.plan.entity.dto.AgentMonthPlanDTO;
 import com.microtomato.hirun.modules.bss.plan.entity.dto.AgentMonthPlanQueryDTO;
 import com.microtomato.hirun.modules.bss.plan.entity.po.PlanAgentMonth;
@@ -154,6 +153,11 @@ public class PlanAgentMonthServiceImpl extends ServiceImpl<PlanAgentMonthMapper,
     @Override
     public PlanAgentMonth queryAgentPlanByCompanyId(Long orgId, Integer month) {
         return this.baseMapper.queryAgentPlanByCompanyId(orgId,month);
+    }
+
+    @Override
+    public AgentMonthAcutalDTO queryAgentAcutalByEmployeeId(Long employeeId, LocalDateTime startTime, LocalDateTime endTime) {
+        return this.baseMapper.queryAgentAcutalByEmployeeId(employeeId,startTime,endTime);
     }
 
     /**

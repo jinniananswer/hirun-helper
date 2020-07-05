@@ -26,5 +26,5 @@ public interface ICustomerServiceReportDomainService {
      * 查询门店报表
      */
 
-    Map<String,List> queryAgentPlanAcutalReport(ReportQueryCondDTO param);
+    Map<String,List> queryAgentPlanAcutalReport(ReportQueryCondDTO param) throws Exception;
 }

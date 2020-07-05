@@ -1,12 +1,14 @@
 package com.microtomato.hirun.modules.bss.plan.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.microtomato.hirun.modules.bss.plan.entity.dto.AgentMonthAcutalDTO;
 import com.microtomato.hirun.modules.bss.plan.entity.dto.AgentMonthPlanDTO;
 import com.microtomato.hirun.modules.bss.plan.entity.dto.AgentMonthPlanQueryDTO;
 import com.microtomato.hirun.modules.bss.plan.entity.po.PlanAgentMonth;
 import com.microtomato.hirun.modules.bss.salary.entity.dto.SalaryMonthlyDTO;
 import com.microtomato.hirun.modules.bss.salary.entity.dto.SalaryMonthlyQueryDTO;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -53,4 +55,13 @@ public interface IPlanAgentMonthService extends IService<PlanAgentMonth> {
      * @return
      */
     PlanAgentMonth queryAgentPlanByCompanyId(Long orgId,Integer month);
+
+    /**
+     *
+     * @param employeeId
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    AgentMonthAcutalDTO queryAgentAcutalByEmployeeId(Long employeeId, LocalDateTime startTime, LocalDateTime endTime);
 }

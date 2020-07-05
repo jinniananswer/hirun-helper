@@ -19,7 +19,7 @@ public interface IOrderDomainService {
 
     List<OrderWorkerDTO> queryOrderWorkers(Long orderId);
 
-    void createNewOrder(NewOrderDTO newOrder);
+    Long createNewOrder(NewOrderDTO newOrder);
 
     void orderStatusTrans(Long orderId, String oper);
 

@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>dolphin-admin</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script src="static/js/framework/requirejs/require.min.js"
+            th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js"
+            th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-main>
+            <el-row :gutter="12">
+                <el-card class="box-card" shadow="hover">
+                    <div slot="header" class="clearfix">
+                        <span>客户信息</span>
+                    </div>
+
+                    <el-tabs v-model="subActiveTab" type="border-card">
+                        <el-tab-pane label="基本信息" name="baseInfo">
+                            <el-col :span="4">
+                                <el-avatar :size="60" v-if="customer.headUrl != null" :src="customer.headUrl"></el-avatar>
+                                <el-avatar :size="60" v-else>{{customer.customerName!=null?customer.customerName.substring(0,1):''}}</el-avatar>
+                            </el-col>
+                            <el-col :span="20">
+                                <el-row :gutter="5">
+                                    <el-col :span="6">
+                                        <div class="text">
+                                            客户姓名：
+                                            <template v-if="customer.customerName != null && customer.customerName != ''">
+                                                <el-tag>{{customer.customerName}}</el-tag>
+                                            </template>
+                                        </div>
+                                    </el-col>
+                                    <el-col :span="6">
+                                        <div class="text item">
+                                            电话号码：
+                                            <template v-if="customer.mobileNo != null && customer.mobileNo != ''">
+                                                <el-tag>{{customer.mobileNo}}</el-tag>
+                                            </template>
+                                        </div>
+                                    </el-col>
+                                    <el-col :span="6">
+                                        <div class="text item">
+                                            所属楼盘：
+                                            <template v-if="customer.houseName != null && customer.houseName != ''">
+                                                <el-tag>{{customer.houseName}}</el-tag>
+                                            </template>
+                                        </div>
+                                    </el-col>
+                                    <el-col :span="6">
+                                        <div class="text item">
+                                            装修地址：
+                                            <template v-if="customer.houseDetail != null && customer.houseDetail != ''">
+                                                <el-tag>{{customer.houseDetail}}</el-tag>
+                                            </template>
+                                        </div>
+                                    </el-col>
+                                </el-row>
+                                <el-row :gutter="5">
+                                    <el-col :span="6">
+                                        <div class="text">
+                                            建筑面积：
+                                            <template v-if="customer.houseArea != null && customer.houseArea != ''">
+                                                <el-tag>{{customer.houseArea}}</el-tag>
+                                            </template>
+                                        </div>
+                                    </el-col>
+                                    <el-col :span="6">
+                                        <div class="text">
+                                            房屋户型：
+                                            <template v-if="customer.houseMode != null && customer.houseMode != ''">
+                                                <el-tag>{{customer.houseMode}}</el-tag>
+                                            </template>
+                                        </div>
+                                    </el-col>
+                                    <el-col :span="6">
+                                        <div class="text">
+                                            家装顾问：
+                                            <template v-if="customer.houseCounselorName != null && customer.houseCounselorName != ''">
+                                                <el-tag>{{customer.houseCounselorName}}</el-tag>
+                                            </template>
+                                        </div>
+                                    </el-col>
+                                    <el-col :span="6">
+                                        <div class="text">
+                                            客户代表：
+                                            <template v-if="customer.customerServiceName != null && customer.customerServiceName != ''">
+                                                <el-tag>{{customer.customerServiceName}}</el-tag>
+                                            </template>
+                                        </div>
+                                    </el-col>
+                                </el-row>
+                            </el-col>
+                        </el-tab-pane>
+                        <el-tab-pane label="扩展信息" name="extInfo">
+                            <el-col :span="4">
+                                <el-avatar :size="60" v-if="customer.headUrl != null" :src="customer.headUrl"></el-avatar>
+                                <el-avatar :size="60" v-else>{{customer.customerName!=null?customer.customerName.substring(0,1):''}}</el-avatar>
+                            </el-col>
+                            <el-col :span="20">
+                                <el-row :gutter="5">
+                                    <el-col :span="6">
+                                        <div class="text">
+                                            微信昵称：
+                                            <template v-if="customer.wxNick != null && customer.wxNick != ''">
+                                                <el-tag>{{customer.wxNick}}</el-tag>
+                                            </template>
+                                        </div>
+                                    </el-col>
+                                    <el-col :span="6">
+                                        <div class="text item">
+                                            性别：
+                                            <template v-if="customer.sexName != null && customer.sexName != ''">
+                                                <el-tag>{{customer.sexName}}</el-tag>
+                                            </template>
+                                        </div>
+                                    </el-col>
+                                    <el-col :span="6">
+                                        <div class="text item">
+                                            年龄：
+                                            <template v-if="customer.age != null && customer.age != ''">
+                                                <el-tag>{{customer.age}}</el-tag>
+                                            </template>
+                                        </div>
+                                    </el-col>
+                                    <el-col :span="6">
+                                        <div class="text item">
+                                            学历：
+                                            <template v-if="customer.educational != null && customer.educational != ''">
+                                                <el-tag>{{customer.educational}}</el-tag>
+                                            </template>
+                                        </div>
+                                    </el-col>
+                                </el-row>
+                                <el-row :gutter="5">
+                                    <el-col :span="6">
+                                        <div class="text">
+                                            兴趣爱好：
+                                            <template v-if="customer.hobbyName != null && customer.hobbyName != ''">
+                                                <el-tag>{{customer.hobbyName}}</el-tag>
+                                            </template>
+                                        </div>
+                                    </el-col>
+                                    <el-col :span="6">
+                                        <div class="text">
+                                            家人数量：
+                                            <template v-if="customer.familyMembersCount != null && customer.familyMembersCount != ''">
+                                                <el-tag>{{customer.familyMembersCount}}</el-tag>
+                                            </template>
+                                        </div>
+                                    </el-col>
+                                    <el-col :span="6">
+                                        <div class="text">
+                                            信息来源：
+                                            <template v-if="customer.informationSource != null && customer.informationSource != ''">
+                                                <el-tag>{{customer.informationSource}}</el-tag>
+                                            </template>
+                                        </div>
+                                    </el-col>
+                                    <el-col :span="6">
+                                        <div class="text">
+                                            咨询时间：
+                                            <template v-if="customer.consultTime != null && customer.consultTime != ''">
+                                                <el-tag>{{customer.consultTime}}</el-tag>
+                                            </template>
+                                        </div>
+                                    </el-col>
+                                </el-row>
+                            </el-col>
+                        </el-tab-pane>
+                    </el-tabs>
+                </el-card>
+            </el-row>
+            <el-row :gutter="12">
+                <el-col :span="6">
+                    <div class="grid-content bg-purple">
+                        <el-card class="box-card" shadow="hover">
+                            <div slot="header" class="clearfix">
+                                <span>流程信息</span>
+                            </div>
+                            <div class="block">
+                                <div class="block">
+                                    <el-timeline>
+                                        <el-timeline-item
+                                                v-for="(activity, index) in activities"
+                                                :key="index"
+                                                :icon="activity.icon"
+                                                :type="activity.type"
+                                                :color="activity.color"
+                                                :size="activity.size"
+                                                :timestamp="activity.finishDate">
+                                            {{activity.actionName}}
+                                            <p v-if="activity.status==0">
+                                                <span style="color: red">未完成</span>
+                                            </p>
+                                        </el-timeline-item>
+                                    </el-timeline>
+                                </div>
+                            </div>
+                        </el-card>
+                    </div>
+                </el-col>
+                <el-col :span="18">
+                    <div class="grid-content bg-purple-light">
+                        <el-card class="box-card" shadow="hover">
+                            <div>
+                                <el-divider content-position="left"><span style="font-weight: 700">需求蓝图一</span>
+                                </el-divider>
+                            </div>
+                            <template>
+                                <el-table
+                                        :data="xqltyInfo"
+                                        border
+                                        stripe="true"
+                                        style="width: 100%">
+                                    <el-table-column
+                                            prop="actionTypeName"
+                                            label="蓝图一类型"
+                                            align="center"
+                                            width="180">
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="style"
+                                            label="风格蓝图"
+                                            align="center"
+                                            width="200">
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="func"
+                                            label="功能蓝图"
+                                            align="center"
+                                            width="200">
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="modeTime"
+                                            align="center"
+                                            label="推送时间">
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="pushEmployeeName"
+                                            align="center"
+                                            label="推送人">
+                                    </el-table-column>
+                                </el-table>
+                            </template>
+                        </el-card>
+                        <el-card class="box-card" shadow="hover">
+                            <div>
+                                <el-divider content-position="left"><span style="font-weight: 700">风格蓝图二</span>
+                                    <el-button type="text" @click="dialogTableVisible = true">图片详情</el-button>
+                                </el-divider>
+                            </div>
+                            <template>
+                                <div class="text item" v-for="(styleInfo, index) in styleInfos">
+                                    <h3>{{styleInfo.name}}</h3>
+                                    <el-alert
+                                            :title="styleInfo.content"
+                                            type="info"
+                                            :closable="false"
+                                            show-icon>
+                                    </el-alert>
+                                </div>
+                            </template>
+                        </el-card>
+
+                        <el-card class="box-card" shadow="hover">
+                            <div>
+                                <el-divider content-position="left"><span style="font-weight: 700">功能蓝图二</span>
+                                </el-divider>
+                            </div>
+                            <template>
+                                <el-button type="text" @click="funcDialogVisibleA = true" :disabled="disabledA"><h3>功能蓝图_A</h3></el-button>
+                                <el-button type="text" @click="funcDialogVisibleB = true" :disabled="disabledB"><h3>功能蓝图_B</h3></el-button>
+                                <el-button type="text" @click="funcDialogVisibleC = true" :disabled="disabledC"><h3>功能蓝图_C</h3></el-button>
+                            </template>
+                        </el-card>
+                    </div>
+                </el-col>
+
+                <el-dialog title="风格蓝图照片" :visible.sync="dialogTableVisible">
+                    <template>
+                        <el-carousel :interval="4000" type="card" height="200px">
+                            <el-carousel-item v-for="url in urls">
+                                <el-image
+                                        style="width: 300px; height: 300px"
+                                        :src="url" ></el-image>
+                            </el-carousel-item>
+                        </el-carousel>
+                    </template>
+                </el-dialog>
+
+                <el-dialog title="功能蓝图" :visible.sync="funcDialogVisibleA" append-to-body height="300px">
+                    <div style="height: 50vh;overflow: auto;">
+                        <el-tree :data="funcA"
+                                 :props="defaultProps"
+                                 node-key="id"
+                                 ref="orgTree"
+                                 accordion
+                                 ></el-tree>
+                    </div>
+                </el-dialog>
+
+                <el-dialog title="功能蓝图" :visible.sync="funcDialogVisibleB" append-to-body height="300px">
+                    <div style="height: 50vh;overflow: auto;">
+                        <el-tree :data="funcB"
+                                 :props="defaultProps"
+                                 node-key="id"
+                                 ref="orgTree"
+                                 accordion
+                        ></el-tree>
+                    </div>
+                </el-dialog>
+
+                <el-dialog title="功能蓝图" :visible.sync="funcDialogVisibleC" append-to-body height="300px">
+                    <div style="height: 50vh;overflow: auto;">
+                        <el-tree :data="funcC"
+                                 :props="defaultProps"
+                                 node-key="id"
+                                 ref="orgTree"
+                                 accordion
+                        ></el-tree>
+                    </div>
+                </el-dialog>
+
+            </el-row>
+        </el-main>
+    </el-container>
+
+</div>
+
+<style>
+    .text {
+        font-size: 14px;
+    }
+
+    .item {
+        margin-bottom: 18px;
+    }
+
+    .box-card {
+        margin-bottom: 12px;
+    }
+
+    .el-card__header {
+        padding: 10px;
+    }
+</style>
+
+<script src="static/js/modules/bss/cust/customer.info.detail.js"
+        th:src="@{static/js/modules/bss/cust/customer.info.detail.js(v=${version})}"></script>
+</body>
+</html>
