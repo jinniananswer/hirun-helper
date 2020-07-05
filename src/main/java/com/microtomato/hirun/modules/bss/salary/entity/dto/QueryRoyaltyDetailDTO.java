@@ -2,8 +2,6 @@ package com.microtomato.hirun.modules.bss.salary.entity.dto;
 
 import lombok.Data;
 
-import java.time.LocalDate;
-
 /**
  * @program: hirun-helper
  * @description: 查询提成明细数据对象
@@ -23,7 +21,17 @@ public class QueryRoyaltyDetailDTO {
 
     private String auditStatus;
 
-    private LocalDate startDate;
+    private Integer salaryMonth;
 
-    private LocalDate endDate;
+    private Integer page;
+
+    private Integer limit;
+
+    private Integer count;
+
+    private Integer projectPage;
+
+    private Integer projectLimit;
+
+    private Integer projectCount;
 }

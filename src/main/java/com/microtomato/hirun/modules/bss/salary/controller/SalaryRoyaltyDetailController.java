@@ -1,10 +1,8 @@
 package com.microtomato.hirun.modules.bss.salary.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.microtomato.hirun.framework.annotation.RestResult;
-import com.microtomato.hirun.modules.bss.salary.entity.dto.DesignRoyaltyDetailDTO;
-import com.microtomato.hirun.modules.bss.salary.entity.dto.ProjectRoyaltyDetailDTO;
-import com.microtomato.hirun.modules.bss.salary.entity.dto.QueryRoyaltyDetailDTO;
-import com.microtomato.hirun.modules.bss.salary.entity.dto.SalaryRoyaltyDetailDTO;
+import com.microtomato.hirun.modules.bss.salary.entity.dto.*;
 import com.microtomato.hirun.modules.bss.salary.service.ISalaryRoyaltyDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -28,12 +26,6 @@ public class SalaryRoyaltyDetailController {
     @RestResult
     public SalaryRoyaltyDetailDTO querySalary(Long orderId) {
         return this.salaryRoyaltyDetailService.queryByOrderId(orderId);
-    }
-
-    @GetMapping("/queryRoyaltyDetails")
-    @RestResult
-    public SalaryRoyaltyDetailDTO queryRoyaltyDetails(QueryRoyaltyDetailDTO condition) {
-        return this.salaryRoyaltyDetailService.queryRoyaltyDetails(condition);
     }
 
     @PostMapping("/saveDesignRoyaltyDetails")
@@ -70,6 +62,18 @@ public class SalaryRoyaltyDetailController {
     @RestResult
     public void auditProjectRoyaltyDetails(@RequestBody List<ProjectRoyaltyDetailDTO> projectRoyaltyDetails) {
         this.salaryRoyaltyDetailService.auditProjectRoyaltyDetails(projectRoyaltyDetails);
+    }
+
+    @GetMapping("/queryAuditDesignRoyaltyDetails")
+    @RestResult
+    public IPage<DesignRoyaltyDetailDTO> queryAuditDesignRoyaltyDetails(QueryRoyaltyDetailDTO condition) {
+        return this.salaryRoyaltyDetailService.queryAuditDesignRoyaltyDetails(condition);
+    }
+
+    @GetMapping("/queryAuditProjectRoyaltyDetails")
+    @RestResult
+    public IPage<ProjectRoyaltyDetailDTO> queryAuditProjectRoyaltyDetails(QueryRoyaltyDetailDTO condition) {
+        return this.salaryRoyaltyDetailService.queryAuditProjectRoyaltyDetails(condition);
     }
 
     @PostMapping("/auditDesignRoyaltyPass")

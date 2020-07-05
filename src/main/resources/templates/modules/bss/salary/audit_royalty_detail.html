@@ -42,32 +42,24 @@
                                 </el-form-item>
                             </el-col>
                             <el-col :span="8">
-                                <el-form-item label="开始时间">
+                                <el-form-item label="提成月份">
                                     <el-date-picker
-                                            v-model="queryCond.startDate"
-                                            type="date"
+                                            v-model="queryCond.salaryMonth"
+                                            type="month"
+                                            format="yyyyMM"
+                                            value-format="yyyyMM"
                                             style="width:100%"
-                                            placeholder="选择日期">
+                                            placeholder="选择月">
                                     </el-date-picker>
                                 </el-form-item>
                             </el-col>
-                            <el-col :span="8">
-                                <el-form-item label="结束时间">
-                                    <el-date-picker
-                                            v-model="queryCond.endDate"
-                                            type="date"
-                                            style="width:100%"
-                                            placeholder="选择日期">
-                                    </el-date-picker>
-                                </el-form-item>
-                            </el-col>
-                        </el-row>
-                        <el-row>
                             <el-col :span="8">
                                 <el-form-item label="审核状态">
                                     <vue-select code-type="SALARY_AUDIT_STATUS" v-model="queryCond.auditStatus"></vue-select>
                                 </el-form-item>
                             </el-col>
+                        </el-row>
+                        <el-row>
                             <el-col :span="8">
                                 <el-form-item>
                                     <el-button type="primary" @click="query">查询</el-button>
@@ -127,6 +119,15 @@
                                         <vxe-table-column field="salaryMonth" title="发放月份" width="100"></vxe-table-column>
                                         <vxe-table-column field="remark" title="提成备注" width="100"></vxe-table-column>
                                     </vxe-table>
+                                    <div style="text-align: center">
+                                        <el-pagination
+                                                layout="total, prev, pager, next"
+                                                :total="queryCond.count"
+                                                :current-page.sync="queryCond.page"
+                                                :page-size="queryCond.limit"
+                                                @current-change="queryDesign">
+                                        </el-pagination>
+                                    </div>
                                     <el-row style="padding-top: 12px">
                                         <el-button type="success" @click="auditDesignPass">审核通过</el-button>
                                         <el-button type="danger" @click="auditDesignNo">审核不通过</el-button>
@@ -179,6 +180,15 @@
                                         <vxe-table-column field="salaryMonth" title="发放月份" width="100"></vxe-table-column>
                                         <vxe-table-column field="remark" title="提成备注" width="100"></vxe-table-column>
                                     </vxe-table>
+                                    <div style="text-align: center">
+                                        <el-pagination
+                                                layout="total, prev, pager, next"
+                                                :total="queryCond.projectCount"
+                                                :current-page.sync="queryCond.projectPage"
+                                                :page-size="queryCond.projectLimit"
+                                                @current-change="queryProject">
+                                        </el-pagination>
+                                    </div>
                                     <el-row style="padding-top: 12px">
                                         <el-button type="success" @click="auditProjectPass">审核通过</el-button>
                                         <el-button type="danger" @click="auditProjectNo">审核不通过</el-button>
