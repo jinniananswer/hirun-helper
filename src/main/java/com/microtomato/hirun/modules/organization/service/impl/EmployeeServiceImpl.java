@@ -61,13 +61,6 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
     @Autowired
     private IStaticDataService staticDataService;
 
-    @Autowired
-    private IOrgService orgService;
-
-    @Autowired
-    private IStaticDataService staticDataService;
-
-
     @Override
     public Employee queryByIdentityNo(String identityNo) {
         List<Employee> employees = employeeMapper.selectList(new QueryWrapper<Employee>().lambda().eq(Employee::getIdentityNo, identityNo));
