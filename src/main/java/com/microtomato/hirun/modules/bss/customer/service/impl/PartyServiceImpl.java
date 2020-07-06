@@ -51,7 +51,7 @@ public class PartyServiceImpl extends ServiceImpl<PartyMapper, Party> implements
         queryWrapper.eq(condDTO.getCustomerServiceEmployeeId() != null, "c.link_employee_id", condDTO.getCustomerServiceEmployeeId());
         queryWrapper.like(StringUtils.isNotEmpty(condDTO.getWxNick()), "a.wx_nick", condDTO.getWxNick());
         queryWrapper.eq(condDTO.getCounselorEmployeeId()!=null, "d.house_counselor_id", condDTO.getCounselorEmployeeId());
-        queryWrapper.like(condDTO.getHouseId()!=null, "b.house_address", housesService.queryHouseName(condDTO.getHouseId()));
+        queryWrapper.like(condDTO.getHouseId()!=null, "b.house_id", condDTO.getHouseId());
 
         queryWrapper.ge(condDTO.getStartTime()!=null, "a.consult_time", condDTO.getStartTime());
         queryWrapper.le(condDTO.getEndTime()!=null, "a.consult_time", condDTO.getEndTime());
