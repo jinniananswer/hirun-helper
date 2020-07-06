@@ -154,7 +154,7 @@ public class CustomerDomainServiceImpl implements ICustomerDomainService {
         }
         //翻译户型
         if (StringUtils.isNotBlank(customerInfoDetailDTO.getHouseMode())) {
-            customerInfoDetailDTO.setHouseMode(customerInfoDetailDTO.getHouseMode());
+            customerInfoDetailDTO.setHouseModeName(staticDataService.getCodeName("HOUSE_MODE",customerInfoDetailDTO.getHouseMode()));
         }
         //翻译性别
         if (StringUtils.isNotBlank(customerInfoDetailDTO.getSex() + "")) {
@@ -181,28 +181,33 @@ public class CustomerDomainServiceImpl implements ICustomerDomainService {
     @Override
     public List<CustomerActionInfoDTO> getActionInfo(Long customerId, String openId, Long partyId) {
         List<Action> actionList = actionService.queryActions("ALL");
-        List<CustOriginalAction> custOriginalActions = custOriginalActionService.queryOriginalInfo(customerId, 254L);
+        Customer customer=customerService.getById(customerId);
+        Long houseCounselorId=0L;
+        if(customer!=null){
+            houseCounselorId=customer.getHouseCounselorId();
+        }
+        List<CustOriginalAction> custOriginalActions = custOriginalActionService.queryOriginalInfo(customerId, houseCounselorId);
         List<ProjectOriginalAction> projectOriginalActions = projectOriginalActionService.queryOriginalActionInfo(partyId);
 
         Map<String, CustomerActionInfoDTO> actionMap = new HashMap<String, CustomerActionInfoDTO>();
         //关注公众号信息处理
         if (StringUtils.isNotBlank(openId)) {
-            actionMap.put("GZGZH", this.setValue("GZGZH", null));
+            actionMap.put("GZGZH_ALL", this.setValue("GZGZH_ALL", null));
         }
         //家装顾问动作完成映射
         if (custOriginalActions.size() > 0) {
             for (CustOriginalAction custOriginalAction : custOriginalActions) {
                 if (StringUtils.equals(custOriginalAction.getActionCode(), "GZHGZ")) {
-                    actionMap.put("GZGZH", this.setValue("GZGZH", custOriginalAction.getFinishTime()));
+                    actionMap.put("GZGZH_ALL", this.setValue("GZGZH_ALL", custOriginalAction.getFinishTime()));
                     continue;
                 } else if (StringUtils.equals(custOriginalAction.getActionCode(), "LTZDSTS")) {
-                    actionMap.put("LTZDSTS", this.setValue("LTZDSTS", custOriginalAction.getFinishTime()));
+                    actionMap.put("LTZDSTS_ALL", this.setValue("LTZDSTS_ALL", custOriginalAction.getFinishTime()));
                     continue;
                 } else if (StringUtils.equals(custOriginalAction.getActionCode(), "SMJRQLC")) {
-                    actionMap.put("SMJRQLC", this.setValue("SMJRQLC", custOriginalAction.getFinishTime()));
+                    actionMap.put("SMJRQLC_ALL", this.setValue("SMJRQLC_ALL", custOriginalAction.getFinishTime()));
                     continue;
                 } else if (StringUtils.equals(custOriginalAction.getActionCode(), "XQLTYTS")) {
-                    actionMap.put("XQLTYTS", this.setValue("XQLTYTS", custOriginalAction.getFinishTime()));
+                    actionMap.put("XQLTYTS_ALL", this.setValue("XQLTYTS_ALL", custOriginalAction.getFinishTime()));
                     continue;
                 }
             }
@@ -211,14 +216,14 @@ public class CustomerDomainServiceImpl implements ICustomerDomainService {
         if (projectOriginalActions.size() > 0) {
             for (ProjectOriginalAction projectOriginalAction : projectOriginalActions) {
                 if (StringUtils.equals(projectOriginalAction.getActionCode(), "SMJRLC")) {
-                    actionMap.put("KHDBBD", this.setValue("KHDBBD", projectOriginalAction.getFinishTime()));
-                    actionMap.put("ZX", this.setValue("ZX", projectOriginalAction.getFinishTime()));
+                    actionMap.put("KHDBBD_ALL", this.setValue("KHDBBD_ALL", projectOriginalAction.getFinishTime()));
+                    actionMap.put("ZX_ALL", this.setValue("ZX_ALL", projectOriginalAction.getFinishTime()));
                     continue;
                 } else if (StringUtils.equals(projectOriginalAction.getActionCode(), "DKCSMW")) {
-                    actionMap.put("TYCSMW", this.setValue("TYCSMW", projectOriginalAction.getFinishTime()));
+                    actionMap.put("TYCSMW_ALL", this.setValue("TYCSMW_ALL", projectOriginalAction.getFinishTime()));
                     continue;
                 } else if (StringUtils.equals(projectOriginalAction.getActionCode(), "APSJS")) {
-                    actionMap.put("APSJS", this.setValue("APSJS", projectOriginalAction.getFinishTime()));
+                    actionMap.put("APSJS_ALL", this.setValue("APSJS_ALL", projectOriginalAction.getFinishTime()));
                     continue;
                 }
             }
@@ -228,10 +233,10 @@ public class CustomerDomainServiceImpl implements ICustomerDomainService {
         if (list.size() > 0) {
             BlueprintAction blueprintAction = list.get(0);
             if (blueprintAction.getFuncprintCreateTime() != null) {
-                actionMap.put("GNLTETS", this.setValue("GNLTETS", blueprintAction.getFuncprintCreateTime()));
+                actionMap.put("GNLTETS_ALL", this.setValue("GNLTETS_ALL", blueprintAction.getFuncprintCreateTime()));
             }
             if (blueprintAction.getStyleprintCreateTime() != null) {
-                actionMap.put("FGLTETS", this.setValue("FGLTETS", blueprintAction.getStyleprintCreateTime()));
+                actionMap.put("FGLTETS_ALL", this.setValue("FGLTETS_ALL", blueprintAction.getStyleprintCreateTime()));
             }
         }
 

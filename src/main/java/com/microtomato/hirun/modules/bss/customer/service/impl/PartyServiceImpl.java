@@ -13,6 +13,7 @@ import com.microtomato.hirun.modules.bss.customer.service.IPartyService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.modules.bss.house.service.IHousesService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
+import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,9 @@ public class PartyServiceImpl extends ServiceImpl<PartyMapper, Party> implements
     @Autowired
     private IEmployeeService employeeService;
 
+    @Autowired
+    private IStaticDataService staticDataService;
+
     @Override
     public IPage<CustomerInfoDetailDTO> queryCustomerInfo(QueryCustCondDTO condDTO) {
         QueryWrapper<CustQueryCondDTO> queryWrapper = new QueryWrapper<>();
@@ -49,8 +53,8 @@ public class PartyServiceImpl extends ServiceImpl<PartyMapper, Party> implements
         queryWrapper.eq(condDTO.getCounselorEmployeeId()!=null, "d.house_counselor_id", condDTO.getCounselorEmployeeId());
         queryWrapper.like(condDTO.getHouseId()!=null, "b.house_address", housesService.queryHouseName(condDTO.getHouseId()));
 
-        queryWrapper.ge(condDTO.getStartTime()!=null, "a.create_time", condDTO.getStartTime());
-        queryWrapper.le(condDTO.getEndTime()!=null, "a.create_time", condDTO.getEndTime());
+        queryWrapper.ge(condDTO.getStartTime()!=null, "a.consult_time", condDTO.getStartTime());
+        queryWrapper.le(condDTO.getEndTime()!=null, "a.consult_time", condDTO.getEndTime());
 
 
         queryWrapper.apply(" a.party_id=b.party_id");
@@ -74,10 +78,13 @@ public class PartyServiceImpl extends ServiceImpl<PartyMapper, Party> implements
                 dto.setCustomerName(dto.getPartyName());
             }
             if(StringUtils.isBlank(dto.getHouseAddress())||StringUtils.equals(dto.getHouseAddress(),"null")){
-                dto.setHouseAddress(housesService.queryHouseName(dto.getHouseId())+"::"+dto.getHouseDetail());
+                dto.setHouseAddress(housesService.queryHouseName(dto.getHouseId())+":"+dto.getHouseBuilding()+":"+dto.getHouseRoomNo());
             }
             if(StringUtils.isBlank(dto.getMobileNo())){
                 dto.setMobileNo(dto.getCounselorMobileNo());
+            }
+            if(StringUtils.isNotBlank(dto.getHouseMode())){
+                dto.setHouseModeName(staticDataService.getCodeName("HOUSE_MODE",dto.getHouseMode()));
             }
         }
 

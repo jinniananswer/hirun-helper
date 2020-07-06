@@ -69,7 +69,6 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'order-selectem
             },
 
             toOrderDetail(custId, openId,partyId) {
-                console.log(custId+"--"+openId+"---"+partyId)
                 util.openPage('openUrl?url=modules/bss/cust/customer_info_detail&custId='+custId+'&openId='+openId+'&partyId='+partyId, '客户详情');
             }
         }
