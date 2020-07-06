@@ -76,7 +76,8 @@ public interface PlanAgentMonthMapper extends BaseMapper<PlanAgentMonth> {
      */
     @Select(" select count(1) as acutal_consult_count,sum(v.sm_count) as acutal_bind_agent_count, " +
             " SUM(city_Count) as acutal_citycabin_count,SUM(v.func_count) as acutal_funca_count," +
-            " SUM(style_count) as acutal_style_count, SUM(design_count) as acutal_bind_design_count " +
+            " SUM(style_count) as acutal_style_count, SUM(design_count) as acutal_bind_design_count, " +
+            " SUM(funcb_count) as acutal_funcb_count, SUM(funcc_count) as acutal_funcc_count" +
             " from ( " +
             " select link_employee_id as employee_id, " +
             " case WHEN EXISTS (select 1 from ins_project_original_action d where  d.`status`='1' and d.party_id=a.party_id and d.action_code='SMJRLC' " +
@@ -91,6 +92,12 @@ public interface PlanAgentMonthMapper extends BaseMapper<PlanAgentMonth> {
             " case WHEN EXISTS (SELECT 1 FROM ins_blueprint_action m where m.open_id=a.open_id and c.link_employee_id=m.rel_employee_id" +
             "      and m.funcprint_create_time BETWEEN #{startTime} and #{endTime} ) then '1' else 0" +
             "    end as func_count," +
+            " case WHEN EXISTS (SELECT 1 FROM ins_blueprint_action p where p.open_id=a.open_id and c.link_employee_id=p.rel_employee_id" +
+            "      and p.b_create_time BETWEEN #{startTime} and #{endTime} ) then '1' else 0" +
+            "    end as funcb_count," +
+            " case WHEN EXISTS (SELECT 1 FROM ins_blueprint_action q where q.open_id=a.open_id and c.link_employee_id=q.rel_employee_id" +
+            "      and q.c_create_time BETWEEN #{startTime} and #{endTime} ) then '1' else 0" +
+            "    end as funcc_count," +
             " case WHEN EXISTS (SELECT 1 FROM ins_blueprint_action n where n.open_id=a.open_id and c.link_employee_id=n.rel_employee_id" +
             "      and n.styleprint_create_time BETWEEN #{startTime} and #{endTime} ) then '1' else 0 " +
             "   end as style_count " +
