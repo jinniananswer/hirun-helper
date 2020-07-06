@@ -35,19 +35,19 @@ spring:
 #        maintenanceInterval: 60
 
         unique-resource-name: sys
-        min-pool-size: 2
+        min-pool-size: 10
         max-pool-size: 50
         max-lifetime: 20000
         borrow-connection-timeout: 10000
         xa-data-source-class-name: com.alibaba.druid.pool.xa.DruidXADataSource
         xa-properties:
-          url: jdbc:mysql://47.105.64.145:3306/sys?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
+          url: jdbc:mysql://127.0.0.1:3306/sys?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
           username: sys
           password: ENC(viZyjCQosuNPI/YI5a/bkAjnKGT9R5zD)
           driverClassName: com.mysql.cj.jdbc.Driver
-          initialSize: 2
-          minIdle: 2
-          maxActive: 5
+          initialSize: 10
+          minIdle: 8
+          maxActive: 50
           maxWait: 60000
           timeBetweenEvictionRunsMillis: 30000
           minEvictableIdleTimeMillis: 300000
@@ -73,17 +73,17 @@ spring:
 #        maintenanceInterval: 60
 
         unique-resource-name: ins
-        min-pool-size: 2
-        max-pool-size: 5
+        min-pool-size: 10
+        max-pool-size: 50
         max-lifetime: 20000
         borrow-connection-timeout: 10000
         xa-data-source-class-name: com.alibaba.druid.pool.xa.DruidXADataSource
         xa-properties:
-          url: jdbc:mysql://47.105.64.145:3306/ins?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
+          url: jdbc:mysql://127.0.0.1:3306/ins?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
           username: ins
           password: ENC(EFtPlR9pOu98f6a1eLlznevxCmlBJH/S)
           driverClassName: com.mysql.cj.jdbc.Driver
-          initialSize: 2
+          initialSize: 10
           minIdle: 8
           maxActive: 50
           maxWait: 60000
