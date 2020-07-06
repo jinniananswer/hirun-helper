@@ -1,10 +1,12 @@
 package com.microtomato.hirun.modules.bss.order.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.microtomato.hirun.framework.annotation.RestResult;
-import com.microtomato.hirun.modules.bss.order.entity.dto.PayComponentDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.LastInstallmentCollectionDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.SecondInstallmentCollectionDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.PayComponentDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.fee.DesignFeeDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.fee.QueryDesignFeeDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFee;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayNo;
 import com.microtomato.hirun.modules.bss.order.service.IInstallmentCollectDomainService;
@@ -95,5 +97,11 @@ public class OrderFeeController {
     @RestResult
     public OrderFee getByOrderIdTypePeriod(Long orderId, String type, Integer period) {
         return orderFeeServiceImpl.getByOrderIdTypePeriod(orderId, type, period);
+    }
+
+    @GetMapping("/queryDesignFees")
+    @RestResult
+    public IPage<DesignFeeDTO> queryDesignFees(QueryDesignFeeDTO designFeeDTO) {
+        return this.orderFeeServiceImpl.queryDesignFees(designFeeDTO);
     }
 }

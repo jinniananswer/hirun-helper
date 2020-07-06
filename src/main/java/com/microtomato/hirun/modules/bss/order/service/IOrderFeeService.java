@@ -1,8 +1,11 @@
 package com.microtomato.hirun.modules.bss.order.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.PayComponentDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.fee.DesignFeeDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.fee.QueryDesignFeeDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFee;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayNo;
 
@@ -66,4 +69,6 @@ public interface IOrderFeeService extends IService<OrderFee> {
      * @param orderId
      */
     void updateByOrderId(Long orderId, String type, Integer periods, String auditStatus, Long employeeId, String auditRemark, LocalDateTime auditTime);
+
+    IPage<DesignFeeDTO> queryDesignFees(QueryDesignFeeDTO condition);
 }

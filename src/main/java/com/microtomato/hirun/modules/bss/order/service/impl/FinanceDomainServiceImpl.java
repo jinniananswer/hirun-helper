@@ -24,6 +24,8 @@ import com.microtomato.hirun.modules.bss.order.exception.OrderException;
 import com.microtomato.hirun.modules.bss.order.mapper.NormalPayNoMapper;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderBaseMapper;
 import com.microtomato.hirun.modules.bss.order.service.*;
+import com.microtomato.hirun.modules.bss.supply.entity.po.SupplierBrand;
+import com.microtomato.hirun.modules.bss.supply.service.ISupplierBrandService;
 import com.microtomato.hirun.modules.organization.entity.domain.EmployeeDO;
 import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;

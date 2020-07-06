@@ -2,6 +2,7 @@ package com.microtomato.hirun.modules.bss.order.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
@@ -13,6 +14,8 @@ import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.PayComponentDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.PayItemDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.fee.DesignFeeDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.fee.QueryDesignFeeDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFee;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayItem;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayNo;
@@ -41,6 +44,9 @@ import java.util.List;
 @Slf4j
 @Service
 public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> implements IOrderFeeService {
+
+    @Autowired
+    private OrderFeeMapper orderFeeMapper;
 
     @Autowired
     private IOrderWorkerService workerService;
@@ -271,5 +277,15 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
             this.update(new UpdateWrapper<OrderFee>().lambda().eq(OrderFee::getOrderId, orderId).eq(OrderFee::getType, type).eq(OrderFee::getPeriods, periods).gt(OrderFee::getEndDate, LocalDateTime.now()).set(OrderFee::getAuditStatus, auditStatus).set(OrderFee::getAuditEmployeeId, employeeId).set(OrderFee::getAuditComment, auditRemark).set(OrderFee::getAuditTime, auditTime));
         }
 
+    }
+
+    /**
+     * 设计费查询
+     * @param condition
+     * @return
+     */
+    @Override
+    public IPage<DesignFeeDTO> queryDesignFees(QueryDesignFeeDTO condition) {
+        return null;
     }
 }
