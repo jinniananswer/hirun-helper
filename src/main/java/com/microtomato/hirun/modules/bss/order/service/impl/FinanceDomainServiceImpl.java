@@ -24,6 +24,7 @@ import com.microtomato.hirun.modules.bss.order.exception.OrderException;
 import com.microtomato.hirun.modules.bss.order.mapper.NormalPayNoMapper;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderBaseMapper;
 import com.microtomato.hirun.modules.bss.order.service.*;
+import com.microtomato.hirun.modules.bss.supply.service.ISupplierBrandService;
 import com.microtomato.hirun.modules.organization.entity.domain.EmployeeDO;
 import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
@@ -669,8 +670,8 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
                     //根据不同的收费小类信息区分项目信息
                     //查询品牌信息
                     if (StringUtils.equals("12", payItemId)) {
-                        SupplierBrand supplierBrands = this.supplierBrandService.getSupplierBrand(projectId);
-                        projectName = supplierBrands.getName();
+//                        SupplierBrand supplierBrands = this.supplierBrandService.getSupplierBrand(projectId);
+//                        projectName = supplierBrands.getName();
                     }
                     //查询工人信息
                     if (StringUtils.equals("16", payItemId) || StringUtils.equals("25", payItemId) || StringUtils.equals("28", payItemId) || StringUtils.equals("33", payItemId) || StringUtils.equals("34", payItemId)) {
@@ -798,7 +799,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
         //查询品牌信息
         if (StringUtils.equals("pay_12", id)) {
             List<CascadeDTO<SupplierBrand>> grandChildrens = new ArrayList<>();
-            List<SupplierBrand> supplierBrands = this.supplierBrandService.queryAllInfo();
+            List<SupplierBrand> supplierBrands = null;//this.supplierBrandService.queryAllInfo();
             for (SupplierBrand supplierBrand : supplierBrands) {
                 CascadeDTO<SupplierBrand> child = new CascadeDTO<>();
                 child.setLabel(supplierBrand.getName());
