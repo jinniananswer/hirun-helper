@@ -1,12 +1,18 @@
 package com.microtomato.hirun.modules.bss.customer.service.impl;
 
 
+import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
+import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.*;
 import com.microtomato.hirun.modules.bss.customer.service.*;
 import com.microtomato.hirun.modules.bss.plan.entity.dto.AgentMonthAcutalDTO;
 import com.microtomato.hirun.modules.bss.plan.entity.po.PlanAgentMonth;
 import com.microtomato.hirun.modules.bss.plan.service.IPlanAgentMonthService;
+import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
+import com.microtomato.hirun.modules.organization.entity.dto.SimpleEmployeeDTO;
+import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import com.microtomato.hirun.modules.organization.service.IOrgService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -14,8 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -32,6 +36,9 @@ public class CustomerServiceReportDomainServiceImpl implements ICustomerServiceR
 
     @Autowired
     private IOrgService orgService;
+
+    @Autowired
+    private IEmployeeService employeeService;
 
     @Autowired
     private IPlanAgentMonthService planAgentMonthService;
@@ -80,16 +87,26 @@ public class CustomerServiceReportDomainServiceImpl implements ICustomerServiceR
         //按员工查询
         if (StringUtils.equals("1", queryType)) {
             listMap.put("planData", this.getEmployeePlanData(employeeId, param.getMonth()));
-            this.getEmployeeAcutalData(employeeId,param.getMonth());
+            listMap.put("acutalData",this.getEmployeeAcutalData(employeeId,param.getMonth()));
         }
         //按门店查
         if(StringUtils.equals("2",queryType)){
-            listMap.put("planData",this.getShopPlanData(param.getOrgId(),param.getMonth()));
+            listMap.put("planData",this.getShopPlanData(param.getShopId(),param.getMonth()));
+            listMap.put("acutalData",this.getOrgAcutalData(param.getShopId(),param.getMonth()));
+
         }
         //按分公司查询
         if(StringUtils.equals("3",queryType)){
             listMap.put("planData",this.getCompanyPlanData(param.getCompanyId(),param.getMonth()));
+            listMap.put("acutalData",this.getOrgAcutalData(param.getCompanyId(),param.getMonth()));
+
         }
+        //查询集团数据
+        if(StringUtils.equals("4",queryType)){
+            listMap.put("planData",this.getBuPlanData(param.getMonth()));
+            listMap.put("acutalData",this.getOrgAcutalData(7L,param.getMonth()));
+        }
+
 
         return listMap;
     }
@@ -121,7 +138,7 @@ public class CustomerServiceReportDomainServiceImpl implements ICustomerServiceR
     }
 
     /**
-     * 拼装门店的计划数据
+     * 拼装分公司的计划数据
      *
      * @param orgId
      * @param month
@@ -132,6 +149,16 @@ public class CustomerServiceReportDomainServiceImpl implements ICustomerServiceR
         return this.buildPlanData(planAgentMonth);
     }
 
+    /**
+     * 拼装事业部的计划数据
+     *
+     * @param month
+     * @return
+     */
+    private List<Integer> getBuPlanData(Integer month) {
+        PlanAgentMonth planAgentMonth = planAgentMonthService.queryAgentPlanByBu(month);
+        return this.buildPlanData(planAgentMonth);
+    }
 
     /**
      * 构造计划数据
@@ -158,7 +185,7 @@ public class CustomerServiceReportDomainServiceImpl implements ICustomerServiceR
     }
 
     /**
-     *
+     *获取员工实际完成数据
      * @param employeeId
      * @param monthDate
      * @return
@@ -188,12 +215,77 @@ public class CustomerServiceReportDomainServiceImpl implements ICustomerServiceR
         startDate= TimeUtils.newThisMonth(transDate)+" 00:00:00";
         endDate=TimeUtils.lastThisMonth(transDate)+" 23:59:59";
 
-        LocalDateTime startTime=TimeUtils.stringToLocalDateTime(startDate,"yyyy-MM-dd HH:mm:ss");
-        LocalDateTime endTime=TimeUtils.stringToLocalDateTime(endDate,"yyyy-MM-dd HH:mm:ss");
-
-        AgentMonthAcutalDTO planAgentMonth=this.planAgentMonthService.queryAgentAcutalByEmployeeId(employeeId,startTime,endTime);
-        return null;
+        AgentMonthAcutalDTO planAgentMonth=this.planAgentMonthService.queryAgentAcutalByEmployeeId(employeeId+"",startDate,endDate);
+        return this.buildAcutalData(planAgentMonth);
     }
 
+    /**
+     *获取门店/分公司/事业部实际完成数据
+     * @param orgId
+     * @param monthDate
+     * @return
+     */
+    private List<Integer> getOrgAcutalData(Long orgId,Integer monthDate) throws Exception{
+        String startDate = "";
+        String endDate = "";
+        Date transDate = null;
+        AgentMonthAcutalDTO planAgentMonth=null;
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM");
+
+        if(monthDate==null){
+            Calendar date = Calendar.getInstance();
+            int year = date.get(Calendar.YEAR);
+            int month = date.get(Calendar.MONTH) + 1;
+
+            if (month < 10) {
+                transDate = simpleDateFormat.parse(year + "-0" + month);
+            }
+            if (month >= 10) {
+                transDate = simpleDateFormat.parse(year + "-" + month);
+            }
+        }else{
+            String queryYear=(monthDate+"").substring(0,4);
+            String queryMonth=(monthDate+"").substring(4,6);
+            transDate = simpleDateFormat.parse(queryYear + "-" + queryMonth);
+        }
+        startDate= TimeUtils.newThisMonth(transDate)+" 00:00:00";
+        endDate=TimeUtils.lastThisMonth(transDate)+" 23:59:59";
+
+        if(orgId==null){
+            orgId= WebContextUtils.getUserContext().getOrgId();
+        }
+
+        List<SimpleEmployeeDTO> employees=employeeService.queryEmployeeByOrgId(orgId);
+
+        if(ArrayUtils.isEmpty(employees)){
+            return this.buildAcutalData(planAgentMonth);
+        }
+        String employeeIdLine="";
+        for(SimpleEmployeeDTO employeeDTO:employees){
+              employeeIdLine +=employeeDTO.getEmployeeId()+",";
+        }
+
+        planAgentMonth=this.planAgentMonthService.queryAgentAcutalByEmployeeId(employeeIdLine.substring(0,employeeIdLine.length()-1),startDate,endDate);
+        return this.buildAcutalData(planAgentMonth);
+    }
+
+
+    private List<Integer> buildAcutalData(AgentMonthAcutalDTO dto) {
+        List<Integer> acutalData = new ArrayList<>();
+
+        if (dto == null) {
+            return Arrays.asList(blankData);
+        }
+        acutalData.add(dto.getAcutalConsultCount() == null ? 0 : dto.getAcutalConsultCount());
+        acutalData.add(dto.getAcutalBindAgentCount() == null ? 0 : dto.getAcutalBindAgentCount());
+        acutalData.add(dto.getAcutalStyleCount() == null ? 0 : dto.getAcutalStyleCount());
+        acutalData.add(dto.getAcutalFuncaCount() == null ? 0 : dto.getAcutalFuncaCount());
+        acutalData.add(dto.getAcutalFuncbCount() == null ? 0 : dto.getAcutalFuncbCount());
+        acutalData.add(dto.getAcutalFunccCount() == null ? 0 : dto.getAcutalFunccCount());
+        acutalData.add(dto.getAcutalCitycabinCount() == null ? 0 : dto.getAcutalCitycabinCount());
+        acutalData.add(dto.getAcutalMeasureCount() == null ? 0 : dto.getAcutalMeasureCount());
+        acutalData.add(dto.getAcutalBindDesignCount() == null ? 0 : dto.getAcutalBindDesignCount());
+        return acutalData;
+    }
 
 }

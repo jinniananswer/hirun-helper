@@ -104,4 +104,12 @@ public interface IEmployeeService extends IService<Employee> {
     List<SimpleEmployeeDTO> querySimpleEmployeeInfo(Long orgId, Long roleId,Boolean isSelf);
 
     List<SimpleEmployeeDTO> queryEmployeeBySelectMode(EmployeeSelectDTO select);
+
+    /**
+     * 根据某部门查询该部门下的所有员工
+      * @param orgId
+     * @return
+     */
+    List<SimpleEmployeeDTO> queryEmployeeByOrgId(Long orgId);
+
 }

@@ -12,7 +12,7 @@ import lombok.Data;
 @Data
 public class ReportQueryCondDTO {
 
-    private Long orgId;
+    private Long shopId;
 
     private Integer month;
 

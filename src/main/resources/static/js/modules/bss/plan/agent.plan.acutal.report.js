@@ -5,7 +5,7 @@ require(['vue', 'ELEMENT', 'vxe-table', 'axios', 'echarts', 'org-orgtree', 'ajax
         data: function () {
             return {
                 queryCond: {
-                    orgId: '',
+                    shopId: '',
                     month : util.getNowMonth(),
                     employeeId:'',
                     queryType:'',
@@ -21,32 +21,62 @@ require(['vue', 'ELEMENT', 'vxe-table', 'axios', 'echarts', 'org-orgtree', 'ajax
                 }, {
                     value: '3',
                     label: '分公司'
-                },],
+                }, {
+                    value: '4',
+                    label: '事业部'
+                }],
                 options: [],
                 companyOptions:[],
                 shopSelectDisabled:false,
+                rules: {
+                    queryType: [
+                        {required: true, message: '请选择查询类型', trigger: 'change'}
+                    ],
+                },
             }
         },
 
         methods: {
+
+
             query() {
-                let that = this;
-                //let orgIdSet = that.queryCond.orgIds;
 
-/*                if (orgIdSet.length <= 0) {
-                    this.$message.error('请选择门店');
-                    return;
-                }*/
+                if(this.verifyQueryCond()){
+                    let that = this;
+                    ajax.get('api/bss.customer/customerServiceReport/queryAgentPlanAcutalReport',that.queryCond, function (data) {
+                        that.drawEcharts(data);
+                    })
+                };
 
-/*                let orgId = '';
-                for (let i = 0; i < orgIdSet.length; i++) {
-                    orgId += orgIdSet[i] + ',';
+
+            },
+
+            verifyQueryCond:function(){
+                if(this.queryCond.queryType==''){
+                    this.$message.error('请选择查询方式');
+                    return false;
                 }
-                that.queryCond.orgIds=orgId;*/
-                ajax.get('api/bss.customer/customerServiceReport/queryAgentPlanAcutalReport',that.queryCond, function (data) {
-                    that.drawEcharts(data);
-                })
+                if(this.queryCond.queryType=='1'){
+                    if(this.queryCond.employeeId==''){
+                        this.$message.error('查询方式为员工,请选择需要查询的员工');
+                        return false;
+                    }
+                }
+                if(this.queryCond.queryType=='2'){
+                    if(this.queryCond.shopId==''){
+                        this.$message.error('查询方式为门店,请选择需要查询的门店');
+                        return false;
+                    }
+                }
 
+                if(this.queryCond.queryType=='3'){
+                    if(this.queryCond.companyId==''){
+                        this.$message.error('查询方式为分公司,请选择需要查询的分公司');
+                        return;
+                    }
+                }
+
+                return true;
             },
 
             initShopData: function () {
@@ -74,9 +104,11 @@ require(['vue', 'ELEMENT', 'vxe-table', 'axios', 'echarts', 'org-orgtree', 'ajax
                 let xAxisData = [];
                 let legendData = [];
                 let planData=[];
+                let acutalData=[];
                 xAxisData = data.action;
                 legendData=data.legendData;
                 planData=data.planData;
+                acutalData=data.acutalData;
 
                 console.log(xAxisData);
                 console.log(legendData);
@@ -113,12 +145,22 @@ require(['vue', 'ELEMENT', 'vxe-table', 'axios', 'echarts', 'org-orgtree', 'ajax
                     series: [{
                         name: '计划',
                         type: 'bar',
-                        data: planData
+                        data: planData,
+                        itemStyle: {
+                            normal: {
+                                color: "#1296db",
+                            }
+                        },
                     },
                         {
                             name: '实际',
                             type: 'bar',
-                            data: [1, 20, 16, 20, 10, 40, 10, 2, 5]
+                            data: acutalData,
+                            itemStyle: {
+                                normal: {
+                                    color: "#0b988f",
+                                }
+                            },
                         }
                     ]
                 };
