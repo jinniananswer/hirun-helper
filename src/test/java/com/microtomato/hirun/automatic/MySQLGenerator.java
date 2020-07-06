@@ -33,7 +33,7 @@ public class MySQLGenerator {
     private static String schemaName = "sys";
     private static String username = "sys";
 
-    private static String parentPackege = "com.microtomato.hirun.modules";
+    private static String parentPackage = "com.microtomato.hirun.modules";
 
 
     private static void switchDatabase(String database) {
@@ -71,7 +71,7 @@ public class MySQLGenerator {
         switchDatabase(databaseName);
         String[] tables = scanner("请输入本次构建的表名(多个表明用英文逗号隔开)").split(",");
 
-        log.info("本次构建的模块路径为: {}.{}", parentPackege, moduleName);
+        log.info("本次构建的模块路径为: {}.{}", parentPackage, moduleName);
         log.info("本次构建的表: ");
         for (String table : tables) {
             log.info(" -> " + table);
@@ -101,6 +101,7 @@ public class MySQLGenerator {
         globalConfig.setOutputDir(outPutDir);
         globalConfig.setAuthor(author);
         globalConfig.setOpen(false);
+        globalConfig.setFileOverride(false);
         autoGenerator.setGlobalConfig(globalConfig);
 
         // 数据源配置
@@ -116,7 +117,7 @@ public class MySQLGenerator {
         // 包配置
         PackageConfig packageConfig = new PackageConfig();
         packageConfig.setModuleName(moduleName);
-        packageConfig.setParent(parentPackege);
+        packageConfig.setParent(parentPackage);
         packageConfig.setEntity("entity.po");
         autoGenerator.setPackageInfo(packageConfig);
 

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>dolphin-admin</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script src="static/js/framework/requirejs/require.min.js" th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js" th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-main>
+            <el-row :gutter="12">
+                <el-col :span="6">
+                    <div class="grid-content bg-purple">
+                        <cust-info :cust-id="custId"></cust-info>
+                        <order-worker :order-id="planFigureInfos.orderId"></order-worker>
+                    </div>
+                </el-col>
+                <el-col :span="18">
+                    <div class="grid-content bg-purple-light">
+                        <order-info :order-id="planFigureInfos.orderId"></order-info>
+                        <el-card class="box-card">
+                            <div slot="header" class="clearfix">
+                                <span>平面图信息</span>
+                            </div>
+
+                            <el-form :inline="false" :model="planFigureInfos" label-position="right" label-width="140px">
+                                <el-row>
+                                    <el-col :span="11">
+                                        <el-form-item label="设计师" required="true" prop="designer">
+                                            <order-selectemployee role-id="30" v-model="planFigureInfos.designer" :disabled="true"></order-selectemployee>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="11">
+                                        <el-form-item label="设计方案数(个)" required="true" prop="designerPlanNum">
+                                            <el-input-number v-model="planFigureInfos.designerPlanNum" controls-position="right" @change="handleChangePlanNum" style="width:100%" :min="0" :max="10"></el-input-number>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row>
+                                    <el-col :span="11">
+                                        <el-form-item label="方案助理">
+                                            <order-selectemployee role-id="30" v-model="planFigureInfos.projectAssistant"></order-selectemployee>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="11">
+                                        <el-form-item label="套内面积" required="true" prop="indoorArea">
+                                            <el-input-number v-model="planFigureInfos.indoorArea" controls-position="right" @change="handleChangeInJacketAreaNum" style="width:100%" :precision="2" :step="0.1" :min="0" :max="1000"></el-input-number>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row>
+                                    <el-col :span="11">
+                                        <el-form-item label="设计费标准" required="true" prop="designFeeStandard">
+                                            <vue-select code-type="designFeeStandard" v-model="planFigureInfos.designFeeStandard" style="width:100%" @change="changeDesignFeeStandard"></vue-select>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="11">
+                                        <el-form-item label="设计主题" required="true" prop="designTheme">
+                                            <vue-select code-type="DESIGN_THEME" v-model="planFigureInfos.designTheme" @change="changeDefaultDesignTheme"></vue-select>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row>
+                                    <el-col :span="11">
+                                        <el-form-item label="合同设计费(元)" required="true" prop="contractDesignFee">
+                                            <el-input v-model="planFigureInfos.contractDesignFee" placeholder="合同设计费"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="11" >
+                                        <el-form-item label="开始时间" >
+                                            <el-date-picker
+                                                    v-model="planFigureInfos.startTime"
+                                                    type="date"
+                                                    value-format="yyyy-MM-dd"
+                                                    style="width:100%"
+                                                    placeholder="选择日期">
+                                            </el-date-picker>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row>
+                                    <el-col :span="11">
+                                        <el-form-item label="结束时间">
+                                            <el-date-picker
+                                                    v-model="planFigureInfos.endTime"
+                                                    type="date"
+                                                    value-format="yyyy-MM-dd"
+                                                    style="width:100%"
+                                                    placeholder="选择日期">
+                                            </el-date-picker>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="11">
+                                        <el-form-item label="第一次看图时间">
+                                            <el-date-picker
+                                                    v-model="planFigureInfos.firstLookTime"
+                                                    type="date"
+                                                    value-format="yyyy-MM-dd"
+                                                    style="width:100%"
+                                                    placeholder="选择日期">
+                                            </el-date-picker>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+
+                                <el-row>
+                                    <el-col :span="22">
+                                        <el-form-item label="客户意见">
+                                            <el-input
+                                                    type="textarea"
+                                                    :rows="2"
+                                                    placeholder="请输入内容"
+                                                    v-model="planFigureInfos.customerComments">
+                                            </el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+
+                                <el-divider>助理设计师信息</el-divider>
+
+                                <el-row>
+                                    <template>
+                                        <el-table
+                                                :data="orderWorkActions"
+                                                border
+                                                style="width: 100%">
+                                            <el-table-column
+                                                    prop="employeeName"
+                                                    label="助理设计师"
+                                                    width="370">
+                                            </el-table-column>
+                                            <el-table-column
+                                                    prop="action"
+                                                    label="员工事项"
+                                                    width="370">
+                                            </el-table-column>
+                                            <el-table-column
+                                                    fixed="right"
+                                                    label="操作"
+                                                    width="60">
+                                                <template slot-scope="scope">
+                                                    <el-button
+                                                            @click.native.prevent="deleteRow(scope.$index, orderWorkActions)"
+                                                            type="text"
+                                                            size="small">
+                                                        取消
+                                                    </el-button>
+                                                </template>
+                                            </el-table-column>
+                                        </el-table>
+                                    </template>
+                                    <el-col :span="11">
+                                        <el-form-item label="助理设计师">
+                                            <order-selectemployee role-id="30" v-model="planFigureInfos.assistantDesigner"></order-selectemployee>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="5">
+                                        <el-button type="info" @click="addSuccess" icon="el-icon-circle-plus-outline">添加助理设计师</el-button>
+                                    </el-col>
+                                </el-row>
+
+                                <el-divider>财务人员信息</el-divider>
+
+                                <el-row>
+                                    <el-col v-if="true" :span="22">
+                                        <el-form-item label="财务人员信息" required="true">
+                                            <order-search-employee :employee-id.sync="planFigureInfos.financeEmployeeId" :employee-name.sync="planFigureInfos.financeEmployeeName"></order-search-employee>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+
+                                <el-divider>文件操作区域</el-divider>
+                                <el-row>
+                                    <el-col>
+                                        <el-form-item >
+                                            <el-row>
+                                                <el-col :span="10">
+                                                    <order-file-upload type="info" ref="upload" button-name="上传平面图" accept=".dwg" limit="1" :order-id="planFigureInfos.orderId" stage="456"></order-file-upload>
+
+                                                </el-col>
+                                                <el-col :span="10">
+                                                    <el-button><el-link type="primary" :href="downloadFileUrl">下载平面图</el-link></el-button>
+                                                </el-col>
+                                            </el-row>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-divider></el-divider>
+                                <el-form-item>
+                                        <el-button type="primary" @click="save">保存</el-button>
+                                        <el-dropdown  @command="handleCommand">
+                                            <el-button  align="left" type="primary">
+                                                平面图流程操作<i class="el-icon-arrow-down el-icon--right"></i>
+                                            </el-button>
+                                            <el-dropdown-menu slot="dropdown">
+                                                <el-dropdown-item v-if="!isBackToDesigner" command="submitToSignContractFlow">签订设计合同</el-dropdown-item>
+                                                <el-dropdown-item v-if="!isBackToDesigner&&!isConfirm" command="submitToConfirmFlow">等待客户确认平面图</el-dropdown-item>
+                                                <el-dropdown-item v-if="!isBackToDesigner&&!isConfirm" command="submitToDelayTimeFlow">申请延迟出平面图时间</el-dropdown-item>
+                                                <el-dropdown-item v-if="isBackToDesigner" command="submitToBackToDesignerFlow">返回设计师</el-dropdown-item>
+                                                <el-dropdown-item v-if="isConfirm" command="submitToSneakFlow">看平面图后跑单</el-dropdown-item>
+                                            </el-dropdown-menu>
+                                        </el-dropdown>
+                                </el-form-item>
+
+                            </el-form>
+                        </el-card>
+                            <div>
+                            <cust-visit :cust-id="custId"></cust-visit>
+                        </div>
+                        </el-card>
+                    </div>
+                </el-col>
+            </el-row>
+        </el-main>
+    </el-container>
+</div>
+<style>
+    .text {
+        font-size: 14px;
+    }
+
+    .item {
+        margin-bottom: 18px;
+    }
+
+    .box-card {
+        margin-bottom: 12px;
+    }
+
+    .el-card__header {
+        padding:10px;
+    }
+</style>
+<script src="static/js/modules/bss/order/order.planesketch.js" th:src="@{static/js/modules/bss/order/order.planesketch.js(v=${version})}"></script>
+</body>
+</html>

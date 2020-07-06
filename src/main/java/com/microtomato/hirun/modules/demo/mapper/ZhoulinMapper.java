@@ -8,11 +8,12 @@ import com.microtomato.hirun.framework.annotation.Storage;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
  * <p>
- *  Mapper 接口
+ * Mapper 接口
  * </p>
  *
  * @author Steven
@@ -24,6 +25,11 @@ public interface ZhoulinMapper extends BaseMapper<Zhoulin> {
 
     @DataSource(DataSourceKey.SYS)
     @Insert("insert into sys_steven(name, create_time) values(#{name}, #{createTime})")
-    public void insertRandom(@Param("name") String name, @Param("createTime")LocalDateTime createTime);
+    void insertRandom(@Param("name") String name, @Param("createTime") LocalDateTime createTime);
+
+    @DataSource(DataSourceKey.INS)
+    @Insert("insert into ins_zhoulin(name, birthday) values(#{name}, #{birthday})")
+    void insertBirthday(@Param("name") String name, @Param("birthday") LocalDate birthday);
+
 
 }

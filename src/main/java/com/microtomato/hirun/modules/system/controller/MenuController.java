@@ -54,6 +54,42 @@ public class MenuController {
     @Value("${mhirun.host-port}")
     private String mHirunHostPort;
 
+    @GetMapping("role-menu")
+    @RestResult
+    public List<Long> roleMenu(Long roleId) {
+        List<Long> rtn = new ArrayList<>();
+        if (null != roleId) {
+            Set<Long> menuIds = roleServiceImpl.queryMenuId(roleId);
+            rtn.addAll(menuIds);
+        }
+        return rtn;
+    }
+
+    @GetMapping("all-menu")
+    @RestResult
+    public List<MenuNode> allMenu() {
+        List<MenuNode> nodes = new ArrayList<>();
+        Map<Long, Menu> longMenuMap = menuServiceImpl.listAllMenus();
+        List<Menu> menus = new ArrayList(longMenuMap.values());
+
+        for (Menu menu : menus) {
+
+            MenuNode node = MenuNode.builder()
+                .id(menu.getMenuId())
+                .title(menu.getTitle())
+                .build();
+
+            if (null != menu.getParentMenuId()) {
+                node.setPid(menu.getParentMenuId());
+            }
+
+            nodes.add(node);
+        }
+
+        List<MenuNode> tree = MenuTreeUtils.build(nodes);
+        return tree;
+    }
+
     @GetMapping("list-all")
     @RestResult
     public List<MenuNode> listAll(Long roleId) {

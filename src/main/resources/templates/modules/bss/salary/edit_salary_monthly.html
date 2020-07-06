@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>月工资总表</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script src="static/js/framework/requirejs/require.min.js" th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js" th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-main>
+            <el-card class="box-card" shadow="hover">
+                <div slot="header" class="clearfix" style="font-size: 14px">
+                    <span>查询条件区</span>
+                </div>
+                <el-form :inline="false" :model="queryCond" label-position="right" label-width="80px">
+                    <el-row>
+                        <el-col :span="8">
+                            <el-form-item label="员工姓名">
+                                <el-input v-model="queryCond.name" placeholder="请输入员工姓名"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="员工电话">
+                                <el-input v-model="queryCond.mobileNo" placeholder="请输入员工电话"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="所在部门">
+                                <org-orgtree :org-id.sync="queryCond.orgIds" :org-name.sync="queryCond.orgName" mode="multi"></org-orgtree>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="8">
+                            <el-form-item label="员工类型">
+                                <vue-select code-type="EMPLOYEE_TYPE" v-model="queryCond.type"></vue-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="员工状态">
+                                <vue-select code-type="EMPLOYEE_STATUS" v-model="queryCond.status"></vue-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="审核状态">
+                                <vue-select code-type="SALARY_AUDIT_STATUS" v-model="queryCond.auditStatus"></vue-select>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="8">
+                            <el-form-item label="工资月份">
+                                <el-date-picker
+                                        v-model="queryCond.salaryMonth"
+                                        type="month"
+                                        format="yyyyMM"
+                                        value-format="yyyyMM"
+                                        style="width:100%"
+                                        placeholder="选择月">
+                                </el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item>
+                                <el-button type="primary" @click="query">查询</el-button>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </el-card>
+
+            <el-row style="padding-bottom: 12px">
+                <el-button type="success" @click="submit">提交保存</el-button>
+                <el-button type="danger" @click="audit">提交审核</el-button>
+            </el-row>
+
+            <vxe-table
+                    border
+                    resizable
+                    ref="employeeSalary"
+                    show-overflow
+                    highlight-hover-row
+                    max-height="800px"
+                    :row-class-name="isModify"
+                    :auto-resize="true"
+                    :data="employees"
+                    :edit-config="{trigger: 'click', mode: 'cell', activeMethod: activeRowMethod}">
+                <vxe-table-column field="name" title="姓名" width="100" fixed="left" style="background-color: #ff4835"></vxe-table-column>
+                <vxe-table-column field="orgPath" title="部门" sortable width="240" fixed="left"></vxe-table-column>
+                <vxe-table-column field="jobRoleName" title="岗位" sortable width="100" fixed="left"></vxe-table-column>
+                <vxe-table-column field="statusName" title="员工状态" sortable width="100" fixed="left"></vxe-table-column>
+                <vxe-table-column field="auditStatusName" title="审核状态" sortable width="100" fixed="left"></vxe-table-column>
+                <vxe-table-column field="basic" title="基本工资" width="100" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+                <vxe-table-column field="rank" title="职称工资" width="100" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+                <vxe-table-column field="performance" title="绩效工资" width="100" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+                <vxe-table-column field="duty" title="职务津贴" width="100" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+                <vxe-table-column field="overtime" title="加班补贴" width="100" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+                <vxe-table-column field="floatAward" title="浮动奖励" width="100" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+                <vxe-table-column field="other" title="其他补贴" width="100" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+                <vxe-table-column field="backPay" title="补发工资" width="100" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+                <vxe-table-column field="royalties" title="提成" width="100" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+                <vxe-table-column field="medical" title="医疗保险" width="100" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+                <vxe-table-column field="overage" title="养老保险" width="100" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+                <vxe-table-column field="unemployment" title="失业保险" width="100" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+                <vxe-table-column field="seriousIll" title="大病医疗" width="100" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+                <vxe-table-column field="tax" title="税金" width="100" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+            </vxe-table>
+
+            <el-row style="padding-top: 12px">
+                <el-button type="success" @click="submit">提交保存</el-button>
+                <el-button type="danger" @click="audit">提交审核</el-button>
+            </el-row>
+        </el-main>
+    </el-container>
+</div>
+<style>
+    .text {
+        font-size: 14px;
+    }
+
+    .box-card {
+        margin-bottom: 12px;
+    }
+
+    .el-card__header {
+        padding:10px;
+    }
+
+    .modify_row {
+        color: #ff4835;
+    }
+</style>
+<script src="static/js/modules/bss/salary/edit.salary.monthly.js" th:src="@{static/js/modules/bss/salary/edit.salary.monthly.js(v=${version})}"></script>
+</body>
+</html>

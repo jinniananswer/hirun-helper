@@ -200,4 +200,10 @@ public class EmployeeController extends AbstractExcelHarbour  {
         List<EmployeeInfoDTO> employeeList = employeeServiceImpl.queryEmployeeRegularInfo(queryTime,orgLine,isSign);
         return employeeList;
     }
+
+    @RequestMapping("/queryEmployeeBySelectMode")
+    @RestResult
+    public List<SimpleEmployeeDTO> queryEmployeeBySelectMode(EmployeeSelectDTO selectDTO) {
+        return this.employeeServiceImpl.queryEmployeeBySelectMode(selectDTO);
+    }
 }

@@ -339,4 +339,28 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
             " and exists(select 1 from ins_train_sign f where f.employee_id = a.employee_id  and f.status = '0')"
     )
     List<EmployeeInfoDTO> queryEmployeeExistsExam(@Param("orgId")String orgId,@Param("inDate") LocalDate inDate);
+
+
+    @Select("select a.employee_id,a.name, b.org_id, b.job_role from ins_employee a, ins_employee_job_role b, ins_user_role c " +
+            " where a.employee_id=b.employee_id" +
+            " and c.user_id = a.user_id " +
+            " and (now() between c.start_date and c.end_date) " +
+            " and a.status='0'" +
+            " and (now() between b.start_date and b.end_date)" +
+            " and b.org_id in (${orgId}) " +
+            " and c.role_id = #{roleId}")
+    List<SimpleEmployeeDTO> querySimpleEmployees(@Param("roleId")Long roleId, @Param("orgId")String orgId);
+
+    @Select("select a.employee_id,a.name, b.org_id, b.job_role from " +
+            " ins_employee a, ins_employee_job_role b " +
+            " ${ew.customSqlSegment}")
+    List<SimpleEmployeeDTO> queryEmployee4Select(@Param(Constants.WRAPPER) Wrapper wrapper);
+
+
+    @Select("select a.employee_id,a.name, b.org_id, b.job_role from ins_employee a, ins_employee_job_role b " +
+            " where a.employee_id=b.employee_id" +
+            " and a.status='0'" +
+            " and (now() between b.start_date and b.end_date)" +
+            " and b.org_id in (${orgId}) ")
+    List<SimpleEmployeeDTO> querySimpleEmployeesByOrgId(@Param("orgId")String orgId);
 }

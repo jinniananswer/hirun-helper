@@ -5,88 +5,234 @@
     <title>dolphin-admin</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <!-- 引入样式 -->
-    <link rel="stylesheet" href="static/element-ui/css/index.css"  th:href="@{static/element-ui/css/index.css(v=${version})}">
-    <script src="static/js/framework/vue/vue.min.js" th:src="@{static/js/framework/vue/vue.min.js(v=${version})}"></script>
-    <!-- 引入组件库 -->
-    <script src="static/element-ui/js/index.js" th:src="@{static/element-ui/js/index.js(v=${version})}"></script>
-    <script src="static/js/framework/axios/axios.min.js" th:src="@{static/js/framework/axios/axios.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.min.js" th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js" th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
 </head>
 <body>
 <div id="app">
     <el-container>
         <el-main>
-            <el-row :gutter="20">
+            <el-row :gutter="12">
                 <el-col :span="6">
                     <div class="grid-content bg-purple">
-                        <el-card class="box-card">
-                            <el-row :gutter="20">
-                                <el-col :span="12">
-                                    <el-avatar :size="80" :src="avatarUrl"></el-avatar>
-                                </el-col>
-                                <el-col :span="12">
-                                    <h2>{{customer.name}}</h2>
-                                </el-col>
-                            </el-row>
-                            <el-divider>基本信息</el-divider>
-                            <div class="text item">
-                                姓名：{{customer.name}}
-                            </div>
-                            <div class="text item">
-                                生日：{{customer.birthday}}
-                            </div>
-                            <div class="text item">
-                                电话：{{customer.mobileNo}}
-                            </div>
-                        </el-card>
+                        <cust-info :cust-id="custId"></cust-info>
+
+                        <order-worker :order-id="orderId"></order-worker>
                     </div>
                 </el-col>
                 <el-col :span="18">
                     <div class="grid-content bg-purple-light">
-                        <el-card class="box-card">
-                            <div slot="header" class="clearfix">
-                                <span>订单主流程工作人员</span>
+                        <el-card class="box-card" shadow="hover">
+                            <div slot="header">
+                                <span>订单基本信息</span>
                             </div>
-                            <el-steps :active="workers.length" align-center>
-                                <el-step v-for="worker in workers" :title="worker.job" status="wait" :description="worker.name" icon="el-icon-s-custom"></el-step>
-                            </el-steps>
-                        </el-card>
-
-                        <el-card class="box-card">
-                            <div slot="header" class="clearfix">
-                                <span>工程进度</span>
+                            <div class="text item" style="margin-left: 18px;padding-bottom: 10px;width:95%" >
+                                <el-slider
+                                        v-model="order.stage"
+                                        range
+                                        :marks="stages">
+                                </el-slider>
                             </div>
-                            <el-progress :text-inside="true" :stroke-width="26" :percentage="70"></el-progress>
+                            <el-divider></el-divider>
+                            <el-row :gutter="5">
+                                <el-col :span="6">
+                                    <div class="text">
+                                        订单状态：<template v-if="order.statusName != null && order.statusName != ''"><el-tag type="danger">{{order.statusName}}</el-tag></template>
+                                    </div>
+                                </el-col>
+                                <el-col :span="6">
+                                    <div class="text item">
+                                        所属楼盘：<template v-if="order.housesName != null && order.housesName != ''"><el-tag>{{order.housesName}}</el-tag></template>
+                                    </div>
+                                </el-col>
+                                <el-col :span="12">
+                                    <div class="text item">
+                                        装修地址：<template v-if="order.decorateAddress != null && order.decorateAddress != ''"><el-tag>{{order.decorateAddress}}</el-tag></template>
+                                    </div>
+                                </el-col>
+                            </el-row >
+                            <el-row :gutter="5">
+                                <el-col :span="6">
+                                    <div class="text">
+                                        订单类型：<template v-if="order.typeName != null && order.typeName != ''"><el-tag>{{order.typeName}}</el-tag></template>
+                                    </div>
+                                </el-col>
+                                <el-col :span="6">
+                                    <div class="text">
+                                        建筑面积：<template v-if="order.floorage != null && order.floorage != ''"><el-tag>{{order.floorage}}平米</el-tag></template>
+                                    </div>
+                                </el-col>
+                                <el-col :span="6">
+                                    <div class="text">
+                                        套内面积：<template v-if="order.indoorArea != null && order.indoorArea != ''"><el-tag>{{order.indoorArea}}平米</el-tag></template>
+                                    </div>
+                                </el-col>
+                                <el-col :span="6">
+                                    <div class="text">
+                                        户型：<template v-if="order.houseLayoutName != null && order.houseLayoutName != ''"><el-tag>{{order.houseLayoutName}}</el-tag></template>
+                                    </div>
+                                </el-col>
+                            </el-row >
                         </el-card>
+                        <el-card class="box-card" shadow="hover">
+                            <div slot="header">
+                                <span>产品信息</span>
+                            </div>
+                            <div class="text item">
+                                <h3>风格蓝图：写意白描</h3>
+                                <el-alert
+                                        title="以抽象概括的设计手法，从中国传统图案或构件中提取线条，并运用于整套设计中表现文士审美追求的设计系列"
+                                        type="info"
+                                        :closable="false"
+                                        show-icon>
+                                </el-alert>
+                            </div>
+                            <div class="text item">
+                                <h3>功能蓝图</h3>
+                            </div>
+                        </el-card>
+                        <el-card class="box-card" shadow="hover">
+                            <div slot="header">
+                                <span>费用信息</span>
+                            </div>
+                            <el-tabs v-model="feeActiveTab" type="border-card">
+                                <el-tab-pane label="费用信息" name="feeInfo">
+                                    <el-table
+                                            :data="order.orderFees"
+                                            stripe="true"
+                                            border
+                                            row-key="rowKey"
+                                            :tree-props="{children:'children', hasChildren: 'hasChildren'}"
+                                            style="width: 100%">
+                                        <el-table-column
+                                                label="费用项"
+                                                prop="typeName"
+                                                fixed>
+                                        </el-table-column>
+                                        <el-table-column
+                                                prop="periodName"
+                                                width="100"
+                                                label="期数">
+                                        </el-table-column>
+                                        <el-table-column
+                                                prop="totalMoney"
+                                                label="总金额（元）"
+                                                width="140"
+                                                align="right">
+                                        </el-table-column>
+                                    </el-table>
+                                </el-tab-pane>
+                                <el-tab-pane label="付款信息" name="payInfo">
+                                    <el-table
+                                            :data="order.orderPays"
+                                            stripe="true"
+                                            border
+                                            style="width: 100%">
+                                        <el-table-column type="expand">
+                                            <template slot-scope="props">
+                                                <el-table
+                                                        :data="props.row.payItems"
+                                                        stripe="true"
+                                                        border
+                                                        style="width: 100%">
+                                                    <el-table-column
+                                                            label="收款项"
+                                                            prop="payItemName"
+                                                            fixed>
+                                                    </el-table-column>
+                                                    <el-table-column
+                                                            prop="money"
+                                                            width="100"
+                                                            align="right"
+                                                            label="金额（元）">
+                                                    </el-table-column>
+                                                </el-table>
+                                                <br/>
+                                                <el-table
+                                                        :data="props.row.payMonies"
+                                                        stripe="true"
+                                                        border
+                                                        style="width: 100%">
+                                                    <el-table-column
+                                                            label="付款方式"
+                                                            prop="paymentName"
+                                                            fixed>
+                                                    </el-table-column>
+                                                    <el-table-column
+                                                            prop="money"
+                                                            width="100"
+                                                            align="right"
+                                                            label="金额（元）">
+                                                    </el-table-column>
+                                                </el-table>
+                                            </template>
+                                        </el-table-column>
+                                        <el-table-column
+                                                label="收款日期"
+                                                prop="payDate"
+                                                width="120">
+                                        </el-table-column>
+                                        <el-table-column
+                                                prop="employeeName"
+                                                label="收款员工"
+                                                width="100">
+                                        </el-table-column>
+                                        <el-table-column
+                                                prop="shopName"
+                                                label="收款店面"
+                                                width="140">
+                                        </el-table-column>
+                                        <el-table-column
+                                                prop="totalMoney"
+                                                align="right"
+                                                label="收款总金额（元）">
+                                        </el-table-column>
 
-                        <el-row :gutter="20">
-                            <el-col :span="12">
-                                <div class="grid-content bg-purple-light">
-                                    <el-card class="box-card">
-                                        <div slot="header" class="clearfix">
-                                            <span>工程进度</span>
-                                        </div>
-                                        <el-progress :text-inside="true" :stroke-width="26" :percentage="70"></el-progress>
-                                    </el-card>
-                                </div>
-                            </el-col>
-                            <el-col :span="12">
-                                <div class="grid-content bg-purple-light">
-                                    <el-card class="box-card">
-                                        <div slot="header" class="clearfix">
-                                            <span>工程进度</span>
-                                        </div>
-                                        <el-progress :text-inside="true" :stroke-width="26" :percentage="70"></el-progress>
-                                    </el-card>
-                                </div>
-                            </el-col>
-                        </el-row>
+                                    </el-table>
+                                </el-tab-pane>
+                            </el-tabs>
+                        </el-card>
+                        <el-card class="box-card" shadow="hover">
+                            <div slot="header">
+                                <span>订单文件</span>
+                            </div>
+                            <el-table
+                                    :data="order.orderFiles"
+                                    stripe="true"
+                                    border
+                                    style="width: 100%">
+                                <el-table-column
+                                        prop="stageName"
+                                        width="120"
+                                        label="文件类型">
+                                </el-table-column>
+                                <el-table-column
+                                        prop="fileName"
+                                        label="文件名称">
+                                </el-table-column>
+                                <el-table-column
+                                        align="center"
+                                        width="100"
+                                        label="文件下载">
+                                    <template slot-scope="scope">
+                                        <el-link type="primary" :href="'api/bss.order/order-file/download/'+scope.row.orderId+'/'+scope.row.stage">下载文件</el-link>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                        </el-card>
+                        <el-card class="box-card" shadow="hover">
+                            <div slot="header">
+                                <span>订单合同</span>
+                            </div>
+                        </el-card>
                     </div>
                 </el-col>
             </el-row>
         </el-main>
     </el-container>
+
 </div>
+
 <style>
     .text {
         font-size: 14px;
@@ -97,84 +243,14 @@
     }
 
     .box-card {
-        margin-bottom: 18px;
+        margin-bottom: 12px;
+    }
+
+    .el-card__header {
+        padding:10px;
     }
 </style>
+
+<script src="static/js/modules/bss/order/cust.order.detail.js" th:src="@{static/js/modules/bss/order/cust.order.detail.js(v=${version})}"></script>
 </body>
-<script>
-    let vm = new Vue({
-        el: '#app',
-        data: function() {
-            return {
-                customer: {
-                    title : '客户基本信息',
-                    name : '刘慧',
-                    birthday : '1989-01-01',
-                    mobileNo : '18573140029'
-                },
-
-                customerDefault: 'base',
-
-                requirement : {
-                    title : '客户需求信息',
-                    style : '白色简约',
-                    func : '功能列表'
-                },
-
-                workers: [
-                    {
-                        job: '家装顾问',
-                        name: '左金虎'
-                    },
-                    {
-                        job: '客户代表',
-                        name: '张晓梅'
-                    },
-                    {
-                        job: '设计师',
-                        name: '罗厚石'
-                    },
-                    {
-                        job: '项目经理',
-                        name: '彭帅'
-                    },
-                    {
-                        job: '工程助理',
-                        name: '彭帅'
-                    },
-                    {
-                        job: '工程文员',
-                        name: '彭帅'
-                    },
-                    {
-                        job: '出纳',
-                        name: '彭帅'
-                    },
-                    {
-                        job: '财务',
-                        name: '彭帅'
-                    },
-                    {
-                        job: '售后人员',
-                        name: '彭帅'
-                    }
-                ],
-
-                avatarUrl: 'static/img/male.jpg'
-            }
-        },
-
-        methods: {
-            getEmployee : function() {
-                axios.get('api/organization/employee/loadEmployeeArchive?employeeId=1').then(function(responseData){
-                    vm.customer = responseData.data.rows;
-                }).catch(function(error){
-                    console.log(error);
-                });
-            }
-        }
-    });
-
-    vm.getEmployee();
-</script>
 </html>

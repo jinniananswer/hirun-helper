@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../../../../static/js/framework/requirejs/require.min.js"
+            th:src="@{static/js/framework/requirejs/require.min.js}"></script>
+    <script src="../../../../static/js/framework/requirejs/require.config.js"
+            th:src="@{static/js/framework/requirejs/require.config.js}"></script>
+</head>
+<body>
+<div id="app" v-cloak>
+    <el-container>
+        <el-main>
+            <el-card class="box-card" shadow="hover">
+                <div slot="header" class="clearfix">
+                    <span>查询区域</span>
+                </div>
+                <el-form :inline="false" :model="queryCond" :rules="rules" label-position="right" label-width="80px" ref="queryCond">
+                    <el-row>
+                        <el-col :span="8">
+                            <el-form-item label="查询方式" prop="queryType">
+                                <el-select v-model="queryCond.queryType" change="changeQueryType" placeholder="请选择">
+                                    <el-option
+                                            v-for="item in queryTypes"
+                                            :key="item.value"
+                                            :label="item.label"
+                                            :value="item.value">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="员工" prop="">
+                                <order-search-employee :employee-id.sync="queryCond.employeeId"
+                                                       :employee-name.sync="queryCond.employeeName"></order-search-employee>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="门店" :disabled="shopSelectDisabled">
+                                <el-select v-model="queryCond.shopId" placeholder="请选择" >
+                                    <el-option
+                                            v-for="item in options"
+                                            :key="item.orgId"
+                                            :label="item.name"
+                                            :value="item.orgId">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="8">
+                            <el-form-item label="分公司">
+                                <el-select v-model="queryCond.companyId" placeholder="请选择">
+                                    <el-option
+                                            v-for="item in companyOptions"
+                                            :key="item.orgId"
+                                            :label="item.name"
+                                            :value="item.orgId">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="计划月份">
+                                <el-date-picker
+                                        v-model="queryCond.month"
+                                        type="month"
+                                        format="yyyyMM"
+                                        value-format="yyyyMM"
+                                        style="width:100%"
+                                        placeholder="选择月">
+                                </el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item style="text-align: right">
+                                <el-button type="primary" @click="query">查询</el-button>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </el-card>
+            <br>
+            <el-card shadow="hover">
+                <template>
+                    <div id="echarts_box" style="width: 1000px;height:400px;"></div>
+                </template>
+            </el-card>
+        </el-main>
+    </el-container>
+
+</div>
+<style>
+    [v-cloak] {
+        display: none;
+    }
+</style>
+<script src="../../../../static/js/modules/bss/plan/agent.plan.acutal.report.js"
+        th:src="@{static/js/modules/bss/plan/agent.plan.acutal.report.js(v=${version})}"></script>
+</body>
+</html>
