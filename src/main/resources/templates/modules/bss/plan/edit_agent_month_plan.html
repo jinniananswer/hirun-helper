@@ -67,9 +67,9 @@
                     :data="employees"
                     :edit-config="{trigger: 'click', mode: 'cell', activeMethod: activeRowMethod}">
                 <vxe-table-column field="name" title="姓名" width="100" fixed="left" style="background-color: #ff4835"></vxe-table-column>
-                <vxe-table-column field="orgPath" title="部门" sortable width="240" fixed="left"></vxe-table-column>
+                <vxe-table-column field="orgPath" title="部门" sortable width="120" fixed="left"></vxe-table-column>
                 <vxe-table-column field="jobRoleName" title="岗位" sortable width="120" fixed="left"></vxe-table-column>
-                <vxe-table-column field="month" title="计划月份"  width="100" fixed="left"></vxe-table-column>
+                <vxe-table-column field="month" title="计划月份"  width="100"></vxe-table-column>
                 <vxe-table-column field="planConsultCount" title="咨询计划数" width="120" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
                 <vxe-table-column field="planBindAgentCount" title="客户代表身份绑定计划数" width="200" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
                 <vxe-table-column field="planStyleCount" title="风格蓝图计划数" width="200" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
