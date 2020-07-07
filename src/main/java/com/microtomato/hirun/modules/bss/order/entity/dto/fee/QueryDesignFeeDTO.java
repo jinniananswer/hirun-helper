@@ -20,4 +20,10 @@ public class QueryDesignFeeDTO {
     private String shopIds;
 
     private String feeTime;
+
+    private Integer page;
+
+    private Integer limit;
+
+    private Integer count;
 }

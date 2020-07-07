@@ -33,6 +33,8 @@ public class DesignFeeDTO {
 
     private String designStyle;
 
+    private Long feeNo;
+
     private Long depositFee;
 
     private LocalDateTime feeTime;

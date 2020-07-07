@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import com.microtomato.hirun.framework.util.ArrayUtils;
@@ -24,6 +25,7 @@ import com.microtomato.hirun.modules.bss.order.mapper.OrderFeeMapper;
 import com.microtomato.hirun.modules.bss.order.service.*;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -31,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -286,6 +289,28 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
      */
     @Override
     public IPage<DesignFeeDTO> queryDesignFees(QueryDesignFeeDTO condition) {
-        return null;
+        IPage<QueryDesignFeeDTO> request = new Page<>(condition.getPage(), condition.getLimit());
+        QueryWrapper<QueryDesignFeeDTO> wrapper = new QueryWrapper<>();
+        wrapper.apply(" b.cust_id = a.cust_id ");
+        wrapper.like(StringUtils.isNotBlank(condition.getCustName()), "b.cust_name", condition.getCustName());
+        wrapper.like(StringUtils.isNotBlank(condition.getMobileNo()), "b.mobile_no", condition.getMobileNo());
+
+        String shopIds = condition.getShopIds();
+        if (StringUtils.isNotBlank(shopIds)) {
+            List<String> shopIdArray = Arrays.asList(StringUtils.split(shopIds, ","));
+            wrapper.in("a.shop_id", shopIdArray);
+        }
+
+        String feeTime = condition.getFeeTime();
+        if (StringUtils.isNotBlank(feeTime)) {
+            String[] feeTimeArray = StringUtils.split(",");
+            wrapper.ge("d.first_pay_time", feeTimeArray[0]);
+            wrapper.le("d.first_pay_time", feeTimeArray[1]);
+        }
+
+        wrapper.eq(condition.getHousesId() != null, "a.houses_id", condition.getHousesId());
+
+        IPage<DesignFeeDTO> designFees = this.orderFeeMapper.queryDesignFee(request, wrapper);
+        return designFees;
     }
 }

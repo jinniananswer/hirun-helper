@@ -40,8 +40,10 @@ public interface OrderFeeMapper extends BaseMapper<OrderFee> {
             " and a.order_id=#{orderId}\n")
     List<OrderFeeDTO> loadDesignFeeInfo(Long orderId);
 
-    @Select("select c.cust_id, c.cust_name, c.cust_no, a.id, a.order_id, a.employee_id, a.org_id, a.job_role, a.job_grade, a.strategy_id, a.order_status, a.type, a.item, a.value, a.total_royalty, a.already_fetch, a.this_month_fetch, a.salary_month, a.audit_status, a.remark, a.audit_remark, a.is_modified, b.name employee_name, b.status employee_status\n" +
-            "from order_base a, cust_base b, order_fee c d\n" +
+    @Select("select b.cust_id, b.cust_name, b.cust_no, a.order_id, a.decorate_address, a.house_layout, a.indoor_area, a.shop_id, c.fee_no, d.first_pay_time\n" +
+            "from cust_base b, order_base a \n" +
+            "left join order_fee c on (c.order_id = a.order_id and c.type = '1' and end_date > now() ) \n" +
+            "left join (select order_id, min(create_time) first_pay_time from order_pay_item where parent_pay_item_id = 1 group by order_id) d on (d.order_id = a.order_id)\n" +
             "${ew.customSqlSegment}"
     )
     IPage<DesignFeeDTO> queryDesignFee(IPage<QueryDesignFeeDTO> queryCondition, @Param(Constants.WRAPPER) Wrapper wrapper);
