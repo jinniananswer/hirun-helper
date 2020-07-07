@@ -3,7 +3,9 @@ package com.microtomato.hirun.modules.bss.customer.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.microtomato.hirun.modules.bss.customer.entity.dto.CustInfoDTO;
+import com.microtomato.hirun.framework.security.UserContext;
+import com.microtomato.hirun.framework.util.TimeUtils;
+import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.CustQueryCondDTO;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.CustomerInfoDetailDTO;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.QueryCustCondDTO;
@@ -19,6 +21,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -53,8 +60,17 @@ public class PartyServiceImpl extends ServiceImpl<PartyMapper, Party> implements
         queryWrapper.eq(condDTO.getCounselorEmployeeId()!=null, "d.house_counselor_id", condDTO.getCounselorEmployeeId());
         queryWrapper.like(condDTO.getHouseId()!=null, "b.house_id", condDTO.getHouseId());
 
+
+
         queryWrapper.ge(condDTO.getStartTime()!=null, "a.consult_time", condDTO.getStartTime());
-        queryWrapper.le(condDTO.getEndTime()!=null, "a.consult_time", condDTO.getEndTime());
+
+        LocalDateTime endTime=null;
+        if(condDTO.getEndTime()!=null){
+            LocalDate endDate=condDTO.getEndTime();
+            ZonedDateTime zonedDateTime = endDate.atStartOfDay(ZoneId.systemDefault());
+            endTime=TimeUtils.reserveDateCustomTime(Date.from(zonedDateTime.toInstant()),"23:59:59");
+        }
+        queryWrapper.le(endTime!=null, "a.consult_time", endTime);
 
 
         queryWrapper.apply(" a.party_id=b.party_id");
@@ -69,6 +85,9 @@ public class PartyServiceImpl extends ServiceImpl<PartyMapper, Party> implements
         }
 
         List<CustomerInfoDetailDTO> list=iPage.getRecords();
+        UserContext userContext = WebContextUtils.getUserContext();
+        Long employeeId = userContext.getEmployeeId();
+
         for(CustomerInfoDetailDTO dto:list){
             if(dto.getHouseCounselorId()!=null){
                 dto.setHouseCounselorName(employeeService.getEmployeeNameEmployeeId(dto.getHouseCounselorId()));
@@ -86,6 +105,10 @@ public class PartyServiceImpl extends ServiceImpl<PartyMapper, Party> implements
             if(StringUtils.isNotBlank(dto.getHouseMode())){
                 dto.setHouseModeName(staticDataService.getCodeName("HOUSE_MODE",dto.getHouseMode()));
             }
+            if(!employeeId.equals(dto.getHouseCounselorId())&&!employeeId.equals(dto.getLinkEmployeeId())){
+                dto.setCustomerName(this.nameDesensitization(dto.getCustomerName()));
+                dto.setMobileNo("***********");
+            }
         }
 
         return iPage;
@@ -97,5 +120,27 @@ public class PartyServiceImpl extends ServiceImpl<PartyMapper, Party> implements
             return null;
         }
         return this.baseMapper.queryPartyInfoDetail(partyId);
+    }
+
+    /**
+     * 模糊化客户姓名
+     *
+     * @param name
+     * @return
+     */
+    private String nameDesensitization(String name) {
+        String newName = "";
+        if (StringUtils.isBlank(name)) {
+            return "";
+        }
+        char[] chars = name.toCharArray();
+        if (chars.length == 1) {
+            newName = name;
+        } else if (chars.length == 2) {
+            newName = name.replaceFirst(name.substring(1), "*");
+        } else {
+            newName = name.replaceAll(name.substring(1, chars.length - 1), "*");
+        }
+        return newName;
     }
 }
