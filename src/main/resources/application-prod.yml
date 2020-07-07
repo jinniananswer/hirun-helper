@@ -55,7 +55,7 @@ spring:
           testWhileIdle: true
           testOnBorrow: false
           testOnReturn: false
-          poolPreparedStatements: true
+          poolPreparedStatements: false
           validationQuery: select 1
           maxPoolPreparedStatementPerConnectionSize: 20
           filters: stat,slf4j,wall
@@ -93,7 +93,7 @@ spring:
           testWhileIdle: true
           testOnBorrow: false
           testOnReturn: false
-          poolPreparedStatements: true
+          poolPreparedStatements: false
           validationQuery: select 1
           maxPoolPreparedStatementPerConnectionSize: 20
           filters: stat,slf4j,wall
