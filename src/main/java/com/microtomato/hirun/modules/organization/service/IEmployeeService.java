@@ -122,4 +122,10 @@ public interface IEmployeeService extends IService<Employee> {
      */
     List<SimpleEmployeeDTO> queryEmployeeByOrgId(Long orgId);
 
+    /**
+     *
+     * @param orgLine
+     * @return
+     */
+    List<SimpleEmployeeDTO> queryEmployeeByOrgLine(String orgLine);
 }

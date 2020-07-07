@@ -466,4 +466,9 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         List<SimpleEmployeeDTO> employees=this.employeeMapper.querySimpleEmployeesByOrgId(orgLine);
         return employees;
     }
+
+    @Override
+    public List<SimpleEmployeeDTO> queryEmployeeByOrgLine(String orgLine) {
+        return this.employeeMapper.querySimpleEmployeesByOrgId(orgLine);
+    }
 }

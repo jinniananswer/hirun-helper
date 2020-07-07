@@ -39,7 +39,7 @@
                             <el-row>
                                 <el-col :span="8">
                                     <el-form-item label="部门">
-                                        <org-orgtree :orgId="custQueryCond.orgId" :orgName="custQueryCond.orgName"></org-orgtree>
+                                        <org-orgtree :org-id.sync="custQueryCond.orgId" :orgName="custQueryCond.orgName"></org-orgtree>
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="8">

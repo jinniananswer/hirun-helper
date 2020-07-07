@@ -5,6 +5,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.microtomato.hirun.framework.data.TreeNode;
 import com.microtomato.hirun.framework.security.UserContext;
+import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.bss.config.entity.po.Action;
 import com.microtomato.hirun.modules.bss.config.service.IActionService;
@@ -163,7 +165,7 @@ public class CustomerDomainServiceImpl implements ICustomerDomainService {
         //模糊化电话号码和姓名
         UserContext userContext = WebContextUtils.getUserContext();
         Long employeeId = userContext.getEmployeeId();
-        if (!employeeId.equals(customerInfoDetailDTO.getLinkEmployeeId()) || !employeeId.equals(customerInfoDetailDTO.getHouseCounselorId())) {
+        if (!employeeId.equals(customerInfoDetailDTO.getLinkEmployeeId()) && !employeeId.equals(customerInfoDetailDTO.getHouseCounselorId())) {
             customerInfoDetailDTO.setCustomerName(this.nameDesensitization(customerInfoDetailDTO.getCustomerName()));
             customerInfoDetailDTO.setMobileNo("***********");
         }
@@ -237,6 +239,14 @@ public class CustomerDomainServiceImpl implements ICustomerDomainService {
             }
             if (blueprintAction.getStyleprintCreateTime() != null) {
                 actionMap.put("FGLTETS_ALL", this.setValue("FGLTETS_ALL", blueprintAction.getStyleprintCreateTime()));
+            }
+        }
+        //补充客户代表完成的需求蓝图一情况
+        if(!actionMap.containsKey("XQLTYTS_ALL")){
+            List<BlueprintAction> xqltyList=blueprintActionService.queryBluePrintInfo(openId,"XQLTY,XQLTY_A,XQLTY_B,XQLTY_C");
+            if(xqltyList.size()>0){
+                BlueprintAction xqltyBlue = xqltyList.get(0);
+                actionMap.put("XQLTYTS_ALL", this.setValue("XQLTYTS_ALL", TimeUtils.stringToLocalDateTime(xqltyBlue.getModeTime(),"yyyy-MM-dd HH:mm:ss")));
             }
         }
 

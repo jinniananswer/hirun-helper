@@ -42,7 +42,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'order-selectem
         methods: {
             queryCustomer: function () {
                 let that = this;
-                ajax.get('api/bss.customer/customer/queryCustomerInfo', this.custQueryCond, function (responseData) {
+                ajax.get('api/bss.customer/customer/queryCustomerInfo', that.custQueryCond, function (responseData) {
                     vm.customerInfo = responseData.records;
                     that.custQueryCond.page = responseData.current;
                     that.custQueryCond.total = responseData.total;
