@@ -161,7 +161,14 @@ require(['vue', 'ELEMENT', 'vxe-table', 'axios', 'echarts', 'org-orgtree', 'ajax
                         itemStyle: {
                             normal: {
                                 color: "#1296db",
-                            }
+                                label: {
+                                    show: true, //开启显示
+                                    position: 'top', //在上方显示
+                                    textStyle: { //数值样式
+                                        color: 'black',
+                                        fontSize: 16
+                                    }
+                                }                            }
                         },
                     },
                         {
@@ -171,6 +178,14 @@ require(['vue', 'ELEMENT', 'vxe-table', 'axios', 'echarts', 'org-orgtree', 'ajax
                             itemStyle: {
                                 normal: {
                                     color: "#0b988f",
+                                    label: {
+                                        show: true, //开启显示
+                                        position: 'top', //在上方显示
+                                        textStyle: { //数值样式
+                                            color: 'black',
+                                            fontSize: 15
+                                        }
+                                    }
                                 }
                             },
                         }
