@@ -130,6 +130,8 @@ public class PartyServiceImpl extends ServiceImpl<PartyMapper, Party> implements
      */
     private String nameDesensitization(String name) {
         String newName = "";
+        String regEx="[\n`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。， 、？]";
+        name=name.replaceAll(regEx,"");
         if (StringUtils.isBlank(name)) {
             return "";
         }

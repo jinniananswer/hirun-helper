@@ -126,6 +126,8 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
      */
     private String nameDesensitization(String name) {
         String newName = "";
+        String regEx="[\n`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。， 、？]";
+        name=name.replaceAll(regEx,"");
         if (StringUtils.isBlank(name)) {
             return "";
         }

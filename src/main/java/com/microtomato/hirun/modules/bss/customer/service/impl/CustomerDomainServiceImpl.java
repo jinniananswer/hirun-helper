@@ -441,6 +441,8 @@ public class CustomerDomainServiceImpl implements ICustomerDomainService {
      */
     private String nameDesensitization(String name) {
         String newName = "";
+        String regEx="[\n`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。， 、？]";
+        name=name.replaceAll(regEx,"");
         if (StringUtils.isBlank(name)) {
             return "";
         }
