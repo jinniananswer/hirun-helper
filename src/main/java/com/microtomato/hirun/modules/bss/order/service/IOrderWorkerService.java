@@ -27,4 +27,6 @@ public interface IOrderWorkerService extends IService<OrderWorker> {
      * @param employeeId
      */
     Long updateOrderWorker(Long orderId,Long roleId,Long employeeId);
+
+    List<OrderWorkerDTO> queryByOrderIdsRoleIds(List<Long> orderIds, List<Long> roleIds);
 }

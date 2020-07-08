@@ -23,13 +23,19 @@ public class DesignFeeDTO {
 
     private String decorateAddress;
 
-    private String orderStateName;
+    private String type;
+
+    private String status;
+
+    private String orderStatusName;
 
     private String houseLayoutName;
 
     private String indoorArea;
 
     private Long designStandard;
+
+    private Long designFee;
 
     private String designStyle;
 
@@ -44,6 +50,8 @@ public class DesignFeeDTO {
     private LocalDateTime signTime;
 
     private LocalDateTime firstPayTime;
+
+    private Long shopId;
 
     private String shopName;
 

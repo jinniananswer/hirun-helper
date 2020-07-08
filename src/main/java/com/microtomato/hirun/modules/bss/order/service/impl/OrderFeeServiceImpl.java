@@ -8,7 +8,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
+import com.microtomato.hirun.modules.bss.config.entity.po.OrderStatusCfg;
+import com.microtomato.hirun.modules.bss.config.service.IOrderStatusCfgService;
 import com.microtomato.hirun.modules.bss.config.service.IPayItemCfgService;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeDTO;
@@ -23,6 +26,10 @@ import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayNo;
 import com.microtomato.hirun.modules.bss.order.exception.OrderException;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderFeeMapper;
 import com.microtomato.hirun.modules.bss.order.service.*;
+import com.microtomato.hirun.modules.organization.entity.po.Employee;
+import com.microtomato.hirun.modules.organization.entity.po.Org;
+import com.microtomato.hirun.modules.organization.service.IEmployeeService;
+import com.microtomato.hirun.modules.organization.service.IOrgService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -72,6 +79,17 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
     @Autowired
     private IFeeDomainService feeDomainService;
 
+    @Autowired
+    private IOrderWorkerService orderWorkerService;
+
+    @Autowired
+    private IEmployeeService employeeService;
+
+    @Autowired
+    private IOrderStatusCfgService orderStatusCfgService;
+
+    @Autowired
+    private IOrgService orgService;
 
     @Override
     public OrderFee queryOrderCollectFee(Long orderId) {
@@ -310,7 +328,177 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
 
         wrapper.eq(condition.getHousesId() != null, "a.houses_id", condition.getHousesId());
 
-        IPage<DesignFeeDTO> designFees = this.orderFeeMapper.queryDesignFee(request, wrapper);
-        return designFees;
+        IPage<DesignFeeDTO> pageDesigns = this.orderFeeMapper.queryDesignFee(request, wrapper);
+
+        List<DesignFeeDTO> designFees = pageDesigns.getRecords();
+
+        //设置订单参与人
+        if (ArrayUtils.isNotEmpty(designFees)) {
+            List<Long> orderIds = this.distinctOrderId(designFees);
+            if (ArrayUtils.isNotEmpty(orderIds)) {
+                List<Long> roleIds = new ArrayList<Long>() {{
+                    this.add(3L);
+                    this.add(15L);
+                    this.add(30L);
+                    this.add(46L);
+                    this.add(47L);
+                    this.add(555L);
+                }};
+                List<OrderWorkerDTO> workers = this.orderWorkerService.queryByOrderIdsRoleIds(orderIds, roleIds);
+
+                if (ArrayUtils.isNotEmpty(workers)) {
+                    designFees.forEach(designFee -> {
+                        OrderWorkerDTO counselor = this.findWorker(designFee.getOrderId(), 3L, workers);
+                        if (counselor != null) {
+                            designFee.setCounselorName(counselor.getName());
+                        }
+
+                        OrderWorkerDTO agent = this.findWorker(designFee.getOrderId(), 15L, workers);
+                        if (agent != null) {
+                            designFee.setAgentName(agent.getName());
+                        }
+
+                        OrderWorkerDTO designer = this.findWorker(designFee.getOrderId(), 30L, workers);
+                        if (designer != null) {
+                            designFee.setDesignerName(designer.getName());
+                        }
+
+                        OrderWorkerDTO material = this.findWorker(designFee.getOrderId(), 46L, workers);
+                        if (material != null) {
+                            designFee.setMaterialName(material.getName());
+                        }
+
+                        OrderWorkerDTO cabinet = this.findWorker(designFee.getOrderId(), 47L, workers);
+                        if (cabinet != null) {
+                            designFee.setCabinetName(cabinet.getName());
+                        }
+
+                        OrderWorkerDTO report = this.findWorker(designFee.getOrderId(), 555L, workers);
+                        if (report != null) {
+                            designFee.setReportName(report.getName());
+                        }
+                    });
+                }
+
+                List<Long> payItemIds = new ArrayList<Long>(){{
+                    this.add(2L);
+                    this.add(3L);
+                    this.add(4L);
+                    this.add(5L);
+                    this.add(6L);
+                }};
+                List<OrderPayItem> orderPayItems = this.orderPayItemService.queryByOrderIdsPayItems(orderIds, payItemIds);
+                if (ArrayUtils.isNotEmpty(orderPayItems)) {
+                    designFees.forEach(designFee -> {
+                        this.fillByDesignPayItem(designFee, orderPayItems);
+                    });
+                }
+            }
+        }
+
+        return pageDesigns;
+    }
+
+    /**
+     * 汇聚orderId列表，且不重复
+     * @param designFees
+     * @return
+     */
+    private List<Long> distinctOrderId(List<DesignFeeDTO> designFees) {
+        if (ArrayUtils.isEmpty(designFees)) {
+            return null;
+        }
+
+        List<Long> orderIds = new ArrayList<>();
+        designFees.forEach(designFee -> {
+            Long orderId = designFee.getOrderId();
+            if (!orderIds.contains(orderId)) {
+                orderIds.add(orderId);
+            }
+        });
+
+        return orderIds;
+    }
+
+    /**
+     * 根据订单ID与角色查找参与人
+     * @param orderId
+     * @param roleId
+     * @param workers
+     * @return
+     */
+    private OrderWorkerDTO findWorker(Long orderId, Long roleId, List<OrderWorkerDTO> workers) {
+        for (OrderWorkerDTO worker : workers) {
+            if (orderId.equals(worker.getOrderId()) && roleId.equals(worker.getRoleId())) {
+                return worker;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * 填充费用相关字段
+     * @param designFee
+     * @param orderPayItems
+     */
+    private void fillByDesignPayItem(DesignFeeDTO designFee, List<OrderPayItem> orderPayItems) {
+        if (ArrayUtils.isEmpty(orderPayItems)) {
+            return;
+        }
+        Long orderId = designFee.getOrderId();
+        List<OrderPayItem> designPayItems = new ArrayList<>();
+        orderPayItems.forEach(orderPayItem -> {
+            if (orderId.equals(orderPayItem.getOrderId())) {
+                designPayItems.add(orderPayItem);
+            }
+        });
+
+        if (ArrayUtils.isEmpty(designPayItems)) {
+            return;
+        }
+
+        Long total = 0L;
+        Long totalDeposit = 0L;
+
+        LocalDateTime payTime = null;
+
+        for (OrderPayItem designPayItem : designPayItems) {
+            total += designPayItem.getFee();
+
+            if (payTime == null) {
+                payTime = designPayItem.getStartDate();
+            } else if (TimeUtils.compareTwoTime(designPayItem.getStartDate(), payTime) < 0) {
+                payTime = designPayItem.getStartDate();
+            }
+            if (designPayItem.getPayItemId().equals(3L) && StringUtils.isBlank(designFee.getDepositFinanceName())) {
+                Long userId = designPayItem.getCreateUserId();
+                Employee employee = this.employeeService.queryByUserId(userId);
+                designFee.setDepositFinanceName(employee.getName());
+                totalDeposit += designPayItem.getFee();
+            } else if (designPayItem.getPayItemId().equals(4L) && StringUtils.isBlank(designFee.getDesignFeeFinanceName())) {
+                Long userId = designPayItem.getCreateUserId();
+                Employee employee = this.employeeService.queryByUserId(userId);
+                designFee.setDesignFeeFinanceName(employee.getName());
+            }
+        }
+        designFee.setDesignFee(total);
+        designFee.setFirstPayTime(payTime);
+        designFee.setDepositFee(totalDeposit);
+        designFee.setFeeTime(payTime);
+
+        String orderStatus = designFee.getStatus();
+        if (StringUtils.isNotBlank(orderStatus)) {
+            OrderStatusCfg orderStatusCfg = this.orderStatusCfgService.getCfgByTypeStatus(designFee.getType(), orderStatus);
+            designFee.setOrderStatusName(orderStatusCfg.getStatusName());
+        }
+
+        Long shopId = designFee.getShopId();
+        if (shopId != null) {
+            Org shop = this.orgService.getById(shopId);
+            if (shop != null) {
+                designFee.setShopName(shop.getName());
+            }
+        }
     }
 }
