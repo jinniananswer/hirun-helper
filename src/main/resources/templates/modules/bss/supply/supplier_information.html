@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>供应商综合资料</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="../../../../static/element-ui/css/index.css" th:href="@{static/element-ui/css/index.css(v=${version})}">
+    <script src="../../../../static/js/framework/requirejs/require.min.js" th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="../../../../static/js/framework/requirejs/require.config.js" th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+</head>
+<body>
+<div id="app" v-cloak>
+    <el-container>
+        <el-main>
+            <el-card class="box-card" shadow="hover">
+                <div slot="header" class="clearfix">
+                    <span>查询条件区</span>
+                </div>
+                <el-form :inline="false" :model="queryCond" label-position="right" label-width="80px">
+                    <el-row>
+                        <el-col :span="8">
+                            <el-form-item label="供应商名称">
+                                <el-input v-model="queryCond.name" placeholder="请输入供应商名称"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="供应商编号">
+                                <el-input v-model="queryCond.id" placeholder="请输入供应商编号"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item>
+                                <el-button type="primary" @click="querySupplier">查询</el-button>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </el-card>
+
+            <el-table
+                    :data="supplierInfo"
+                    stripe="true"
+                    border
+                    height="400"
+                    style="width: 100%">
+                <el-table-column
+                        label="供应商编号"
+                        fixed
+                        prop="id"
+                        width="100"
+                        align="center">
+                    <template slot-scope="scopeSupplier">
+                        <el-button type="text" @click="">{{ scopeSupplier.row.id }}</el-button>
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        prop="name"
+                        width="100"
+                        label="供应商名称"
+                        align="center">
+                </el-table-column>
+                <el-table-column
+                        prop="abbreviation"
+                        width="100"
+                        label="供应商简称"
+                        align="center">
+                </el-table-column>
+                <el-table-column
+                        prop="supplier_type"
+                        width="100"
+                        label="供应商类型"
+                        align="center">
+                </el-table-column>
+                <el-table-column
+                        prop="operator"
+                        width="120"
+                        label="经办人"
+                        align="center">
+                </el-table-column>
+                <el-table-column
+                        prop="mobile_no"
+                        width="120"
+                        label="联系电话"
+                        align="center">
+                </el-table-column>
+                <el-table-column
+                        prop="Landline"
+                        width="120"
+                        label="座机"
+                        align="center">
+                </el-table-column>
+                <el-table-column
+                        prop="mailbox"
+                        width="120"
+                        label="邮箱"
+                        align="center">
+                </el-table-column>
+                <el-table-column
+                        prop="address"
+                        label="地址">
+                </el-table-column>
+                <el-table-column
+                        prop="status"
+                        width="150"
+                        label="状态"
+                        align="center">
+                </el-table-column>
+                <el-table-column
+                        prop="contacts"
+                        width="100"
+                        label="联系人"
+                        align="center">
+                </el-table-column>
+                <el-table-column
+                        prop="standby_telephone"
+                        width="100"
+                        label="备用联系电话"
+                        align="center">
+                </el-table-column>
+                <el-table-column
+                        prop="verify_person"
+                        width="100"
+                        label="对账人"
+                        align="center">
+                </el-table-column>
+                <el-table-column
+                        prop="reviewer"
+                        width="100"
+                        label="审核人"
+                        align="center">
+                </el-table-column>
+                <el-table-column
+                        prop="account_number1"
+                        width="100"
+                        label="银行账号1"
+                        align="center">
+                </el-table-column>
+            </el-table>
+            <div style="text-align: center">
+                <el-pagination
+                        layout="total, prev, pager, next"
+                        :total="queryCond.count"
+                        :current-page.sync="queryCond.page"
+                        :page-size="queryCond.limit"
+                        @current-change="querySupplier">
+                </el-pagination>
+            </div>
+        </el-main>
+    </el-container>
+</div>
+<style>
+    [v-cloak] {
+        display: none;
+    }
+
+</style>
+<script src="../../../../static/js/modules/bss/supply/supplier_information.js" th:src="@{static/js/modules/bss/supply/supplier_information.js(v=${version})}"></script>
+</body>
+
+</html>

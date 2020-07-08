@@ -1,16 +1,16 @@
 package com.microtomato.hirun.modules.bss.supply.controller;
 
 
-
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.beans.factory.annotation.Autowired;
-
+import com.microtomato.hirun.framework.annotation.RestResult;
+import com.microtomato.hirun.modules.bss.supply.entity.dto.SupplierQueryDTO;
 import com.microtomato.hirun.modules.bss.supply.entity.po.Supplier;
 import com.microtomato.hirun.modules.bss.supply.service.ISupplierService;
-import com.microtomato.hirun.framework.annotation.RestResult;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.Serializable;
 import java.util.List;
@@ -23,6 +23,7 @@ import java.util.List;
  * @date 2020-07-05 17:41:16
  */
 @RestController
+@Slf4j
 @RequestMapping("/api/SupplySupplier")
 public class SupplierController {
 
@@ -88,5 +89,11 @@ public class SupplierController {
     @GetMapping("deleteByIds")
     public boolean deleteByIds(@RequestParam("idList") List<Long> idList) {
         return this.supplySupplierService.removeByIds(idList);
+    }
+
+    @GetMapping("queryByNameAndId")
+    @RestResult
+    public IPage<Supplier> queryByNameAndId(SupplierQueryDTO supplierQueryDTO){
+        return this.supplySupplierService.queryByNameAndId(supplierQueryDTO);
     }
 }
