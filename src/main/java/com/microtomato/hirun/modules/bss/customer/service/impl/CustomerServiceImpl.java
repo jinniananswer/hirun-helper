@@ -88,6 +88,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         queryWrapper.like(StringUtils.isNotEmpty(condDTO.getWxNick()), "a.wx_nick", condDTO.getWxNick());
         queryWrapper.eq(condDTO.getHouseId()!=null, "a.house_id",condDTO.getHouseId());
         queryWrapper.in(ArrayUtils.isNotEmpty(emplyeeIds), "a.house_counselor_id", emplyeeIds);
+        queryWrapper.eq(condDTO.getCounselorEmployeeId()!=null, "a.house_counselor_id", condDTO.getCounselorEmployeeId());
         queryWrapper.ge(condDTO.getStartTime()!=null, "a.create_time", condDTO.getStartTime());
         queryWrapper.le(condDTO.getEndTime()!=null, "a.create_time", condDTO.getEndTime());
 
