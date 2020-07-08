@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.security.UserContext;
+import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.CustQueryCondDTO;
@@ -14,7 +15,9 @@ import com.microtomato.hirun.modules.bss.customer.mapper.PartyMapper;
 import com.microtomato.hirun.modules.bss.customer.service.IPartyService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.modules.bss.house.service.IHousesService;
+import com.microtomato.hirun.modules.organization.entity.dto.SimpleEmployeeDTO;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
+import com.microtomato.hirun.modules.organization.service.IOrgService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +28,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -49,19 +53,37 @@ public class PartyServiceImpl extends ServiceImpl<PartyMapper, Party> implements
     @Autowired
     private IStaticDataService staticDataService;
 
+    @Autowired
+    private IOrgService orgService;
+
     @Override
     public IPage<CustomerInfoDetailDTO> queryCustomerInfo(QueryCustCondDTO condDTO) {
         QueryWrapper<CustQueryCondDTO> queryWrapper = new QueryWrapper<>();
         Page<CustQueryCondDTO> page = new Page<>(condDTO.getPage(), condDTO.getSize());
 
+        String orgLine="";
+        List<SimpleEmployeeDTO> employees=null;
+        List<Long> emplyeeIds=new ArrayList<>();
+
+        if(condDTO.getOrgId()==null){
+            orgLine= orgService.listOrgSecurityLine();
+            employees=employeeService.queryEmployeeByOrgLine(orgLine);
+        }else{
+            employees=employeeService.queryEmployeeByOrgId(condDTO.getOrgId());
+        }
+
+        if(ArrayUtils.isNotEmpty(employees)){
+            for(SimpleEmployeeDTO employeeDTO:employees){
+                emplyeeIds.add(employeeDTO.getEmployeeId());
+            }
+        }
+
         queryWrapper.like(StringUtils.isNotEmpty(condDTO.getCustName()), "a.party_name", condDTO.getCustName());
         queryWrapper.eq(condDTO.getCustomerServiceEmployeeId() != null, "c.link_employee_id", condDTO.getCustomerServiceEmployeeId());
+        queryWrapper.in(ArrayUtils.isNotEmpty(emplyeeIds), "c.link_employee_id", emplyeeIds);
         queryWrapper.like(StringUtils.isNotEmpty(condDTO.getWxNick()), "a.wx_nick", condDTO.getWxNick());
         queryWrapper.eq(condDTO.getCounselorEmployeeId()!=null, "d.house_counselor_id", condDTO.getCounselorEmployeeId());
         queryWrapper.like(condDTO.getHouseId()!=null, "b.house_id", condDTO.getHouseId());
-
-
-
         queryWrapper.ge(condDTO.getStartTime()!=null, "a.consult_time", condDTO.getStartTime());
 
         LocalDateTime endTime=null;
@@ -77,7 +99,7 @@ public class PartyServiceImpl extends ServiceImpl<PartyMapper, Party> implements
         queryWrapper.apply(" c.project_id=b.project_id");
         queryWrapper.apply(" a.party_status='0' ");
         queryWrapper.apply(" c.role_type='CUSTOMERSERVICE'");
-        queryWrapper.orderByDesc("a.create_time ");
+        queryWrapper.orderByDesc("a.consult_time ");
 
         IPage<CustomerInfoDetailDTO> iPage = this.baseMapper.queryCustomerInfo(page, queryWrapper);
         if (iPage.getRecords().size() <= 0) {
