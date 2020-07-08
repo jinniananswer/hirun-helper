@@ -20,7 +20,7 @@
                     <el-row>
                         <el-col :span="8">
                             <el-form-item label="查询方式" prop="queryType">
-                                <el-select v-model="queryCond.queryType" change="changeQueryType" placeholder="请选择">
+                                <el-select v-model="queryCond.queryType" @change="changeQueryType" placeholder="请选择">
                                     <el-option
                                             v-for="item in queryTypes"
                                             :key="item.value"
@@ -33,12 +33,12 @@
                         <el-col :span="8">
                             <el-form-item label="员工" prop="">
                                 <order-search-employee :employee-id.sync="queryCond.employeeId"
-                                                       :employee-name.sync="queryCond.employeeName"></order-search-employee>
+                                                       :employee-name.sync="queryCond.employeeName" ></order-search-employee>
                             </el-form-item>
                         </el-col>
                         <el-col :span="8">
-                            <el-form-item label="门店" :disabled="shopSelectDisabled">
-                                <el-select v-model="queryCond.shopId" placeholder="请选择" >
+                            <el-form-item label="门店" >
+                                <el-select v-model="queryCond.shopId" placeholder="请选择" :disabled="shopSelectDisabled">
                                     <el-option
                                             v-for="item in options"
                                             :key="item.orgId"
@@ -52,7 +52,7 @@
                     <el-row>
                         <el-col :span="8">
                             <el-form-item label="分公司">
-                                <el-select v-model="queryCond.companyId" placeholder="请选择">
+                                <el-select v-model="queryCond.companyId" placeholder="请选择" :disabled="companySelectDisabled">
                                     <el-option
                                             v-for="item in companyOptions"
                                             :key="item.orgId"

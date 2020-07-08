@@ -28,6 +28,8 @@ require(['vue', 'ELEMENT', 'vxe-table', 'axios', 'echarts', 'org-orgtree', 'ajax
                 options: [],
                 companyOptions:[],
                 shopSelectDisabled:false,
+                companySelectDisabled:false,
+                employeeSelectDisabled:false,
                 rules: {
                     queryType: [
                         {required: true, message: '请选择查询类型', trigger: 'change'}
@@ -96,6 +98,16 @@ require(['vue', 'ELEMENT', 'vxe-table', 'axios', 'echarts', 'org-orgtree', 'ajax
             changeQueryType:function(newVal){
               if(newVal=='1'){
                   this.shopSelectDisabled=true;
+                  this.companySelectDisabled=true;
+              }else if (newVal=='2'){
+                  this.shopSelectDisabled=false;
+                  this.companySelectDisabled=true;
+              }else if(newVal=='3'){
+                  this.shopSelectDisabled=true;
+                  this.companySelectDisabled=false;
+              }else{
+                  this.shopSelectDisabled=true;
+                  this.companySelectDisabled=true;
               }
             },
 
