@@ -16,9 +16,11 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 funcDialogVisibleA:false,
                 funcDialogVisibleB:false,
                 funcDialogVisibleC:false,
+                funcDialogVisibleAll:false,
                 disabledA:true,
                 disabledB:true,
                 disabledC:true,
+                disabledAll:true,
                 urls:[],
                 defaultProps: {
                     children: 'children',
@@ -81,15 +83,18 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                         if(xqlteData.funcInfo!=null&&xqlteData.funcInfo.FUNC_A!=null){
                             that.funcA=xqlteData.funcInfo.FUNC_A;
                             that.disabledA=false;
+                            that.disabledAll=false;
                         }
                         if(xqlteData.funcInfo!=null&&xqlteData.funcInfo.FUNC_B!=null){
                             that.funcB=xqlteData.funcInfo.FUNC_B;
                             that.disabledB=false;
+                            that.disabledAll=false;
                         }
 
                         if(xqlteData.funcInfo!=null&&xqlteData.funcInfo.FUNC_C!=null){
                             that.funcC=xqlteData.funcInfo.FUNC_C;
                             that.disabledC=false;
+                            that.disabledAll=false;
                         }
                     }
 
