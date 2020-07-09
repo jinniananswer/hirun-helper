@@ -21,9 +21,6 @@ import com.microtomato.hirun.modules.organization.mapper.EmployeeMapper;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import com.microtomato.hirun.modules.organization.service.IOrgService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
-import com.microtomato.hirun.modules.organization.service.IOrgService;
-import com.microtomato.hirun.modules.system.entity.domain.AddressDO;
-import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +33,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -470,5 +466,20 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
     @Override
     public List<SimpleEmployeeDTO> queryEmployeeByOrgLine(String orgLine) {
         return this.employeeMapper.querySimpleEmployeesByOrgId(orgLine);
+    }
+
+    @Override
+    public List<SimpleEmployeeDTO> queryEmployeeByRoleAndOrg(Long orgId, String roleType) {
+        if(orgId==null){
+            orgId=WebContextUtils.getUserContext().getOrgId();
+        }
+        OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+        String orgLine=orgDO.getOrgLine(orgId);
+
+        QueryWrapper<SimpleEmployeeDTO> wrapper = new QueryWrapper<>();
+        wrapper.apply("c.org_id = b.org_id and a.user_id = e.user_id " +
+                "  and e.end_date > now() and a.status='0' and e.role_id in ( " +
+                roleType+") and b.org_id in ("+orgLine+")");
+        return this.employeeMapper.queryEmployeeByRoleAndOrg(wrapper);
     }
 }

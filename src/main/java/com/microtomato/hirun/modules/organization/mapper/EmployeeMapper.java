@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.Storage;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
+import com.microtomato.hirun.modules.bss.plan.entity.dto.AgentMonthPlanDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.*;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import org.apache.ibatis.annotations.Param;
@@ -363,4 +364,12 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
             " and (now() between b.start_date and b.end_date)" +
             " and b.org_id in (${orgId}) ")
     List<SimpleEmployeeDTO> querySimpleEmployeesByOrgId(@Param("orgId")String orgId);
+
+    @Select("select a.employee_id, b.org_id " +
+            " from ins_org c, ins_user_role e ,ins_employee a " +
+            " LEFT JOIN ( select * from ins_employee_job_role k where k.job_role_id in(select max(i.job_role_id) from (select * from ins_employee_job_role h where is_main= '1') i group by i.employee_id)) b" +
+            " on (a.employee_id=b.employee_id) "+
+            " ${ew.customSqlSegment}"
+    )
+    List<SimpleEmployeeDTO> queryEmployeeByRoleAndOrg(@Param(Constants.WRAPPER) Wrapper wrapper);
 }

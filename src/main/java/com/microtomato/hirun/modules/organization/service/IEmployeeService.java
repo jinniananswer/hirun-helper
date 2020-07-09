@@ -128,4 +128,12 @@ public interface IEmployeeService extends IService<Employee> {
      * @return
      */
     List<SimpleEmployeeDTO> queryEmployeeByOrgLine(String orgLine);
+
+    /**
+     * 根据部门和角色查询员工
+     * @param orgId
+     * @param roleType
+     * @return
+     */
+    List<SimpleEmployeeDTO> queryEmployeeByRoleAndOrg(Long orgId,String roleType);
 }
