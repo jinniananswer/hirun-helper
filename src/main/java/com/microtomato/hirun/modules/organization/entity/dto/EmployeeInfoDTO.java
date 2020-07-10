@@ -199,6 +199,9 @@ public class EmployeeInfoDTO implements Serializable {
     @ExcelIgnore
     private String hrEmployeeName;
 
+    @ExcelIgnore
+    private String secondEntry;
+
     @ColumnWidth(20)
     @ExcelProperty(value = "离职时间",converter = LocalDateTimeConvert.class)
     private LocalDateTime destroyDate;

@@ -487,6 +487,15 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             employeeInfoDTOResult.setTypeName(this.staticDataService.getCodeName("EMPLOYEE_TYPE", employeeInfoDTOResult.getType()));
             employeeInfoDTOResult.setJobRoleNatureName(this.staticDataService.getCodeName("JOB_NATURE", employeeInfoDTOResult.getJobRoleNature()));
             employeeInfoDTOResult.setParentEmployeeName(employeeService.getEmployeeNameEmployeeId(employeeInfoDTOResult.getParentEmployeeId()));
+
+            List<EmployeeTag> employeeTags=employeeTagService.list(new QueryWrapper<EmployeeTag>().lambda()
+                    .eq(EmployeeTag::getEmployeeId,employeeInfoDTOResult.getEmployeeId())
+                    .eq(EmployeeTag::getTagType,"2"));
+            if(ArrayUtils.isEmpty(employeeTags)){
+                employeeInfoDTOResult.setSecondEntry("否");
+            }else {
+                employeeInfoDTOResult.setSecondEntry("是");
+            }
         }
         return iPage;
     }
