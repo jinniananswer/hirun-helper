@@ -23,6 +23,7 @@ import com.microtomato.hirun.modules.bss.order.entity.dto.fee.QueryDesignFeeDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFee;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayItem;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayNo;
+import com.microtomato.hirun.modules.bss.order.entity.po.OrderPlaneSketch;
 import com.microtomato.hirun.modules.bss.order.exception.OrderException;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderFeeMapper;
 import com.microtomato.hirun.modules.bss.order.service.*;
@@ -87,6 +88,9 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
 
     @Autowired
     private IOrderStatusCfgService orderStatusCfgService;
+
+    @Autowired
+    private IOrderPlaneSketchService orderPlaneSketchService;
 
     @Autowired
     private IOrgService orgService;
@@ -393,6 +397,18 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
                         this.fillByDesignPayItem(designFee, orderPayItems);
                     });
                 }
+
+                List<OrderPlaneSketch> planeSketches = this.orderPlaneSketchService.queryByOrderIds(orderIds);
+                if (ArrayUtils.isNotEmpty(planeSketches)) {
+                    designFees.forEach(designFee -> {
+                        Long orderId = designFee.getOrderId();
+                        OrderPlaneSketch planeSketch = this.findPlaneSketch(orderId, planeSketches);
+                        if (planeSketch != null) {
+                            designFee.setDesignTheme(this.staticDataService.getCodeName("DESIGN_THEME", planeSketch.getDesignTheme()));
+                            designFee.setDesignFeeStandard(planeSketch.getDesignFeeStandard());
+                        }
+                    });
+                }
             }
         }
 
@@ -434,6 +450,21 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
             }
         }
 
+        return null;
+    }
+
+    /**
+     * 根据订单ID查看设计表
+     * @param orderId
+     * @param planeSketches
+     * @return
+     */
+    private OrderPlaneSketch findPlaneSketch(Long orderId, List<OrderPlaneSketch> planeSketches) {
+        for (OrderPlaneSketch planeSketch : planeSketches) {
+            if (orderId.equals(planeSketch.getOrderId())) {
+                return planeSketch;
+            }
+        }
         return null;
     }
 
@@ -486,6 +517,7 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
         designFee.setFirstPayTime(payTime);
         designFee.setDepositFee(totalDeposit);
         designFee.setFeeTime(payTime);
+        designFee.setHouseLayoutName(this.staticDataService.getCodeName("HOUSE_MODE", designFee.getHouseLayout()));
 
         String orderStatus = designFee.getStatus();
         if (StringUtils.isNotBlank(orderStatus)) {
@@ -495,7 +527,7 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
 
         Long shopId = designFee.getShopId();
         if (shopId != null) {
-            Org shop = this.orgService.getById(shopId);
+            Org shop = this.orgService.queryByOrgId(shopId);
             if (shop != null) {
                 designFee.setShopName(shop.getName());
             }

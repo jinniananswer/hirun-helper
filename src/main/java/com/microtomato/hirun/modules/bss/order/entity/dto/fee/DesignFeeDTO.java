@@ -29,15 +29,17 @@ public class DesignFeeDTO {
 
     private String orderStatusName;
 
+    private String houseLayout;
+
     private String houseLayoutName;
 
     private String indoorArea;
 
-    private Long designStandard;
+    private Integer designFeeStandard;
 
     private Long designFee;
 
-    private String designStyle;
+    private String designTheme;
 
     private Long feeNo;
 
