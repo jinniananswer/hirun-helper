@@ -56,4 +56,11 @@ public interface ICustomerDomainService {
      */
     IPage<CustomerInfoDetailDTO> queryCustomerInfo(QueryCustCondDTO condDTO);
 
+    /**
+     *
+     * @param openId
+     * @return
+     */
+    List<LTZDSInfoDTO> getLtzdsInfo(String openId);
+
 }

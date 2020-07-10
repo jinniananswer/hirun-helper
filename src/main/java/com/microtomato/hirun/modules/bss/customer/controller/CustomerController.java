@@ -64,4 +64,11 @@ public class CustomerController {
         log.debug(custQueryCond.toString());
         return customerDomainService.queryCustomerInfo(custQueryCond);
     }
+
+    @GetMapping("/getLtzdsInfo")
+    @RestResult
+    public List<LTZDSInfoDTO> getLtzdsInfo(String openId) {
+        return customerDomainService.getLtzdsInfo(openId);
+    }
+
 }

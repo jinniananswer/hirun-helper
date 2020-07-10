@@ -2,6 +2,7 @@ package com.microtomato.hirun.modules.bss.customer.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.microtomato.hirun.framework.data.TreeNode;
 import com.microtomato.hirun.framework.security.UserContext;
@@ -374,6 +375,39 @@ public class CustomerDomainServiceImpl implements ICustomerDomainService {
         }
 
         return null;
+    }
+
+    @Override
+    public List<LTZDSInfoDTO> getLtzdsInfo(String openId) {
+        if (StringUtils.isBlank(openId)) {
+            return null;
+        }
+        Customer customer=customerService.getOne(new QueryWrapper<Customer>().lambda()
+                .eq(Customer::getIdentifyCode,openId));
+
+        if(customer==null){
+            return null;
+        }
+
+        List<CustOriginalAction> originalActions=custOriginalActionService.list(new QueryWrapper<CustOriginalAction>().lambda()
+                .eq(CustOriginalAction::getCustId,customer.getCustId())
+                .eq(CustOriginalAction::getActionCode,"LTZDSTS")
+                .orderByDesc(CustOriginalAction::getFinishTime));
+
+        if(ArrayUtils.isEmpty(originalActions)){
+            return null;
+        }
+
+        List<LTZDSInfoDTO> dtoList = new ArrayList<>();
+
+        for(CustOriginalAction custOriginalAction:originalActions){
+            LTZDSInfoDTO ltzdsInfoDTO=new LTZDSInfoDTO();
+            ltzdsInfoDTO.setCommitTime(custOriginalAction.getFinishTime());
+            ltzdsInfoDTO.setCommitEmployeeName(employeeService.getEmployeeNameEmployeeId(custOriginalAction.getEmployeeId()));
+            dtoList.add(ltzdsInfoDTO);
+        }
+
+        return dtoList;
     }
 
 

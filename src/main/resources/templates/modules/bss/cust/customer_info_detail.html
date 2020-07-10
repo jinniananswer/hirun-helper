@@ -23,15 +23,19 @@
                     <el-tabs v-model="subActiveTab" type="border-card">
                         <el-tab-pane label="基本信息" name="baseInfo">
                             <el-col :span="4">
-                                <el-avatar :size="60" v-if="customer.headUrl != null" :src="customer.headUrl"></el-avatar>
-                                <el-avatar :size="60" v-else>{{customer.customerName!=null?customer.customerName.substring(0,1):''}}</el-avatar>
+                                <el-avatar :size="60" v-if="customer.headUrl != null"
+                                           :src="customer.headUrl"></el-avatar>
+                                <el-avatar :size="60" v-else>
+                                    {{customer.customerName!=null?customer.customerName.substring(0,1):''}}
+                                </el-avatar>
                             </el-col>
                             <el-col :span="20">
                                 <el-row :gutter="5">
                                     <el-col :span="6">
                                         <div class="text">
                                             客户姓名：
-                                            <template v-if="customer.customerName != null && customer.customerName != ''">
+                                            <template
+                                                    v-if="customer.customerName != null && customer.customerName != ''">
                                                 <el-tag>{{customer.customerName}}</el-tag>
                                             </template>
                                         </div>
@@ -73,7 +77,8 @@
                                     <el-col :span="6">
                                         <div class="text">
                                             房屋户型：
-                                            <template v-if="customer.houseModeName != null && customer.houseModeName != ''">
+                                            <template
+                                                    v-if="customer.houseModeName != null && customer.houseModeName != ''">
                                                 <el-tag>{{customer.houseModeName}}</el-tag>
                                             </template>
                                         </div>
@@ -81,7 +86,8 @@
                                     <el-col :span="6">
                                         <div class="text">
                                             家装顾问：
-                                            <template v-if="customer.houseCounselorName != null && customer.houseCounselorName != ''">
+                                            <template
+                                                    v-if="customer.houseCounselorName != null && customer.houseCounselorName != ''">
                                                 <el-tag>{{customer.houseCounselorName}}</el-tag>
                                             </template>
                                         </div>
@@ -89,7 +95,8 @@
                                     <el-col :span="6">
                                         <div class="text">
                                             客户代表：
-                                            <template v-if="customer.customerServiceName != null && customer.customerServiceName != ''">
+                                            <template
+                                                    v-if="customer.customerServiceName != null && customer.customerServiceName != ''">
                                                 <el-tag>{{customer.customerServiceName}}</el-tag>
                                             </template>
                                         </div>
@@ -99,8 +106,11 @@
                         </el-tab-pane>
                         <el-tab-pane label="扩展信息" name="extInfo">
                             <el-col :span="4">
-                                <el-avatar :size="60" v-if="customer.headUrl != null" :src="customer.headUrl"></el-avatar>
-                                <el-avatar :size="60" v-else>{{customer.customerName!=null?customer.customerName.substring(0,1):''}}</el-avatar>
+                                <el-avatar :size="60" v-if="customer.headUrl != null"
+                                           :src="customer.headUrl"></el-avatar>
+                                <el-avatar :size="60" v-else>
+                                    {{customer.customerName!=null?customer.customerName.substring(0,1):''}}
+                                </el-avatar>
                             </el-col>
                             <el-col :span="20">
                                 <el-row :gutter="5">
@@ -149,7 +159,8 @@
                                     <el-col :span="6">
                                         <div class="text">
                                             家人数量：
-                                            <template v-if="customer.familyMembersCount != null && customer.familyMembersCount != ''">
+                                            <template
+                                                    v-if="customer.familyMembersCount != null && customer.familyMembersCount != ''">
                                                 <el-tag>{{customer.familyMembersCount}}</el-tag>
                                             </template>
                                         </div>
@@ -157,7 +168,8 @@
                                     <el-col :span="6">
                                         <div class="text">
                                             信息来源：
-                                            <template v-if="customer.informationSource != null && customer.informationSource != ''">
+                                            <template
+                                                    v-if="customer.informationSource != null && customer.informationSource != ''">
                                                 <el-tag>{{customer.informationSource}}</el-tag>
                                             </template>
                                         </div>
@@ -207,6 +219,32 @@
                 </el-col>
                 <el-col :span="18">
                     <div class="grid-content bg-purple-light">
+                        <el-collapse value="1" accordion>
+                            <el-card class="box-card" shadow="hover">
+                                <div>
+                                    <el-divider content-position="left"><span style="font-weight: 700">蓝图指导书</span>
+                                    </el-divider>
+                                </div>
+                                <template>
+                                    <el-table
+                                            :data="ltzdsInfo"
+                                            border
+                                            stripe="true"
+                                            style="width: 100%">
+                                        <el-table-column
+                                                prop="commitTime"
+                                                align="center"
+                                                label="推送时间">
+                                        </el-table-column>
+                                        <el-table-column
+                                                prop="commitEmployeeName"
+                                                align="center"
+                                                label="推送人">
+                                        </el-table-column>
+                                    </el-table>
+                                </template>
+                            </el-card>
+                        </el-collapse>
                         <el-card class="box-card" shadow="hover">
                             <div>
                                 <el-divider content-position="left"><span style="font-weight: 700">需求蓝图一</span>
@@ -271,13 +309,18 @@
                         <el-card class="box-card" shadow="hover">
                             <div>
                                 <el-divider content-position="left"><span style="font-weight: 700">功能蓝图二</span>
-                                    <el-button type="text" @click="funcDialogVisibleAll = true" style="color: green">蓝图比对</el-button>
+                                    <el-button type="text" @click="funcDialogVisibleAll = true" style="color: green">
+                                        蓝图比对
+                                    </el-button>
                                 </el-divider>
                             </div>
                             <template>
-                                <el-button type="text" @click="funcDialogVisibleA = true" :disabled="disabledA"><h3>功能蓝图_A</h3></el-button>
-                                <el-button type="text" @click="funcDialogVisibleB = true" :disabled="disabledB"><h3>功能蓝图_B</h3></el-button>
-                                <el-button type="text" @click="funcDialogVisibleC = true" :disabled="disabledC"><h3>功能蓝图_C</h3></el-button>
+                                <el-button type="text" @click="funcDialogVisibleA = true" :disabled="disabledA"><h3>
+                                    功能蓝图_A</h3></el-button>
+                                <el-button type="text" @click="funcDialogVisibleB = true" :disabled="disabledB"><h3>
+                                    功能蓝图_B</h3></el-button>
+                                <el-button type="text" @click="funcDialogVisibleC = true" :disabled="disabledC"><h3>
+                                    功能蓝图_C</h3></el-button>
                             </template>
                         </el-card>
                     </div>
@@ -289,13 +332,13 @@
                             <el-carousel-item v-for="url in urls">
                                 <el-image
                                         style="width: 300px; height: 300px"
-                                        :src="url" ></el-image>
+                                        :src="url"></el-image>
                             </el-carousel-item>
                         </el-carousel>
                     </template>
                 </el-dialog>
 
-                <el-dialog title="功能蓝图" :visible.sync="funcDialogVisibleA"  append-to-body height="300px">
+                <el-dialog title="功能蓝图" :visible.sync="funcDialogVisibleA" append-to-body height="300px">
                     <div style="height: 50vh;overflow: auto;">
                         <el-tree :data="funcA"
                                  :props="defaultProps"
@@ -328,7 +371,8 @@
                     </div>
                 </el-dialog>
 
-                <el-dialog title="功能蓝图对比" :visible.sync="funcDialogVisibleAll" append-to-body height="300px" fullscreen="true">
+                <el-dialog title="功能蓝图对比" :visible.sync="funcDialogVisibleAll" append-to-body height="300px"
+                           fullscreen="true">
                     <el-row :gutter="12">
                         <el-col :span="8">
                             <div class="grid-content bg-purple">

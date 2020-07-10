@@ -11,6 +11,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 activities: [],
                 xqltyInfo:[],
                 styleInfos:[],
+                ltzdsInfo:[],
                 activeNames:'',
                 dialogTableVisible: false,
                 funcDialogVisibleA:false,
@@ -70,6 +71,13 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 })
             },
 
+            initLtzds : function() {
+                let that = this;
+                ajax.get('api/bss.customer/customer/getLtzdsInfo', {openId:this.openId}, function(ltzdsData) {
+                    that.ltzdsInfo=ltzdsData;
+                })
+            },
+
             initXqlte : function() {
                 let that = this;
                 ajax.get('api/bss.customer/customer/getXQLTEInfo', {openId:this.openId}, function(xqlteData) {
@@ -110,6 +118,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
             this.initAction();
             this.initXqlty();
             this.initXqlte();
+            this.initLtzds();
         },
 
     });
