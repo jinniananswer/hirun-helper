@@ -1,5 +1,6 @@
 package com.microtomato.hirun.modules.organization.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -97,6 +98,7 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
 
     @Autowired
     private IEmployeeTagService employeeTagService;
+
 
     @Override
     public List<EmployeeInfoDTO> searchEmployee(String searchText) {
@@ -589,6 +591,15 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, jobRole.getOrgId());
         archive.setOrgPath(orgDO.getCompanyLinePath());
         archive.setJobRoleNatureName(this.staticDataService.getCodeName("JOB_NATURE", jobRole.getJobRoleNature()));
+
+        List<EmployeeTag> employeeTags=employeeTagService.list(new QueryWrapper<EmployeeTag>().lambda()
+                .eq(EmployeeTag::getEmployeeId,employeeId).eq(EmployeeTag::getTagType,"2"));
+
+        if(ArrayUtils.isEmpty(employeeTags)){
+            archive.setSecondEntry("否");
+        }else {
+            archive.setSecondEntry("是");
+        }
 
         return archive;
     }
