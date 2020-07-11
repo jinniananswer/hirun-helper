@@ -8,10 +8,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.Storage;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
-import com.microtomato.hirun.modules.bss.order.entity.dto.CustOrderInfoDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.CustOrderQueryDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.FinancePendingOrderDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.PendingOrderDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.*;
+import com.microtomato.hirun.modules.bss.order.entity.dto.finance.FinanceOrderTaskDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.finance.FinanceOrderTaskQueryDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderBase;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -46,4 +45,14 @@ public interface OrderBaseMapper extends BaseMapper<OrderBase> {
             " order by status, create_time desc"
     )
     List<FinancePendingOrderDTO> queryFinancePendingOrders(@Param("employeeId") Long employeeId, @Param("statuses")String statuses);
+
+    @Select("select a.cust_id, a.order_id, a.status,a.decorate_address,a.house_layout, a.houses_id, a.indoor_area,a.type, b.cust_no, b.cust_name, b.mobile_no, a.create_time from order_base a, cust_base b" +
+            " ${ew.customSqlSegment}"
+    )
+    IPage<OrderTaskDTO> queryOrderTaskInConsole(IPage<OrderTaskQueryDTO> condition, @Param(Constants.WRAPPER)Wrapper wrapper);
+
+    @Select("select a.cust_id, a.order_id, a.status,a.decorate_address,a.house_layout, a.houses_id, a.indoor_area,a.type, b.cust_no, b.cust_name, b.mobile_no, a.create_time, c.total_money/100 total_money, c.pay_no, c.audit_status,c.pay_date from order_base a, cust_base b, order_pay_no c " +
+            " ${ew.customSqlSegment}"
+    )
+    IPage<FinanceOrderTaskDTO> queryFinanceOrderTaskInConsole(IPage<FinanceOrderTaskQueryDTO> condition, @Param(Constants.WRAPPER)Wrapper wrapper);
 }

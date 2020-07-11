@@ -18,6 +18,7 @@ import com.microtomato.hirun.modules.bss.config.service.IOrderStatusTransCfgServ
 import com.microtomato.hirun.modules.bss.config.service.IRoleAttentionStatusCfgService;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.CustInfoDTO;
 import com.microtomato.hirun.modules.bss.customer.service.ICustBaseService;
+import com.microtomato.hirun.modules.bss.house.entity.po.Houses;
 import com.microtomato.hirun.modules.bss.house.service.IHousesService;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.*;
@@ -383,5 +384,94 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
             }
         }
         return result;
+    }
+
+    /**
+     * 查询员工订单任务
+     * @param condition
+     * @return
+     */
+    @Override
+    public IPage<OrderTaskDTO> queryOrderTasks(OrderTaskQueryDTO condition) {
+        List<Role> roles = WebContextUtils.getUserContext().getRoles();
+        Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
+        if (ArrayUtils.isEmpty(roles)) {
+            return null;
+        }
+
+        List<Long> roleIds = new ArrayList<>();
+        for (Role role : roles) {
+            roleIds.add(role.getId());
+        }
+        List<RoleAttentionStatusCfg> roleAttentionStatusCfgs = this.roleAttentionStatusCfgService.queryInRoleIds(roleIds);
+        if (ArrayUtils.isEmpty(roleAttentionStatusCfgs)) {
+            return null;
+        }
+
+        List<String> statuses = new ArrayList<>();
+        List<OrderStatusCfg> statusCfgs = new ArrayList<>();
+        for (RoleAttentionStatusCfg attentionStatusCfg : roleAttentionStatusCfgs) {
+            Long statusId = attentionStatusCfg.getAttentionStatusId();
+            OrderStatusCfg statusCfg = this.orderStatusCfgService.getById(statusId);
+            statuses.add(statusCfg.getOrderStatus());
+            statusCfgs.add(statusCfg);
+        }
+
+        QueryWrapper<OrderTaskQueryDTO> wrapper = new QueryWrapper<>();
+        wrapper.apply("b.cust_id = a.cust_id ");
+        wrapper.like(StringUtils.isNotBlank(condition.getCustName()), "b.cust_name", condition.getCustName());
+        wrapper.eq(StringUtils.isNotBlank(condition.getOrderStatus()), "a.status", condition.getOrderStatus());
+        wrapper.eq(condition.getHousesId() != null, "a.houses_id", condition.getHousesId());
+        wrapper.eq(StringUtils.isNotBlank(condition.getMobileNo()), "b.mobile_no", condition.getMobileNo());
+        wrapper.exists("select 1 from order_worker c where c.order_id = a.order_id and c.employee_id = " + employeeId);
+        wrapper.in("a.status", statuses);
+        wrapper.orderByAsc("a.status", "a.create_time");
+
+        IPage<OrderTaskQueryDTO> page = new Page<>(condition.getPage(), condition.getLimit());
+        IPage<OrderTaskDTO> pageTasks = this.orderBaseMapper.queryOrderTaskInConsole(page, wrapper);
+
+        List<OrderTaskDTO> tasks = pageTasks.getRecords();
+        if (ArrayUtils.isEmpty(tasks)) {
+            return pageTasks;
+        }
+
+        tasks.forEach(task -> {
+            task.setHouseLayoutName(this.staticDataService.getCodeName("HOUSE_MODE", task.getHouseLayout()));
+            task.setTypeName(this.staticDataService.getCodeName("ORDER_TYPE", task.getType()));
+            OrderStatusCfg statusCfg = this.findOrderStatusCfg(task.getType(), task.getStatus(), statusCfgs);
+            if (statusCfg != null) {
+                task.setStatusName(statusCfg.getStatusName());
+                task.setPageUrl(statusCfg.getPageUrl());
+            }
+
+            if (task.getHousesId() != null) {
+                Houses house = this.housesService.getHouse(task.getHousesId());
+                if (house != null) {
+                    task.setHousesName(house.getName());
+                }
+            }
+
+        });
+        return pageTasks;
+    }
+
+    /**
+     * 查找订单状态配置
+     * @param orderType
+     * @param orderStatus
+     * @param statusCfgs
+     * @return
+     */
+    private OrderStatusCfg findOrderStatusCfg(String orderType, String orderStatus, List<OrderStatusCfg> statusCfgs) {
+        if (ArrayUtils.isEmpty(statusCfgs)) {
+            return null;
+        }
+
+        for (OrderStatusCfg statusCfg : statusCfgs) {
+            if (StringUtils.equals(orderType, statusCfg.getType()) && StringUtils.equals(orderStatus, statusCfg.getOrderStatus())) {
+                return statusCfg;
+            }
+        }
+        return null;
     }
 }
