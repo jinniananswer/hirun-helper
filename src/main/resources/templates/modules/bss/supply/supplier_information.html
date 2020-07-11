@@ -18,7 +18,7 @@
                 <div slot="header" class="clearfix">
                     <span>查询条件区</span>
                 </div>
-                <el-form :inline="false" :model="queryCond" label-position="right" label-width="80px">
+                <el-form :inline="false" :model="queryCond" label-position="right" label-width="100px">
                     <el-row>
                         <el-col :span="8">
                             <el-form-item label="供应商名称">
@@ -29,8 +29,6 @@
                             <el-form-item label="供应商编号">
                                 <el-input v-model="queryCond.id" placeholder="请输入供应商编号"></el-input>
                             </el-form-item>
-                        </el-col>
-                        <el-col :span="8">
                         </el-col>
                         <el-col :span="8">
                             <el-form-item>
@@ -48,6 +46,15 @@
                     height="400"
                     style="width: 100%">
                 <el-table-column
+                        fixed
+                        prop="id"
+                        width="100"
+                        align="center">
+                    <template slot-scope="scopeSupplier">
+                        <el-checkbox v-model="checked" border></el-checkbox>
+                    </template>
+                </el-table-column>
+                <el-table-column
                         label="供应商编号"
                         fixed
                         prop="id"
@@ -59,13 +66,13 @@
                 </el-table-column>
                 <el-table-column
                         prop="name"
-                        width="100"
+                        width="200"
                         label="供应商名称"
                         align="center">
                 </el-table-column>
                 <el-table-column
                         prop="abbreviation"
-                        width="100"
+                        width="200"
                         label="供应商简称"
                         align="center">
                 </el-table-column>
@@ -95,17 +102,19 @@
                 </el-table-column>
                 <el-table-column
                         prop="mailbox"
-                        width="120"
+                        width="180"
                         label="邮箱"
                         align="center">
                 </el-table-column>
                 <el-table-column
                         prop="address"
-                        label="地址">
+                        width="250"
+                        label="地址"
+                        align="center">
                 </el-table-column>
                 <el-table-column
                         prop="status"
-                        width="150"
+                        width="100"
                         label="状态"
                         align="center">
                 </el-table-column>
@@ -135,7 +144,7 @@
                 </el-table-column>
                 <el-table-column
                         prop="account_number1"
-                        width="100"
+                        width="150"
                         label="银行账号1"
                         align="center">
                 </el-table-column>
