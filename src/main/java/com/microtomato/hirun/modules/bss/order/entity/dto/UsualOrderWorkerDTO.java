@@ -11,19 +11,43 @@ import lombok.Data;
 @Data
 public class UsualOrderWorkerDTO {
 
+    /**
+     * 家装顾问
+     */
     private String counselorName;
 
+    /**
+     * 客户代表
+     */
     private String agentName;
 
+    /**
+     * 设计师
+     */
     private String designerName;
 
+    /**
+     * 财务人员
+     */
     private String financeName;
 
+    /**
+     * 主材管家
+     */
     private String materialName;
 
+    /**
+     * 橱柜设计师
+     */
     private String cabinetName;
 
+    /**
+     * 报备人员
+     */
     private String reportName;
 
+    /**
+     * 项目经理
+     */
     private String projectManagerName;
 }
