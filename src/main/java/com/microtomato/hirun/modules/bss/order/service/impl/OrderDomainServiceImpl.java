@@ -474,4 +474,44 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
         }
         return null;
     }
+
+    /**
+     * 获取经常用于展示的订单工作人员数据
+     * @param orderId
+     * @return
+     */
+    @Override
+    public UsualOrderWorkerDTO getUsualOrderWorker(Long orderId) {
+        UsualOrderWorkerDTO usualWorker = new UsualOrderWorkerDTO();
+        List<OrderWorkerDTO> orderWorkers = this.queryOrderWorkers(orderId);
+        if (ArrayUtils.isEmpty(orderWorkers)) {
+            return usualWorker;
+        }
+
+        orderWorkers.forEach(worker -> {
+            Long roleId = worker.getRoleId();
+            String name = worker.getName();
+            if (roleId.equals(3L)) {
+                usualWorker.setCounselorName(name);
+            } else if (roleId.equals(15L)) {
+                usualWorker.setAgentName(name);
+            } else if (roleId.equals(30L)) {
+                usualWorker.setDesignerName(name);
+            } else if (roleId.equals(46L)) {
+                usualWorker.setMaterialName(name);
+            } else if (roleId.equals(47L)) {
+                usualWorker.setCabinetName(name);
+            } else if (roleId.equals(555L)) {
+                usualWorker.setReportName(name);
+            } else if (roleId.equals(33L)) {
+                usualWorker.setProjectManagerName(name);
+            }
+        });
+
+        return usualWorker;
+    }
+
+    public UsualFeeDTO getUsualOrderFee(Long orderId) {
+        return null;
+    }
 }

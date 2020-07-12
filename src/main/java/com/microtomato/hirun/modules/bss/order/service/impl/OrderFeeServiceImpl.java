@@ -14,12 +14,11 @@ import com.microtomato.hirun.modules.bss.config.entity.po.OrderStatusCfg;
 import com.microtomato.hirun.modules.bss.config.service.IOrderStatusCfgService;
 import com.microtomato.hirun.modules.bss.config.service.IPayItemCfgService;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
-import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.PayComponentDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.PayItemDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.*;
 import com.microtomato.hirun.modules.bss.order.entity.dto.fee.DesignFeeDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.fee.ProjectFeeDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.fee.QueryDesignFeeDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.fee.QueryProjectFeeDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFee;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayItem;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayNo;
@@ -339,51 +338,11 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
         //设置订单参与人
         if (ArrayUtils.isNotEmpty(designFees)) {
             List<Long> orderIds = this.distinctOrderId(designFees);
+            designFees.forEach(designFee -> {
+                UsualOrderWorkerDTO usualOrderWorkerDTO = this.orderDomainService.getUsualOrderWorker(designFee.getOrderId());
+                designFee.setUsualWorker(usualOrderWorkerDTO);
+            });
             if (ArrayUtils.isNotEmpty(orderIds)) {
-                List<Long> roleIds = new ArrayList<Long>() {{
-                    this.add(3L);
-                    this.add(15L);
-                    this.add(30L);
-                    this.add(46L);
-                    this.add(47L);
-                    this.add(555L);
-                }};
-                List<OrderWorkerDTO> workers = this.orderWorkerService.queryByOrderIdsRoleIds(orderIds, roleIds);
-
-                if (ArrayUtils.isNotEmpty(workers)) {
-                    designFees.forEach(designFee -> {
-                        OrderWorkerDTO counselor = this.findWorker(designFee.getOrderId(), 3L, workers);
-                        if (counselor != null) {
-                            designFee.setCounselorName(counselor.getName());
-                        }
-
-                        OrderWorkerDTO agent = this.findWorker(designFee.getOrderId(), 15L, workers);
-                        if (agent != null) {
-                            designFee.setAgentName(agent.getName());
-                        }
-
-                        OrderWorkerDTO designer = this.findWorker(designFee.getOrderId(), 30L, workers);
-                        if (designer != null) {
-                            designFee.setDesignerName(designer.getName());
-                        }
-
-                        OrderWorkerDTO material = this.findWorker(designFee.getOrderId(), 46L, workers);
-                        if (material != null) {
-                            designFee.setMaterialName(material.getName());
-                        }
-
-                        OrderWorkerDTO cabinet = this.findWorker(designFee.getOrderId(), 47L, workers);
-                        if (cabinet != null) {
-                            designFee.setCabinetName(cabinet.getName());
-                        }
-
-                        OrderWorkerDTO report = this.findWorker(designFee.getOrderId(), 555L, workers);
-                        if (report != null) {
-                            designFee.setReportName(report.getName());
-                        }
-                    });
-                }
-
                 List<Long> payItemIds = new ArrayList<Long>(){{
                     this.add(2L);
                     this.add(3L);
@@ -469,7 +428,7 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
     }
 
     /**
-     * 填充费用相关字段
+     * 填充设计费用相关字段
      * @param designFee
      * @param orderPayItems
      */
@@ -532,5 +491,35 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
                 designFee.setShopName(shop.getName());
             }
         }
+    }
+
+    public IPage<ProjectFeeDTO> queryProjectFees(QueryProjectFeeDTO condition) {
+        QueryWrapper<QueryProjectFeeDTO> wrapper = new QueryWrapper<>();
+        wrapper.apply(" b.cust_id = a.cust_id ");
+        wrapper.like(StringUtils.isNotBlank(condition.getCustName()), "b.cust_name", condition.getCustName());
+        wrapper.like(StringUtils.isNotBlank(condition.getMobileNo()), "b.mobile_no", condition.getMobileNo());
+
+        String shopIds = condition.getShopIds();
+        if (StringUtils.isNotBlank(shopIds)) {
+            List<String> shopIdArray = Arrays.asList(StringUtils.split(shopIds, ","));
+            wrapper.in("a.shop_id", shopIdArray);
+        }
+        IPage<QueryProjectFeeDTO> page = new Page<>(condition.getPage(), condition.getLimit());
+        IPage<ProjectFeeDTO> pageProjectFees = this.orderFeeMapper.queryProjectFee(page, wrapper);
+
+        List<ProjectFeeDTO> projectFees = pageProjectFees.getRecords();
+
+        if (ArrayUtils.isEmpty(projectFees)) {
+            return pageProjectFees;
+        }
+
+        projectFees.forEach(projectFee -> {
+            UsualOrderWorkerDTO usualWorker = this.orderDomainService.getUsualOrderWorker(projectFee.getOrderId());
+            projectFee.setUsualWorker(usualWorker);
+
+            //查询订单费用
+        });
+
+        return pageProjectFees;
     }
 }
