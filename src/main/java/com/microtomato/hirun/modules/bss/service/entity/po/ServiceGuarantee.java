@@ -38,8 +38,8 @@ public class ServiceGuarantee extends BaseEntity {
     private Long id;
 
 
-    @TableField(value = "customer_id")
-    private Long customerId;
+    @TableField(value = "order_id")
+    private Long orderId;
 
 
     @TableField(value = "guarantee_start_date")
