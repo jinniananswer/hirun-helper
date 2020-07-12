@@ -50,7 +50,7 @@ public interface OrderFeeMapper extends BaseMapper<OrderFee> {
     IPage<DesignFeeDTO> queryDesignFee(IPage<QueryDesignFeeDTO> queryCondition, @Param(Constants.WRAPPER) Wrapper wrapper);
 
 
-    @Select("select b.cust_id, b.cust_name, b.cust_no, a.order_id, a.decorate_address, a.house_layout, a.indoor_area, a.shop_id, a.type, a.status" +
+    @Select("select b.cust_id, b.cust_name, b.cust_no, b.cust_status, a.order_id, a.decorate_address, a.house_layout, a.indoor_area, a.shop_id, a.type, a.status " +
             "from cust_base b, order_base a \n" +
             "${ew.customSqlSegment}"
     )

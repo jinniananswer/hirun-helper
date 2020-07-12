@@ -1,15 +1,25 @@
 package com.microtomato.hirun.modules.bss.order.entity.dto;
 
+import lombok.Data;
+
+import java.time.LocalDate;
+
 /**
  * @program: hirun-helper
  * @description: 常用的费用信息查询数据对象
  * @author: jinnian
  * @create: 2020-07-12 15:39
  **/
+@Data
 public class UsualFeeDTO {
 
     /**
-     * 首期合同金额
+     * 首期合同金额+返回设计费金额
+     */
+    private Double totalContractFee;
+
+    /**
+     * 首期合同金额、净合同金额
      */
     private Double contractFee;
 
@@ -22,6 +32,11 @@ public class UsualFeeDTO {
      * 首期已付款
      */
     private Double payed;
+
+    /**
+     * 付首期款时间
+     */
+    private LocalDate payDate;
 
     /**
      * 基础装修金额
@@ -69,6 +84,11 @@ public class UsualFeeDTO {
     private Double secondPayed;
 
     /**
+     * 付二期款时间
+     */
+    private LocalDate secondPayDate;
+
+    /**
      * 结算合同金额
      */
     private Double settlementContractFee;
@@ -99,6 +119,11 @@ public class UsualFeeDTO {
     private Double settlementPayed;
 
     /**
+     * 付结算款时间
+     */
+    private LocalDate settlementPayDate;
+
+    /**
      * 橱柜款
      */
     private Double cabinetFee;
@@ -114,11 +139,6 @@ public class UsualFeeDTO {
     private Double backDesignFee;
 
     /**
-     * 现金优惠
-     */
-    private Double cashDiscount;
-
-    /**
      * 设计费用
      */
     private Double designFee;
@@ -132,4 +152,9 @@ public class UsualFeeDTO {
      * 设计费已付
      */
     private Double designPayed;
+
+    /**
+     * 付设计费时间
+     */
+    private LocalDate payDesignDate;
 }

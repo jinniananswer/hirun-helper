@@ -6,7 +6,9 @@ import com.microtomato.hirun.modules.bss.order.entity.dto.LastInstallmentCollect
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.PayComponentDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.fee.DesignFeeDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.fee.ProjectFeeDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.fee.QueryDesignFeeDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.fee.QueryProjectFeeDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFee;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayNo;
 import com.microtomato.hirun.modules.bss.order.service.IInstallmentCollectDomainService;
@@ -103,5 +105,11 @@ public class OrderFeeController {
     @RestResult
     public IPage<DesignFeeDTO> queryDesignFees(QueryDesignFeeDTO designFeeDTO) {
         return this.orderFeeServiceImpl.queryDesignFees(designFeeDTO);
+    }
+
+    @GetMapping("/queryProjectFees")
+    @RestResult
+    public IPage<ProjectFeeDTO> queryProjectFees(QueryProjectFeeDTO projectFeeDTO) {
+        return this.orderFeeServiceImpl.queryProjectFees(projectFeeDTO);
     }
 }

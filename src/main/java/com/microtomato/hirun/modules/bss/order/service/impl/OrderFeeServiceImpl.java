@@ -19,10 +19,7 @@ import com.microtomato.hirun.modules.bss.order.entity.dto.fee.DesignFeeDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.fee.ProjectFeeDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.fee.QueryDesignFeeDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.fee.QueryProjectFeeDTO;
-import com.microtomato.hirun.modules.bss.order.entity.po.OrderFee;
-import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayItem;
-import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayNo;
-import com.microtomato.hirun.modules.bss.order.entity.po.OrderPlaneSketch;
+import com.microtomato.hirun.modules.bss.order.entity.po.*;
 import com.microtomato.hirun.modules.bss.order.exception.OrderException;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderFeeMapper;
 import com.microtomato.hirun.modules.bss.order.service.*;
@@ -90,6 +87,9 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
 
     @Autowired
     private IOrderPlaneSketchService orderPlaneSketchService;
+
+    @Autowired
+    private IOrderContractService orderContractService;
 
     @Autowired
     private IOrgService orgService;
@@ -493,6 +493,12 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
         }
     }
 
+    /**
+     * 工程款查询
+     * @param condition
+     * @return
+     */
+    @Override
     public IPage<ProjectFeeDTO> queryProjectFees(QueryProjectFeeDTO condition) {
         QueryWrapper<QueryProjectFeeDTO> wrapper = new QueryWrapper<>();
         wrapper.apply(" b.cust_id = a.cust_id ");
@@ -518,6 +524,24 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
             projectFee.setUsualWorker(usualWorker);
 
             //查询订单费用
+            UsualFeeDTO usualFee = this.orderDomainService.getUsualOrderFee(projectFee.getOrderId(), projectFee.getType());
+            projectFee.setUsualFee(usualFee);
+
+            OrderContract contract = this.orderContractService.getByOrderIdType(projectFee.getOrderId(), "1");
+            if (contract != null) {
+                projectFee.setContractStartDate(contract.getStartDate());
+                projectFee.setContractEndDate(contract.getEndDate());
+                projectFee.setBusinessLevel(this.staticDataService.getCodeName("BUSI_LEVEL", contract.getBusiLevel()));
+            }
+
+            projectFee.setHouseLayoutName(this.staticDataService.getCodeName("HOUSE_MODE", projectFee.getHouseLayout()));
+            String orderStatus = projectFee.getStatus();
+            if (StringUtils.isNotBlank(orderStatus)) {
+                OrderStatusCfg orderStatusCfg = this.orderStatusCfgService.getCfgByTypeStatus(projectFee.getType(), orderStatus);
+                if (orderStatusCfg != null) {
+                    projectFee.setOrderStatusName(orderStatusCfg.getStatusName());
+                }
+            }
         });
 
         return pageProjectFees;

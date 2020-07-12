@@ -22,7 +22,7 @@ import com.microtomato.hirun.modules.bss.house.entity.po.Houses;
 import com.microtomato.hirun.modules.bss.house.service.IHousesService;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.*;
-import com.microtomato.hirun.modules.bss.order.entity.po.OrderBase;
+import com.microtomato.hirun.modules.bss.order.entity.po.*;
 import com.microtomato.hirun.modules.bss.order.exception.OrderException;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderBaseMapper;
 import com.microtomato.hirun.modules.bss.order.service.*;
@@ -92,8 +92,19 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
     private IEmployeeJobRoleService employeeJobRoleService;
 
     @Autowired
-    private OrderBaseMapper orderBaseMapper;
+    private IOrderFeeService orderFeeService;
 
+    @Autowired
+    private IOrderFeeItemService orderFeeItemService;
+
+    @Autowired
+    private IOrderPayItemService orderPayItemService;
+
+    @Autowired
+    private IOrderPayNoService orderPayNoService;
+
+    @Autowired
+    private OrderBaseMapper orderBaseMapper;
 
     /**
      * 查询订单综合信息
@@ -511,7 +522,220 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
         return usualWorker;
     }
 
-    public UsualFeeDTO getUsualOrderFee(Long orderId) {
+    /**
+     * 常用费用查询
+     * @param orderId
+     * @param orderType
+     * @return
+     */
+    @Override
+    public UsualFeeDTO getUsualOrderFee(Long orderId, String orderType) {
+        UsualFeeDTO usualFee = new UsualFeeDTO();
+        List<OrderFee> orderFees = this.orderFeeService.queryByOrderId(orderId);
+        if (ArrayUtils.isEmpty(orderFees)) {
+            return usualFee;
+        }
+        List<OrderFeeItem> orderFeeItems = this.orderFeeItemService.queryByOrderId(orderId);
+        List<OrderPayItem> orderPayItems = this.orderPayItemService.queryByOrderId(orderId);
+        List<OrderPayNo> orderPayNos = this.orderPayNoService.queryByOrderId(orderId);
+
+        if (ArrayUtils.isNotEmpty(orderPayItems)) {
+            OrderPayItem designPayItem = this.findPayItem(new ArrayList<Long>() {{
+                this.add(1L);
+                this.add(2L);
+                this.add(3L);
+                this.add(4L);
+                this.add(5L);
+                this.add(6L);
+            }}, null, orderPayItems);
+
+            OrderPayItem firstPayItem = this.findPayItem(new ArrayList<Long>() {{
+                this.add(7L);
+            }}, 1, orderPayItems);
+
+            if (firstPayItem != null) {
+                OrderPayNo payNo = this.findPayNo(firstPayItem.getPayNo(), orderPayNos);
+                if (payNo != null) {
+                    usualFee.setPayDate(payNo.getPayDate());
+                }
+            }
+            OrderPayItem secondPayItem = this.findPayItem(new ArrayList<Long>() {{
+                this.add(7L);
+            }}, 2, orderPayItems);
+
+            if (secondPayItem != null) {
+                OrderPayNo payNo = this.findPayNo(secondPayItem.getPayNo(), orderPayNos);
+                if (payNo != null) {
+                    usualFee.setSecondPayDate(payNo.getPayDate());
+                }
+            }
+            OrderPayItem settlementPayItem = this.findPayItem(new ArrayList<Long>() {{
+                this.add(7L);
+            }}, 3, orderPayItems);
+
+            if (settlementPayItem != null) {
+                OrderPayNo payNo = this.findPayNo(settlementPayItem.getPayNo(), orderPayNos);
+                if (payNo != null) {
+                    usualFee.setSettlementPayDate(payNo.getPayDate());
+                }
+            }
+
+        }
+
+        orderFees.forEach(orderFee -> {
+            String type = orderFee.getType();
+            Long originalTotalFee = orderFee.getTotalFee();
+            Long originalNeedPay = orderFee.getNeedPay();
+            Long originalPayed = orderFee.getPay();
+            Integer period = orderFee.getPeriods();
+
+            Double totalFee = null;
+            Double needPay = null;
+            Double payed = null;
+            if (originalTotalFee != null) {
+                totalFee = originalTotalFee /100d;
+            }
+            if (originalNeedPay != null) {
+                needPay = originalNeedPay / 100d;
+            }
+            if (originalPayed != null) {
+                payed = originalPayed / 100d;
+            }
+
+            if (StringUtils.equals("1", type)) {
+                //设计费
+                usualFee.setDesignFee(totalFee);
+                usualFee.setDesignNeedPay(needPay);
+                usualFee.setDesignPayed(payed);
+            } else if (StringUtils.equals("2", type)) {
+                //工程款
+                List<OrderFeeItem> feeItems = this.findFeeItems(orderFee.getFeeNo(), orderFeeItems);
+                if (ArrayUtils.isEmpty(feeItems)) {
+                    return;
+                }
+
+                Double basicFee = null;
+                Double doorFee = null;
+                Double furnitureFee = null;
+                Double backDesignFee = null;
+                for (OrderFeeItem feeItem : feeItems) {
+                    Long originalFee = feeItem.getFee();
+                    Double fee = null;
+                    if (originalFee != null) {
+                        fee = originalFee / 100d;
+                    }
+                    if (feeItem.getFeeItemId().equals(5L)) {
+                        basicFee = fee;
+                    } else if (feeItem.getFeeItemId().equals(7L)) {
+                        doorFee = fee;
+                    } else if (feeItem.getFeeItemId().equals(8L)) {
+                        furnitureFee = fee;
+                    } else if (feeItem.getFeeItemId().equals(14L)) {
+                        backDesignFee = fee;
+                    }
+                }
+                usualFee.setBackDesignFee(backDesignFee);
+                if (period.equals(1)) {
+                    //首期
+                    usualFee.setBasicFee(basicFee);
+                    usualFee.setDoorFee(doorFee);
+                    usualFee.setFurnitureFee(furnitureFee);
+                    usualFee.setContractFee(totalFee);
+                    usualFee.setNeedPay(needPay);
+                    usualFee.setPayed(payed);
+
+                    if (totalFee != null && backDesignFee != null) {
+                        Double totalContractFee = totalFee + Math.abs(backDesignFee);
+                        usualFee.setTotalContractFee(totalContractFee);
+                    } else if (totalFee != null) {
+                        usualFee.setTotalContractFee(totalFee);
+                    }
+
+                } else if (period.equals(2) && StringUtils.equals(OrderConst.ORDER_TYPE_HOME, orderType)) {
+                    //二期
+                    usualFee.setSecondBasicFee(basicFee);
+                    usualFee.setSecondDoorFee(doorFee);
+                    usualFee.setSecondFurnitureFee(furnitureFee);
+                    usualFee.setSecondContractFee(totalFee);
+                    usualFee.setSecondNeedPay(needPay);
+                    usualFee.setSecondPayed(payed);
+                } else if (period.equals(3) || (period.equals(2) && StringUtils.equals(OrderConst.ORDER_TYPE_WOOD, orderType))) {
+                    usualFee.setSettlementBasicFee(basicFee);
+                    usualFee.setSettlementDoorFee(doorFee);
+                    usualFee.setSettlementFurnitureFee(furnitureFee);
+                    usualFee.setSettlementContractFee(totalFee);
+                    usualFee.setSettlementNeedPay(needPay);
+                    usualFee.setSettlementPayed(payed);
+                }
+            } else if (StringUtils.equals("3", type)) {
+                //主材款
+                usualFee.setMaterialFee(totalFee);
+            } else if (StringUtils.equals("4", type)) {
+                usualFee.setCabinetFee(totalFee);
+            }
+        });
+
+        return usualFee;
+    }
+
+    private List<OrderFeeItem> findFeeItems(Long feeNo, List<OrderFeeItem> feeItems) {
+        if (ArrayUtils.isEmpty(feeItems)) {
+            return null;
+        }
+
+        List<OrderFeeItem> result = new ArrayList<>();
+        feeItems.forEach(feeItem -> {
+            if (feeNo.equals(feeItem.getFeeNo())) {
+                result.add(feeItem);
+            }
+        });
+
+        return result;
+    }
+
+    /**
+     * 查找满足条件的付款记录
+     * @param payItemIds
+     * @param payItems
+     * @return
+     */
+    private OrderPayItem findPayItem(List<Long> payItemIds, Integer periods, List<OrderPayItem> payItems) {
+        if (ArrayUtils.isEmpty(payItems)) {
+            return null;
+        }
+
+        for (OrderPayItem payItem : payItems) {
+            if (periods == null) {
+                if (payItemIds.contains(payItem.getPayItemId())) {
+                    return payItem;
+                }
+            } else {
+                if (payItemIds.contains(payItem.getPayItemId()) && periods.equals(payItem.getPeriods())) {
+                    return payItem;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * 根据付款流水找到付款记录
+     * @param payNo
+     * @param orderPayNos
+     * @return
+     */
+    private OrderPayNo findPayNo(Long payNo, List<OrderPayNo> orderPayNos) {
+        if (ArrayUtils.isEmpty(orderPayNos)) {
+            return null;
+        }
+
+        for (OrderPayNo orderPayNo : orderPayNos) {
+            if (payNo.equals(orderPayNo.getPayNo())) {
+                return orderPayNo;
+            }
+        }
+
         return null;
     }
 }
