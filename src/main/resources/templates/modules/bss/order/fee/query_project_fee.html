@@ -71,38 +71,56 @@
                     <vxe-table
                             border
                             resizable
-                            ref="designFeeTable"
+                            ref="projectFeeTable"
                             show-overflow
                             highlight-hover-row
                             highlight-cell
                             keep-source
                             max-height="800px"
                             :auto-resize="true"
-                            :data="designFees">
+                            :data="projectFees">
                         <vxe-table-column field="custNo" title="客户编号" sortable width="150" fixed="left"></vxe-table-column>
                         <vxe-table-column field="custName" title="客户姓名" sortable width="100" fixed="left"></vxe-table-column>
                         <vxe-table-column field="decorateAddress" title="地址" sortable width="200" fixed="left"></vxe-table-column>
                         <vxe-table-column field="orderStatusName" title="客户状态" sortable width="100"></vxe-table-column>
                         <vxe-table-column field="houseLayoutName" title="户型" sortable width="100" fixed="left"></vxe-table-column>
                         <vxe-table-column field="indoorArea" title="套内面积" sortable width="100"></vxe-table-column>
-                        <vxe-table-column field="designFeeStandard" title="设计费标准" sortable width="120"></vxe-table-column>
-                        <vxe-table-column field="designTheme" title="设计主题" width="120"></vxe-table-column>
-                        <vxe-table-column field="depositFee" title="设计定金" width="100"></vxe-table-column>
-                        <vxe-table-column field="feeTime" title="交费时间" width="180"></vxe-table-column>
-                        <vxe-table-column field="designFee" title="实收设计费" width="180"></vxe-table-column>
-                        <vxe-table-column field="remark" title="备注" width="100"></vxe-table-column>
-                        <vxe-table-column field="signTime" title="签单时间" width="100"></vxe-table-column>
-                        <vxe-table-column field="firstPayTime" title="首付时间" width="180"></vxe-table-column>
                         <vxe-table-column field="shopName" title="店名" width="100"></vxe-table-column>
-                        <vxe-table-column field="depositFinanceName" title="财务员（定金）" sortable width="140"></vxe-table-column>
-                        <vxe-table-column field="designFeeFinanceName" title="财务员（设计费）" sortable width="160"></vxe-table-column>
                         <vxe-table-column field="usualWorker.agentName" title="客户代表" sortable width="100"></vxe-table-column>
                         <vxe-table-column field="usualWorker.designerName" title="设计师" sortable width="100"></vxe-table-column>
                         <vxe-table-column field="usualWorker.counselorName" title="家装顾问" sortable width="100"></vxe-table-column>
                         <vxe-table-column field="usualWorker.cabinetName" title="橱柜设计师" sortable width="120"></vxe-table-column>
                         <vxe-table-column field="usualWorker.materialName" title="主材管家" sortable width="100"></vxe-table-column>
-                        <vxe-table-column field="usualWorker.reportName" title="申报人" sortable width="100"></vxe-table-column>
-                        <vxe-table-column field="contractTime" title="设计合同时间" sortable width="200"></vxe-table-column>
+                        <vxe-table-column field="usualWorker.reportName" title="报备人" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="reportStatusName" title="报备状态" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="usualFee.totalContractFee" title="合同总金额" sortable width="120"></vxe-table-column>
+                        <vxe-table-column field="usualFee.backDesignFee" title="返设计费" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="cashDiscount" title="现金优惠" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="usualFee.contractFee" title="净合同总金额" sortable width="140"></vxe-table-column>
+                        <vxe-table-column field="contractStartDate" title="合同开始时间" sortable width="140"></vxe-table-column>
+                        <vxe-table-column field="contractEndDate" title="合同结束时间" sortable width="140"></vxe-table-column>
+                        <vxe-table-column field="usualFee.payDate" title="首付时间" sortable width="120"></vxe-table-column>
+                        <vxe-table-column field="usualFee.payed" title="工程首付" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="firstPayFull" title="是否付完" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="usualFee.secondPayDate" title="二期款时间" sortable width="140"></vxe-table-column>
+                        <vxe-table-column field="usualFee.secondContractFee" title="工程二期款" sortable width="120"></vxe-table-column>
+                        <vxe-table-column field="secondPayFull" title="是否付完" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="checkDate" title="验收时间" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="usualFee.settlementPayDate" title="尾款时间" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="usualFee.settlementContractFee" title="工程结算款" sortable width="120"></vxe-table-column>
+                        <vxe-table-column field="settlementPayFull" title="是否付完" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="usualFee.settlementBasicFee" title="基础结算" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="usualFee.settlementDoorFee" title="门结算" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="usualFee.settlementFurnitureFee" title="家具结算" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="usualFee.cabinetFee" title="橱柜结算" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="usualFee.materialFee" title="主材结算" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="discountItem" title="优惠项目" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="saleActive" title="享受活动" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="financeRemark" title="财务备注" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="submitFileDate" title="交档案袋时间" sortable width="140"></vxe-table-column>
+                        <vxe-table-column field="submitReportDate" title="交总结报告时间" sortable width="160"></vxe-table-column>
+                        <vxe-table-column field="fetchRoyaltyDate" title="提尾款时间" sortable width="140"></vxe-table-column>
+                        <vxe-table-column field="businessLevel" title="业务级别" sortable width="100"></vxe-table-column>
                     </vxe-table>
                     <div style="text-align: center">
                         <el-pagination
@@ -148,6 +166,6 @@
         text-decoration:line-through;
     }
 </style>
-<script src="static/js/modules/bss/order/fee/query.design.fee.js" th:src="@{static/js/modules/bss/order/fee/query.design.fee.js(v=${version})}"></script>
+<script src="static/js/modules/bss/order/fee/query.project.fee.js" th:src="@{static/js/modules/bss/order/fee/query.project.fee.js(v=${version})}"></script>
 </body>
 </html>
