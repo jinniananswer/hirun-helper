@@ -3,14 +3,10 @@ package com.microtomato.hirun.modules.bss.service.controller;
 
 
 import com.microtomato.hirun.framework.annotation.RestResult;
-import com.microtomato.hirun.modules.bss.salary.entity.dto.DesignRoyaltyDetailDTO;
-import com.microtomato.hirun.modules.bss.salary.entity.dto.SalaryRoyaltyDetailDTO;
 import com.microtomato.hirun.modules.bss.service.entity.dto.GuaranteeDTO;
 import com.microtomato.hirun.modules.bss.service.service.IServiceGuaranteeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * (ServiceGuarantee)表控制层
@@ -20,7 +16,7 @@ import java.util.List;
  * @date 2020-07-12 18:46:24
  */
 @RestController
-@RequestMapping("/api/bss.service/ServiceGuarantee")
+@RequestMapping("/api/bss.service/service-guarantee")
 public class ServiceGuaranteeController {
 
     /**

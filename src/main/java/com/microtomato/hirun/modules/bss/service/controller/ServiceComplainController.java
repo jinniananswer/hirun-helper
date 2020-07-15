@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @date 2020-07-12 18:46:24
  */
 @RestController
-@RequestMapping("/api/bss.service/ServiceComplain")
+@RequestMapping("/api/bss.service/service-complain")
 public class ServiceComplainController {
 
     /**
