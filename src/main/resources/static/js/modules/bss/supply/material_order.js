@@ -1,8 +1,8 @@
-require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-select', 'util', 'cust-info', 'order-info', 'order-worker', 'order-search-employee'], function(Vue, element, ajax, table, vueSelect, orgTree, houseSelect, util, custInfo, orderInfo, orderWorker, orderSearchEmployee) {
+require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'house-select', 'util', 'cust-info', 'order-info', 'order-worker', 'order-search-employee'], function (Vue, element, ajax, table, vueSelect, orgTree, houseSelect, util, custInfo, orderInfo, orderWorker, orderSearchEmployee) {
     Vue.use(table);
     let vm = new Vue({
         el: '#app',
-        data: function() {
+        data: function () {
             return {
                 queryCond: {
                     custName: '',
@@ -15,34 +15,29 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     count: null
                 },
                 selectedMaterial: '',
+                supplyOrderType:'',
                 materialOptions: [],
-                employeeTableData: [],
-                serviceGuaranteeInfo: {
-                    id:'',
-                    customerEmployeeName: '',
-                    designEmployeeName: '',
-                    projectEmployeeName:'',
-                    checkTime: '',
-                    hydropowerName: '',
-                    woodworkerName: '',
-                    inlayName:'',
-                    paintName:'',
-                    createTime:util.getNowTime(),
-                    guaranteeStartDate:'',
-                    guaranteeEndDate:'',
+                materialTableData: [],
+                validRules: {
+                    money: [
+                        {type: 'number', message: '数量必须为数字'},
+                        {pattern: /^[0-9]+(\.\d+)?$/, message: '数量必须为正数'}
+                    ]
+                },
+                MaterialInfo: {
                     custId: util.getRequest('custId'),
                     orderId: util.getRequest('orderId'),
                 },
-                dialogVisible:false,
-                activeTab:'designRoyaltyTab',
-                custOrder:[],
+                dialogVisible: false,
+                activeTab: 'designRoyaltyTab',
+                custOrder: [],
                 show: 'display:none',
                 rules: {
                     guaranteeStartDate: [
-                        { required: true, message: '保修开始时间不能为空', trigger: 'blur' }
+                        {required: true, message: '保修开始时间不能为空', trigger: 'blur'}
                     ],
                     guaranteeEndDate: [
-                        { required: true, message: '保修结束时间不能为空', trigger: 'blur' }
+                        {required: true, message: '保修结束时间不能为空', trigger: 'blur'}
                     ],
                 },
             }
@@ -53,76 +48,83 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
             init: function () {
                 this.show = 'display:none';
                 this.queryShow = 'display:block';
-                this.materialOptions=[
-                    {'id': '1', 'materialName': '鸿扬','materialType': '木材', 'materialUnit': '1'},
-                    {'id': '2', 'materialName': '鸿扬','materialType': '石头', 'materialUnit': '1'},
-                    {'id': '3', 'materialName': '万象','materialType': '石头', 'materialUnit': '1'},
-                    {'id': '4', 'materialName': '蒋庄','materialType': '油漆', 'materialUnit': '1'},
-                ];
-                // axios.get('api/organization/employee/loadEmployee').then(function (res) {
-                //     vm.materialOptions = res.data.rows;
-                // }).catch(function (error) {
-                //     console.log(error);
-                // });
+                // this.materialOptions=[
+                //     {'id': '1', 'materialName': '鸿扬','materialType': '木材', 'materialUnit': '1'},
+                //     {'id': '2', 'materialName': '鸿扬','materialType': '石头', 'materialUnit': '1'},
+                //     {'id': '3', 'materialName': '万象','materialType': '石头', 'materialUnit': '1'},
+                //     {'id': '4', 'materialName': '蒋庄','materialType': '油漆', 'materialUnit': '1'},
+                // ];
+
+            },
+            selectedMaterialChange: function (item) {
+                let spans = item.split('-');
+                let isExist = false;
+                vm.materialTableData.forEach(function (element, index, array) {
+                    if (spans[0] == element.id) {
+                        isExist = true;
+                    }
+                });
+                if (!isExist) {
+                    vm.materialTableData.push({
+                        id: spans[0],
+                        materialName: spans[1],
+                        supplierName: spans[2],
+                        standard: spans[3],
+                        materialUnit: spans[4]
+                    });
+                }
             },
 
-            query: function() {
+            query: function () {
                 let that = this;
-                ajax.get('api/bss.order/finance/queryCustOrderInfo', this.queryCond, function(responseData){
+                ajax.get('api/bss.order/finance/queryCustOrderInfo', this.queryCond, function (responseData) {
                     that.custOrder = responseData.records;
                     that.queryCond.page = responseData.current;
                     that.queryCond.count = responseData.total;
                 });
             },
 
-            showCustQuery: function() {
+            showCustQuery: function () {
                 this.dialogVisible = true;
             },
 
-            selectCustOrder: function(orderId, custId) {
-                this.serviceGuaranteeInfo.custId = custId;
-                this.serviceGuaranteeInfo.orderId = orderId;
+            loadMaterial: function (orderId, custId) {
+                this.MaterialInfo.custId = custId;
+                this.MaterialInfo.orderId = orderId;
                 this.dialogVisible = false;
                 this.show = 'display:block';
                 let that = this;
-                ajax.get('api/bss.service/ServiceGuarantee/queryCustomerGuaranteeInfo', {orderId: this.serviceGuaranteeInfo.orderId}, function(responseData) {
-                    that.serviceGuaranteeInfo=responseData;
+                ajax.get('api/bss.supply/SupplyMaterial/loadMaterial', '', function (responseData) {
+                    that.materialOptions = responseData;
                 });
             },
-
-            save : function() {
-                if(this.serviceGuaranteeInfo.guaranteeStartDate==''){
-                    this.$message.error('保修开始时间不能为空');
-                    return false;
-                }
-                if(this.serviceGuaranteeInfo.guaranteeEndDate==''){
-                    this.$message.error('保修结束时间不能为空');
-                    return false;
-                }
-               // ajax.post('api/bss.service/ServiceGuarantee/saveGuaranteeInfo', this.serviceGuaranteeInfo,null,null,true);
+            handleMaterialTableDelete: function (index) {
+                vm.materialTableData.splice(index, 1);
             },
-            selectedMaterialChange: function (item) {
-                let spans = item.split('-');
-                let isExist = false;
-                vm.employeeTableData.forEach(function (element, index, array) {
-                    if (spans[0] == element.userId) {
-                        isExist = true;
-                    }
-                });
-                if (!isExist) {
-                    vm.employeeTableData.push({
-                        id: spans[0],
-                        materialName: spans[1],
-                        materialType: spans[2],
-                        materialUnit: spans[3],
-                    });
+            save: function () {
+                if (this.materialTableData == '') {
+                    this.$message.error('没有新增材料下单，不能提交');
+                    return false;
                 }
+                let data = {
+                    orderId: this.MaterialInfo.orderId,
+                    supplyOrderType: "1",
+                    supplyMaterial: []
+                };
+                for (let i = 0; i < this.materialTableData.length; i++) {
+                    let material = {};
+                    material.id = this.materialTableData[i].id;
+                    material.num = this.materialTableData[i].num;
+                    material.costPrice = this.materialTableData[i].costPrice;
+                    data.supplyMaterial.push(material);
+                }
+                ajax.post('api/bss.supply/supply-order/materialOrderDeal', data, null, null, true);
             },
 
 
         },
 
-        mounted () {
+        mounted() {
             this.init();
         }
     });
