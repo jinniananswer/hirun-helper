@@ -1,6 +1,8 @@
 package com.microtomato.hirun.modules.bss.order.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.exception.cases.NotFoundException;
 import com.microtomato.hirun.modules.bss.config.entity.consts.FeeConst;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
@@ -8,15 +10,13 @@ import com.microtomato.hirun.modules.bss.order.entity.dto.DecorateContractDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.FeeDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderContract;
-import com.microtomato.hirun.modules.bss.order.entity.po.OrderFee;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFeeItem;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderContractMapper;
 import com.microtomato.hirun.modules.bss.order.service.*;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +51,7 @@ public class OrderContractServiceImpl extends ServiceImpl<OrderContractMapper, O
     @Autowired
     private IOrderFeeItemService orderFeeItemService;
 
+    @Override
     public DecorateContractDTO getDecorateContractInfo(Long orderId) {
         DecorateContractDTO decorateContractDTO = new DecorateContractDTO();
         decorateContractDTO.setOrderId(orderId);
@@ -91,6 +92,7 @@ public class OrderContractServiceImpl extends ServiceImpl<OrderContractMapper, O
         return decorateContractDTO;
     }
 
+    @Override
     public void submitDecorateContract(DecorateContractDTO decorateContractDTO) {
         //校验规则
         if(orderFileService.getOrderFile(decorateContractDTO.getOrderId(), 16) == null) {
@@ -137,6 +139,21 @@ public class OrderContractServiceImpl extends ServiceImpl<OrderContractMapper, O
         orderDomainService.orderStatusTrans(decorateContractDTO.getOrderId(), OrderConst.OPER_NEXT_STEP);
 
         orderWorkerService.updateOrderWorker(decorateContractDTO.getOrderId(), 35L, decorateContractDTO.getFinanceEmployeeId());
+    }
+
+    /**
+     * 根据订单ID和合同类型查询合同表
+     * @param orderId
+     * @param type
+     * @return
+     */
+    @Override
+    public OrderContract getByOrderIdType(Long orderId, String type) {
+        OrderContract orderContract = this.getOne(Wrappers.<OrderContract>lambdaQuery()
+                .eq(OrderContract::getOrderId, orderId)
+                .eq(OrderContract::getContractType, type), false);
+
+        return orderContract;
     }
 
 }

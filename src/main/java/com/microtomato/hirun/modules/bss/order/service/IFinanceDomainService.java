@@ -3,6 +3,8 @@ package com.microtomato.hirun.modules.bss.order.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.modules.bss.order.entity.dto.*;
+import com.microtomato.hirun.modules.bss.order.entity.dto.finance.FinanceOrderTaskDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.finance.FinanceOrderTaskQueryDTO;
 
 import java.util.List;
 
@@ -35,4 +37,6 @@ public interface IFinanceDomainService {
     List<OrderPayInfoDTO> queryPayInfoByOrderId(Long orderId);
 
     List<NonCollectFeeDTO> queryPayInfoByCond(NonCollectFeeQueryDTO queryCondition);
+
+    IPage<FinanceOrderTaskDTO> queryFinanceOrderTasks(FinanceOrderTaskQueryDTO condition);
 }

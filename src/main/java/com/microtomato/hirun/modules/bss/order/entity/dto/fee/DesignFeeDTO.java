@@ -1,5 +1,6 @@
 package com.microtomato.hirun.modules.bss.order.entity.dto.fee;
 
+import com.microtomato.hirun.modules.bss.order.entity.dto.UsualOrderWorkerDTO;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -23,15 +24,23 @@ public class DesignFeeDTO {
 
     private String decorateAddress;
 
-    private String orderStateName;
+    private String type;
+
+    private String status;
+
+    private String orderStatusName;
+
+    private String houseLayout;
 
     private String houseLayoutName;
 
     private String indoorArea;
 
-    private Long designStandard;
+    private Integer designFeeStandard;
 
-    private String designStyle;
+    private Long designFee;
+
+    private String designTheme;
 
     private Long feeNo;
 
@@ -45,23 +54,15 @@ public class DesignFeeDTO {
 
     private LocalDateTime firstPayTime;
 
+    private Long shopId;
+
     private String shopName;
 
     private String depositFinanceName;
 
     private String designFeeFinanceName;
 
-    private String agentName;
-
-    private String designerName;
-
-    private String counselorName;
-
-    private String cabinetName;
-
-    private String materialName;
-
-    private String reportName;
+    private UsualOrderWorkerDTO usualWorker;
 
     private String contractTime;
 }

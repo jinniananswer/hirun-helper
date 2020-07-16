@@ -17,4 +17,6 @@ public interface IOrderContractService extends IService<OrderContract> {
     public DecorateContractDTO getDecorateContractInfo(Long orderId);
 
     public void submitDecorateContract(DecorateContractDTO decorateContractDTO);
+
+    OrderContract getByOrderIdType(Long orderId, String type);
 }

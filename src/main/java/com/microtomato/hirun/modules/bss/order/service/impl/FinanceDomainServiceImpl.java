@@ -12,13 +12,18 @@ import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.bss.config.entity.po.CollectionItemCfg;
 import com.microtomato.hirun.modules.bss.config.entity.po.Enterprise;
+import com.microtomato.hirun.modules.bss.config.entity.po.OrderStatusCfg;
 import com.microtomato.hirun.modules.bss.config.entity.po.PayItemCfg;
 import com.microtomato.hirun.modules.bss.config.service.ICollectionItemCfgService;
 import com.microtomato.hirun.modules.bss.config.service.IEnterpriseService;
+import com.microtomato.hirun.modules.bss.config.service.IOrderStatusCfgService;
 import com.microtomato.hirun.modules.bss.config.service.IPayItemCfgService;
+import com.microtomato.hirun.modules.bss.house.entity.po.Houses;
 import com.microtomato.hirun.modules.bss.house.service.IHousesService;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.*;
+import com.microtomato.hirun.modules.bss.order.entity.dto.finance.FinanceOrderTaskDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.finance.FinanceOrderTaskQueryDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.*;
 import com.microtomato.hirun.modules.bss.order.exception.OrderException;
 import com.microtomato.hirun.modules.bss.order.mapper.NormalPayNoMapper;
@@ -108,6 +113,9 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
 
     @Autowired
     private NormalPayNoMapper normalPayNoMapper;
+
+    @Autowired
+    private IOrderStatusCfgService orderStatusCfgService;
 
 
     /**
@@ -1091,5 +1099,43 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
             normalPayNo.setAuditEmployeeId(WebContextUtils.getUserContext().getEmployeeId());
             this.normalPayNoService.updateById(normalPayNo);
         }
+    }
+
+    @Override
+    public IPage<FinanceOrderTaskDTO> queryFinanceOrderTasks(FinanceOrderTaskQueryDTO condition) {
+        QueryWrapper<FinanceOrderTaskQueryDTO> wrapper = new QueryWrapper<>();
+        wrapper.apply("b.cust_id = a.cust_id ");
+        wrapper.apply("c.order_id = a.order_id");
+        wrapper.like(StringUtils.isNotBlank(condition.getCustName()), "b.cust_name", condition.getCustName());
+        wrapper.eq(StringUtils.isNotBlank(condition.getAuditStatus()), "c.audit_status", condition.getAuditStatus());
+        wrapper.eq(condition.getHousesId() != null, "a.houses_id", condition.getHousesId());
+        wrapper.eq(StringUtils.isNotBlank(condition.getMobileNo()), "b.mobile_no", condition.getMobileNo());
+        wrapper.orderByAsc("a.status", "a.create_time");
+
+        IPage<FinanceOrderTaskQueryDTO> page = new Page<>(condition.getPage(), condition.getLimit());
+        IPage<FinanceOrderTaskDTO> pageTasks = this.orderBaseMapper.queryFinanceOrderTaskInConsole(page, wrapper);
+
+        List<FinanceOrderTaskDTO> tasks = pageTasks.getRecords();
+        if (ArrayUtils.isEmpty(tasks)) {
+            return pageTasks;
+        }
+
+        tasks.forEach(task -> {
+            task.setHouseLayoutName(this.staticDataService.getCodeName("HOUSE_MODE", task.getHouseLayout()));
+            task.setTypeName(this.staticDataService.getCodeName("ORDER_TYPE", task.getType()));
+            task.setAuditStatusName(this.staticDataService.getCodeName("AUDIT_STATUS", task.getAuditStatus()));
+            OrderStatusCfg statusCfg = this.orderStatusCfgService.getCfgByTypeStatus(task.getType(), task.getStatus());
+            if (statusCfg != null) {
+                task.setStatusName(statusCfg.getStatusName());
+            }
+
+            if (task.getHousesId() != null) {
+                Houses house = this.housesService.getHouse(task.getHousesId());
+                if (house != null) {
+                    task.setHousesName(house.getName());
+                }
+            }
+        });
+        return pageTasks;
     }
 }

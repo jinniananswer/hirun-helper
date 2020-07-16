@@ -28,4 +28,10 @@ public interface IOrderDomainService {
     List<PendingTaskDTO> queryPendingTask();
 
     IPage<CustOrderInfoDTO> queryCustOrderInfos(CustOrderQueryDTO queryCondition, Page<CustOrderQueryDTO> page);
+
+    IPage<OrderTaskDTO> queryOrderTasks(OrderTaskQueryDTO condition);
+
+    UsualOrderWorkerDTO getUsualOrderWorker(Long orderId);
+
+    UsualFeeDTO getUsualOrderFee(Long orderId, String orderType);
 }

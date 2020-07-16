@@ -6,17 +6,22 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.exception.ErrorKind;
 import com.microtomato.hirun.framework.exception.cases.NotFoundException;
 import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
+import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderWorker;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderWorkerMapper;
 import com.microtomato.hirun.modules.bss.order.service.IOrderWorkerService;
+import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
+import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,6 +41,9 @@ public class OrderWorkerServiceImpl extends ServiceImpl<OrderWorkerMapper, Order
 
     @Autowired
     private IEmployeeJobRoleService employeeJobRoleService;
+
+    @Autowired
+    private IEmployeeService employeeService;
 
     @Override
     public List<OrderWorkerDTO> queryByOrderId(Long orderId) {
@@ -78,5 +86,35 @@ public class OrderWorkerServiceImpl extends ServiceImpl<OrderWorkerMapper, Order
         this.orderWorkerMapper.insert(newOrderWorker);
         return newOrderWorker.getId();
 
+    }
+
+    /**
+     * 根据订单ID列表及角色列表查询订单参与人相关信息
+     * @param orderIds
+     * @param roleIds
+     * @return
+     */
+    @Override
+    public List<OrderWorkerDTO> queryByOrderIdsRoleIds(List<Long> orderIds, List<Long> roleIds) {
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+        List<OrderWorker> orderWorkers = this.list(Wrappers.<OrderWorker>lambdaQuery()
+                .in(OrderWorker::getOrderId, orderIds)
+                .in(OrderWorker::getRoleId, roleIds)
+                .ge(OrderWorker::getEndDate, now));
+
+        if (ArrayUtils.isEmpty(orderWorkers)) {
+            return null;
+        }
+
+        List<OrderWorkerDTO> result = new ArrayList<>();
+        orderWorkers.forEach(orderWorker -> {
+            Long employeeId = orderWorker.getEmployeeId();
+            Employee employee = this.employeeService.getById(employeeId);
+            OrderWorkerDTO worker = new OrderWorkerDTO();
+            BeanUtils.copyProperties(orderWorker, worker);
+            worker.setName(employee.getName());
+            result.add(worker);
+        });
+        return result;
     }
 }

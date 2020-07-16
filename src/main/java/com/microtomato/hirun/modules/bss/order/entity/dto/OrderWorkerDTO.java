@@ -11,6 +11,8 @@ import lombok.Data;
 @Data
 public class OrderWorkerDTO {
 
+    private Long orderId;
+
     private Long roleId;
 
     private String roleName;

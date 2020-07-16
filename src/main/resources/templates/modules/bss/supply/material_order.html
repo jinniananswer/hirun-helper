@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>保修卡管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script src="static/js/framework/requirejs/require.min.js"
+            th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js"
+            th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-main>
+            <el-row>
+                <el-card class="box-card" shadow="hover">
+                    <el-input placeholder="请点击进行客户订单查询" @focus="showCustQuery">
+                        <template slot="prepend">客户姓名</template>
+                    </el-input>
+                    <el-dialog width="80%" title="客户订单查询" :visible.sync="dialogVisible">
+                        <el-card class="box-card" shadow="hover">
+                            <div slot="header" class="clearfix">
+                                <span>查询条件区</span>
+                            </div>
+                            <el-form :inline="false" :model="queryCond" label-position="right" label-width="80px">
+                                <el-row>
+                                    <el-col :span="8">
+                                        <el-form-item label="客户姓名">
+                                            <el-input v-model="queryCond.custName" placeholder="请输入客户姓名"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="客户性别">
+                                            <vue-select code-type="SEX" v-model="queryCond.sex"></vue-select>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="联系电话">
+                                            <el-input v-model="queryCond.mobileNo" placeholder="请输入联系电话"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row>
+                                    <el-col :span="8">
+                                        <el-form-item label="归属楼盘">
+                                            <house-select v-model="queryCond.housesId"></house-select>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="订单状态">
+                                            <vue-select code-type="ORDER_STATUS"
+                                                        v-model="queryCond.orderStatus"></vue-select>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item>
+                                            <el-button type="primary" @click="query">查询</el-button>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                            </el-form>
+                        </el-card>
+                        <el-table
+                                :data="custOrder"
+                                stripe="true"
+                                border
+                                height="400"
+                                style="width: 100%">
+                            <el-table-column
+                                    label="客户姓名"
+                                    fixed
+                                    width="80"
+                                    align="center">
+                                <template slot-scope="scope">
+                                    <el-button type="text"
+                                               @click="loadMaterial(scope.row.orderId, scope.row.custId)">{{
+                                        scope.row.custName }}
+                                    </el-button>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                    prop="sexName"
+                                    width="60"
+                                    label="性别">
+                            </el-table-column>
+                            <el-table-column
+                                    prop="mobileNo"
+                                    width="120"
+                                    label="联系电话"
+                                    align="center">
+                            </el-table-column>
+                            <el-table-column
+                                    prop="decorateAddress"
+                                    label="装修地址">
+                            </el-table-column>
+                            <el-table-column
+                                    width="150"
+                                    prop="housesName"
+                                    label="所属楼盘">
+                            </el-table-column>
+                            <el-table-column
+                                    width="100"
+                                    prop="houseLayoutName"
+                                    label="户型">
+                            </el-table-column>
+                            <el-table-column
+                                    width="100"
+                                    prop="floorage"
+                                    label="建筑面积">
+                            </el-table-column>
+                            <el-table-column
+                                    width="100"
+                                    prop="indoorArea"
+                                    label="室内面积">
+                            </el-table-column>
+                            <el-table-column
+                                    width="100"
+                                    prop="stageName"
+                                    label="订单阶段">
+                            </el-table-column>
+                            <el-table-column
+                                    width="100"
+                                    prop="statusName"
+                                    label="订单状态">
+                            </el-table-column>
+                        </el-table>
+                        <div style="text-align: center">
+                            <el-pagination
+                                    layout="total, prev, pager, next"
+                                    :total="queryCond.count"
+                                    :current-page.sync="queryCond.page"
+                                    :page-size="queryCond.limit"
+                                    @current-change="query">
+                            </el-pagination>
+                        </div>
+                    </el-dialog>
+                </el-card>
+            </el-row>
+            <el-row :style="show">
+                <div class="grid-content bg-purple-light">
+                    <order-info :order_id="MaterialInfo.orderId"></order-info>
+
+                    <el-card class="box-card">
+                        <div slot="header">
+                            <span>操作区</span>
+                        </div>
+                        <el-card class="box-card" shadow="hover" :style="show">
+
+                                <el-divider content-position="left">材料单</el-divider>
+                                <div class="text item">
+                                    <el-select v-model="selectedMaterial" filterable placeholder="输入材料名称或材料编码或供应商名称搜索"
+                                               @change="selectedMaterialChange" style="width: 500px">
+                                        <el-option v-for="item in materialOptions" :key="item.id"
+                                                   :label="item.name + '-' + item.supplierName+ '-' + item.materialUnit"
+                                                   :value="item.id + '-' + item.name + '-' + item.supplierName+ '-' + item.materialUnit+ '-' + item.costPrice + '-' + item.salePrice+ '-' + item.standard"></el-option>
+                                    </el-select>
+                                </div>
+
+                                <vxe-table
+                                        border
+                                        resizable
+                                        ref="materialItem"
+                                        show-footer
+                                        show-overflow
+                                        highlight-hover-row
+                                        :auto-resize="true"
+                                        :data="materialTableData"
+                                        :edit-rules="validRules"
+                                        :edit-config="{trigger: 'click', mode: 'cell'}">
+                                    <vxe-table-column field="id" title="材料编码"></vxe-table-column>
+                                    <vxe-table-column field="supplierName" title="供应商名称"></vxe-table-column>
+                                    <vxe-table-column field="materialName" title="材料名称"></vxe-table-column>
+                                    <vxe-table-column field="standard" title="规格"></vxe-table-column>
+                                    <vxe-table-column field="materialUnit" title="材料单位" width="100"></vxe-table-column>
+                                    <vxe-table-column field="num" title="预算数量" width="180"
+                                                      :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+                                    <vxe-table-column title="操作" width="100" show-overflow>
+                                        <template v-slot="{ row }">
+                                            <el-button
+                                                    size="mini"
+                                                    type="danger"
+                                                    icon="el-icon-delete"
+                                                    @click="handleMaterialTableDelete(row)">删除
+                                            </el-button>
+                                        </template>
+                                    </vxe-table-column>
+                                </vxe-table>
+                                <el-row style="padding-top: 12px" :style="show">
+                                    <el-button type="success" @click="save">提交保存</el-button>
+                                </el-row>
+
+                        </el-card>
+                        </el-tab-pane>
+                    </el-card>
+                </div>
+            </el-row>
+
+        </el-main>
+    </el-container>
+</div>
+<style>
+    .text {
+        font-size: 14px;
+    }
+
+    .box-card {
+        margin-bottom: 12px;
+    }
+
+    .item {
+        margin-bottom: 18px;
+    }
+
+    .el-card__header {
+        padding: 10px;
+    }
+
+    .modify_row {
+        color: #ff4835;
+    }
+
+    .new_row {
+        color: #4DAF29;
+    }
+
+    .delete_row {
+        text-decoration: line-through;
+    }
+</style>
+<script src="static/js/modules/bss/supply/material_order.js"
+        th:src="@{static/js/modules/bss/supply/material_order.js(v=${version})}"></script>
+</body>
+</html>
