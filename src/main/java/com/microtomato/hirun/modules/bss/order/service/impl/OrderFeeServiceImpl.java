@@ -322,11 +322,10 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
             wrapper.in("a.shop_id", shopIdArray);
         }
 
-        String feeTime = condition.getFeeTime();
-        if (StringUtils.isNotBlank(feeTime)) {
-            String[] feeTimeArray = StringUtils.split(",");
-            wrapper.ge("d.first_pay_time", feeTimeArray[0]);
-            wrapper.le("d.first_pay_time", feeTimeArray[1]);
+        String[] feeTime = condition.getFeeTime();
+        if (ArrayUtils.isNotEmpty(feeTime)) {
+            wrapper.ge("d.first_pay_time", feeTime[0]);
+            wrapper.le("d.first_pay_time", feeTime[1]);
         }
 
         wrapper.eq(condition.getHousesId() != null, "a.houses_id", condition.getHousesId());
@@ -472,9 +471,9 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
                 designFee.setDesignFeeFinanceName(employee.getName());
             }
         }
-        designFee.setDesignFee(total);
+        designFee.setDesignFee(total / 100d);
         designFee.setFirstPayTime(payTime);
-        designFee.setDepositFee(totalDeposit);
+        designFee.setDepositFee(totalDeposit / 100d);
         designFee.setFeeTime(payTime);
         designFee.setHouseLayoutName(this.staticDataService.getCodeName("HOUSE_MODE", designFee.getHouseLayout()));
 

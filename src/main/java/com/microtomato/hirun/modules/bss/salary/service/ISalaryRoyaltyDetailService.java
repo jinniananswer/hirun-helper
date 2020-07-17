@@ -18,6 +18,8 @@ public interface ISalaryRoyaltyDetailService extends IService<SalaryRoyaltyDetai
 
     List<SalaryRoyaltyDetail> queryByOrderIdEmployeeIdItems(Long orderId, Long employeeId, List<String> items);
 
+    List<SalaryRoyaltyDetail> queryByOrderIds(List<Long> orderIds);
+
     SalaryRoyaltyDetailDTO queryByOrderId(Long orderId);
 
     void saveDesignRoyaltyDetails(List<DesignRoyaltyDetailDTO> designRoyaltyDetails);
@@ -43,4 +45,6 @@ public interface ISalaryRoyaltyDetailService extends IService<SalaryRoyaltyDetai
     void auditProjectRoyaltyPass(List<ProjectRoyaltyDetailDTO> projectDetails);
 
     void auditProjectRoyaltyNo(List<ProjectRoyaltyDetailDTO> projectDetails);
+
+    IPage<StatRoyaltyDetailDTO> statByCustOrder(QueryStatRoyaltyDTO condition);
 }

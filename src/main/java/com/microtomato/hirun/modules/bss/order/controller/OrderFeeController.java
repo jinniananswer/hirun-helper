@@ -101,9 +101,9 @@ public class OrderFeeController {
         return orderFeeServiceImpl.getByOrderIdTypePeriod(orderId, type, period);
     }
 
-    @GetMapping("/queryDesignFees")
+    @PostMapping("/queryDesignFees")
     @RestResult
-    public IPage<DesignFeeDTO> queryDesignFees(QueryDesignFeeDTO designFeeDTO) {
+    public IPage<DesignFeeDTO> queryDesignFees(@RequestBody QueryDesignFeeDTO designFeeDTO) {
         return this.orderFeeServiceImpl.queryDesignFees(designFeeDTO);
     }
 
