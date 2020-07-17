@@ -46,8 +46,8 @@ public class DecoratorController {
 
     @GetMapping("/queryDecoratorInfo")
     @RestResult
-    public IPage<Decorator> queryDecoratorInfo(String name, String identityNo) {
-        return this.decoratorServiceImpl.queryDecoratorInfo(name, identityNo);
+    public IPage<Decorator> queryDecoratorInfo(String name, String identityNo, int page, int size) {
+        return this.decoratorServiceImpl.queryDecoratorInfo(name, identityNo, page, size);
     }
 
 }

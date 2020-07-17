@@ -51,12 +51,12 @@ public class DecoratorServiceImpl extends ServiceImpl<DecoratorMapper, Decorator
     }
 
     @Override
-    public IPage<Decorator> queryDecoratorInfo(String name, String identityNo) {
+    public IPage<Decorator> queryDecoratorInfo(String name, String identityNo, int current, int size) {
         LambdaQueryWrapper<Decorator> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.eq(StringUtils.isNotEmpty(name), Decorator::getName, name)
                 .eq(StringUtils.isNotEmpty(identityNo), Decorator::getIdentityNo, identityNo)
                 .eq(Decorator::getStatus, "0");
-        Page<Decorator> page = new Page<>(1L, 10L);
+        Page<Decorator> page = new Page<>(current, size);
         IPage<Decorator> decoratorPages = decoratorMapper.selectPage(page, lambdaQueryWrapper);
 
         return decoratorPages;
