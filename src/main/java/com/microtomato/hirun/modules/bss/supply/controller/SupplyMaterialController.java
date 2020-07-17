@@ -2,10 +2,18 @@ package com.microtomato.hirun.modules.bss.supply.controller;
 
 
 
+import com.microtomato.hirun.framework.annotation.RestResult;
+import com.microtomato.hirun.modules.bss.order.entity.dto.NonCollectFeeDTO;
+import com.microtomato.hirun.modules.bss.supply.entity.dto.SupplyMaterialDTO;
+import com.microtomato.hirun.modules.bss.supply.entity.po.SupplyMaterial;
 import com.microtomato.hirun.modules.bss.supply.service.ISupplyMaterialService;
+import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 材料表(SupplyMaterial)表控制层
@@ -23,5 +31,14 @@ public class SupplyMaterialController {
      */
     @Autowired
     private ISupplyMaterialService supplyMaterialService;
+
+    @GetMapping("/loadMaterial")
+    @RestResult
+    public  List<SupplyMaterialDTO> loadMaterial() {
+        return supplyMaterialService.loadMaterial();
+
+    }
+
+
 
 }

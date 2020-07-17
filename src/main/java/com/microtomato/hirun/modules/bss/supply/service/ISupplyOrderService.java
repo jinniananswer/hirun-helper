@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.bss.supply.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.microtomato.hirun.modules.bss.supply.entity.dto.SupplyOrderDTO;
 import com.microtomato.hirun.modules.bss.supply.entity.po.SupplyOrder;
 
 /**
@@ -11,5 +12,7 @@ import com.microtomato.hirun.modules.bss.supply.entity.po.SupplyOrder;
  * @date 2020-07-15 11:26:08
  */
 public interface ISupplyOrderService extends IService<SupplyOrder> {
+
+    void materialOrderDeal(SupplyOrderDTO supplyOrderInfo);
 
 }
