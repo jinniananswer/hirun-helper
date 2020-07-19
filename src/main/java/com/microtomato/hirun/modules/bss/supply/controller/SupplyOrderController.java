@@ -2,16 +2,21 @@ package com.microtomato.hirun.modules.bss.supply.controller;
 
 
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.microtomato.hirun.framework.annotation.RestResult;
+import com.microtomato.hirun.framework.security.UserContext;
+import com.microtomato.hirun.framework.util.WebContextUtils;
+import com.microtomato.hirun.modules.bss.order.entity.dto.fee.ProjectFeeDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.fee.QueryProjectFeeDTO;
+import com.microtomato.hirun.modules.bss.supply.entity.dto.QuerySupplyOrderDTO;
+import com.microtomato.hirun.modules.bss.supply.entity.dto.SupplyMaterialDTO;
 import com.microtomato.hirun.modules.bss.supply.entity.dto.SupplyOrderDTO;
 import com.microtomato.hirun.modules.bss.supply.service.ISupplyOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -37,9 +42,19 @@ public class SupplyOrderController {
     @PostMapping("/materialOrderDeal")
     @RestResult
     public Map materialOrderDeal(@RequestBody SupplyOrderDTO supplyOrderInfo) {
-        System.out.println("supplyOrderInfo=========="+supplyOrderInfo);
-        this.supplyOrderService.materialOrderDeal(supplyOrderInfo);
+       this.supplyOrderService.materialOrderDeal(supplyOrderInfo);
         return new HashMap();
+    }
+
+
+    @GetMapping("/querySupplyInfo")
+    @RestResult
+    public IPage<SupplyOrderDTO> querySupplyInfo(QuerySupplyOrderDTO querySupplyDTO) {
+        UserContext userContext = WebContextUtils.getUserContext();
+        if(querySupplyDTO.getEmployeeId()==null){
+            querySupplyDTO.setEmployeeId(userContext.getEmployeeId());
+        }
+        return this.supplyOrderService.querySupplyInfo(querySupplyDTO);
     }
 
 }

@@ -70,6 +70,7 @@ public class DecoratorServiceImpl extends ServiceImpl<DecoratorMapper, Decorator
 
     /**
      * 根据工人ID查询工人信息
+     *
      * @param decoratorId
      * @return
      */
@@ -81,6 +82,7 @@ public class DecoratorServiceImpl extends ServiceImpl<DecoratorMapper, Decorator
 
     /**
      * 根据工人姓名、证件号码查询工人信息
+     *
      * @param name
      * @param identityNo
      * @return

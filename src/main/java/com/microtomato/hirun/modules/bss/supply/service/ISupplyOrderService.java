@@ -1,6 +1,10 @@
 package com.microtomato.hirun.modules.bss.supply.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.microtomato.hirun.modules.bss.order.entity.dto.fee.ProjectFeeDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.fee.QueryProjectFeeDTO;
+import com.microtomato.hirun.modules.bss.supply.entity.dto.QuerySupplyOrderDTO;
 import com.microtomato.hirun.modules.bss.supply.entity.dto.SupplyOrderDTO;
 import com.microtomato.hirun.modules.bss.supply.entity.po.SupplyOrder;
 
@@ -14,5 +18,7 @@ import com.microtomato.hirun.modules.bss.supply.entity.po.SupplyOrder;
 public interface ISupplyOrderService extends IService<SupplyOrder> {
 
     void materialOrderDeal(SupplyOrderDTO supplyOrderInfo);
+
+    IPage<SupplyOrderDTO> querySupplyInfo(QuerySupplyOrderDTO condition);
 
 }
