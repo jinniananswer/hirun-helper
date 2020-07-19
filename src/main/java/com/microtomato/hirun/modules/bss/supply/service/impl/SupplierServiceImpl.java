@@ -35,9 +35,10 @@ public class SupplierServiceImpl extends ServiceImpl<SupplierMapper, Supplier> i
      */
     @Override
     public Supplier querySupplierById(Long supplierId){
-        return this.getOne(new QueryWrapper<Supplier>().lambda()
-                .eq(Supplier::getId,supplierId)
-                .eq(Supplier::getStatus,0));
+//        return this.getOne(new QueryWrapper<Supplier>().lambda()
+//                .eq(Supplier::getId,supplierId)
+//                .eq(Supplier::getStatus,0));
+        return supplierMapper.selectById(supplierId);
     }
 
     /**

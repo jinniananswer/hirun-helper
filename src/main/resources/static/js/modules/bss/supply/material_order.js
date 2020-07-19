@@ -121,6 +121,26 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                 ajax.post('api/bss.supply/supply-order/materialOrderDeal', data, null, null, true);
             },
 
+            saveForOther: function () {
+                if (this.materialTableData == '') {
+                    this.$message.error('没有新增材料下单，不能提交');
+                    return false;
+                }
+                let data = {
+                    orderId: this.MaterialInfo.orderId,
+                    supplyOrderType: "2",
+                    supplyMaterial: []
+                };
+                for (let i = 0; i < this.materialTableData.length; i++) {
+                    let material = {};
+                    material.id = this.materialTableData[i].id;
+                    material.num = this.materialTableData[i].num;
+                    material.costPrice = this.materialTableData[i].costPrice;
+                    data.supplyMaterial.push(material);
+                }
+                ajax.post('api/bss.supply/supply-order/materialOrderDeal', data, null, null, true);
+            },
+
 
         },
 

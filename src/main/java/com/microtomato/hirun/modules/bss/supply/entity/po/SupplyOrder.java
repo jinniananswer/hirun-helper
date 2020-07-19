@@ -40,9 +40,7 @@ public class SupplyOrder extends BaseEntity {
     @TableField(value = "order_id")
     private Long orderId;
 
-    /** 供应链id */
-    @TableField(value = "supply_id")
-    private Long supplyId;
+
 
     /** 总费用 */
     @TableField(value = "total_fee")
