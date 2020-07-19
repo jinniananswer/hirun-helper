@@ -106,4 +106,20 @@ public class CustomerInfoDetailDTO {
 
     private String counselorMobileNo;
 
+    private String totalPriceplan;
+
+    private String basicandwoodPriceplan;
+
+    private String hvacPriceplan;
+
+    private String materialPriceplan;
+
+    private String furniturePriceplan;
+
+    private String electricalPriceplan;
+
+    private String designerOpus;
+
+    private String woodIntention;
+
 }

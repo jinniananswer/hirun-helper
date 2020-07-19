@@ -42,10 +42,13 @@ public interface PartyMapper extends BaseMapper<Party> {
     @Select(" select a.party_name as customer_name,a.age,a.sex,a.wx_nick,a.mobile_no,a.educational,a.family_members_count," +
             " a.hobby,a.other_hobby,a.create_time as consult_time,a.head_url, " +
             " b.house_mode, b.house_area,b.house_address as house_detail,b.information_source,c.link_employee_id , " +
-            " b.house_id as house_id,b.house_building,b.house_room_no " +
-            " from ins_party a ,ins_project b ,ins_project_linkman c " +
+            " b.house_id as house_id,b.house_building,b.house_room_no," +
+            " d.designer_opus,d.wood_intention,d.total_priceplan,d.basicandwood_priceplan,d.hvac_priceplan,d.material_priceplan," +
+            " d.furniture_priceplan,d.electrical_priceplan " +
+            " from ins_party a ,ins_project b ,ins_project_linkman c,ins_project_intention d " +
             " where a.party_id=b.party_id " +
             " and a.party_status='0'" +
+            " and b.project_id=d.project_id" +
             " and b.project_id=c.project_id " +
             " and c.role_type='CUSTOMERSERVICE' " +
             " and a.party_id=#{partyId} "

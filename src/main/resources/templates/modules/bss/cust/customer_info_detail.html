@@ -185,6 +185,89 @@
                                 </el-row>
                             </el-col>
                         </el-tab-pane>
+                        <el-tab-pane label="客户意向" name="intentionInfo">
+                            <el-col :span="4">
+                                <el-avatar :size="60" v-if="customer.headUrl != null"
+                                           :src="customer.headUrl"></el-avatar>
+                                <el-avatar :size="60" v-else>
+                                    {{customer.customerName!=null?customer.customerName.substring(0,1):''}}
+                                </el-avatar>
+                            </el-col>
+                            <el-col :span="20">
+                                <el-row :gutter="5">
+                                    <el-col :span="6">
+                                        <div class="text">
+                                            看中作品：
+                                            <template
+                                                    v-if="customer.designerOpus != null && customer.designerOpus != ''">
+                                                <el-tag>{{customer.designerOpus}}</el-tag>
+                                            </template>
+                                        </div>
+                                    </el-col>
+                                    <el-col :span="6">
+                                        <div class="text item">
+                                            木制品意向：
+                                            <template v-if="customer.woodIntention != null && customer.woodIntention != ''">
+                                                <el-tag>{{customer.woodIntention}}</el-tag>
+                                            </template>
+                                        </div>
+                                    </el-col>
+                                    <el-col :span="6">
+                                        <div class="text item">
+                                            计划总投资：
+                                            <template v-if="customer.totalPriceplan != null && customer.totalPriceplan != ''">
+                                                <el-tag>{{customer.totalPriceplan}}(万元)</el-tag>
+                                            </template>
+                                        </div>
+                                    </el-col>
+                                    <el-col :span="6">
+                                        <div class="text item">
+                                            基础+木制品：
+                                            <template v-if="customer.basicandwoodPriceplan != null && customer.basicandwoodPriceplan != ''">
+                                                <el-tag>{{customer.basicandwoodPriceplan}}(万元)</el-tag>
+                                            </template>
+                                        </div>
+                                    </el-col>
+                                </el-row>
+                                <el-row :gutter="5">
+                                    <el-col :span="6">
+                                        <div class="text">
+                                            暖通及设备：
+                                            <template v-if="customer.hvacPriceplan != null && customer.hvacPriceplan != ''">
+                                                <el-tag>{{customer.hvacPriceplan}}(万元)</el-tag>
+                                            </template>
+                                        </div>
+                                    </el-col>
+                                    <el-col :span="6">
+                                        <div class="text">
+                                            主材：
+                                            <template
+                                                    v-if="customer.materialPriceplan != null && customer.materialPriceplan != ''">
+                                                <el-tag>{{customer.materialPriceplan}}(万元)</el-tag>
+                                            </template>
+                                        </div>
+                                    </el-col>
+                                    <el-col :span="6">
+                                        <div class="text">
+                                            移动家具：
+                                            <template
+                                                    v-if="customer.furniturePriceplan != null && customer.furniturePriceplan != ''">
+                                                <el-tag>{{customer.furniturePriceplan}}(万元)</el-tag>
+                                            </template>
+                                        </div>
+                                    </el-col>
+                                    <el-col :span="6">
+                                        <div class="text">
+                                            电器：
+                                            <template
+                                                    v-if="customer.electricalPriceplan != null && customer.electricalPriceplan != ''">
+                                                <el-tag>{{customer.electricalPriceplan}}(万元)</el-tag>
+                                            </template>
+                                        </div>
+                                    </el-col>
+                                </el-row>
+                            </el-col>
+                        </el-tab-pane>
                     </el-tabs>
                 </el-card>
             </el-row>
