@@ -9,6 +9,7 @@ import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
 import com.microtomato.hirun.modules.organization.entity.dto.SimpleEmployeeDTO;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -39,7 +40,6 @@ public class CreateAgentMonthPlanTask {
      * 每月1号执行。
      * 查询合同记录提醒人资续签
      * 每个月1号 的 1:00 开始执行
-     *
      */
     @Scheduled(cron = "0 0 1 1 * ?")
     public void scheduled() {
@@ -51,11 +51,18 @@ public class CreateAgentMonthPlanTask {
         Calendar date = Calendar.getInstance();
         String currentYear = String.valueOf(date.get(Calendar.YEAR));
         String currentMonth = String.valueOf(date.get(Calendar.MONTH) + 1);
+        String previousMonth = String.valueOf(date.get(Calendar.MONTH));
 
-        if(currentMonth.length()<2){
-            currentMonth="0"+currentMonth;
+        if (currentMonth.length() < 2) {
+            currentMonth = "0" + currentMonth;
         }
+
+        if (previousMonth.length() < 2) {
+            previousMonth = "0" + previousMonth;
+        }
+
         Integer planMonth = Integer.valueOf(currentYear + currentMonth);
+        Integer previousMonthPlan = Integer.valueOf(previousMonth + previousMonth);
 
         List<PlanAgentMonth> addList = new ArrayList<>();
 
@@ -68,27 +75,48 @@ public class CreateAgentMonthPlanTask {
             if (existPlanAgentMonth != null) {
                 continue;
             }
-            PlanAgentMonth planAgentMonth=new PlanAgentMonth();
-            OrgDO orgDO= SpringContextUtils.getBean(OrgDO.class,employee.getOrgId());
 
+            //查看上个月是否有设定的计划，将上个月的计划继承下来
+            PlanAgentMonth existPreviousPlanAgentMonth = planAgentMonthService.getOne(new QueryWrapper<PlanAgentMonth>().lambda()
+                    .eq(PlanAgentMonth::getMonth, previousMonthPlan)
+                    .eq(PlanAgentMonth::getEmployeeId, employee.getEmployeeId()));
+
+
+            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, employee.getOrgId());
+            PlanAgentMonth planAgentMonth = new PlanAgentMonth();
             planAgentMonth.setEmployeeId(employee.getEmployeeId());
             planAgentMonth.setOrgId(employee.getOrgId());
             planAgentMonth.setMonth(planMonth);
-            planAgentMonth.setPlanBindAgentCount(6);
-            planAgentMonth.setPlanConsultCount(6);
-            planAgentMonth.setPlanStyleCount(6);
-            planAgentMonth.setPlanFuncaCount(6);
-            planAgentMonth.setPlanFuncbCount(6);
-            planAgentMonth.setPlanFunccCount(6);
-            planAgentMonth.setPlanBindDesignCount(3);
-            planAgentMonth.setPlanMeasureCount(3);
-            planAgentMonth.setPlanCitycabinCount(6);
             planAgentMonth.setShopId(orgDO.getBelongShop().getOrgId());
             planAgentMonth.setCompanyId(orgDO.getBelongCompany().getOrgId());
-            addList.add(planAgentMonth);
+
+            if (existPreviousPlanAgentMonth != null) {
+                planAgentMonth.setPlanBindAgentCount(existPreviousPlanAgentMonth.getPlanBindAgentCount());
+                planAgentMonth.setPlanConsultCount(existPreviousPlanAgentMonth.getPlanConsultCount());
+                planAgentMonth.setPlanStyleCount(existPreviousPlanAgentMonth.getPlanStyleCount());
+                planAgentMonth.setPlanFuncaCount(existPreviousPlanAgentMonth.getPlanFuncaCount());
+                planAgentMonth.setPlanFuncbCount(existPreviousPlanAgentMonth.getPlanFuncbCount());
+                planAgentMonth.setPlanFunccCount(existPreviousPlanAgentMonth.getPlanFunccCount());
+                planAgentMonth.setPlanBindDesignCount(existPreviousPlanAgentMonth.getPlanBindDesignCount());
+                planAgentMonth.setPlanMeasureCount(existPreviousPlanAgentMonth.getPlanMeasureCount());
+                planAgentMonth.setPlanCitycabinCount(existPreviousPlanAgentMonth.getPlanCitycabinCount());
+                addList.add(planAgentMonth);
+            } else {
+                planAgentMonth.setPlanBindAgentCount(6);
+                planAgentMonth.setPlanConsultCount(6);
+                planAgentMonth.setPlanStyleCount(6);
+                planAgentMonth.setPlanFuncaCount(6);
+                planAgentMonth.setPlanFuncbCount(6);
+                planAgentMonth.setPlanFunccCount(6);
+                planAgentMonth.setPlanBindDesignCount(3);
+                planAgentMonth.setPlanMeasureCount(3);
+                planAgentMonth.setPlanCitycabinCount(6);
+                addList.add(planAgentMonth);
+            }
+
         }
 
-        if(ArrayUtils.isNotEmpty(addList)){
+        if (ArrayUtils.isNotEmpty(addList)) {
             planAgentMonthService.saveBatch(addList);
         }
     }
