@@ -5,10 +5,7 @@ import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.modules.bss.order.entity.dto.LastInstallmentCollectionDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.PayComponentDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.fee.DesignFeeDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.fee.ProjectFeeDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.fee.QueryDesignFeeDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.fee.QueryProjectFeeDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.fee.*;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFee;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayNo;
 import com.microtomato.hirun.modules.bss.order.service.IInstallmentCollectDomainService;
@@ -111,5 +108,11 @@ public class OrderFeeController {
     @RestResult
     public IPage<ProjectFeeDTO> queryProjectFees(QueryProjectFeeDTO projectFeeDTO) {
         return this.orderFeeServiceImpl.queryProjectFees(projectFeeDTO);
+    }
+
+    @GetMapping("/queryNoBalanceFees")
+    @RestResult
+    public IPage<NoBalanceFeeDTO> queryNoBalanceFees(QueryNoBalanceFeeDTO condtion) {
+        return this.orderFeeServiceImpl.queryNoBalanceFees(condtion);
     }
 }

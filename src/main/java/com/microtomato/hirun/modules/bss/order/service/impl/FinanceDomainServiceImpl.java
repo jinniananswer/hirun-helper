@@ -455,6 +455,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
         queryWrapper.likeRight(StringUtils.isNotEmpty(queryCondition.getMobileNo()), "b.mobile_no", queryCondition.getMobileNo());
         queryWrapper.eq(StringUtils.isNotEmpty(queryCondition.getOrderStatus()), "a.status", queryCondition.getOrderStatus());
         queryWrapper.eq(queryCondition.getHousesId() != null, "a.housesId", queryCondition.getHousesId());
+        queryWrapper.eq(queryCondition.getCustNo() != null, "b.cust_no", queryCondition.getCustNo());
         //排除售后，订单关闭的状态
         queryWrapper.notIn("a.status", "32", "33", "100");
         IPage<CustOrderInfoDTO> result = this.orderBaseMapper.queryCustOrderInfo(page, queryWrapper);
