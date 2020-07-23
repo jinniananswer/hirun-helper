@@ -5,10 +5,14 @@
     <title>供应商综合资料</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <link rel="stylesheet" href="../../../../static/element-ui/css/index.css" th:href="@{static/element-ui/css/index.css(v=${version})}">
-    <script src="../../../../static/js/framework/requirejs/require.min.js" th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
-    <script src="../../../../static/js/framework/requirejs/require.config.js" th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="../../../../static/element-ui/css/index.css"
+          th:href="@{static/element-ui/css/index.css(v=${version})}">
+    <script src="../../../../static/js/framework/requirejs/require.min.js"
+            th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="../../../../static/js/framework/requirejs/require.config.js"
+            th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
 </head>
 <body>
 <div id="app" v-cloak>
@@ -39,116 +43,46 @@
                 </el-form>
             </el-card>
 
-            <el-table
-                    :data="supplierInfo"
-                    stripe="true"
-                    border
-                    height="400"
-                    style="width: 100%">
-                <el-table-column
-                        fixed
-                        prop="id"
-                        width="100"
-                        align="center">
-                    <template slot-scope="scopeSupplier">
-                        <el-checkbox v-model="checked" border></el-checkbox>
-                    </template>
-                </el-table-column>
-                <el-table-column
-                        label="供应商编号"
-                        fixed
-                        prop="id"
-                        width="100"
-                        align="center">
-                    <template slot-scope="scopeSupplier">
-                        <el-button type="text" @click="">{{ scopeSupplier.row.id }}</el-button>
-                    </template>
-                </el-table-column>
-                <el-table-column
-                        prop="name"
-                        width="200"
-                        label="供应商名称"
-                        align="center">
-                </el-table-column>
-                <el-table-column
-                        prop="abbreviation"
-                        width="200"
-                        label="供应商简称"
-                        align="center">
-                </el-table-column>
-                <el-table-column
-                        prop="supplier_type"
-                        width="100"
-                        label="供应商类型"
-                        align="center">
-                </el-table-column>
-                <el-table-column
-                        prop="operator"
-                        width="120"
-                        label="经办人"
-                        align="center">
-                </el-table-column>
-                <el-table-column
-                        prop="mobile_no"
-                        width="120"
-                        label="联系电话"
-                        align="center">
-                </el-table-column>
-                <el-table-column
-                        prop="Landline"
-                        width="120"
-                        label="座机"
-                        align="center">
-                </el-table-column>
-                <el-table-column
-                        prop="mailbox"
-                        width="180"
-                        label="邮箱"
-                        align="center">
-                </el-table-column>
-                <el-table-column
-                        prop="address"
-                        width="250"
-                        label="地址"
-                        align="center">
-                </el-table-column>
-                <el-table-column
-                        prop="status"
-                        width="100"
-                        label="状态"
-                        align="center">
-                </el-table-column>
-                <el-table-column
-                        prop="contacts"
-                        width="100"
-                        label="联系人"
-                        align="center">
-                </el-table-column>
-                <el-table-column
-                        prop="standby_telephone"
-                        width="100"
-                        label="备用联系电话"
-                        align="center">
-                </el-table-column>
-                <el-table-column
-                        prop="verify_person"
-                        width="100"
-                        label="对账人"
-                        align="center">
-                </el-table-column>
-                <el-table-column
-                        prop="reviewer"
-                        width="100"
-                        label="审核人"
-                        align="center">
-                </el-table-column>
-                <el-table-column
-                        prop="account_number1"
-                        width="150"
-                        label="银行账号1"
-                        align="center">
-                </el-table-column>
-            </el-table>
+            <el-card class="box-card" shadow="hover">
+                <el-row style="padding-bottom: 12px">
+                    <el-button type="success" icon="el-icon-folder-add" @click="addSupplier">新增</el-button>
+                    <el-button type="danger" icon="el-icon-delete" @click="deleteSupplierBatch">删除</el-button>
+                </el-row>
+                <el-table
+                        :data="supplierInfo" stripe="true" border height="350" style="width: 100%"
+                        @selection-change="handleSelectionChange">
+                    <el-table-column type="selection" width="60" align="center"></el-table-column>
+                    <el-table-column label="供应商编号" fixed prop="id" width="100" align="center">
+                        <template slot-scope="scopeSupplier">
+                            <el-button type="text" @click="querySupplierBrandBySupplierId(scopeSupplier.row.id)">{{
+                                scopeSupplier.row.id }}
+                            </el-button>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="name" width="200" label="供应商名称" align="center"></el-table-column>
+                    <el-table-column prop="abbreviation" width="200" label="供应商简称" align="center"></el-table-column>
+                    <el-table-column prop="supplierType" width="100" label="供应商类型" align="center"></el-table-column>
+                    <el-table-column prop="operator" width="120" label="经办人" align="center"></el-table-column>
+                    <el-table-column prop="mobileNo" width="120" label="联系电话" align="center"></el-table-column>
+                    <el-table-column prop="landline" width="120" label="座机" align="center"></el-table-column>
+                    <el-table-column prop="mailbox" width="180" label="邮箱" align="center"></el-table-column>
+                    <el-table-column prop="address" width="250" label="地址" align="center"></el-table-column>
+                    <el-table-column prop="status" width="100" label="状态" align="center"></el-table-column>
+                    <el-table-column prop="contacts" width="100" label="联系人" align="center"></el-table-column>
+                    <el-table-column prop="standbyTelephone" width="100" label="备用联系电话" align="center"></el-table-column>
+                    <el-table-column fixed="right" label="操作" align="center" width="200">
+                        <template slot-scope="scope">
+                            <el-button type="danger" width="50" size="mini" icon="el-icon-edit"
+                                       @click="editSupplierById(scope.row)">编辑
+                            </el-button>
+                            <el-button type="danger" width="50" size="mini" icon="el-icon-delete"
+                                       @click="deleteSupplierById(scope.row.id)">删除
+                            </el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </el-card>
+
             <div style="text-align: center">
                 <el-pagination
                         layout="total, prev, pager, next"
@@ -158,6 +92,122 @@
                         @current-change="querySupplier">
                 </el-pagination>
             </div>
+
+            <el-dialog width="80%" title="供应商信息修改" append-to-body :visible.sync="editSupplierDialogVisible">
+                <el-form :inline="false" :model="editSupplierInfo" :rules="supplierRules" ref="editSupplierInfo" label-position="right"
+                         label-width="120px">
+                    <el-row>
+                        <el-col :span="8">
+                            <el-form-item label="供应商名称" label-width="100px" prop="name">
+                                <el-input v-model="editSupplierInfo.name" autocomplete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="供应商简称" label-width="100px" prop="abbreviation">
+                                <el-input v-model="editSupplierInfo.abbreviation" autocomplete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="联系电话" label-width="100px" prop="mobileNo">
+                                <el-input v-model.number="editSupplierInfo.mobileNo" autocomplete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="8">
+                            <el-form-item label="座机" label-width="100px" prop="landline">
+                                <el-input v-model="editSupplierInfo.landline" autocomplete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="邮箱" label-width="100px" prop="mailbox">
+                                <el-input v-model="editSupplierInfo.mailbox" autocomplete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="地址" label-width="100px" prop="address">
+                                <el-input v-model="editSupplierInfo.address" autocomplete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="8">
+                            <el-form-item label="联系人" label-width="100px" prop="contacts">
+                                <el-input v-model="editSupplierInfo.contacts" autocomplete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="备用联系电话" label-width="100px">
+                                <el-input v-model="editSupplierInfo.standbyTelephone" autocomplete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <div style="text-align: center">
+                            <el-button type="primary" @click="submitEdit(editSupplierInfo)">提交修改</el-button>
+                            <el-button @click="cancel()">取消</el-button>
+                        </div>
+                    </el-row>
+                </el-form>
+            </el-dialog>
+
+            <el-dialog width="80%" title="供应商信息新增" append-to-body :visible.sync="addSupplierDialogVisible">
+                <el-form :inline="false" :model="addSupplierInfo"  ref="addSupplierInfo" label-position="right"
+                         label-width="120px">
+                    <el-row>
+                        <el-col :span="8">
+                            <el-form-item label="供应商名称" label-width="100px" prop="name">
+                                <el-input v-model="addSupplierInfo.name" autocomplete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="供应商简称" label-width="100px" prop="abbreviation">
+                                <el-input v-model="addSupplierInfo.abbreviation" autocomplete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="联系电话" label-width="100px" prop="mobileNo">
+                                <el-input v-model.number="addSupplierInfo.mobileNo" autocomplete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="8">
+                            <el-form-item label="座机" label-width="100px" prop="landline">
+                                <el-input v-model="addSupplierInfo.landline" autocomplete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="邮箱" label-width="100px" prop="mailbox">
+                                <el-input v-model="addSupplierInfo.mailbox" autocomplete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="地址" label-width="100px" prop="address">
+                                <el-input v-model="addSupplierInfo.address" autocomplete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="8">
+                            <el-form-item label="联系人" label-width="100px" prop="contacts">
+                                <el-input v-model="addSupplierInfo.contacts" autocomplete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="备用联系电话" label-width="100px">
+                                <el-input v-model="addSupplierInfo.standbyTelephone" autocomplete="off"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <div style="text-align: center">
+                            <el-button type="primary" @click="submitAdd(addSupplierInfo)">保存</el-button>
+                            <el-button @click="cancel()">取消</el-button>
+                        </div>
+                    </el-row>
+                </el-form>
+            </el-dialog>
         </el-main>
     </el-container>
 </div>
@@ -167,7 +217,8 @@
     }
 
 </style>
-<script src="../../../../static/js/modules/bss/supply/supplier_information.js" th:src="@{static/js/modules/bss/supply/supplier_information.js(v=${version})}"></script>
+<script src="../../../../static/js/modules/bss/supply/supplier_information.js"
+        th:src="@{static/js/modules/bss/supply/supplier_information.js(v=${version})}"></script>
 </body>
 
 </html>
