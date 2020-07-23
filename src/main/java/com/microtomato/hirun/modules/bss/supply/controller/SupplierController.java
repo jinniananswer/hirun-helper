@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * 供应商表(SupplySupplier)表控制层
  *
@@ -39,7 +41,13 @@ public class SupplierController {
     @RestResult
     public boolean updateSupplierById(@RequestBody Supplier supplier){
         System.out.println(supplier);
-        log.debug(supplier.toString());
         return this.supplySupplierService.updateById(supplier);
+    }
+
+    @PostMapping("deleteSupplierByIds")
+    @RestResult
+    public boolean deleteSupplierByIds(@RequestBody List<Supplier> supplierList){
+        System.out.println(supplierList);
+        return true;
     }
 }

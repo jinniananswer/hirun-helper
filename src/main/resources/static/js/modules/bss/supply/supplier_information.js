@@ -83,7 +83,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'house-select']
             },
             deleteSupplierBatch(){
                 let val = this.multipleSelection
-                if(val.length <= 0){
+                if(val == undefined || val == 'undefined' || val.length <= 0){
                     this.$message({
                         showClose: true,
                         duration: 3000,
@@ -93,9 +93,14 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'house-select']
                     return;
                 }
                 alert("勾选了删除：" + val.length + "个元素")
+                let supplierIdList = [];
                 val.forEach(v => {
-                    alert(v.id);
+                    supplierIdList.push({supplierId:v.id});
                 });
+                alert(JSON.stringify(supplierIdList));
+                ajax.post('api/bss.supply/supplier/deleteSupplierByIds', val, function(responseData){
+
+                },null, true);
             },
             editSupplierById(supplier){
                 this.$nextTick(()=>{
