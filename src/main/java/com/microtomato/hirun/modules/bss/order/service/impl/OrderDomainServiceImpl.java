@@ -548,6 +548,12 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
                 this.add(5L);
                 this.add(6L);
             }}, null, orderPayItems);
+            if (designPayItem != null) {
+                OrderPayNo payNo = this.findPayNo(designPayItem.getPayNo(), orderPayNos);
+                if (payNo != null) {
+                    usualFee.setPayDesignDate(payNo.getPayDate());
+                }
+            }
 
             OrderPayItem firstPayItem = this.findPayItem(new ArrayList<Long>() {{
                 this.add(7L);
@@ -607,6 +613,7 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
                 usualFee.setDesignFee(totalFee);
                 usualFee.setDesignNeedPay(needPay);
                 usualFee.setDesignPayed(payed);
+
             } else if (StringUtils.equals("2", type)) {
                 //工程款
                 List<OrderFeeItem> feeItems = this.findFeeItems(orderFee.getFeeNo(), orderFeeItems);

@@ -1,4 +1,4 @@
-package com.microtomato.hirun.modules.bss.supply.entity.po;
+package com.microtomato.hirun.modules.bss.config.entity.po;
 
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -16,11 +16,11 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 /**
- * 供应订单表(SupplyOrder)表实体类
+ * 财务科目表(FinanceItem)表实体类
  *
  * @author Jinnian
  * @version 1.0.0
- * @date 2020-07-15 11:26:08
+ * @date 2020-07-19 22:26:54
  */
 @Data
 @Builder
@@ -28,31 +28,33 @@ import lombok.NoArgsConstructor;
 @Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("supply_order")
-public class SupplyOrder extends BaseEntity {
+@TableName("finance_item")
+public class FinanceItem extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
     
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    /** 主营系统订单号，暂可以为空 */
-    @TableField(value = "order_id")
-    private Long orderId;
+    /** 财务科目 对应老系统id，将 */
+    @TableField(value = "finance_item_id")
+    private String financeItemId;
 
+    /** 财务科目名称 */
+    @TableField(value = "name")
+    private String name;
 
+    /** 财务科目类型 */
+    @TableField(value = "type")
+    private String type;
 
-    /** 总费用 */
-    @TableField(value = "total_fee")
-    private Integer totalFee;
+    /** 财务科目上级科目 */
+    @TableField(value = "parent_finance_item_id")
+    private String parentFinanceItemId;
 
-    /** 1-主营材料下单 2-主营材料退单 3-材料入库 4-材料出库 */
-    @TableField(value = "supply_order_type")
-    private String supplyOrderType;
-
-
-    @TableField(value = "remark")
-    private String remark;
+    /** 0-借 1-贷 */
+    @TableField(value = "direction")
+    private Boolean direction;
 
 
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)
@@ -70,8 +72,12 @@ public class SupplyOrder extends BaseEntity {
     @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
 
-    /** 状态：暂0代表在用，1为废弃 */
-    @TableField(value = "supply_status")
-    private String supplyStatus;
+    /** U-表示有效 */
+    @TableField(value = "status")
+    private String status;
+
+
+    @TableField(value = "remark")
+    private String remark;
 
 }

@@ -7,9 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.microtomato.hirun.framework.annotation.Storage;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
-import com.microtomato.hirun.modules.bss.salary.entity.dto.EmployeeSalaryRoyaltyDetailDTO;
-import com.microtomato.hirun.modules.bss.salary.entity.dto.OrderSalaryRoyaltyDetailDTO;
-import com.microtomato.hirun.modules.bss.salary.entity.dto.QueryRoyaltyDetailDTO;
+import com.microtomato.hirun.modules.bss.salary.entity.dto.*;
 import com.microtomato.hirun.modules.bss.salary.entity.po.SalaryRoyaltyDetail;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -46,4 +44,10 @@ public interface SalaryRoyaltyDetailMapper extends BaseMapper<SalaryRoyaltyDetai
             "${ew.customSqlSegment}"
     )
     IPage<OrderSalaryRoyaltyDetailDTO> queryOrderSalaryRoyaltyDetailPages(IPage<QueryRoyaltyDetailDTO> queryCondition, @Param(Constants.WRAPPER) Wrapper wrapper);
+
+    @Select("select b.cust_id, b.cust_name, b.cust_no, b.cust_status, a.order_id, a.decorate_address, a.house_layout, a.indoor_area, a.shop_id, a.type, a.status " +
+            "from cust_base b, order_base a \n" +
+            "${ew.customSqlSegment}"
+    )
+    IPage<StatRoyaltyDetailDTO> statByCustOrder(IPage<QueryStatRoyaltyDTO> condition, @Param(Constants.WRAPPER) Wrapper wrapper);
 }

@@ -99,4 +99,10 @@ public class SalaryRoyaltyDetailController {
     public void auditProjectRoyaltyNo(@RequestBody List<ProjectRoyaltyDetailDTO> projectRoyaltyDetails) {
         this.salaryRoyaltyDetailService.auditProjectRoyaltyNo(projectRoyaltyDetails);
     }
+
+    @GetMapping("/statByCustOrder")
+    @RestResult
+    public IPage<StatRoyaltyDetailDTO> statByCustOrder(QueryStatRoyaltyDTO condition) {
+        return this.salaryRoyaltyDetailService.statByCustOrder(condition);
+    }
 }

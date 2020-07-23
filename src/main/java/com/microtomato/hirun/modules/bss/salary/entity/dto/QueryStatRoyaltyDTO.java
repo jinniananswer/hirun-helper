@@ -1,15 +1,15 @@
-package com.microtomato.hirun.modules.bss.order.entity.dto.fee;
+package com.microtomato.hirun.modules.bss.salary.entity.dto;
 
 import lombok.Data;
 
 /**
  * @program: hirun-helper
- * @description: 设计费用查询条件数据对象
+ * @description: 统计提成明细查询条件DTO
  * @author: jinnian
- * @create: 2020-07-04 15:09
+ * @create: 2020-07-15 23:40
  **/
 @Data
-public class QueryDesignFeeDTO {
+public class QueryStatRoyaltyDTO {
 
     private String custName;
 
@@ -19,7 +19,7 @@ public class QueryDesignFeeDTO {
 
     private String shopIds;
 
-    private String[] feeTime;
+    private String feeTime;
 
     private Integer page;
 
