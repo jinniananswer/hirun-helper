@@ -15,10 +15,7 @@ import com.microtomato.hirun.modules.bss.config.service.IOrderStatusCfgService;
 import com.microtomato.hirun.modules.bss.config.service.IPayItemCfgService;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.*;
-import com.microtomato.hirun.modules.bss.order.entity.dto.fee.DesignFeeDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.fee.ProjectFeeDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.fee.QueryDesignFeeDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.fee.QueryProjectFeeDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.fee.*;
 import com.microtomato.hirun.modules.bss.order.entity.po.*;
 import com.microtomato.hirun.modules.bss.order.exception.OrderException;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderFeeMapper;
@@ -322,11 +319,10 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
             wrapper.in("a.shop_id", shopIdArray);
         }
 
-        String feeTime = condition.getFeeTime();
-        if (StringUtils.isNotBlank(feeTime)) {
-            String[] feeTimeArray = StringUtils.split(",");
-            wrapper.ge("d.first_pay_time", feeTimeArray[0]);
-            wrapper.le("d.first_pay_time", feeTimeArray[1]);
+        String[] feeTime = condition.getFeeTime();
+        if (ArrayUtils.isNotEmpty(feeTime)) {
+            wrapper.ge("d.first_pay_time", feeTime[0]);
+            wrapper.le("d.first_pay_time", feeTime[1]);
         }
 
         wrapper.eq(condition.getHousesId() != null, "a.houses_id", condition.getHousesId());
@@ -472,9 +468,9 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
                 designFee.setDesignFeeFinanceName(employee.getName());
             }
         }
-        designFee.setDesignFee(total);
+        designFee.setDesignFee(total / 100d);
         designFee.setFirstPayTime(payTime);
-        designFee.setDepositFee(totalDeposit);
+        designFee.setDepositFee(totalDeposit / 100d);
         designFee.setFeeTime(payTime);
         designFee.setHouseLayoutName(this.staticDataService.getCodeName("HOUSE_MODE", designFee.getHouseLayout()));
 
@@ -545,5 +541,71 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
         });
 
         return pageProjectFees;
+    }
+
+    /**
+     * 查询未收齐款项工地
+     * @param condition
+     * @return
+     */
+    @Override
+    public IPage<NoBalanceFeeDTO> queryNoBalanceFees(QueryNoBalanceFeeDTO condition) {
+        QueryWrapper<QueryProjectFeeDTO> wrapper = new QueryWrapper<>();
+        wrapper.apply(" b.cust_id = a.cust_id ");
+        wrapper.apply("c.order_id = a.order_id ");
+        wrapper.eq(condition.getOrderId() != null, "a.order_id", condition.getOrderId());
+        wrapper.eq(condition.getFeeType() != null, "c.type", condition.getFeeType());
+        wrapper.eq(condition.getPeriods() != null, "c.periods", condition.getFeeType());
+
+        String shopIds = condition.getShopIds();
+        if (StringUtils.isNotBlank(shopIds)) {
+            List<String> shopIdArray = Arrays.asList(StringUtils.split(shopIds, ","));
+            wrapper.in("a.shop_id", shopIdArray);
+        }
+        IPage<QueryNoBalanceFeeDTO> page = new Page<>(condition.getPage(), condition.getLimit());
+        IPage<NoBalanceFeeDTO> pageNoBalanceFee = this.orderFeeMapper.queryNoBalanceFee(page, wrapper);
+
+        List<NoBalanceFeeDTO> noBalanceFees = pageNoBalanceFee.getRecords();
+
+        if (ArrayUtils.isEmpty(noBalanceFees)) {
+            return pageNoBalanceFee;
+        }
+
+        noBalanceFees.forEach(noBalanceFee -> {
+            UsualOrderWorkerDTO usualWorker = this.orderDomainService.getUsualOrderWorker(noBalanceFee.getOrderId());
+            noBalanceFee.setUsualWorker(usualWorker);
+
+            String orderStatus = noBalanceFee.getStatus();
+            if (StringUtils.isNotBlank(orderStatus)) {
+                OrderStatusCfg orderStatusCfg = this.orderStatusCfgService.getCfgByTypeStatus(noBalanceFee.getType(), orderStatus);
+                if (orderStatusCfg != null) {
+                    noBalanceFee.setOrderStatusName(orderStatusCfg.getStatusName());
+                }
+            }
+
+            if (noBalanceFee.getPeriods() != null) {
+                noBalanceFee.setPeriodsName(this.staticDataService.getCodeName("PERIODS", noBalanceFee.getPeriodsName()));
+            }
+
+            if (noBalanceFee.getFeeType() != null) {
+                noBalanceFee.setFeeTypeName(this.staticDataService.getCodeName("FEE_TYPE", noBalanceFee.getFeeType()));
+            }
+
+            if (noBalanceFee.getNeedPay() == null) {
+                noBalanceFee.setNeedPay(0d);
+            } else {
+                noBalanceFee.setNeedPay(noBalanceFee.getNeedPay() / 100d);
+            }
+
+            if (noBalanceFee.getPay() == null) {
+                noBalanceFee.setPay(0d);
+            } else {
+                noBalanceFee.setPay(noBalanceFee.getPay() / 100d);
+            }
+
+            noBalanceFee.setMinus(noBalanceFee.getNeedPay() - noBalanceFee.getPay());
+        });
+
+        return pageNoBalanceFee;
     }
 }

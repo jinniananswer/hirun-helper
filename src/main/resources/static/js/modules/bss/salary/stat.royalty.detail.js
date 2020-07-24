@@ -5,12 +5,11 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
         data: function() {
             return {
                 queryCond: {
-                    feeTime: [],
                     count: 0,
                     limit: 20,
                     page: 1
                 },
-                designFees: [],
+                statRoyaltyDetails: [],
                 pickerOptions: {
                     shortcuts: [{
                         text: '最近一周',
@@ -51,9 +50,9 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
 
             query: function() {
                 let that = this;
-                ajax.post('api/bss/order/order-fee/queryDesignFees', this.queryCond, function(responseData){
+                ajax.get('api/bss.salary/salary-royalty-detail/statByCustOrder', this.queryCond, function(responseData){
                     if (responseData) {
-                        that.designFees = responseData.records;
+                        that.statRoyaltyDetails = responseData.records;
                         that.queryCond.page = responseData.current;
                         that.queryCond.count = responseData.total;
                     }

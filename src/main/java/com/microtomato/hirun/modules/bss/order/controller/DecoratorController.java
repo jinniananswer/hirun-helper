@@ -41,7 +41,12 @@ public class DecoratorController {
     public List<Decorator> selectTypeDecorator(Long type) {
         UserContext userContext = WebContextUtils.getUserContext();
         Long orgId = userContext.getOrgId();
-        return this.decoratorServiceImpl.queryDecoratorInfo(orgId, type);
+        if (type == null) {
+            return  this.decoratorServiceImpl.queryAllInfo();
+        }
+        else{
+            return this.decoratorServiceImpl.queryDecoratorInfo(orgId, type);
+        }
     }
 
     @GetMapping("/queryDecoratorInfo")

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>工地未收齐款项查询</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script src="static/js/framework/requirejs/require.min.js" th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js" th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-main>
+            <el-row>
+                <el-card class="box-card" shadow="hover">
+                    <div slot="header" class="clearfix">
+                        <span>查询条件区</span>
+                    </div>
+                    <el-form :inline="false" :model="queryCond" label-position="right" label-width="80px">
+                        <el-row>
+                            <el-col :span="8">
+                                <el-form-item label="款项">
+                                    <vue-select code-type="FEE_TYPE" v-model="queryCond.feeType"></vue-select>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="期数">
+                                    <vue-select code-type="PERIODS" v-model="queryCond.periods"></vue-select>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="归属店面">
+                                    <org-orgtree :org-id.sync="queryCond.orgIds" :org-name.sync="queryCond.orgName" mode="multi"></org-orgtree>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="8">
+                                <el-form-item label="客户">
+                                    <el-input v-model="queryCond.custName" placeholder="请点击进行客户订单查询" @focus="showCustQuery">
+                                        <template slot="prepend">客户姓名</template>
+                                    </el-input>
+                                    <el-input v-model="queryCond.custId" style="display: none"></el-input>
+                                    <el-input v-model="queryCond.orderId" style="display: none"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item>
+                                    <el-button type="primary" @click="query">查询</el-button>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                    </el-form>
+                </el-card>
+            </el-row>
+            <el-dialog width="80%" title="客户订单查询" :visible.sync="dialogVisible">
+                <el-card class="box-card" shadow="hover">
+                    <div slot="header" class="clearfix">
+                        <span>查询条件区</span>
+                    </div>
+                    <el-form :inline="false" :model="dialogQueryCond" label-position="right" label-width="80px">
+                        <el-row>
+                            <el-col :span="8">
+                                <el-form-item label="客户姓名">
+                                    <el-input v-model="dialogQueryCond.custName" placeholder="请输入客户姓名"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="客户编号">
+                                    <el-input v-model="dialogQueryCond.custNo" placeholder="请输入客户编号"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="联系电话">
+                                    <el-input v-model="dialogQueryCond.mobileNo" placeholder="请输入联系电话"></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="8">
+                                <el-form-item label="归属楼盘">
+                                    <house-select v-model="dialogQueryCond.housesId"></house-select>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="订单状态">
+                                    <vue-select code-type="ORDER_STATUS" v-model="dialogQueryCond.orderStatus"></vue-select>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item>
+                                    <el-button type="primary" @click="dialogQuery">查询</el-button>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                    </el-form>
+                </el-card>
+                <el-table
+                        :data="custOrder"
+                        stripe="true"
+                        border
+                        height="400"
+                        style="width: 100%">
+                    <el-table-column
+                            label="客户姓名"
+                            fixed
+                            width="80"
+                            align="center">
+                        <template slot-scope="scope">
+                            <el-button type="text" @click="selectCustOrder(scope.row.orderId, scope.row.custId, scope.row.custName)">{{ scope.row.custName }}</el-button>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                            prop="sexName"
+                            width="60"
+                            label="性别">
+                    </el-table-column>
+                    <el-table-column
+                            prop="mobileNo"
+                            width="120"
+                            label="联系电话"
+                            align="center">
+                    </el-table-column>
+                    <el-table-column
+                            prop="decorateAddress"
+                            label="装修地址">
+                    </el-table-column>
+                    <el-table-column
+                            width="150"
+                            prop="housesName"
+                            label="所属楼盘">
+                    </el-table-column>
+                    <el-table-column
+                            width="100"
+                            prop="houseLayoutName"
+                            label="户型">
+                    </el-table-column>
+                    <el-table-column
+                            width="100"
+                            prop="floorage"
+                            label="建筑面积">
+                    </el-table-column>
+                    <el-table-column
+                            width="100"
+                            prop="indoorArea"
+                            label="室内面积">
+                    </el-table-column>
+                    <el-table-column
+                            width="100"
+                            prop="stageName"
+                            label="订单阶段">
+                    </el-table-column>
+                    <el-table-column
+                            width="100"
+                            prop="statusName"
+                            label="订单状态">
+                    </el-table-column>
+                </el-table>
+                <div style="text-align: center">
+                    <el-pagination
+                            layout="total, prev, pager, next"
+                            :total="dialogQueryCond.count"
+                            :current-page.sync="queryCond.page"
+                            :page-size="dialogQueryCond.limit"
+                            @current-change="dialogQuery">
+                    </el-pagination>
+                </div>
+            </el-dialog>
+            <el-row>
+                <el-card class="box-card" shadow="hover">
+                    <vxe-table
+                            border
+                            resizable
+                            ref="balanceTable"
+                            show-overflow
+                            highlight-hover-row
+                            highlight-cell
+                            keep-source
+                            max-height="800px"
+                            :auto-resize="true"
+                            :data="balances">
+                        <vxe-table-column field="contractId" title="合同编号" sortable width="150" fixed="left"></vxe-table-column>
+                        <vxe-table-column field="custNo" title="客户编号" sortable width="150" fixed="left"></vxe-table-column>
+                        <vxe-table-column field="custName" title="客户姓名" sortable width="100" fixed="left"></vxe-table-column>
+                        <vxe-table-column field="decorateAddress" title="地址" sortable width="200" fixed="left"></vxe-table-column>
+                        <vxe-table-column field="orderStatusName" title="客户状态" sortable width="100" fixed="left"></vxe-table-column>
+                        <vxe-table-column field="needPay" title="应收合计" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="pay" title="已收合计" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="minus" title="差额" sortable width="120"></vxe-table-column>
+                        <vxe-table-column field="remark" title="备注" width="120"></vxe-table-column>
+                        <vxe-table-column field="shopName" title="店名" width="100"></vxe-table-column>
+                        <vxe-table-column field="usualWorker.agentName" title="客户代表" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="usualWorker.designerName" title="设计师" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="usualWorker.counselorName" title="家装顾问" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="usualWorker.cabinetName" title="橱柜设计师" sortable width="120"></vxe-table-column>
+                        <vxe-table-column field="usualWorker.materialName" title="主材管家" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="usualWorker.reportName" title="申报人" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="firstRoyaltyMonth" title="首付提成月份" sortable width="200"></vxe-table-column>
+                        <vxe-table-column field="secondRoyaltyMonth" title="二期提成月份" sortable width="200"></vxe-table-column>
+                    </vxe-table>
+                    <div style="text-align: center">
+                        <el-pagination
+                                layout="total, prev, pager, next"
+                                :total="queryCond.count"
+                                :current-page.sync="queryCond.page"
+                                :page-size="queryCond.limit"
+                                @current-change="query">
+                        </el-pagination>
+                    </div>
+                </el-card>
+            </el-row>
+
+        </el-main>
+    </el-container>
+</div>
+<style>
+    .text {
+        font-size: 14px;
+    }
+
+    .box-card {
+        margin-bottom: 12px;
+    }
+
+    .item {
+        margin-bottom: 18px;
+    }
+
+    .el-card__header {
+        padding:10px;
+    }
+
+    .modify_row {
+        color: #ff4835;
+    }
+
+    .new_row {
+        color: #4DAF29;
+    }
+
+    .delete_row {
+        text-decoration:line-through;
+    }
+</style>
+<script src="static/js/modules/bss/order/fee/query.no.balance.js" th:src="@{static/js/modules/bss/order/fee/query.no.balance.js(v=${version})}"></script>
+</body>
+</html>

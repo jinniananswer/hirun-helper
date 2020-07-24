@@ -8,10 +8,7 @@ import com.microtomato.hirun.framework.annotation.Storage;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.fee.DesignFeeDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.fee.ProjectFeeDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.fee.QueryDesignFeeDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.fee.QueryProjectFeeDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.fee.*;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFee;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -55,4 +52,10 @@ public interface OrderFeeMapper extends BaseMapper<OrderFee> {
             "${ew.customSqlSegment}"
     )
     IPage<ProjectFeeDTO> queryProjectFee(IPage<QueryProjectFeeDTO> queryCondtion, @Param(Constants.WRAPPER) Wrapper wrapper);
+
+    @Select("select b.cust_id, b.cust_name, b.cust_no, b.cust_status, a.order_id, a.decorate_address, a.house_layout, a.indoor_area, a.shop_id, a.type, a.status, c.type fee_type, c.periods, c.need_pay, c.pay " +
+            "from cust_base b, order_base a, order_fee c \n" +
+            "${ew.customSqlSegment}"
+    )
+    IPage<NoBalanceFeeDTO> queryNoBalanceFee(IPage<QueryNoBalanceFeeDTO> queryCondtion, @Param(Constants.WRAPPER) Wrapper wrapper);
 }

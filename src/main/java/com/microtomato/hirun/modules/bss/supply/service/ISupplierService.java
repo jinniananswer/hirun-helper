@@ -1,7 +1,9 @@
 package com.microtomato.hirun.modules.bss.supply.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.microtomato.hirun.modules.bss.supply.entity.dto.SupplierQueryDTO;
 import com.microtomato.hirun.modules.bss.supply.entity.po.Supplier;
 import com.microtomato.hirun.modules.bss.supply.entity.po.SupplyMaterial;
 
@@ -31,5 +33,11 @@ public interface ISupplierService extends IService<Supplier> {
      */
     List<Supplier> loadSupplierInfos();
 
+    /**
+     * 根据id和供应商名称查询
+     * @param supplierQueryDTO
+     * @return
+     */
+    IPage<Supplier> queryByNameAndId(SupplierQueryDTO supplierQueryDTO);
 
 }

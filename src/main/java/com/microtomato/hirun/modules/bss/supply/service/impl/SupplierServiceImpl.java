@@ -1,13 +1,17 @@
 package com.microtomato.hirun.modules.bss.supply.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import com.microtomato.hirun.modules.bss.order.entity.po.NormalPayNo;
+import com.microtomato.hirun.modules.bss.supply.entity.dto.SupplierQueryDTO;
 import com.microtomato.hirun.modules.bss.supply.entity.po.Supplier;
 import com.microtomato.hirun.modules.bss.supply.mapper.SupplierMapper;
 import com.microtomato.hirun.modules.bss.supply.service.ISupplierService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,9 +39,10 @@ public class SupplierServiceImpl extends ServiceImpl<SupplierMapper, Supplier> i
      */
     @Override
     public Supplier querySupplierById(Long supplierId){
-        return this.getOne(new QueryWrapper<Supplier>().lambda()
-                .eq(Supplier::getId,supplierId)
-                .eq(Supplier::getStatus,0));
+//        return this.getOne(new QueryWrapper<Supplier>().lambda()
+//                .eq(Supplier::getId,supplierId)
+//                .eq(Supplier::getStatus,0));
+        return supplierMapper.selectById(supplierId);
     }
 
     /**
@@ -52,6 +57,14 @@ public class SupplierServiceImpl extends ServiceImpl<SupplierMapper, Supplier> i
                 .eq(Supplier::getStatus,0));
     }
 
+    @Override
+    public IPage<Supplier> queryByNameAndId(SupplierQueryDTO supplierQueryDTO) {
+        QueryWrapper<Supplier> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(null != supplierQueryDTO.getId(), "id", supplierQueryDTO.getId());
+        queryWrapper.like(StringUtils.isNotEmpty(supplierQueryDTO.getName()), "name", supplierQueryDTO.getName());
+        Page<SupplierQueryDTO> page = new Page<>(supplierQueryDTO.getPage(), supplierQueryDTO.getLimit());
+        return this.supplierMapper.queryByNameAndId(page, queryWrapper);
+    }
 
 
 }

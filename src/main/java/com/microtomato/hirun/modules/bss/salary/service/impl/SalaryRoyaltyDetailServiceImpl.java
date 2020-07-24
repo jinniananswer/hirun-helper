@@ -17,8 +17,11 @@ import com.microtomato.hirun.modules.bss.config.service.ISalaryRoyaltyStrategySe
 import com.microtomato.hirun.modules.bss.config.service.ISalaryStatusFeeMappingService;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeCompositeDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderPlaneSketchDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.UsualFeeDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.UsualOrderWorkerDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPlaneSketch;
 import com.microtomato.hirun.modules.bss.order.service.IFeeDomainService;
+import com.microtomato.hirun.modules.bss.order.service.IOrderDomainService;
 import com.microtomato.hirun.modules.bss.order.service.IOrderPlaneSketchService;
 import com.microtomato.hirun.modules.bss.salary.entity.dto.*;
 import com.microtomato.hirun.modules.bss.salary.entity.po.SalaryRoyaltyDetail;
@@ -39,10 +42,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 员工工资提成明细(SalaryRoyaltyDetail)表服务实现类
@@ -83,6 +83,9 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
     @Autowired
     private IEmployeeJobRoleService employeeJobRoleService;
 
+    @Autowired
+    private IOrderDomainService orderDomainService;
+
 
     /**
      * 根据订单ID、员工ID，提成明细项列表查询用户提成详情信息
@@ -98,6 +101,19 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
                 .eq(SalaryRoyaltyDetail::getOrderId, orderId)
                 .eq(SalaryRoyaltyDetail::getEmployeeId, employeeId)
                 .in(SalaryRoyaltyDetail::getItem, items)
+                .ge(SalaryRoyaltyDetail::getEndTime, now));
+    }
+
+    /**
+     * 根据多个订单ID查询提成明细信息
+     * @param orderIds
+     * @return
+     */
+    @Override
+    public List<SalaryRoyaltyDetail> queryByOrderIds(List<Long> orderIds) {
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+        return this.list(Wrappers.<SalaryRoyaltyDetail>lambdaQuery()
+                .in(SalaryRoyaltyDetail::getOrderId, orderIds)
                 .ge(SalaryRoyaltyDetail::getEndTime, now));
     }
 
@@ -1146,5 +1162,245 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
             }
         });
         this.updateBatchById(salaryRoyaltyDetails);
+    }
+
+    /**
+     * 简单统计提成明细信息各工位所占比例
+     * @param condition
+     * @return
+     */
+    @Override
+    public IPage<StatRoyaltyDetailDTO> statByCustOrder(QueryStatRoyaltyDTO condition) {
+        QueryWrapper<QueryStatRoyaltyDTO> wrapper = new QueryWrapper<>();
+        wrapper.apply(" b.cust_id = a.cust_id ");
+        wrapper.like(StringUtils.isNotBlank(condition.getCustName()), "b.cust_name", condition.getCustName());
+        wrapper.like(StringUtils.isNotBlank(condition.getMobileNo()), "b.mobile_no", condition.getMobileNo());
+
+        String shopIds = condition.getShopIds();
+        if (StringUtils.isNotBlank(shopIds)) {
+            List<String> shopIdArray = Arrays.asList(StringUtils.split(shopIds, ","));
+            wrapper.in("a.shop_id", shopIdArray);
+        }
+        IPage<QueryStatRoyaltyDTO> page = new Page<>(condition.getPage(), condition.getLimit());
+        IPage<StatRoyaltyDetailDTO> pageRoyaltyDetail = this.salaryRoyaltyDetailMapper.statByCustOrder(page, wrapper);
+
+        List<StatRoyaltyDetailDTO> statRoyaltyDetails = pageRoyaltyDetail.getRecords();
+        if (ArrayUtils.isEmpty(statRoyaltyDetails)) {
+            return pageRoyaltyDetail;
+        }
+
+        List<Long> orderIds = this.distinctOrderId(statRoyaltyDetails);
+        List<SalaryRoyaltyDetail> salaryRoyaltyDetails = this.queryByOrderIds(orderIds);
+
+        for (StatRoyaltyDetailDTO statRoyaltyDetail : statRoyaltyDetails) {
+            Long orderId = statRoyaltyDetail.getOrderId();
+            UsualOrderWorkerDTO usualWorker = this.orderDomainService.getUsualOrderWorker(orderId);
+            //设置常用工作人员
+            if (usualWorker != null) {
+                statRoyaltyDetail.setUsualWorker(usualWorker);
+            }
+
+            //设置常用费用信息
+            UsualFeeDTO usualFee = this.orderDomainService.getUsualOrderFee(orderId, statRoyaltyDetail.getType());
+            if (usualFee.getDesignFee() != null) {
+                statRoyaltyDetail.setDesignFee(usualFee.getDesignFee());
+            }
+
+            if (usualFee.getPayDesignDate() != null) {
+                statRoyaltyDetail.setDesignPayDate(usualFee.getPayDesignDate());
+            }
+
+            if (usualFee.getSettlementContractFee() != null) {
+                statRoyaltyDetail.setContractFee(usualFee.getSettlementContractFee());
+                statRoyaltyDetail.setPayDate(usualFee.getSettlementPayDate());
+                statRoyaltyDetail.setBasicFee(usualFee.getSettlementBasicFee());
+                statRoyaltyDetail.setDoorFee(usualFee.getSettlementDoorFee());
+                statRoyaltyDetail.setFurnitureFee(usualFee.getSettlementFurnitureFee());
+                statRoyaltyDetail.setPeriods("结算");
+
+                Double needPay = usualFee.getSettlementNeedPay();
+                Double payed = usualFee.getSettlementPayed();
+                if (needPay != null && payed != null && needPay.equals(payed)) {
+                    statRoyaltyDetail.setPayState("已收齐");
+                } else {
+                    statRoyaltyDetail.setPayState("未收齐");
+                }
+            } else if (usualFee.getSecondContractFee() != null) {
+                statRoyaltyDetail.setContractFee(usualFee.getSecondContractFee());
+                statRoyaltyDetail.setPayDate(usualFee.getSecondPayDate());
+                statRoyaltyDetail.setBasicFee(usualFee.getSecondBasicFee());
+                statRoyaltyDetail.setDoorFee(usualFee.getSecondDoorFee());
+                statRoyaltyDetail.setFurnitureFee(usualFee.getSecondFurnitureFee());
+                statRoyaltyDetail.setPeriods("二期");
+
+                Double needPay = usualFee.getSecondNeedPay();
+                Double payed = usualFee.getSecondPayed();
+                if (needPay != null && payed != null && needPay.equals(payed)) {
+                    statRoyaltyDetail.setPayState("已收齐");
+                } else {
+                    statRoyaltyDetail.setPayState("未收齐");
+                }
+            } else {
+                statRoyaltyDetail.setContractFee(usualFee.getContractFee());
+                statRoyaltyDetail.setPayDate(usualFee.getPayDate());
+                statRoyaltyDetail.setBasicFee(usualFee.getBasicFee());
+                statRoyaltyDetail.setDoorFee(usualFee.getDoorFee());
+                statRoyaltyDetail.setFurnitureFee(usualFee.getFurnitureFee());
+                statRoyaltyDetail.setPeriods("首期");
+
+                Double needPay = usualFee.getNeedPay();
+                Double payed = usualFee.getPayed();
+                if (needPay != null && payed != null && needPay.equals(payed)) {
+                    statRoyaltyDetail.setPayState("已收齐");
+                } else {
+                    statRoyaltyDetail.setPayState("未收齐");
+                }
+            }
+
+            //汇总统计提成信息
+            List<SalaryRoyaltyDetail> orderSalaryDetails = this.findByOrderId(orderId, salaryRoyaltyDetails);
+            if (ArrayUtils.isEmpty(orderSalaryDetails)) {
+                continue;
+            }
+
+            Long counselorRoyalty = 0L;
+            Long agentRoyalty = 0L;
+            Long designerRoyalty = 0L;
+            Long projectManagerRoyalty = 0L;
+            Long areaManagerRoyalty = 0L;
+            Long designContractAward = 0L;
+            Long designRoyalty = 0L;
+            Long assistantRoyalty = 0L;
+            Long produceRoyalty = 0L;
+            Long contractAward = 0L;
+            Long budgetRoyalty = 0L;
+            Long customerGroupAward = 0L;
+            Long projectChargeRoyalty = 0L;
+            Long otherRoyalty = 0L;
+            Long totalRoyalty = 0L;
+
+            for (SalaryRoyaltyDetail orderSalaryDetail : orderSalaryDetails) {
+                Long royalty = orderSalaryDetail.getTotalRoyalty();
+                if (royalty == null) {
+                    royalty = 0L;
+                }
+
+                totalRoyalty += royalty;
+
+                Long roleId = orderSalaryDetail.getRoleId();
+                String item = orderSalaryDetail.getItem();
+                String type = orderSalaryDetail.getType();
+
+                if (roleId.equals(3L)) {
+                    counselorRoyalty += royalty;
+                } else if (roleId.equals(4L)) {
+                    areaManagerRoyalty += royalty;
+                } else if (roleId.equals(15L) || roleId.equals(16L)) {
+                    agentRoyalty += royalty;
+                } else if (roleId.equals(30L)) {
+                    designerRoyalty += royalty;
+                } else if (roleId.equals(41L)) {
+                    assistantRoyalty += royalty;
+                } else if (roleId.equals(42L)) {
+                    produceRoyalty += royalty;
+                } else if (roleId.equals(48L)) {
+                    projectChargeRoyalty += royalty;
+                } else if (roleId.equals(33L)) {
+                    projectManagerRoyalty += royalty;
+                } else if (roleId.equals(18L)) {
+                    customerGroupAward += royalty;
+                } else {
+                    otherRoyalty += royalty;
+                }
+
+                if (StringUtils.equals("21", item)) {
+                    budgetRoyalty += royalty;
+                } else if (StringUtils.equals("3", item)) {
+                    designContractAward += royalty;
+                }
+
+                if (StringUtils.equals("1", type)) {
+                    designRoyalty += royalty;
+                }
+
+                //contractAward如何统计？todo
+            }
+
+            statRoyaltyDetail.setDesignRoyalty(designRoyalty / 100d);
+            statRoyaltyDetail.setDesignRate(String.format("%.2f", (designRoyalty * 1.0d / totalRoyalty) * 100) + "%");
+            statRoyaltyDetail.setCounselorRoyalty(counselorRoyalty / 100d);
+            statRoyaltyDetail.setCounselorRate(String.format("%.2f", (counselorRoyalty * 1.0d / totalRoyalty) * 100) + "%");
+            statRoyaltyDetail.setAgentRoyalty(agentRoyalty / 100d);
+            statRoyaltyDetail.setAgentRate(String.format("%.2f", (agentRoyalty * 1.0d / totalRoyalty) * 100) + "%");
+            statRoyaltyDetail.setDesignerRoyalty(designerRoyalty / 100d);
+            statRoyaltyDetail.setDesignerRate(String.format("%.2f", (designerRoyalty * 1.0d / totalRoyalty) * 100) + "%");
+            statRoyaltyDetail.setAssistantRoyalty(assistantRoyalty / 100d);
+            statRoyaltyDetail.setAssistantRate(String.format("%.2f", (assistantRoyalty * 1.0d / totalRoyalty) * 100) + "%");
+            statRoyaltyDetail.setProjectChargeRoyalty(projectChargeRoyalty / 100d);
+            statRoyaltyDetail.setProjectChargeRate(String.format("%.2f", (projectChargeRoyalty * 1.0d / totalRoyalty) * 100) + "%");
+            statRoyaltyDetail.setProjectManagerRoyalty(projectManagerRoyalty / 100d);
+            statRoyaltyDetail.setProjectManagerRate(String.format("%.2f", (projectManagerRoyalty * 1.0d / totalRoyalty) * 100) + "%");
+            statRoyaltyDetail.setAreaManagerRoyalty(areaManagerRoyalty / 100d);
+            statRoyaltyDetail.setAreaManagerRate(String.format("%.2f", (areaManagerRoyalty * 1.0d / totalRoyalty) * 100) + "%");
+            statRoyaltyDetail.setProduceRoyalty(produceRoyalty / 100d);
+            statRoyaltyDetail.setProduceRate(String.format("%.2f", (produceRoyalty * 1.0d / totalRoyalty) * 100) + "%");
+            statRoyaltyDetail.setBudgetRoyalty(budgetRoyalty /100d);
+            statRoyaltyDetail.setDesignContractAward(designContractAward / 100d);
+            statRoyaltyDetail.setOtherRoyalty(otherRoyalty / 100d);
+            statRoyaltyDetail.setOtherRate(String.format("%.2f", (otherRoyalty * 1.0d / totalRoyalty) * 100) + "%");
+            statRoyaltyDetail.setCustomerGroupAward(customerGroupAward / 100d);
+
+            Long shopId = statRoyaltyDetail.getShopId();
+            if (shopId != null) {
+                Org org = this.orgService.queryByOrgId(shopId);
+                if (org != null) {
+                    statRoyaltyDetail.setShopName(org.getName());
+                }
+            }
+        }
+
+        return pageRoyaltyDetail;
+    }
+
+    /**
+     * 归并订单ID，减少查询次数
+     * @param statRoyaltyDetails
+     * @return
+     */
+    private List<Long> distinctOrderId(List<StatRoyaltyDetailDTO> statRoyaltyDetails) {
+        if (ArrayUtils.isEmpty(statRoyaltyDetails)) {
+            return null;
+        }
+
+        List<Long> orderIds = new ArrayList<>();
+        statRoyaltyDetails.forEach(statRoyaltyDetail -> {
+            Long orderId = statRoyaltyDetail.getOrderId();
+            if (!orderIds.contains(orderId)) {
+                orderIds.add(orderId);
+            }
+        });
+
+        return orderIds;
+    }
+
+    /**
+     * 在提成明细集合中找出与传入orderId相同的提成明细数据
+     * @param orderId
+     * @param details
+     * @return
+     */
+    private List<SalaryRoyaltyDetail> findByOrderId(Long orderId, List<SalaryRoyaltyDetail> details) {
+        if (ArrayUtils.isEmpty(details)) {
+            return null;
+        }
+
+        List<SalaryRoyaltyDetail> result = new ArrayList<>();
+        for (SalaryRoyaltyDetail detail : details) {
+            if (orderId.equals(detail.getOrderId())) {
+                result.add(detail);
+            }
+        }
+
+        return result;
     }
 }

@@ -4,22 +4,20 @@ import lombok.Data;
 
 /**
  * @program: hirun-helper
- * @description: 设计费用查询条件数据对象
+ * @description: 工地未收齐款项查询
  * @author: jinnian
- * @create: 2020-07-04 15:09
+ * @create: 2020-07-20 19:05
  **/
 @Data
-public class QueryDesignFeeDTO {
+public class QueryNoBalanceFeeDTO {
 
-    private String custName;
+    private Long orderId;
 
-    private String mobileNo;
+    private Integer periods;
 
-    private Long housesId;
+    private String feeType;
 
     private String shopIds;
-
-    private String[] feeTime;
 
     private Integer page;
 

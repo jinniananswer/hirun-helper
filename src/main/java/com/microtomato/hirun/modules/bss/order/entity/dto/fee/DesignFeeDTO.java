@@ -38,13 +38,13 @@ public class DesignFeeDTO {
 
     private Integer designFeeStandard;
 
-    private Long designFee;
+    private Double designFee;
 
     private String designTheme;
 
     private Long feeNo;
 
-    private Long depositFee;
+    private Double depositFee;
 
     private LocalDateTime feeTime;
 

@@ -21,6 +21,11 @@ public class CustOrderQueryDTO {
 
     private String orderStatus;
 
+    /**
+     * 客户编号
+     */
+    private String custNo;
+
     private Integer page;
 
     private Integer limit;
