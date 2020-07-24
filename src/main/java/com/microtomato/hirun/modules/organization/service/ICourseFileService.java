@@ -13,7 +13,7 @@ import com.microtomato.hirun.modules.organization.entity.po.CourseFile;
  * @author huanghua
  * @since 2020-07-21
  */
-public interface ICourseFileService extends IService<Course> {
+public interface ICourseFileService extends IService<CourseFile> {
 
     IPage<CourseFile> queryCourseFileInfo(CourseFile courseFile, int current, int size);
 

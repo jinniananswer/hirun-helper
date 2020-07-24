@@ -5,8 +5,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.microtomato.hirun.modules.bss.order.entity.po.Decorator;
-import com.microtomato.hirun.modules.organization.entity.po.Course;
 import com.microtomato.hirun.modules.organization.entity.po.CourseFile;
 import com.microtomato.hirun.modules.organization.mapper.CourseFileMapper;
 import com.microtomato.hirun.modules.organization.mapper.CourseMapper;
@@ -15,8 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * <p>
@@ -28,7 +24,7 @@ import java.util.List;
  */
 @Slf4j
 @Service
-public class CourseFileServiceImpl extends ServiceImpl<CourseMapper, Course> implements ICourseFileService {
+public class CourseFileServiceImpl extends ServiceImpl<CourseFileMapper, CourseFile> implements ICourseFileService {
 
     @Autowired
     private CourseFileMapper courseFileMapper;
@@ -36,9 +32,9 @@ public class CourseFileServiceImpl extends ServiceImpl<CourseMapper, Course> imp
     @Override
     public IPage<CourseFile> queryCourseFileInfo(CourseFile courseFile, int current, int size) {
         LambdaQueryWrapper<CourseFile> lambdaQueryWrapper = Wrappers.lambdaQuery();
-        lambdaQueryWrapper.eq(CourseFile::getFileId, courseFile.getFileId())
-                .eq(CourseFile::getCourseId, courseFile.getCourseId())
-                .like(CourseFile::getName, courseFile.getName());
+        lambdaQueryWrapper.eq(null != courseFile.getFileId(), CourseFile::getFileId, courseFile.getFileId())
+                .eq(null != courseFile.getCourseId(), CourseFile::getCourseId, courseFile.getCourseId())
+                .like(StringUtils.isNotEmpty(courseFile.getName()), CourseFile::getName, courseFile.getName());
         Page<CourseFile> page = new Page<>(current, size);
         IPage<CourseFile> courseFilePages = courseFileMapper.selectPage(page, lambdaQueryWrapper);
 
