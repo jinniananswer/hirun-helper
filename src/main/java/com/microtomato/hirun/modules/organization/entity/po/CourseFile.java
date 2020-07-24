@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("ins_course")
+@TableName("ins_course_file")
 public class CourseFile  extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
