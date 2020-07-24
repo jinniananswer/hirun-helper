@@ -3,6 +3,7 @@ package com.microtomato.hirun.modules.bss.order.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.microtomato.hirun.framework.mybatis.sequence.impl.FeeNoCycleSeq;
 import com.microtomato.hirun.framework.mybatis.sequence.impl.PayNoCycleSeq;
 import com.microtomato.hirun.framework.mybatis.service.IDualService;
 import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
@@ -10,14 +11,8 @@ import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
-import com.microtomato.hirun.modules.bss.config.entity.po.CollectionItemCfg;
-import com.microtomato.hirun.modules.bss.config.entity.po.Enterprise;
-import com.microtomato.hirun.modules.bss.config.entity.po.OrderStatusCfg;
-import com.microtomato.hirun.modules.bss.config.entity.po.PayItemCfg;
-import com.microtomato.hirun.modules.bss.config.service.ICollectionItemCfgService;
-import com.microtomato.hirun.modules.bss.config.service.IEnterpriseService;
-import com.microtomato.hirun.modules.bss.config.service.IOrderStatusCfgService;
-import com.microtomato.hirun.modules.bss.config.service.IPayItemCfgService;
+import com.microtomato.hirun.modules.bss.config.entity.po.*;
+import com.microtomato.hirun.modules.bss.config.service.*;
 import com.microtomato.hirun.modules.bss.house.entity.po.Houses;
 import com.microtomato.hirun.modules.bss.house.service.IHousesService;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
@@ -117,7 +112,14 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
     @Autowired
     private IOrderStatusCfgService orderStatusCfgService;
 
+    @Autowired
+    private IFeePayRelCfgService feePayRelCfgService;
 
+    @Autowired
+    private IFeeItemCfgService feeItemCfgService;
+
+    @Autowired
+    private IOrderFeeService orderFeeService;
     /**
      * 初始化支付组件
      *
@@ -227,6 +229,8 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
         Long payItemTotal = 0L;
         List<OrderPayItem> orderPayItems = new ArrayList<>();
 
+        Map<String, Long> feeType = new HashMap<>();
+
         if (ArrayUtils.isNotEmpty(payItems)) {
             for (PayItemDTO payItem : payItems) {
                 Double money = payItem.getMoney();
@@ -252,6 +256,29 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
                 orderPayItem.setEndDate(forever);
                 orderPayItems.add(orderPayItem);
                 payItemTotal += fee;
+
+                //查看付款项与费用类型的关系
+                FeePayRelCfg feePayRelCfg = this.feePayRelCfgService.getByPayItemId(payItemId);
+                if (feePayRelCfg != null) {
+                    Long feeItemId = feePayRelCfg.getFeeItemId();
+                    FeeItemCfg feeItemCfg = this.feeItemCfgService.getFeeItem(feeItemId);
+                    if (feeItemCfg != null) {
+                        String type = feeItemCfg.getType();
+                        String key = type;
+
+                        Boolean isPeriod = feeItemCfg.getIsPeriod();
+                        if (isPeriod) {
+                            key = type + "," +payItem.getPeriod();
+                        }
+                        if (!feeType.containsKey(key)) {
+                            feeType.put(key, new Long(0L));
+                        }
+
+                        Long payed = feeType.get(key);
+                        payed += fee;
+                        feeType.put(key, payed);
+                    }
+                }
             }
         }
         List<PaymentDTO> payments = feeData.getPayments();
@@ -305,7 +332,45 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
             this.orderPayMoneyService.saveBatch(payMonies);
         }
 
-        //todo 补充更新order_fee对应实收的逻辑
+        //更新费用主表实收信息
+        if (feeType.size() > 0) {
+            feeType.forEach((key, value) -> {
+                OrderFee orderFee = null;
+                String type = null;
+                Integer period = null;
+                if (StringUtils.indexOf(key, ",") > 0) {
+                    //有分期信息
+                    String[] keyArray = key.split(",");
+                    //费用类型
+                    type = keyArray[0];
+                    //分期期数
+                    period = Integer.parseInt(keyArray[1]);
+                    orderFee = this.orderFeeService.getByOrderIdTypePeriod(orderId, type, period);
+                } else {
+                    orderFee = this.orderFeeService.getByOrderIdTypePeriod(orderId, key, null);
+                }
+
+                if (orderFee != null) {
+                    orderFee.setPay(value);
+                    this.orderFeeService.updateById(orderFee);
+                } else {
+                    Long orgId = WebContextUtils.getUserContext().getOrgId();
+                    Long feeNo = this.dualService.nextval(FeeNoCycleSeq.class);
+                    orderFee = new OrderFee();
+                    orderFee.setFeeEmployeeId(employeeId);
+                    orderFee.setOrgId(orgId);
+                    orderFee.setTotalFee(value);
+                    orderFee.setNeedPay(value);
+                    orderFee.setPeriods(period);
+                    orderFee.setType(type);
+                    orderFee.setFeeNo(feeNo);
+                    orderFee.setStartDate(now);
+                    orderFee.setEndDate(forever);
+                    orderFee.setOrderId(orderId);
+                    this.orderFeeService.save(orderFee);
+                }
+            });
+        }
     }
 
     /**
