@@ -40,4 +40,11 @@ public interface ISupplierService extends IService<Supplier> {
      */
     IPage<Supplier> queryByNameAndId(SupplierQueryDTO supplierQueryDTO);
 
+    /**
+     * 批量删除供应商
+     * @param supplierList
+     * @return
+     */
+    boolean deleteSupplierByIds(List<Supplier> supplierList);
+
 }

@@ -4,6 +4,7 @@ package com.microtomato.hirun.modules.bss.supply.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.microtomato.hirun.framework.annotation.RestResult;
+import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.modules.bss.supply.entity.dto.SupplierQueryDTO;
 import com.microtomato.hirun.modules.bss.supply.entity.po.Supplier;
 import com.microtomato.hirun.modules.bss.supply.service.ISupplierService;
@@ -48,6 +49,25 @@ public class SupplierController {
     @RestResult
     public boolean deleteSupplierByIds(@RequestBody List<Supplier> supplierList){
         System.out.println(supplierList);
-        return true;
+        if(ArrayUtils.isNotEmpty(supplierList)){
+            for (Supplier supplier : supplierList){
+                supplier.setStatus("1");
+            }
+        }
+        return this.supplySupplierService.deleteSupplierByIds(supplierList);
+    }
+
+    @PostMapping("addSupplier")
+    @RestResult
+    public boolean addSupplier(@RequestBody Supplier supplier){
+        supplier.setStatus("0");
+        return this.supplySupplierService.save(supplier);
+    }
+
+    @PostMapping("deleteSupplierById")
+    @RestResult
+    public boolean deleteSupplierById(@RequestBody Supplier supplier){
+        supplier.setStatus("1");
+        return this.supplySupplierService.updateById(supplier);
     }
 }

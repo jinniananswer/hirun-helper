@@ -67,7 +67,6 @@
                     <el-table-column prop="landline" width="120" label="座机" align="center"></el-table-column>
                     <el-table-column prop="mailbox" width="180" label="邮箱" align="center"></el-table-column>
                     <el-table-column prop="address" width="250" label="地址" align="center"></el-table-column>
-                    <el-table-column prop="status" width="100" label="状态" align="center"></el-table-column>
                     <el-table-column prop="contacts" width="100" label="联系人" align="center"></el-table-column>
                     <el-table-column prop="standbyTelephone" width="100" label="备用联系电话" align="center"></el-table-column>
                     <el-table-column fixed="right" label="操作" align="center" width="200">
@@ -76,7 +75,7 @@
                                        @click="editSupplierById(scope.row)">编辑
                             </el-button>
                             <el-button type="danger" width="50" size="mini" icon="el-icon-delete"
-                                       @click="deleteSupplierById(scope.row.id)">删除
+                                       @click="deleteSupplierById(scope.row)">删除
                             </el-button>
                         </template>
                     </el-table-column>

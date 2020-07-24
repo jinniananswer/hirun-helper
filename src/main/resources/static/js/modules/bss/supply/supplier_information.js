@@ -7,9 +7,21 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'house-select']
                     return callback(new Error('联系人号码为空'));
                 }else {
                     if (!Number.isInteger(value)) {
-                        callback(new Error('请输入数字值'));
+                        if(value.length != 11){
+                            callback(new Error('请输入11位正确的手机号码'));
+                        }else if(value != undefined && value != 'undefined'){
+                            if(!Number.isInteger(value.parseInt())){
+                                callback(new Error('请输入11位正确的手机号码'));
+                            }
+                        }else {
+                            callback(new Error('请输入11位正确的手机号码'));
+                        }
                     } else {
-                        callback();
+                        if(value.toString().length != 11){
+                            callback(new Error('请输入11位正确的手机号码'));
+                        }else {
+                            callback();
+                        }
                     }
                 }
             };
@@ -102,6 +114,11 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'house-select']
 
                 },null, true);
             },
+            deleteSupplierById(supplier){
+                ajax.post('api/bss.supply/supplier/deleteSupplierById', supplier, function(responseData){
+
+                },null, true);
+            },
             editSupplierById(supplier){
                 this.$nextTick(()=>{
                     this.$refs.editSupplierInfo.resetFields();
@@ -125,6 +142,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'house-select']
                                 for(let i = 0 ; i < supplierSize ; i++){
                                     if(that.supplierInfo[i].id == editSupplierInfo.id){
                                         that.supplierInfo[i] = editSupplierInfo;
+                                        alert(JSON.stringify(that.supplierInfo[i]))
                                     }
                                 }
                             },null, true);
@@ -153,7 +171,10 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'house-select']
                 this.addSupplierDialogVisible = true;
             },
             submitAdd(addSupplierInfo){
-                alert(JSON.stringify(addSupplierInfo));
+                let that = this;
+                ajax.post('api/bss.supply/supplier/addSupplier', addSupplierInfo, function(responseData){
+                    that.addSupplierDialogVisible = false;
+                },null, true);
             }
         }
     });
