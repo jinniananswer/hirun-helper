@@ -15,6 +15,7 @@ import com.microtomato.hirun.modules.bss.order.entity.po.OrderBase;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -55,4 +56,14 @@ public interface OrderBaseMapper extends BaseMapper<OrderBase> {
             " ${ew.customSqlSegment}"
     )
     IPage<FinanceOrderTaskDTO> queryFinanceOrderTaskInConsole(IPage<FinanceOrderTaskQueryDTO> condition, @Param(Constants.WRAPPER)Wrapper wrapper);
+
+    @Select("SELECT a.order_id,a.contract_fee FROM order_base a " +
+            " WHERE a.order_id IN (" +
+            " SELECT a.order_id FROM order_base a, order_worker b" +
+            " WHERE a.`order_id` = b.`order_id`" +
+            " AND b.`employee_id` = #{employeeId})" +
+            " AND a.`create_time` >= #{startDate}" +
+            " AND a.`create_time` <= #{endDate}"
+    )
+    List<OrderBase> queryOrderBaseByEmployee(@Param("employeeId") Long employeeId, @Param("startDate")LocalDateTime startDate, @Param("endDate")LocalDateTime endDate);
 }

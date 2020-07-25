@@ -27,8 +27,11 @@ import com.microtomato.hirun.modules.bss.order.exception.OrderException;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderBaseMapper;
 import com.microtomato.hirun.modules.bss.order.service.*;
 import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeSelectDTO;
+import com.microtomato.hirun.modules.organization.entity.dto.SimpleEmployeeDTO;
 import com.microtomato.hirun.modules.organization.entity.po.Org;
 import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
+import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -36,6 +39,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -105,6 +109,9 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
 
     @Autowired
     private OrderBaseMapper orderBaseMapper;
+
+    @Autowired
+    private IEmployeeService employeeService;
 
     /**
      * 查询订单综合信息
@@ -746,5 +753,53 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
         }
 
         return null;
+    }
+
+    /**
+     * 员工业绩统计
+     * @param queryCond
+     * @return
+     */
+    public List<EmployeeResultsDTO> queryEmployeeResults(EmployeeResultsQueryDTO queryCond) {
+        List<EmployeeResultsDTO> list = new ArrayList<>();
+        if(queryCond.getEmployeeId() != null && queryCond.getEmployeeId() > 0) {
+            list.add(this.getEmployeeResultsByEmployee(queryCond.getEmployeeId(), queryCond.getOrderCreateStartDate(), queryCond.getOrderCreateEndDate()));
+        } else if(queryCond.getRoleId() != null && queryCond.getRoleId() > 0) {
+            //先根据角色找到员工，再循环
+            EmployeeSelectDTO employeeSelectDTO = new EmployeeSelectDTO();
+            employeeSelectDTO.setMode("priv");
+            employeeSelectDTO.setRoleId(queryCond.getRoleId());
+            List<SimpleEmployeeDTO> simpleEmployeeDTOList = employeeService.queryEmployeeBySelectMode(employeeSelectDTO);
+            for(SimpleEmployeeDTO simpleEmployeeDTO : simpleEmployeeDTOList) {
+                list.add(this.getEmployeeResultsByEmployee(simpleEmployeeDTO.getEmployeeId(), queryCond.getOrderCreateStartDate(), queryCond.getOrderCreateEndDate()));
+            }
+        }
+        return list;
+    }
+
+    private EmployeeResultsDTO getEmployeeResultsByEmployee(Long employeeId, LocalDateTime startDate, LocalDateTime endDate) {
+        EmployeeResultsDTO employeeResultsDTO = new EmployeeResultsDTO();
+        List<OrderBase> orderBaseList = orderBaseMapper.queryOrderBaseByEmployee(employeeId, startDate, endDate);
+        employeeResultsDTO.setEmployeeName(employeeService.getEmployeeNameEmployeeId(employeeId));
+        employeeResultsDTO.setOrderCount(orderBaseList.size());
+
+        //遍历累计合同总金额及费用明细金额
+        for(OrderBase orderBase : orderBaseList) {
+            UsualFeeDTO usualFeeDTO = this.getUsualOrderFee(orderBase.getOrderId(), OrderConst.ORDER_TYPE_HOME);
+            OrderDetailDTO orderDetailDTO = this.getOrderDetail(orderBase.getOrderId());
+            employeeResultsDTO.setContractTotalFee(employeeResultsDTO.getContractTotalFee() + (usualFeeDTO.getContractFee() == null ? 0d : usualFeeDTO.getContractFee()));
+            employeeResultsDTO.setDoorFee(employeeResultsDTO.getDoorFee() + (usualFeeDTO.getDoorFee() == null ? 0d : usualFeeDTO.getDoorFee()));
+            employeeResultsDTO.setFurnitureFee(employeeResultsDTO.getFurnitureFee() + (usualFeeDTO.getFurnitureFee() == null ? 0d : usualFeeDTO.getFurnitureFee()));
+            employeeResultsDTO.setMainMaterialFee(employeeResultsDTO.getMainMaterialFee() + (usualFeeDTO.getMaterialFee() == null ? 0d : usualFeeDTO.getMaterialFee()));
+            employeeResultsDTO.setCupboardFee(employeeResultsDTO.getCupboardFee() + (usualFeeDTO.getCabinetFee() == null ? 0d : usualFeeDTO.getCabinetFee()));
+
+//            if(employeeResultsDTO.getContractTotalFee() == null) {
+//                employeeResultsDTO.setContractTotalFee(orderDetailDTO.getTotalActFee());
+//            } else {
+//                employeeResultsDTO.setContractTotalFee(employeeResultsDTO.getContractTotalFee() + orderDetailDTO.getTotalActFee());
+//            }
+        }
+
+        return employeeResultsDTO;
     }
 }
