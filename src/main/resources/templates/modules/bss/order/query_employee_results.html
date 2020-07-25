@@ -16,10 +16,11 @@
                 <div slot="header" class="clearfix">
                     <span>查询条件区</span>
                 </div>
-                <el-form :inline="false" :model="queryCond" label-position="right" label-width="80px">
+                <el-form :inline="false" :model="queryCond" label-position="right" label-width="80px"
+                         :rules="queryCondRules" ref="queryCond">
                     <el-row>
                         <el-col :span="8">
-                            <el-form-item label="角色">
+                            <el-form-item label="角色" required="true" prop="roleId">
                                 <el-select v-model="queryCond.roleId" filterable clearable placeholder="请选择"
                                            @change="changeRole" style="width:100%">
                                     <el-option
@@ -34,6 +35,34 @@
                         <el-col :span="8">
                             <el-form-item label="员工">
                                 <order-selectemployee v-model="queryCond.employeeId" :role-id="queryCond.roleId"></order-selectemployee>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="8">
+                            <el-form-item label="开始时间" prop="startDate" required="true">
+                                <el-date-picker
+                                        v-model="queryCond.orderCreateStartDate"
+                                        type="date"
+                                        value-format="yyyy-MM-dd"
+                                        style="width:100%"
+                                        placeholder="选择日期">
+                                </el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="结束时间" prop="endDate" required="true">
+                                <el-date-picker
+                                        v-model="queryCond.orderCreateEndDate"
+                                        type="date"
+                                        value-format="yyyy-MM-dd"
+                                        style="width:100%"
+                                        placeholder="选择日期">
+                                </el-date-picker>
                             </el-form-item>
                         </el-col>
                         <el-col :span="8">

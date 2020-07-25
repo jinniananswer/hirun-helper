@@ -6,11 +6,22 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'order-selectem
                 queryCond: {
                     employeeId: '',
                     roleId: '',
-                    orderCreateStartDate: '2020-01-01',
-                    orderCreateEndDate: '2020-08-01 23:59:59',
+                    orderCreateStartDate: '',
+                    orderCreateEndDate: '',
                 },
                 roles: [],
-                employeeResults: []
+                employeeResults: [],
+                queryCondRules : {
+                    roleId: [
+                        {required: true, message: '请选择角色', trigger: 'change'}
+                    ],
+                    startDate: [
+                        {required: true, message: '请选择开始时间', trigger: 'change'}
+                    ],
+                    endDate: [
+                        {required: true, message: '请选择结束时间', trigger: 'change'}
+                    ],
+                }
             }
         },
         mounted() {
@@ -25,8 +36,14 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'order-selectem
             },
             onSubmit: function() {
                 let that = this;
-                ajax.get('api/bss.order/order-domain/queryEmployeeResults', this.queryCond, function(responseData){
-                    that.employeeResults = responseData;
+                this.$refs['queryCond'].validate((valid) => {
+                    if (valid) {
+                        ajax.get('api/bss.order/order-domain/queryEmployeeResults', this.queryCond, function(responseData){
+                            that.employeeResults = responseData;
+                        });
+                    } else {
+                        return false;
+                    }
                 });
             },
             changeRole: function() {
