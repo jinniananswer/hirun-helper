@@ -34,4 +34,6 @@ public interface IOrderDomainService {
     UsualOrderWorkerDTO getUsualOrderWorker(Long orderId);
 
     UsualFeeDTO getUsualOrderFee(Long orderId, String orderType);
+
+    public List<EmployeeResultsDTO> queryEmployeeResults(EmployeeResultsQueryDTO queryCond);
 }
