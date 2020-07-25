@@ -44,7 +44,7 @@
                     </el-row>
                     <el-row>
                         <el-col :span="8">
-                            <el-form-item label="开始时间" prop="startDate" required="true">
+                            <el-form-item label="开始时间" prop="orderCreateStartDate" required="true">
                                 <el-date-picker
                                         v-model="queryCond.orderCreateStartDate"
                                         type="date"
@@ -55,7 +55,7 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="8">
-                            <el-form-item label="结束时间" prop="endDate" required="true">
+                            <el-form-item label="结束时间" prop="orderCreateEndDate" required="true">
                                 <el-date-picker
                                         v-model="queryCond.orderCreateEndDate"
                                         type="date"
