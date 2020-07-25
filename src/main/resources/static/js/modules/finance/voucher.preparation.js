@@ -1,14 +1,18 @@
-require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'house-select', 'util', 'cust-info', 'order-info', 'order-worker', 'order-search-employee', 'order-selectdecorator'], function (Vue, element, ajax, table, vueSelect, orgTree, houseSelect, util, custInfo, orderInfo, orderWorker, orderSearchEmployee,orderSelectDecorator) {
+require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'house-select', 'util', 'cust-info', 'order-info', 'order-worker', 'order-search-employee', 'order-selectemployee','order-selectdecorator'], function (Vue, element, ajax, table, vueSelect, orgTree, houseSelect, util, custInfo, orderInfo, orderWorker, orderSearchEmployee,orderSelectEmployee,orderSelectDecorator) {
     Vue.use(table);
     let vm = new Vue({
             el: '#app',
             data: function () {
                 return {
+                    supplyOrderDetailDetailList : [],
+                    supplyOrderDetail: false,
                     voucherTab:'',
                     materialTab:'',
                     constructionTab: '',
                     otherTab: '',
                     materialTableData: [],
+                    materialDetailTable:'',
+                    materialDetailTableData: [],
                     custOrder: [],
                     financeItem: {},
                     financeItems: [],
@@ -22,7 +26,7 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                         limit: 20,
                         page: 1
                     },
-                    queryCond: {
+                    queryConstructionCond: {
                         count: 0,
                         limit: 20,
                         page: 1
@@ -93,23 +97,43 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                 },
                 init() {
                 },
+
                 querySupplyInfo: function () {
                     let that = this;
                     ajax.get('api/bss.supply/supply-order/querySupplyInfo', this.queryCondForMaterial, function (responseData) {
                         that.materialTableData = responseData.records;
-                        that.queryCond.page = responseData.current;
-                        that.queryCond.count = responseData.total;
+                        that.queryCondForMaterial.page = responseData.current;
+                        that.queryCondForMaterial.count = responseData.total;
                     });
                 },
-                query: function () {
+                queryConstruction: function () {
                     let that = this;
-                    ajax.get('api/bss.order/finance/queryCustOrderInfo', this.queryCondForMaterial, function (responseData) {
+                    ajax.get('api/bss.order/finance/queryCustOrderInfo', this.queryConstructionCond, function (responseData) {
                         that.custOrder = responseData.records;
-                        that.queryCond.page = responseData.current;
-                        that.queryCond.count = responseData.total;
+                        that.queryConstructionCond.page = responseData.current;
+                        that.queryConstructionCond.count = responseData.total;
                     });
                 },
-                //查询当前流程的施工人员情况
+                toSupplyDetail: function(id,supplierId) {
+                    this.supplyOrderDetail=true;
+                    let data = {
+                        id : id,
+                        supplierId:supplierId
+                    };
+                    ajax.get('api/bss.supply/supply-order/querySupplyDetailInfo', data, (responseData)=>{
+                        this.supplyOrderDetailDetailList = responseData;
+                    });
+
+                },
+                voucherPreparation : function() {
+                    let data = this.$refs.materialTable.getCheckboxRecords();
+                    if (data == null || data.length <= 0) {
+                        this.$message.error('没有选中任何记录，无法提交');
+                        return;
+                    }
+                    ajax.post('api/bss.supply/supply-order/voucherPreparationForSupply', this.$refs.materialTable.getCheckboxRecords());
+                },
+                //查询当前流程的施工人员情况,后续应该改为直接从工人预计工资表去获取，根据不同阶段最多领款额度算出来
                 loadConstructionInfo: function (orderId, custId) {
                     this.constructionInfo.custId = custId;
                     this.constructionInfo.orderId = orderId;
@@ -138,6 +162,28 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                 },
                 handleConstructionTableDataDelete: function (index) {
                     vm.constructionTableData.splice(index, 1);
+                },
+                isModify: function(obj) {
+                    if (obj.row.isModified == '1') {
+                        return "modify_row";
+                    } else if (obj.row.isModified == '0') {
+                        return 'new_row';
+                    } else if (obj.row.isModified == '2') {
+                        return 'delete_row';
+                    }
+                },
+
+                activeRowMethod ({ row, rowIndex }) {
+                    if (row.auditStatus == '1') {
+                        return false;
+                    }
+
+                    return true;
+                },
+
+                checkMethod: function({row}) {
+
+                   // return row.auditStatus == '1';
                 },
                 popupDialog() {
                     this.dialogVisible = true;

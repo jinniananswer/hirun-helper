@@ -2,8 +2,6 @@ package com.microtomato.hirun.modules.bss.supply.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.microtomato.hirun.modules.bss.config.entity.po.FeeItemCfg;
-import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeInfoDTO;
 import com.microtomato.hirun.modules.bss.supply.entity.dto.SupplyMaterialDTO;
 import com.microtomato.hirun.modules.bss.supply.entity.po.SupplyMaterial;
 import com.microtomato.hirun.modules.bss.supply.mapper.SupplyMaterialMapper;
@@ -59,7 +57,6 @@ public class SupplyMaterialServiceImpl extends ServiceImpl<SupplyMaterialMapper,
             supplyMaterials.add(supplyMaterial);
 
         }
-        log.debug("supplyMaterials========"+supplyMaterials);
         return supplyMaterials ;
     }
     

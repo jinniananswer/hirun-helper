@@ -6,8 +6,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.WebContextUtils;
-import com.microtomato.hirun.modules.bss.order.entity.dto.fee.ProjectFeeDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.fee.QueryProjectFeeDTO;
 import com.microtomato.hirun.modules.bss.supply.entity.dto.QuerySupplyOrderDTO;
 import com.microtomato.hirun.modules.bss.supply.entity.dto.SupplyMaterialDTO;
 import com.microtomato.hirun.modules.bss.supply.entity.dto.SupplyOrderDTO;
@@ -55,6 +53,12 @@ public class SupplyOrderController {
             querySupplyDTO.setEmployeeId(userContext.getEmployeeId());
         }
         return this.supplyOrderService.querySupplyInfo(querySupplyDTO);
+    }
+
+    @GetMapping("/querySupplyDetailInfo")
+    @RestResult
+    public List<SupplyMaterialDTO> querySupplyDetailInfo(QuerySupplyOrderDTO querySupplyDTO) {
+        return this.supplyOrderService.querySupplyDetailInfo(querySupplyDTO);
     }
 
 }

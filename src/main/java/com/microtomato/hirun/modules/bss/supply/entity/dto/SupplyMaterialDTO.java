@@ -9,6 +9,8 @@ public class SupplyMaterialDTO {
 
     private Long id;
 
+    private Long materialId;
+
     private String name;
 
     private String supplierName;

@@ -11,13 +11,12 @@ import lombok.Data;
 @Data
 public class QuerySupplyOrderDTO {
 
-    private String custName;
 
     private Long employeeId;
 
-    private Long housesId;
+    private Long supplierId;
 
-    private String shopIds;
+    private Long id;
 
     private Integer page;
 
