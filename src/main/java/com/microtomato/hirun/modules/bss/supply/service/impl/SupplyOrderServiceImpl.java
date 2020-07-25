@@ -24,14 +24,18 @@ import com.microtomato.hirun.modules.bss.order.service.INormalPayItemService;
 import com.microtomato.hirun.modules.bss.supply.entity.dto.QuerySupplyOrderDTO;
 import com.microtomato.hirun.modules.bss.supply.entity.dto.SupplyMaterialDTO;
 import com.microtomato.hirun.modules.bss.supply.entity.dto.SupplyOrderDTO;
+import com.microtomato.hirun.modules.bss.supply.entity.po.SupplyMaterial;
 import com.microtomato.hirun.modules.bss.supply.entity.po.SupplyOrder;
 import com.microtomato.hirun.modules.bss.supply.entity.po.SupplyOrderDetail;
+import com.microtomato.hirun.modules.bss.supply.mapper.SupplyMaterialMapper;
 import com.microtomato.hirun.modules.bss.supply.mapper.SupplyOrderDetailMapper;
 import com.microtomato.hirun.modules.bss.supply.mapper.SupplyOrderMapper;
+import com.microtomato.hirun.modules.bss.supply.service.ISupplierService;
 import com.microtomato.hirun.modules.bss.supply.service.ISupplyOrderDetailService;
 import com.microtomato.hirun.modules.bss.supply.service.ISupplyOrderService;
+import com.microtomato.hirun.modules.organization.service.IEmployeeService;
+import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -61,7 +65,19 @@ public class SupplyOrderServiceImpl extends ServiceImpl<SupplyOrderMapper, Suppl
     private ISupplyOrderService supplyOrderService;
 
     @Autowired
+    private ISupplierService supplierService;
+
+    @Autowired
     private ISupplyOrderDetailService supplyOrderDetailService;
+
+    @Autowired
+    private IEmployeeService employeeService;
+
+    @Autowired
+    private IStaticDataService staticDataService;
+
+    @Autowired
+    private SupplyMaterialMapper supplyMaterialMapper;
 
     @Autowired
     private IDualService dualService;
@@ -103,27 +119,53 @@ public class SupplyOrderServiceImpl extends ServiceImpl<SupplyOrderMapper, Suppl
 
     /**
      * 供应订单查询
+     *
      * @param condition
      * @return
      */
     @Override
     public IPage<SupplyOrderDTO> querySupplyInfo(QuerySupplyOrderDTO condition) {
 
-        //先根据对账人查询出对应供应id
-//        QueryWrapper<QuerySupplyOrderDTO> wrapper = new QueryWrapper<>();
-//       // wrapper.apply(" a.id=b.supply_id and b.supplier_id =c.id ");
-//        wrapper.eq("supply_status",0);
-//        wrapper.eq("c.verify_person",condition.getEmployeeId());
-        Long employeeId=condition.getEmployeeId();
-        String status ="0";
+
+        Long employeeId = condition.getEmployeeId();
+        String status = "0";
         IPage<QuerySupplyOrderDTO> page = new Page<>(condition.getPage(), condition.getLimit());
-        IPage<SupplyOrderDTO> pageSupplyOrders = this.supplyOrderMapper.querySupplyInfo(page, employeeId,status);
+        IPage<SupplyOrderDTO> pageSupplyOrders = this.supplyOrderMapper.querySupplyInfo(page, employeeId, status);
 
-        List<SupplyOrderDTO> supplyOrder = pageSupplyOrders.getRecords();
-
+        List<SupplyOrderDTO> supplyOrders = pageSupplyOrders.getRecords();
+        supplyOrders.forEach(supplyOrder -> {
+            String supplierName = this.supplierService.querySupplierById(supplyOrder.getSupplierId()).getName();
+            supplyOrder.setSupplierName(supplierName);
+            String createUserName = this.employeeService.queryByUserId(supplyOrder.getCreateUserId()).getName();
+            supplyOrder.setCreateUserName(createUserName);
+            supplyOrder.setSupplyOrderName(this.staticDataService.getCodeName("SUPPLY_ORDER_TYPE", supplyOrder.getSupplyOrderType()));
+        });
 
 
         return pageSupplyOrders;
+    }
+
+    /**
+     * 供应订单详情查询
+     *
+     * @param condition
+     * @return
+     */
+    @Override
+    public List<SupplyMaterialDTO> querySupplyDetailInfo(QuerySupplyOrderDTO condition) {
+
+        Long supplyId = condition.getId();
+        Long supplierId = condition.getSupplierId();
+        List<SupplyMaterialDTO> supplyDetails = this.supplyOrderMapper.querySupplyDetailInfo(supplyId, supplierId);
+
+        for (SupplyMaterialDTO supplyDetail : supplyDetails) {
+            String supplierName = this.supplierService.querySupplierById(supplierId).getName();
+            supplyDetail.setSupplierName(supplierName);
+            String materialName = this.supplyMaterialMapper.selectById(supplyDetail.getMaterialId()).getName();
+            supplyDetail.setName(materialName);
+        };
+
+        return supplyDetails;
     }
 
 }
