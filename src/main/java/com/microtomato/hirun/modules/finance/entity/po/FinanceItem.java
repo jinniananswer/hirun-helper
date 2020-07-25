@@ -1,19 +1,11 @@
-package com.microtomato.hirun.modules.bss.config.entity.po;
+package com.microtomato.hirun.modules.finance.entity.po;
+
+import com.baomidou.mybatisplus.annotation.*;
+import com.microtomato.hirun.framework.data.BaseEntity;
+import lombok.*;
+import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.microtomato.hirun.framework.data.BaseEntity;
-import com.baomidou.mybatisplus.annotation.TableField;
-
-import lombok.Data;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
 /**
  * 财务科目表(FinanceItem)表实体类

@@ -1,9 +1,9 @@
-package com.microtomato.hirun.modules.bss.config.service.impl;
+package com.microtomato.hirun.modules.finance.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.microtomato.hirun.modules.bss.config.entity.po.FinanceItem;
-import com.microtomato.hirun.modules.bss.config.mapper.FinanceItemMapper;
-import com.microtomato.hirun.modules.bss.config.service.IFinanceItemService;
+import com.microtomato.hirun.modules.finance.entity.po.FinanceItem;
+import com.microtomato.hirun.modules.finance.mapper.FinanceItemMapper;
+import com.microtomato.hirun.modules.finance.service.IFinanceItemService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

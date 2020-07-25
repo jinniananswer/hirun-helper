@@ -1,10 +1,10 @@
-package com.microtomato.hirun.modules.bss.config.mapper;
+package com.microtomato.hirun.modules.finance.mapper;
 
 import com.microtomato.hirun.framework.annotation.Storage;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.microtomato.hirun.modules.bss.config.entity.po.FinanceItem;
+import com.microtomato.hirun.modules.finance.entity.po.FinanceItem;
 
 /**
  * 财务科目表(FinanceItem)表数据库访问层
