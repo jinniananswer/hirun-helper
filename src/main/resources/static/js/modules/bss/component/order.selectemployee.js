@@ -45,6 +45,12 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
                 if (val != oldValue) {
                     this.$emit("input", val);
                 }
+            },
+
+            roleId(val, oldValue) {
+                if (val != oldValue) {
+                    this.init();
+                }
             }
         },
 
