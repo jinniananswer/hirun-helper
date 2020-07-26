@@ -33,6 +33,8 @@ import com.microtomato.hirun.modules.bss.supply.mapper.SupplyOrderMapper;
 import com.microtomato.hirun.modules.bss.supply.service.ISupplierService;
 import com.microtomato.hirun.modules.bss.supply.service.ISupplyOrderDetailService;
 import com.microtomato.hirun.modules.bss.supply.service.ISupplyOrderService;
+import com.microtomato.hirun.modules.finance.entity.dto.FinanceVoucherDTO;
+import com.microtomato.hirun.modules.finance.entity.dto.FinanceVoucherItemDTO;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +43,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -97,10 +100,14 @@ public class SupplyOrderServiceImpl extends ServiceImpl<SupplyOrderMapper, Suppl
             SupplyOrder supplyOrder = new SupplyOrder();
             supplyOrder.setOrderId(supplyOrderInfo.getOrderId());
             supplyOrder.setCreateTime(RequestTimeHolder.getRequestTime());
-            supplyOrder.setCreateUserId(WebContextUtils.getUserContext().getEmployeeId());
-            //supplyOrder.setSupplyId(supplyId);
+            supplyOrder.setCreateUserId(WebContextUtils.getUserContext().getUserId());
             supplyOrder.setSupplyOrderType(supplyOrderInfo.getSupplyOrderType());
             supplyOrder.setSupplyStatus("0");
+            int totalFee = 0;
+            for (SupplyMaterialDTO supplyMaterialOrder : supplyMaterialOrders) {
+                totalFee += supplyMaterialOrder.getCostPrice() * Integer.getInteger(supplyMaterialOrder.getNum());
+            }
+            supplyOrder.setTotalFee(totalFee);
             supplyOrderService.save(supplyOrder);
             for (SupplyMaterialDTO supplyMaterialOrder : supplyMaterialOrders) {
                 SupplyOrderDetail supplyOrderDetail = new SupplyOrderDetail();
@@ -108,9 +115,9 @@ public class SupplyOrderServiceImpl extends ServiceImpl<SupplyOrderMapper, Suppl
                 supplyOrderDetail.setMaterialId(supplyMaterialOrder.getId());
                 supplyOrderDetail.setNum(supplyMaterialOrder.getNum());
                 supplyOrderDetail.setSupplyId(supplyOrder.getId());
-                supplyOrderDetail.setFee(supplyMaterialOrder.getCostPrice());
+                supplyOrderDetail.setFee(supplyMaterialOrder.getCostPrice() * Integer.getInteger(supplyMaterialOrder.getNum()));
                 supplyOrderDetail.setCreateTime(RequestTimeHolder.getRequestTime());
-                supplyOrderDetail.setCreateUserId(WebContextUtils.getUserContext().getEmployeeId());
+                supplyOrderDetail.setCreateUserId(WebContextUtils.getUserContext().getUserId());
                 supplyOrderDetailService.save(supplyOrderDetail);
             }
         }
@@ -163,9 +170,33 @@ public class SupplyOrderServiceImpl extends ServiceImpl<SupplyOrderMapper, Suppl
             supplyDetail.setSupplierName(supplierName);
             String materialName = this.supplyMaterialMapper.selectById(supplyDetail.getMaterialId()).getName();
             supplyDetail.setName(materialName);
-        };
+        }
 
         return supplyDetails;
+    }
+
+    /**
+     * 材料制单审核不通过
+     *
+     * @param supplyOrderDTOS
+     */
+    @Override
+    public void auditSupplyDetail(List<SupplyOrderDTO> supplyOrderDTOS) {
+        if (ArrayUtils.isEmpty(supplyOrderDTOS)) {
+            return;
+        }
+
+        supplyOrderDTOS.forEach(supplyOrderDTO -> {
+            //拼supplyOrder表数据
+            SupplyOrder supplyOrder = new SupplyOrder();
+            supplyOrder.setId(supplyOrderDTO.getId());
+            supplyOrder.setSupplyStatus("1");//审核不通过
+            supplyOrder.setUpdateTime(RequestTimeHolder.getRequestTime());
+            supplyOrder.setUpdateUserId(WebContextUtils.getUserContext().getUserId());
+            supplyOrderService.save(supplyOrder);
+        });
+
+
     }
 
 }

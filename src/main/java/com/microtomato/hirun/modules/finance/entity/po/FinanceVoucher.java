@@ -37,9 +37,6 @@ public class FinanceVoucher extends BaseEntity {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    /** 领款单编码 */
-    @TableField(value = "voucher_no")
-    private Long voucherNo;
 
     /** 领款单类型 1-材料单 2-施工队领款单 3-其他领款单 */
     @TableField(value = "voucher_type")
@@ -51,7 +48,7 @@ public class FinanceVoucher extends BaseEntity {
 
     /** 领款单总金额 */
     @TableField(value = "total_money")
-    private Long totalMoney;
+    private Double totalMoney;
 
     /** 0-未审核 1-财务审核通过 2-审核不通过 3-出纳付款中 4-待提交会计 5-挂账中 6-会计收单 */
     @TableField(value = "audit_status")

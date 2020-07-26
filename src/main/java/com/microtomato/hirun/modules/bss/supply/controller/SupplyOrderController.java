@@ -10,6 +10,7 @@ import com.microtomato.hirun.modules.bss.supply.entity.dto.QuerySupplyOrderDTO;
 import com.microtomato.hirun.modules.bss.supply.entity.dto.SupplyMaterialDTO;
 import com.microtomato.hirun.modules.bss.supply.entity.dto.SupplyOrderDTO;
 import com.microtomato.hirun.modules.bss.supply.service.ISupplyOrderService;
+import com.microtomato.hirun.modules.finance.entity.dto.FinanceVoucherDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -59,6 +60,12 @@ public class SupplyOrderController {
     @RestResult
     public List<SupplyMaterialDTO> querySupplyDetailInfo(QuerySupplyOrderDTO querySupplyDTO) {
         return this.supplyOrderService.querySupplyDetailInfo(querySupplyDTO);
+    }
+
+    @PostMapping("/auditSupplyDetail")
+    @RestResult
+    public void auditSupplyDetail(@RequestBody List<SupplyOrderDTO> supplyOrderDTOS) {
+        this.supplyOrderService.auditSupplyDetail(supplyOrderDTOS);
     }
 
 }

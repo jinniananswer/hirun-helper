@@ -8,6 +8,7 @@ import com.microtomato.hirun.modules.bss.supply.entity.dto.QuerySupplyOrderDTO;
 import com.microtomato.hirun.modules.bss.supply.entity.dto.SupplyMaterialDTO;
 import com.microtomato.hirun.modules.bss.supply.entity.dto.SupplyOrderDTO;
 import com.microtomato.hirun.modules.bss.supply.entity.po.SupplyOrder;
+import com.microtomato.hirun.modules.finance.entity.dto.FinanceVoucherDTO;
 
 import java.util.List;
 
@@ -25,5 +26,7 @@ public interface ISupplyOrderService extends IService<SupplyOrder> {
     IPage<SupplyOrderDTO> querySupplyInfo(QuerySupplyOrderDTO condition);
 
     List<SupplyMaterialDTO> querySupplyDetailInfo(QuerySupplyOrderDTO condition);
+
+    void auditSupplyDetail(List<SupplyOrderDTO> supplyOrderDTOS);
 
 }

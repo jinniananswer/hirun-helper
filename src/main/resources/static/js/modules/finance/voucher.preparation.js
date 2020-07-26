@@ -125,13 +125,29 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                     });
 
                 },
-                voucherPreparation : function() {
+                auditSupplyDetail: function() {
                     let data = this.$refs.materialTable.getCheckboxRecords();
                     if (data == null || data.length <= 0) {
                         this.$message.error('没有选中任何记录，无法提交');
                         return;
                     }
-                    ajax.post('api/bss.supply/supply-order/voucherPreparationForSupply', this.$refs.materialTable.getCheckboxRecords());
+                    ajax.post('api/bss.supply/supply-order/auditSupplyDetail', this.$refs.materialTable.getCheckboxRecords());
+                },
+                voucherPreparationForSupply : function() {
+                    let data = this.$refs.materialTable.getCheckboxRecords();
+                    if (data == null || data.length <= 0) {
+                        this.$message.error('没有选中任何记录，无法提交');
+                        return;
+                    }
+                    ajax.post('api/finance/finance-voucher/voucherPreparationForSupply', this.$refs.materialTable.getCheckboxRecords());
+                },
+                voucherPreparationForConstruction : function() {
+                    let data = this.$refs.materialTable.getCheckboxRecords();
+                    if (data == null || data.length <= 0) {
+                        this.$message.error('没有选中任何记录，无法提交');
+                        return;
+                    }
+                    ajax.post('api/finance/finance-voucher/voucherPreparationForSupply', this.$refs.materialTable.getCheckboxRecords());
                 },
                 //查询当前流程的施工人员情况,后续应该改为直接从工人预计工资表去获取，根据不同阶段最多领款额度算出来
                 loadConstructionInfo: function (orderId, custId) {

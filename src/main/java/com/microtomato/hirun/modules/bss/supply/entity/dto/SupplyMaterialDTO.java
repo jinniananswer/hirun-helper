@@ -25,6 +25,8 @@ public class SupplyMaterialDTO {
 
     private String num;
 
+    private Integer fee;
+
     private Integer costPrice;
 
     private Integer salePrice;
