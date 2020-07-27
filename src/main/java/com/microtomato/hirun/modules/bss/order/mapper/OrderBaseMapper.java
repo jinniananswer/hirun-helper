@@ -12,6 +12,7 @@ import com.microtomato.hirun.modules.bss.order.entity.dto.*;
 import com.microtomato.hirun.modules.bss.order.entity.dto.finance.FinanceOrderTaskDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.finance.FinanceOrderTaskQueryDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderBase;
+import com.microtomato.hirun.modules.system.entity.dto.PendingTaskDTO;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
@@ -66,4 +67,7 @@ public interface OrderBaseMapper extends BaseMapper<OrderBase> {
             " AND a.`create_time` <= #{endDate}"
     )
     List<OrderBase> queryOrderBaseByEmployee(@Param("employeeId") Long employeeId, @Param("startDate")LocalDateTime startDate, @Param("endDate")LocalDateTime endDate);
+
+    @Select("select a.status name, count(1) num from order_base a where a.status in (${statuses}) and a.type=#{type} and exists(select 1 from order_worker b where b.employee_id = #{employeeId}) group by a.status ")
+    List<PendingTaskDTO> queryOrderStatusPendingTasks(@Param("statuses")String statuses, @Param("employeeId")Long employeeId, @Param("type")String type);
 }
