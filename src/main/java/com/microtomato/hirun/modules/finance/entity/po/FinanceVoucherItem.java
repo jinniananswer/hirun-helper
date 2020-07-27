@@ -36,9 +36,9 @@ public class FinanceVoucherItem extends BaseEntity {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    /** 领款单编码 */
-    @TableField(value = "voucher_no")
-    private Long voucherNo;
+    /** 领款单编码 对应FinanceVoucher表ID*/
+    @TableField(value = "voucher_id")
+    private Long voucherId;
 
     /** 金额 */
     @TableField(value = "fee")
@@ -48,17 +48,23 @@ public class FinanceVoucherItem extends BaseEntity {
     @TableField(value = "supplier_id")
     private Long supplierId;
 
+    /** 供应链id 针对材料付款使用 */
+    @TableField(value = "supply_id")
+    private Long supplyId;
+
+    private Long orderId;
+
     /** 项目编码 可以为客户编码，师傅ID等 */
     @TableField(value = "project_id")
     private Long projectId;
 
-    /** 费用科目，见参数sys_voucher_item_cfg */
+    /** 费用科目，见参数finance_item */
     @TableField(value = "voucher_item_id")
-    private Long voucherItemId;
+    private String voucherItemId;
 
-    /** 上级费用科目，见参数sys_voucher_item_cfg */
+    /** 上级费用科目，见参数finance_item */
     @TableField(value = "parent_voucher_item_id")
-    private Long parentVoucherItemId;
+    private String parentVoucherItemId;
 
     /** 开始时间 */
     @TableField(value = "start_date")

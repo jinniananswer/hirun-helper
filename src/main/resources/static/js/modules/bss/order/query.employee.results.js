@@ -15,10 +15,10 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'order-selectem
                     roleId: [
                         {required: true, message: '请选择角色', trigger: 'change'}
                     ],
-                    startDate: [
+                    orderCreateStartDate: [
                         {required: true, message: '请选择开始时间', trigger: 'change'}
                     ],
-                    endDate: [
+                    orderCreateEndDate: [
                         {required: true, message: '请选择结束时间', trigger: 'change'}
                     ],
                 }

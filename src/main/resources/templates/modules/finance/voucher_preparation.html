@@ -71,47 +71,9 @@
                             <el-row>
                                 <el-card class="box-card" shadow="hover">
                                     <el-row style="padding-bottom: 12px">
-                                        <el-button type="success" @click="voucherPreparation">制单</el-button>
-                                        <el-button type="danger" @click="voucherPreparation">审核不通过</el-button>
+                                        <el-button type="success" @click="voucherPreparationForSupply">制单</el-button>
+                                        <el-button type="danger" @click="auditSupplyDetail">审核不通过</el-button>
                                     </el-row>
-<!--                                    <vxe-table-->
-<!--                                            border-->
-<!--                                            resizable-->
-<!--                                            ref="materialTable"-->
-<!--                                            show-overflow-->
-<!--                                            highlight-hover-row-->
-<!--                                            highlight-cell-->
-<!--                                            keep-source-->
-<!--                                            max-height="800px"-->
-<!--                                            :auto-resize="true"-->
-<!--                                            :data="materialTableData">-->
-<!--                                        <vxe-table-column field="id" title="材料下单编号" sortable width="150"-->
-<!--                                                          fixed="left"></vxe-table-column>-->
-<!--                                        <vxe-table-column field="custName" title="总金额" sortable width="100"-->
-<!--                                                          fixed="left"></vxe-table-column>-->
-<!--                                        <vxe-table-column field="create_user_id" title="下单员" sortable width="100"-->
-<!--                                                          fixed="left"></vxe-table-column>-->
-<!--                                        <vxe-table-column field="orderStatusName" title="材料下单类型" sortable-->
-<!--                                                          width="200"></vxe-table-column>-->
-<!--                                        <vxe-table-column title="查看详情" width="100" show-overflow>-->
-<!--                                            <template v-slot="{ row }">-->
-<!--                                                <el-button-->
-<!--                                                        size="mini"-->
-<!--                                                        type="primary"-->
-<!--                                                        @click="">下单详情-->
-<!--                                                </el-button>-->
-<!--                                            </template>-->
-<!--                                        </vxe-table-column>-->
-<!--                                        <vxe-table-column title="操作" width="100" show-overflow>-->
-<!--                                            <template v-slot="{ row }">-->
-<!--                                                <el-button-->
-<!--                                                        size="mini"-->
-<!--                                                        type="primary"-->
-<!--                                                        @click="">制单-->
-<!--                                                </el-button>-->
-<!--                                            </template>-->
-<!--                                        </vxe-table-column>-->
-<!--                                    </vxe-table>-->
                                     <vxe-table
                                             border
                                             resizable
@@ -127,7 +89,7 @@
                                             :edit-config="{trigger: 'click', mode: 'cell', showStatus: true, activeMethod: activeRowMethod}"
                                             :checkbox-config="{strict: true,range: true, trigger: 'row', highlight: true}">
                                         <vxe-table-column type="checkbox" fixed="left" width="40"></vxe-table-column>
-                                        <vxe-table-column field="id" title="材料下单编号" sortable width="150"
+                                        <vxe-table-column field="id" title="材料下单编号" :visible="false"sortable width="150"
                                                           fixed="left"></vxe-table-column>
                                         <vxe-table-column field="supplierId" title="供应商编码" sortable width="100"
                                                           fixed="left"></vxe-table-column>
@@ -146,15 +108,15 @@
                                                 </el-button>
                                             </template>
                                         </vxe-table-column>
-                                        <vxe-table-column title="操作" width="100" show-overflow>
-                                            <template v-slot="{ row }">
-                                                <el-button
-                                                        size="mini"
-                                                        type="primary"
-                                                        @click="voucherPreparation(row.id,row.supplierId)">制单
-                                                </el-button>
-                                            </template>
-                                        </vxe-table-column>
+<!--                                        <vxe-table-column title="操作" width="100" show-overflow>-->
+<!--                                            <template v-slot="{ row }">-->
+<!--                                                <el-button-->
+<!--                                                        size="mini"-->
+<!--                                                        type="primary"-->
+<!--                                                        @click="voucherPreparation(row.id,row.supplierId)">制单-->
+<!--                                                </el-button>-->
+<!--                                            </template>-->
+<!--                                        </vxe-table-column>-->
                                     </vxe-table>
                                     <div style="text-align: center">
                                         <el-pagination
@@ -341,8 +303,7 @@
                                                 </el-select>
                                             </div>
                                             <el-row style="padding-bottom: 12px">
-                                                <el-button type="success" @click="voucherPreparation">制单</el-button>
-                                                <el-button type="danger" @click="voucherPreparation">审核不通过</el-button>
+                                                <el-button type="success" @click="voucherPreparationForConstruction">制单</el-button>
                                             </el-row>
                                             <vxe-table
                                                     border
@@ -357,11 +318,13 @@
                                                     :auto-resize="true"
                                                     :data="constructionTableData"
                                                     :edit-config="{trigger: 'click', mode: 'cell', showStatus: true, activeMethod: activeRowMethod}"
-                                                    :checkbox-config="{strict: true, checkMethod: checkMethod, range: true, trigger: 'row', highlight: true}">
-                                                <vxe-table-column field="decoratorId" title="工人编码"></vxe-table-column>
+                                                    :checkbox-config="{strict: true,range: true, trigger: 'row', highlight: true}">
+                                                <vxe-table-column type="checkbox" fixed="left" width="40"></vxe-table-column>
+                                                <vxe-table-column type="orderId" title="订单编码" :visible="false"></vxe-table-column>
+                                                <vxe-table-column field="decoratorId" title="工人编码" :visible="false"></vxe-table-column>
                                                 <vxe-table-column field="name" title="工人名称"></vxe-table-column>
                                                 <vxe-table-column field="decoratorType" title="工种"></vxe-table-column>
-                                                <vxe-table-column field="num" title="领款金额" width="180"
+                                                <vxe-table-column field="money" title="领款金额" width="180"
                                                                   :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
                                                 <vxe-table-column title="操作" width="100" show-overflow>
                                                     <template v-slot="{ row }">
