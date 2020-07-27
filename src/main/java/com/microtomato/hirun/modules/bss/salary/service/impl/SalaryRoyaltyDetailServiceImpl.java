@@ -40,6 +40,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -408,6 +410,7 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
      * 保存提成明细数据
      * @param designRoyaltyDetails
      */
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @Override
     public void saveDesignRoyaltyDetails(List<DesignRoyaltyDetailDTO> designRoyaltyDetails) {
         if (ArrayUtils.isEmpty(designRoyaltyDetails)) {
@@ -503,6 +506,7 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
      * 提交提成明细数据进行审核
      * @param designRoyaltyDetails
      */
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @Override
     public void auditDesignRoyaltyDetails(List<DesignRoyaltyDetailDTO> designRoyaltyDetails) {
         if (ArrayUtils.isEmpty(designRoyaltyDetails)) {
@@ -520,6 +524,7 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
      * 保存工程提成明细数据
      * @param projectRoyaltyDetails
      */
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @Override
     public void saveProjectRoyaltyDetails(List<ProjectRoyaltyDetailDTO> projectRoyaltyDetails) {
         if (ArrayUtils.isEmpty(projectRoyaltyDetails)) {
@@ -765,6 +770,7 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
      * 提交工程提成数据到审核员审核
      * @param projectRoyaltyDetails
      */
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @Override
     public void auditProjectRoyaltyDetails(List<ProjectRoyaltyDetailDTO> projectRoyaltyDetails) {
         if (ArrayUtils.isEmpty(projectRoyaltyDetails)) {
@@ -1034,6 +1040,7 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
      * 设计费提成明细审核通过
      * @param designDetails
      */
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @Override
     public void auditDesignRoyaltyPass(List<DesignRoyaltyDetailDTO> designDetails) {
         if (ArrayUtils.isEmpty(designDetails)) {
@@ -1058,6 +1065,7 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
      * 设计费提成明细审核不通过
      * @param designDetails
      */
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @Override
     public void auditDesignRoyaltyNo(List<DesignRoyaltyDetailDTO> designDetails) {
         if (ArrayUtils.isEmpty(designDetails)) {
@@ -1082,6 +1090,7 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
      * 工程提成明细审核通过
      * @param projectDetails
      */
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @Override
     public void auditProjectRoyaltyPass(List<ProjectRoyaltyDetailDTO> projectDetails) {
         if (ArrayUtils.isEmpty(projectDetails)) {
@@ -1124,6 +1133,7 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
      * 工程提成明细审核不通过
      * @param projectDetails
      */
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @Override
     public void auditProjectRoyaltyNo(List<ProjectRoyaltyDetailDTO> projectDetails) {
         if (ArrayUtils.isEmpty(projectDetails)) {

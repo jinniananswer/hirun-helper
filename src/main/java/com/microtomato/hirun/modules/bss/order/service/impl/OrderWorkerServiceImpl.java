@@ -9,12 +9,14 @@ import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerDetailDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderWorker;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderWorkerMapper;
 import com.microtomato.hirun.modules.bss.order.service.IOrderWorkerService;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
+import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +46,9 @@ public class OrderWorkerServiceImpl extends ServiceImpl<OrderWorkerMapper, Order
 
     @Autowired
     private IEmployeeService employeeService;
+
+    @Autowired
+    private IStaticDataService staticDataService;
 
     @Override
     public List<OrderWorkerDTO> queryByOrderId(Long orderId) {
@@ -116,5 +121,31 @@ public class OrderWorkerServiceImpl extends ServiceImpl<OrderWorkerMapper, Order
             result.add(worker);
         });
         return result;
+    }
+
+    /**
+     * 订单详情获取时展示工作人员信息
+     * @param orderId
+     * @return
+     */
+    @Override
+    public List<OrderWorkerDetailDTO> queryOrderWorkerDetails(Long orderId) {
+        List<OrderWorkerDetailDTO> orderWorkers = this.orderWorkerMapper.queryAllByOrderId(orderId);
+        if (ArrayUtils.isEmpty(orderWorkers)) {
+            return orderWorkers;
+        }
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+        orderWorkers.forEach(orderWorker -> {
+            orderWorker.setStatusName(this.staticDataService.getCodeName("EMPLOYEE_STATUS", orderWorker.getStatus()));
+            LocalDateTime endDate = orderWorker.getEndDate();
+
+            if (TimeUtils.compareTwoTime(endDate, now) < 0) {
+                orderWorker.setWorkerStatus("已退出");
+            } else {
+                orderWorker.setWorkerStatus("正常");
+            }
+        });
+
+        return orderWorkers;
     }
 }

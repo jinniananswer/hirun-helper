@@ -155,6 +155,11 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
             orderInfo.setHouseLayoutName(this.staticDataService.getCodeName("HOUSE_MODE", orderInfo.getHouseLayout()));
         }
 
+        List<OrderWorkerDetailDTO> orderWorkers = this.orderWorkerService.queryOrderWorkerDetails(orderId);
+        if (ArrayUtils.isNotEmpty(orderWorkers)) {
+            orderInfo.setOrderWorkers(orderWorkers);
+        }
+
         List<OrderFeeInfoDTO> orderFees = this.feeDomainService.queryOrderFeeInfo(orderId);
         if (ArrayUtils.isNotEmpty(orderFees)) {
             orderInfo.setOrderFees(orderFees);

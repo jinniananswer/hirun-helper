@@ -553,6 +553,7 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
         QueryWrapper<QueryProjectFeeDTO> wrapper = new QueryWrapper<>();
         wrapper.apply(" b.cust_id = a.cust_id ");
         wrapper.apply("c.order_id = a.order_id ");
+        wrapper.apply(" c.need_pay <> c.pay ");
         wrapper.eq(condition.getOrderId() != null, "a.order_id", condition.getOrderId());
         wrapper.eq(condition.getFeeType() != null, "c.type", condition.getFeeType());
         wrapper.eq(condition.getPeriods() != null, "c.periods", condition.getFeeType());

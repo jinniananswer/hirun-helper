@@ -142,4 +142,9 @@ public class OrderDetailDTO {
      * 订单上传文件信息
      */
     private List<OrderFileDTO> orderFiles;
+
+    /**
+     * 订单工作人员信息
+     */
+    private List<OrderWorkerDetailDTO> orderWorkers;
 }
