@@ -51,6 +51,10 @@ public class ServiceRepairOrder extends BaseEntity {
     @TableField(value = "repair_worker_type")
     private String repairWorkerType;
 
+    /** 是否收费 */
+    @TableField(value = "is_fee")
+    private String isFee;
+
     /** 维修项目 */
     @TableField(value = "repair_item")
     private String repairItem;
@@ -75,17 +79,21 @@ public class ServiceRepairOrder extends BaseEntity {
     @TableField(value = "repair_worker_count")
     private String repairWorkerCount;
 
+    /** 维修人员 */
+    @TableField(value = "repair_worker")
+    private String repairWorker;
+
     /** 受理时间 */
     @TableField(value = "accept_time")
     private LocalDateTime acceptTime;
 
     /** 取单时间 */
     @TableField(value = "offer_time")
-    private LocalDateTime offerTime;
+    private LocalDate offerTime;
 
     /** 回单时间 */
     @TableField(value = "receipt_time")
-    private LocalDateTime receiptTime;
+    private LocalDate receiptTime;
 
     /** 预计维修时间 */
     @TableField(value = "plan_repair_date")
@@ -105,7 +113,7 @@ public class ServiceRepairOrder extends BaseEntity {
 
 
     @TableField(value = "repair_visit_time")
-    private LocalDateTime repairVisitTime;
+    private LocalDate repairVisitTime;
 
     /** 维修满意度 */
     @TableField(value = "repair_satisfaction")

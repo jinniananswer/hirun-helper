@@ -4,9 +4,13 @@ package com.microtomato.hirun.modules.bss.service.controller;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.modules.bss.service.entity.dto.RepairOrderInfoDTO;
 import com.microtomato.hirun.modules.bss.service.entity.dto.RepairOrderRecordDTO;
+import com.microtomato.hirun.modules.bss.service.entity.dto.ServicePendingTaskDTO;
+import com.microtomato.hirun.modules.bss.service.service.IServiceCenterDomainService;
 import com.microtomato.hirun.modules.bss.service.service.IServiceRepairOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 /**
@@ -17,24 +21,19 @@ import org.springframework.web.bind.annotation.*;
  * @date 2020-07-12 18:46:24
  */
 @RestController
-@RequestMapping("/api/bss.service/service-repair-order")
-public class ServiceRepairOrderController {
+@RequestMapping("/api/bss.service/service-center-domain")
+public class ServiceCenterDomainController {
 
     /**
      * 服务对象
      */
     @Autowired
-    private IServiceRepairOrderService serviceRepairOrderService;
+    private IServiceCenterDomainService domainService;
 
-    @PostMapping("/saveRepairOrder")
-    @RestResult
-    public void saveRepairOrder(@RequestBody RepairOrderInfoDTO records) {
-        this.serviceRepairOrderService.saveRepairRecord(records);
-    }
 
-    @GetMapping("/queryRepairRecordInfo")
+    @GetMapping("/queryServicePendingTask")
     @RestResult
-    public RepairOrderRecordDTO queryRepairRecordInfo(Long orderId,Long customerId,String repairNo) {
-        return serviceRepairOrderService.queryRepairRecordInfo(orderId,customerId,repairNo);
+    public List<ServicePendingTaskDTO> queryServicePendingTask() {
+        return domainService.queryServicePendingTask();
     }
 }
