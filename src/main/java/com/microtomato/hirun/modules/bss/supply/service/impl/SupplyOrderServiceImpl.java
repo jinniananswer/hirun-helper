@@ -1,30 +1,15 @@
 package com.microtomato.hirun.modules.bss.supply.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.microtomato.hirun.framework.mybatis.sequence.impl.PayNoCycleSeq;
 import com.microtomato.hirun.framework.mybatis.service.IDualService;
 import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
-import com.microtomato.hirun.modules.bss.config.entity.po.CollectionItemCfg;
-import com.microtomato.hirun.modules.bss.config.entity.po.OrderStatusCfg;
-import com.microtomato.hirun.modules.bss.order.entity.dto.NonCollectFeeDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.NormalPayItemDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.UsualFeeDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.UsualOrderWorkerDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.fee.ProjectFeeDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.fee.QueryProjectFeeDTO;
-import com.microtomato.hirun.modules.bss.order.entity.po.NormalPayItem;
-import com.microtomato.hirun.modules.bss.order.entity.po.OrderContract;
-import com.microtomato.hirun.modules.bss.order.exception.OrderException;
-import com.microtomato.hirun.modules.bss.order.service.INormalPayItemService;
 import com.microtomato.hirun.modules.bss.supply.entity.dto.QuerySupplyOrderDTO;
 import com.microtomato.hirun.modules.bss.supply.entity.dto.SupplyMaterialDTO;
 import com.microtomato.hirun.modules.bss.supply.entity.dto.SupplyOrderDTO;
-import com.microtomato.hirun.modules.bss.supply.entity.po.SupplyMaterial;
 import com.microtomato.hirun.modules.bss.supply.entity.po.SupplyOrder;
 import com.microtomato.hirun.modules.bss.supply.entity.po.SupplyOrderDetail;
 import com.microtomato.hirun.modules.bss.supply.mapper.SupplyMaterialMapper;
@@ -33,8 +18,6 @@ import com.microtomato.hirun.modules.bss.supply.mapper.SupplyOrderMapper;
 import com.microtomato.hirun.modules.bss.supply.service.ISupplierService;
 import com.microtomato.hirun.modules.bss.supply.service.ISupplyOrderDetailService;
 import com.microtomato.hirun.modules.bss.supply.service.ISupplyOrderService;
-import com.microtomato.hirun.modules.finance.entity.dto.FinanceVoucherDTO;
-import com.microtomato.hirun.modules.finance.entity.dto.FinanceVoucherItemDTO;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
@@ -42,9 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
