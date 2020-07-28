@@ -1,4 +1,4 @@
-require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-select', 'util'], function(Vue, element, ajax, table, vueSelect, orgTree, houseSelect, util) {
+require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-select', 'util', 'order-selectemployee'], function(Vue, element, ajax, table, vueSelect, orgTree, houseSelect, util, selectEmployee) {
     Vue.use(table);
     let vm = new Vue({
         el: '#app',
@@ -11,10 +11,20 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 },
 
                 dialogQueryCond: {
+                    roleId: 1,
                     limit: 20,
                     page: 1,
                     count: 0
                 },
+
+                roles : [{
+                        roleId: 30,
+                        roleName: "设计师"
+                    },
+                    {
+                        roleId: 15,
+                        roleName : "客户代表"
+                    }],
                 balances: [],
                 custOrder: [],
                 dialogVisible : false
