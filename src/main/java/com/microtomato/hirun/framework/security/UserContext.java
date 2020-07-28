@@ -71,6 +71,11 @@ public class UserContext implements UserDetails {
     private String name;
 
     /**
+     * 主角色，每个用户最多有一个主角色
+     */
+    private Long mainRoleId;
+
+    /**
      * 登录时间
      */
     private LocalDateTime loginTime = LocalDateTime.now();
