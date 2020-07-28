@@ -108,6 +108,12 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
     private IOrderPayNoService orderPayNoService;
 
     @Autowired
+    private IOrderContractService orderContractService;
+
+    @Autowired
+    private IOrderDiscountItemService orderDiscountItemService;
+
+    @Autowired
     private OrderBaseMapper orderBaseMapper;
 
     @Autowired
@@ -174,6 +180,26 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
         if (ArrayUtils.isNotEmpty(orderFiles)) {
             orderInfo.setOrderFiles(orderFiles);
         }
+
+        List<OrderContract> orderContracts = this.orderContractService.queryByOrderId(orderId);
+        if (ArrayUtils.isNotEmpty(orderContracts)) {
+            List<OrderContractDTO> contracts = new ArrayList<>();
+            orderContracts.forEach(orderContract -> {
+                OrderContractDTO contract = new OrderContractDTO();
+                BeanUtils.copyProperties(orderContract, contract);
+                contract.setContractTypeName(this.staticDataService.getCodeName("ORDER_CONTRACT_TYPE", contract.getContractType()));
+                contract.setBusiLevelName(this.staticDataService.getCodeName("BUSI_LEVEL", contract.getBusiLevel()));
+                contract.setEnvironmentalTestingAgencyName(this.staticDataService.getCodeName("environmentalTestingAgency", contract.getEnvironmentalTestingAgency()));
+                contracts.add(contract);
+            });
+            orderInfo.setOrderContracts(contracts);
+        }
+
+        List<OrderDiscountItemDTO> orderDiscountItems = this.orderDiscountItemService.queryByOrderId(orderId);
+        if (ArrayUtils.isNotEmpty(orderDiscountItems)) {
+            orderInfo.setOrderDiscountItems(orderDiscountItems);
+        }
+
         return orderInfo;
     }
 

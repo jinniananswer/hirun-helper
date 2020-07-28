@@ -1,22 +1,22 @@
 package com.microtomato.hirun.modules.bss.order.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
+import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderDiscountItemDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderDiscountItem;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderDiscountItemMapper;
 import com.microtomato.hirun.modules.bss.order.service.IOrderDiscountItemService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.modules.organization.service.impl.EmployeeServiceImpl;
 import com.microtomato.hirun.modules.system.entity.po.StaticData;
 import com.microtomato.hirun.modules.system.service.impl.StaticDataServiceImpl;
-import org.apache.commons.lang3.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -99,5 +99,28 @@ public class OrderDiscountItemServiceImpl extends ServiceImpl<OrderDiscountItemM
         }
 
         this.saveOrUpdateBatch(list);
+    }
+
+    @Override
+    public List<OrderDiscountItemDTO> queryByOrderId(Long orderId) {
+        List<OrderDiscountItem> orderDiscountItemList = baseMapper.selectList((new QueryWrapper<OrderDiscountItem>().lambda()
+                .eq(OrderDiscountItem::getOrderId, orderId)));
+        if (ArrayUtils.isEmpty(orderDiscountItemList)) {
+            return null;
+        }
+
+        List<OrderDiscountItemDTO> discountItems = new ArrayList<>();
+        orderDiscountItemList.forEach(orderDiscountItem -> {
+            OrderDiscountItemDTO discountItem = new OrderDiscountItemDTO();
+            BeanUtils.copyProperties(orderDiscountItem, discountItem);
+            discountItem.setEmployeeName(employeeService.getEmployeeNameEmployeeId(discountItem.getEmployeeId()));
+            discountItem.setStatusName(staticDataService.getCodeName("DISCOUNT_ITEM_STATUS", discountItem.getStatus()));
+            if(discountItem.getApproveEmployeeId() != null && discountItem.getApproveEmployeeId() > 0) {
+                discountItem.setApproveEmployeeName(employeeService.getEmployeeNameEmployeeId(discountItem.getApproveEmployeeId()));
+            }
+            discountItem.setDiscountItemName(this.staticDataService.getCodeName("DISCOUNT_ITEM", discountItem.getDiscountItem()));
+            discountItems.add(discountItem);
+        });
+        return discountItems;
     }
 }

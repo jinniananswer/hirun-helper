@@ -156,4 +156,17 @@ public class OrderContractServiceImpl extends ServiceImpl<OrderContractMapper, O
         return orderContract;
     }
 
+    /**
+     * 根据订单ID查询订单合同信息
+     * @param orderId
+     * @return
+     */
+    @Override
+    public List<OrderContract> queryByOrderId(Long orderId) {
+        List<OrderContract> orderContracts = this.list(Wrappers.<OrderContract>lambdaQuery()
+                .eq(OrderContract::getOrderId, orderId));
+
+        return orderContracts;
+    }
+
 }

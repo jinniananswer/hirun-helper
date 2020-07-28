@@ -147,4 +147,14 @@ public class OrderDetailDTO {
      * 订单工作人员信息
      */
     private List<OrderWorkerDetailDTO> orderWorkers;
+
+    /**
+     * 订单合同信息
+     */
+    private List<OrderContractDTO> orderContracts;
+
+    /**
+     * 订单优惠项目
+     */
+    private List<OrderDiscountItemDTO> orderDiscountItems;
 }

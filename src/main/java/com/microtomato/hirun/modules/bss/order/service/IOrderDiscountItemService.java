@@ -20,4 +20,5 @@ public interface IOrderDiscountItemService extends IService<OrderDiscountItem> {
 
     public void save(List<OrderDiscountItemDTO> dtoList);
 
+    List<OrderDiscountItemDTO> queryByOrderId(Long orderId);
 }
