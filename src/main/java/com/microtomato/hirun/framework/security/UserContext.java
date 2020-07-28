@@ -73,7 +73,7 @@ public class UserContext implements UserDetails {
     /**
      * 主角色，每个用户最多有一个主角色
      */
-    private Long mainRoleId;
+    private Long mainRoleId = -1L;
 
     /**
      * 登录时间
