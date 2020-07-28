@@ -79,6 +79,28 @@
                         </el-row>
                         <el-row>
                             <el-col :span="8">
+                                <el-form-item label="选择角色">
+                                    <el-select v-model="dialogQueryCond.roleId" placeholder="请选择">
+                                        <el-option
+                                                v-for="role in roles"
+                                                :key="role.roleId"
+                                                :label="role.roleName"
+                                                :value="role.roleId">
+                                        </el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="客户编号">
+                                    <order-selectemployee :role-id="dialogQueryCond.roleId"></order-selectemployee>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="8">
                                 <el-form-item label="归属楼盘">
                                     <house-select v-model="dialogQueryCond.housesId"></house-select>
                                 </el-form-item>
