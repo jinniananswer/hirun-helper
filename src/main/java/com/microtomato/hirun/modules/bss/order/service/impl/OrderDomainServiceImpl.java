@@ -17,7 +17,10 @@ import com.microtomato.hirun.modules.bss.config.service.IOrderStatusCfgService;
 import com.microtomato.hirun.modules.bss.config.service.IOrderStatusTransCfgService;
 import com.microtomato.hirun.modules.bss.config.service.IRoleAttentionStatusCfgService;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.CustInfoDTO;
+import com.microtomato.hirun.modules.bss.customer.entity.dto.XQLTEInfoDTO;
+import com.microtomato.hirun.modules.bss.customer.entity.dto.XQLTYInfoDTO;
 import com.microtomato.hirun.modules.bss.customer.service.ICustBaseService;
+import com.microtomato.hirun.modules.bss.customer.service.ICustomerDomainService;
 import com.microtomato.hirun.modules.bss.house.entity.po.Houses;
 import com.microtomato.hirun.modules.bss.house.service.IHousesService;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
@@ -114,6 +117,9 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
     private IOrderDiscountItemService orderDiscountItemService;
 
     @Autowired
+    private ICustomerDomainService customerDomainService;
+
+    @Autowired
     private OrderBaseMapper orderBaseMapper;
 
     @Autowired
@@ -198,6 +204,16 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
         List<OrderDiscountItemDTO> orderDiscountItems = this.orderDiscountItemService.queryByOrderId(orderId);
         if (ArrayUtils.isNotEmpty(orderDiscountItems)) {
             orderInfo.setOrderDiscountItems(orderDiscountItems);
+        }
+
+        List<XQLTYInfoDTO> bluePics = this.customerDomainService.getXQLTYInfo(customer.getOpenId());
+        XQLTEInfoDTO bluePicSecond = this.customerDomainService.getXQLTEInfo(customer.getOpenId());
+        if (ArrayUtils.isNotEmpty(bluePics)) {
+            orderInfo.setXqltyInfo(bluePics);
+        }
+
+        if (bluePicSecond != null) {
+            orderInfo.setXqlteInfo(bluePicSecond);
         }
 
         return orderInfo;
