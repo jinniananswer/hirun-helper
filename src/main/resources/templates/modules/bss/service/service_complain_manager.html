@@ -178,8 +178,8 @@
                                         <vxe-table-column field="acceptEmployeeName" title="客服人员" width="150" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
                                     </vxe-table>
                                     <el-row :style="show">
-                                        <el-button type="danger" :style="showBeginRepair" @click="">投诉受理</el-button>
-                                        <el-button type="danger" :style="showCheckData" @click="">投诉受理完毕</el-button>
+                                        <el-button type="danger" :style="showBeginRepair" @click="acceptComplain()">投诉受理</el-button>
+                                        <el-button type="danger" :style="showCheckData" @click="finishComplainDeal()">投诉受理完毕</el-button>
                                     </el-row>
                                 </el-tab-pane>
                                 <el-tab-pane label="历史投诉记录" name="repairHistoryActiveTable">

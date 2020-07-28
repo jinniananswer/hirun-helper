@@ -56,4 +56,16 @@ public class ComplainOrderDTO {
 
     private String status;
 
+    private String statusName;
+
+    private String custName;
+
+    private String custNo;
+
+    private String mobileNo;
+
+    private Long houseId;
+
+    private String houseName;
+
 }

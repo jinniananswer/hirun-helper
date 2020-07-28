@@ -161,7 +161,31 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
 
             },
 
+            acceptComplain :function(){
+                let  insertRecords= this.$refs.serviceComplainRecordList.getInsertRecords();
+                let removeRecords=this.$refs.serviceComplainRecordList.getRemoveRecords();
+                let updateRecords =this.$refs.serviceComplainRecordList.getUpdateRecords();
 
+                if((this.complainNo==''||this.complainNo==null)){
+                    this.$message.error('获取投诉编码出错');
+                    return false;
+                }
+                ajax.post('api/bss.service/service-complain/acceptComplain', {insertRecords:insertRecords,removeRecords:removeRecords,updateRecords:updateRecords,customerId:this.custId,orderId:this.orderId,complainNo:this.complainNo});
+
+            },
+
+            finishComplainDeal :function(){
+                let  insertRecords= this.$refs.serviceComplainRecordList.getInsertRecords();
+                let removeRecords=this.$refs.serviceComplainRecordList.getRemoveRecords();
+                let updateRecords =this.$refs.serviceComplainRecordList.getUpdateRecords();
+
+                if((this.complainNo==''||this.complainNo==null)){
+                    this.$message.error('获取投诉编码出错');
+                    return false;
+                }
+                ajax.post('api/bss.service/service-complain/finishComplainDeal', {insertRecords:insertRecords,removeRecords:removeRecords,updateRecords:updateRecords,customerId:this.custId,orderId:this.orderId,complainNo:this.complainNo});
+
+            },
 
 
             async removeRecord (row) {
