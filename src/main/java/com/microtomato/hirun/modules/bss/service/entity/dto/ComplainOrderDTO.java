@@ -68,4 +68,8 @@ public class ComplainOrderDTO {
 
     private String houseName;
 
+    private String agentName;
+
+    private String designName;
+
 }

@@ -11,6 +11,7 @@ import com.microtomato.hirun.framework.mybatis.service.IDualService;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.bss.house.service.IHousesService;
+import com.microtomato.hirun.modules.bss.order.service.IOrderDomainService;
 import com.microtomato.hirun.modules.bss.service.entity.dto.*;
 import com.microtomato.hirun.modules.bss.service.entity.po.ServiceComplain;
 import com.microtomato.hirun.modules.bss.service.entity.po.ServiceRepairOrder;
@@ -61,6 +62,9 @@ public class ServiceComplainServiceImpl extends ServiceImpl<ServiceComplainMappe
 
     @Autowired
     private IHousesService housesService;
+
+    @Autowired
+    private IOrderDomainService orderDomainService;
 
     @Override
     public void saveComplainOrder(ComplainOrderInfoDTO infoDTO) {
@@ -221,6 +225,17 @@ public class ServiceComplainServiceImpl extends ServiceImpl<ServiceComplainMappe
         queryWrapper.eq(condDTO.getHouseId()!=null,"b.houses_id",condDTO.getHouseId());
 
         queryWrapper.apply("a.cust_id=b.cust_id and a.cust_id=c.customer_id");
+        queryWrapper.between(StringUtils.equals("1",condDTO.getComplainTimeType()),"c.complain_time",condDTO.getStartTime(),condDTO.getEndTime());
+        queryWrapper.between(StringUtils.equals("2",condDTO.getComplainTimeType()),"c.deal_date",condDTO.getStartTime(),condDTO.getEndTime());
+
+        queryWrapper.apply(condDTO.getCustomerServiceEmployeeId()!=null,
+                " EXISTS (select 1 from order_worker d where d.order_id=b.order_id and end_date > now() " +
+                        " and role_id='15' and d.employee_id="+condDTO.getCustomerServiceEmployeeId()+")");
+
+        queryWrapper.apply(condDTO.getDesignEmployeeId()!=null,
+                " EXISTS (select 1 from order_worker e where e.order_id=b.order_id and end_date > now() " +
+                        " and role_id='30' and e.employee_id="+condDTO.getDesignEmployeeId()+")");
+
         List<ComplainOrderDTO> list=this.baseMapper.queryComplainAllRecord(queryWrapper);
         if(ArrayUtils.isEmpty(list)){
             return null;
@@ -231,6 +246,8 @@ public class ServiceComplainServiceImpl extends ServiceImpl<ServiceComplainMappe
             dto.setAcceptEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getAcceptEmployeeId()));
             dto.setHouseName(housesService.queryHouseName(dto.getHouseId()));
             dto.setStatusName(staticDataService.getCodeName("COMPLAIN_STATUS",dto.getStatus()));
+            dto.setAgentName(orderDomainService.getUsualOrderWorker(dto.getOrderId()).getAgentName());
+            dto.setDesignName(orderDomainService.getUsualOrderWorker(dto.getOrderId()).getDesignerName());
         }
         return list;
     }
