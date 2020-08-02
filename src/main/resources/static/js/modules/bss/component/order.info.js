@@ -607,7 +607,6 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
                         that.order = data;
                         that.customer = data.customer;
 
-
                         if (data.tabShow) {
                             if (data.tabShow.indexOf(".") > 0) {
                                 let array = data.tabShow.split(".");
@@ -621,17 +620,20 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
                             that.activeTab = 'orderInfo';
                             that.subActiveTab = 'feeInfo';
                         }
+                        if (data.xqlteInfo != null) {
+                            if(data.xqlteInfo.funcInfo != null && data.xqlteInfo.funcInfo.FUNC_A != null){
+                                that.disabledA = false;
+                            }
 
-                        if(data.xqlteInfo.funcInfo != null && data.xqlteInfo.funcInfo.FUNC_A != null){
-                            that.disabledA = false;
-                        }
-                        if(data.xqlteInfo.funcInfo != null && data.xqlteInfo.funcInfo.FUNC_B != null){
-                            that.disabledB = false;
+                            if(data.xqlteInfo.funcInfo != null && data.xqlteInfo.funcInfo.FUNC_B != null){
+                                that.disabledB = false;
+                            }
+
+                            if(data.xqlteInfo.funcInfo != null && data.xqlteInfo.funcInfo.FUNC_C != null){
+                                that.disabledC = false;
+                            }
                         }
 
-                        if(data.xqlteInfo.funcInfo != null && data.xqlteInfo.funcInfo.FUNC_C != null){
-                            that.disabledC = false;
-                        }
                     });
                 }
             },
