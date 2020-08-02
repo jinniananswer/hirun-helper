@@ -19,11 +19,17 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'util', 'vxe-table', 'vueselect','ho
             query : function() {
                 let that = this;
                 ajax.get("api/bss.config/order-status-cfg/queryAll", null, function(data) {
+                    if (data == null) {
+                        return;
+                    }
                     that.options = data;
                     that.queryCond.page = data.current;
                     that.queryCond.count = data.total;
                 });
                 ajax.get('api/bss.order/order-domain/queryOrderTasks', this.queryCond, function(data) {
+                    if (data == null) {
+                        return null;
+                    }
                     that.tasks = data.records;
                 })
             },
