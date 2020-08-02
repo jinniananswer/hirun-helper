@@ -41,11 +41,7 @@ public class UserRole extends BaseEntity {
      * 是否主角色 (1:主角色； 0:非主角色)
      */
     @TableField("is_main_role")
-    private Boolean mainRole;
-
-    public Boolean isMainRole() {
-        return this.mainRole;
-    }
+    private Boolean isMainRole;
 
     /**
      * 生效开始时间

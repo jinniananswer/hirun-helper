@@ -45,7 +45,7 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
         LocalDateTime now = LocalDateTime.now();
         return list(
             Wrappers.<UserRole>lambdaQuery()
-                .select(UserRole::getRoleId, UserRole::getMainRole)
+                .select(UserRole::getRoleId, UserRole::getIsMainRole)
                 .eq(UserRole::getUserId, user.getUserId())
                 .lt(UserRole::getStartDate, now)
                 .gt(UserRole::getEndDate, now)
