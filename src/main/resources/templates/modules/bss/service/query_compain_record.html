@@ -5,91 +5,97 @@
     <title>维修信息查询</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <script src="static/js/framework/requirejs/require.min.js" th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
-    <script src="static/js/framework/requirejs/require.config.js" th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.min.js"
+            th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js"
+            th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
 </head>
 <body>
 <div id="app">
     <el-container>
         <el-main>
             <el-card class="box-card" shadow="hover">
-                <div slot="header" class="clearfix" style="font-size: 14px">
-                    <span>查询条件区</span>
-                </div>
-                <el-form :inline="false" :model="queryCond" label-position="right" label-width="80px">
-                    <el-row>
-                        <el-col :span="8">
-                            <el-form-item label="客户姓名">
-                                <el-input v-model="queryCond.custName" placeholder="请输入客户姓名"></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="8">
-                            <el-form-item label="投诉类型">
-                                <vue-select code-type="COMPLAIN_TYPE" v-model="queryCond.complainType"></vue-select>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="8">
-                            <el-form-item label="投诉方式">
-                                <vue-select code-type="COMPLAIN_WAY" v-model="queryCond.complainWay"></vue-select>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-row>
-                        <el-col :span="8">
-                            <el-form-item label="时间类型">
-                                <vue-select code-type="COMPLAIN_TIME_TYPE" v-model="queryCond.repairTimeType"></vue-select>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="8">
-                            <el-form-item label="开始时间">
-                                <el-date-picker
-                                        v-model="queryCond.startTime"
-                                        type="date"
-                                        value-format="yyyy-MM-dd"
-                                        placeholder="选择日期"
-                                        style="width:100%">
-                                </el-date-picker>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="8">
-                            <el-form-item label="结束时间">
-                                <el-date-picker
-                                        v-model="queryCond.endTime"
-                                        type="date"
-                                        value-format="yyyy-MM-dd"
-                                        placeholder="选择日期"
-                                        style="width:100%">
-                                </el-date-picker>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-row>
-                        <el-col :span="8">
-                            <el-form-item label="楼盘">
-                                <house-select v-model="queryCond.houseId"></house-select>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="8">
-                            <el-form-item label="客户代表">
-                                <order-selectemployee role-id="15"
-                                                      v-model="queryCond.customerServiceEmployeeId"></order-selectemployee>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="8">
-                            <el-form-item label="设计师">
-                                <order-selectemployee role-id="30"
-                                                      v-model="queryCond.customerServiceEmployeeId"></order-selectemployee>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-row>
-                        <el-col :span="8">
-                            <el-form-item>
-                                <el-button type="primary" @click="query">查询</el-button>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                </el-form>
+                <el-collapse value="1" accordion>
+                    <el-collapse-item title="查询条件区" name="1">
+                        <el-form :inline="false" :model="queryCond" label-position="right" label-width="80px">
+                            <el-row>
+                                <el-col :span="8">
+                                    <el-form-item label="客户姓名">
+                                        <el-input v-model="queryCond.custName" placeholder="请输入客户姓名"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="投诉类型">
+                                        <vue-select code-type="COMPLAIN_TYPE"
+                                                    v-model="queryCond.complainType"></vue-select>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="投诉方式">
+                                        <vue-select code-type="COMPLAIN_WAY"
+                                                    v-model="queryCond.complainWay"></vue-select>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="8">
+                                    <el-form-item label="时间类型">
+                                        <vue-select code-type="COMPLAIN_TIME_TYPE"
+                                                    v-model="queryCond.complainTimeType"></vue-select>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="开始时间">
+                                        <el-date-picker
+                                                v-model="queryCond.startTime"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                placeholder="选择日期"
+                                                style="width:100%">
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="结束时间">
+                                        <el-date-picker
+                                                v-model="queryCond.endTime"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                placeholder="选择日期"
+                                                style="width:100%">
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="8">
+                                    <el-form-item label="楼盘">
+                                        <house-select v-model="queryCond.houseId"></house-select>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="客户代表">
+                                        <order-selectemployee role-id="15"
+                                                              v-model="queryCond.customerServiceEmployeeId"></order-selectemployee>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="设计师">
+                                        <order-selectemployee role-id="30"
+                                                              v-model="queryCond.designEmployeeId"></order-selectemployee>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="8">
+                                    <el-form-item>
+                                        <el-button type="primary" @click="query">查询</el-button>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                        </el-form>
+                    </el-collapse-item>
+                </el-collapse>
             </el-card>
 
             <vxe-table
@@ -101,22 +107,26 @@
                     highlight-cell
                     keep-source
                     max-height="800px"
+                    minHeight="400px"
                     :auto-resize="true"
                     :data="serviceRepairHistoryRecordList"
                     :edit-config="{trigger: 'click', mode: 'cell', showStatus: true}">
-                <vxe-table-column field="isFeeName" title="投诉编号"  width="100"></vxe-table-column>
-                <vxe-table-column field="isFeeName" title="客户编号"  width="100"></vxe-table-column>
-                <vxe-table-column field="isFeeName" title="客户姓名"  width="100"></vxe-table-column>
-                <vxe-table-column field="isFeeName" title="楼盘地址"  width="100"></vxe-table-column>
-                <vxe-table-column field="isFeeName" title="客户电话"  width="100"></vxe-table-column>
-                <vxe-table-column field="repairWorkerType" title="投诉类型"  width="150" ></vxe-table-column>
-                <vxe-table-column field="repairItem" title="投诉方式"  width="150" ></vxe-table-column>
-                <vxe-table-column field="acceptTime" title="投诉时间" width="160" ></vxe-table-column>
-                <vxe-table-column field="repairReason" title="投诉内容"  width="150" ></vxe-table-column>
-                <vxe-table-column field="offerTime" title="投诉时间" width="160" ></vxe-table-column>
-                <vxe-table-column field="repairMaterial" title="处理结果"  width="150" ></vxe-table-column>
-                <vxe-table-column field="buildHeadman" title="情况跟踪"  width="150"></vxe-table-column>
-                <vxe-table-column field="repairWorker" title="客服人员" width="150"></vxe-table-column>
+                <vxe-table-column field="complainNo" title="投诉编号" width="150"></vxe-table-column>
+                <vxe-table-column field="custNo" title="客户编号" width="150"></vxe-table-column>
+                <vxe-table-column field="custName" title="客户姓名" width="100"></vxe-table-column>
+                <vxe-table-column field="houseName" title="楼盘地址" width="200"></vxe-table-column>
+                <vxe-table-column field="mobileNo" title="电话" width="150"></vxe-table-column>
+                <vxe-table-column field="agentName" title="客户代表" width="150"></vxe-table-column>
+                <vxe-table-column field="designName" title="设计师" width="150"></vxe-table-column>
+                <vxe-table-column field="complainTypeName" title="投诉类型" width="150"></vxe-table-column>
+                <vxe-table-column field="complainWayName" title="投诉方式" width="150"></vxe-table-column>
+                <vxe-table-column field="complainTime" title="投诉时间" width="160"></vxe-table-column>
+                <vxe-table-column field="complainContent" title="投诉内容" width="150"></vxe-table-column>
+                <vxe-table-column field="statusName" title="处理节点" width="150"></vxe-table-column>
+                <vxe-table-column field="dealDate" title="处理时间" width="160"></vxe-table-column>
+                <vxe-table-column field="dealResult" title="处理结果" width="150"></vxe-table-column>
+                <vxe-table-column field="followTrace" title="情况跟踪" width="150"></vxe-table-column>
+                <vxe-table-column field="acceptEmployeeName" title="客服人员" width="150"></vxe-table-column>
             </vxe-table>
         </el-main>
     </el-container>
@@ -131,13 +141,14 @@
     }
 
     .el-card__header {
-        padding:10px;
+        padding: 10px;
     }
 
     .modify_row {
         color: #ff4835;
     }
 </style>
-<script src="static/js/modules/bss/service/query.complain.record.js" th:src="@{static/js/modules/bss/service/query.complain.record.js(v=${version})}"></script>
+<script src="static/js/modules/bss/service/query.complain.record.js"
+        th:src="@{static/js/modules/bss/service/query.complain.record.js(v=${version})}"></script>
 </body>
 </html>

@@ -2,24 +2,33 @@ package com.microtomato.hirun.modules.bss.service.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.framework.exception.ErrorKind;
+import com.microtomato.hirun.framework.exception.cases.AlreadyExistException;
+import com.microtomato.hirun.framework.exception.cases.NotFoundException;
 import com.microtomato.hirun.framework.mybatis.sequence.impl.ComplainNoCycleSeq;
 import com.microtomato.hirun.framework.mybatis.sequence.impl.CustNoMaxCycleSeq;
 import com.microtomato.hirun.framework.mybatis.service.IDualService;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
+import com.microtomato.hirun.modules.bss.house.service.IHousesService;
+import com.microtomato.hirun.modules.bss.order.service.IOrderDomainService;
 import com.microtomato.hirun.modules.bss.service.entity.dto.*;
 import com.microtomato.hirun.modules.bss.service.entity.po.ServiceComplain;
 import com.microtomato.hirun.modules.bss.service.entity.po.ServiceRepairOrder;
 import com.microtomato.hirun.modules.bss.service.mapper.ServiceComplainMapper;
 import com.microtomato.hirun.modules.bss.service.service.IServiceComplainService;
 import com.microtomato.hirun.modules.bss.service.service.IServiceGuaranteeService;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeExampleDTO;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.mapstruct.ap.internal.model.assignment.UpdateWrapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,6 +59,12 @@ public class ServiceComplainServiceImpl extends ServiceImpl<ServiceComplainMappe
 
     @Autowired
     private IEmployeeService employeeService;
+
+    @Autowired
+    private IHousesService housesService;
+
+    @Autowired
+    private IOrderDomainService orderDomainService;
 
     @Override
     public void saveComplainOrder(ComplainOrderInfoDTO infoDTO) {
@@ -105,28 +120,28 @@ public class ServiceComplainServiceImpl extends ServiceImpl<ServiceComplainMappe
 
     @Override
     public List<ServicePendingOrderDTO> queryComplainPendingOrders(Long employeeId, String status) {
-        return this.baseMapper.queryComplainPendingOrders(employeeId,status);
+        return this.baseMapper.queryComplainPendingOrders(employeeId, status);
     }
 
     @Override
     public ComplainOrderRecordDTO queryComplainRecordInfo(Long orderId, Long customerId, String complainNo) {
-        ComplainOrderRecordDTO complainOrderRecordDTO=new ComplainOrderRecordDTO();
-        GuaranteeDTO guaranteeDTO=guaranteeService.queryCustomerGuaranteeInfo(orderId);
+        ComplainOrderRecordDTO complainOrderRecordDTO = new ComplainOrderRecordDTO();
+        GuaranteeDTO guaranteeDTO = guaranteeService.queryCustomerGuaranteeInfo(orderId);
         //设置维修卡信息
         complainOrderRecordDTO.setGuaranteeInfo(guaranteeDTO);
 
         //查询历史投诉记录
-        List<ServiceComplain> historyComplainRecord=this.baseMapper.selectList(new QueryWrapper<ServiceComplain>().lambda()
-                .eq(ServiceComplain::getCustomerId,customerId)
-                .in(ServiceComplain::getStatus, Arrays.asList(1,2,3)));
+        List<ServiceComplain> historyComplainRecord = this.baseMapper.selectList(new QueryWrapper<ServiceComplain>().lambda()
+                .eq(ServiceComplain::getCustomerId, customerId)
+                .in(ServiceComplain::getStatus, Arrays.asList(1, 2, 3)));
 
-        if(ArrayUtils.isNotEmpty(historyComplainRecord)){
-            List<ComplainOrderDTO> historyList=new ArrayList<>();
-            for(ServiceComplain serviceComplain :historyComplainRecord){
-                ComplainOrderDTO complainOrderDTO=new ComplainOrderDTO();
-                BeanUtils.copyProperties(serviceComplain,complainOrderDTO);
-                complainOrderDTO.setComplainTypeName(staticDataService.getCodeName("COMPLAIN_TYPE",serviceComplain.getComplainType()));
-                complainOrderDTO.setComplainWayName(staticDataService.getCodeName("COMPLAIN_WAY",serviceComplain.getComplainWay()));
+        if (ArrayUtils.isNotEmpty(historyComplainRecord)) {
+            List<ComplainOrderDTO> historyList = new ArrayList<>();
+            for (ServiceComplain serviceComplain : historyComplainRecord) {
+                ComplainOrderDTO complainOrderDTO = new ComplainOrderDTO();
+                BeanUtils.copyProperties(serviceComplain, complainOrderDTO);
+                complainOrderDTO.setComplainTypeName(staticDataService.getCodeName("COMPLAIN_TYPE", serviceComplain.getComplainType()));
+                complainOrderDTO.setComplainWayName(staticDataService.getCodeName("COMPLAIN_WAY", serviceComplain.getComplainWay()));
                 complainOrderDTO.setAcceptEmployeeName(employeeService.getEmployeeNameEmployeeId(serviceComplain.getAcceptEmployeeId()));
                 historyList.add(complainOrderDTO);
             }
@@ -134,15 +149,15 @@ public class ServiceComplainServiceImpl extends ServiceImpl<ServiceComplainMappe
         }
 
         //根据投诉编码查询投诉记录
-        List<ServiceComplain> complainNoRecord=this.baseMapper.selectList(new QueryWrapper<ServiceComplain>().lambda()
-                .eq(ServiceComplain::getComplainNo,complainNo)
-                .in(ServiceComplain::getStatus, Arrays.asList(1,2)));
+        List<ServiceComplain> complainNoRecord = this.baseMapper.selectList(new QueryWrapper<ServiceComplain>().lambda()
+                .eq(ServiceComplain::getComplainNo, complainNo)
+                .in(ServiceComplain::getStatus, Arrays.asList(1, 2)));
 
-        if(ArrayUtils.isNotEmpty(complainNoRecord)){
-            List<ComplainOrderDTO> complainNoList=new ArrayList<>();
-            for(ServiceComplain serviceComplain:complainNoRecord){
-                ComplainOrderDTO complainOrderDTO=new ComplainOrderDTO();
-                BeanUtils.copyProperties(serviceComplain,complainOrderDTO);
+        if (ArrayUtils.isNotEmpty(complainNoRecord)) {
+            List<ComplainOrderDTO> complainNoList = new ArrayList<>();
+            for (ServiceComplain serviceComplain : complainNoRecord) {
+                ComplainOrderDTO complainOrderDTO = new ComplainOrderDTO();
+                BeanUtils.copyProperties(serviceComplain, complainOrderDTO);
                 complainOrderDTO.setAcceptEmployeeName(employeeService.getEmployeeNameEmployeeId(serviceComplain.getAcceptEmployeeId()));
                 complainNoList.add(complainOrderDTO);
             }
@@ -150,5 +165,90 @@ public class ServiceComplainServiceImpl extends ServiceImpl<ServiceComplainMappe
         }
 
         return complainOrderRecordDTO;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    public void acceptComplain(ComplainOrderInfoDTO infoDTO) {
+        String complainNo = infoDTO.getComplainNo();
+        if (StringUtils.isBlank(complainNo)) {
+            throw new NotFoundException("未找到对应的投诉编码,无法处理", ErrorKind.NOT_FOUND.getCode());
+        }
+        //保存一次前台数据
+        this.saveComplainOrder(infoDTO);
+        //根据投诉ID取所有新建状态的数据进行更新
+        List<ServiceComplain> serviceComplains=this.baseMapper.selectList(new QueryWrapper<ServiceComplain>().lambda()
+                .eq(ServiceComplain::getComplainNo,complainNo)
+                .eq(ServiceComplain::getStatus,"1"));
+
+        if(ArrayUtils.isNotEmpty(serviceComplains)){
+            Long employeeId=WebContextUtils.getUserContext().getEmployeeId();
+            for(ServiceComplain serviceComplain:serviceComplains){
+                serviceComplain.setDealEmployeeId(employeeId);
+                serviceComplain.setStatus("2");
+                this.baseMapper.updateById(serviceComplain);
+            }
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    public void finishComplainDeal(ComplainOrderInfoDTO infoDTO) {
+        String complainNo = infoDTO.getComplainNo();
+        if (StringUtils.isBlank(complainNo)) {
+            throw new NotFoundException("未找到对应的投诉编码,无法处理", ErrorKind.NOT_FOUND.getCode());
+        }
+        //保存一次前台数据
+        this.saveComplainOrder(infoDTO);
+        //根据投诉ID取所有新建状态的数据进行更新
+        List<ServiceComplain> serviceComplains=this.baseMapper.selectList(new QueryWrapper<ServiceComplain>().lambda()
+                .eq(ServiceComplain::getComplainNo,complainNo)
+                .in(ServiceComplain::getStatus,Arrays.asList(1, 2)));
+
+        if(ArrayUtils.isNotEmpty(serviceComplains)){
+            Long employeeId=WebContextUtils.getUserContext().getEmployeeId();
+            for(ServiceComplain serviceComplain:serviceComplains){
+                serviceComplain.setDealEmployeeId(employeeId);
+                serviceComplain.setStatus("3");
+                this.baseMapper.updateById(serviceComplain);
+            }
+        }
+    }
+
+    @Override
+    public List<ComplainOrderDTO> queryComplainAllRecord(QueryComplainCondDTO condDTO) {
+
+        QueryWrapper<QueryComplainCondDTO> queryWrapper = new QueryWrapper<>();
+        queryWrapper.like(StringUtils.isNotBlank(condDTO.getCustName()),"a.cust_name",condDTO.getCustName());
+        queryWrapper.eq(StringUtils.isNotBlank(condDTO.getComplainType()),"c.complain_type",condDTO.getComplainType());
+        queryWrapper.eq(StringUtils.isNotBlank(condDTO.getComplainWay()),"c.complain_way",condDTO.getComplainWay());
+        queryWrapper.eq(condDTO.getHouseId()!=null,"b.houses_id",condDTO.getHouseId());
+
+        queryWrapper.apply("a.cust_id=b.cust_id and a.cust_id=c.customer_id");
+        queryWrapper.between(StringUtils.equals("1",condDTO.getComplainTimeType()),"c.complain_time",condDTO.getStartTime(),condDTO.getEndTime());
+        queryWrapper.between(StringUtils.equals("2",condDTO.getComplainTimeType()),"c.deal_date",condDTO.getStartTime(),condDTO.getEndTime());
+
+        queryWrapper.apply(condDTO.getCustomerServiceEmployeeId()!=null,
+                " EXISTS (select 1 from order_worker d where d.order_id=b.order_id and end_date > now() " +
+                        " and role_id='15' and d.employee_id="+condDTO.getCustomerServiceEmployeeId()+")");
+
+        queryWrapper.apply(condDTO.getDesignEmployeeId()!=null,
+                " EXISTS (select 1 from order_worker e where e.order_id=b.order_id and end_date > now() " +
+                        " and role_id='30' and e.employee_id="+condDTO.getDesignEmployeeId()+")");
+
+        List<ComplainOrderDTO> list=this.baseMapper.queryComplainAllRecord(queryWrapper);
+        if(ArrayUtils.isEmpty(list)){
+            return null;
+        }
+        for(ComplainOrderDTO dto:list){
+            dto.setComplainTypeName(staticDataService.getCodeName("COMPLAIN_TYPE", dto.getComplainType()));
+            dto.setComplainWayName(staticDataService.getCodeName("COMPLAIN_WAY", dto.getComplainWay()));
+            dto.setAcceptEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getAcceptEmployeeId()));
+            dto.setHouseName(housesService.queryHouseName(dto.getHouseId()));
+            dto.setStatusName(staticDataService.getCodeName("COMPLAIN_STATUS",dto.getStatus()));
+            dto.setAgentName(orderDomainService.getUsualOrderWorker(dto.getOrderId()).getAgentName());
+            dto.setDesignName(orderDomainService.getUsualOrderWorker(dto.getOrderId()).getDesignerName());
+        }
+        return list;
     }
 }

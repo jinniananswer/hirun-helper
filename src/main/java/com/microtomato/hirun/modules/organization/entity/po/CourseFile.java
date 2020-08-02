@@ -37,7 +37,7 @@ public class CourseFile  extends BaseEntity {
     private String fileType;
 
     @TableField("status")
-    private Long status;
+    private String status;
 
     @TableField("remark")
     private String remark;

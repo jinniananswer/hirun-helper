@@ -5,19 +5,19 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.mybatis.sequence.impl.CustNoMaxCycleSeq;
 import com.microtomato.hirun.framework.mybatis.service.IDualService;
 import com.microtomato.hirun.framework.util.ArrayUtils;
-import com.microtomato.hirun.modules.bss.service.entity.dto.GuaranteeDTO;
-import com.microtomato.hirun.modules.bss.service.entity.dto.RepairOrderDTO;
-import com.microtomato.hirun.modules.bss.service.entity.dto.RepairOrderInfoDTO;
-import com.microtomato.hirun.modules.bss.service.entity.dto.RepairOrderRecordDTO;
+import com.microtomato.hirun.modules.bss.service.entity.dto.*;
 import com.microtomato.hirun.modules.bss.service.entity.po.ServiceRepairOrder;
 import com.microtomato.hirun.modules.bss.service.mapper.ServiceRepairOrderMapper;
 import com.microtomato.hirun.modules.bss.service.service.IServiceGuaranteeService;
 import com.microtomato.hirun.modules.bss.service.service.IServiceRepairOrderService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,31 +47,53 @@ public class ServiceRepairOrderServiceImpl extends ServiceImpl<ServiceRepairOrde
     private IStaticDataService staticDataService;
 
     @Override
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void saveRepairRecord(RepairOrderInfoDTO infoDTO) {
         Long seq = dualService.nextval(CustNoMaxCycleSeq.class);
-        String repairNo="";
-        if(ArrayUtils.isEmpty(infoDTO.getRemoveRecords())&&ArrayUtils.isEmpty(infoDTO.getUpdateRecords())&&ArrayUtils.isNotEmpty(infoDTO.getInsertRecords())){
+
+        if(StringUtils.isBlank(infoDTO.getRepairNo())){
+            String repairNo="";
             repairNo="WX"+seq;
+            if(ArrayUtils.isNotEmpty(infoDTO.getInsertRecords())){
+                for(RepairOrderDTO orderDTO:infoDTO.getInsertRecords()){
+                    ServiceRepairOrder serviceRepairOrder=new ServiceRepairOrder();
+                    BeanUtils.copyProperties(orderDTO,serviceRepairOrder);
+                    serviceRepairOrder.setCustomerId(infoDTO.getCustomerId());
+                    serviceRepairOrder.setStatus("1");
+                    serviceRepairOrder.setRepairNo(repairNo);
+                    this.baseMapper.insert(serviceRepairOrder);
+                }
+            }
         }else{
-            if(ArrayUtils.isNotEmpty(infoDTO.getUpdateRecords())){
-                repairNo=infoDTO.getUpdateRecords().get(0).getRepairNo();
-            }else if(ArrayUtils.isNotEmpty(infoDTO.getRemoveRecords())){
-                repairNo=infoDTO.getRemoveRecords().get(0).getRepairNo();
+            if(ArrayUtils.isNotEmpty(infoDTO.getInsertRecords())){
+                for(RepairOrderDTO orderDTO:infoDTO.getInsertRecords()){
+                    ServiceRepairOrder serviceRepairOrder=new ServiceRepairOrder();
+                    BeanUtils.copyProperties(orderDTO,serviceRepairOrder);
+                    serviceRepairOrder.setCustomerId(infoDTO.getCustomerId());
+                    serviceRepairOrder.setStatus("1");
+                    serviceRepairOrder.setRepairNo(infoDTO.getRepairNo());
+                    this.baseMapper.insert(serviceRepairOrder);
+                }
+            }
+
+            if (ArrayUtils.isNotEmpty(infoDTO.getRemoveRecords())) {
+                for (RepairOrderDTO removeRecord : infoDTO.getRemoveRecords()) {
+                    ServiceRepairOrder repairOrder = new ServiceRepairOrder();
+                    BeanUtils.copyProperties(removeRecord, repairOrder);
+                    repairOrder.setStatus("0");
+                    this.baseMapper.updateById(repairOrder);
+                }
+            }
+
+            if (ArrayUtils.isNotEmpty(infoDTO.getUpdateRecords())) {
+                for (RepairOrderDTO removeRecord : infoDTO.getRemoveRecords()) {
+                    ServiceRepairOrder repairOrder = new ServiceRepairOrder();
+                    BeanUtils.copyProperties(removeRecord, repairOrder);
+                    this.baseMapper.updateById(repairOrder);
+                }
             }
         }
 
-
-        List<ServiceRepairOrder> addList=new ArrayList<ServiceRepairOrder>();
-        if(ArrayUtils.isNotEmpty(infoDTO.getInsertRecords())){
-            for(RepairOrderDTO orderDTO:infoDTO.getInsertRecords()){
-                ServiceRepairOrder serviceRepairOrder=new ServiceRepairOrder();
-                BeanUtils.copyProperties(orderDTO,serviceRepairOrder);
-                serviceRepairOrder.setCustomerId(infoDTO.getCustomerId());
-                serviceRepairOrder.setStatus("1");
-                serviceRepairOrder.setRepairNo(repairNo);
-                this.baseMapper.insert(serviceRepairOrder);
-            }
-        }
 
     }
 

@@ -36,4 +36,23 @@ public interface IServiceComplainService extends IService<ServiceComplain> {
      * @return
      */
     ComplainOrderRecordDTO queryComplainRecordInfo(Long orderId, Long customerId, String repairNo);
+
+    /**
+     * 投诉受理
+     * @param infoDTO
+     */
+    void acceptComplain(ComplainOrderInfoDTO infoDTO);
+
+    /**
+     * 完成投诉处理
+     * @param infoDTO
+     */
+    void finishComplainDeal(ComplainOrderInfoDTO infoDTO);
+
+    /**
+     * 投诉信息查询
+     * @param condDTO
+     * @return
+     */
+    List<ComplainOrderDTO> queryComplainAllRecord(QueryComplainCondDTO condDTO);
 }

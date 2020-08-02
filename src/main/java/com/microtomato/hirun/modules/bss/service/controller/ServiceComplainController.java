@@ -3,13 +3,12 @@ package com.microtomato.hirun.modules.bss.service.controller;
 
 
 import com.microtomato.hirun.framework.annotation.RestResult;
-import com.microtomato.hirun.modules.bss.service.entity.dto.ComplainOrderInfoDTO;
-import com.microtomato.hirun.modules.bss.service.entity.dto.ComplainOrderRecordDTO;
-import com.microtomato.hirun.modules.bss.service.entity.dto.RepairOrderInfoDTO;
-import com.microtomato.hirun.modules.bss.service.entity.dto.RepairOrderRecordDTO;
+import com.microtomato.hirun.modules.bss.service.entity.dto.*;
 import com.microtomato.hirun.modules.bss.service.service.IServiceComplainService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * (ServiceComplain)表控制层
@@ -40,4 +39,21 @@ public class ServiceComplainController {
         return serviceComplainService.queryComplainRecordInfo(orderId,customerId,complainNo);
     }
 
+    @PostMapping("/acceptComplain")
+    @RestResult
+    public void acceptComplain(@RequestBody ComplainOrderInfoDTO records) {
+        this.serviceComplainService.acceptComplain(records);
+    }
+
+    @PostMapping("/finishComplainDeal")
+    @RestResult
+    public void finishComplainDeal(@RequestBody ComplainOrderInfoDTO records) {
+        this.serviceComplainService.finishComplainDeal(records);
+    }
+
+    @GetMapping("/queryComplainAllRecord")
+    @RestResult
+    public List<ComplainOrderDTO> queryComplainAllRecord(QueryComplainCondDTO condDTO) {
+        return serviceComplainService.queryComplainAllRecord(condDTO);
+    }
 }

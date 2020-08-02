@@ -2,14 +2,16 @@ package com.microtomato.hirun.modules.organization.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.microtomato.hirun.framework.annotation.RestResult;
+import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.modules.bss.order.entity.po.Decorator;
+import com.microtomato.hirun.modules.bss.supply.entity.po.Supplier;
 import com.microtomato.hirun.modules.organization.entity.po.CourseFile;
 import com.microtomato.hirun.modules.organization.service.ICourseFileService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * <p>
@@ -39,4 +41,36 @@ public class CourseFileController {
         return this.courseFileServiceImpl.queryCourseFileInfoByName(name, page, size);
     }
 
+    @PostMapping("/updateCourseFileById")
+    @RestResult
+    public boolean updateCourseFileById(@RequestBody CourseFile courseFile){
+        System.out.println(courseFile);
+        return this.courseFileServiceImpl.updateById(courseFile);
+    }
+
+    @PostMapping("addCourseFile")
+    @RestResult
+    public boolean addCourseFile(@RequestBody CourseFile courseFile){
+        courseFile.setStatus("0");
+        return this.courseFileServiceImpl.save(courseFile);
+    }
+
+    @PostMapping("deleteCourseFileById")
+    @RestResult
+    public boolean deleteCourseFileById(@RequestBody CourseFile courseFile){
+        courseFile.setStatus("1");
+        return this.courseFileServiceImpl.updateById(courseFile);
+    }
+
+    @PostMapping("deleteCourseFileByIds")
+    @RestResult
+    public boolean deleteCourseFileByIds(@RequestBody List<CourseFile> courseFileList){
+        System.out.println(courseFileList);
+        if(ArrayUtils.isNotEmpty(courseFileList)){
+            for (CourseFile courseFile : courseFileList){
+                courseFile.setStatus("1");
+            }
+        }
+        return this.courseFileServiceImpl.deleteCourseFileByIds(courseFileList);
+    }
 }

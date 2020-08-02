@@ -23,11 +23,11 @@ import java.util.List;
 @DataSource(DataSourceKey.INS)
 public interface ServiceRepairOrderMapper extends BaseMapper<ServiceRepairOrder> {
 
-    @Select("select c.cust_name,b.decorate_address,'1' as type,v.repair_no as code,v.`status`,v.accept_time,b.order_id,b.cust_id " +
+    @Select("select c.cust_name,b.decorate_address,'1' as type,v.repair_no as code,v.`status`,b.order_id,b.cust_id " +
             " from order_base b,cust_base c," +
-            " (select a.customer_id,a.repair_no,a.`status`,a.accept_time from service_repair_order a" +
+            " (select a.customer_id,a.repair_no,a.`status` from service_repair_order a" +
             "  where a.`status` in (${statuses}) " +
-            " group by a.customer_id,a.repair_no,a.`status`,a.accept_time order by a.accept_time desc) v " +
+            " group by a.customer_id,a.repair_no,a.`status` order by a.accept_time desc) v " +
             " where b.cust_id=c.cust_id and v.customer_id=c.cust_id "
     )
     List<ServicePendingOrderDTO> queryRepairPendingOrders(@Param("employeeId") Long employeeId, @Param("statuses")String statuses);

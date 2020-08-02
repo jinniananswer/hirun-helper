@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.modules.bss.supply.entity.po.Supplier;
 import com.microtomato.hirun.modules.organization.entity.po.CourseFile;
 import com.microtomato.hirun.modules.organization.mapper.CourseFileMapper;
 import com.microtomato.hirun.modules.organization.mapper.CourseMapper;
@@ -13,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * <p>
@@ -49,5 +52,10 @@ public class CourseFileServiceImpl extends ServiceImpl<CourseFileMapper, CourseF
         IPage<CourseFile> courseFilePages = courseFileMapper.selectPage(page, lambdaQueryWrapper);
 
         return courseFilePages;
+    }
+
+    @Override
+    public boolean deleteCourseFileByIds(List<CourseFile> courseFileList){
+        return super.updateBatchById(courseFileList);
     }
 }
