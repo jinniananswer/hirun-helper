@@ -29,4 +29,6 @@ public class RepairOrderInfoDTO {
     Long customerId;
 
     Long orderId;
+
+    String repairNo;
 }
