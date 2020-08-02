@@ -149,7 +149,7 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
 
             async insertRecord (row) {
                 let record = {
-                    IsFee: '1',
+                    isFee: '2',
                     acceptTime: util.getNowTime(),
                 }
                 let { row: newRow } = await this.$refs.serviceRepairRecordList.insertAt(record, row)
@@ -160,8 +160,7 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 let  insertRecords= this.$refs.serviceRepairRecordList.getInsertRecords();
                 let removeRecords=this.$refs.serviceRepairRecordList.getRemoveRecords();
                 let updateRecords =this.$refs.serviceRepairRecordList.getUpdateRecords();
-                ajax.post('api/bss.service/service-repair-order/saveRepairOrder', {insertRecords:insertRecords,removeRecords:removeRecords,updateRecords:updateRecords,customerId:this.custId,orderId:this.orderId},null,null,true);
-
+                ajax.post('api/bss.service/service-repair-order/saveRepairOrder', {insertRecords:insertRecords,removeRecords:removeRecords,updateRecords:updateRecords,customerId:this.custId,orderId:this.orderId,repairNo:this.repairNo});
             },
 
 
