@@ -12,7 +12,7 @@
 <div id="app">
     <el-container>
         <el-main>
-            <el-row style="margin-left: -6px;margin-right: -6px">
+            <el-row>
                 <el-card class="box-card" shadow="hover">
                     <el-input placeholder="请点击进行客户订单查询" @focus="showCustQuery">
                         <template slot="prepend">客户姓名</template>
@@ -132,7 +132,7 @@
                     </el-dialog>
                 </el-card>
             </el-row>
-            <el-row :gutter="12" :style="show">
+            <el-row :style="show">
                 <div class="grid-content bg-purple-light">
                     <order-info :order-id="orderId"></order-info>
                     <el-card class="box-card">

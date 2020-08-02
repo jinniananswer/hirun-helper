@@ -1,6 +1,8 @@
 package com.microtomato.hirun.modules.bss.order.entity.dto;
 
 import com.microtomato.hirun.modules.bss.customer.entity.dto.CustInfoDTO;
+import com.microtomato.hirun.modules.bss.customer.entity.dto.XQLTEInfoDTO;
+import com.microtomato.hirun.modules.bss.customer.entity.dto.XQLTYInfoDTO;
 import lombok.Data;
 
 import java.util.List;
@@ -142,4 +144,23 @@ public class OrderDetailDTO {
      * 订单上传文件信息
      */
     private List<OrderFileDTO> orderFiles;
+
+    /**
+     * 订单工作人员信息
+     */
+    private List<OrderWorkerDetailDTO> orderWorkers;
+
+    /**
+     * 订单合同信息
+     */
+    private List<OrderContractDTO> orderContracts;
+
+    /**
+     * 订单优惠项目
+     */
+    private List<OrderDiscountItemDTO> orderDiscountItems;
+
+    private List<XQLTYInfoDTO> xqltyInfo;
+
+    private XQLTEInfoDTO xqlteInfo;
 }

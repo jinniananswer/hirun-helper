@@ -14,57 +14,48 @@
 <div id="app">
     <el-container>
         <el-main>
-            <el-row :gutter="12">
-                <el-col :span="6">
-                    <div class="grid-content bg-purple">
-                        <cust-info :cust-id="task.custId"></cust-info>
-
-                        <order-worker :order-id="task.orderId"></order-worker>
-                    </div>
-                </el-col>
-                <el-col :span="18">
-                    <div class="grid-content bg-purple-light">
-                        <order-info :order-id="task.orderId"></order-info>
-                        <el-card class="box-card">
-                            <div slot="header">
-                                <span>操作区</span>
-                            </div>
-                            <el-form :inline="false" :rules="rules" label-position="right" label-width="80px" :model="task" ref="task">
-                                <el-row>
-                                    <el-col :span="8">
-                                        <el-form-item label="工程主管" prop="engineeringSupervisor" label-width="100px">
-                                            <order-selectemployee role-id="48" v-model="task.engineeringSupervisor"  ></order-selectemployee>
-                                        </el-form-item>
-                                    </el-col>
-                                    <el-col :span="8">
-                                        <el-form-item label="项目经理" prop="projectManager" label-width="100px">
-                                            <order-selectemployee role-id="33" v-model="task.projectManager"  ></order-selectemployee>
-                                        </el-form-item>
-                                    </el-col>
+            <el-row>
+                <div class="grid-content bg-purple-light">
+                    <order-info :order-id="task.orderId"></order-info>
+                    <el-card class="box-card">
+                        <div slot="header">
+                            <span>操作区</span>
+                        </div>
+                        <el-form :inline="false" :rules="rules" label-position="right" label-width="80px" :model="task" ref="task">
+                            <el-row>
+                                <el-col :span="8">
+                                    <el-form-item label="工程主管" prop="engineeringSupervisor" label-width="100px">
+                                        <order-selectemployee role-id="48" v-model="task.engineeringSupervisor"  ></order-selectemployee>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="项目经理" prop="projectManager" label-width="100px">
+                                        <order-selectemployee role-id="33" v-model="task.projectManager"  ></order-selectemployee>
+                                    </el-form-item>
+                                </el-col>
 <!--                                    <el-col :span="8">-->
 <!--                                        <el-form-item label="工程助理" prop="engineeringAssistant" label-width="100px">-->
 <!--                                            <order-selectemployee role-id="31" v-model="task.engineeringAssistant"  ></order-selectemployee>-->
 <!--                                        </el-form-item>-->
 <!--                                    </el-col>-->
-                                </el-row>
-                                <el-row>
-                                    <el-col :span="24">
-                                        <el-form-item label="拖延工期原因" prop="remark" label-width="100px">
-                                            <el-input type="textarea" v-model="task.remark"></el-input>
-                                        </el-form-item>
-                                    </el-col>
-                                </el-row>
-                                <el-form-item style="text-align: center ">
-                                    <el-button type="primary" @click="save">保存</el-button>
-                                    <el-button type="primary" @click="submitTask">提交工程分配任务</el-button>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="24">
+                                    <el-form-item label="拖延工期原因" prop="remark" label-width="100px">
+                                        <el-input type="textarea" v-model="task.remark"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-form-item style="text-align: center ">
+                                <el-button type="primary" @click="save">保存</el-button>
+                                <el-button type="primary" @click="submitTask">提交工程分配任务</el-button>
 <!--                                    <el-button type="primary" @click="submitSneak">咨询跑单</el-button>-->
-                                </el-form-item>
-                            </el-form>
-                        </el-card>
+                            </el-form-item>
+                        </el-form>
+                    </el-card>
 
-                        </el-card>
-                    </div>
-                </el-col>
+                    </el-card>
+                </div>
             </el-row>
         </el-main>
     </el-container>

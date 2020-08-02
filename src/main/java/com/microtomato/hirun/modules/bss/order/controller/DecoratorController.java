@@ -1,9 +1,11 @@
 package com.microtomato.hirun.modules.bss.order.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.bss.order.entity.dto.ConstructionDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.DecoratorInfoDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.Decorator;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,9 +41,18 @@ public class DecoratorController {
     public List<Decorator> selectTypeDecorator(Long type) {
         UserContext userContext = WebContextUtils.getUserContext();
         Long orgId = userContext.getOrgId();
-        return this.decoratorServiceImpl.queryDecoratorInfo(orgId, type);
+        if (type == null) {
+            return  this.decoratorServiceImpl.queryAllInfo();
+        }
+        else{
+            return this.decoratorServiceImpl.queryDecoratorInfo(orgId, type);
+        }
     }
 
-
+    @GetMapping("/queryDecoratorInfo")
+    @RestResult
+    public IPage<Decorator> queryDecoratorInfo(String name, String identityNo, int page, int size) {
+        return this.decoratorServiceImpl.queryDecoratorInfo(name, identityNo, page, size);
+    }
 
 }

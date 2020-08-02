@@ -39,7 +39,7 @@ public interface PlanAgentMonthMapper extends BaseMapper<PlanAgentMonth> {
 
     @Select(" select sum(t.plan_consult_count) as plan_consult_count,sum(t.plan_bind_agent_count) as plan_bind_agent_count," +
             " sum(t.plan_style_count) as plan_style_count,SUM(t.plan_funca_count) as plan_funca_count, " +
-            " sum(t.plan_funcb_count) as plan_funcb_count,SUM(t.plan_funcc_count) as plan_funcb_count, " +
+            " sum(t.plan_funcb_count) as plan_funcb_count,SUM(t.plan_funcc_count) as plan_funcc_count, " +
             " SUM(t.plan_citycabin_count) as plan_citycabin_count,SUM(t.plan_measure_count) as  plan_measure_count, " +
             " SUM(t.plan_bind_design_count) as plan_bind_design_count" +
             " from plan_agent_month t "+
@@ -49,13 +49,23 @@ public interface PlanAgentMonthMapper extends BaseMapper<PlanAgentMonth> {
 
     @Select(" select sum(t.plan_consult_count) as plan_consult_count,sum(t.plan_bind_agent_count) as plan_bind_agent_count," +
             " sum(t.plan_style_count) as plan_style_count,SUM(t.plan_funca_count) as plan_funca_count, " +
-            " sum(t.plan_funcb_count) as plan_funcb_count,SUM(t.plan_funcc_count) as plan_funcb_count, " +
+            " sum(t.plan_funcb_count) as plan_funcb_count,SUM(t.plan_funcc_count) as plan_funcc_count, " +
             " SUM(t.plan_citycabin_count) as plan_citycabin_count,SUM(t.plan_measure_count) as  plan_measure_count, " +
             " SUM(t.plan_bind_design_count) as plan_bind_design_count" +
             " from plan_agent_month t "+
             " where month = ${month} and company_id = ${companyId}"
     )
     PlanAgentMonth queryAgentPlanByCompanyId(@Param("companyId")Long companyId, @Param("month")Integer month);
+
+    @Select(" select sum(t.plan_consult_count) as plan_consult_count,sum(t.plan_bind_agent_count) as plan_bind_agent_count," +
+            " sum(t.plan_style_count) as plan_style_count,SUM(t.plan_funca_count) as plan_funca_count, " +
+            " sum(t.plan_funcb_count) as plan_funcb_count,SUM(t.plan_funcc_count) as plan_funcc_count, " +
+            " SUM(t.plan_citycabin_count) as plan_citycabin_count,SUM(t.plan_measure_count) as  plan_measure_count, " +
+            " SUM(t.plan_bind_design_count) as plan_bind_design_count" +
+            " from plan_agent_month t "+
+            " where month = ${month}"
+    )
+    PlanAgentMonth queryAgentPlanByBu(@Param("month")Integer month);
 
     /**
      * 查询实际完成情况
@@ -66,27 +76,30 @@ public interface PlanAgentMonthMapper extends BaseMapper<PlanAgentMonth> {
      */
     @Select(" select count(1) as acutal_consult_count,sum(v.sm_count) as acutal_bind_agent_count, " +
             " SUM(city_Count) as acutal_citycabin_count,SUM(v.func_count) as acutal_funca_count," +
-            " SUM(style_count) as acutal_style_count " +
+            " SUM(style_count) as acutal_style_count, SUM(design_count) as acutal_bind_design_count " +
             " from ( " +
             " select link_employee_id as employee_id, " +
-            " case WHEN (d.`status`='1' and d.finish_time BETWEEN ${startTime} and ${endTime} ) then '1' else 0 " +
+            " case WHEN EXISTS (select 1 from ins_project_original_action d where  d.`status`='1' and d.party_id=a.party_id and d.action_code='SMJRLC' " +
+            "       and  d.finish_time BETWEEN #{startTime} and #{endTime} ) then '1' else 0 " +
             "    end as sm_count, "+
+            " case WHEN EXISTS (select 1 from ins_project_original_action u where  u.`status`='1' and u.party_id=a.party_id and u.action_code='APSJS' " +
+            "       and  u.finish_time BETWEEN #{startTime} and #{endTime} ) then '1' else 0 " +
+            "    end as design_count, "+
             " case WHEN EXISTS (select 1 from ins_scan_citycabin x where b.project_id=x.project_id and x.employee_id=c.link_employee_id " +
-            "      and x.experience_Time BETWEEN ${startTime} and ${endTime} ) then '1' else 0 " +
+            "      and x.experience_Time BETWEEN #{startTime} and #{endTime} ) then '1' else 0 " +
             "    end as city_count, " +
             " case WHEN EXISTS (SELECT 1 FROM ins_blueprint_action m where m.open_id=a.open_id and c.link_employee_id=m.rel_employee_id" +
-            "      and m.funcprint_create_time BETWEEN ${startTime} and ${endTime} ) then '1' else 0" +
+            "      and m.funcprint_create_time BETWEEN #{startTime} and #{endTime} ) then '1' else 0" +
             "    end as func_count," +
             " case WHEN EXISTS (SELECT 1 FROM ins_blueprint_action n where n.open_id=a.open_id and c.link_employee_id=n.rel_employee_id" +
-            "      and n.styleprint_create_time BETWEEN ${startTime} and ${endTime} ) then '1' else 0 " +
+            "      and n.styleprint_create_time BETWEEN #{startTime} and #{endTime} ) then '1' else 0 " +
             "   end as style_count " +
-            " from ins_party a,ins_project b,ins_project_linkman c ,ins_project_original_action d" +
+            " from ins_party a,ins_project b,ins_project_linkman c " +
             "  where a.party_id=b.party_id and b.project_id=c.project_id and a.party_status='0' " +
-            "  and b.project_id=d.project_id and d.action_code='SMJRLC' and c.ROLE_TYPE = 'CUSTOMERSERVICE' " +
-            "  and a.consult_time BETWEEN ${startTime} and ${endTime} " +
-            "  and c.link_employee_id= ${employeeId}" +
-            "  ) v " +
-            "  group by v.employee_id "
+            "   and c.ROLE_TYPE = 'CUSTOMERSERVICE' " +
+            "  and a.consult_time BETWEEN #{startTime} and #{endTime} " +
+            "  and c.link_employee_id in ( ${employeeId} )" +
+            "  ) v "
     )
-    AgentMonthAcutalDTO queryAgentAcutalByEmployeeId(@Param("employeeId")Long employeeId, @Param("startTime") LocalDateTime startTime, @Param("endTime")LocalDateTime endTime);
+    AgentMonthAcutalDTO queryAgentAcutalByEmployeeId(@Param("employeeId")String employeeId, @Param("startTime") String startTime, @Param("endTime")String endTime);
 }

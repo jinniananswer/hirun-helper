@@ -18,4 +18,6 @@ public interface IEmployeeOrgRelService extends IService<EmployeeOrgRel> {
     List<EmployeeOrgRel> queryRelByEmployeeId(Long employeeId);
 
     void updateEmployeeOrgRel(String orgIds,String type);
+
+    List<EmployeeOrgRel> queryFinanceOrgRel(Long employeeId);
 }

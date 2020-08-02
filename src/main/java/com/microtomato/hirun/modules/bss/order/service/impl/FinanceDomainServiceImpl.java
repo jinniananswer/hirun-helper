@@ -3,27 +3,30 @@ package com.microtomato.hirun.modules.bss.order.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.microtomato.hirun.framework.mybatis.sequence.impl.FeeNoCycleSeq;
 import com.microtomato.hirun.framework.mybatis.sequence.impl.PayNoCycleSeq;
 import com.microtomato.hirun.framework.mybatis.service.IDualService;
+import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
-import com.microtomato.hirun.modules.bss.config.entity.po.CollectionItemCfg;
-import com.microtomato.hirun.modules.bss.config.entity.po.Enterprise;
-import com.microtomato.hirun.modules.bss.config.entity.po.PayItemCfg;
-import com.microtomato.hirun.modules.bss.config.service.ICollectionItemCfgService;
-import com.microtomato.hirun.modules.bss.config.service.IEnterpriseService;
-import com.microtomato.hirun.modules.bss.config.service.IPayItemCfgService;
+import com.microtomato.hirun.modules.bss.config.entity.po.*;
+import com.microtomato.hirun.modules.bss.config.service.*;
+import com.microtomato.hirun.modules.bss.house.entity.po.Houses;
 import com.microtomato.hirun.modules.bss.house.service.IHousesService;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.*;
+import com.microtomato.hirun.modules.bss.order.entity.dto.finance.FinanceOrderTaskDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.finance.FinanceOrderTaskQueryDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.*;
 import com.microtomato.hirun.modules.bss.order.exception.OrderException;
 import com.microtomato.hirun.modules.bss.order.mapper.NormalPayNoMapper;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderBaseMapper;
 import com.microtomato.hirun.modules.bss.order.service.*;
+import com.microtomato.hirun.modules.bss.supply.entity.po.SupplierBrand;
+import com.microtomato.hirun.modules.bss.supply.service.ISupplierBrandService;
 import com.microtomato.hirun.modules.organization.entity.domain.EmployeeDO;
 import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
@@ -107,7 +110,20 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
     @Autowired
     private NormalPayNoMapper normalPayNoMapper;
 
+    @Autowired
+    private IOrderStatusCfgService orderStatusCfgService;
 
+    @Autowired
+    private IFeePayRelCfgService feePayRelCfgService;
+
+    @Autowired
+    private IFeeItemCfgService feeItemCfgService;
+
+    @Autowired
+    private IOrderFeeService orderFeeService;
+
+    @Autowired
+    private IOrderBaseService orderBaseService;
     /**
      * 初始化支付组件
      *
@@ -217,6 +233,8 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
         Long payItemTotal = 0L;
         List<OrderPayItem> orderPayItems = new ArrayList<>();
 
+        Map<String, Long> feeType = new HashMap<>();
+
         if (ArrayUtils.isNotEmpty(payItems)) {
             for (PayItemDTO payItem : payItems) {
                 Double money = payItem.getMoney();
@@ -242,6 +260,29 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
                 orderPayItem.setEndDate(forever);
                 orderPayItems.add(orderPayItem);
                 payItemTotal += fee;
+
+                //查看付款项与费用类型的关系
+                FeePayRelCfg feePayRelCfg = this.feePayRelCfgService.getByPayItemId(payItemId);
+                if (feePayRelCfg != null) {
+                    Long feeItemId = feePayRelCfg.getFeeItemId();
+                    FeeItemCfg feeItemCfg = this.feeItemCfgService.getFeeItem(feeItemId);
+                    if (feeItemCfg != null) {
+                        String type = feeItemCfg.getType();
+                        String key = type;
+
+                        Boolean isPeriod = feeItemCfg.getIsPeriod();
+                        if (isPeriod) {
+                            key = type + "," +payItem.getPeriod();
+                        }
+                        if (!feeType.containsKey(key)) {
+                            feeType.put(key, new Long(0L));
+                        }
+
+                        Long payed = feeType.get(key);
+                        payed += fee;
+                        feeType.put(key, payed);
+                    }
+                }
             }
         }
         List<PaymentDTO> payments = feeData.getPayments();
@@ -295,7 +336,184 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
             this.orderPayMoneyService.saveBatch(payMonies);
         }
 
-        //todo 补充更新order_fee对应实收的逻辑
+        //更新店面信息
+        if (feeType.size() > 0) {
+            OrderBase orderBase = this.orderBaseService.queryByOrderId(orderId);
+            feeType.forEach((key, value) -> {
+                String type = null;
+                if (StringUtils.indexOf(key, ",") > 0) {
+                    //有分期信息，肯定不是设计费
+                    return;
+                } else {
+                    type = key;
+                }
+
+                if (StringUtils.equals("1", type)) {
+                    //收设计费，更新店面信息
+                    UserContext userContext = WebContextUtils.getUserContext();
+                    Long orgId = userContext.getOrgId();
+                    if (orgId != null) {
+                        OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+                        Org shop = orgDO.getBelongShop();
+                        if (shop != null) {
+                            //以收设计费的店铺为准
+                            orderBase.setShopId(shop.getOrgId());
+                        }
+                    }
+                    return;
+                }
+            });
+
+            this.updatePayed(orderBase);
+        }
+    }
+
+    /**
+     * 更新主台帐及费用表的实收信息
+     * @param orderBase
+     */
+    private void updatePayed(OrderBase orderBase) {
+        String orderType = orderBase.getType();
+        Map<String, Long> payCache = new HashMap<>();
+        Long orderId = orderBase.getOrderId();
+        Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
+
+        List<OrderPayItem> payItems = this.orderPayItemService.queryByOrderId(orderId);
+
+        if (ArrayUtils.isEmpty(payItems)) {
+            return;
+        }
+
+        Map<String, Long> feeType = new HashMap<>();
+        payItems.forEach(payItem -> {
+            //查看付款项与费用类型的关系
+            FeePayRelCfg feePayRelCfg = this.feePayRelCfgService.getByPayItemId(payItem.getPayItemId());
+            if (feePayRelCfg != null) {
+                Long feeItemId = feePayRelCfg.getFeeItemId();
+                FeeItemCfg feeItemCfg = this.feeItemCfgService.getFeeItem(feeItemId);
+                if (feeItemCfg != null) {
+                    String type = feeItemCfg.getType();
+                    String key = type;
+
+                    Boolean isPeriod = feeItemCfg.getIsPeriod();
+                    if (isPeriod) {
+                        key = type + "," +payItem.getPeriods();
+                    }
+                    if (!feeType.containsKey(key)) {
+                        feeType.put(key, new Long(0L));
+                    }
+
+                    Long payed = feeType.get(key);
+                    payed += payItem.getFee();
+                    feeType.put(key, payed);
+                }
+            }
+        });
+        feeType.forEach((key, value) -> {
+            OrderFee orderFee = null;
+            String type = null;
+            Integer period = null;
+            if (StringUtils.indexOf(key, ",") > 0) {
+                //有分期信息
+                String[] keyArray = key.split(",");
+                //费用类型
+                type = keyArray[0];
+                //分期期数
+                period = Integer.parseInt(keyArray[1]);
+
+                if (period == 1) {
+                    payCache.put("FIRST", value);
+                } else if (period == 2 && StringUtils.equals(OrderConst.ORDER_TYPE_HOME, orderType)) {
+                    payCache.put("SECOND", value);
+                } else if (period == 2 && StringUtils.equals(OrderConst.ORDER_TYPE_WOOD, orderType)) {
+                    payCache.put("SETTLEMENT", value);
+                } else if (period == 3) {
+                    payCache.put("SETTLEMENT", value);
+                }
+                orderFee = this.orderFeeService.getByOrderIdTypePeriod(orderId, type, period);
+            } else {
+                type = key;
+                if (StringUtils.equals("1", type)) {
+                    payCache.put("DESIGN", value);
+                } else if (StringUtils.equals("3", type)) {
+                    payCache.put("CABINET", value);
+                } else if (StringUtils.equals("4", type)) {
+                    payCache.put("MATERIAL", value);
+                }
+                orderFee = this.orderFeeService.getByOrderIdTypePeriod(orderId, key, null);
+            }
+
+            LocalDateTime now = RequestTimeHolder.getRequestTime();
+            LocalDateTime forever = TimeUtils.getForeverTime();
+            if (orderFee != null) {
+                orderFee.setPay(value);
+                this.orderFeeService.updateById(orderFee);
+            } else {
+                Long orgId = WebContextUtils.getUserContext().getOrgId();
+                Long feeNo = this.dualService.nextval(FeeNoCycleSeq.class);
+                orderFee = new OrderFee();
+                orderFee.setFeeEmployeeId(employeeId);
+                orderFee.setOrgId(orgId);
+                orderFee.setTotalFee(value);
+                orderFee.setNeedPay(value);
+                orderFee.setPeriods(period);
+                orderFee.setType(type);
+                orderFee.setFeeNo(feeNo);
+                orderFee.setStartDate(now);
+                orderFee.setEndDate(forever);
+                orderFee.setOrderId(orderId);
+                this.orderFeeService.save(orderFee);
+            }
+        });
+
+        if (payCache.size() > 0) {
+            Long first = payCache.get("FIRST");
+            if (first != null) {
+                orderBase.setContractPay(first);
+            } else {
+                first = 0L;
+            }
+
+            Long second = payCache.get("SECOND");
+            if (second != null) {
+                orderBase.setSecondContractPay(second);
+            } else {
+                second = 0L;
+            }
+
+            Long settlement = payCache.get("SETTLEMENT");
+            if (settlement != null) {
+                orderBase.setSettlementPay(settlement);
+            } else {
+                settlement = 0L;
+            }
+
+            Long design = payCache.get("DESIGN");
+            if (design != null) {
+                orderBase.setDesignPay(design);
+            } else {
+                design = 0L;
+            }
+
+            Long cabinet = payCache.get("CABINET");
+            if (cabinet != null) {
+                orderBase.setCabinetPay(cabinet);
+            } else {
+                cabinet = 0L;
+            }
+
+            Long material = payCache.get("MATERIAL");
+            if (material != null) {
+                orderBase.setMaterialPay(material);
+            } else {
+                material = 0L;
+            }
+
+            Long total = first + second + settlement + design + cabinet + material;
+            orderBase.setTotalPay(total);
+
+            this.orderBaseService.updateById(orderBase);
+        }
     }
 
     /**
@@ -303,6 +521,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
      *
      * @param feeData
      */
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @Override
     public void changePay(CollectFeeDTO feeData) {
         Long orderId = feeData.getOrderId();
@@ -445,6 +664,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
         queryWrapper.likeRight(StringUtils.isNotEmpty(queryCondition.getMobileNo()), "b.mobile_no", queryCondition.getMobileNo());
         queryWrapper.eq(StringUtils.isNotEmpty(queryCondition.getOrderStatus()), "a.status", queryCondition.getOrderStatus());
         queryWrapper.eq(queryCondition.getHousesId() != null, "a.housesId", queryCondition.getHousesId());
+        queryWrapper.eq(queryCondition.getCustNo() != null, "b.cust_no", queryCondition.getCustNo());
         //排除售后，订单关闭的状态
         queryWrapper.notIn("a.status", "32", "33", "100");
         IPage<CustOrderInfoDTO> result = this.orderBaseMapper.queryCustOrderInfo(page, queryWrapper);
@@ -1089,5 +1309,43 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
             normalPayNo.setAuditEmployeeId(WebContextUtils.getUserContext().getEmployeeId());
             this.normalPayNoService.updateById(normalPayNo);
         }
+    }
+
+    @Override
+    public IPage<FinanceOrderTaskDTO> queryFinanceOrderTasks(FinanceOrderTaskQueryDTO condition) {
+        QueryWrapper<FinanceOrderTaskQueryDTO> wrapper = new QueryWrapper<>();
+        wrapper.apply("b.cust_id = a.cust_id ");
+        wrapper.apply("c.order_id = a.order_id");
+        wrapper.like(StringUtils.isNotBlank(condition.getCustName()), "b.cust_name", condition.getCustName());
+        wrapper.eq(StringUtils.isNotBlank(condition.getAuditStatus()), "c.audit_status", condition.getAuditStatus());
+        wrapper.eq(condition.getHousesId() != null, "a.houses_id", condition.getHousesId());
+        wrapper.eq(StringUtils.isNotBlank(condition.getMobileNo()), "b.mobile_no", condition.getMobileNo());
+        wrapper.orderByAsc("a.status", "a.create_time");
+
+        IPage<FinanceOrderTaskQueryDTO> page = new Page<>(condition.getPage(), condition.getLimit());
+        IPage<FinanceOrderTaskDTO> pageTasks = this.orderBaseMapper.queryFinanceOrderTaskInConsole(page, wrapper);
+
+        List<FinanceOrderTaskDTO> tasks = pageTasks.getRecords();
+        if (ArrayUtils.isEmpty(tasks)) {
+            return pageTasks;
+        }
+
+        tasks.forEach(task -> {
+            task.setHouseLayoutName(this.staticDataService.getCodeName("HOUSE_MODE", task.getHouseLayout()));
+            task.setTypeName(this.staticDataService.getCodeName("ORDER_TYPE", task.getType()));
+            task.setAuditStatusName(this.staticDataService.getCodeName("AUDIT_STATUS", task.getAuditStatus()));
+            OrderStatusCfg statusCfg = this.orderStatusCfgService.getCfgByTypeStatus(task.getType(), task.getStatus());
+            if (statusCfg != null) {
+                task.setStatusName(statusCfg.getStatusName());
+            }
+
+            if (task.getHousesId() != null) {
+                Houses house = this.housesService.getHouse(task.getHousesId());
+                if (house != null) {
+                    task.setHousesName(house.getName());
+                }
+            }
+        });
+        return pageTasks;
     }
 }

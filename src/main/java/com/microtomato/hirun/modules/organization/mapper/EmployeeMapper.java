@@ -307,4 +307,12 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
             " ins_employee a, ins_employee_job_role b " +
             " ${ew.customSqlSegment}")
     List<SimpleEmployeeDTO> queryEmployee4Select(@Param(Constants.WRAPPER) Wrapper wrapper);
+
+
+    @Select("select a.employee_id,a.name, b.org_id, b.job_role from ins_employee a, ins_employee_job_role b " +
+            " where a.employee_id=b.employee_id" +
+            " and a.status='0'" +
+            " and (now() between b.start_date and b.end_date)" +
+            " and b.org_id in (${orgId}) ")
+    List<SimpleEmployeeDTO> querySimpleEmployeesByOrgId(@Param("orgId")String orgId);
 }

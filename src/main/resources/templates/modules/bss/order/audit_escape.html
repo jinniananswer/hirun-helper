@@ -14,82 +14,73 @@
 <div id="app">
     <el-container>
         <el-main>
-            <el-row :gutter="12">
-                <el-col :span="6">
-                    <div class="grid-content bg-purple">
-                        <cust-info :cust-id="escape.custId"></cust-info>
-
-                        <order-worker :order-id="escape.orderId"></order-worker>
-                    </div>
-                </el-col>
-                <el-col :span="18">
-                    <div class="grid-content bg-purple-light">
-                        <order-info :order-id="escape.orderId"></order-info>
-                        <el-card class="box-card">
-                            <div slot="header">
-                                <span>操作区</span>
-                            </div>
-                            <el-form :inline="false" :rules="rules" label-position="right" label-width="80px"
-                                     :model="escape" ref="escape">
-                                <el-row>
-                                    <el-col :span="8" >
-                                        <el-form-item label="跑单节点">
-                                            <el-input v-model="escape.escapeNodeName" readonly disabled="true"></el-input>
-                                        </el-form-item>
-                                    </el-col>
-                                    <el-col :span="8">
-                                        <el-form-item label="跑单类别" prop="escapeType">
-                                            <vue-select code-type="ESCAPE_TYPE"
-                                                        v-model="escape.escapeType"></vue-select>
-                                        </el-form-item>
-                                    </el-col>
-                                    <el-col :span="8">
-                                        <el-form-item label="跑单去向" prop="escapeTrend">
-                                            <vue-select code-type="ESCAPE_TREND"
-                                                        v-model="escape.escapeTrend"></vue-select>
-                                        </el-form-item>
-                                    </el-col>
-                                </el-row>
-                                <el-row>
-                                    <el-col :span="8">
-                                        <el-form-item label="跑单原因" prop="escapeCause">
-                                            <vue-select code-type="ESCAPE_REASON"
-                                                        v-model="escape.escapeCause"></vue-select>
-                                        </el-form-item>
-                                    </el-col>
-                                    <el-col :span="8">
-                                        <el-form-item label="跑单时间" prop="escapeTime">
-                                            <el-date-picker
-                                                    v-model="escape.escapeTime"
-                                                    type="date"
-                                                    value-format="yyyy-MM-dd"
-                                                    placeholder="选择日期"
-                                            >
-                                            </el-date-picker>
-                                        </el-form-item>
-                                    </el-col>
-                                </el-row>
-
-                                <el-row>
-                                    <el-col :span="24">
-                                        <el-form-item label="具体原因" prop="escapeRemark">
-                                            <el-input type="textarea" v-model="escape.escapeRemark"></el-input>
-                                        </el-form-item>
-                                    </el-col>
-                                </el-row>
-                                <el-form-item style="text-align: center ">
-                                    <el-button type="primary" @click="save">保存</el-button>
-                                    <el-button type="primary" @click="closeOrder">关闭单据</el-button>
-                                    <el-button type="primary" @click="auditBack">返回上一个节点</el-button>
-                                </el-form-item>
-                            </el-form>
-                        </el-card>
-                        <div>
-                            <cust-visit :cust-id="escape.custId"></cust-visit>
+            <el-row>
+                <div class="grid-content bg-purple-light">
+                    <order-info :order-id="escape.orderId"></order-info>
+                    <el-card class="box-card">
+                        <div slot="header">
+                            <span>操作区</span>
                         </div>
-                        </el-card>
+                        <el-form :inline="false" :rules="rules" label-position="right" label-width="80px"
+                                 :model="escape" ref="escape">
+                            <el-row>
+                                <el-col :span="8" >
+                                    <el-form-item label="跑单节点">
+                                        <el-input v-model="escape.escapeNodeName" readonly disabled="true"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="跑单类别" prop="escapeType">
+                                        <vue-select code-type="ESCAPE_TYPE"
+                                                    v-model="escape.escapeType"></vue-select>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="跑单去向" prop="escapeTrend">
+                                        <vue-select code-type="ESCAPE_TREND"
+                                                    v-model="escape.escapeTrend"></vue-select>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="8">
+                                    <el-form-item label="跑单原因" prop="escapeCause">
+                                        <vue-select code-type="ESCAPE_REASON"
+                                                    v-model="escape.escapeCause"></vue-select>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="跑单时间" prop="escapeTime">
+                                        <el-date-picker
+                                                v-model="escape.escapeTime"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                placeholder="选择日期"
+                                        >
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+
+                            <el-row>
+                                <el-col :span="24">
+                                    <el-form-item label="具体原因" prop="escapeRemark">
+                                        <el-input type="textarea" v-model="escape.escapeRemark"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-form-item style="text-align: center ">
+                                <el-button type="primary" @click="save">保存</el-button>
+                                <el-button type="primary" @click="closeOrder">关闭单据</el-button>
+                                <el-button type="primary" @click="auditBack">返回上一个节点</el-button>
+                            </el-form-item>
+                        </el-form>
+                    </el-card>
+                    <div>
+                        <cust-visit :cust-id="escape.custId"></cust-visit>
                     </div>
-                </el-col>
+                    </el-card>
+                </div>
             </el-row>
         </el-main>
     </el-container>

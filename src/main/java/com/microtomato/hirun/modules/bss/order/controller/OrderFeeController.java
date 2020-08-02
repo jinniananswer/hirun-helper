@@ -1,10 +1,11 @@
 package com.microtomato.hirun.modules.bss.order.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.microtomato.hirun.framework.annotation.RestResult;
-import com.microtomato.hirun.modules.bss.order.entity.dto.PayComponentDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.LastInstallmentCollectionDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.SecondInstallmentCollectionDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.PayComponentDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.fee.*;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFee;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayNo;
 import com.microtomato.hirun.modules.bss.order.service.IInstallmentCollectDomainService;
@@ -95,5 +96,23 @@ public class OrderFeeController {
     @RestResult
     public OrderFee getByOrderIdTypePeriod(Long orderId, String type, Integer period) {
         return orderFeeServiceImpl.getByOrderIdTypePeriod(orderId, type, period);
+    }
+
+    @PostMapping("/queryDesignFees")
+    @RestResult
+    public IPage<DesignFeeDTO> queryDesignFees(@RequestBody QueryDesignFeeDTO designFeeDTO) {
+        return this.orderFeeServiceImpl.queryDesignFees(designFeeDTO);
+    }
+
+    @GetMapping("/queryProjectFees")
+    @RestResult
+    public IPage<ProjectFeeDTO> queryProjectFees(QueryProjectFeeDTO projectFeeDTO) {
+        return this.orderFeeServiceImpl.queryProjectFees(projectFeeDTO);
+    }
+
+    @GetMapping("/queryNoBalanceFees")
+    @RestResult
+    public IPage<NoBalanceFeeDTO> queryNoBalanceFees(QueryNoBalanceFeeDTO condtion) {
+        return this.orderFeeServiceImpl.queryNoBalanceFees(condtion);
     }
 }

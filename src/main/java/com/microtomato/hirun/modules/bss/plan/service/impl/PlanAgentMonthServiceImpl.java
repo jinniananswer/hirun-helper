@@ -25,7 +25,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -156,7 +155,12 @@ public class PlanAgentMonthServiceImpl extends ServiceImpl<PlanAgentMonthMapper,
     }
 
     @Override
-    public AgentMonthAcutalDTO queryAgentAcutalByEmployeeId(Long employeeId, LocalDateTime startTime, LocalDateTime endTime) {
+    public PlanAgentMonth queryAgentPlanByBu(Integer month) {
+        return this.baseMapper.queryAgentPlanByBu(month);
+    }
+
+    @Override
+    public AgentMonthAcutalDTO queryAgentAcutalByEmployeeId(String employeeId, String startTime, String endTime) {
         return this.baseMapper.queryAgentAcutalByEmployeeId(employeeId,startTime,endTime);
     }
 

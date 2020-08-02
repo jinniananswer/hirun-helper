@@ -2,6 +2,9 @@ package com.microtomato.hirun.modules.bss.order.service;
 
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderBase;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.microtomato.hirun.modules.system.entity.dto.PendingTaskDTO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -16,4 +19,6 @@ public interface IOrderBaseService extends IService<OrderBase> {
     OrderBase queryByOrderId(Long orderId);
 
     void updateOrderBase(OrderBase orderBase);
+
+    List<PendingTaskDTO> queryOrderStatusPendingTasks(String orderStatuses, String type);
 }

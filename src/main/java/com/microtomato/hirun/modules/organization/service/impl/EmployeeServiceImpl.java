@@ -383,4 +383,15 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         }
         return employees;
     }
+
+    @Override
+    public List<SimpleEmployeeDTO> queryEmployeeByOrgId(Long orgId) {
+        if(orgId==null){
+            orgId=WebContextUtils.getUserContext().getOrgId();
+        }
+        OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+        String orgLine=orgDO.getOrgLine(orgId);
+        List<SimpleEmployeeDTO> employees=this.employeeMapper.querySimpleEmployeesByOrgId(orgLine);
+        return employees;
+    }
 }

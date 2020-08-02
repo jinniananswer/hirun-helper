@@ -12,14 +12,14 @@
 <div id="app" v-cloak>
     <el-container>
         <el-main>
-            <el-card class="box-card">
+            <el-card class="box-card" shadow="hover">
                 <div slot="header" class="clearfix">
                     <span>查询区域</span>
                 </div>
-                <el-form :inline="false" :model="queryCond" label-position="right" label-width="80px">
+                <el-form :inline="false" :model="queryCond" :rules="rules" label-position="right" label-width="80px" ref="queryCond">
                     <el-row>
                         <el-col :span="8">
-                            <el-form-item label="查询方式">
+                            <el-form-item label="查询方式" prop="queryType">
                                 <el-select v-model="queryCond.queryType" change="changeQueryType" placeholder="请选择">
                                     <el-option
                                             v-for="item in queryTypes"
@@ -37,8 +37,8 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="8">
-                            <el-form-item label="门店">
-                                <el-select v-model="queryCond.orgId" placeholder="请选择" :disabled="shopSelectDisabled">
+                            <el-form-item label="门店" :disabled="shopSelectDisabled">
+                                <el-select v-model="queryCond.shopId" placeholder="请选择" >
                                     <el-option
                                             v-for="item in options"
                                             :key="item.orgId"
@@ -82,7 +82,8 @@
                     </el-row>
                 </el-form>
             </el-card>
-            <el-card>
+            <br>
+            <el-card shadow="hover">
                 <template>
                     <div id="echarts_box" style="width: 1000px;height:400px;"></div>
                 </template>

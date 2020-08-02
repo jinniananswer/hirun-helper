@@ -5,10 +5,7 @@ import com.microtomato.hirun.modules.bss.plan.entity.dto.AgentMonthAcutalDTO;
 import com.microtomato.hirun.modules.bss.plan.entity.dto.AgentMonthPlanDTO;
 import com.microtomato.hirun.modules.bss.plan.entity.dto.AgentMonthPlanQueryDTO;
 import com.microtomato.hirun.modules.bss.plan.entity.po.PlanAgentMonth;
-import com.microtomato.hirun.modules.bss.salary.entity.dto.SalaryMonthlyDTO;
-import com.microtomato.hirun.modules.bss.salary.entity.dto.SalaryMonthlyQueryDTO;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -57,11 +54,18 @@ public interface IPlanAgentMonthService extends IService<PlanAgentMonth> {
     PlanAgentMonth queryAgentPlanByCompanyId(Long orgId,Integer month);
 
     /**
+     * 查询集团公司的计划报表数据
+     * @param month
+     * @return
+     */
+    PlanAgentMonth queryAgentPlanByBu(Integer month);
+
+    /**
      *
      * @param employeeId
      * @param startTime
      * @param endTime
      * @return
      */
-    AgentMonthAcutalDTO queryAgentAcutalByEmployeeId(Long employeeId, LocalDateTime startTime, LocalDateTime endTime);
+    AgentMonthAcutalDTO queryAgentAcutalByEmployeeId(String employeeId, String startTime, String endTime);
 }

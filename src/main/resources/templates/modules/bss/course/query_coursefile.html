@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>dolphin-admin</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script src="static/js/framework/requirejs/require.min.js"
+            th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js"
+            th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+</head>
+<body>
+<div id="app" style="display:none" :style="display?display:''">
+    <el-container>
+        <el-main>
+            <el-card class="box-card">
+                <el-collapse value="1" accordion>
+                    <el-collapse-item title="查询条件" name="1">
+
+                        <el-form :inline="false" :model="courseFileQueryCond" label-position="right" label-width="80px">
+                            <el-row>
+                                <el-col :span="6">
+                                    <el-form-item label="课件名称">
+                                        <el-input v-model="courseFileQueryCond.name" placeholder="课件名称"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="课件标识">
+                                        <el-input v-model="courseFileQueryCond.fileId" placeholder="课件标识"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="课程标识">
+                                        <el-input v-model="courseFileQueryCond.courseId" placeholder="课程标识"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="20">
+                                    <el-form-item style="text-align: right">
+                                        <el-button type="primary" @click="queryCourseFileInfo">查询</el-button>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                        </el-form>
+                    </el-collapse-item>
+                </el-collapse>
+            </el-card>
+
+            <template>
+                <el-row style="padding-bottom: 12px">
+                    <el-button type="success" icon="el-icon-folder-add" @click="addCourseFile">新增</el-button>
+                    <el-button type="danger" icon="el-icon-delete" @click="deleteCourseFileBatch">删除</el-button>
+                </el-row>
+                <el-table :data="courseFileInfo" stripe="true" style="width: 100%" fit="true" border height="400px">
+                    <el-table-column type="selection" width="40" align="center"></el-table-column>
+                    <el-table-column prop="name" label="课件名称" fixed align="center" width="280"></el-table-column>
+                    <el-table-column prop="courseId" label="课程标识" align="center" width="80"></el-table-column>
+                    <el-table-column prop="storagePath" label="课件地址" align="center" width="420"></el-table-column>
+                    <el-table-column fixed="right" label="操作" align="center" width="200">
+                        <template slot-scope="scope">
+                            <el-button type="danger" width="35" size="mini" icon="el-icon-edit"
+                                       @click="editCourseFileById(scope.row)">编辑
+                            </el-button>
+                            <el-button type="danger" width="35" size="mini" icon="el-icon-delete"
+                                       @click="deleteCourseFileById(scope.row)">删除
+                            </el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <div class="pagination">
+                    <el-pagination
+                            background
+                            :current-page="courseFileQueryCond.page"
+                            :page-size="courseFileQueryCond.size"
+                            layout="total, sizes, prev, pager, next"
+                            :total="courseFileQueryCond.total"
+                            @size-change="handleSizeChange"
+                            @current-change="handleCurrentChange">
+                    </el-pagination>
+                </div>
+
+                <el-dialog width="80%" title="课件信息修改" append-to-body :visible.sync="editCourseFileDialogVisible">
+                    <el-form :inline="false" :model="courseFileEditCond" :rules="courseFileRules" ref="courseFileEditCond" label-position="right"
+                             label-width="120px">
+                        <el-row>
+                            <el-col :span="8">
+                                <el-form-item label="课件名称" label-width="100px" prop="name">
+                                    <el-input v-model="courseFileEditCond.name" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="课件地址" label-width="100px" prop="storagePath">
+                                    <el-input v-model="courseFileEditCond.storagePath" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="状态" label-width="100px" prop="status">
+                                    <el-input v-model.number="courseFileEditCond.status" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <div style="text-align: center">
+                                <el-button type="primary" @click="submitEdit(courseFileEditCond)">提交修改</el-button>
+                                <el-button @click="cancel()">取消</el-button>
+                            </div>
+                        </el-row>
+                    </el-form>
+                </el-dialog>
+
+                <el-dialog width="80%" title="课件信息新增" append-to-body :visible.sync="addCourseFileDialogVisible">
+                    <el-form :inline="false" :model="courseFileAddCond"  ref="courseFileAddCond" label-position="right"
+                             label-width="120px">
+                        <el-row>
+                            <el-col :span="8">
+                                <el-form-item label="课件名称" label-width="100px" prop="name">
+                                    <el-input v-model="courseFileAddCond.name" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="课程标识" label-width="100px" prop="abbreviation">
+                                    <el-input v-model="courseFileAddCond.courseId" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="课件地址" label-width="100px" prop="mobileNo">
+                                    <el-input v-model.number="courseFileAddCond.storagePath" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <div style="text-align: center">
+                                <el-button type="primary" @click="submitAdd(courseFileAddCond)">保存</el-button>
+                                <el-button @click="cancel()">取消</el-button>
+                            </div>
+                        </el-row>
+                    </el-form>
+                </el-dialog>
+            </template>
+        </el-main>
+    </el-container>
+</div>
+<style>
+    .text {
+        font-size: 14px;
+    }
+
+    .item {
+        margin-bottom: 18px;
+    }
+
+    .box-card {
+        margin-bottom: 18px;
+    }
+</style>
+<script src="../../../static/js/modules/bss/course/query.coursefile.js"
+        th:src="@{static/js/modules/bss/course/query.coursefile.js(v=${version})}"></script>
+</body>
+</html>

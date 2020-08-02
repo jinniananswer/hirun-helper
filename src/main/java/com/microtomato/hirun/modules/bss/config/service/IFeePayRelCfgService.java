@@ -2,6 +2,7 @@ package com.microtomato.hirun.modules.bss.config.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.microtomato.hirun.modules.bss.config.entity.po.FeePayRelCfg;
+import springfox.documentation.annotations.Cacheable;
 
 import java.util.List;
 
@@ -17,4 +18,7 @@ public interface IFeePayRelCfgService extends IService<FeePayRelCfg> {
     List<FeePayRelCfg> queryAll();
 
     List<FeePayRelCfg> queryByFeeItemIds(List<Long> feeItemIds);
+
+    @Cacheable(value = "sys_fee_pay_rel_cfg-payItemId")
+    FeePayRelCfg getByPayItemId(Long payItemId);
 }
