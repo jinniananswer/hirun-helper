@@ -17,6 +17,9 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'util', 'vxe-table', 'vueselect','ho
             query : function() {
                 let that = this;
                 ajax.get('api/bss.order/finance/queryFinanceOrderTasks', this.queryCond, function(data) {
+                    if (data == null) {
+                        return;
+                    }
                     that.tasks = data.records;
                     that.queryCond.page = data.current;
                     that.queryCond.count = data.total;
