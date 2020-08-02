@@ -14,11 +14,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
+ * 上传文件失效自动删除处理（此任务已停用）
+ *
  * @author Steven
  * @date 2020-02-06
  */
 @Slf4j
-@Component
+//@Component
 public class UploadFileTask {
 
     @Autowired
@@ -27,7 +29,7 @@ public class UploadFileTask {
     /**
      * 每天凌晨 6:00 开始执行。
      */
-    @Scheduled(cron = "0 0 6 * * ?")
+    //@Scheduled(cron = "0 0 6 * * ?")
     public void scheduled() {
 
         log.info("开始清理未被确认的上传文件...");
