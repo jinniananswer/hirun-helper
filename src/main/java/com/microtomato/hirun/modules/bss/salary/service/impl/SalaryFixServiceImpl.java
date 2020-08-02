@@ -22,6 +22,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -128,6 +130,7 @@ public class SalaryFixServiceImpl extends ServiceImpl<SalaryFixMapper, SalaryFix
      * 保存员工月工资固定项目
      * @param salaries
      */
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @Override
     public void saveSalaries(List<SalaryFixDTO> salaries, boolean isAudit) {
         if (ArrayUtils.isEmpty(salaries)) {
@@ -195,6 +198,7 @@ public class SalaryFixServiceImpl extends ServiceImpl<SalaryFixMapper, SalaryFix
      * @param isPass
      */
     @Override
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void audit(List<SalaryFixDTO> employeeSalaries, boolean isPass) {
         if (ArrayUtils.isEmpty(employeeSalaries)) {
             return;

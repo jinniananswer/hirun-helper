@@ -23,16 +23,16 @@ spring:
   datasource:
     atomikos:
       sys:
-#        uniqueResourceName: sys
-#        driverClassName: com.mysql.cj.jdbc.Driver
-#        url: jdbc:mysql://127.0.0.1:3306/sys?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
-#        user: sys
-#        password: ENC(viZyjCQosuNPI/YI5a/bkAjnKGT9R5zD)
-#        minPoolSize: 20
-#        maxPoolSize: 50
-#        maxIdleTime: 60
-#        maxLifetime: 1200
-#        maintenanceInterval: 60
+        #        uniqueResourceName: sys
+        #        driverClassName: com.mysql.cj.jdbc.Driver
+        #        url: jdbc:mysql://127.0.0.1:3306/sys?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
+        #        user: sys
+        #        password: ENC(viZyjCQosuNPI/YI5a/bkAjnKGT9R5zD)
+        #        minPoolSize: 20
+        #        maxPoolSize: 50
+        #        maxIdleTime: 60
+        #        maxLifetime: 1200
+        #        maintenanceInterval: 60
 
         unique-resource-name: sys
         min-pool-size: 10
@@ -61,16 +61,16 @@ spring:
           filters: stat,slf4j,wall
 
       ins:
-#        uniqueResourceName: ins
-#        driverClassName: com.mysql.cj.jdbc.Driver
-#        url: jdbc:mysql://127.0.0.1:3306/ins?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
-#        user: ins
-#        password: ENC(EFtPlR9pOu98f6a1eLlznevxCmlBJH/S)
-#        minPoolSize: 20
-#        maxPoolSize: 50
-#        maxIdleTime: 60
-#        maxLifetime: 1200
-#        maintenanceInterval: 60
+        #        uniqueResourceName: ins
+        #        driverClassName: com.mysql.cj.jdbc.Driver
+        #        url: jdbc:mysql://127.0.0.1:3306/ins?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
+        #        user: ins
+        #        password: ENC(EFtPlR9pOu98f6a1eLlznevxCmlBJH/S)
+        #        minPoolSize: 20
+        #        maxPoolSize: 50
+        #        maxIdleTime: 60
+        #        maxLifetime: 1200
+        #        maintenanceInterval: 60
 
         unique-resource-name: ins
         min-pool-size: 10

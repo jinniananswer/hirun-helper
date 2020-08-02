@@ -180,10 +180,28 @@ public class OrderBase extends BaseEntity {
     private Long settlementFee;
 
     /**
+     * 结算应付金额
+     */
+    @TableField("settlement_need_pay")
+    private Long settlementNeedPay;
+
+    /**
      * 结算实收
      */
     @TableField("settlement_pay")
     private Long settlementPay;
+
+    /**
+     * 橱柜实收
+     */
+    @TableField("cabinet_pay")
+    private Long cabinetPay;
+
+    /**
+     * 主材实收
+     */
+    @TableField("material_pay")
+    private Long materialPay;
 
     /**
      * 客户总付费用

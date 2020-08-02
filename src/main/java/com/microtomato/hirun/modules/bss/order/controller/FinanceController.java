@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
 
 import com.microtomato.hirun.modules.bss.order.entity.dto.*;
+import com.microtomato.hirun.modules.bss.order.entity.dto.finance.FinanceOrderTaskDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.finance.FinanceOrderTaskQueryDTO;
 import com.microtomato.hirun.modules.bss.order.service.IFinanceDomainService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,5 +87,11 @@ public class FinanceController {
     @RestResult
     public List<FinancePendingTaskDTO> queryFinancePendingTask() {
         return this.domainService.queryFinancePendingTask();
+    }
+
+    @GetMapping("/queryFinanceOrderTasks")
+    @RestResult
+    public IPage<FinanceOrderTaskDTO> queryFinanceOrderTasks(FinanceOrderTaskQueryDTO condition) {
+        return this.domainService.queryFinanceOrderTasks(condition);
     }
 }

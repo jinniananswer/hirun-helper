@@ -1,14 +1,18 @@
 package com.microtomato.hirun.modules.bss.order.mapper;
 
-import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeDTO;
-import com.microtomato.hirun.modules.bss.order.entity.po.OrderFee;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.microtomato.hirun.framework.annotation.Storage;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
+import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.fee.*;
+import com.microtomato.hirun.modules.bss.order.entity.po.OrderFee;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,4 +39,23 @@ public interface OrderFeeMapper extends BaseMapper<OrderFee> {
             " and a.order_id=#{orderId}\n")
     List<OrderFeeDTO> loadDesignFeeInfo(Long orderId);
 
+    @Select("select b.cust_id, b.cust_name, b.cust_no, a.order_id, a.decorate_address, a.house_layout, a.indoor_area, a.shop_id, a.type, a.status, c.fee_no\n" +
+            "from cust_base b, order_base a \n" +
+            "left join order_fee c on (c.order_id = a.order_id and c.type = '1' and end_date > now() ) \n" +
+            "${ew.customSqlSegment}"
+    )
+    IPage<DesignFeeDTO> queryDesignFee(IPage<QueryDesignFeeDTO> queryCondition, @Param(Constants.WRAPPER) Wrapper wrapper);
+
+
+    @Select("select b.cust_id, b.cust_name, b.cust_no, b.cust_status, a.order_id, a.decorate_address, a.house_layout, a.indoor_area, a.shop_id, a.type, a.status " +
+            "from cust_base b, order_base a \n" +
+            "${ew.customSqlSegment}"
+    )
+    IPage<ProjectFeeDTO> queryProjectFee(IPage<QueryProjectFeeDTO> queryCondtion, @Param(Constants.WRAPPER) Wrapper wrapper);
+
+    @Select("select b.cust_id, b.cust_name, b.cust_no, b.cust_status, a.order_id, a.decorate_address, a.house_layout, a.indoor_area, a.shop_id, a.type, a.status, c.type fee_type, c.periods, c.need_pay, c.pay " +
+            "from cust_base b, order_base a, order_fee c \n" +
+            "${ew.customSqlSegment}"
+    )
+    IPage<NoBalanceFeeDTO> queryNoBalanceFee(IPage<QueryNoBalanceFeeDTO> queryCondtion, @Param(Constants.WRAPPER) Wrapper wrapper);
 }

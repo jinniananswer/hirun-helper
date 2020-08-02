@@ -1,13 +1,13 @@
-package com.microtomato.hirun.modules.bss.order.entity.po;
+package com.microtomato.hirun.modules.bss.supply.entity.po;
 
-import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.microtomato.hirun.framework.data.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import lombok.Data;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -16,12 +16,11 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 /**
- * <p>
- * 供应商品牌表
- * </p>
+ * 供应订单表(SupplyOrder)表实体类
  *
- * @author sunxin
- * @since 2020-03-29
+ * @author Jinnian
+ * @version 1.0.0
+ * @date 2020-07-15 11:26:08
  */
 @Data
 @Builder
@@ -29,70 +28,50 @@ import lombok.NoArgsConstructor;
 @Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("sys_supplier_brand")
-public class SupplierBrand extends BaseEntity {
+@TableName("supply_order")
+public class SupplyOrder extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
-
+    
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    /**
-     * 品牌名称
-     */
-    @TableField("name")
-    private String name;
+    /** 主营系统订单号，暂可以为空 */
+    @TableField(value = "order_id")
+    private Long orderId;
 
-    /**
-     * 供应商id
-     */
-    @TableField("supplier_id")
-    private Long supplierId;
 
-    /**
-     * 品牌类别
-     */
-    @TableField("brand_type")
-    private String brandType;
 
-    /**
-     * 成本百分比，例如78代表78%
-     */
-    @TableField("cost_rate")
-    private BigDecimal costRate;
+    /** 总费用 */
+    @TableField(value = "total_fee")
+    private Integer totalFee;
 
-    /**
-     * 提成百分比，例如8.5代表8.5%
-     */
-    @TableField("royalty_rate")
-    private BigDecimal royaltyRate;
+    /** 1-主营材料下单 2-主营材料退单 3-材料入库 4-材料出库 */
+    @TableField(value = "supply_order_type")
+    private String supplyOrderType;
 
-    /**
-     * 毛利润百分比，例如13.5代表13.5%
-     */
-    @TableField("gross_profit_rate")
-    private BigDecimal grossProfitRate;
 
-    @TableField("remark")
+    @TableField(value = "remark")
     private String remark;
+
 
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)
     private Long createUserId;
 
+
     @TableField(value = "create_time", fill = FieldFill.INSERT)
     private LocalDateTime createTime;
+
 
     @TableField(value = "update_user_id", fill = FieldFill.INSERT_UPDATE)
     private Long updateUserId;
 
+
     @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
 
-    /**
-     * 状态，0代表在用，1为废弃
-     */
-    @TableField("status")
-    private String status;
-
+    /** 状态：暂0代表在用，1为废弃 */
+    @TableField(value = "supply_status")
+    private String supplyStatus;
 
 }

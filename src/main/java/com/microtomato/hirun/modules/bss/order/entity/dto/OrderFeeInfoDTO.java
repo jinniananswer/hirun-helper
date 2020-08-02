@@ -39,6 +39,21 @@ public class OrderFeeInfoDTO {
     private Double totalMoney;
 
     /**
+     * 应付
+     */
+    private Double needPay;
+
+    /**
+     * 实付
+     */
+    private Double pay;
+
+    /**
+     * 是否付齐
+     */
+    private String isEquals;
+
+    /**
      * 标识
      */
     private Long rowKey;

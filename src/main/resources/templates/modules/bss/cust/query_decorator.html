@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>dolphin-admin</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script src="static/js/framework/requirejs/require.min.js"
+            th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js"
+            th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+</head>
+<body>
+<div id="app" style="display:none" :style="display?display:''">
+    <el-container>
+        <el-main>
+            <el-card class="box-card">
+                <el-collapse value="1" accordion>
+                    <el-collapse-item title="查询条件" name="1">
+
+                        <el-form :inline="false" :model="decoratorQueryCond" label-position="right" label-width="80px">
+                            <el-row>
+                                <el-col :span="6">
+                                    <el-form-item label="姓名">
+                                        <el-input v-model="decoratorQueryCond.name" placeholder="工人姓名"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="身份证号">
+                                        <el-input v-model="decoratorQueryCond.identityNo" placeholder="证件号码"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="20">
+                                    <el-form-item style="text-align: right">
+                                        <el-button type="primary" @click="queryDecorator">查询</el-button>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                        </el-form>
+                    </el-collapse-item>
+                </el-collapse>
+            </el-card>
+
+            <template>
+                <el-table :data="decoratorInfo" stripe="true" style="width: 100%" fit="true" border height="400px">
+                    <el-table-column prop="decoratorId" label="工人ID" align="center" width="100"></el-table-column>
+                    <el-table-column prop="name" label="姓名" fixed align="center" width="100"></el-table-column>
+                    <el-table-column prop="identityNo" label="身份证号" align="center" width="180"></el-table-column>
+                    <el-table-column prop="mobileNo" label="手机号" align="center" width="180"></el-table-column>
+                    <el-table-column prop="decoratorType" label="工人类别" align="center"></el-table-column>
+                    <el-table-column prop="agreementTag" label="协议标记" align="center" width="180"></el-table-column>
+                </el-table>
+                <div class="pagination">
+                    <el-pagination
+                            background
+                            :current-page="decoratorQueryCond.page"
+                            :page-size="decoratorQueryCond.size"
+                            layout="total, sizes, prev, pager, next"
+                            :total="decoratorQueryCond.total"
+                            @size-change="handleSizeChange"
+                            @current-change="handleCurrentChange">
+                    </el-pagination>
+                </div>
+            </template>
+        </el-main>
+    </el-container>
+</div>
+<style>
+    .text {
+        font-size: 14px;
+    }
+
+    .item {
+        margin-bottom: 18px;
+    }
+
+    .box-card {
+        margin-bottom: 18px;
+    }
+</style>
+<script src="../../../static/js/modules/bss/cust/query.decorator.js"
+        th:src="@{static/js/modules/bss/cust/query.decorator.js(v=${version})}"></script>
+</body>
+
+</html>
