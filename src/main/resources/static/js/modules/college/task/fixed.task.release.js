@@ -114,7 +114,7 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
 
             query: function() {
                 let that = this;
-                ajax.get('api/bss.order/finance/queryCustOrderInfo', this.queryCond, function(responseData){
+                ajax.get('api/organization/employee/queryNewEmployeeByPage', this.queryCond, function(responseData){
                     that.custOrder = responseData.records;
                     that.queryCond.page = responseData.current;
                     that.queryCond.count = responseData.total;
