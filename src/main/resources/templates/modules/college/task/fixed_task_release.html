@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>固定任务发布</title>
+        <meta name="renderer" content="webkit">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <script src="static/js/framework/requirejs/require.min.js" th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+        <script src="static/js/framework/requirejs/require.config.js" th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+    </head>
+    <body>
+        <div id="app">
+            <el-container>
+                <el-main>
+                    <el-row style="margin-left: -6px;margin-right: -6px">
+                        <el-card class="box-card" shadow="hover">
+                            <el-input placeholder="请点击进行新入职员工查询" @focus="showCustQuery">
+                            <template slot="prepend">员工姓名</template>
+                        </el-input>
+                        <el-dialog width="80%" title="员工信息查询" :visible.sync="dialogVisible">
+                        <el-card class="box-card" shadow="hover">
+                        <div slot="header" class="clearfix">
+                            <span>查询条件区</span>
+                        </div>
+                        <el-form :inline="false" :model="queryCond" label-position="right" label-width="80px">
+                        <el-row>
+                            <el-col :span="8">
+                                <el-form-item label="客户姓名">
+                                    <el-input v-model="queryCond.name" placeholder="请输入客户姓名"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="客户性别">
+                                    <vue-select code-type="SEX" v-model="queryCond.sex"></vue-select>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="8">
+                                <el-form-item>
+                                    <el-button type="primary" @click="query">查询</el-button>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </el-card>
+            <el-table
+                    :data="custOrder"
+                    stripe="true"
+                    border
+                    height="400"
+                    style="width: 100%">
+                <el-table-column
+                        label="客户姓名"
+                        fixed
+                        width="80"
+                        align="center">
+                    <template slot-scope="scope">
+                        <el-button type="text" @click="selectCustOrder(scope.row.orderId, scope.row.custId)">{{ scope.row.custName }}</el-button>
+                </template>
+            </el-table-column>
+            <el-table-column
+                    prop="sexName"
+                    width="60"
+                    label="性别">
+            </el-table-column>
+            <el-table-column
+                    prop="mobileNo"
+                    width="120"
+                    label="联系电话"
+                    align="center">
+            </el-table-column>
+            <el-table-column
+                    prop="decorateAddress"
+                    label="装修地址">
+            </el-table-column>
+            <el-table-column
+                    width="150"
+                    prop="housesName"
+                    label="所属楼盘">
+            </el-table-column>
+            <el-table-column
+                    width="100"
+                    prop="houseLayoutName"
+                    label="户型">
+            </el-table-column>
+            <el-table-column
+                    width="100"
+                    prop="floorage"
+                    label="建筑面积">
+            </el-table-column>
+            <el-table-column
+                    width="100"
+                    prop="indoorArea"
+                    label="室内面积">
+            </el-table-column>
+            <el-table-column
+                    width="100"
+                    prop="stageName"
+                    label="订单阶段">
+            </el-table-column>
+            <el-table-column
+                    width="100"
+                    prop="statusName"
+                    label="订单状态">
+            </el-table-column>
+        </el-table>
+        <div style="text-align: center">
+            <el-pagination
+                    layout="total, prev, pager, next"
+                    :total="queryCond.count"
+                    :current-page.sync="queryCond.page"
+                    :page-size="queryCond.limit"
+            @current-change="query">
+        </el-pagination>
+    </div>
+</el-dialog>
+        </el-card>
+        </el-row>
+<el-row :gutter="12" :style="show">
+<div class="grid-content bg-purple-light">
+<order-info :order-id="orderId"></order-info>
+<el-card class="box-card">
+<div slot="header">
+    <span>操作区</span>
+</div>
+
+<el-card class="box-card" shadow="hover" :style="show">
+<el-tabs v-model="activeTab">
+    <el-tab-pane label="设计提成明细" name="designRoyaltyTab">
+        <el-row style="padding-bottom: 12px" :style="show">
+            <el-button type="primary" @click="initNewDesignRoyalty">新增设计提成</el-button>
+        <el-button type="success" @click="saveDesignRoyalty">提交保存</el-button>
+    <el-button type="danger" @click="auditDesignRoyalty">提交审核</el-button>
+</el-row>
+<vxe-table
+border
+resizable
+ref="designRoyaltyDetail"
+show-overflow
+highlight-hover-row
+highlight-cell
+keep-source
+max-height="800px"
+:row-class-name="isModify"
+:auto-resize="true"
+:data="designRoyaltyDetails"
+:edit-config="{trigger: 'click', mode: 'cell', showStatus: true, activeMethod: activeRowMethod}"
+:checkbox-config="{strict: true, checkMethod: checkMethod, range: true, trigger: 'row', highlight: true}">
+<vxe-table-column type="checkbox" fixed="left" width="40"></vxe-table-column>
+<vxe-table-column field="nodeCondition" title="提成条件" sortable width="200" fixed="left"></vxe-table-column>
+<vxe-table-column field="orgName" title="部门" sortable width="100" fixed="left"></vxe-table-column>
+<vxe-table-column field="employeeName" title="员工姓名" sortable width="100" fixed="left"></vxe-table-column>
+<vxe-table-column field="jobRoleName" title="岗位" sortable width="100" fixed="left"></vxe-table-column>
+<vxe-table-column field="employeeStatusName" title="员工状态" sortable width="100" fixed="left"></vxe-table-column>
+<vxe-table-column field="itemName" title="提成项目" sortable width="100" fixed="left"></vxe-table-column>
+<vxe-table-column field="designFeeStandard" title="设计费级别" sortable width="120" fixed="left"></vxe-table-column>
+<vxe-table-column field="value" title="提成点/固定值" width="120"></vxe-table-column>
+<vxe-table-column field="auditStatusName" title="审核状态" width="100"></vxe-table-column>
+<vxe-table-column field="totalRoyalty" title="总提成" width="180" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+<vxe-table-column field="alreadyFetch" title="已提" width="180" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+<vxe-table-column field="thisMonthFetch" title="本月可提" width="100">
+    <template v-slot="{ row }">
+        <span>{{ minusThisMonthFetch(row) }} 元</span>
+    </template>
+</vxe-table-column>
+<vxe-table-column field="salaryMonth" title="发放月份" width="100" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+<vxe-table-column field="remark" title="提成备注" width="100" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+<vxe-table-column title="操作" width="100" show-overflow>
+    <template v-slot="{ row }">
+        <el-button
+                size="mini"
+                type="danger"
+                icon="el-icon-delete"
+                :disabled="row.auditStatus ==  '1' || row.auditStatus == '2' || row.auditStatus == '4'"
+        @click="deleteDesign(row)">删除</el-button>
+</template>
+</vxe-table-column>
+        </vxe-table>
+<el-dialog width="80%" title="请输入设计提成内容" append-to-body :visible.sync="designDialogVisible">
+<el-form :inline="false" :model="designItem" :rules="designRules" ref="designForm" label-position="right" label-width="120px">
+    <el-row>
+        <el-col :span="8">
+            <el-form-item label="员工姓名" prop="employeeName">
+                <order-search-employee :employee-id.sync="designItem.employeeId" :employee-name.sync="designItem.employeeName"></order-search-employee>
+            </el-form-item>
+        </el-col>
+        <el-col :span="8">
+            <el-form-item label="提成节点条件" prop="orderStatus">
+                <vue-select code-type="NODE_CONDITION" v-model="designItem.orderStatus"></vue-select>
+            </el-form-item>
+        </el-col>
+        <el-col :span="8">
+            <el-form-item label="提成点/固定值" prop="value">
+                <el-input v-model="designItem.value" placeholder="请输入提成点/固定值"></el-input>
+            </el-form-item>
+        </el-col>
+    </el-row>
+    <el-row>
+        <el-col :span="8">
+            <el-form-item label="提成类型" prop="type">
+                <vue-select code-type="ROYALTY_TYPE" v-model="designItem.type" disable-value="3"></vue-select>
+            </el-form-item>
+        </el-col>
+        <el-col :span="8">
+            <el-form-item label="提成项目" prop="item">
+                <vue-select code-type="ROYALTY_ITEM" v-model="designItem.item"></vue-select>
+            </el-form-item>
+        </el-col>
+    </el-row>
+    <el-row>
+        <el-col :span="8">
+            <el-form-item label="总提成" prop="totalRoyalty">
+                <el-input v-model.number="designItem.totalRoyalty"
+                          placeholder="请输入总提成金额"></el-input>
+            </el-form-item>
+        </el-col>
+        <el-col :span="8">
+            <el-form-item label="已提" prop="alreadyFetch">
+                <el-input v-model.number="designItem.alreadyFetch"
+                          placeholder="请输入总提成金额"></el-input>
+            </el-form-item>
+        </el-col>
+        <el-col :span="8">
+            <el-form-item label="发放月份" prop="salaryMonth">
+                <el-date-picker
+                        v-model="designItem.salaryMonth"
+                        type="month"
+                        format="yyyyMM"
+                        value-format="yyyyMM"
+                        style="width:100%"
+                        placeholder="选择月">
+                </el-date-picker>
+            </el-form-item>
+        </el-col>
+    </el-row>
+    <el-row>
+        <el-col :span="24">
+            <el-form-item label="提成备注">
+                <el-input
+                        type="textarea"
+                        :rows="3"
+                        placeholder="请输入备注内容"
+                        v-model="designItem.remark">
+                </el-input>
+            </el-form-item>
+        </el-col>
+    </el-row>
+    <el-row style="padding-top: 12px" :style="show">
+        <el-button type="primary" @click="createNewDesignRoyalty">新增设计提成</el-button>
+</el-row>
+</el-form>
+        </el-dialog>
+<el-row style="padding-top: 12px" :style="show">
+<el-button type="primary" @click="initNewDesignRoyalty">新增设计提成</el-button>
+<el-button type="success" @click="saveDesignRoyalty">提交保存</el-button>
+<el-button type="danger" @click="auditDesignRoyalty">提交审核</el-button>
+        </el-row>
+        </el-tab-pane>
+<el-tab-pane label="工程提成明细" name="projectRoyaltyDetail">
+<el-row style="padding-bottom: 12px" :style="show">
+    <el-button type="primary" @click="initNewProjectRoyalty">新增工程提成</el-button>
+<el-button type="success" @click="saveProjectRoyalty">提交保存</el-button>
+<el-button type="danger" @click="auditProjectRoyalty">提交审核</el-button>
+        </el-row>
+<vxe-table
+border
+resizable
+ref="projectRoyaltyDetail"
+show-overflow
+highlight-hover-row
+max-height="800px"
+:row-class-name="isModify"
+:auto-resize="true"
+:data="projectRoyaltyDetails"
+:edit-config="{trigger: 'click', mode: 'cell', showStatus: true, activeMethod: activeRowMethod}"
+:checkbox-config="{strict: true, checkMethod: checkMethod, range: true, trigger: 'row', highlight: true}">
+<vxe-table-column type="checkbox" fixed="left" width="40"></vxe-table-column>
+<vxe-table-column field="nodeCondition" title="提成节点条件" width="200" fixed="left"></vxe-table-column>
+<vxe-table-column field="orgName" title="部门" sortable width="100" fixed="left"></vxe-table-column>
+<vxe-table-column field="employeeName" title="员工姓名" sortable width="100" fixed="left"></vxe-table-column>
+<vxe-table-column field="jobRoleName" title="岗位" sortable width="100" fixed="left"></vxe-table-column>
+<vxe-table-column field="jobGradeName" title="职称" sortable width="100" fixed="left"></vxe-table-column>
+<vxe-table-column field="employeeStatusName" title="员工状态" sortable width="100" fixed="left"></vxe-table-column>
+<vxe-table-column field="periodName" title="合同阶段" width="100"></vxe-table-column>
+<vxe-table-column field="contractFee" title="净合同金额" sortable width="120" fixed="left"></vxe-table-column>
+<vxe-table-column field="basicFee" title="基础金额" width="100"></vxe-table-column>
+<vxe-table-column field="doorFee" title="门金额" width="100"></vxe-table-column>
+<vxe-table-column field="furnitureFee" title="家具金额" width="100"></vxe-table-column>
+<vxe-table-column field="value" title="提成点/固定值" width="120"></vxe-table-column>
+<vxe-table-column field="auditStatusName" title="审核状态" width="100"></vxe-table-column>
+<vxe-table-column field="basicRoyalty" title="基础提成" width="180" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+<vxe-table-column field="doorRoyalty" title="门提成" width="180" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+<vxe-table-column field="furnitureRoyalty" title="家具提成" width="180" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+<vxe-table-column field="basicAlreadyFetch" title="基础已提" width="180" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+<vxe-table-column field="doorAlreadyFetch" title="门已提" width="180" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+<vxe-table-column field="furnitureAlreadyFetch" title="家具已提" width="180" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+<vxe-table-column field="thisMonthFetch" title="本月可提" width="100">
+    <template v-slot="{ row }">
+        <span>{{ minusProjectThisMonthFetch(row) }} 元</span>
+    </template>
+</vxe-table-column>
+<vxe-table-column field="salaryMonth" title="发放月份" width="100" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+<vxe-table-column field="remark" title="提成备注" width="100" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+<vxe-table-column title="操作" width="100" show-overflow>
+    <template v-slot="{ row }">
+        <el-button
+                size="mini"
+                type="danger"
+                icon="el-icon-delete"
+                :disabled="row.auditStatus ==  '1' || row.auditStatus == '2' || row.auditStatus == '4'"
+        @click="deleteProject(row)">删除</el-button>
+</template>
+</vxe-table-column>
+        </vxe-table>
+<el-dialog width="80%" title="请输入工程提成内容" append-to-body :visible.sync="projectDialogVisible">
+<el-form :inline="false" :model="projectItem" :rules="projectRules" ref="projectForm" label-position="right" label-width="120px">
+    <el-row>
+        <el-col :span="8">
+            <el-form-item label="员工姓名" prop="employeeName">
+                <order-search-employee :employee-id.sync="projectItem.employeeId" :employee-name.sync="projectItem.employeeName"></order-search-employee>
+            </el-form-item>
+        </el-col>
+        <el-col :span="8">
+            <el-form-item label="提成节点条件" prop="orderStatus">
+                <vue-select code-type="NODE_CONDITION" v-model="projectItem.orderStatus"></vue-select>
+            </el-form-item>
+        </el-col>
+        <el-col :span="8">
+            <el-form-item label="提成点/固定值" prop="value">
+                <el-input v-model="projectItem.value" placeholder="请输入提成点/固定值"></el-input>
+            </el-form-item>
+        </el-col>
+    </el-row>
+    <el-row>
+        <el-col :span="8">
+            <el-form-item label="基础提成" prop="basicRoyalty">
+                <el-input v-model.number="projectItem.basicRoyalty"
+                          placeholder="请输入基础提成金额"></el-input>
+            </el-form-item>
+        </el-col>
+        <el-col :span="8">
+            <el-form-item label="基础已提" prop="basicAlreadyFetch">
+                <el-input v-model.number="projectItem.basicAlreadyFetch"
+                          placeholder="请输入基础已提金额"></el-input>
+            </el-form-item>
+        </el-col>
+        <el-col :span="8">
+            <el-form-item label="门提成" prop="doorRoyalty">
+                <el-input v-model.number="projectItem.doorRoyalty"
+                          placeholder="请输入门提成金额"></el-input>
+            </el-form-item>
+        </el-col>
+    </el-row>
+    <el-row>
+        <el-col :span="8">
+            <el-form-item label="门已提" prop="doorAlreadyFetch">
+                <el-input v-model.number="projectItem.doorAlreadyFetch"
+                          placeholder="请输入门已提金额"></el-input>
+            </el-form-item>
+        </el-col>
+        <el-col :span="8">
+            <el-form-item label="家具提成" prop="furnitureRoyalty">
+                <el-input v-model.number="projectItem.furnitureRoyalty"
+                          placeholder="请输入家具提成金额"></el-input>
+            </el-form-item>
+        </el-col>
+        <el-col :span="8">
+            <el-form-item label="家具已提" prop="furnitureAlreadyFetch">
+                <el-input v-model.number="projectItem.furnitureAlreadyFetch"
+                          placeholder="请输入家具已提金额"></el-input>
+            </el-form-item>
+        </el-col>
+    </el-row>
+    <el-row>
+        <el-col :span="8">
+            <el-form-item label="发放月份" prop="salaryMonth">
+                <el-date-picker
+                        v-model="projectItem.salaryMonth"
+                        type="month"
+                        format="yyyyMM"
+                        value-format="yyyyMM"
+                        style="width:100%"
+                        placeholder="选择月">
+                </el-date-picker>
+            </el-form-item>
+        </el-col>
+    </el-row>
+    <el-row>
+        <el-col :span="24">
+            <el-form-item label="提成备注">
+                <el-input
+                        type="textarea"
+                        :rows="3"
+                        placeholder="请输入备注内容"
+                        v-model="projectItem.remark">
+                </el-input>
+            </el-form-item>
+        </el-col>
+    </el-row>
+    <el-row style="padding-top: 12px" :style="show">
+        <el-button type="primary" @click="createNewProjectRoyalty">新增工程提成</el-button>
+</el-row>
+</el-form>
+        </el-dialog>
+<el-row style="padding-top: 12px" :style="show">
+<el-button type="primary" @click="initNewProjectRoyalty">新增工程提成</el-button>
+<el-button type="success" @click="saveProjectRoyalty">提交保存</el-button>
+<el-button type="danger" @click="auditProjectRoyalty">提交审核</el-button>
+        </el-row>
+        </el-tab-pane>
+        </el-tabs>
+        </el-card>
+        </el-card>
+        </div>
+        </el-row>
+
+        </el-main>
+        </el-container>
+        </div>
+<style>
+.text {
+font-size: 14px;
+}
+
+.box-card {
+margin-bottom: 12px;
+}
+
+.item {
+margin-bottom: 18px;
+}
+
+.el-card__header {
+padding:10px;
+}
+
+.modify_row {
+color: #ff4835;
+}
+
+.new_row {
+color: #4DAF29;
+}
+
+.delete_row {
+text-decoration:line-through;
+}
+</style>
+<script src="static/js/modules/bss/salary/edit.royalty.detail.js" th:src="@{static/js/modules/bss/salary/edit.royalty.detail.js(v=${version})}"></script>
+        </body>
+        </html>

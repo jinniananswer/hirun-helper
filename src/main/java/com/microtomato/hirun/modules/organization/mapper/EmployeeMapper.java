@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.Storage;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
+import com.microtomato.hirun.modules.bss.customer.entity.dto.CustQueryCondDTO;
 import com.microtomato.hirun.modules.bss.plan.entity.dto.AgentMonthPlanDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.*;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
@@ -372,4 +373,7 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
             " ${ew.customSqlSegment}"
     )
     List<SimpleEmployeeDTO> queryEmployeeByRoleAndOrg(@Param(Constants.WRAPPER) Wrapper wrapper);
+
+    @Select("select * from ")
+    IPage<Employee> queryEmployeeByPage(Page<EmployeeQueryDTO> page, @Param(Constants.WRAPPER) Wrapper wrapper);
 }

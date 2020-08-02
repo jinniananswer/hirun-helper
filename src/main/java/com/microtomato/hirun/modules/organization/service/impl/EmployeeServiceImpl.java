@@ -482,4 +482,15 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
                 roleType+") and b.org_id in ("+orgLine+")");
         return this.employeeMapper.queryEmployeeByRoleAndOrg(wrapper);
     }
+
+    @Override
+    public IPage<Employee> queryEmployeeByPage(EmployeeQueryDTO employeeQueryDTO, Page<EmployeeQueryDTO> page) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq(null != employeeQueryDTO.getEmployeeId(), "employee_id", employeeQueryDTO.getEmployeeId());
+        queryWrapper.like(StringUtils.isNotEmpty(employeeQueryDTO.getName()), "name", employeeQueryDTO.getName());
+        queryWrapper.eq(StringUtils.isNotEmpty(employeeQueryDTO.getSex()), "sex", employeeQueryDTO.getSex());
+        return this.employeeMapper.queryEmployeeByPage(page, queryWrapper);
+    }
+
+
 }
