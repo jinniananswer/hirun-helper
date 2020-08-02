@@ -40,8 +40,8 @@ public class PartyVisit extends BaseEntity {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @TableField("cust_id")
-    private Long custId;
+    @TableField("party_id")
+    private Long partyId;
 
     /**
      * 回访对象
