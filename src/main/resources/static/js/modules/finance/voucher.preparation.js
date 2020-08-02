@@ -179,6 +179,22 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                 handleConstructionTableDataDelete: function (index) {
                     vm.constructionTableData.splice(index, 1);
                 },
+                loadFinancenItem() {
+                    let that = this;
+                    let url = 'api/finance/finance-item/initFinancenItem';
+                    ajax.get(url, null, function (data) {
+                        that.financeItemptions = data.collectionItemOption;
+                        if (data.payItems) {
+                            that.payItems = data.payItems;
+                        }
+                        that.auditStatus = data.auditStatus;
+                        that.payForm.needPay = data.needPay;
+
+                        if (data.payDate) {
+                            that.payForm.payDate = data.payDate;
+                        }
+                    });
+                },
                 isModify: function(obj) {
                     if (obj.row.isModified == '1') {
                         return "modify_row";
