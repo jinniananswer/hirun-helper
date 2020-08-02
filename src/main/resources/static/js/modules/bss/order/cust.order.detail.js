@@ -16,7 +16,19 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     60: '施工',
                     95: '维护'
                 },
-                feeActiveTab: 'feeInfo'
+                defaultProps: {
+                    children: 'children',
+                    label: 'title'
+                },
+                feeActiveTab: 'feeInfo',
+                dialogTableVisible: false,
+                funcDialogVisibleA:false,
+                funcDialogVisibleB:false,
+                funcDialogVisibleC:false,
+                funcDialogVisibleAll:false,
+                disabledA:true,
+                disabledB:true,
+                disabledC:true
             }
         },
 
@@ -30,6 +42,19 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                         data.stage.push(-10);
                         data.stage.push(stage);
                         that.order = data;
+
+                        if (data.xqlteInfo != null) {
+                            if (data.xqlteInfo.funcInfo != null && data.xqlteInfo.funcInfo.FUNC_A != null) {
+                                that.disabledA = false;
+                            }
+                            if (data.xqlteInfo.funcInfo != null && data.xqlteInfo.funcInfo.FUNC_B != null) {
+                                that.disabledB = false;
+                            }
+
+                            if (data.xqlteInfo.funcInfo != null && data.xqlteInfo.funcInfo.FUNC_C != null) {
+                                that.disabledC = false;
+                            }
+                        }
                     });
                 }
             }
