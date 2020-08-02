@@ -95,7 +95,13 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
         }
 
         Long roleId = one.getRoleId();
-        UserRole userRole = UserRole.builder().userId(userId).roleId(roleId).startDate(startDate).endDate(endDate).build();
+        UserRole userRole = UserRole.builder()
+                .userId(userId)
+                .roleId(roleId)
+                .isMainRole(false)
+                .startDate(startDate)
+                .endDate(endDate)
+                .build();
         this.save(userRole);
 
     }
@@ -193,7 +199,13 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
                 );
 
                 if (null == one) {
-                    UserRole userRole = UserRole.builder().userId(userId).roleId(roleId).startDate(now).endDate(foreverTime).build();
+                    UserRole userRole = UserRole.builder()
+                            .userId(userId)
+                            .roleId(roleId)
+                            .isMainRole(false)
+                            .startDate(now)
+                            .endDate(foreverTime)
+                            .build();
                     this.save(userRole);
                 }
 
