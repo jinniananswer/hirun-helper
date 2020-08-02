@@ -68,23 +68,6 @@
                     </el-card>
                     <el-card class="box-card" shadow="hover">
                         <div slot="header">
-                            <span>产品信息</span>
-                        </div>
-                        <div class="text item">
-                            <h3>风格蓝图：写意白描</h3>
-                            <el-alert
-                                    title="以抽象概括的设计手法，从中国传统图案或构件中提取线条，并运用于整套设计中表现文士审美追求的设计系列"
-                                    type="info"
-                                    :closable="false"
-                                    show-icon>
-                            </el-alert>
-                        </div>
-                        <div class="text item">
-                            <h3>功能蓝图</h3>
-                        </div>
-                    </el-card>
-                    <el-card class="box-card" shadow="hover">
-                        <div slot="header">
                             <span>费用信息</span>
                         </div>
                         <el-tabs v-model="feeActiveTab" type="border-card">
@@ -186,6 +169,41 @@
                     </el-card>
                     <el-card class="box-card" shadow="hover">
                         <div slot="header">
+                            <span>工作人员</span>
+                        </div>
+                        <el-table
+                                :data="order.orderWorkers"
+                                stripe="true"
+                                border
+                                style="width: 100%">
+                            <el-table-column
+                                    label="员工姓名"
+                                    prop="name"
+                                    width="140">
+                            </el-table-column>
+                            <el-table-column
+                                    prop="roleName"
+                                    width="140"
+                                    label="角色名称">
+                            </el-table-column>
+                            <el-table-column
+                                    prop="statusName"
+                                    label="员工状态"
+                                    width="140">
+                            </el-table-column>
+                            <el-table-column
+                                    prop="startDate"
+                                    label="加入时间"
+                                    width="200">
+                            </el-table-column>
+                            <el-table-column
+                                    prop="workerStatus"
+                                    label="当前状态">
+                            </el-table-column>
+                        </el-table>
+                    </el-card>
+                    <el-card class="box-card" shadow="hover">
+                        <div slot="header">
                             <span>订单文件</span>
                         </div>
                         <el-table
@@ -214,8 +232,290 @@
                     </el-card>
                     <el-card class="box-card" shadow="hover">
                         <div slot="header">
-                            <span>订单合同</span>
+                            <span>合同信息</span>
                         </div>
+                        <el-table
+                                :data="order.orderContracts"
+                                stripe="true"
+                                border
+                                style="width: 100%">
+                            <el-table-column
+                                    label="合同类型"
+                                    prop="contractTypeName"
+                                    width="140">
+                            </el-table-column>
+                            <el-table-column
+                                    prop="signDate"
+                                    width="140"
+                                    label="签订日期">
+                            </el-table-column>
+                            <el-table-column
+                                    prop="busiLevelName"
+                                    width="120"
+                                    label="业务级别">
+                            </el-table-column>
+                            <el-table-column
+                                    prop="environmentalTestingAgencyName"
+                                    label="环保机构">
+                            </el-table-column>
+                            <el-table-column
+                                    prop="chargeSecondFeeDate"
+                                    width="200"
+                                    label="二期款时间">
+                            </el-table-column>
+                            <el-table-column
+                                    prop="startDate"
+                                    label="开始时间"
+                                    width="200">
+                            </el-table-column>
+                            <el-table-column
+                                    prop="endDate"
+                                    label="结束时间"
+                                    width="200">
+                            </el-table-column>
+                        </el-table>
+                    </el-card>
+                    <el-card class="box-card" shadow="hover">
+                        <div slot="header">
+                            <span>订单优惠</span>
+                        </div>
+                        <el-table
+                                :data="order.orderDiscountItems"
+                                stripe="true"
+                                border
+                                style="width: 100%">
+                            <el-table-column
+                                    label="优惠项目"
+                                    prop="discountItemName"
+                                    width="140">
+                            </el-table-column>
+                            <el-table-column
+                                    prop="employeeName"
+                                    width="140"
+                                    label="录入人">
+                            </el-table-column>
+                            <el-table-column
+                                    prop="createTime"
+                                    width="200"
+                                    label="录入时间">
+                            </el-table-column>
+                            <el-table-column
+                                    prop="contractDiscountFee"
+                                    width="200"
+                                    label="合同优惠金额">
+                            </el-table-column>
+                            <el-table-column
+                                    prop="结算优惠金额"
+                                    width="160"
+                                    label="结算优惠金额">
+                            </el-table-column>
+                            <el-table-column
+                                    prop="approveEmployeeName"
+                                    label="优惠审批人"
+                                    width="140">
+                            </el-table-column>
+                            <el-table-column
+                                    prop="statusName"
+                                    label="状态"
+                                    width="140">
+                            </el-table-column>
+                            <el-table-column
+                                    prop="remark"
+                                    label="备注">
+                            </el-table-column>
+
+                        </el-table>
+                    </el-card>
+                    <el-card class="box-card" shadow="hover">
+                        <div slot="header">
+                            <span>中间产品</span>
+                        </div>
+                        <div class="grid-content bg-purple-light">
+                            <el-card class="box-card" shadow="hover">
+                                <div>
+                                    <el-divider content-position="left"><span style="font-weight: 700">需求蓝图一</span>
+                                    </el-divider>
+                                </div>
+                                <el-table
+                                        :data="order.xqltyInfo"
+                                        border
+                                        stripe="true"
+                                        style="width: 100%">
+                                    <el-table-column
+                                            prop="actionTypeName"
+                                            label="蓝图一类型"
+                                            align="center"
+                                            width="180">
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="style"
+                                            label="风格蓝图"
+                                            align="center"
+                                            width="200">
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="func"
+                                            label="功能蓝图"
+                                            align="center"
+                                            width="200">
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="modeTime"
+                                            align="center"
+                                            label="推送时间">
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="pushEmployeeName"
+                                            align="center"
+                                            label="推送人">
+                                    </el-table-column>
+                                </el-table>
+                            </el-card>
+                            <el-card class="box-card" shadow="hover">
+                                <div>
+                                    <el-divider content-position="left"><span style="font-weight: 700">风格蓝图二</span>
+                                        <el-button type="text" @click="dialogTableVisible = true">图片详情</el-button>
+                                    </el-divider>
+                                </div>
+                                <template v-if="order.xqlteInfo != null">
+                                    <div class="text item" v-for="(styleInfo, index) in order.xqlteInfo.styleInfo">
+                                        <h3>{{styleInfo.name}}</h3>
+                                        <el-alert
+                                                :title="styleInfo.content"
+                                                type="info"
+                                                :closable="false"
+                                                show-icon>
+                                        </el-alert>
+                                    </div>
+                                </template>
+                            </el-card>
+
+                            <el-card class="box-card" shadow="hover">
+                                <div>
+                                    <el-divider content-position="left"><span style="font-weight: 700">功能蓝图二</span>
+                                        <el-button type="text" @click="funcDialogVisibleAll = true" style="color: green">
+                                            蓝图比对
+                                        </el-button>
+                                    </el-divider>
+                                </div>
+                                <el-button type="text" @click="funcDialogVisibleA = true" :disabled="disabledA"><h3>
+                                    功能蓝图_A</h3></el-button>
+                                <el-button type="text" @click="funcDialogVisibleB = true" :disabled="disabledB"><h3>
+                                    功能蓝图_B</h3></el-button>
+                                <el-button type="text" @click="funcDialogVisibleC = true" :disabled="disabledC"><h3>
+                                    功能蓝图_C</h3></el-button>
+                            </el-card>
+                        </div>
+
+                        <el-dialog title="风格蓝图照片" :visible.sync="dialogTableVisible">
+                            <template v-if="order.xqlteInfo != null">
+                                <el-carousel :interval="4000" type="card" height="200px">
+                                    <el-carousel-item v-for="url in order.xqlteInfo.styleUrl">
+                                        <el-image
+                                                style="width: 300px; height: 300px"
+                                                :src="url"></el-image>
+                                    </el-carousel-item>
+                                </el-carousel>
+                            </template>
+                        </el-dialog>
+
+                        <el-dialog title="功能蓝图" :visible.sync="funcDialogVisibleA" append-to-body height="300px">
+                            <div style="height: 50vh;overflow: auto;">
+                                <template v-if="order.xqlteInfo != null">
+                                    <el-tree :data="order.xqlteInfo.funcInfo.FUNC_A"
+                                             :props="defaultProps"
+                                             node-key="id"
+                                             ref="funcA"
+                                             default-expand-all>
+                                    </el-tree>
+                                </template>
+                            </div>
+                        </el-dialog>
+
+                        <el-dialog title="功能蓝图" :visible.sync="funcDialogVisibleB" append-to-body height="300px">
+                            <div style="height: 50vh;overflow: auto;">
+                                <template v-if="order.xqlteInfo != null">
+                                    <el-tree :data="order.xqlteInfo.funcInfo.FUNC_B"
+                                             :props="defaultProps"
+                                             node-key="id"
+                                             ref="funcB"
+                                             default-expand-all></el-tree>
+                                </template>
+                            </div>
+                        </el-dialog>
+
+                        <el-dialog title="功能蓝图" :visible.sync="funcDialogVisibleC" append-to-body height="300px">
+                            <div style="height: 50vh;overflow: auto;">
+                                <template v-if="order.xqlteInfo != null">
+                                    <el-tree :data="order.xqlteInfo.funcInfo.FUNC_C"
+                                             :props="defaultProps"
+                                             node-key="id"
+                                             ref="funcC"
+                                             default-expand-all></el-tree>
+                                </template>
+                            </div>
+                        </el-dialog>
+
+                        <el-dialog title="功能蓝图对比" :visible.sync="funcDialogVisibleAll" append-to-body width="1200px" height="300px">
+                            <el-row :gutter="12">
+                                <el-col :span="8">
+                                    <div class="grid-content bg-purple">
+                                        <el-card class="box-card" shadow="hover">
+                                            <div slot="header" class="clearfix">
+                                                <span>功能蓝图A</span>
+                                            </div>
+                                            <div style="height: 100vh;overflow: auto;">
+                                                <template v-if="order.xqlteInfo != null">
+                                                    <el-tree :data="order.xqlteInfo.funcInfo.FUNC_A"
+                                                             :props="defaultProps"
+                                                             node-key="id"
+                                                             ref="funcA"
+                                                             default-expand-all></el-tree>
+                                                </template>
+                                            </div>
+                                        </el-card>
+                                    </div>
+                                </el-col>
+                                <el-col :span="8">
+                                    <div class="grid-content bg-purple">
+                                        <el-card class="box-card" shadow="hover">
+                                            <div slot="header" class="clearfix">
+                                                <span>功能蓝图B</span>
+                                            </div>
+                                            <div style="height: 100vh;overflow: auto;">
+                                                <template v-if="order.xqlteInfo != null">
+                                                    <el-tree :data="order.xqlteInfo.funcInfo.FUNC_B"
+                                                             :props="defaultProps"
+                                                             node-key="id"
+                                                             ref="funcB"
+                                                             default-expand-all></el-tree>
+                                                </template>
+                                            </div>
+                                        </el-card>
+                                    </div>
+                                </el-col>
+                                <el-col :span="8">
+                                    <div class="grid-content bg-purple">
+                                        <el-card class="box-card" shadow="hover">
+                                            <div slot="header" class="clearfix">
+                                                <span>功能蓝图C</span>
+                                            </div>
+                                            <div style="height: 100vh;overflow: auto;">
+                                                <template v-if="order.xqlteInfo != null">
+                                                    <el-tree :data="order.xqlteInfo.funcInfo.FUNC_C"
+                                                             :props="defaultProps"
+                                                             node-key="id"
+                                                             ref="funcC"
+                                                             default-expand-all
+                                                    ></el-tree>
+                                                </template>
+                                            </div>
+                                        </el-card>
+                                    </div>
+                                </el-col>
+                            </el-row>
+
+                        </el-dialog>
                     </el-card>
                 </div>
             </el-row>
