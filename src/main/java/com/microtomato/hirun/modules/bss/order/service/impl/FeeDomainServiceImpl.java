@@ -264,8 +264,22 @@ public class FeeDomainServiceImpl implements IFeeDomainService {
 
             if (orderFee.getTotalFee() != null) {
                 orderFeeInfo.setTotalMoney(orderFee.getTotalFee().doubleValue() / 100);
-            } else {
-                orderFeeInfo.setTotalMoney(0d);
+            }
+
+            Long needPay = orderFee.getNeedPay();
+            Long pay = orderFee.getPay();
+            if (needPay != null) {
+                orderFeeInfo.setNeedPay(needPay / 100d);
+            }
+
+            if (pay != null) {
+                orderFeeInfo.setPay(pay / 100d);
+            }
+
+            if (needPay != null && pay != null && needPay > pay) {
+                orderFeeInfo.setIsEquals("未付齐");
+            } else if (needPay != null && pay != null && needPay.equals(pay)) {
+                orderFeeInfo.setIsEquals("已付齐");
             }
 
             List<OrderFeeItem> orderFeeItems = this.orderFeeItemService.queryByOrderIdFeeNo(orderId, orderFee.getFeeNo());

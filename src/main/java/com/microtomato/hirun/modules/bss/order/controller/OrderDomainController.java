@@ -3,10 +3,8 @@ package com.microtomato.hirun.modules.bss.order.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
-import com.microtomato.hirun.modules.bss.order.entity.dto.CustOrderInfoDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.CustOrderQueryDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.OrderDetailDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.PendingTaskDTO;
+import com.microtomato.hirun.framework.util.TimeUtils;
+import com.microtomato.hirun.modules.bss.order.entity.dto.*;
 import com.microtomato.hirun.modules.bss.order.service.IOrderDomainService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 /**
@@ -52,5 +51,18 @@ public class OrderDomainController {
     public IPage<CustOrderInfoDTO> queryCustOrderInfo(CustOrderQueryDTO queryCond) {
         Page<CustOrderQueryDTO> page = new Page<>(queryCond.getPage(), queryCond.getLimit());
         return this.domainService.queryCustOrderInfos(queryCond, page);
+    }
+
+    @GetMapping("/queryOrderTasks")
+    @RestResult
+    public IPage<OrderTaskDTO> queryOrderTasks(OrderTaskQueryDTO condition) {
+        return this.domainService.queryOrderTasks(condition);
+    }
+
+    @GetMapping("/queryEmployeeResults")
+    @RestResult
+    public List<EmployeeResultsDTO> queryEmployeeResults(EmployeeResultsQueryDTO queryCond) {
+        queryCond.setOrderCreateEndDate(TimeUtils.addTime(queryCond.getOrderCreateEndDate(), ChronoUnit.SECONDS, 86399));
+        return this.domainService.queryEmployeeResults(queryCond);
     }
 }

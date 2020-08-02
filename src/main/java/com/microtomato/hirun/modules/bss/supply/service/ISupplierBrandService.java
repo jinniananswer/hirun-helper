@@ -3,6 +3,8 @@ package com.microtomato.hirun.modules.bss.supply.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.microtomato.hirun.modules.bss.supply.entity.po.SupplierBrand;
 
+import java.util.List;
+
 /**
  * 供应商品牌表(SupplySupplierBrand)表服务接口
  *
@@ -12,4 +14,7 @@ import com.microtomato.hirun.modules.bss.supply.entity.po.SupplierBrand;
  */
 public interface ISupplierBrandService extends IService<SupplierBrand> {
 
+    List<SupplierBrand> queryAllInfo();
+
+    SupplierBrand getSupplierBrand(Long supplierId);
 }

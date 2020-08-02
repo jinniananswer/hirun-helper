@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.bss.config.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.modules.bss.config.entity.po.FeePayRelCfg;
@@ -61,5 +62,18 @@ public class FeePayRelCfgServiceImpl extends ServiceImpl<FeePayRelCfgMapper, Fee
         }
 
         return result;
+    }
+
+    /**
+     * 根据付款项找到费用项关系
+     * @param payItemId
+     * @return
+     */
+    @Override
+    @Cacheable(value = "sys_fee_pay_rel_cfg-payItemId")
+    public FeePayRelCfg getByPayItemId(Long payItemId) {
+        return this.getOne(Wrappers.<FeePayRelCfg>lambdaQuery()
+                .eq(FeePayRelCfg::getPayItemId, payItemId)
+                .eq(FeePayRelCfg::getStatus, "U"), false);
     }
 }

@@ -19,5 +19,7 @@ public interface IOrderPayItemService extends IService<OrderPayItem> {
 
     List<OrderPayItem> queryByOrderId(Long orderId);
 
+    List<OrderPayItem> queryByOrderIdsPayItems(List<Long> orderIds, List<Long> payItems);
+
     List<OrderPayItem> queryByPayItemIds(Long orderId, List<Long> payItemIds, Integer period);
 }

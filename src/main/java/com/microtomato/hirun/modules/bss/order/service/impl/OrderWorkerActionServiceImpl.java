@@ -100,19 +100,6 @@ public class OrderWorkerActionServiceImpl extends ServiceImpl<OrderWorkerActionM
         }
     }
 
-    /*@Override
-    public void deleteOrderWorkerByOrderId(Long orderId) {
-        LocalDateTime now = RequestTimeHolder.getRequestTime();
-        List<OrderWorkerAction> oldActions = this.queryByOrderIdEmployeeIdAction(orderId,employeeId,action);
-        List<OrderWorkerAction> oldActions = this.queryByOrderIdAction(orderId,action);
-        if (ArrayUtils.isNotEmpty(oldActions)) {
-            oldActions.forEach(oldAction -> {
-                oldAction.setEndDate(now);
-                this.updateById(oldAction);
-            });
-        }
-    }*/
-
     /**
      * 创建订单参与工作人员动作数据
      * @param orderId

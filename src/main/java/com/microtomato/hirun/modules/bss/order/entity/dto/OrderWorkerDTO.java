@@ -2,6 +2,8 @@ package com.microtomato.hirun.modules.bss.order.entity.dto;
 
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 /**
  * @program: hirun-helper
  * @description: 订单主流程工作人员数据传输对象
@@ -10,6 +12,8 @@ import lombok.Data;
  **/
 @Data
 public class OrderWorkerDTO {
+
+    private Long orderId;
 
     private Long roleId;
 
@@ -20,4 +24,8 @@ public class OrderWorkerDTO {
     private String status;
 
     private Long employeeId;
+
+    private LocalDateTime startDate;
+
+    private LocalDateTime endDate;
 }

@@ -41,7 +41,7 @@ layui.extend({
     let console = {
         init: function () {
             layui.map.draw('LAY-index-mapview', 'china', 1);
-            layui.ajax.post('api/organization/employee-statistic/countInAndDestroyOneYear', '', function (data) {
+            layui.ajax.post('api/bss.order/order-statistic/consoleBar', '', function (data) {
                 let bar = data.rows;
                 layui.chart.drawBar('LAY-index-dataview', bar);
             });
@@ -200,7 +200,7 @@ layui.extend({
         },
 
         drawPending: function () {
-            layui.ajax.post('api/organization/hr-pending/countPending', '', function (datas) {
+            layui.ajax.post('api/system/role-console-config/queryPendingTasks', '', function (datas) {
                 var data = datas.rows;
                 if (data == null || data.length <= 0) {
                     return;
@@ -213,13 +213,13 @@ layui.extend({
                     var pendingData = data[i];
                     var pendingType = pendingData.name;
                     var pendingNum = pendingData.num;
-/*                    if(i==2){
+                    var link = pendingData.link;
+                    if((length == 3 && i == 2) || (length == 1 && i == 0) || length==2){
                         html.push('<li class="layui-col-xs12">');
                     }else{
                         html.push('<li class="layui-col-xs6">');
-                    }*/
-                    html.push('<li class="layui-col-xs6">');
-                    html.push('<a lay-href="openUrl?url=modules/organization/hr/pending_manager" class="layadmin-backlog-body">');
+                    }
+                    html.push('<a lay-href="'+link+'" class="layadmin-backlog-body">');
                     html.push('<h3>' + pendingType + '</h3>');
                     html.push('<p><cite>' + pendingNum + '</cite></p>');
                     html.push('</a></li>');

@@ -16,6 +16,10 @@ define(['moment'], function(moment){
             return moment(new Date()).add('year',0).format("YYYY-MM-DD HH:mm:ss");
         },
 
+        formatDate: function(date, format) {
+            return moment(date).add('year',0).format(format);
+        },
+
         openPage: function(url, title) {
             let topLayui = parent === self ? layui : top.layui;
             topLayui.index.openTabsPage(url, title);
