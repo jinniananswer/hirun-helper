@@ -771,6 +771,14 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
                 }
             }
 
+            Long auditEmployeeId = orderPayNo.getAuditEmployeeId();
+            if (auditEmployeeId != null) {
+                EmployeeDO employeeDO = SpringContextUtils.getBean(EmployeeDO.class, employeeId);
+                orderPayInfo.setAuditEmployeeName(employeeDO.getEmployee().getName());
+            }
+
+            orderPayInfo.setAuditStatusName(this.staticDataService.getCodeName("AUDIT_STATUS", orderPayNo.getAuditStatus()));
+
             if (orderPayNo.getTotalMoney() != null) {
                 orderPayInfo.setTotalMoney(orderPayNo.getTotalMoney().doubleValue() / 100);
             } else {
