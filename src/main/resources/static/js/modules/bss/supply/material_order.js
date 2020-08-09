@@ -15,7 +15,7 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                     count: null
                 },
                 selectedMaterial: '',
-                supplyOrderType:'',
+                supplyOrderType: '',
                 materialOptions: [],
                 materialTableData: [],
                 validRules: {
@@ -71,7 +71,8 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                         supplierName: spans[2],
                         standard: spans[3],
                         materialUnit: spans[4],
-                        costPrice: spans[5]
+                        costPrice: spans[5],
+                        supplierId: spans[7]
                     });
                 }
             },
@@ -115,6 +116,10 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                 for (let i = 0; i < this.materialTableData.length; i++) {
                     let material = {};
                     material.id = this.materialTableData[i].id;
+                    if (this.materialTableData[i].materialNum == null) {
+                        this.$message.error('没有输入材料数量，不能提交');
+                        return false;
+                    }
                     material.materialNum = this.materialTableData[i].materialNum;
                     material.costPrice = this.materialTableData[i].costPrice;
                     material.supplierId = this.materialTableData[i].supplierId;

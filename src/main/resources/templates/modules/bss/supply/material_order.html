@@ -170,13 +170,13 @@
                                         :edit-rules="validRules"
                                         :edit-config="{trigger: 'click', mode: 'cell'}">
                                     <vxe-table-column field="id" title="材料编码"></vxe-table-column>
-                                    <vxe-table-column field="supplierName" title="供应商名称"></vxe-table-column>
-                                    <vxe-table-column field="materialName" title="材料名称"></vxe-table-column>
+                                    <vxe-table-column field="supplierName" title="供应商名称" width="100"></vxe-table-column>
+                                    <vxe-table-column field="materialName" title="材料名称" width="100"></vxe-table-column>
                                     <vxe-table-column field="standard" title="规格"></vxe-table-column>
                                     <vxe-table-column field="costPrice" title="费用" ></vxe-table-column>
                                     <vxe-table-column field="supplierId" title="供应商id" ></vxe-table-column>
-                                    <vxe-table-column field="materialUnit" title="材料单位" width="100"></vxe-table-column>
-                                    <vxe-table-column field="materialNum" title="预算数量" width="180"
+                                    <vxe-table-column field="materialUnit" title="材料单位" width="40"></vxe-table-column>
+                                    <vxe-table-column field="materialNum" title="预算数量"
                                                       :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
                                     <vxe-table-column title="操作" width="100" show-overflow>
                                         <template v-slot="{ row }">

@@ -54,6 +54,7 @@ public class SupplyMaterialServiceImpl extends ServiceImpl<SupplyMaterialMapper,
             supplyMaterial.setName(material.getName());
             supplyMaterial.setSupplierName(supplierName);
             supplyMaterial.setStandard(material.getStandard());
+            supplyMaterial.setSupplierId(supplierId);
             supplyMaterials.add(supplyMaterial);
 
         }

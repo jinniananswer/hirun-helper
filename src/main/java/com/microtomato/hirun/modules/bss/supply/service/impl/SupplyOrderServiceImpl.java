@@ -148,7 +148,6 @@ public class SupplyOrderServiceImpl extends ServiceImpl<SupplyOrderMapper, Suppl
         Long supplyId = condition.getId();
         Long supplierId = condition.getSupplierId();
         List<SupplyMaterialDTO> supplyDetails = this.supplyOrderMapper.querySupplyDetailInfo(supplyId, supplierId);
-
         for (SupplyMaterialDTO supplyDetail : supplyDetails) {
             String supplierName = this.supplierService.querySupplierById(supplierId).getName();
             supplyDetail.setSupplierName(supplierName);
