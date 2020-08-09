@@ -253,7 +253,16 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
                                                     align="right"
                                                     label="收款总金额（元）">
                                             </el-table-column>
-                                            
+                                            <el-table-column
+                                                    prop="auditStatusName"
+                                                    label="审核状态" 
+                                                    width="140">
+                                            </el-table-column>
+                                            <el-table-column
+                                                    prop="auditEmployeeName"
+                                                    label="审核员工" 
+                                                    width="140">
+                                            </el-table-column>
                                         </el-table>
                                     </el-tab-pane>
                                 </el-tabs>
