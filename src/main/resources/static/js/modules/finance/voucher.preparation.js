@@ -1,17 +1,17 @@
-require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'house-select', 'util', 'cust-info', 'order-info', 'order-worker', 'order-search-employee', 'order-selectemployee','order-selectdecorator'], function (Vue, element, ajax, table, vueSelect, orgTree, houseSelect, util, custInfo, orderInfo, orderWorker, orderSearchEmployee,orderSelectEmployee,orderSelectDecorator) {
+require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'house-select', 'util', 'cust-info', 'order-info', 'order-worker', 'order-search-employee', 'order-selectemployee', 'order-selectdecorator'], function (Vue, element, ajax, table, vueSelect, orgTree, houseSelect, util, custInfo, orderInfo, orderWorker, orderSearchEmployee, orderSelectEmployee, orderSelectDecorator) {
     Vue.use(table);
     let vm = new Vue({
             el: '#app',
             data: function () {
                 return {
-                    supplyOrderDetailDetailList : [],
+                    supplyOrderDetailDetailList: [],
                     supplyOrderDetail: false,
-                    voucherTab:'',
-                    materialTab:'',
+                    voucherTab: '',
+                    materialTab: '',
                     constructionTab: '',
                     otherTab: '',
                     materialTableData: [],
-                    materialDetailTable:'',
+                    materialDetailTable: '',
                     materialDetailTableData: [],
                     custOrder: [],
                     financeItem: {},
@@ -32,6 +32,7 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                         page: 1
                     },
                     dialogVisible: false,
+                    dialogOtherVisible: false,
                     constructionInfo: {
                         custId: util.getRequest('custId'),
                         orderId: util.getRequest('orderId'),
@@ -114,18 +115,18 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                         that.queryConstructionCond.count = responseData.total;
                     });
                 },
-                toSupplyDetail: function(id,supplierId) {
-                    this.supplyOrderDetail=true;
+                toSupplyDetail: function (id, supplierId) {
+                    this.supplyOrderDetail = true;
                     let data = {
-                        id : id,
-                        supplierId:supplierId
+                        id: id,
+                        supplierId: supplierId
                     };
-                    ajax.get('api/bss.supply/supply-order/querySupplyDetailInfo', data, (responseData)=>{
+                    ajax.get('api/bss.supply/supply-order/querySupplyDetailInfo', data, (responseData) => {
                         this.supplyOrderDetailDetailList = responseData;
                     });
 
                 },
-                auditSupplyDetail: function() {
+                auditSupplyDetail: function () {
                     let data = this.$refs.materialTable.getCheckboxRecords();
                     if (data == null || data.length <= 0) {
                         this.$message.error('没有选中任何记录，无法提交');
@@ -133,7 +134,7 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                     }
                     ajax.post('api/bss.supply/supply-order/auditSupplyDetail', this.$refs.materialTable.getCheckboxRecords());
                 },
-                voucherPreparationForSupply : function() {
+                voucherPreparationForSupply: function () {
                     let data = this.$refs.materialTable.getCheckboxRecords();
                     if (data == null || data.length <= 0) {
                         this.$message.error('没有选中任何记录，无法提交');
@@ -141,13 +142,13 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                     }
                     ajax.post('api/finance/finance-voucher/voucherPreparationForSupply', this.$refs.materialTable.getCheckboxRecords());
                 },
-                voucherPreparationForConstruction : function() {
-                    let data = this.$refs.materialTable.getCheckboxRecords();
+                voucherPreparationForConstruction: function () {
+                    let data = this.$refs.constructionItem.getCheckboxRecords();
                     if (data == null || data.length <= 0) {
                         this.$message.error('没有选中任何记录，无法提交');
                         return;
                     }
-                    ajax.post('api/finance/finance-voucher/voucherPreparationForSupply', this.$refs.materialTable.getCheckboxRecords());
+                    ajax.post('api/finance/finance-voucher/voucherPreparationForConstruction', this.$refs.constructionItem.getCheckboxRecords());
                 },
                 //查询当前流程的施工人员情况,后续应该改为直接从工人预计工资表去获取，根据不同阶段最多领款额度算出来
                 loadConstructionInfo: function (orderId, custId) {
@@ -181,21 +182,105 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                 },
                 loadFinancenItem() {
                     let that = this;
-                    let url = 'api/finance/finance-item/initFinancenItem';
+                    let url = 'api/finance/finance-item/loadFinancenItem';
                     ajax.get(url, null, function (data) {
-                        that.financeItemptions = data.collectionItemOption;
-                        if (data.payItems) {
-                            that.payItems = data.payItems;
-                        }
-                        that.auditStatus = data.auditStatus;
-                        that.payForm.needPay = data.needPay;
+                        that.financeItemptions = data;
+                    });
+                },
+                confirmSelectFinanceItem() {
+                    if (this.financeItem.selectedFinanceItem == null || this.financeItem.selectedFinanceItem.length === 0) {
+                        return;
+                    }
 
-                        if (data.payDate) {
-                            that.payForm.payDate = data.payDate;
+                    for (let items of this.financeItem.selectedFinanceItem) {
+                        let financeItemName = this.findFinanceItemName(items, this.financeItemptions, '', 0);
+
+                        let financeItemValue = '';
+                        let childFinanceItemtValue = '';
+                        let childFinanceItemtName = '';
+                        let financeItemNames = financeItemName.split("-");
+                        financeItemName = '';
+                        for (let i = 0; i < financeItemNames.length - 1; i++) {
+                            financeItemName += financeItemNames[i] + "-";
+                        }
+                        if(financeItemNames[financeItemNames.length - 2]!=null){
+                            financeItemName = financeItemNames[financeItemNames.length - 2];
+                            childFinanceItemtName = financeItemNames[financeItemNames.length - 1];
+                            financeItemValue = items[items.length - 2];
+                            childFinanceItemtValue = items[items.length - 1];
+                        }
+                        else{
+                            financeItemName = financeItemNames[financeItemNames.length - 1];
+                            financeItemValue = items[items.length - 1];
+                        }
+
+                        // projectValue = items[items.length - 1];
+                        let financeItem = {
+                            financeItemName: financeItemName,
+                            childFinanceItemtName: childFinanceItemtName,
+                            financeItemId: financeItemValue,
+                            childFinanceItemId: childFinanceItemtValue,
+                            money: 0
+                        };
+
+                        let isFind = false;
+                        if (this.financeItems.length > 0) {
+                            for (let financeItem of this.financeItems) {
+                                if (financeItem.financeItemId == financeItemValue) {
+                                    isFind = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (!isFind) {
+                            this.financeItems.push(financeItem);
+                        }
+                    }
+                    this.dialogOtherVisible = false;
+                },
+                findFinanceItemName(financeItems, financeItemptions, financeItemName, initValue) {
+                    for (let item of financeItemptions) {
+                        if (item.value == financeItems[initValue]) {
+                            initValue++;
+
+                            financeItemName += item.label + "-";
+                            if (initValue == financeItems.length) {
+                                return financeItemName.substring(0, financeItemName.length - 1);
+                            } else {
+                                return this.findFinanceItemName(financeItems, item.children, financeItemName, initValue)
+                            }
+                        }
+                    }
+                },
+                deleteFinanceItem(row) {
+                    this.$confirm('此操作将删除会计科目, 是否继续?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        this.$refs.financeItem.remove(row);
+                        this.$refs.financeItem.updateFooter();
+
+                        for (let i = 0; i < this.financeItems.length; i++) {
+                            let item = this.financeItems[i];
+                            if (item.financeItemId == row.financeItemId) {
+                                this.financeItems.splice(i, 1);
+                                break;
+                            }
                         }
                     });
                 },
-                isModify: function(obj) {
+
+                voucherPreparationForOther: function () {
+                    let data = this.financeItem;
+                    if (data == null || data.length <= 0) {
+                        this.$message.error('没有新增任何记录，无法提交');
+                        return;
+                    }
+                    ajax.post('api/finance/finance-voucher/voucherPreparationForOther', data);
+                },
+                isModify: function (obj) {
                     if (obj.row.isModified == '1') {
                         return "modify_row";
                     } else if (obj.row.isModified == '0') {
@@ -205,7 +290,7 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                     }
                 },
 
-                activeRowMethod ({ row, rowIndex }) {
+                activeRowMethod({row, rowIndex}) {
                     if (row.auditStatus == '1') {
                         return false;
                     }
@@ -213,84 +298,15 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                     return true;
                 },
 
-                checkMethod: function({row}) {
+                checkMethod: function ({row}) {
 
-                   // return row.auditStatus == '1';
+                    // return row.auditStatus == '1';
                 },
                 popupDialog() {
-                    this.dialogVisible = true;
+                    this.dialogOtherVisible = true;
+                    this.loadFinancenItem();
                 },
 
-                getSubmitData() {
-                    let payDate = this.payForm.payDate;
-                    let needPay = this.payForm.needPay;
-                    let data = {
-                        payDate: payDate,
-                        needPay: needPay,
-                        payItems: [],
-                        payments: [],
-                        auditRemark: this.auditRemark,
-                        auditStatus: this.auditStatus,
-                        payNo: this.payNo
-
-
-                    };
-                    for (let i = 0; i < this.payItems.length; i++) {
-                        let payItem = {};
-
-                        payItem.payItemId = this.payItems[i].payItemId.split("_")[1];
-                        payItem.subjectId = this.payItems[i].subjectId.split("_")[1];
-                        payItem.projectId = this.payItems[i].projectId.split("_")[1];
-                        payItem.money = this.payItems[i].money;
-                        data.payItems.push(payItem);
-                    }
-
-                    for (let i = 0; i < this.payments.length; i++) {
-                        let payment = {};
-                        payment.paymentType = this.payments[i].paymentType;
-                        payment.money = this.payments[i].money;
-                        data.payments.push(payment);
-                    }
-                    return data;
-                },
-                submit: async function () {
-                    let isValid = await this.valid().then(isValid => isValid);
-                    if (isValid) {
-                        let data = this.getSubmitData();
-                        ajax.post('api/bss.order/finance/nonCollectFee', data);
-                    }
-                },
-                submitForUpdate: async function () {
-                    let isValid = await this.valid().then(isValid => isValid);
-                    if (isValid) {
-                        let data = this.getSubmitData();
-                        ajax.post('api/bss.order/finance/nonCollectFeeUpdate', data);
-                    }
-                },
-                submitForAudit: async function () {
-                    let isValid = await this.valid().then(isValid => isValid);
-                    if (isValid) {
-                        let data = this.getSubmitData();
-                        data.auditStatus = "1";
-                        ajax.post('api/bss.order/finance/nonCollectFeeForAudit', data);
-                    }
-                },
-                submitForNo: async function () {
-                    let isValid = await this.valid().then(isValid => isValid);
-                    if (isValid) {
-                        let data = this.getSubmitData();
-                        data.auditStatus = "2";
-                        ajax.post('api/bss.order/finance/nonCollectFeeForAudit', data);
-                    }
-                },
-                submitForReview: async function () {
-                    let isValid = await this.valid().then(isValid => isValid);
-                    if (isValid) {
-                        let data = this.getSubmitData();
-                        data.auditStatus = "0";
-                        ajax.post('api/bss.order/finance/nonCollectFeeForAudit', data);
-                    }
-                },
             }
         })
     ;

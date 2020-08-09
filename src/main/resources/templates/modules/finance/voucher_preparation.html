@@ -343,18 +343,18 @@
                                 </div>
                             </el-row>
                         </el-tab-pane>
-                        <el-tab-pane label="其他制单" name="otherTab" @click="loadFinancenItem">
+                        <el-tab-pane label="其他制单" name="otherTab" @click="">
                             <el-tabs v-model="otherTab" type="border-card">
                                 <el-card class="box-card" shadow="hover">
-                                    <el-divider><i class="el-icon-money"></i>会计科目</el-divider>
+                                    <el-divider><i class="el-icon-money"></i>新增其他制单</el-divider>
                                     <el-row style="margin-bottom: 18px;">
-                                        <el-button type="primary" @click="popupDialog">新增其他制单</el-button>
-                                        <el-dialog title="新增其他制单" :visible.sync="dialogVisible">
+                                        <el-button type="primary" @click="popupDialog">选择会计科目</el-button>
+                                        <el-dialog title="选择会计科目" :visible.sync="dialogOtherVisible">
                                             <el-form :inline="false" :model="financeItem" label-position="right"
                                                      label-width="80px">
                                                 <el-row>
                                                     <el-col :span="24">
-                                                        <el-form-item label="收款项目">
+                                                        <el-form-item label="会计科目">
                                                             <el-cascader
                                                                     v-model="financeItem.selectedFinanceItem"
                                                                     placeholder="搜索会计科目"
@@ -370,9 +370,12 @@
                                                 </el-row>
                                             </el-form>
                                             <div slot="footer" class="dialog-footer">
-                                                <el-button type="primary" @click="">确 定</el-button>
+                                                <el-button type="primary" @click="confirmSelectFinanceItem">确 定</el-button>
                                             </div>
                                         </el-dialog>
+                                    </el-row>
+                                    <el-row style="padding-bottom: 12px">
+                                        <el-button type="success" @click="voucherPreparationForOther">制单</el-button>
                                     </el-row>
                                     <vxe-table
                                             border
@@ -385,8 +388,10 @@
                                             :data="financeItems"
                                             :edit-rules="validRules"
                                             :edit-config="{trigger: 'click', mode: 'cell'}">
-                                        <vxe-table-column field="payItemName" title="款项"></vxe-table-column>
-                                        <vxe-table-column field="subjectName" title="科目类别" width="100"></vxe-table-column>
+                                        <vxe-table-column field="financeItemName" title="会计科目大类"></vxe-table-column>
+                                        <vxe-table-column field="financeItemId" title="会计科目大类编码"></vxe-table-column>
+                                        <vxe-table-column field="childFinanceItemtName" title="会计科目小类" ></vxe-table-column>
+                                        <vxe-table-column field="childFinanceItemId" title="会计科目小类编码" ></vxe-table-column>
                                         <vxe-table-column field="projectName" title="项目名称" width="100"></vxe-table-column>
                                         <vxe-table-column field="money" title="应付金额（单位：元）" width="180"
                                                           :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
@@ -396,7 +401,7 @@
                                                         size="mini"
                                                         type="danger"
                                                         icon="el-icon-delete"
-                                                        @click="">删除
+                                                        @click="deleteFinanceItem(row)">删除
                                                 </el-button>
                                             </template>
                                         </vxe-table-column>

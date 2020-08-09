@@ -46,7 +46,9 @@ public class FinanceItemServiceImpl extends ServiceImpl<FinanceItemMapper, Finan
     @Override
     public List<CascadeDTO<FinanceItem>>  loadFinancenItem() {
         List<FinanceItem> financeItemCfgs = this.queryAll();
+        log.debug("financeItemCfgs=======rrrrr===="+financeItemCfgs);
         List<CascadeDTO<FinanceItem>> financeItems = this.buildFinanceItemCascade(financeItemCfgs);
+        log.debug("financeItems==========="+financeItems);
         return financeItems;
     }
 
@@ -57,7 +59,7 @@ public class FinanceItemServiceImpl extends ServiceImpl<FinanceItemMapper, Finan
 
     @Cacheable(value = "financeItem-all")
     public List<FinanceItem> queryAll() {
-        List<FinanceItem> financeItem = this.list(new QueryWrapper<FinanceItem>().lambda().eq(FinanceItem::getStatus, "U"));
+        List<FinanceItem> financeItem = this.list(new QueryWrapper<FinanceItem>().lambda().eq(FinanceItem::getStatus, "0"));
         return financeItem;
     }
 
@@ -70,24 +72,26 @@ public class FinanceItemServiceImpl extends ServiceImpl<FinanceItemMapper, Finan
         if (ArrayUtils.isEmpty(financeItemCfgs)) {
             return null;
         }
-
+        log.debug("financeItemCfgs====1111====="+financeItemCfgs);
         List<CascadeDTO<FinanceItem>> roots = new ArrayList<>();
         for (FinanceItem financeItemCfg : financeItemCfgs) {
-            if (financeItemCfg.getParentFinanceItemId().equals(-1L)) {
+            log.debug("financeItemCfg=========="+financeItemCfg);
+            if (financeItemCfg.getParentFinanceItemId().equals("-1")) {
+                log.debug("eeeeeeeeeeee");
                 CascadeDTO<FinanceItem> root = new CascadeDTO<>();
                 root.setLabel(financeItemCfg.getName());
-                root.setValue("finance_" + financeItemCfg.getId());
+                root.setValue(financeItemCfg.getFinanceItemId());
                 root.setSelf(financeItemCfg);
                 roots.add(root);
             }
         }
-
+        log.debug("roots====1111====="+roots);
         if (ArrayUtils.isNotEmpty(roots)) {
             for (CascadeDTO<FinanceItem> root : roots) {
                 this.buildFinanceItemChildren(root, financeItemCfgs);
             }
         }
-
+log.debug("roots=========="+roots);
         return roots;
     }
 
@@ -101,10 +105,10 @@ public class FinanceItemServiceImpl extends ServiceImpl<FinanceItemMapper, Finan
     private void buildFinanceItemChildren(CascadeDTO root, List<FinanceItem> financeItemCfgs) {
         List<CascadeDTO<FinanceItem>> children = new ArrayList<>();
         for (FinanceItem financeItemCfg : financeItemCfgs) {
-            if (StringUtils.equals("finance_" + financeItemCfg.getParentFinanceItemId(), root.getValue())) {
+            if (StringUtils.equals(financeItemCfg.getParentFinanceItemId(), root.getValue())) {
                 CascadeDTO<FinanceItem> child = new CascadeDTO<>();
                 child.setLabel(financeItemCfg.getName());
-                child.setValue("finance_" + financeItemCfg.getId());
+                child.setValue(financeItemCfg.getFinanceItemId());
                 child.setSelf(financeItemCfg);
                 children.add(child);
 
