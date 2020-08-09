@@ -215,12 +215,40 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @Override
     public void collectFee(CollectFeeDTO feeData) {
+
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+
         List<PayItemDTO> payItems = feeData.getPayItems();
-        Long payNo = this.dualService.nextval(PayNoCycleSeq.class);
         Long orderId = feeData.getOrderId();
+
+        Long oldPayNo = feeData.getPayNo();
+        if (oldPayNo != null) {
+            //终止老的未审核通过的信息
+            OrderPayNo orderPayNo = this.orderPayNoService.getByOrderIdAndPayNo(orderId, oldPayNo);
+            if (orderPayNo != null) {
+                orderPayNo.setEndDate(now);
+                this.orderPayNoService.updateById(orderPayNo);
+            }
+
+            List<OrderPayMoney> orderPayMonies = this.orderPayMoneyService.queryByOrderIdPayNo(orderId, oldPayNo);
+            if (ArrayUtils.isNotEmpty(orderPayMonies)) {
+                orderPayMonies.forEach(orderPayMoney -> {
+                    orderPayMoney.setEndDate(now);
+                });
+                this.orderPayMoneyService.updateBatchById(orderPayMonies);
+            }
+
+            List<OrderPayItem> orderPayItems = this.orderPayItemService.queryByOrderIdPayNo(orderId, oldPayNo);
+            if (ArrayUtils.isNotEmpty(orderPayItems)) {
+                orderPayItems.forEach(orderPayItem -> {
+                    orderPayItem.setEndDate(now);
+                });
+                this.orderPayItemService.updateBatchById(orderPayItems);
+            }
+        }
+        Long payNo = this.dualService.nextval(PayNoCycleSeq.class);
         Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
         LocalDate payDate = feeData.getPayDate();
-        LocalDateTime now = RequestTimeHolder.getRequestTime();
         LocalDateTime forever = TimeUtils.getForeverTime();
 
         Double needPayDouble = feeData.getNeedPay();
