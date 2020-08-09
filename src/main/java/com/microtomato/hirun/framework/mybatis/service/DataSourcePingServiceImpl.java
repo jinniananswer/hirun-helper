@@ -45,14 +45,16 @@ public class DataSourcePingServiceImpl implements ApplicationContextAware {
 
             while (true) {
                 try {
-                    Thread.sleep(180000);
+                    Thread.sleep(120000);
                     MyGlobalConfig myGlobalConfig = ctx.getBean(MyGlobalConfig.class);
                     Map<String, SqlSessionFactory> targetSqlSessionFactories = myGlobalConfig.getSqlSessionTemplate().getTargetSqlSessionFactories();
                     for (String dataSource : targetSqlSessionFactories.keySet()) {
                         SqlSessionFactory sqlSessionFactory = targetSqlSessionFactories.get(dataSource);
-                        SqlSession sqlSession = sqlSessionFactory.openSession();
-                        keepAlive(sqlSession);
-                        log.debug("Connection keepalive: {}", dataSource);
+                        for (int i = 0; i < 10; i++) {
+                            SqlSession sqlSession = sqlSessionFactory.openSession();
+                            keepAlive(sqlSession);
+                        }
+                        log.info("Connection keepalive: {}, count: {}", dataSource, 10);
                     }
 
                 } catch (Exception e) {
