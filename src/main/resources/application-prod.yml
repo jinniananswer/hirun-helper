@@ -127,4 +127,4 @@ spring:
     store-type: redis
     timeout: 1800
 
-hirun.upload.path: /home/web/upload
+hirun.data.path: /home/web/data

@@ -41,6 +41,7 @@ import java.util.UUID;
 @Service
 public class OrderFileServiceImpl extends ServiceImpl<OrderFileMapper, com.microtomato.hirun.modules.bss.order.entity.po.OrderFile> implements IOrderFileService {
 
+    private static final String HIRUN_DATA_PATH = "hirun.data.path";
     private static final String UPLOAD = "upload";
 
     @Autowired
@@ -54,7 +55,7 @@ public class OrderFileServiceImpl extends ServiceImpl<OrderFileMapper, com.micro
         String absolutePath = null;
 
         try {
-            absolutePath = env.getProperty("hirun.upload.path");
+            absolutePath = env.getProperty(HIRUN_DATA_PATH);
             if (null == absolutePath) {
                 absolutePath = ResourceUtils.getURL("classpath:").getPath() + "../..";
             }
@@ -74,7 +75,7 @@ public class OrderFileServiceImpl extends ServiceImpl<OrderFileMapper, com.micro
     private String getDestPath() {
         String destPath = null;
         try {
-            destPath = env.getProperty("hirun.upload.path");
+            destPath = env.getProperty(HIRUN_DATA_PATH);
             if (null == destPath) {
                 destPath = ResourceUtils.getURL("classpath:").getPath() + "../..";
             }
