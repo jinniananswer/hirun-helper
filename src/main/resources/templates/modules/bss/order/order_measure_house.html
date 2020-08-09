@@ -70,17 +70,16 @@
                                         <el-table-column
                                                 prop="employeeName"
                                                 label="助理设计师"
-                                                width="370">
+                                                width="140">
                                         </el-table-column>
                                         <el-table-column
                                                 prop="action"
                                                 label="员工事项"
-                                                width="370">
+                                                width="300">
                                         </el-table-column>
                                         <el-table-column
                                                 fixed="right"
-                                                label="操作"
-                                                width="60">
+                                                label="操作">
                                             <template slot-scope="scope">
                                                 <el-button
                                                         @click.native.prevent="deleteRow(scope.$index, orderWorkActions)"
@@ -93,7 +92,7 @@
                                     </el-table>
                                 </template>
                             </el-row>
-                            <el-row>
+                            <el-row style="margin-top:20px">
                                 <el-col :span="11">
                                     <el-form-item label="助理设计师">
                                         <order-selectemployee role-id="30" v-model="quantityRoomInfos.assistantDesigner"></order-selectemployee>
