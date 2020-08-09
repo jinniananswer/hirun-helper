@@ -278,7 +278,7 @@ public class FeeDomainServiceImpl implements IFeeDomainService {
 
             if (needPay != null && pay != null && needPay > pay) {
                 orderFeeInfo.setIsEquals("未付齐");
-            } else if (needPay != null && pay != null && needPay.equals(pay)) {
+            } else if (needPay != null && pay != null && pay >= needPay) {
                 orderFeeInfo.setIsEquals("已付齐");
             }
 
