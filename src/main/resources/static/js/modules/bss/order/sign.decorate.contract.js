@@ -17,7 +17,6 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     doorFee : 0,
                     furnitureFee : '0',
                     activityId : '',
-                    chargedDesignFee : '0',
                     returnDesignFee : '0',
                     taxFee : '0',
                     cashDiscount : '0',
@@ -171,7 +170,6 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 data.baseDecorationFee = data.baseDecorationFee / 100;
                 data.doorFee = data.doorFee / 100;
                 data.furnitureFee = data.furnitureFee / 100;
-                data.chargedDesignFee = data.chargedDesignFee / 100;
                 data.returnDesignFee = data.returnDesignFee / 100;
                 data.taxFee = data.taxFee / 100;
                 data.cashDiscount = data.cashDiscount / 100;
@@ -182,7 +180,6 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 data.baseDecorationFee = Math.round(data.baseDecorationFee * 100);
                 data.doorFee = Math.round(data.doorFee * 100);
                 data.furnitureFee = Math.round(data.furnitureFee * 100);
-                data.chargedDesignFee = Math.round(data.chargedDesignFee * 100);
                 data.returnDesignFee = Math.round(data.returnDesignFee * 100);
                 data.taxFee = Math.round(data.taxFee * 100);
                 data.cashDiscount = Math.round(data.cashDiscount * 100);
