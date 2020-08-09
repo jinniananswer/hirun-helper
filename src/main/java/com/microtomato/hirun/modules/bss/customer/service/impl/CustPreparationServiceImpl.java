@@ -177,7 +177,8 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
             Long orderId=domainService.createNewOrder(orderBase);
             //报备角色为一个通用的虚拟角色
             Long reportWorkerId=workerService.updateOrderWorker(orderId,555L,dto.getPrepareEmployeeId());
-            workerActionService.createOrderWorkerAction(orderId,dto.getPrepareEmployeeId(),reportWorkerId,"","report");
+            //只有在报备成功的时候才入这个表
+            //workerActionService.createOrderWorkerAction(orderId,dto.getPrepareEmployeeId(),reportWorkerId,"","report");
         }
     }
 

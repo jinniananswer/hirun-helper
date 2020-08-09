@@ -154,7 +154,7 @@
                                                @change="selectedMaterialChange" style="width: 500px">
                                         <el-option v-for="item in materialOptions" :key="item.id"
                                                    :label="item.name + '-' + item.supplierName+ '-' + item.materialUnit"
-                                                   :value="item.id + '-' + item.name + '-' + item.supplierName+ '-' +  item.standard +  '-' + item.materialUnit+ '-' + item.costPrice + '-' + item.salePrice+ '-'"></el-option>
+                                                   :value="item.id + '-' + item.name + '-' + item.supplierName+ '-' +  item.standard +  '-' + item.materialUnit+ '-' + item.costPrice + '-' + item.salePrice+ '-'+ item.supplierId"></el-option>
                                     </el-select>
                                 </div>
 
@@ -173,8 +173,10 @@
                                     <vxe-table-column field="supplierName" title="供应商名称"></vxe-table-column>
                                     <vxe-table-column field="materialName" title="材料名称"></vxe-table-column>
                                     <vxe-table-column field="standard" title="规格"></vxe-table-column>
+                                    <vxe-table-column field="costPrice" title="费用" ></vxe-table-column>
+                                    <vxe-table-column field="supplierId" title="供应商id" ></vxe-table-column>
                                     <vxe-table-column field="materialUnit" title="材料单位" width="100"></vxe-table-column>
-                                    <vxe-table-column field="num" title="预算数量" width="180"
+                                    <vxe-table-column field="materialNum" title="预算数量" width="180"
                                                       :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
                                     <vxe-table-column title="操作" width="100" show-overflow>
                                         <template v-slot="{ row }">

@@ -75,6 +75,7 @@ public class SupplyOrderServiceImpl extends ServiceImpl<SupplyOrderMapper, Suppl
     @Override
     public void materialOrderDeal(SupplyOrderDTO supplyOrderInfo) {
         List<SupplyMaterialDTO> supplyMaterialOrders = supplyOrderInfo.getSupplyMaterial();
+        log.debug("supplyMaterialOrders============"+supplyMaterialOrders);
         if (ArrayUtils.isNotEmpty(supplyMaterialOrders)) {
             //拼supplyOrder表数据
             SupplyOrder supplyOrder = new SupplyOrder();
@@ -84,8 +85,10 @@ public class SupplyOrderServiceImpl extends ServiceImpl<SupplyOrderMapper, Suppl
             supplyOrder.setSupplyOrderType(supplyOrderInfo.getSupplyOrderType());
             supplyOrder.setSupplyStatus("0");
             int totalFee = 0;
+
             for (SupplyMaterialDTO supplyMaterialOrder : supplyMaterialOrders) {
-                totalFee += supplyMaterialOrder.getCostPrice() * Integer.getInteger(supplyMaterialOrder.getNum());
+                totalFee+= supplyMaterialOrder.getCostPrice() * supplyMaterialOrder.getMaterialNum();
+
             }
             supplyOrder.setTotalFee(totalFee);
             supplyOrderService.save(supplyOrder);
@@ -93,9 +96,10 @@ public class SupplyOrderServiceImpl extends ServiceImpl<SupplyOrderMapper, Suppl
                 SupplyOrderDetail supplyOrderDetail = new SupplyOrderDetail();
                 //拼SupplyOrderDetail表数据
                 supplyOrderDetail.setMaterialId(supplyMaterialOrder.getId());
-                supplyOrderDetail.setNum(supplyMaterialOrder.getNum());
+                supplyOrderDetail.setSupplierId(supplyMaterialOrder.getSupplierId());
+                supplyOrderDetail.setNum(supplyMaterialOrder.getMaterialNum().toString());
                 supplyOrderDetail.setSupplyId(supplyOrder.getId());
-                supplyOrderDetail.setFee(supplyMaterialOrder.getCostPrice() * Integer.getInteger(supplyMaterialOrder.getNum()));
+                supplyOrderDetail.setFee(supplyMaterialOrder.getCostPrice() * supplyMaterialOrder.getMaterialNum());
                 supplyOrderDetail.setCreateTime(RequestTimeHolder.getRequestTime());
                 supplyOrderDetail.setCreateUserId(WebContextUtils.getUserContext().getUserId());
                 supplyOrderDetailService.save(supplyOrderDetail);
@@ -165,7 +169,6 @@ public class SupplyOrderServiceImpl extends ServiceImpl<SupplyOrderMapper, Suppl
         if (ArrayUtils.isEmpty(supplyOrderDTOS)) {
             return;
         }
-
         supplyOrderDTOS.forEach(supplyOrderDTO -> {
             //拼supplyOrder表数据
             SupplyOrder supplyOrder = new SupplyOrder();
@@ -173,7 +176,7 @@ public class SupplyOrderServiceImpl extends ServiceImpl<SupplyOrderMapper, Suppl
             supplyOrder.setSupplyStatus("1");//审核不通过
             supplyOrder.setUpdateTime(RequestTimeHolder.getRequestTime());
             supplyOrder.setUpdateUserId(WebContextUtils.getUserContext().getUserId());
-            supplyOrderService.save(supplyOrder);
+            supplyOrderService.updateById(supplyOrder);
         });
 
 

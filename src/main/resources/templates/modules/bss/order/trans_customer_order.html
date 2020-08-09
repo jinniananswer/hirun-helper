@@ -46,6 +46,12 @@
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="8">
+                                    <el-form-item label="设计师" prop="designEmployeeId" label-width="100px">
+                                        <order-selectemployee role-id="30"
+                                                              v-model="customerConsult.designEmployeeId"></order-selectemployee>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
                                     <el-form-item label="橱柜设计师" prop="designCupboardEmployeeId" label-width="100px">
                                         <order-selectemployee role-id="45"
                                                               v-model="customerConsult.designCupboardEmployeeId"></order-selectemployee>

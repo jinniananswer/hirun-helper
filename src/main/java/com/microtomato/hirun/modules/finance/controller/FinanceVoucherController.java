@@ -42,4 +42,10 @@ public class FinanceVoucherController {
         this.financeVoucherService.voucherPreparationForConstruction(financeVoucherDetails);
     }
 
+    @PostMapping("/voucherPreparationForOther")
+    @RestResult
+    public void voucherPreparationForOther(@RequestBody List<FinanceVoucherDTO> financeVoucherDetails) {
+        this.financeVoucherService.voucherPreparationForConstruction(financeVoucherDetails);
+    }
+
 }
