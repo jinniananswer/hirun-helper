@@ -93,7 +93,7 @@
                                                           fixed="left"></vxe-table-column>
                                         <vxe-table-column field="supplierId" title="供应商编码" sortable width="100"
                                                           fixed="left"></vxe-table-column>
-                                        <vxe-table-column field="supplierName" title="供应商名称" sortable width="100"
+                                        <vxe-table-column field="supplierName" title="供应商名称" sortable width="300"
                                                           fixed="left"></vxe-table-column>
                                         <vxe-table-column field="createUserName" title="下单员" sortable width="100"
                                                           fixed="left"></vxe-table-column>
@@ -145,9 +145,9 @@
                                         :edit-config="{trigger: 'click', mode: 'cell', showStatus: true}"
                                         show-footer
                                         ref="discountItemTable">
-                                    <vxe-table-column align="center" field="supplierName" title="供应商"></vxe-table-column>
+                                    <vxe-table-column align="center" field="supplierName" title="供应商" width="100"></vxe-table-column>
                                     <vxe-table-column align="center" field="name" title="材料"></vxe-table-column>
-                                    <vxe-table-column align="center" field="num" title="数量"></vxe-table-column>
+                                    <vxe-table-column align="center" field="materialNum" title="数量"></vxe-table-column>
 
 <!--                                    <vxe-table-column align="center" field="remark" title="备注" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>-->
                                 </vxe-table>

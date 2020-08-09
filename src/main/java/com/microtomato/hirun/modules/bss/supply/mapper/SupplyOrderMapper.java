@@ -29,7 +29,7 @@ public interface SupplyOrderMapper extends BaseMapper<SupplyOrder> {
             "from supply_order a ,supply_order_detail b,supply_supplier c where a.id =b.supply_id and  b.supplier_id =c.id and c.verify_person = #{employeeId} and a.supply_status = #{status} group by b.supplier_id" )
     IPage<SupplyOrderDTO> querySupplyInfo(IPage<QuerySupplyOrderDTO> queryCondtion, @Param("employeeId") Long employeeId,@Param("status")String status);
 
-    @Select("select a.material_id,a.fee,a.storehouse_id,a.num " +
+    @Select("select a.material_id,a.fee,a.storehouse_id,a.num as materialNum " +
             "from supply_order_detail a where a.supply_id =#{supplyId} and a.supplier_id = #{supplierId}" )
     List<SupplyMaterialDTO> querySupplyDetailInfo(@Param("supplyId") Long supplyId, @Param("supplierId")Long supplierId);
 }
