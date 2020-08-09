@@ -70,6 +70,7 @@ require(['vue', 'ELEMENT','ajax', 'vueselect', 'util','cust-info', 'order-info',
                 if (isValid) {
                     let data = this.$refs.pay.getSubmitData();
                     data['orderId'] = this.orderId;
+                    data['payNo'] = this.payNo;
                     ajax.post('api/bss.order/finance/collectFee', data);
                 }
             }
