@@ -54,7 +54,7 @@ public class OrderFileServiceImpl extends ServiceImpl<OrderFileMapper, com.micro
         String absolutePath = null;
 
         try {
-            absolutePath = env.getProperty("upload.path");
+            absolutePath = env.getProperty("hirun.upload.path");
             if (null == absolutePath) {
                 absolutePath = ResourceUtils.getURL("classpath:").getPath() + "../..";
             }
@@ -74,7 +74,7 @@ public class OrderFileServiceImpl extends ServiceImpl<OrderFileMapper, com.micro
     private String getDestPath() {
         String destPath = null;
         try {
-            destPath = env.getProperty("upload.path");
+            destPath = env.getProperty("hirun.upload.path");
             if (null == destPath) {
                 destPath = ResourceUtils.getURL("classpath:").getPath() + "../..";
             }

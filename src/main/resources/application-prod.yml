@@ -126,3 +126,5 @@ spring:
     # session 的存储方式，开发模式（本地）：none，生产模式（分布式缓存）：redis
     store-type: redis
     timeout: 1800
+
+hirun.upload.path: /home/web/upload
