@@ -110,6 +110,16 @@ public class OrderWorkerActionServiceImpl extends ServiceImpl<OrderWorkerActionM
     @Override
     public void createOrderWorkerAction(Long orderId, Long employeeId, Long workerId, String currentOrderStatus, String action) {
         LocalDateTime now = RequestTimeHolder.getRequestTime();
+
+        List<OrderWorkerAction> orderWorkerActions = this.queryByOrderIdEmployeeIdAction(orderId, employeeId, action);
+        if (ArrayUtils.isNotEmpty(orderWorkerActions)) {
+            orderWorkerActions.forEach(orderWorkerAction -> {
+                orderWorkerAction.setEndDate(now);
+            });
+
+            this.updateBatchById(orderWorkerActions);
+        }
+
         //新增新的记录
         EmployeeJobRole employeeJobRole = this.employeeJobRoleService.queryLast(employeeId);
         OrderWorkerAction workerAction = new OrderWorkerAction();
