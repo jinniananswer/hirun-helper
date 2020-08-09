@@ -42,13 +42,13 @@
                                     装修地址：<template v-if="order.decorateAddress != null && order.decorateAddress != ''"><el-tag>{{order.decorateAddress}}</el-tag></template>
                                 </div>
                             </el-col>
-                        </el-row >
-                        <el-row :gutter="5">
                             <el-col :span="6">
                                 <div class="text">
                                     订单类型：<template v-if="order.typeName != null && order.typeName != ''"><el-tag>{{order.typeName}}</el-tag></template>
                                 </div>
                             </el-col>
+                        </el-row >
+                        <el-row :gutter="5">
                             <el-col :span="6">
                                 <div class="text">
                                     建筑面积：<template v-if="order.floorage != null && order.floorage != ''"><el-tag>{{order.floorage}}平米</el-tag></template>
