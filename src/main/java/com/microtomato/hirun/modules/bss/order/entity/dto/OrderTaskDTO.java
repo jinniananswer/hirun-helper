@@ -13,6 +13,8 @@ public class OrderTaskDTO {
 
     private Long custId;
 
+    private String custNo;
+
     private String custName;
 
     private String mobileNo;
