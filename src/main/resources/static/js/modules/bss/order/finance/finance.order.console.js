@@ -28,12 +28,15 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'util', 'vxe-table', 'vueselect','ho
 
             openProcess(orderId, custId, payNo, auditStatus) {
                 let url = null;
+                let title = null;
                 if (auditStatus == '0') {
                     url = 'openUrl?url=modules/bss/order/finance/audit_fee';
+                    title = '出纳复核';
                 } else {
                     url = 'openUrl?url=modules/bss/order/finance/collect_fee'
+                    title = '收款修改';
                 }
-                util.openPage(url+'&orderId='+orderId+'&custId='+custId+'&payNo='+payNo, '出纳复核');
+                util.openPage(url+'&orderId='+orderId+'&custId='+custId+'&payNo='+payNo, title);
             }
         },
 
