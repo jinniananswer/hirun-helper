@@ -52,7 +52,7 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
 
     private void setMainRoleId(UserContext userContext, List<UserRole> userRoles) {
         for (UserRole userRole : userRoles) {
-            if (userRole.isMainRole()) {
+            if (userRole.getIsMainRole()) {
                 userContext.setMainRoleId(userRole.getRoleId());
                 return;
             }

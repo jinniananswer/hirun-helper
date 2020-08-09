@@ -45,7 +45,7 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
         LocalDateTime now = LocalDateTime.now();
         return list(
             Wrappers.<UserRole>lambdaQuery()
-                .select(UserRole::getRoleId, UserRole::getMainRole)
+                .select(UserRole::getRoleId, UserRole::getIsMainRole)
                 .eq(UserRole::getUserId, user.getUserId())
                 .lt(UserRole::getStartDate, now)
                 .gt(UserRole::getEndDate, now)
@@ -95,7 +95,13 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
         }
 
         Long roleId = one.getRoleId();
-        UserRole userRole = UserRole.builder().userId(userId).roleId(roleId).startDate(startDate).endDate(endDate).build();
+        UserRole userRole = UserRole.builder()
+                .userId(userId)
+                .roleId(roleId)
+                .isMainRole(false)
+                .startDate(startDate)
+                .endDate(endDate)
+                .build();
         this.save(userRole);
 
     }
@@ -193,7 +199,13 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
                 );
 
                 if (null == one) {
-                    UserRole userRole = UserRole.builder().userId(userId).roleId(roleId).startDate(now).endDate(foreverTime).build();
+                    UserRole userRole = UserRole.builder()
+                            .userId(userId)
+                            .roleId(roleId)
+                            .isMainRole(false)
+                            .startDate(now)
+                            .endDate(foreverTime)
+                            .build();
                     this.save(userRole);
                 }
 
