@@ -86,7 +86,6 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
 
         this.voucherPreparation(financeVoucherDetails);
     }
-
     /**
      * 施工队制单
      *

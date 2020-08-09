@@ -19,7 +19,7 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                 materialOptions: [],
                 materialTableData: [],
                 validRules: {
-                    money: [
+                    materialNum: [
                         {type: 'number', message: '数量必须为数字'},
                         {pattern: /^[0-9]+(\.\d+)?$/, message: '数量必须为正数'}
                     ]
@@ -70,7 +70,8 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                         materialName: spans[1],
                         supplierName: spans[2],
                         standard: spans[3],
-                        materialUnit: spans[4]
+                        materialUnit: spans[4],
+                        costPrice: spans[5]
                     });
                 }
             },
@@ -114,8 +115,9 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                 for (let i = 0; i < this.materialTableData.length; i++) {
                     let material = {};
                     material.id = this.materialTableData[i].id;
-                    material.num = this.materialTableData[i].num;
+                    material.materialNum = this.materialTableData[i].materialNum;
                     material.costPrice = this.materialTableData[i].costPrice;
+                    material.supplierId = this.materialTableData[i].supplierId;
                     data.supplyMaterial.push(material);
                 }
                 ajax.post('api/bss.supply/supply-order/materialOrderDeal', data, null, null, true);

@@ -23,7 +23,7 @@ public class SupplyMaterialDTO {
 
     private Long supplierId;
 
-    private String num;
+    private Integer materialNum;
 
     private Integer fee;
 
