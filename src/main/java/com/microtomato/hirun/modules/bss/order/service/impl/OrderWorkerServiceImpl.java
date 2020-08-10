@@ -21,6 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -65,6 +67,7 @@ public class OrderWorkerServiceImpl extends ServiceImpl<OrderWorkerMapper, Order
         return orderWorkers;
     }
 
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @Override
     public Long updateOrderWorker(Long orderId, Long roleId, Long employeeId) {
         if (orderId == null || roleId == null || employeeId == null) {
