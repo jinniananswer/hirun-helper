@@ -35,7 +35,7 @@ spring:
         #        maintenanceInterval: 60
 
         unique-resource-name: sys
-        min-pool-size: 10
+        min-pool-size: 5
         max-pool-size: 50
         max-lifetime: 20000
         borrow-connection-timeout: 10000
@@ -45,7 +45,7 @@ spring:
           username: sys
           password: ENC(viZyjCQosuNPI/YI5a/bkAjnKGT9R5zD)
           driverClassName: com.mysql.cj.jdbc.Driver
-          initialSize: 10
+          initialSize: 5
           minIdle: 8
           maxActive: 50
           maxWait: 60000
@@ -73,7 +73,7 @@ spring:
         #        maintenanceInterval: 60
 
         unique-resource-name: ins
-        min-pool-size: 10
+        min-pool-size: 5
         max-pool-size: 50
         max-lifetime: 20000
         borrow-connection-timeout: 10000
@@ -83,7 +83,7 @@ spring:
           username: ins
           password: ENC(EFtPlR9pOu98f6a1eLlznevxCmlBJH/S)
           driverClassName: com.mysql.cj.jdbc.Driver
-          initialSize: 10
+          initialSize: 5
           minIdle: 8
           maxActive: 50
           maxWait: 60000
