@@ -1289,6 +1289,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
      *
      * @param feeData
      */
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @Override
     public void nonCollectFeeUpdate(NonCollectFeeDTO feeData) {
         Long payNo = feeData.getPayNo();
@@ -1329,6 +1330,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
      *
      * @param feeData
      */
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @Override
     public void nonCollectFeeForAudit(NonCollectFeeDTO feeData) {
         Long payNo = feeData.getPayNo();
