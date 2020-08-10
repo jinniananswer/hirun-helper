@@ -7,6 +7,8 @@ import com.microtomato.hirun.modules.bss.order.service.IOrderOperLogService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * <p>
@@ -28,6 +30,7 @@ public class OrderOperLogServiceImpl extends ServiceImpl<OrderOperLogMapper, Ord
      * @param orderStatus
      * @param content
      */
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @Override
     public void createOrderOperLog(Long orderId, String type, Integer orderStage, String orderStatus, String content) {
         OrderOperLog orderOperLog = new OrderOperLog();
