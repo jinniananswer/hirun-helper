@@ -14,6 +14,8 @@ import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleServic
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -86,6 +88,7 @@ public class OrderWorkerActionServiceImpl extends ServiceImpl<OrderWorkerActionM
      * @param orderId
      * @param action
      */
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @Override
     public void deleteOrderWorkerAction(Long orderId,String action) {
         //先终止原来的数据
@@ -107,6 +110,7 @@ public class OrderWorkerActionServiceImpl extends ServiceImpl<OrderWorkerActionM
      * @param workerId
      * @param action
      */
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @Override
     public void createOrderWorkerAction(Long orderId, Long employeeId, Long workerId, String currentOrderStatus, String action) {
         LocalDateTime now = RequestTimeHolder.getRequestTime();
