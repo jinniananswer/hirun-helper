@@ -72,6 +72,7 @@ public class OrderWorkerSalaryServiceImpl extends ServiceImpl<OrderWorkerSalaryM
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void updateWorkerSalary(Integer periods, OrderWorkerSalaryDTO dto) {
         OrderWorkerSalary orderWorkerSalary = new OrderWorkerSalary();
         BeanUtils.copyProperties(dto, orderWorkerSalary);
