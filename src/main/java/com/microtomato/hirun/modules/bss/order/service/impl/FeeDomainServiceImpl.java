@@ -29,6 +29,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -81,6 +83,7 @@ public class FeeDomainServiceImpl implements IFeeDomainService {
      * @param period 期数 1-首期 2-二期款 3-结算款
      * @param fees 费用项数据
      */
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @Override
     public void createOrderFee(Long orderId, String type, Integer period, List<FeeDTO> fees) {
         if (ArrayUtils.isEmpty(fees)) {
