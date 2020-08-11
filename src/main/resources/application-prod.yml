@@ -37,7 +37,7 @@ spring:
         unique-resource-name: sys
         min-pool-size: 5
         max-pool-size: 50
-        max-lifetime: 20000
+        max-lifetime: 3600
         borrow-connection-timeout: 10000
         xa-data-source-class-name: com.alibaba.druid.pool.xa.DruidXADataSource
         xa-properties:
@@ -75,7 +75,7 @@ spring:
         unique-resource-name: ins
         min-pool-size: 5
         max-pool-size: 50
-        max-lifetime: 20000
+        max-lifetime: 3600
         borrow-connection-timeout: 10000
         xa-data-source-class-name: com.alibaba.druid.pool.xa.DruidXADataSource
         xa-properties:
