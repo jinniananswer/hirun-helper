@@ -43,7 +43,7 @@ public interface OrderBaseMapper extends BaseMapper<OrderBase> {
 
 
     @Select("select a.cust_id, a.order_id, a.status,a.decorate_address, b.cust_name, b.mobile_no, a.create_time, c.total_money/100 total_money, c.pay_no, c.audit_status,c.pay_date from order_base a, cust_base b, order_pay_no c " +
-            " where b.cust_id = a.cust_id and a.order_id = c.order_id and c.order_id = a.order_id and c.audit_status in (${statuses}) " +
+            " where b.cust_id = a.cust_id and a.order_id = c.order_id and c.order_id = a.order_id and c.audit_status in (${statuses}) and c.end_date > now() " +
             " order by status, create_time desc"
     )
     List<FinancePendingOrderDTO> queryFinancePendingOrders(@Param("employeeId") Long employeeId, @Param("statuses")String statuses);
