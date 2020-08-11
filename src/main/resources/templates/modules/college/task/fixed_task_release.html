@@ -48,16 +48,17 @@
                         :data="employeeInfo" stripe="true" border height="350" style="width: 100%"
                         @selection-change="handleSelectionChange">
                     <el-table-column type="selection" width="60" align="center"></el-table-column>
-                    <el-table-column label="员工姓名" fixed prop="id" width="100" align="center">
+                    <el-table-column label="员工姓名" fixed prop="name" width="100" align="center">
                         <template slot-scope="employee">
                             <el-button type="text" @click="">{{
                                 employee.row.name }}
                             </el-button>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="sex" width="200" label="员工性别" align="center"></el-table-column>
-                    <el-table-column prop="mobileNo" width="200" label="员工电话" align="center"></el-table-column>
-                    <el-table-column prop="inDate" width="100" label="入职时间" align="center"></el-table-column>
+                    <el-table-column prop="sex" width="50" label="性别" align="center"></el-table-column>
+                    <el-table-column prop="mobileNo" width="200" label="联系电话" align="center"></el-table-column>
+                    <el-table-column prop="inDate" width="200" label="入职时间" align="center"></el-table-column>
+                    <el-table-column prop="regularDate" width="200" label="转正时间" align="center"></el-table-column>
                     <el-table-column prop="workNature" width="120" label="工作方式" align="center"></el-table-column>
                 </el-table>
             </el-card>
@@ -68,7 +69,7 @@
                         :total="queryCond.count"
                         :current-page.sync="queryCond.page"
                         :page-size="queryCond.limit"
-                        @current-change="querySupplier">
+                        @current-change="query">
                 </el-pagination>
             </div>
         </el-main>

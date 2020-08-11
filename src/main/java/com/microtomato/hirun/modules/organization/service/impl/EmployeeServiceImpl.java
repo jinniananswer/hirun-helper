@@ -28,6 +28,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -489,6 +490,8 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         queryWrapper.eq(null != employeeQueryDTO.getEmployeeId(), "employee_id", employeeQueryDTO.getEmployeeId());
         queryWrapper.like(StringUtils.isNotEmpty(employeeQueryDTO.getName()), "name", employeeQueryDTO.getName());
         queryWrapper.eq(StringUtils.isNotEmpty(employeeQueryDTO.getSex()), "sex", employeeQueryDTO.getSex());
+        queryWrapper.eq("status", "0");
+        queryWrapper.gt("regular_date", LocalDateTime.now());
         return this.employeeMapper.queryNewEmployeeByPage(page, queryWrapper);
     }
 

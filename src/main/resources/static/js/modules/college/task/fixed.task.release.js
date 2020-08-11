@@ -20,11 +20,17 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
             query: function() {
                 let that = this;
                 ajax.get('api/organization/employee/queryNewEmployeeByPage', this.queryCond, function(responseData){
-                    that.custOrder = responseData.records;
+                    that.employeeInfo = responseData.records;
                     that.queryCond.page = responseData.current;
                     that.queryCond.count = responseData.total;
                 });
             },
+            handleSelectionChange(val) {
+                this.multipleSelection = val;
+            },
+            fixedTaskRelease: function(){
+                
+            }
         },
 
         /*mounted () {

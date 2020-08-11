@@ -688,6 +688,25 @@ public class TimeUtils {
         return ldtStart.toEpochSecond(ZoneOffset.of("+8"));
     }
 
+    /**
+     * 获取传入时间偏移后所在天的第一秒
+     * @param time
+     * @return
+     */
+    public static LocalDateTime getFirstSecondDay(LocalDateTime time, int offset) {
+        return LocalDateTime.of(addDays(time, offset).toLocalDate(), LocalTime.MIN);
+    }
+
+    /**
+     * 根据传入的时间，偏移N天
+     * @param time
+     * @param offset
+     * @return
+     */
+    public static LocalDateTime addDays(LocalDateTime time, int offset) {
+        return time.plusDays((long)offset);
+    }
+
     public static LocalDateTime getForeverTime() {
         return stringToLocalDateTime(FOREVER_TIME, TIME_PATTERN);
     }
