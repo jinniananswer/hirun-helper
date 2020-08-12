@@ -33,8 +33,8 @@ public class TaskDomainOpenServiceImpl implements ITaskDomainOpenService {
     private ICollegeEmployeeTaskService collegeEmployeeTaskServiceImpl;
 
     @Override
-    public void fixedTaskReleaseByEmployeeList(List<Employee> employeeList) {
-        if(ArrayUtils.isNotEmpty(employeeList)){
+    public void fixedTaskReleaseByEmployeeList(List<Long> employeeIdList) {
+        if(ArrayUtils.isNotEmpty(employeeIdList)){
             //1.获取需要分配给新员工的课程以及课程章节
             //1.1查询固定任务配置课程
             List<CollegeCourseTaskCfg> collegeCourseTaskCfgList = collegeCourseTaskCfgServiceImpl.queryByTaskType("1");
@@ -84,7 +84,7 @@ public class TaskDomainOpenServiceImpl implements ITaskDomainOpenService {
                             //将本章节开始时间设置到上一章节的开始时间，用以下一章节判断使用
                             lastTimeChaptersStartDate = startDate;
 
-                            LocalDateTime studyEndDate = TimeUtils.getFirstSecondDay(startDate, Integer.valueOf(collegeCourseChaptersCfg.getStudyTime()) - 1);
+                            LocalDateTime studyEndDate = TimeUtils.getFirstSecondDay(startDate, Integer.valueOf(collegeCourseChaptersCfg.getStudyTime()));
                             collegeEmployeeTaskDTO.setStudyEndDate(studyEndDate);
                             //取当前章节较大的结束时间
                             if (TimeUtils.compareTwoTime(lastChaptersEndDate, studyEndDate) < 0){
@@ -113,7 +113,7 @@ public class TaskDomainOpenServiceImpl implements ITaskDomainOpenService {
                         //将本课程开始时间设置到上一课程的开始时间，用以下一课程判断使用
                         lastTimeCourseStartDate = startDate;
 
-                        LocalDateTime studyEndDate = TimeUtils.getFirstSecondDay(startDate, Integer.valueOf(collegeCourseTaskCfg.getStudyTime()) - 1);
+                        LocalDateTime studyEndDate = TimeUtils.getFirstSecondDay(startDate, Integer.valueOf(collegeCourseTaskCfg.getStudyTime()));
                         collegeEmployeeTaskDTO.setStudyEndDate(studyEndDate);
                         //取前面课程较大的结束时间
                         if (TimeUtils.compareTwoTime(lastCourseEndDate, studyEndDate) < 0){
@@ -127,15 +127,16 @@ public class TaskDomainOpenServiceImpl implements ITaskDomainOpenService {
 
             List<CollegeEmployeeTask> fixedCollegeEmployeeTaskList = new ArrayList<>();
             if (ArrayUtils.isNotEmpty(collegeEmployeeTaskDTOList)){
-                for (Employee employee : employeeList){
+                for (Long employeeId : employeeIdList){
                     //获取员工已分配的固定任务
-                    List<CollegeEmployeeTask> collegeEmployeeTaskList = collegeEmployeeTaskServiceImpl.queryByEmployeeIdAndTaskType(String.valueOf(employee.getEmployeeId()), "1");
+                    List<CollegeEmployeeTask> collegeEmployeeTaskList = collegeEmployeeTaskServiceImpl.queryByEmployeeIdAndTaskType(String.valueOf(employeeId), "1");
                     //如果该员工已经分配了固定任务，在此不能统一再次分配，需要去员工任务管理界面添加
                     if (ArrayUtils.isEmpty(collegeEmployeeTaskList)){
                         for (CollegeEmployeeTaskDTO collegeEmployeeTaskDTO : collegeEmployeeTaskDTOList){
                             CollegeEmployeeTask collegeEmployeeTask = new CollegeEmployeeTask();
                             BeanUtils.copyProperties(collegeEmployeeTaskDTO, collegeEmployeeTask);
-                            collegeEmployeeTask.setEmployeeId(String.valueOf(employee.getEmployeeId()));
+                            collegeEmployeeTask.setEmployeeId(String.valueOf(employeeId));
+                            fixedCollegeEmployeeTaskList.add(collegeEmployeeTask);
                         }
                     }
                 }

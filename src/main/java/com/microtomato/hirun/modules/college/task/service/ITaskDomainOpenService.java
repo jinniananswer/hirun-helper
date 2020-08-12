@@ -9,5 +9,5 @@ public interface ITaskDomainOpenService {
      * 批量给新员工发布固定任务
      * @param employeeList
      */
-    void fixedTaskReleaseByEmployeeList(List<Employee> employeeList);
+    void fixedTaskReleaseByEmployeeList(List<Long> employeeIdList);
 }

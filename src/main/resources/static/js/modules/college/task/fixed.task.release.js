@@ -12,8 +12,7 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     page: 1,
                     count: null
                 },
-                employeeInfo: [],
-                multipleSelection: []
+                employeeInfo: []
             }
         },
 
@@ -30,8 +29,14 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 this.multipleSelection = val;
             },
             fixedTaskRelease: function(){
-                let val = this.multipleSelection;
-                ajax.post('api/bss.supply/supplier/deleteSupplierByIds', val, function(responseData){
+                let val = [];
+                this.multipleSelection.forEach(function (e, index, array) {
+                    val.push()
+                })
+                this.multipleSelection.forEach((selection) => {
+                    val.push(selection.employeeId)
+                })
+                ajax.post('api/CollegeEmployeeTask/fixedTaskReleaseByEmployeeList', val, function(responseData){
 
                 },null, true);
             }

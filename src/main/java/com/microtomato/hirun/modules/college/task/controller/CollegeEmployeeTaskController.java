@@ -94,7 +94,7 @@ public class CollegeEmployeeTaskController {
     }
 
     @PostMapping("fixedTaskReleaseByEmployeeList")
-    public void fixedTaskReleaseByEmployeeList(@RequestBody List<Employee> employeeList) {
-        this.taskDomainOpenServiceImpl.fixedTaskReleaseByEmployeeList(employeeList);
+    public void fixedTaskReleaseByEmployeeList(@RequestBody List<Long> employeeIdList) {
+        this.taskDomainOpenServiceImpl.fixedTaskReleaseByEmployeeList(employeeIdList);
     }
 }
