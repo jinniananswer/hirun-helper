@@ -121,7 +121,7 @@ public class FeeDomainServiceImpl implements IFeeDomainService {
             FeeItemStageCfg feeItemStageCfg = this.feeItemStageCfgService.getByFeeItemIdTypePeriod(feeItemId, orderBase.getType(), period);
             if (feeItemStageCfg != null) {
                 Integer rate = feeItemStageCfg.getRate();
-                long ratePay = (long)(money * (rate/100));
+                long ratePay = (long)(money * (rate/100d));
                 stageNeedPay += ratePay;
             } else {
                 //没有找到费用分期配置，则全额收取
