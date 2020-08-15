@@ -11,9 +11,11 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 preTime: util.getNowDate(),//预约看图时间
                 startTime: '',
                 endTime: '',
+                drawStartDate: '',
+                drawEndDate: '',
                 drawingAuditor :'',
                 drawingAuditorName : '',
-                productionLeader: '金念',//制作组长
+                productionLeader: '',//制作组长
                 assistantDesigner: '',//助理设计师
                 hydropowerDesigner: '',//水电设计师
                 drawingAssistant: '',//绘图助理
@@ -49,8 +51,23 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
 
                 ajax.get('api/bss.order/order-wholeRoomDrawing/getWholeRoomDraw', data, (responseData)=>{
                     Object.assign(this.wholeRoomDrawing, responseData);
-                    //alert(JSON.stringify(this.wholeRoomDrawing));
-                this.orderWorkActions = responseData.orderWorkActions;
+                    this.orderWorkActions = responseData.orderWorkActions;
+                    let array = [];
+                    for(let i = 0; i < this.orderWorkActions.length; i++) {
+
+                        if ( this.orderWorkActions[i].action == "draw_construct") {
+                            this.orderWorkActions[i].action = "参与全房图设计中"
+                        }
+                        array.push({
+                            action: this.orderWorkActions[i].action,
+                            employeeName: this.orderWorkActions[i].employeeName,
+                            orderStatus : this.orderWorkActions[i].orderStatus,
+                            employeeId : this.orderWorkActions[i].employeeId,
+                            roleId : this.orderWorkActions[i].roleId,
+                            orderId : this.orderWorkActions[i].orderId
+                        });
+                    }
+                    this.orderWorkActions = array;
                 });
 
                 this.wholeRoomDrawing.orderId = util.getRequest('orderId');
@@ -74,6 +91,24 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 let designer = this.wholeRoomDrawing.designer;
                 let drawingAuditor = this.wholeRoomDrawing.drawingAuditor;
                 let orderWorkActions = this.orderWorkActions;
+                let drawStartDate = this.wholeRoomDrawing.drawStartDate;
+                let drawEndDate = this.wholeRoomDrawing.drawEndDate;
+                let preTime = this.wholeRoomDrawing.preTime;
+                let array = [];
+                for(let i = 0; i < this.orderWorkActions.length; i++) {
+                    if ( this.orderWorkActions[i].action == "参与全房图设计中") {
+                        this.orderWorkActions[i].action = "draw_construct"
+                    }
+                    array.push({
+                        action: this.orderWorkActions[i].action,
+                        employeeName: this.orderWorkActions[i].employeeName,
+                        orderStatus : this.orderWorkActions[i].orderStatus,
+                        employeeId : this.orderWorkActions[i].employeeId,
+                        roleId : this.orderWorkActions[i].roleId,
+                        orderId : this.orderWorkActions[i].orderId
+                    });
+                }
+                this.orderWorkActions = array;
                 let data = {
                     orderId: orderId,
                     id: '',
@@ -86,7 +121,10 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     hydropowerDesigner : hydropowerDesigner,
                     drawingAuditor : drawingAuditor,
                     designer: designer,
-                    orderWorkActions: orderWorkActions
+                    orderWorkActions: orderWorkActions,
+                    drawStartDate : drawStartDate,
+                    drawEndDate : drawEndDate,
+                    preTime : preTime,
                 };
                 return data;
             },
@@ -104,8 +142,8 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     this.orderWorkAction.employeeName = responseData.employeeName ;
                 });
                 this.orderWorkAction.orderId = this.wholeRoomDrawing.orderId;
-                this.orderWorkAction.action = 'draw_construct';
-                this.orderWorkAction.roleId = '19';
+                this.orderWorkAction.action = '参与全房图设计中';
+                this.orderWorkAction.roleId = '41';
                 this.orderWorkAction.orderStatus = this.orderStatus;
                 this.orderWorkActions.push(this.orderWorkAction);
             },
@@ -178,6 +216,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     return false;
                 }
                 let data = this.getDatas();
+                //alert(JSON.stringify(data));
                 ajax.post('api/bss.order/order-wholeRoomDrawing/submitWholeRoomDrawing', data,null,null,true);
             },
             submitToAuditPicturesFlow : function () {
