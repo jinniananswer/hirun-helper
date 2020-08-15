@@ -39,6 +39,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 let measureArea = this.quantityRoomInfos.measureArea;
                 let measureTime = this.quantityRoomInfos.measureTime;
                 let designer = this.quantityRoomInfos.designer;
+                let customerComments = this.quantityRoomInfos.customerComments;
                 let orderWorkActions = this.orderWorkActions;
                 let array = [];
                 for(let i = 0; i < this.orderWorkActions.length; i++) {
@@ -61,7 +62,8 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     measureTime : measureTime,
                     measureArea: measureArea,
                     designer: designer,
-                    orderWorkActions: orderWorkActions
+                    orderWorkActions: orderWorkActions,
+                    customerComments : customerComments,
                 };
                 return data;
             },
