@@ -11,4 +11,5 @@ public interface IDesignerCommonService {
 
     void dealOrderWorkerAction(String action,Object obj);
 
+    Long getWorkerId(Long orderId,Long roleId,Long employeeId);
 }
