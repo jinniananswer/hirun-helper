@@ -84,6 +84,19 @@ public class OrderPlaneSketch extends BaseEntity {
     @TableField("end_date")
     private LocalDateTime endDate;
 
+
+    /**
+     * 平面图开始时间
+     */
+    @TableField("plane_sketch_start_date")
+    private LocalDate planeSketchStartDate;
+
+    /**
+     * 平面图结束时间
+     */
+    @TableField("plane_sketch_end_date")
+    private LocalDate planeSketchEndDate;
+
     /**
      * 第一次看图时间
      */
