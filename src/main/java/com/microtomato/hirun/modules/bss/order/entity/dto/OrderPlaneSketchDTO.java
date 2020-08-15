@@ -65,6 +65,17 @@ public class OrderPlaneSketchDTO {
     private LocalDate endTime;
 
     /**
+     * 平面图开始时间
+     */
+    private LocalDate planeSketchStartDate;
+
+    /**
+     * 平面图结束时间
+     */
+
+    private LocalDate planeSketchEndDate;
+
+    /**
      * 第一次看图时间
      */
     private LocalDate firstLookTime;
