@@ -1,5 +1,6 @@
 package com.microtomato.hirun.modules.bss.order.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.security.UserContext;
@@ -11,12 +12,12 @@ import com.microtomato.hirun.modules.bss.order.entity.consts.DesignerConst;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderMeasureHouseDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerActionDTO;
+import com.microtomato.hirun.modules.bss.order.entity.po.OrderBase;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderMeasureHouse;
+import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayNo;
+import com.microtomato.hirun.modules.bss.order.exception.OrderException;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderMeasureHouseMapper;
-import com.microtomato.hirun.modules.bss.order.service.IDesignerCommonService;
-import com.microtomato.hirun.modules.bss.order.service.IOrderDomainService;
-import com.microtomato.hirun.modules.bss.order.service.IOrderMeasureHouseService;
-import com.microtomato.hirun.modules.bss.order.service.IOrderWorkerActionService;
+import com.microtomato.hirun.modules.bss.order.service.*;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -45,6 +46,12 @@ public class OrderMeasureHouseServiceImpl extends ServiceImpl<OrderMeasureHouseM
 
     @Autowired
     private IEmployeeService employeeService;
+
+    @Autowired
+    private IOrderWorkerService orderWorkerService;
+
+    @Autowired
+    private IOrderBaseService orderBaseService ;
 
     @Autowired
     private IDesignerCommonService designerCommonService;
@@ -132,6 +139,14 @@ public class OrderMeasureHouseServiceImpl extends ServiceImpl<OrderMeasureHouseM
          *订单动作
          */
         designerCommonService.dealOrderWorkerAction(DesignerConst.OPER_MEASURE,dto);
+        /*OrderBase orderBase = this.orderBaseService.queryByOrderId(orderId);
+        if (orderBase == null) {
+            throw new OrderException(OrderException.OrderExceptionEnum.ORDER_FEE_NOT_FOUND);
+        }
+        orderBase.setIndoorArea(dto.getMeasureArea());
+        this.orderBaseService.save(orderBase);*/
+        this.orderBaseService.update(new UpdateWrapper<OrderBase>().lambda().eq(OrderBase::getOrderId,orderId).set(OrderBase::getIndoorArea,dto.getMeasureArea()));
+
     }
 
 }
