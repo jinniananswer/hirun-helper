@@ -98,8 +98,9 @@ public class OrderWorkerActionServiceImpl extends ServiceImpl<OrderWorkerActionM
         if (ArrayUtils.isNotEmpty(oldActions)) {
             oldActions.forEach(oldAction -> {
                 oldAction.setEndDate(now);
+                this.updateById(oldAction);
             });
-            this.updateBatchById(oldActions);
+            //this.updateBatchById(oldActions);
         }
     }
 
