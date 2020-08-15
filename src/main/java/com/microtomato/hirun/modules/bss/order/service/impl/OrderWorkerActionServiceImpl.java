@@ -140,4 +140,17 @@ public class OrderWorkerActionServiceImpl extends ServiceImpl<OrderWorkerActionM
 
         this.save(workerAction);
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    public void deleteOrderWorkerByEmployeeIdAction(Long orderId, Long employeeId, String action) {
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+        List<OrderWorkerAction> oldActions = this.queryByOrderIdEmployeeIdAction(orderId,employeeId,action);
+        if (ArrayUtils.isNotEmpty(oldActions)) {
+            oldActions.forEach(oldAction -> {
+                oldAction.setEndDate(now);
+                this.updateById(oldAction);
+            });
+        }
+    }
 }
