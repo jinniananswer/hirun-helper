@@ -20,7 +20,7 @@
                             <span>平面图信息</span>
                         </div>
 
-                        <el-form :inline="false" :model="planFigureInfos" label-position="right" label-width="140px">
+                        <el-form :inline="false" :rules="planSketchRules" :model="planFigureInfos"  ref="planFigureInfos" label-position="right" label-width="140px">
                             <el-row>
                                 <el-col :span="11">
                                     <el-form-item label="设计师" required="true" prop="designer">
@@ -36,7 +36,7 @@
                             <el-row>
                                 <el-col :span="11">
                                     <el-form-item label="方案助理">
-                                        <order-selectemployee role-id="30" v-model="planFigureInfos.projectAssistant"></order-selectemployee>
+                                        <order-selectemployee role-id="37" v-model="planFigureInfos.projectAssistant"></order-selectemployee>
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="11">
@@ -66,7 +66,7 @@
                                 <el-col :span="11" >
                                     <el-form-item label="开始时间" >
                                         <el-date-picker
-                                                v-model="planFigureInfos.startTime"
+                                                v-model="planFigureInfos.planeSketchStartDate"
                                                 type="date"
                                                 value-format="yyyy-MM-dd"
                                                 style="width:100%"
@@ -79,7 +79,7 @@
                                 <el-col :span="11">
                                     <el-form-item label="结束时间">
                                         <el-date-picker
-                                                v-model="planFigureInfos.endTime"
+                                                v-model="planFigureInfos.planeSketchEndDate"
                                                 type="date"
                                                 value-format="yyyy-MM-dd"
                                                 style="width:100%"
@@ -148,7 +148,7 @@
                                 </template>
                                 <el-col :span="11">
                                     <el-form-item label="助理设计师">
-                                        <order-selectemployee role-id="30" v-model="planFigureInfos.assistantDesigner"></order-selectemployee>
+                                        <order-selectemployee role-id="41" v-model="planFigureInfos.assistantDesigner"></order-selectemployee>
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="5">
@@ -160,7 +160,7 @@
 
                             <el-row>
                                 <el-col v-if="true" :span="22">
-                                    <el-form-item label="财务人员信息" required="true">
+                                    <el-form-item label="财务人员信息" required="true" prop="financeEmployeeId">
                                         <order-search-employee :employee-id.sync="planFigureInfos.financeEmployeeId" :employee-name.sync="planFigureInfos.financeEmployeeName"></order-search-employee>
                                     </el-form-item>
                                 </el-col>
