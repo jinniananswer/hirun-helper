@@ -67,23 +67,28 @@
                         :data="courseTaskInfo" stripe="true" height="350" style="width: 100%"
                         @selection-change="handleSelectionChange">
                     <el-table-column type="selection" width="40" align="center"></el-table-column>
-                    <el-table-column type="expand">
+                    <el-table-column type="expand" align="center">
                         <template slot-scope="props">
                             <el-table
-                                    :data="props.row.collegeCourseChaptersList" stripe="true" height="350"
-                                    style="width: 100%">
-                                <el-table-column prop="courseId" width="200" label="课程ID"
+                                    :data="props.row.collegeCourseChaptersList" stripe="true" height="300"
+                                    style="width: 100%" align="center">
+                                <el-table-column prop="courseId" width="50" label="课程ID"
                                                  align="center"></el-table-column>
                                 <el-table-column prop="chaptersName" width="200" label="章节名称"
                                                  align="center"></el-table-column>
                                 <el-table-column prop="chaptersStudyOrder" width="150" label="章节学习顺序"
                                                  align="center"></el-table-column>
-                                <el-table-column prop="chaptersType" width="200" label="章节类型"
+                                <el-table-column prop="chaptersType" width="100" label="章节类型"
                                                  align="center"></el-table-column>
-                                <el-table-column prop="studyTime" width="120" label="学习时间/天"
+                                <el-table-column prop="studyTime" width="100" label="学习时间/天"
                                                  align="center"></el-table-column>
-                                <el-table-column prop="studyModel" width="120" label="学习模式"
+                                <el-table-column prop="studyModel" width="100" label="学习模式"
                                                  align="center"></el-table-column>
+                                <el-table-column label="操作" align="center" width="80">
+                                    <el-button type="danger" width="50" size="mini" icon="el-icon-edit"
+                                               @click="">修改
+                                    </el-button>
+                                </el-table-column>
                             </el-table>
                         </template>
                     </el-table-column>
@@ -101,6 +106,13 @@
                     <el-table-column prop="staffRank" width="120" label="员工职级" align="center"></el-table-column>
                     <el-table-column prop="taskType" width="120" label="任务类型" align="center"></el-table-column>
                     <el-table-column prop="studyTime" width="120" label="学习时间/天" align="center"></el-table-column>
+                    <el-table-column fixed="right" label="操作" align="center" width="80">
+                        <template slot-scope="scope">
+                            <el-button type="danger" width="50" size="mini" icon="el-icon-edit"
+                                       @click="">修改
+                            </el-button>
+                        </template>
+                    </el-table-column>
                 </el-table>
             </el-card>
 
@@ -113,28 +125,12 @@
                         @current-change="query">
                 </el-pagination>
             </div>
-            <el-dialog width="80%" title="课程章节信息" append-to-body :visible.sync="courseChaptersDialogVisible">
+            <el-dialog width="80%" title="新增课程任务" append-to-body :visible.sync="addCourseTaskDialogVisible">
                 <el-card>
                     <el-row style="padding-bottom: 12px">
                         <el-button type="success" icon="el-icon-folder-add" @click="fixedTaskRelease">新增章节</el-button>
                         <el-button type="danger" icon="el-icon-delete" @click="">删除章节</el-button>
                     </el-row>
-                    <el-table
-                            :data="courseChaptersInfos" stripe="true" height="350"
-                            style="width: 100%">
-                        <el-table-column prop="courseId" width="200" label="课程ID"
-                                         align="center"></el-table-column>
-                        <el-table-column prop="chaptersName" width="200" label="章节名称"
-                                         align="center"></el-table-column>
-                        <el-table-column prop="chaptersStudyOrder" width="100" label="章节学习顺序"
-                                         align="center"></el-table-column>
-                        <el-table-column prop="chaptersType" width="200" label="章节类型"
-                                         align="center"></el-table-column>
-                        <el-table-column prop="studyTime" width="120" label="学习时间/天"
-                                         align="center"></el-table-column>
-                        <el-table-column prop="studyModel" width="120" label="学习模式"
-                                         align="center"></el-table-column>
-                    </el-table>
                 </el-card>
             </el-dialog>
         </el-main>

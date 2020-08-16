@@ -15,7 +15,7 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 },
                 courseTaskInfo: [],
                 courseTaskTypes: [],
-                courseChaptersDialogVisible: false,
+                addCourseTaskDialogVisible: false,
                 courseChaptersInfos: []
             }
         },
