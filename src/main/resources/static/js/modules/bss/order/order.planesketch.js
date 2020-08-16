@@ -118,6 +118,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 let customerComments = this.planFigureInfos.customerComments;
                 let orderWorkActions = this.orderWorkActions;
                 let financeEmployeeId = this.planFigureInfos.financeEmployeeId;
+                let id = this.planFigureInfos.id;
                 let array = [];
                 for(let i = 0; i < this.orderWorkActions.length; i++) {
                     if ( this.orderWorkActions[i].action == "参与平面图设计中") {
@@ -151,7 +152,8 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     startTime : startTime,
                     firstLookTime : firstLookTime,
                     planeSketchStartDate :planeSketchStartDate,
-                    planeSketchEndDate : planeSketchEndDate
+                    planeSketchEndDate : planeSketchEndDate,
+                    id : id
                 };
 
                 return data;
@@ -244,7 +246,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     return false;
                 }
                 let data = this.getDatas();
-                //alert(JSON.stringify(data));
+                alert(JSON.stringify(data));
                 ajax.post('api/bss.order/order-planSketch/submitPlaneSketch', data,null,null,true);
             },
             //修改平面图时间
