@@ -49,6 +49,12 @@ public class OrderPlaneSketch extends BaseEntity {
     private Long designerPlanNum;
 
     /**
+     * 方案助理
+     */
+    @TableField("project_assistant")
+    private Long projectAssistant;
+
+    /**
      * 套内面积
      */
     @TableField("indoor_area")
