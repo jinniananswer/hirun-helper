@@ -16,7 +16,8 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 courseTaskInfo: [],
                 courseTaskTypes: [],
                 addCourseTaskDialogVisible: false,
-                courseChaptersInfos: []
+                courseChaptersInfos: [],
+                addCourseTaskInfo: {}
             }
         },
         mounted: function() {
@@ -49,9 +50,16 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
 
                 },null, true);
             },
-            loadCoureChapters: function(val){
-                this.courseChaptersInfos = val.collegeCourseChaptersList;
-                this.courseChaptersDialogVisible = true;
+            addCourseTask: function(){
+                this.$nextTick(()=>{
+                    this.$refs.addCourseTaskInfo.resetFields();
+                });
+                this.addCourseTaskDialogVisible = true;
+            },
+            getRowClass(row, index) {
+                let res = []
+                if (!row.children)//即改行没有子元素时，添加row-expand-cover类
+                    return "visibility:hidden";
             }
         },
 
