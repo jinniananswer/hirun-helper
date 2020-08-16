@@ -130,7 +130,14 @@
             </div>
             <el-dialog width="80%" title="新增课程任务" append-to-body :visible.sync="addCourseTaskDialogVisible">
                 <el-card>
-                    
+                    <el-card class="box-card" shadow="hover">
+                        <div slot="header" class="clearfix">
+                            <span>选择课程</span>
+                        </div>
+                        <div style="height: 50vh;overflow: auto;">
+                            <el-tree el-tree :data="courseInfos" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+                        </div>
+                    </el-card>
                 </el-card>
                 <el-card>
                     <el-row style="padding-bottom: 12px">
