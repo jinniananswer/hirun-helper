@@ -33,6 +33,8 @@ public class OrderPlaneSketchDTO {
      */
     private Long designerPlanNum;
 
+    private Long projectAssistant;
+
     /**
      * 套内面积
      */
