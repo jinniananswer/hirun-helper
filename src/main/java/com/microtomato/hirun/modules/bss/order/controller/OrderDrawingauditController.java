@@ -35,6 +35,24 @@ public class OrderDrawingauditController {
     @RestResult
     public void save(@RequestBody OrderWholeRoomDrawDTO dto) {
         iOrderWholeRoomDrawService.submitWholeRoomDrawing(dto);
+        if (dto.getDesigner() != null) {
+            orderWorkerService.updateOrderWorker(dto.getOrderId(),30L,dto.getDesigner());
+        }
+        if (dto.getDrawingAuditor() != null) {
+            orderWorkerService.updateOrderWorker(dto.getOrderId(),44L,dto.getDrawingAuditor());
+        }
+        if (dto.getProductionLeader() != null) {
+            orderWorkerService.updateOrderWorker(dto.getOrderId(),42L,dto.getProductionLeader());
+        }
+        if (dto.getDrawingAssistant() != null) {
+            orderWorkerService.updateOrderWorker(dto.getOrderId(),39L,dto.getDrawingAssistant());
+        }
+        if (dto.getAdminAssistant() != null) {
+            orderWorkerService.updateOrderWorker(dto.getOrderId(),40L,dto.getAdminAssistant());
+        }
+        if (dto.getHydropowerDesigner() != null) {
+            orderWorkerService.updateOrderWorker(dto.getOrderId(),38L,dto.getHydropowerDesigner());
+        }
         orderWorkerService.updateOrderWorker(dto.getOrderId(),19L,dto.getCustomerLeader());
     }
 }
