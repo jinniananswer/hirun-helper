@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
  *
  * @author makejava
  * @version 1.0.0
- * @date 2020-08-09 12:41:16
+ * @date 2020-08-13 00:26:58
  */
 @Data
 @Builder
@@ -50,8 +50,8 @@ public class CollegeCourseChaptersCfg extends BaseEntity {
     /**
      * 章节类型
      */
-    @TableField(value = "study_type")
-    private String studyType;
+    @TableField(value = "chapters_type")
+    private String chaptersType;
 
     /**
      * 章节学习顺序

@@ -1,6 +1,10 @@
 package com.microtomato.hirun.modules.college.config.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.microtomato.hirun.modules.college.config.entity.dto.CollegeCourseTaskRequestDTO;
+import com.microtomato.hirun.modules.college.config.entity.dto.CollegeCourseTaskResponseDTO;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeCourseTaskCfg;
 
 import java.util.List;
@@ -20,4 +24,6 @@ public interface ICollegeCourseTaskCfgService extends IService<CollegeCourseTask
      * @return
      */
     List<CollegeCourseTaskCfg> queryByTaskType(String taskType);
+
+    IPage<CollegeCourseTaskResponseDTO> queryCollegeCourseByPage(CollegeCourseTaskRequestDTO collegeCourseTaskRequestDTO, Page<CollegeCourseTaskRequestDTO> page);
 }

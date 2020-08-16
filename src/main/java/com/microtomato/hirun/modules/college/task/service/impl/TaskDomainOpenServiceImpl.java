@@ -76,6 +76,7 @@ public class TaskDomainOpenServiceImpl implements ITaskDomainOpenService {
                             String chaptersStudyOrder = collegeCourseChaptersCfg.getChaptersStudyOrder();
                             //学习模式是分批学习并且当前学习顺序与上一章节学习顺序不一致时，学习开始时间应该为同时学习章节最后学习结束时间的后一天
                             LocalDateTime startDate = TimeUtils.getFirstSecondDay(lastChaptersEndDate, 1);
+                            //第一章节的开始时间总是取上一课程的结束时间的后一天
                             //如果学习模式是同时学习或者学习顺序与上一章节的一致时，开始时间为上一章节的开始时间
                             if (StringUtils.equals("1", studyModel) || StringUtils.equals(lastTimeChaptersStudyOrder, chaptersStudyOrder)){
                                 startDate = lastTimeChaptersStartDate;
@@ -84,11 +85,15 @@ public class TaskDomainOpenServiceImpl implements ITaskDomainOpenService {
                             //将本章节开始时间设置到上一章节的开始时间，用以下一章节判断使用
                             lastTimeChaptersStartDate = startDate;
 
-                            LocalDateTime studyEndDate = TimeUtils.getFirstSecondDay(startDate, Integer.valueOf(collegeCourseChaptersCfg.getStudyTime()));
+                            LocalDateTime studyEndDate = TimeUtils.addSeconds(TimeUtils.getFirstSecondDay(startDate, Integer.valueOf(collegeCourseChaptersCfg.getStudyTime())), -1);
                             collegeEmployeeTaskDTO.setStudyEndDate(studyEndDate);
                             //取当前章节较大的结束时间
                             if (TimeUtils.compareTwoTime(lastChaptersEndDate, studyEndDate) < 0){
                                 lastChaptersEndDate = studyEndDate;
+                            }
+                            if (j == collegeCourseChaptersCfgList.size() - 1){
+
+                                lastCourseEndDate = lastChaptersEndDate;
                             }
                             lastTimeChaptersStudyOrder = chaptersStudyOrder;
                             collegeEmployeeTaskDTOList.add(collegeEmployeeTaskDTO);
@@ -113,7 +118,7 @@ public class TaskDomainOpenServiceImpl implements ITaskDomainOpenService {
                         //将本课程开始时间设置到上一课程的开始时间，用以下一课程判断使用
                         lastTimeCourseStartDate = startDate;
 
-                        LocalDateTime studyEndDate = TimeUtils.getFirstSecondDay(startDate, Integer.valueOf(collegeCourseTaskCfg.getStudyTime()));
+                        LocalDateTime studyEndDate = TimeUtils.addSeconds(TimeUtils.getFirstSecondDay(startDate, Integer.valueOf(collegeCourseTaskCfg.getStudyTime())), -1);
                         collegeEmployeeTaskDTO.setStudyEndDate(studyEndDate);
                         //取前面课程较大的结束时间
                         if (TimeUtils.compareTwoTime(lastCourseEndDate, studyEndDate) < 0){

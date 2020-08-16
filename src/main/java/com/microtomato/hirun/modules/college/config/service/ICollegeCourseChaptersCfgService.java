@@ -1,7 +1,11 @@
 package com.microtomato.hirun.modules.college.config.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeCourseChaptersCfg;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeQueryDTO;
+import com.microtomato.hirun.modules.organization.entity.po.Employee;
 
 import java.util.List;
 
@@ -27,4 +31,5 @@ public interface ICollegeCourseChaptersCfgService extends IService<CollegeCourse
      * @return
      */
     List<CollegeCourseChaptersCfg> queryByCourseIdList(List<String> courseIdList);
+
 }

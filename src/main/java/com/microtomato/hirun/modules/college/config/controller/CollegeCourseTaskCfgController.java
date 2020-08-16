@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
+import com.microtomato.hirun.modules.college.config.entity.dto.CollegeCourseTaskRequestDTO;
+import com.microtomato.hirun.modules.college.config.entity.dto.CollegeCourseTaskResponseDTO;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeCourseTaskCfg;
 import com.microtomato.hirun.modules.college.config.service.ICollegeCourseTaskCfgService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,5 +88,12 @@ public class CollegeCourseTaskCfgController {
     @GetMapping("deleteByIds")
     public boolean deleteByIds(@RequestParam("idList") List<Long> idList) {
         return this.collegeCourseTaskCfgService.removeByIds(idList);
+    }
+
+    @GetMapping("queryCollegeCourseByPage")
+    @RestResult
+    IPage<CollegeCourseTaskResponseDTO> queryCollegeCourseByPage(CollegeCourseTaskRequestDTO collegeCourseTaskRequestDTO){
+        Page<CollegeCourseTaskRequestDTO> page = new Page<>(collegeCourseTaskRequestDTO.getPage(), collegeCourseTaskRequestDTO.getLimit());
+        return this.collegeCourseTaskCfgService.queryCollegeCourseByPage(collegeCourseTaskRequestDTO, page);
     }
 }
