@@ -16,9 +16,15 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 courseTaskInfo: [],
                 courseTaskTypes: [],
                 addCourseTaskDialogVisible: false,
+                selectCourseDialogVisible: false,
                 courseChaptersInfos: [],
                 addCourseTaskInfo: {},
-                courseInfos: []
+                selectCurrent: {},
+                courseInfos: [],
+                defaultProps: {
+                    children: 'children',
+                    label: 'name'
+                }
             }
         },
         mounted: function() {
@@ -52,13 +58,24 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 },null, true);
             },
             addCourseTask: function(){
-                this.$nextTick(()=>{
+              /*  this.$nextTick(()=>{
                     this.$refs.addCourseTaskInfo.resetFields();
+                });*/
+                let that = this;
+                ajax.get('api/organization/course/qeuryCourseTree', null, function(responseData){
+                    that.courseInfos = responseData;
                 });
-                this.addCourseTaskDialogVisible = true;
+                this.selectCourseDialogVisible = true;
             },
             handleNodeClick(data) {
-                console.log(data);
+                if (data.courseFlag){
+                    this.selectCurrent = data;
+                }
+            },
+            selectCourse(val){
+                alert(JSON.stringify(val));
+                this.addCourseTaskDialogVisible = true;
+                this.selectCourseDialogVisible = false;
             }
         },
 
