@@ -182,6 +182,12 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                         })
                     }
                 });
+            },
+            cancel: function () {
+                let that = this;
+                that.addCourseTaskDialogVisible = false;
+                that.addCourseTaskInfo = [];
+                that.courseChaptersDetails = [];
             }
         },
 
