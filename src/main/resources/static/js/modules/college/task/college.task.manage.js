@@ -24,21 +24,15 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                         { required: true, message: '课程类型不能为空', trigger: 'blur' }
                     ],
                     courseStudyOrder: [
-                        { required: true, message: '课程学习顺序不能为空', trigger: 'blur' }
+                        { required: true, message: '课程学习顺序不能为空', trigger: 'blur' },
+                        { type: 'number', message: '课程学习顺序必须为数字值', trigger: 'blur'}
                     ],
-                    item: [
-                        { required: true, message: '提成项目不能为空', trigger: 'blur' }
+                    staffRank: [
+                        { required: true, message: '员工职级不能为空', trigger: 'blur' },
+                        { type: 'number', message: '员工职级必须为数字值', trigger: 'blur'}
                     ],
-                    totalRoyalty: [
-                        { required: true, message: '总提成不能为空', trigger: 'blur'},
-                        { type: 'number', message: '总提成必须为数字值', trigger: 'blur'}
-                    ],
-                    alreadyFetch: [
-                        { required: true, message: '已提不能为空', trigger: 'blur'},
-                        { type: 'number', message: '已提必须为数字值', trigger: 'blur'}
-                    ],
-                    salaryMonth: [
-                        { required: true, message: '发放月份不能为空', trigger: 'blur' }
+                    taskType: [
+                        { required: true, message: '任务类型不能为空', trigger: 'blur'}
                     ]
                 },
                 courseTaskInfo: [],
