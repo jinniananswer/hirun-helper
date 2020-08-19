@@ -187,7 +187,7 @@
                         <el-row>
                             <el-col :span="8">
                                 <el-form-item label="学习时间/天" label-width="100px" prop="studyTime">
-                                    <el-input v-model="addCourseTaskInfo.studyTime" autocomplete="off"></el-input>
+                                    <el-input v-model.number="addCourseTaskInfo.studyTime" autocomplete="off"></el-input>
                                 </el-form-item>
                             </el-col>
                         </el-row>
@@ -239,7 +239,7 @@
                         <el-row>
                             <div style="text-align: center">
                                 <el-button type="primary" @click="submitAdd(addCourseTaskInfo, courseChaptersDetails)">保存</el-button>
-                                <el-button @click="cancel()">取消</el-button>
+                                <el-button @click="cancel">取消</el-button>
                             </div>
                         </el-row>
                     </el-form>

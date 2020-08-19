@@ -33,6 +33,10 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     ],
                     taskType: [
                         { required: true, message: '任务类型不能为空', trigger: 'blur'}
+                    ],
+                    studyTime: [
+                        { required: true, message: '学习时间不能为空', trigger: 'blur' },
+                        { type: 'number', message: '学习时间必须为数字值', trigger: 'blur'}
                     ]
                 },
                 courseTaskInfo: [],
@@ -164,10 +168,20 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
 
             },
             submitAdd: function (addCourseTaskInfo, courseChaptersDetails) {
-                let that = this;
-                alert(JSON.stringify(that.addCourseTaskInfo.courseChaptersList))
-                that.addCourseTaskInfo.courseChaptersList = courseChaptersDetails
-                alert(JSON.stringify(addCourseTaskInfo))
+                this.$refs.addCourseTaskInfo.validate((valid) => {
+                    if(valid){
+                        let that = this;
+                        this.$confirm('是否保存新增课程任务?', '提示', {
+                            confirmButtonText: '确定',
+                            cancelButtonText: '取消',
+                            type: 'warning'
+                        }).then(() => {
+                            alert(JSON.stringify(that.addCourseTaskInfo.courseChaptersList))
+                            that.addCourseTaskInfo.courseChaptersList = courseChaptersDetails
+                            alert(JSON.stringify(addCourseTaskInfo))
+                        })
+                    }
+                });
             }
         },
 
