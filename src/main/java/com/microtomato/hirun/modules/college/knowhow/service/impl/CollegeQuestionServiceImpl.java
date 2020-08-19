@@ -1,9 +1,12 @@
 package com.microtomato.hirun.modules.college.knowhow.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.modules.college.knowhow.consts.KnowhowConsts;
 import com.microtomato.hirun.modules.college.knowhow.mapper.CollegeQuestionMapper;
 import com.microtomato.hirun.modules.college.knowhow.entity.po.CollegeQuestion;
 import com.microtomato.hirun.modules.college.knowhow.service.ICollegeQuestionService;
+import io.lettuce.core.dynamic.annotation.Key;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,6 +22,11 @@ public class CollegeQuestionServiceImpl extends ServiceImpl<CollegeQuestionMappe
 
     @Autowired
     private CollegeQuestionMapper collegeQuestionMapper;
-    
 
+    @Override
+    public CollegeQuestion getValidById(String questionId) {
+        return this.getOne(new QueryWrapper<CollegeQuestion>().lambda()
+                .eq(CollegeQuestion::getQuestionId, questionId)
+                .eq(CollegeQuestion::getStatus, KnowhowConsts.NORMAL_STATUS_VALID));
+    }
 }

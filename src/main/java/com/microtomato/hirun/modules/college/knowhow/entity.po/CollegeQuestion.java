@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.college.knowhow.entity.po;
 
 import java.time.LocalDateTime;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -32,31 +33,47 @@ import lombok.NoArgsConstructor;
 public class CollegeQuestion extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
-    
+
     @TableId(value = "question_id", type = IdType.AUTO)
     private Long questionId;
 
-    /** 问题标题 */
+    /**
+     * 问题标题
+     */
     @TableField(value = "question_tittle")
     private String questionTittle;
 
-    /** 问题内容 */
+    /**
+     * 问题内容
+     */
     @TableField(value = "question_content")
     private String questionContent;
 
-    /** 问题类型 */
+    /**
+     * 问题类型
+     */
     @TableField(value = "question_type")
     private String questionType;
 
-    /** 点击量 */
+    /**
+     * 点击量
+     */
     @TableField(value = "clicks")
     private Long clicks;
 
-    /** 状态 */
+    /**
+     * 状态
+     * 0:已失效（审批未通过）
+     * 1:未审批
+     * 2:已审批未回答
+     * 3:已回答
+     */
     @TableField(value = "status")
     private String status;
 
-    /** 创建时间 */
+    /**
+     * 创建时间
+     */
     @TableField(value = "create_time", fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 

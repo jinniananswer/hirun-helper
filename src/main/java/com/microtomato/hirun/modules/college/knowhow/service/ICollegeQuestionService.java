@@ -12,4 +12,6 @@ import com.microtomato.hirun.modules.college.knowhow.entity.po.CollegeQuestion;
  */
 public interface ICollegeQuestionService extends IService<CollegeQuestion> {
 
+    CollegeQuestion getValidById(String questionId);
+
 }

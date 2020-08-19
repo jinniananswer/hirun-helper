@@ -1,7 +1,11 @@
 package com.microtomato.hirun.modules.college.knowhow.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.microtomato.hirun.modules.college.knowhow.entity.po.CollegeQuestionRela;
+
+import java.util.List;
 
 /**
  * (CollegeQuestionRela)表服务接口
@@ -12,4 +16,11 @@ import com.microtomato.hirun.modules.college.knowhow.entity.po.CollegeQuestionRe
  */
 public interface ICollegeQuestionRelaService extends IService<CollegeQuestionRela> {
 
+    /**
+     * 根据员工标识、关系类型获取关系数据
+     * @param employeeId
+     * @param relationType
+     * @return
+     */
+    List<CollegeQuestionRela> queryByEmployeeIdAndRelaType(String employeeId, String relationType);
 }
