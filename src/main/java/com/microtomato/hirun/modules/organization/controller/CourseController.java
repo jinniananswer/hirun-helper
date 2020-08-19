@@ -46,9 +46,9 @@ public class CourseController {
         if (ArrayUtils.isNotEmpty(courseList) && courseList.size() > 0){
             for (Course course : courseList){
                 CourseTreeResponseDTO courseTreeResponseDTO = new CourseTreeResponseDTO();
-                courseTreeResponseDTO.setName(course.getName());
+                courseTreeResponseDTO.setCourseName(course.getName());
                 courseTreeResponseDTO.setCourseId(course.getCourseId());
-                courseTreeResponseDTO.setType(course.getType());
+                courseTreeResponseDTO.setCourseType(course.getType());
                 //根据本级课程ID查询下级课程
                 List<CourseTreeResponseDTO> courseTreeResponseDTOList = this.queryCourseByParentCourseId(course.getCourseId());
                 courseTreeResponseDTO.setChildren(courseTreeResponseDTOList);

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
 <head>
     <meta charset="UTF-8">
     <title>学院任务管理</title>
@@ -65,7 +65,7 @@
                 </el-row>
                 <el-table
                         :data="courseTaskInfo" stripe="true" height="350" style="width: 100%"
-                        @selection-change="handleSelectionChange" >
+                        @selection-change="handleCourseTaskSelectionChange" >
                     <el-table-column type="selection" width="40" align="center"></el-table-column>
                     <el-table-column type="expand" align="center">
                         <template slot-scope="props">
@@ -128,51 +128,51 @@
                         @current-change="query">
                 </el-pagination>
             </div>
-            <el-dialog width="60%" title="选择课程" append-to-body :visible.sync="selectCourseDialogVisible">
+            <el-dialog width="80%" title="新增课程任务" append-to-body :visible.sync="addCourseTaskDialogVisible">
                 <el-card class="box-card" shadow="hover">
-                    <div style="height: 30vh;overflow: auto;">
+                    <div slot="header" class="clearfix">
+                        <span>选择课程</span>
+                    </div>
+                    <div style="height: 20vh;overflow: auto;">
                         <el-tree :data="courseInfos" node-key="courseId" :props="defaultProps" @node-click="handleNodeClick" accordion></el-tree>
                     </div>
-                    <el-button type="primary" @click="selectCourse">确定</el-button>
                 </el-card>
-            </el-dialog>
-            <el-dialog width="80%" title="新增课程任务" append-to-body :visible.sync="addCourseTaskDialogVisible">
                 <el-card>
-                    <el-row style="padding-bottom: 12px">
-                        <el-button type="success" icon="el-icon-folder-add" @click="fixedTaskRelease">新增章节</el-button>
-                    </el-row>
+                    <div slot="header" class="clearfix">
+                        <span>填写任务信息</span>
+                    </div>
                     <el-form :inline="false" :model="addCourseTaskInfo"  ref="addCourseTaskInfo" label-position="right"
                              label-width="120px">
                         <el-row>
                             <el-col :span="8">
-                                <el-form-item label="课程ID" label-width="100px" prop="name">
+                                <el-form-item label="课程ID" label-width="100px" prop="courseId">
                                     <el-input :disabled="true" v-model="addCourseTaskInfo.courseId" autocomplete="off"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="8">
-                                <el-form-item label="课程名称" label-width="100px" prop="abbreviation">
+                                <el-form-item label="课程名称" label-width="100px" prop="courseName">
                                     <el-input :disabled="true" v-model="addCourseTaskInfo.courseName" autocomplete="off"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="8">
-                                <el-form-item label="课程类型" label-width="100px" prop="mobileNo">
+                                <el-form-item label="课程类型" label-width="100px" prop="courseType">
                                     <el-input :disabled="true" v-model.number="addCourseTaskInfo.courseType" autocomplete="off"></el-input>
                                 </el-form-item>
                             </el-col>
                         </el-row>
                         <el-row>
                             <el-col :span="8">
-                                <el-form-item label="课程学习顺序" label-width="100px" prop="landline">
+                                <el-form-item label="课程学习顺序" label-width="100px" prop="courseStudyOrder">
                                     <el-input v-model="addCourseTaskInfo.courseStudyOrder" autocomplete="off"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="8">
-                                <el-form-item label="员工职级" label-width="100px" prop="mailbox">
+                                <el-form-item label="员工职级" label-width="100px" prop="staffRank">
                                     <el-input v-model="addCourseTaskInfo.staffRank" autocomplete="off"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="8">
-                                <el-form-item label="任务类型" label-width="100px" prop="address">
+                                <el-form-item label="任务类型" label-width="100px" prop="taskType">
                                     <el-select v-model="addCourseTaskInfo.taskType" filterable placeholder="请选择">
                                         <el-option
                                                 v-for="courseTaskType in courseTaskTypes"
@@ -186,14 +186,59 @@
                         </el-row>
                         <el-row>
                             <el-col :span="8">
-                                <el-form-item label="学习时间/天" label-width="100px" prop="contacts">
+                                <el-form-item label="学习时间/天" label-width="100px" prop="studyTime">
                                     <el-input v-model="addCourseTaskInfo.studyTime" autocomplete="off"></el-input>
                                 </el-form-item>
                             </el-col>
                         </el-row>
                         <el-row>
+                            <el-col :span="8">
+                                <el-form-item label="课程章节信息:" label-width="100px" prop="">
+
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <vxe-toolbar>
+                                <template v-slot:buttons>
+                                    <vxe-button icon="fa fa-plus" @click="addDesign">新增章节</vxe-button>
+                                    <vxe-button icon="fa fa-plus" @click="deleteSelectedDesign">删除章节</vxe-button>
+                                </template>
+                            </vxe-toolbar>
+                            <vxe-table
+                                    border
+                                    resizable
+                                    ref="courseChaptersDetails"
+                                    show-overflow
+                                    highlight-hover-row
+                                    highlight-cell
+                                    keep-source
+                                    max-height="800px"
+                                    :auto-resize="true"
+                                    :data="courseChaptersDetails"
+                                    :edit-config="{trigger: 'click', mode: 'cell', showStatus: true}"
+                                    :checkbox-config="{strict: true, range: true, trigger: 'row', highlight: true}">
+                                <vxe-table-column type="checkbox" align="center" fixed="left" width="40"></vxe-table-column>
+                                <vxe-table-column field="courseId" align="center" title="课程ID" width="80" fixed="left"></vxe-table-column>
+                                <vxe-table-column field="chaptersName" align="center" sortable title="章节名称" width="250" fixed="left" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                                <vxe-table-column field="chaptersStudyOrder" align="center" sortable title="章节学习顺序" width="150" fixed="left" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+                                <vxe-table-column field="chaptersType" align="center" title="章节类型" width="100" fixed="left" :edit-render="{name: 'select', options: chaptersTypes, events: {change: changeEvent}}"></vxe-table-column>
+                                <vxe-table-column field="studyTime" align="center" sortable title="学习时间/天" width="150" fixed="left" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+                                <vxe-table-column field="studyModel"  align="center"title="学习模式" width="100" fixed="left" :edit-render="{name: 'select', options: courseStudyModelTypes, events: {change: changeEvent}}"></vxe-table-column>
+                                <vxe-table-column title="操作" align="center" width="80" show-overflow>
+                                    <template v-slot="{ row }">
+                                        <el-button
+                                                size="mini"
+                                                type="danger"
+                                                icon="el-icon-delete"
+                                                @click="deleteDesign(row)">删除</el-button>
+                                    </template>
+                                </vxe-table-column>
+                            </vxe-table>
+                        </el-row>
+                        <el-row>
                             <div style="text-align: center">
-                                <el-button type="primary" @click="submitAdd(addCourseTaskInfo)">保存</el-button>
+                                <el-button type="primary" @click="submitAdd(addCourseTaskInfo, courseChaptersDetails)">保存</el-button>
                                 <el-button @click="cancel()">取消</el-button>
                             </div>
                         </el-row>

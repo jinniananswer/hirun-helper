@@ -7,11 +7,11 @@ import java.util.List;
 @Data
 public class CourseTreeResponseDTO {
 
-    private String name;
+    private String courseName;
 
     private Long courseId;
 
-    private String type;
+    private String courseType;
 
     private boolean courseFlag;
 
