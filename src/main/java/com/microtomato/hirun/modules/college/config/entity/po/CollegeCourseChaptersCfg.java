@@ -54,7 +54,7 @@ public class CollegeCourseChaptersCfg extends BaseEntity {
     private String chaptersType;
 
     /**
-     * 章节学习顺序
+     * 状态
      */
     @TableField(value = "status")
     private String status;

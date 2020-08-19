@@ -176,9 +176,10 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                             cancelButtonText: '取消',
                             type: 'warning'
                         }).then(() => {
-                            alert(JSON.stringify(that.addCourseTaskInfo.courseChaptersList))
                             that.addCourseTaskInfo.courseChaptersList = courseChaptersDetails
-                            alert(JSON.stringify(addCourseTaskInfo))
+                            ajax.post('api/CollegeCourseTaskCfg/addCourseTaskCfg', that.addCourseTaskInfo, function(responseData){
+
+                            });
                         })
                     }
                 });

@@ -5,10 +5,15 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
+import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.modules.college.config.entity.dto.CollegeCourseChaptersTaskRequestDTO;
 import com.microtomato.hirun.modules.college.config.entity.dto.CollegeCourseTaskRequestDTO;
 import com.microtomato.hirun.modules.college.config.entity.dto.CollegeCourseTaskResponseDTO;
+import com.microtomato.hirun.modules.college.config.entity.po.CollegeCourseChaptersCfg;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeCourseTaskCfg;
+import com.microtomato.hirun.modules.college.config.service.ICollegeCourseChaptersCfgService;
 import com.microtomato.hirun.modules.college.config.service.ICollegeCourseTaskCfgService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,6 +36,9 @@ public class CollegeCourseTaskCfgController {
      */
     @Autowired
     private ICollegeCourseTaskCfgService collegeCourseTaskCfgService;
+
+    @Autowired
+    private ICollegeCourseChaptersCfgService collegeCourseChaptersCfgServiceImpl;
 
     /**
      * 分页查询所有数据
@@ -95,5 +103,23 @@ public class CollegeCourseTaskCfgController {
     IPage<CollegeCourseTaskResponseDTO> queryCollegeCourseByPage(CollegeCourseTaskRequestDTO collegeCourseTaskRequestDTO){
         Page<CollegeCourseTaskRequestDTO> page = new Page<>(collegeCourseTaskRequestDTO.getPage(), collegeCourseTaskRequestDTO.getLimit());
         return this.collegeCourseTaskCfgService.queryCollegeCourseByPage(collegeCourseTaskRequestDTO, page);
+    }
+
+    @PostMapping("addCourseTaskCfg")
+    @RestResult
+    public boolean addCourseTaskCfg(@RequestBody CollegeCourseChaptersTaskRequestDTO collegeCourseChaptersTaskRequestDTO){
+        CollegeCourseTaskCfg collegeCourseTaskCfg = new CollegeCourseTaskCfg();
+        BeanUtils.copyProperties(collegeCourseChaptersTaskRequestDTO, collegeCourseTaskCfg);
+        collegeCourseTaskCfg.setStatus("0");
+        this.collegeCourseTaskCfgService.save(collegeCourseTaskCfg);
+        List<CollegeCourseChaptersCfg> courseChaptersList = collegeCourseChaptersTaskRequestDTO.getCourseChaptersList();
+        if (ArrayUtils.isNotEmpty(courseChaptersList)){
+            for (CollegeCourseChaptersCfg courseChaptersCfg : courseChaptersList){
+                courseChaptersCfg.setStatus("0");
+            }
+            collegeCourseChaptersCfgServiceImpl.saveBatch(courseChaptersList);
+        }
+
+        return false;
     }
 }
