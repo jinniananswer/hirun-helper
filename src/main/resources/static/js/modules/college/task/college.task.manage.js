@@ -15,7 +15,7 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 },
                 courseTaskRules: {
                     courseId: [
-                        { required: true, message: '课程ID不能为空', trigger: 'change' }
+                        { required: true, message: '请先选择课程', trigger: 'change' }
                     ],
                     courseName: [
                         { required: true, message: '课程名称不能为空', trigger: 'blur' }

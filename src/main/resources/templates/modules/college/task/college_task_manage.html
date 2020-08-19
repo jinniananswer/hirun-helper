@@ -162,13 +162,13 @@
                         </el-row>
                         <el-row>
                             <el-col :span="8">
-                                <el-form-item label="课程学习顺序" label-width="100px" prop="courseStudyOrder">
-                                    <el-input v-model="addCourseTaskInfo.courseStudyOrder" autocomplete="off"></el-input>
+                                <el-form-item label="学习顺序" label-width="100px" prop="courseStudyOrder">
+                                    <el-input v-model.number="addCourseTaskInfo.courseStudyOrder" autocomplete="off"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="8">
                                 <el-form-item label="员工职级" label-width="100px" prop="staffRank">
-                                    <el-input v-model="addCourseTaskInfo.staffRank" autocomplete="off"></el-input>
+                                    <el-input v-model.number="addCourseTaskInfo.staffRank" autocomplete="off"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="8">
