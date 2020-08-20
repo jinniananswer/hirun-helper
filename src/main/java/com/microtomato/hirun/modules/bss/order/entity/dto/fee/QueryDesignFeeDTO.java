@@ -21,6 +21,14 @@ public class QueryDesignFeeDTO {
 
     private String[] feeTime;
 
+    private String condition;
+
+    private Long report;
+
+    private Long agent;
+
+    private Long designer;
+
     private Integer page;
 
     private Integer limit;
