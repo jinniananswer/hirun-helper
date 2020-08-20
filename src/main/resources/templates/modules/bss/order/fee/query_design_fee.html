@@ -42,6 +42,28 @@
                                 </el-form-item>
                             </el-col>
                             <el-col :span="8">
+                                <el-form-item label="筛选条件">
+                                    <vue-select code-type="DESIGN_FEE_QUERY" v-model="queryCond.condition"></vue-select>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="报备人员">
+                                    <order-selectemployee role-id="555" v-model="queryCond.report"  ></order-selectemployee>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="8">
+                                <el-form-item label="客户代表">
+                                    <order-selectemployee role-id="15" v-model="queryCond.agent"  ></order-selectemployee>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="设计师">
+                                    <order-selectemployee role-id="30" v-model="queryCond.designer"  ></order-selectemployee>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
                                 <el-form-item label="交款时间">
                                     <el-date-picker
                                             v-model="queryCond.feeTime"
@@ -58,6 +80,9 @@
                                     </el-date-picker>
                                 </el-form-item>
                             </el-col>
+                        </el-row>
+                        <el-row>
+
                             <el-col :span="8">
                                 <el-form-item>
                                     <el-button type="primary" @click="query">查询</el-button>
