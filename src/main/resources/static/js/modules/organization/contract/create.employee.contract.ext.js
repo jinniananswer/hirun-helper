@@ -8,7 +8,7 @@ layui.extend({
         init: function () {
 
             layui.select.init('agreementType','AGREEMENT_TYPE',null,true,'请选择协议类型');
-            layui.select.init('probation','PROBATION',null,true);
+            //layui.select.init('probation','PROBATION',null,true);
 
 
             laydate.render({
@@ -29,26 +29,22 @@ layui.extend({
                     $("#probationDiv").hide();
                     $("#probation").removeAttr("lay-verify");
                 }else if(data.value==9){
-                    createEmployeeContractExt.timeComponentsController('hide');
-                    $("#probationDiv").show();
-                    $("#probation").attr("lay-verify","required");
+                    createEmployeeContractExt.timeComponentsController('show');
+                    //$("#probationDiv").show();
+                    //$("#probationDiv").hide();
+                    //$("#probation").removeAttr("lay-verify");
                 } else{
                     createEmployeeContractExt.timeComponentsController('hide');
-                    $("#probationDiv").hide();
-                    $("#probation").removeAttr("lay-verify");
+                    //$("#probationDiv").hide();
+                    //$("#probation").removeAttr("lay-verify");
                 }
                 form.render('select', 'contractType');
             });
 
             form.on('submit(create-employeeContract-submit)', function (data) {
                 var field = data.field; //获取提交的字段
-                if(field.contractType==6){
-                    field.probation='';
-                }else if(field.contractType==7 ||field.contractType==8 ||field.contractType==10){
-                    field.contractStartTime='';
-                    field.contractEndTime='';
-                    field.probation='';
-                }else{
+
+                 if(field.contractType==7 ||field.contractType==8 ||field.contractType==10){
                     field.contractStartTime='';
                     field.contractEndTime='';
                 }

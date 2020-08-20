@@ -218,4 +218,7 @@ public class EmployeeInfoDTO implements Serializable {
     @ExcelProperty(value = "社保停买日期",converter = LocalDateConvert.class)
     private LocalDate socialSecurityEnd;
 
+    @ColumnWidth(50)
+    @ExcelProperty("休假记录")
+    private String holidayRecord;
 }

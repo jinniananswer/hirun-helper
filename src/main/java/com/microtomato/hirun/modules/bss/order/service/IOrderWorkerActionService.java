@@ -25,6 +25,8 @@ public interface IOrderWorkerActionService extends IService<OrderWorkerAction> {
 
     void createOrderWorkerAction(Long orderId, Long employeeId, Long workerId, String currentOrderStatus, String action);
 
+    void deleteOrderWorkerByEmployeeIdAction(Long orderId,Long employeeId,String action);
+
     void deleteOrderWorkerAction(Long orderId,String action);
 
 }

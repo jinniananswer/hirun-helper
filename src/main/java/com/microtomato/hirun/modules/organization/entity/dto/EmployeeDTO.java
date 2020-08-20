@@ -107,4 +107,6 @@ public class EmployeeDTO implements Serializable {
     private List<EmployeeWorkExperienceDTO> employeeWorkExperiences;
 
     private List<EmployeeChildrenDTO> children;
+
+    private String beforeHirunYear;
 }

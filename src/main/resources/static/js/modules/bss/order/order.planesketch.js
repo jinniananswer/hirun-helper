@@ -18,6 +18,8 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 startTime: '',
                 financeEmployeeName : '',
                 endTime: '',
+                planeSketchStartDate : '',
+                planeSketchEndDate : '',
                 firstLookTime: util.getNowDate(),
                 financeEmployeeId : '' ,
                 employeeId : ''
@@ -41,6 +43,26 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
             isConfirm : false,
             employeeName:'',
             downloadFileUrl : '',
+            planSketchRules : {
+                designFeeStandard: [
+                    { required: true, message: '请选择设计费标准！', trigger: 'change' }
+                ],
+                indoorArea: [
+                    { required: true, message: '请填套内面积！', trigger: 'change' }
+                ],
+                contractDesignFee : [
+                    { required: true, message: '请输入合同设计费！', trigger: 'blur' }
+                ],
+                designTheme : [
+                    { required: true, message: '请选择设计主题！', trigger: 'blur' }
+                ],
+                designTheme : [
+                    { required: true, message: '请选择设计主题！', trigger: 'blur' }
+                ],
+                financeEmployeeId : [
+                    { required: true, message: '请选择财务人员！', trigger: 'blur' }
+                ],
+            },
         },
 
         methods: {
@@ -50,8 +72,26 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 }
                 ajax.get('api/bss.order/order-planSketch/getPlaneSketch', data, (responseData)=>{
                     Object.assign(this.planFigureInfos, responseData);
-                    //alert(JSON.stringify(this.planFigureInfos));
+                    if ( responseData.designFeeStandard != null) {
+                        this.planFigureInfos.designFeeStandard = responseData.designFeeStandard/100;
+                    }
                     this.orderWorkActions = responseData.orderWorkActions;
+                    let array = [];
+                    for(let i = 0; i < this.orderWorkActions.length; i++) {
+
+                        if ( this.orderWorkActions[i].action == "draw_plane") {
+                            this.orderWorkActions[i].action = "参与平面图设计中"
+                        }
+                        array.push({
+                            action: this.orderWorkActions[i].action,
+                            employeeName: this.orderWorkActions[i].employeeName,
+                            orderStatus : this.orderWorkActions[i].orderStatus,
+                            employeeId : this.orderWorkActions[i].employeeId,
+                            roleId : this.orderWorkActions[i].roleId,
+                            orderId : this.orderWorkActions[i].orderId
+                        });
+                    }
+                    this.orderWorkActions = array;
                 });
                 if (this.orderStatus=='35') {
                     this.isBackToDesigner = true;
@@ -69,10 +109,31 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 let designerPlanNum = this.planFigureInfos.designerPlanNum;
                 let designTheme = this.planFigureInfos.designTheme;
                 let designer = this.planFigureInfos.designer;
+                let endTime = this.planFigureInfos.endTime;
+                let startTime = this.planFigureInfos.startTime ;
+                let planeSketchStartDate = this.planFigureInfos.planeSketchStartDate;
+                let planeSketchEndDate = this.planFigureInfos.planeSketchEndDate;
+                let firstLookTime = this.planFigureInfos.firstLookTime;
                 let designFeeStandard = this.planFigureInfos.designFeeStandard;
                 let customerComments = this.planFigureInfos.customerComments;
                 let orderWorkActions = this.orderWorkActions;
                 let financeEmployeeId = this.planFigureInfos.financeEmployeeId;
+                let id = this.planFigureInfos.id;
+                let array = [];
+                for(let i = 0; i < this.orderWorkActions.length; i++) {
+                    if ( this.orderWorkActions[i].action == "参与平面图设计中") {
+                        this.orderWorkActions[i].action = "draw_plane"
+                    }
+                    array.push({
+                        action: this.orderWorkActions[i].action,
+                        employeeName: this.orderWorkActions[i].employeeName,
+                        orderStatus : this.orderWorkActions[i].orderStatus,
+                        employeeId : this.orderWorkActions[i].employeeId,
+                        roleId : this.orderWorkActions[i].roleId,
+                        orderId : this.orderWorkActions[i].orderId
+                    });
+                }
+                this.orderWorkActions = array;
                 let data = {
                     orderId: orderId,
                     id: '',
@@ -82,12 +143,19 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     contractDesignFee : contractDesignFee,
                     designerPlanNum : designerPlanNum,
                     designTheme : designTheme,
-                    designFeeStandard : designFeeStandard,
+                    designFeeStandard : designFeeStandard*100,
                     customerComments : customerComments,
                     designer: designer,
                     financeEmployeeId : financeEmployeeId,
-                    orderWorkActions: orderWorkActions
+                    orderWorkActions: orderWorkActions,
+                    endTime : endTime,
+                    startTime : startTime,
+                    firstLookTime : firstLookTime,
+                    planeSketchStartDate :planeSketchStartDate,
+                    planeSketchEndDate : planeSketchEndDate,
+                    id : id
                 };
+
                 return data;
             },
             addSuccess : function() {
@@ -104,8 +172,8 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     this.orderWorkAction.employeeName = responseData.employeeName ;
                 });
                 this.orderWorkAction.orderId = this.planFigureInfos.orderId;
-                this.orderWorkAction.action = 'draw_plane';
-                this.orderWorkAction.roleId = '19';
+                this.orderWorkAction.action = '参与平面设计中';
+                this.orderWorkAction.roleId = '41';
                 this.orderWorkAction.orderStatus = this.orderStatus;
                 this.orderWorkActions.push(this.orderWorkAction);
             },
@@ -117,6 +185,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
             },
             changeDesignFeeStandard: function(newVal) {
                 this.planFigureInfos.designFeeStandard = newVal;
+                this.planFigureInfos.contractDesignFee = this.planFigureInfos.designFeeStandard*this.planFigureInfos.indoorArea;
             },
             changeDefaultDesignTheme: function(newVal) {
                 this.planFigureInfos.designTheme=newVal;
@@ -148,6 +217,27 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     });
                     return false;
                 }
+                if (this.planFigureInfos.designerPlanNum == '0') {
+                    Vue.prototype.$message({
+                        message: '请输入正确的方案个数！',
+                        type: 'error'
+                    });
+                    return false;
+                }
+                if (this.planFigureInfos.designFeeStandard == '') {
+                    Vue.prototype.$message({
+                        message: '请选择设计费标准！',
+                        type: 'error'
+                    });
+                    return false;
+                }
+                if (this.planFigureInfos.financeEmployeeId == '') {
+                    Vue.prototype.$message({
+                        message: '请先选择财务人员！',
+                        type: 'error'
+                    });
+                    return false;
+                }
                 if (this.planFigureInfos.contractDesignFee == '') {
                     Vue.prototype.$message({
                         message: '合同设计费不能为空！',
@@ -156,7 +246,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     return false;
                 }
                 let data = this.getDatas();
-                //alert(JSON.stringify(data));
+                alert(JSON.stringify(data));
                 ajax.post('api/bss.order/order-planSketch/submitPlaneSketch', data,null,null,true);
             },
             //修改平面图时间

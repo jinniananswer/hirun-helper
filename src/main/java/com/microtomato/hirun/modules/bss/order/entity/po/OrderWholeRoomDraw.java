@@ -54,6 +54,18 @@ public class OrderWholeRoomDraw extends BaseEntity {
     private LocalDateTime endDate;
 
     /**
+     * 全房图开始时间
+     */
+    @TableField("draw_start_date")
+    private LocalDate drawStartDate;
+
+    /**
+     * 全房图结束时间
+     */
+    @TableField("draw_end_date")
+    private LocalDate drawEndDate;
+
+    /**
      * 预约看图时间
      */
     @TableField(value = "pre_time")
@@ -63,31 +75,31 @@ public class OrderWholeRoomDraw extends BaseEntity {
      * 助理设计师
      */
     @TableField(value = "assistant_designer")
-    private String assistantDesigner;
+    private Long assistantDesigner;
 
     /**
      * 制作组长
      */
     @TableField(value = "production_leader")
-    private String productionLeader;
+    private Long productionLeader;
 
     /**
      * 水电设计师
      */
     @TableField(value = "hydropower_designer")
-    private String hydropowerDesigner;
+    private Long hydropowerDesigner;
 
     /**
      * 绘图助理
      */
     @TableField(value = "drawing_assistant")
-    private String drawingAssistant;
+    private Long drawingAssistant;
 
     /**
      * 行政助理
      */
     @TableField(value = "admin_assistant")
-    private String adminAssistant;
+    private Long adminAssistant;
 
     /**
      * 设计师备注

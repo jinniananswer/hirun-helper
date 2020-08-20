@@ -9,7 +9,7 @@ layui.extend({}).define(['ajax', 'form', 'layer', 'element', 'laydate', 'select'
             var probationValue = $('#probationValue').val();
 
             layui.select.init('agreementType', 'AGREEMENT_TYPE', contractTypeValue, false);
-            layui.select.init('probation', 'PROBATION', probationValue, false);
+            //layui.select.init('probation', 'PROBATION', probationValue, false);
 
             if (contractTypeValue != 9) {
                 $("#probationDiv").hide();
@@ -31,16 +31,16 @@ layui.extend({}).define(['ajax', 'form', 'layer', 'element', 'laydate', 'select'
             form.on('select(agreementType)', function (data) {
                 if (data.value == 6) {
                     updateEmployeeContractExt.timeComponentsController('show');
-                    $("#probationDiv").hide();
-                    $("#probation").removeAttr("lay-verify");
+                    //$("#probationDiv").hide();
+                    //$("#probation").removeAttr("lay-verify");
                 } else if (data.value == 9) {
-                    updateEmployeeContractExt.timeComponentsController('hide');
-                    $("#probationDiv").show();
-                    $("#probation").attr("lay-verify", "required");
+                    updateEmployeeContractExt.timeComponentsController('show');
+                    //$("#probationDiv").show();
+                    //$("#probation").attr("lay-verify", "required");
                 } else {
                     updateEmployeeContractExt.timeComponentsController('hide');
-                    $("#probationDiv").hide();
-                    $("#probation").removeAttr("lay-verify");
+                    //$("#probationDiv").hide();
+                    //$("#probation").removeAttr("lay-verify");
                 }
                 form.render('select', 'contractType');
             });

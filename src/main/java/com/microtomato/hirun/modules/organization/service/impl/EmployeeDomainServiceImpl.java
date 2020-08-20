@@ -99,6 +99,9 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
     @Autowired
     private IEmployeeTagService employeeTagService;
 
+    @Autowired
+    private IEmployeeHolidayService holidayService;
+
 
     @Override
     public List<EmployeeInfoDTO> searchEmployee(String searchText) {
@@ -638,7 +641,19 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             employeeInfo.setEmployeeStatusName(this.staticDataService.getCodeName("EMPLOYEE_STATUS", employeeInfo.getEmployeeStatus()));
             employeeInfo.setJobRoleNatureName(this.staticDataService.getCodeName("JOB_NATURE", employeeInfo.getJobRoleNature()));
             employeeInfo.setDestroyWay(this.staticDataService.getCodeName("DESTROY_WAY", employeeInfo.getDestroyWay()));
+            List<EmployeeHoliday> holidays=this.holidayService.list(new QueryWrapper<EmployeeHoliday>().lambda()
+                    .eq(EmployeeHoliday::getEmployeeId,employeeInfo.getEmployeeId()).orderByDesc(EmployeeHoliday::getCreateTime));
 
+            if(ArrayUtils.isEmpty(holidays)){
+                continue;
+            }
+            String holidayRecord="";
+            for(EmployeeHoliday holiday:holidays){
+                holidayRecord+=this.staticDataService.getCodeName("HOLIDAY_TYPE",holiday.getHolidayType()+"")
+                        +" 开始时间: "+holiday.getStartTime()+" 结束时间: "+holiday.getEndTime()+"  "+holiday.getRemark()
+                        +"\r\n";
+            }
+            employeeInfo.setHolidayRecord(holidayRecord);
         }
         return list;
     }

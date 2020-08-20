@@ -174,8 +174,10 @@ public class OrderWholeRoomDrawServiceImpl extends ServiceImpl<OrderWholeRoomDra
         } else {
             this.updateById(orderWholeRoomDrawNew);
         }
-
-        this.orderWorkerActionService.createOrderWorkerAction(dto.getOrderId(),dto.getHydropowerDesigner(),1L,"",DesignerConst.OPER_WATER_ELEC_DESIGN);
+        if (orderWholeRoomDrawNew.getHydropowerDesigner() != null) {
+            Long workerId = this.orderWorkerService.updateOrderWorker(orderId,38L,orderWholeRoomDrawNew.getHydropowerDesigner());
+            this.orderWorkerActionService.createOrderWorkerAction(dto.getOrderId(),dto.getHydropowerDesigner(),workerId,"",DesignerConst.OPER_WATER_ELEC_DESIGN);
+        }
         designerCommonService.dealOrderWorkerAction(DesignerConst.OPER_DRAW_CONSTRUCT,dto);
     }
 }

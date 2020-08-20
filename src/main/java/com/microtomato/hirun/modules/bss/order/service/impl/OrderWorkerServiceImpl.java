@@ -96,6 +96,34 @@ public class OrderWorkerServiceImpl extends ServiceImpl<OrderWorkerMapper, Order
 
     }
 
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    @Override
+    public Long updateOrderWorkerByEmployeeId(Long orderId, Long roleId, Long employeeId) {
+        if (orderId == null || roleId == null || employeeId == null) {
+            throw new NotFoundException("参数缺失", ErrorKind.NOT_FOUND.getCode());
+        }
+        OrderWorker orderWorker = this.orderWorkerMapper.selectOne(new QueryWrapper<OrderWorker>().lambda()
+                .eq(OrderWorker::getOrderId, orderId).eq(OrderWorker::getRoleId, roleId).eq(OrderWorker::getEmployeeId,employeeId)
+                .gt(OrderWorker::getEndDate, RequestTimeHolder.getRequestTime()));
+
+        if (orderWorker != null) {
+            //如果Employee一样，则不更新
+            if (orderWorker.getEmployeeId().equals(employeeId)) {
+                return null;
+            }
+            orderWorker.setEndDate(LocalDateTime.now());
+            this.orderWorkerMapper.updateById(orderWorker);
+        }
+        OrderWorker newOrderWorker = new OrderWorker();
+        newOrderWorker.setOrderId(orderId);
+        newOrderWorker.setRoleId(roleId);
+        newOrderWorker.setEmployeeId(employeeId);
+        newOrderWorker.setStartDate(RequestTimeHolder.getRequestTime());
+        newOrderWorker.setEndDate(TimeUtils.getForeverTime());
+        this.orderWorkerMapper.insert(newOrderWorker);
+        return newOrderWorker.getId();
+    }
+
     /**
      * 根据订单ID列表及角色列表查询订单参与人相关信息
      * @param orderIds
