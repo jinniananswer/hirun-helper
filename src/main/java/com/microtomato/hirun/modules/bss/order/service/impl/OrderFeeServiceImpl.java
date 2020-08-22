@@ -321,8 +321,23 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
 
         String[] feeTime = condition.getFeeTime();
         if (ArrayUtils.isNotEmpty(feeTime)) {
-            wrapper.ge("d.first_pay_time", feeTime[0]);
-            wrapper.le("d.first_pay_time", feeTime[1]);
+            wrapper.apply(" exists(select 1 from order_pay_no d where d.order_id = a.order_id and d.pay_date >= {0} and d.pay_date <= {1})", feeTime[0], feeTime[1]);
+        }
+
+        if (StringUtils.equals(condition.getCondition(), "1")) {
+            wrapper.apply("a.status < 8 ");
+        }
+
+        if (condition.getReport() != null) {
+            wrapper.apply("exists(select 1 from order_worker e where e.order_id = a.order_id and e.employee_id = {0} and e.role_id = 555 and e.end_date > now()) ", condition.getReport());
+        }
+
+        if (condition.getAgent() != null) {
+            wrapper.apply("exists(select 1 from order_worker e where e.order_id = a.order_id and e.employee_id = {0} and e.role_id = 15 and e.end_date > now()) ", condition.getAgent());
+        }
+
+        if (condition.getDesigner() != null) {
+            wrapper.apply("exists(select 1 from order_worker e where e.order_id = a.order_id and e.employee_id = {0} and e.role_id = 30 and e.end_date > now()) ", condition.getDesigner());
         }
 
         wrapper.eq(condition.getHousesId() != null, "a.houses_id", condition.getHousesId());
