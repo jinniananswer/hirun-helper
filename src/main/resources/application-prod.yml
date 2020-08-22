@@ -127,4 +127,5 @@ spring:
     store-type: redis
     timeout: 1800
 
+# 数据文件位置
 hirun.data.path: /home/web/data
