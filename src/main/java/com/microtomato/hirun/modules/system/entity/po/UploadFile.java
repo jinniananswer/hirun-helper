@@ -36,8 +36,8 @@ public class UploadFile extends BaseEntity {
     /**
      * Id
      */
-    @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
+    @TableId(value = "id")
+    private String id;
 
     /**
      * 原件名称

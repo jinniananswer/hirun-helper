@@ -1,4 +1,4 @@
-require(['vue', 'ELEMENT', 'axios', 'order-file-upload'], function (Vue, element, axios, orderFileUpload) {
+require(['vue', 'ELEMENT', 'axios', 'order-file-upload', 'upload-file'], function (Vue, element, axios, orderFileUpload) {
     let vm = new Vue({
         el: '#app',
         data() {

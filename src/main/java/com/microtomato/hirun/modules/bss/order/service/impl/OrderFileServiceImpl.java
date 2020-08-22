@@ -13,15 +13,13 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -41,29 +39,17 @@ import java.util.UUID;
 @Service
 public class OrderFileServiceImpl extends ServiceImpl<OrderFileMapper, com.microtomato.hirun.modules.bss.order.entity.po.OrderFile> implements IOrderFileService {
 
-    private static final String HIRUN_DATA_PATH = "hirun.data.path";
     private static final String UPLOAD = "upload";
-
-    @Autowired
-    private Environment env;
 
     @Autowired
     private IStaticDataService staticDataService;
 
+    @Value("${hirun.data.path}")
+    private String dataPath;
+
     @Override
     public String toAbsolutePath(String relativePath) {
-        String absolutePath = null;
-
-        try {
-            absolutePath = env.getProperty(HIRUN_DATA_PATH);
-            if (null == absolutePath) {
-                absolutePath = ResourceUtils.getURL("classpath:").getPath() + "../..";
-            }
-            absolutePath = absolutePath + "/" + relativePath;
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
+        String absolutePath = FilenameUtils.concat(dataPath, relativePath);
         return absolutePath;
     }
 
@@ -73,16 +59,7 @@ public class OrderFileServiceImpl extends ServiceImpl<OrderFileMapper, com.micro
      * @return
      */
     private String getDestPath() {
-        String destPath = null;
-        try {
-            destPath = env.getProperty(HIRUN_DATA_PATH);
-            if (null == destPath) {
-                destPath = ResourceUtils.getURL("classpath:").getPath() + "../..";
-            }
-            destPath = destPath + "/" + UPLOAD + "/order";
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        String destPath = FilenameUtils.concat(dataPath, "/" + UPLOAD + "/order");
         return destPath;
     }
 
@@ -100,13 +77,13 @@ public class OrderFileServiceImpl extends ServiceImpl<OrderFileMapper, com.micro
         log.debug("文件路径: {}", filePath);
 
         OrderFile orderFile = OrderFile.builder()
-                .orderId(orderId)
-                .stage(stage)
-                .fileName(fileName)
-                .filePath(filePath)
-                .fileSize(fileSize)
-                .enabled(true)
-                .build();
+            .orderId(orderId)
+            .stage(stage)
+            .fileName(fileName)
+            .filePath(filePath)
+            .fileSize(fileSize)
+            .enabled(true)
+            .build();
         return orderFile;
     }
 
@@ -143,10 +120,10 @@ public class OrderFileServiceImpl extends ServiceImpl<OrderFileMapper, com.micro
         OrderFile orderFile = prepare(destDir, multipartFile, orderId, stage);
 
         this.update(
-                Wrappers.<OrderFile>lambdaUpdate()
-                        .setSql("enabled = false")
-                        .eq(OrderFile::getOrderId, orderId)
-                        .eq(OrderFile::getStage, stage)
+            Wrappers.<OrderFile>lambdaUpdate()
+                .setSql("enabled = false")
+                .eq(OrderFile::getOrderId, orderId)
+                .eq(OrderFile::getStage, stage)
         );
 
         this.save(orderFile);
@@ -157,9 +134,9 @@ public class OrderFileServiceImpl extends ServiceImpl<OrderFileMapper, com.micro
     public void confirmUpload(String ids) {
         List<Long> idList = convert(ids);
         this.update(
-                Wrappers.<OrderFile>lambdaUpdate().
-                        setSql("enabled = true")
-                        .in(OrderFile::getId, idList)
+            Wrappers.<OrderFile>lambdaUpdate().
+                setSql("enabled = true")
+                .in(OrderFile::getId, idList)
         );
     }
 
@@ -168,9 +145,9 @@ public class OrderFileServiceImpl extends ServiceImpl<OrderFileMapper, com.micro
 
         List<Long> idList = convert(ids);
         List<OrderFile> orderFiles = this.list(
-                Wrappers.<OrderFile>lambdaQuery()
-                        .in(OrderFile::getId, idList)
-                        .eq(OrderFile::getEnabled, true)
+            Wrappers.<OrderFile>lambdaQuery()
+                .in(OrderFile::getId, idList)
+                .eq(OrderFile::getEnabled, true)
         );
         return orderFiles;
     }
@@ -178,30 +155,32 @@ public class OrderFileServiceImpl extends ServiceImpl<OrderFileMapper, com.micro
     @Override
     public void deleteById(Long id) {
         this.update(
-                Wrappers.<OrderFile>lambdaUpdate()
-                        .setSql("enabled = false")
-                        .eq(OrderFile::getId, id)
+            Wrappers.<OrderFile>lambdaUpdate()
+                .setSql("enabled = false")
+                .eq(OrderFile::getId, id)
         );
     }
 
     @Override
     public OrderFile getOrderFile(Long orderId, Integer stage) {
         OrderFile orderFile = this.getOne(
-                Wrappers.<OrderFile>lambdaQuery()
-                        .eq(OrderFile::getOrderId, orderId)
-                        .eq(OrderFile::getStage, stage)
-                        .eq(OrderFile::getEnabled, true)
-                        .orderByDesc(OrderFile::getCreateTime)
+            Wrappers.<OrderFile>lambdaQuery()
+                .eq(OrderFile::getOrderId, orderId)
+                .eq(OrderFile::getStage, stage)
+                .eq(OrderFile::getEnabled, true)
+                .orderByDesc(OrderFile::getCreateTime)
         );
         return orderFile;
     }
 
     @Override
     public List<OrderFileDTO> queryOrderFiles(Long orderId) {
-        List<OrderFile> files = this.list(Wrappers.<OrderFile>lambdaQuery()
+        List<OrderFile> files = this.list(
+            Wrappers.<OrderFile>lambdaQuery()
                 .eq(OrderFile::getOrderId, orderId)
                 .eq(OrderFile::getEnabled, true)
-                .orderByAsc(OrderFile::getCreateTime));
+                .orderByAsc(OrderFile::getCreateTime)
+        );
 
         if (ArrayUtils.isEmpty(files)) {
             return null;

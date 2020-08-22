@@ -26,7 +26,7 @@ public interface IUploadFileService extends IService<UploadFile> {
      * @return
      * @throws IOException
      */
-    Long uploadOne(MultipartFile multipartFile) throws IOException;
+    String uploadOne(MultipartFile multipartFile) throws IOException;
 
     /**
      * 上传多个文件

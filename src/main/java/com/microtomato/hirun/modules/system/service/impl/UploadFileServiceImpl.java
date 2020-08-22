@@ -9,14 +9,13 @@ import com.microtomato.hirun.modules.system.service.IUploadFileService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -36,16 +35,12 @@ import java.util.UUID;
 @Service
 public class UploadFileServiceImpl extends ServiceImpl<UploadFileMapper, UploadFile> implements IUploadFileService {
 
+    @Value("${hirun.data.path}")
+    private String dataPath;
+
     @Override
     public String toAbsolutePath(String relativePath) {
-        String absolutePath = null;
-
-        try {
-            absolutePath = ResourceUtils.getURL("classpath:").getPath() + "../../" + relativePath;
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
+        String absolutePath = FilenameUtils.concat(dataPath, relativePath);
         return absolutePath;
     }
 
@@ -63,6 +58,7 @@ public class UploadFileServiceImpl extends ServiceImpl<UploadFileMapper, UploadF
         log.debug("文件路径: {}", filePath);
 
         UploadFile uploadFile = UploadFile.builder()
+            .id(uniqueId)
             .fileName(fileName)
             .filePath(filePath)
             .fileSize(fileSize)
@@ -103,18 +99,13 @@ public class UploadFileServiceImpl extends ServiceImpl<UploadFileMapper, UploadF
      * @return
      */
     private String getDestPath() {
-        String destPath = null;
-        try {
-            destPath = ResourceUtils.getURL("classpath:").getPath() + "../../upload";
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        String destPath = FilenameUtils.concat(dataPath, "upload/doc");
         return destPath;
     }
 
     @Override
     @Transactional(rollbackFor = Throwable.class, propagation = Propagation.REQUIRED)
-    public Long uploadOne(MultipartFile multipartFile) throws IOException {
+    public String uploadOne(MultipartFile multipartFile) throws IOException {
         String destPath = getDestPath();
         File destDir = makesureFolderExist(destPath);
         UploadFile uploadFile = prepare(destDir, multipartFile);
@@ -130,7 +121,7 @@ public class UploadFileServiceImpl extends ServiceImpl<UploadFileMapper, UploadF
         String destPath = getDestPath();
         File destDir = makesureFolderExist(destPath);
 
-        List<Long> idList = new ArrayList();
+        List<String> idList = new ArrayList();
         for (MultipartFile multipartFile : multipartFiles) {
             UploadFile uploadFile = prepare(destDir, multipartFile);
             this.save(uploadFile);
