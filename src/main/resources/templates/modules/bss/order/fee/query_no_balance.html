@@ -46,6 +46,35 @@
                                 </el-form-item>
                             </el-col>
                             <el-col :span="8">
+                                <el-form-item label="客户代表">
+                                    <order-selectemployee role-id="15" v-model="queryCond.agent"  ></order-selectemployee>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="项目经理">
+                                    <order-selectemployee role-id="33" v-model="queryCond.projectManager"  ></order-selectemployee>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="8">
+                                <el-form-item label="工程主管">
+                                    <order-selectemployee role-id="48" v-model="queryCond.projectCharger"  ></order-selectemployee>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="橱柜设计">
+                                    <order-selectemployee role-id="45" v-model="queryCond.cabinetDesigner"  ></order-selectemployee>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="主材管家">
+                                    <order-selectemployee role-id="46" v-model="queryCond.materialManager"  ></order-selectemployee>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="8">
                                 <el-form-item>
                                     <el-button type="primary" @click="query">查询</el-button>
                                 </el-form-item>
@@ -79,27 +108,10 @@
                         </el-row>
                         <el-row>
                             <el-col :span="8">
-                                <el-form-item label="选择角色">
-                                    <el-select v-model="dialogQueryCond.roleId" placeholder="请选择">
-                                        <el-option
-                                                v-for="role in roles"
-                                                :key="role.roleId"
-                                                :label="role.roleName"
-                                                :value="role.roleId">
-                                        </el-option>
-                                    </el-select>
-                                </el-form-item>
-                            </el-col>
-                            <el-col :span="8">
                                 <el-form-item label="客户编号">
                                     <order-selectemployee :role-id="dialogQueryCond.roleId"></order-selectemployee>
                                 </el-form-item>
                             </el-col>
-                            <el-col :span="8">
-
-                            </el-col>
-                        </el-row>
-                        <el-row>
                             <el-col :span="8">
                                 <el-form-item label="归属楼盘">
                                     <house-select v-model="dialogQueryCond.housesId"></house-select>
@@ -110,6 +122,8 @@
                                     <vue-select code-type="ORDER_STATUS" v-model="dialogQueryCond.orderStatus"></vue-select>
                                 </el-form-item>
                             </el-col>
+                        </el-row>
+                        <el-row>
                             <el-col :span="8">
                                 <el-form-item>
                                     <el-button type="primary" @click="dialogQuery">查询</el-button>
@@ -207,6 +221,7 @@
                         <vxe-table-column field="custName" title="客户姓名" sortable width="100" fixed="left"></vxe-table-column>
                         <vxe-table-column field="decorateAddress" title="地址" sortable width="200" fixed="left"></vxe-table-column>
                         <vxe-table-column field="orderStatusName" title="客户状态" sortable width="100" fixed="left"></vxe-table-column>
+                        <vxe-table-column field="feeTypeName" title="费用类型" sortable width="100"></vxe-table-column>
                         <vxe-table-column field="needPay" title="应收合计" sortable width="100"></vxe-table-column>
                         <vxe-table-column field="pay" title="已收合计" sortable width="100"></vxe-table-column>
                         <vxe-table-column field="minus" title="差额" sortable width="120"></vxe-table-column>
@@ -215,7 +230,7 @@
                         <vxe-table-column field="usualWorker.agentName" title="客户代表" sortable width="100"></vxe-table-column>
                         <vxe-table-column field="usualWorker.designerName" title="设计师" sortable width="100"></vxe-table-column>
                         <vxe-table-column field="usualWorker.counselorName" title="家装顾问" sortable width="100"></vxe-table-column>
-                        <vxe-table-column field="usualWorker.cabinetName" title="橱柜设计师" sortable width="120"></vxe-table-column>
+                        <vxe-table-column field="usualWorker.cabinetDesignerName" title="橱柜设计师" sortable width="120"></vxe-table-column>
                         <vxe-table-column field="usualWorker.materialName" title="主材管家" sortable width="100"></vxe-table-column>
                         <vxe-table-column field="usualWorker.reportName" title="申报人" sortable width="100"></vxe-table-column>
                         <vxe-table-column field="firstRoyaltyMonth" title="首付提成月份" sortable width="200"></vxe-table-column>
