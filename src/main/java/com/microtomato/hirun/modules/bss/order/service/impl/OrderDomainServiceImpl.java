@@ -564,6 +564,8 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
                 usualWorker.setAgentName(name);
             } else if (roleId.equals(30L)) {
                 usualWorker.setDesignerName(name);
+            } else if (roleId.equals(45L)) {
+                usualWorker.setCabinetDesignerName(name);
             } else if (roleId.equals(46L)) {
                 usualWorker.setMaterialName(name);
             } else if (roleId.equals(47L)) {

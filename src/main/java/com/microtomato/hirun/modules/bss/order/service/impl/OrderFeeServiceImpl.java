@@ -521,6 +521,23 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
             List<String> shopIdArray = Arrays.asList(StringUtils.split(shopIds, ","));
             wrapper.in("a.shop_id", shopIdArray);
         }
+
+        if (condition.getProjectManager() != null) {
+            wrapper.apply("exists(select 1 from order_worker e where e.order_id = a.order_id and e.employee_id = {0} and e.role_id = 33 and e.end_date > now()) ", condition.getProjectManager());
+        }
+
+        if (condition.getAgent() != null) {
+            wrapper.apply("exists(select 1 from order_worker e where e.order_id = a.order_id and e.employee_id = {0} and e.role_id = 15 and e.end_date > now()) ", condition.getAgent());
+        }
+
+        if (condition.getProjectCharger() != null) {
+            wrapper.apply("exists(select 1 from order_worker e where e.order_id = a.order_id and e.employee_id = {0} and e.role_id = 48 and e.end_date > now()) ", condition.getProjectCharger());
+        }
+
+        if (condition.getDesigner() != null) {
+            wrapper.apply("exists(select 1 from order_worker e where e.order_id = a.order_id and e.employee_id = {0} and e.role_id = 30 and e.end_date > now()) ", condition.getDesigner());
+        }
+
         IPage<QueryProjectFeeDTO> page = new Page<>(condition.getPage(), condition.getLimit());
         IPage<ProjectFeeDTO> pageProjectFees = this.orderFeeMapper.queryProjectFee(page, wrapper);
 
@@ -569,6 +586,7 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
         wrapper.apply(" b.cust_id = a.cust_id ");
         wrapper.apply("c.order_id = a.order_id ");
         wrapper.apply(" c.need_pay <> c.pay ");
+        wrapper.apply("c.end_date > now() ");
         wrapper.eq(condition.getOrderId() != null, "a.order_id", condition.getOrderId());
         wrapper.eq(condition.getFeeType() != null, "c.type", condition.getFeeType());
         wrapper.eq(condition.getPeriods() != null, "c.periods", condition.getFeeType());
@@ -578,6 +596,27 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
             List<String> shopIdArray = Arrays.asList(StringUtils.split(shopIds, ","));
             wrapper.in("a.shop_id", shopIdArray);
         }
+
+        if (condition.getProjectManager() != null) {
+            wrapper.apply("exists(select 1 from order_worker e where e.order_id = a.order_id and e.employee_id = {0} and e.role_id = 33 and e.end_date > now()) ", condition.getProjectManager());
+        }
+
+        if (condition.getAgent() != null) {
+            wrapper.apply("exists(select 1 from order_worker e where e.order_id = a.order_id and e.employee_id = {0} and e.role_id = 15 and e.end_date > now()) ", condition.getAgent());
+        }
+
+        if (condition.getCabinetDesigner() != null) {
+            wrapper.apply("exists(select 1 from order_worker e where e.order_id = a.order_id and e.employee_id = {0} and e.role_id = 45 and e.end_date > now()) ", condition.getCabinetDesigner());
+        }
+
+        if (condition.getProjectCharger() != null) {
+            wrapper.apply("exists(select 1 from order_worker e where e.order_id = a.order_id and e.employee_id = {0} and e.role_id = 48 and e.end_date > now()) ", condition.getProjectCharger());
+        }
+
+        if (condition.getMaterialManager() != null) {
+            wrapper.apply("exists(select 1 from order_worker e where e.order_id = a.order_id and e.employee_id = {0} and e.role_id = 46 and e.end_date > now()) ", condition.getMaterialManager());
+        }
+
         IPage<QueryNoBalanceFeeDTO> page = new Page<>(condition.getPage(), condition.getLimit());
         IPage<NoBalanceFeeDTO> pageNoBalanceFee = this.orderFeeMapper.queryNoBalanceFee(page, wrapper);
 
