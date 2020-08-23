@@ -3,13 +3,15 @@ package com.microtomato.hirun.modules.finance.controller;
 
 
 import com.microtomato.hirun.framework.annotation.RestResult;
+import com.microtomato.hirun.framework.security.UserContext;
+import com.microtomato.hirun.framework.util.WebContextUtils;
+import com.microtomato.hirun.modules.bss.order.entity.dto.DecoratorInfoDTO;
+import com.microtomato.hirun.modules.bss.supply.entity.dto.QuerySupplyOrderDTO;
+import com.microtomato.hirun.modules.bss.supply.entity.dto.SupplyMaterialDTO;
 import com.microtomato.hirun.modules.finance.entity.dto.FinanceVoucherDTO;
 import com.microtomato.hirun.modules.finance.service.IFinanceVoucherService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -45,7 +47,16 @@ public class FinanceVoucherController {
     @PostMapping("/voucherPreparationForOther")
     @RestResult
     public void voucherPreparationForOther(@RequestBody List<FinanceVoucherDTO> financeVoucherDetails) {
-        this.financeVoucherService.voucherPreparationForConstruction(financeVoucherDetails);
+        System.out.println("financeVoucherDetails=========="+financeVoucherDetails);
+        this.financeVoucherService.voucherPreparationForOther(financeVoucherDetails);
+    }
+
+
+
+    @GetMapping("/selectDecorator")
+    @RestResult
+    public List<DecoratorInfoDTO> selectDecorator(DecoratorInfoDTO decoratorInfoDTO) {
+        return this.financeVoucherService.selectDecorator(decoratorInfoDTO);
     }
 
 }

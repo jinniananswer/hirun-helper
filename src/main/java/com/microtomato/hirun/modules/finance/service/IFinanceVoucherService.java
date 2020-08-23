@@ -1,7 +1,7 @@
 package com.microtomato.hirun.modules.finance.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.microtomato.hirun.modules.bss.salary.entity.dto.DesignRoyaltyDetailDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.DecoratorInfoDTO;
 import com.microtomato.hirun.modules.finance.entity.dto.FinanceVoucherDTO;
 import com.microtomato.hirun.modules.finance.entity.po.FinanceVoucher;
 
@@ -20,6 +20,10 @@ public interface IFinanceVoucherService extends IService<FinanceVoucher> {
 
     void voucherPreparationForConstruction(List<FinanceVoucherDTO> financeVoucherDetails);
 
+    void voucherPreparationForOther(List<FinanceVoucherDTO> financeVoucherDetails);
+
     void voucherPreparation(List<FinanceVoucherDTO> financeVoucherDetails);
+
+    List<DecoratorInfoDTO> selectDecorator(DecoratorInfoDTO decoratorInfoDTO);
 
 }

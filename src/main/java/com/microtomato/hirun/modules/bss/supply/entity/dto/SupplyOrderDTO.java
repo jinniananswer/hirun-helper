@@ -21,10 +21,12 @@ public class SupplyOrderDTO {
     private Long createUserId;
 
     private String createUserName;
+
+    private Double money;
     /**
      * 供应ID
      */
-    private Long id;
+    private Long supplyId;
 
     /** 1-主营材料下单 2-主营材料退单 3-材料入库 4-材料出库 */
     private String supplyOrderType;

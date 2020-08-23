@@ -44,7 +44,7 @@ public class SupplyOrder extends BaseEntity {
 
     /** 总费用 */
     @TableField(value = "total_fee")
-    private Integer totalFee;
+    private Double totalFee;
 
     /** 1-主营材料下单 2-主营材料退单 3-材料入库 4-材料出库 */
     @TableField(value = "supply_order_type")

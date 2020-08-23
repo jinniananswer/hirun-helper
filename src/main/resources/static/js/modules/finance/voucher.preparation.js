@@ -15,6 +15,7 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                     materialDetailTableData: [],
                     custOrder: [],
                     financeItem: {},
+                    financeItemData: {},
                     financeItems: [],
                     financeItemptions: [],
                     selectedDecorator: '',
@@ -115,10 +116,10 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                         that.queryConstructionCond.count = responseData.total;
                     });
                 },
-                toSupplyDetail: function (id, supplierId) {
+                toSupplyDetail: function (supplyId, supplierId) {
                     this.supplyOrderDetail = true;
                     let data = {
-                        id: id,
+                        supplyId: supplyId,
                         supplierId: supplierId
                     };
                     ajax.get('api/bss.supply/supply-order/querySupplyDetailInfo', data, (responseData) => {
@@ -150,14 +151,33 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                     }
                     ajax.post('api/finance/finance-voucher/voucherPreparationForConstruction', this.$refs.constructionItem.getCheckboxRecords());
                 },
+                voucherPreparationForOther: function () {
+                    let data = this.$refs.financeItemData.getCheckboxRecords();
+                    if (data == null || data.length <= 0) {
+                        this.$message.error('没有选中任何记录，无法提交');
+                        return;
+                    };
+                   if (data && data.length > 0) {
+                        data.forEach((da) => {
+                           if(da.money==0){
+                               this.$message.error('没有输入金额，不能提交');
+                               return;
+                           }
+                        })
+                   }
+                    ajax.post('api/finance/finance-voucher/voucherPreparationForOther', this.$refs.financeItemData.getCheckboxRecords());
+                  //  ajax.post('api/finance/finance-voucher/voucherPreparationForOther', data);
+                },
                 //查询当前流程的施工人员情况,后续应该改为直接从工人预计工资表去获取，根据不同阶段最多领款额度算出来
                 loadConstructionInfo: function (orderId, custId) {
-                    this.constructionInfo.custId = custId;
-                    this.constructionInfo.orderId = orderId;
                     this.dialogVisible = false;
                     this.show = 'display:block';
                     let that = this;
-                    ajax.get('api/bss.order/decorator/selectTypeDecorator', '', function (responseData) {
+                    let data = {
+                        custId: custId,
+                        orderId: orderId
+                    };
+                    ajax.get('api/finance/finance-voucher/selectDecorator', data, function (responseData) {
                         that.decoratorOptions = responseData;
                     });
                 },
@@ -173,7 +193,8 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                         vm.constructionTableData.push({
                             decoratorId: spans[0],
                             name: spans[1],
-                            decoratorType: spans[2]
+                            decoratorType: spans[2],
+                            decoratorTypeName: spans[3]
                         });
                     }
                 },
@@ -215,7 +236,7 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                         }
 
                         // projectValue = items[items.length - 1];
-                        let financeItem = {
+                        let financeItemData = {
                             financeItemName: financeItemName,
                             childFinanceItemtName: childFinanceItemtName,
                             financeItemId: financeItemValue,
@@ -234,7 +255,7 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                         }
 
                         if (!isFind) {
-                            this.financeItems.push(financeItem);
+                            this.financeItems.push(financeItemData);
                         }
                     }
                     this.dialogOtherVisible = false;
@@ -270,15 +291,6 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                             }
                         }
                     });
-                },
-
-                voucherPreparationForOther: function () {
-                    let data = this.financeItem;
-                    if (data == null || data.length <= 0) {
-                        this.$message.error('没有新增任何记录，无法提交');
-                        return;
-                    }
-                    ajax.post('api/finance/finance-voucher/voucherPreparationForOther', data);
                 },
                 isModify: function (obj) {
                     if (obj.row.isModified == '1') {

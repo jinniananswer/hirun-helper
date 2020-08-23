@@ -54,7 +54,7 @@ public class SupplyOrderDetail extends BaseEntity {
 
     /** 明细费用 */
     @TableField(value = "fee")
-    private Integer fee;
+    private Double fee;
 
     /** 材料数量 */
     @TableField(value = "num")
