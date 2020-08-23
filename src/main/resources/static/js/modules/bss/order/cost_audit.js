@@ -6,6 +6,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                 collectFee: {
                     orderId:util.getRequest('orderId'),
                     engineeringClerk:'',
+                    serviceClerk:'',
                     auditRemark:'',
                     auditStatus:0,
                     orderStatus :util.getRequest('status'),
@@ -67,6 +68,13 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                 if(this.collectFee.orderStatus=="18"){
                     if(this.collectFee.engineeringClerk==""){
                         this.$message.error('工程文员没有选择，请亲重新选择哦~~~~~~~！');
+                        return ;
+                    }
+                }
+                if(this.collectFee.orderStatus=="30"){
+                    alert("serviceClerk==="+this.collectFee.serviceClerk);
+                    if(this.collectFee.serviceClerk==""){
+                        this.$message.error('售后文员没有选择，请亲重新选择哦~~~~~~~！');
                         return ;
                     }
                 }

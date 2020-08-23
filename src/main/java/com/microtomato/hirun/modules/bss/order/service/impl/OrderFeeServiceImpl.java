@@ -170,11 +170,14 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
             orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_AUDIT_NO);
         }
 
-        //如果需要流转到指定人，才需要处理worker记录 首期款需要选择工程文员
+        //如果需要流转到指定人，才需要处理worker记录 首期款需要选择工程文员，尾款需要选择售后文员
         //判断当前状态，处理worker表
 
         if (orderStatus.equals("18") && auditStatus.equals("1")) {
             workerService.updateOrderWorker(dto.getOrderId(), 32L, dto.getEngineeringClerk());
+        }
+        if (orderStatus.equals("30") && auditStatus.equals("1")) {
+            workerService.updateOrderWorker(dto.getOrderId(), 57L, dto.getServiceClerk());
         }
         //处理orderFee的审核人与审核备注
         String type = "";
