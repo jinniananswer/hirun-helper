@@ -140,6 +140,12 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                     if (data == null || data.length <= 0) {
                         this.$message.error('没有选中任何记录，无法提交');
                         return;
+                    };
+                    for (let i = 0; i < data.length; i++) {
+                        if(data[i].money==0){
+                            this.$message.error('没有输入金额，不能提交');
+                            return;
+                        }
                     }
                     ajax.post('api/finance/finance-voucher/voucherPreparationForSupply', this.$refs.materialTable.getCheckboxRecords());
                 },
@@ -148,6 +154,12 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                     if (data == null || data.length <= 0) {
                         this.$message.error('没有选中任何记录，无法提交');
                         return;
+                    };
+                    for (let i = 0; i < data.length; i++) {
+                        if(data[i].money==0){
+                            this.$message.error('没有输入金额，不能提交');
+                            return;
+                        }
                     }
                     ajax.post('api/finance/finance-voucher/voucherPreparationForConstruction', this.$refs.constructionItem.getCheckboxRecords());
                 },
@@ -157,14 +169,13 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                         this.$message.error('没有选中任何记录，无法提交');
                         return;
                     };
-                   if (data && data.length > 0) {
-                        data.forEach((da) => {
-                           if(da.money==0){
+
+                       for (let i = 0; i < data.length; i++) {
+                           if(data[i].money==0){
                                this.$message.error('没有输入金额，不能提交');
                                return;
                            }
-                        })
-                   }
+                        }
                     ajax.post('api/finance/finance-voucher/voucherPreparationForOther', this.$refs.financeItemData.getCheckboxRecords());
                   //  ajax.post('api/finance/finance-voucher/voucherPreparationForOther', data);
                 },
