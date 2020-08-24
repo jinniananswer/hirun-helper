@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>提成核算（统计信息）</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script src="static/js/framework/requirejs/require.min.js" th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js" th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-main>
+            <el-row>
+                <el-card class="box-card" shadow="hover">
+                    <div slot="header" class="clearfix">
+                        <span>查询条件区</span>
+                    </div>
+                    <el-form :inline="false" :model="queryCond" label-position="right" label-width="80px">
+                        <el-row>
+                            <el-col :span="8">
+                                <el-form-item label="客户姓名">
+                                    <el-input v-model="queryCond.custName" placeholder="请输入客户姓名"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="客户电话">
+                                    <el-input v-model="queryCond.mobileNo" placeholder="请输入联系电话"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="归属楼盘">
+                                    <house-select v-model="queryCond.housesId"></house-select>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="8">
+                                <el-form-item label="归属店面">
+                                    <org-orgtree :org-id.sync="queryCond.orgIds" :org-name.sync="queryCond.orgName" mode="multi"></org-orgtree>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="交款时间">
+                                    <el-date-picker
+                                            v-model="queryCond.feeTime"
+                                            type="daterange"
+                                            format="yyyy-MM-dd"
+                                            align="right"
+                                            unlink-panels
+                                            range-separator="至"
+                                            start-placeholder="开始日期"
+                                            end-placeholder="结束日期"
+                                            style="width:100%"
+                                            :picker-options="pickerOptions">
+                                    </el-date-picker>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item>
+                                    <el-button type="primary" @click="query">查询</el-button>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                    </el-form>
+                </el-card>
+            </el-row>
+            <el-row>
+                <el-card class="box-card" shadow="hover">
+                    <vxe-table
+                            border
+                            resizable
+                            ref="statRoyaltyTable"
+                            show-overflow
+                            highlight-hover-row
+                            highlight-cell
+                            keep-source
+                            max-height="800px"
+                            :auto-resize="true"
+                            :data="statRoyaltyDetails">
+                        <vxe-table-column field="custNo" title="客户编号" sortable width="150" fixed="left"></vxe-table-column>
+                        <vxe-table-column field="custName" title="客户姓名" sortable width="100" fixed="left"></vxe-table-column>
+                        <vxe-table-column field="decorateAddress" title="地址" sortable width="200" fixed="left"></vxe-table-column>
+                        <vxe-table-column field="royaltyStatus" title="当前提成节点" sortable width="200" fixed="left"></vxe-table-column>
+                        <vxe-table-column field="royaltyStatusDate" title="走流程时间" sortable width="200" fixed="left"></vxe-table-column>
+                        <vxe-table-column field="designPayDate" title="设计费时间" sortable width="200"></vxe-table-column>
+                        <vxe-table-column field="designFee" title="设计费金额" sortable width="200"></vxe-table-column>
+                        <vxe-table-column field="designContractAward" title="设计合同奖" sortable width="200"></vxe-table-column>
+                        <vxe-table-column field="designRoyalty" title="设计费提成" sortable width="120"></vxe-table-column>
+                        <vxe-table-column field="designRate" title="占比" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="assistantRoyalty" title="助理提成" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="assistantRate" title="占比" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="produceRoyalty" title="制作提成" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="produceRate" title="占比" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="contractFee" title="净合同金额" sortable width="120"></vxe-table-column>
+                        <vxe-table-column field="basicFee" title="基础" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="doorFee" title="门" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="furnitureFee" title="家具" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="periods" title="期数" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="payState" title="付款状态" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="payDate" title="对应时间" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="contractAward" title="合同奖" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="budgetRoyalty" title="预算费提成" sortable width="120"></vxe-table-column>
+                        <vxe-table-column field="customerGroupAward" title="客户小组奖" sortable width="120"></vxe-table-column>
+                        <vxe-table-column field="usualWorker.reportName" title="报备人" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="reportStatusName" title="报备状态" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="counselorRoyalty" title="家装顾问提成" sortable width="140"></vxe-table-column>
+                        <vxe-table-column field="counselorRate" title="占比" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="areaManagerRoyalty" title="区域经理提成" sortable width="140"></vxe-table-column>
+                        <vxe-table-column field="areaManagerRate" title="占比" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="agentRoyalty" title="客户代表提成" sortable width="140"></vxe-table-column>
+                        <vxe-table-column field="agentRate" title="占比" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="designerRoyalty" title="设计师累计提成" sortable width="180"></vxe-table-column>
+                        <vxe-table-column field="designerRate" title="占比" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="projectManagerRoyalty" title="项目经理累计提成" sortable width="200"></vxe-table-column>
+                        <vxe-table-column field="projectManagerRate" title="占比" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="projectChargeRoyalty" title="工程主管累计提成" sortable width="200"></vxe-table-column>
+                        <vxe-table-column field="projectChargeRate" title="占比" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="otherRoyalty" title="其它提成" sortable width="200"></vxe-table-column>
+                        <vxe-table-column field="otherRate" title="占比" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="usualWorker.agentName" title="客户代表" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="usualWorker.designerName" title="设计师" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="usualWorker.projectManagerName" title="项目经理" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="usualWorker.projectChargeName" title="工程主管" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="shopName" title="店名" width="100"></vxe-table-column>
+                    </vxe-table>
+                    <div style="text-align: center">
+                        <el-pagination
+                                layout="total, prev, pager, next"
+                                :total="queryCond.count"
+                                :current-page.sync="queryCond.page"
+                                :page-size="queryCond.limit"
+                                @current-change="query">
+                        </el-pagination>
+                    </div>
+                </el-card>
+            </el-row>
+
+        </el-main>
+    </el-container>
+</div>
+<style>
+    .text {
+        font-size: 14px;
+    }
+
+    .box-card {
+        margin-bottom: 12px;
+    }
+
+    .item {
+        margin-bottom: 18px;
+    }
+
+    .el-card__header {
+        padding:10px;
+    }
+
+    .modify_row {
+        color: #ff4835;
+    }
+
+    .new_row {
+        color: #4DAF29;
+    }
+
+    .delete_row {
+        text-decoration:line-through;
+    }
+</style>
+<script src="static/js/modules/bss/salary/stat.royalty.detail.js" th:src="@{static/js/modules/bss/salary/stat.royalty.detail.js(v=${version})}"></script>
+</body>
+</html>

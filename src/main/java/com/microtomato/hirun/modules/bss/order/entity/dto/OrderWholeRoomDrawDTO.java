@@ -36,6 +36,16 @@ public class OrderWholeRoomDrawDTO {
     private LocalDate endTime;
 
     /**
+     * 绘图开始时间
+     */
+    private LocalDate drawStartDate;
+
+    /**
+     * 绘图结束时间
+     */
+    private LocalDate drawEndDate;
+
+    /**
      * 预约看图时间
      */
     private LocalDate preTime;
@@ -43,12 +53,12 @@ public class OrderWholeRoomDrawDTO {
     /**
      * 助理设计师
      */
-    private String assistantDesigner;
+    private Long assistantDesigner;
 
     /**
      * 制作组长
      */
-    private String productionLeader;
+    private Long productionLeader;
 
     /**
      * 水电设计师
@@ -58,12 +68,12 @@ public class OrderWholeRoomDrawDTO {
     /**
      * 绘图助理
      */
-    private String drawingAssistant;
+    private Long drawingAssistant;
 
     /**
      * 行政助理
      */
-    private String adminAssistant;
+    private Long adminAssistant;
 
     /**
      * 设计师备注

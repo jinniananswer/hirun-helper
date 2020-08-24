@@ -2,6 +2,7 @@ package com.microtomato.hirun.modules.bss.order.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerDetailDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderWorker;
 
 import java.util.List;
@@ -27,4 +28,10 @@ public interface IOrderWorkerService extends IService<OrderWorker> {
      * @param employeeId
      */
     Long updateOrderWorker(Long orderId,Long roleId,Long employeeId);
+
+    Long updateOrderWorkerByEmployeeId(Long orderId,Long roleId,Long employeeId);
+
+    List<OrderWorkerDTO> queryByOrderIdsRoleIds(List<Long> orderIds, List<Long> roleIds);
+
+    List<OrderWorkerDetailDTO> queryOrderWorkerDetails(Long orderId);
 }

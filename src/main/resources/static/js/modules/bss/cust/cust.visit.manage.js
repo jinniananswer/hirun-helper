@@ -11,6 +11,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info','cus
                     visitWay:'',
                     visitContent:'',
                     custId: util.getRequest('custId'),
+                    partyId: util.getRequest('custId'),
                 },
                 display: 'display:block',
                 rules: {

@@ -1,4 +1,4 @@
-require(['vue', 'ELEMENT','ajax', 'vueselect', 'util','cust-info', 'order-info', 'order-worker', 'order-payment', 'house-select'], function(Vue, element, ajax, vueselect, util, custInfo, orderInfo, orderWorker, payment, houseSelect) {
+require(['vue', 'ELEMENT','ajax', 'vueselect', 'util','cust-info', 'order-info', 'order-worker', 'order-payment', 'house-select', 'org-selectemployee'], function(Vue, element, ajax, vueselect, util, custInfo, orderInfo, orderWorker, payment, houseSelect, orgSelectEmployee) {
     let vm = new Vue({
         el: '#app',
         data: function() {
@@ -51,6 +51,10 @@ require(['vue', 'ELEMENT','ajax', 'vueselect', 'util','cust-info', 'order-info',
                 this.show = 'display:block';
             },
 
+            selectCustOrderRow: function(row) {
+                this.selectCustOrder(row.orderId, row.custId);
+            },
+
             query: function() {
                 let that = this;
                 ajax.get('api/bss.order/finance/queryCustOrderInfo', this.queryCond, function(responseData){
@@ -66,6 +70,7 @@ require(['vue', 'ELEMENT','ajax', 'vueselect', 'util','cust-info', 'order-info',
                 if (isValid) {
                     let data = this.$refs.pay.getSubmitData();
                     data['orderId'] = this.orderId;
+                    data['payNo'] = this.payNo;
                     ajax.post('api/bss.order/finance/collectFee', data);
                 }
             }

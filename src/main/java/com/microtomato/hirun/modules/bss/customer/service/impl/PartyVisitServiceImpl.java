@@ -39,7 +39,7 @@ public class PartyVisitServiceImpl extends ServiceImpl<PartyVisitMapper, PartyVi
 
     @Override
     public List<CustVisitInfoDTO> queryCustVisit(Long custId) {
-        List<PartyVisit> list=this.list(new QueryWrapper<PartyVisit>().lambda().eq(PartyVisit::getCustId,custId));
+        List<PartyVisit> list=this.list(new QueryWrapper<PartyVisit>().lambda().eq(PartyVisit::getPartyId,custId));
         if(ArrayUtils.isEmpty(list)){
             return null;
         }

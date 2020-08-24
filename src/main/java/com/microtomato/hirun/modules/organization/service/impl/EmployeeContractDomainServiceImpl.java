@@ -54,9 +54,10 @@ public class EmployeeContractDomainServiceImpl implements IEmployeeContractDomai
                 || StringUtils.equals(EmployeeConst.CONTRACT_TYPE_SECRET, contractType)) {
             employeeContract.setContractStartTime(employeeContract.getContractSignTime());
             employeeContract.setContractEndTime(TimeUtils.getForeverTime());
+        }else if(StringUtils.equals(EmployeeConst.CONTRACT_TYPE_CHANGE_PROBLATION, contractType)) {
+
         } else if (StringUtils.equals(EmployeeConst.CONTRACT_TYPE_CHANGE_ROLE, contractType)
                 || StringUtils.equals(EmployeeConst.CONTRACT_TYPE_CHANGE_PLACE, contractType)
-                || StringUtils.equals(EmployeeConst.CONTRACT_TYPE_CHANGE_PROBLATION, contractType)
                 || StringUtils.equals(EmployeeConst.CONTRACT_TYPE_OTHER, contractType)) {
             //如果变更类型为合同变更设置变更协议的结束时间为当前合同的结束时间，如果未找到则设置时间为2099年
             employeeContract.setContractStartTime(employeeContract.getContractSignTime());

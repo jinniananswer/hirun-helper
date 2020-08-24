@@ -14,6 +14,8 @@ import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleServic
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -86,6 +88,7 @@ public class OrderWorkerActionServiceImpl extends ServiceImpl<OrderWorkerActionM
      * @param orderId
      * @param action
      */
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @Override
     public void deleteOrderWorkerAction(Long orderId,String action) {
         //先终止原来的数据
@@ -97,21 +100,9 @@ public class OrderWorkerActionServiceImpl extends ServiceImpl<OrderWorkerActionM
                 oldAction.setEndDate(now);
                 this.updateById(oldAction);
             });
+            //this.updateBatchById(oldActions);
         }
     }
-
-    /*@Override
-    public void deleteOrderWorkerByOrderId(Long orderId) {
-        LocalDateTime now = RequestTimeHolder.getRequestTime();
-        List<OrderWorkerAction> oldActions = this.queryByOrderIdEmployeeIdAction(orderId,employeeId,action);
-        List<OrderWorkerAction> oldActions = this.queryByOrderIdAction(orderId,action);
-        if (ArrayUtils.isNotEmpty(oldActions)) {
-            oldActions.forEach(oldAction -> {
-                oldAction.setEndDate(now);
-                this.updateById(oldAction);
-            });
-        }
-    }*/
 
     /**
      * 创建订单参与工作人员动作数据
@@ -120,9 +111,20 @@ public class OrderWorkerActionServiceImpl extends ServiceImpl<OrderWorkerActionM
      * @param workerId
      * @param action
      */
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @Override
     public void createOrderWorkerAction(Long orderId, Long employeeId, Long workerId, String currentOrderStatus, String action) {
         LocalDateTime now = RequestTimeHolder.getRequestTime();
+
+        List<OrderWorkerAction> orderWorkerActions = this.queryByOrderIdEmployeeIdAction(orderId, employeeId, action);
+        if (ArrayUtils.isNotEmpty(orderWorkerActions)) {
+            orderWorkerActions.forEach(orderWorkerAction -> {
+                orderWorkerAction.setEndDate(now);
+            });
+
+            this.updateBatchById(orderWorkerActions);
+        }
+
         //新增新的记录
         EmployeeJobRole employeeJobRole = this.employeeJobRoleService.queryLast(employeeId);
         OrderWorkerAction workerAction = new OrderWorkerAction();
@@ -138,5 +140,18 @@ public class OrderWorkerActionServiceImpl extends ServiceImpl<OrderWorkerActionM
         workerAction.setOrderStatus(currentOrderStatus);
 
         this.save(workerAction);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    public void deleteOrderWorkerByEmployeeIdAction(Long orderId, Long employeeId, String action) {
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+        List<OrderWorkerAction> oldActions = this.queryByOrderIdEmployeeIdAction(orderId,employeeId,action);
+        if (ArrayUtils.isNotEmpty(oldActions)) {
+            oldActions.forEach(oldAction -> {
+                oldAction.setEndDate(now);
+                this.updateById(oldAction);
+            });
+        }
     }
 }

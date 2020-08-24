@@ -23,21 +23,21 @@ spring:
   datasource:
     atomikos:
       sys:
-#        uniqueResourceName: sys
-#        driverClassName: com.mysql.cj.jdbc.Driver
-#        url: jdbc:mysql://127.0.0.1:3306/sys?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
-#        user: sys
-#        password: ENC(viZyjCQosuNPI/YI5a/bkAjnKGT9R5zD)
-#        minPoolSize: 20
-#        maxPoolSize: 50
-#        maxIdleTime: 60
-#        maxLifetime: 1200
-#        maintenanceInterval: 60
+        #        uniqueResourceName: sys
+        #        driverClassName: com.mysql.cj.jdbc.Driver
+        #        url: jdbc:mysql://127.0.0.1:3306/sys?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
+        #        user: sys
+        #        password: ENC(viZyjCQosuNPI/YI5a/bkAjnKGT9R5zD)
+        #        minPoolSize: 20
+        #        maxPoolSize: 50
+        #        maxIdleTime: 60
+        #        maxLifetime: 1200
+        #        maintenanceInterval: 60
 
         unique-resource-name: sys
-        min-pool-size: 10
+        min-pool-size: 5
         max-pool-size: 50
-        max-lifetime: 20000
+        max-lifetime: 3600
         borrow-connection-timeout: 10000
         xa-data-source-class-name: com.alibaba.druid.pool.xa.DruidXADataSource
         xa-properties:
@@ -45,7 +45,7 @@ spring:
           username: sys
           password: ENC(viZyjCQosuNPI/YI5a/bkAjnKGT9R5zD)
           driverClassName: com.mysql.cj.jdbc.Driver
-          initialSize: 10
+          initialSize: 5
           minIdle: 8
           maxActive: 50
           maxWait: 60000
@@ -61,21 +61,21 @@ spring:
           filters: stat,slf4j,wall
 
       ins:
-#        uniqueResourceName: ins
-#        driverClassName: com.mysql.cj.jdbc.Driver
-#        url: jdbc:mysql://127.0.0.1:3306/ins?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
-#        user: ins
-#        password: ENC(EFtPlR9pOu98f6a1eLlznevxCmlBJH/S)
-#        minPoolSize: 20
-#        maxPoolSize: 50
-#        maxIdleTime: 60
-#        maxLifetime: 1200
-#        maintenanceInterval: 60
+        #        uniqueResourceName: ins
+        #        driverClassName: com.mysql.cj.jdbc.Driver
+        #        url: jdbc:mysql://127.0.0.1:3306/ins?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
+        #        user: ins
+        #        password: ENC(EFtPlR9pOu98f6a1eLlznevxCmlBJH/S)
+        #        minPoolSize: 20
+        #        maxPoolSize: 50
+        #        maxIdleTime: 60
+        #        maxLifetime: 1200
+        #        maintenanceInterval: 60
 
         unique-resource-name: ins
-        min-pool-size: 10
+        min-pool-size: 5
         max-pool-size: 50
-        max-lifetime: 20000
+        max-lifetime: 3600
         borrow-connection-timeout: 10000
         xa-data-source-class-name: com.alibaba.druid.pool.xa.DruidXADataSource
         xa-properties:
@@ -83,7 +83,7 @@ spring:
           username: ins
           password: ENC(EFtPlR9pOu98f6a1eLlznevxCmlBJH/S)
           driverClassName: com.mysql.cj.jdbc.Driver
-          initialSize: 10
+          initialSize: 5
           minIdle: 8
           maxActive: 50
           maxWait: 60000
@@ -126,3 +126,6 @@ spring:
     # session 的存储方式，开发模式（本地）：none，生产模式（分布式缓存）：redis
     store-type: redis
     timeout: 1800
+
+# 数据文件位置
+hirun.data.path: /home/web/data

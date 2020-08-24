@@ -49,6 +49,12 @@ public class OrderPlaneSketch extends BaseEntity {
     private Long designerPlanNum;
 
     /**
+     * 方案助理
+     */
+    @TableField("project_assistant")
+    private Long projectAssistant;
+
+    /**
      * 套内面积
      */
     @TableField("indoor_area")
@@ -83,6 +89,19 @@ public class OrderPlaneSketch extends BaseEntity {
      */
     @TableField("end_date")
     private LocalDateTime endDate;
+
+
+    /**
+     * 平面图开始时间
+     */
+    @TableField("plane_sketch_start_date")
+    private LocalDate planeSketchStartDate;
+
+    /**
+     * 平面图结束时间
+     */
+    @TableField("plane_sketch_end_date")
+    private LocalDate planeSketchEndDate;
 
     /**
      * 第一次看图时间

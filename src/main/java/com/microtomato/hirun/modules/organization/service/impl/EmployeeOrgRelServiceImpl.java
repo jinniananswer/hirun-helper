@@ -46,4 +46,15 @@ public class EmployeeOrgRelServiceImpl extends ServiceImpl<EmployeeOrgRelMapper,
         this.mapper.delete(Wrappers.<EmployeeOrgRel>lambdaQuery().eq(EmployeeOrgRel::getRelType,type)
                 .apply("org_id in ("+orgIds+")"));
     }
+
+    /**
+     * 查询财务人员负责的店面
+     * @param employeeId
+     * @return
+     */
+    @Override
+    public List<EmployeeOrgRel> queryFinanceOrgRel(Long employeeId) {
+        List<EmployeeOrgRel> orgRels = this.list(new QueryWrapper<EmployeeOrgRel>().lambda().eq(EmployeeOrgRel::getRelType, "2").eq(EmployeeOrgRel::getEmployeeId, employeeId));
+        return orgRels;
+    }
 }

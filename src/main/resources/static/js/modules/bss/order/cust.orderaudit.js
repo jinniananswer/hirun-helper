@@ -37,6 +37,22 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
             ajax.get('api/bss.order/order-wholeRoomDrawing/getWholeRoomDraw', data, (responseData)=>{
                 Object.assign(this.wholeRoomDrawing, responseData);
                 this.orderWorkActions = responseData.orderWorkActions;
+                let array = [];
+                for(let i = 0; i < this.orderWorkActions.length; i++) {
+
+                    if ( this.orderWorkActions[i].action == "draw_construct") {
+                        this.orderWorkActions[i].action = "参与全房图设计中"
+                    }
+                    array.push({
+                        action: this.orderWorkActions[i].action,
+                        employeeName: this.orderWorkActions[i].employeeName,
+                        orderStatus : this.orderWorkActions[i].orderStatus,
+                        employeeId : this.orderWorkActions[i].employeeId,
+                        roleId : this.orderWorkActions[i].roleId,
+                        orderId : this.orderWorkActions[i].orderId
+                    });
+                }
+                this.orderWorkActions = array;
             });
         },
 
@@ -54,6 +70,24 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 let designer = this.wholeRoomDrawing.designer;
                 let drawingAuditor = this.wholeRoomDrawing.drawingAuditor;
                 let orderWorkActions = this.orderWorkActions;
+                let drawStartDate = this.wholeRoomDrawing.drawStartDate;
+                let drawEndDate = this.wholeRoomDrawing.drawEndDate;
+                let preTime = this.wholeRoomDrawing.preTime;
+                let array = [];
+                for(let i = 0; i < this.orderWorkActions.length; i++) {
+                    if ( this.orderWorkActions[i].action == "参与全房图设计中") {
+                        this.orderWorkActions[i].action = "draw_construct"
+                    }
+                    array.push({
+                        action: this.orderWorkActions[i].action,
+                        employeeName: this.orderWorkActions[i].employeeName,
+                        orderStatus : this.orderWorkActions[i].orderStatus,
+                        employeeId : this.orderWorkActions[i].employeeId,
+                        roleId : this.orderWorkActions[i].roleId,
+                        orderId : this.orderWorkActions[i].orderId
+                    });
+                }
+                this.orderWorkActions = array;
                 let data = {
                     orderId: orderId,
                     id: '',
@@ -66,7 +100,10 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     hydropowerDesigner : hydropowerDesigner,
                     drawingAuditor : drawingAuditor,
                     designer: designer,
-                    orderWorkActions: orderWorkActions
+                    orderWorkActions: orderWorkActions,
+                    drawStartDate : drawStartDate,
+                    drawEndDate : drawEndDate,
+                    preTime : preTime,
                 };
                 return data;
             },

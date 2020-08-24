@@ -14,88 +14,85 @@
 <div id="app">
     <el-container>
         <el-main>
-            <el-row :gutter="12">
-                <el-col :span="6">
-                    <div class="grid-content bg-purple">
-                        <cust-info :cust-id="customerConsult.custId"></cust-info>
-
-                        <order-worker :order-id="customerConsult.orderId"></order-worker>
-                    </div>
-                </el-col>
-                <el-col :span="18">
-                    <div class="grid-content bg-purple-light">
-                        <order-info :order-id="customerConsult.orderId"></order-info>
-                        <el-card class="box-card">
-                            <div slot="header">
-                                <span>操作区</span>
-                            </div>
-                            <el-form :inline="false" :rules="rules" label-position="right" label-width="80px"
-                                     :model="customerConsult" ref="customerConsult">
-                                <el-row>
-                                    <el-col :span="8">
-                                        <el-form-item label="选择客户" prop="custId" label-width="100px">
-                                            <el-input v-model="customerConsult.custName" placeholder="请选择客户"
-                                                      @focus="selectCustomer"></el-input>
-                                        </el-form-item>
-                                    </el-col>
-                                </el-row>
-                                <el-row>
-                                    <el-col :span="8">
-                                        <el-form-item label="咨询时间" prop="consultTime" label-width="100px">
-                                            <el-date-picker v-model="customerConsult.consultTime" type="datetime"
-                                                            value-format="yyyy-MM-dd HH:mm:ss">
-                                            </el-date-picker>
-                                        </el-form-item>
-                                    </el-col>
-                                    <el-col :span="8">
-                                        <el-form-item label="客户代表" prop="custServiceEmployeeId" label-width="100px">
-                                            <order-selectemployee role-id="15"
-                                                                  v-model="customerConsult.custServiceEmployeeId"></order-selectemployee>
-                                        </el-form-item>
-                                    </el-col>
-                                    <el-col :span="8">
-                                        <el-form-item label="橱柜设计师" prop="designCupboardEmployeeId" label-width="100px">
-                                            <order-selectemployee role-id="45"
-                                                                  v-model="customerConsult.designCupboardEmployeeId"></order-selectemployee>
-                                        </el-form-item>
-                                    </el-col>
-                                </el-row>
-                                <el-row>
-                                    <el-col :span="8">
-                                        <el-form-item label="主材管家" prop="mainMaterialKeeperEmployeeId"
-                                                      label-width="100px">
-                                            <order-selectemployee role-id="46"
-                                                                  v-model="customerConsult.mainMaterialKeeperEmployeeId"></order-selectemployee>
-                                        </el-form-item>
-                                    </el-col>
-                                    <el-col :span="8">
-                                        <el-form-item label="橱柜管家" prop="cupboardKeeperEmployeeId" label-width="100px">
-                                            <order-selectemployee role-id="46"
-                                                                  v-model="customerConsult.cupboardKeeperEmployeeId"></order-selectemployee>
-                                        </el-form-item>
-                                    </el-col>
-                                </el-row>
-                                <el-row>
-                                    <el-col :span="24">
-                                        <el-form-item label="咨询备注" prop="consultRemark" label-width="100px">
-                                            <el-input type="textarea"
-                                                      v-model="customerConsult.consultRemark"></el-input>
-                                        </el-form-item>
-                                    </el-col>
-                                </el-row>
-                                <el-form-item style="text-align: center ">
-                                    <el-button type="primary" @click="save">保存</el-button>
-                                    <el-button type="primary" @click="submitTransOrder">转家装订单</el-button>
-                                    <el-button type="primary" @click="submitSneak">跑单</el-button>
-                                </el-form-item>
-                            </el-form>
-                        </el-card>
-                        <div>
-                            <cust-visit :cust-id="customerConsult.custId"></cust-visit>
+            <el-row>
+                <div class="grid-content bg-purple-light">
+                    <order-info :order-id="customerConsult.orderId"></order-info>
+                    <el-card class="box-card">
+                        <div slot="header">
+                            <span>操作区</span>
                         </div>
-                        </el-card>
+                        <el-form :inline="false" :rules="rules" label-position="right" label-width="80px"
+                                 :model="customerConsult" ref="customerConsult">
+                            <el-row>
+                                <el-col :span="8">
+                                    <el-form-item label="选择客户" prop="custId" label-width="100px">
+                                        <el-input v-model="customerConsult.custName" placeholder="请选择客户"
+                                                  @focus="selectCustomer"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="8">
+                                    <el-form-item label="咨询时间" prop="consultTime" label-width="100px">
+                                        <el-date-picker v-model="customerConsult.consultTime" type="datetime"
+                                                        value-format="yyyy-MM-dd HH:mm:ss">
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="客户代表" prop="custServiceEmployeeId" label-width="100px">
+                                        <order-selectemployee role-id="15"
+                                                              v-model="customerConsult.custServiceEmployeeId"></order-selectemployee>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="设计师" prop="designEmployeeId" label-width="100px">
+                                        <order-selectemployee role-id="30"
+                                                              v-model="customerConsult.designEmployeeId"></order-selectemployee>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="橱柜设计师" prop="designCupboardEmployeeId" label-width="100px">
+                                        <order-selectemployee role-id="45"
+                                                              v-model="customerConsult.designCupboardEmployeeId"></order-selectemployee>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="8">
+                                    <el-form-item label="主材管家" prop="mainMaterialKeeperEmployeeId"
+                                                  label-width="100px">
+                                        <order-selectemployee role-id="46"
+                                                              v-model="customerConsult.mainMaterialKeeperEmployeeId"></order-selectemployee>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="橱柜管家" prop="cupboardKeeperEmployeeId" label-width="100px">
+                                        <order-selectemployee role-id="46"
+                                                              v-model="customerConsult.cupboardKeeperEmployeeId"></order-selectemployee>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="24">
+                                    <el-form-item label="咨询备注" prop="consultRemark" label-width="100px">
+                                        <el-input type="textarea"
+                                                  v-model="customerConsult.consultRemark"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-form-item style="text-align: center ">
+                                <el-button type="primary" @click="save">保存</el-button>
+                                <el-button type="primary" @click="submitTransOrder">转家装订单</el-button>
+                                <el-button type="primary" @click="submitSneak">跑单</el-button>
+                            </el-form-item>
+                        </el-form>
+                    </el-card>
+                    <div>
+                        <cust-visit :cust-id="customerConsult.custId"></cust-visit>
                     </div>
-                </el-col>
+                    </el-card>
+                </div>
             </el-row>
             <el-dialog title="双击选择客户" :visible.sync="dialogTableVisible" width="80%" close-on-press-escape>
                 <el-table

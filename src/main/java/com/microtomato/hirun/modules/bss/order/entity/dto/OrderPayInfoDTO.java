@@ -22,6 +22,10 @@ public class OrderPayInfoDTO {
 
     private String shopName;
 
+    private String auditStatusName;
+
+    private String auditEmployeeName;
+
     private List<OrderPayItemInfoDTO> payItems;
 
     private List<OrderPayMoneyInfoDTO> payMonies;

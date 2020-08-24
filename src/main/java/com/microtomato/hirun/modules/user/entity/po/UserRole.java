@@ -36,6 +36,14 @@ public class UserRole extends BaseEntity {
     private Long roleId;
 
     /**
+     * ALTER TABLE ins_user_role ADD COLUMN is_main_role tinyint(1) NULL COMMENT '是否为主角色' AFTER `role_id`;
+     *
+     * 是否主角色 (1:主角色； 0:非主角色)
+     */
+    @TableField("is_main_role")
+    private Boolean isMainRole;
+
+    /**
      * 生效开始时间
      */
     @TableField("start_date")

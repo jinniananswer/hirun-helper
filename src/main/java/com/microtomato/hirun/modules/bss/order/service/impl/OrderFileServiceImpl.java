@@ -13,14 +13,13 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -45,16 +44,12 @@ public class OrderFileServiceImpl extends ServiceImpl<OrderFileMapper, com.micro
     @Autowired
     private IStaticDataService staticDataService;
 
+    @Value("${hirun.data.path}")
+    private String dataPath;
+
     @Override
     public String toAbsolutePath(String relativePath) {
-        String absolutePath = null;
-
-        try {
-            absolutePath = ResourceUtils.getURL("classpath:").getPath() + "../../" + relativePath;
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
+        String absolutePath = FilenameUtils.concat(dataPath, relativePath);
         return absolutePath;
     }
 
@@ -64,12 +59,7 @@ public class OrderFileServiceImpl extends ServiceImpl<OrderFileMapper, com.micro
      * @return
      */
     private String getDestPath() {
-        String destPath = null;
-        try {
-            destPath = ResourceUtils.getURL("classpath:").getPath() + "../../" + UPLOAD + "/order";
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        String destPath = FilenameUtils.concat(dataPath, "/" + UPLOAD + "/order");
         return destPath;
     }
 
@@ -185,10 +175,12 @@ public class OrderFileServiceImpl extends ServiceImpl<OrderFileMapper, com.micro
 
     @Override
     public List<OrderFileDTO> queryOrderFiles(Long orderId) {
-        List<OrderFile> files = this.list(Wrappers.<OrderFile>lambdaQuery()
-            .eq(OrderFile::getOrderId, orderId)
-            .eq(OrderFile::getEnabled, true)
-            .orderByAsc(OrderFile::getCreateTime));
+        List<OrderFile> files = this.list(
+            Wrappers.<OrderFile>lambdaQuery()
+                .eq(OrderFile::getOrderId, orderId)
+                .eq(OrderFile::getEnabled, true)
+                .orderByAsc(OrderFile::getCreateTime)
+        );
 
         if (ArrayUtils.isEmpty(files)) {
             return null;

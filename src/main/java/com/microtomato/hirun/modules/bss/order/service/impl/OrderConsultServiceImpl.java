@@ -10,6 +10,7 @@ import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderBase;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderConsult;
+import com.microtomato.hirun.modules.bss.order.entity.po.OrderWorker;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderConsultMapper;
 import com.microtomato.hirun.modules.bss.order.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -77,7 +78,6 @@ public class OrderConsultServiceImpl extends ServiceImpl<OrderConsultMapper, Ord
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void saveCustomerConsultInfo(CustConsultDTO dto) {
-        dto.setOrderId(54L);
 
         OrderConsult orderConsult = new OrderConsult();
         BeanUtils.copyProperties(dto, orderConsult);
@@ -87,10 +87,8 @@ public class OrderConsultServiceImpl extends ServiceImpl<OrderConsultMapper, Ord
         } else {
             this.baseMapper.updateById(orderConsult);
         }
-        Long customerServiceWorkerId=workerService.updateOrderWorker(dto.getOrderId(), 15L, dto.getCustServiceEmployeeId());
-        workerActionService.createOrderWorkerAction(dto.getOrderId(),dto.getCustServiceEmployeeId(),customerServiceWorkerId,"","consult");
-        Long designCupBoardWorkerId=workerService.updateOrderWorker(dto.getOrderId(), 45L, dto.getDesignCupboardEmployeeId());
-        workerActionService.createOrderWorkerAction(dto.getOrderId(),dto.getCupboardKeeperEmployeeId(),designCupBoardWorkerId,"","consult");
+        workerService.updateOrderWorker(dto.getOrderId(), 15L, dto.getCustServiceEmployeeId());
+        workerService.updateOrderWorker(dto.getOrderId(), 45L, dto.getDesignCupboardEmployeeId());
         workerService.updateOrderWorker(dto.getOrderId(), 46L, dto.getMainMaterialKeeperEmployeeId());
         workerService.updateOrderWorker(dto.getOrderId(), 47L, dto.getCupboardKeeperEmployeeId());
         if (dto.getDesignEmployeeId() != null) {
@@ -106,9 +104,19 @@ public class OrderConsultServiceImpl extends ServiceImpl<OrderConsultMapper, Ord
     public void submitMeasure(CustConsultDTO dto) {
         this.saveCustomerConsultInfo(dto);
         orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_NEXT_STEP);
+        //插入workerAction,用于工资计算
+        List<OrderWorker> workers=workerService.queryValidByOrderId(dto.getOrderId());
+        if(ArrayUtils.isNotEmpty(workers)){
+            for(OrderWorker orderWorker:workers){
+                if(orderWorker.getRoleId().equals(15L)){
+                    workerActionService.createOrderWorkerAction(dto.getOrderId(),orderWorker.getEmployeeId(),orderWorker.getId(),"2","consult");
+                }
+            }
+        }
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void submitSneak(CustConsultDTO dto) {
         this.saveCustomerConsultInfo(dto);
         orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_RUN);
