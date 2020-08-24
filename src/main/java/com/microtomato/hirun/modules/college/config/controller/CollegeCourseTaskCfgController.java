@@ -106,8 +106,7 @@ public class CollegeCourseTaskCfgController {
     }
 
     @PostMapping("addCourseTaskCfg")
-    @RestResult
-    public boolean addCourseTaskCfg(@RequestBody CollegeCourseChaptersTaskRequestDTO collegeCourseChaptersTaskRequestDTO){
+    public void addCourseTaskCfg(@RequestBody CollegeCourseChaptersTaskRequestDTO collegeCourseChaptersTaskRequestDTO){
         CollegeCourseTaskCfg collegeCourseTaskCfg = new CollegeCourseTaskCfg();
         BeanUtils.copyProperties(collegeCourseChaptersTaskRequestDTO, collegeCourseTaskCfg);
         collegeCourseTaskCfg.setStatus("0");
@@ -119,7 +118,5 @@ public class CollegeCourseTaskCfgController {
             }
             collegeCourseChaptersCfgServiceImpl.saveBatch(courseChaptersList);
         }
-
-        return false;
     }
 }

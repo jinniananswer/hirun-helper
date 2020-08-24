@@ -177,8 +177,12 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                             type: 'warning'
                         }).then(() => {
                             that.addCourseTaskInfo.courseChaptersList = courseChaptersDetails
-                            ajax.post('api/CollegeCourseTaskCfg/addCourseTaskCfg', that.addCourseTaskInfo, function(responseData){
-
+                            ajax.post('api/CollegeCourseTaskCfg/addCourseTaskCfg', that.addCourseTaskInfo, function(){
+                                this.$message({
+                                    showClose: true,
+                                    message: '课程任务新增成功',
+                                    type: 'success'
+                                });
                             });
                         })
                     }
