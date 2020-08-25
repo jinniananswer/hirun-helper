@@ -1,4 +1,4 @@
-require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-select', 'util', 'cust-info', 'order-info', 'order-worker', 'order-search-employee'], function(Vue, element, ajax, table, vueSelect, orgTree, houseSelect, util, custInfo, orderInfo, orderWorker, orderSearchEmployee) {
+require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-select', 'util', 'cust-info', 'order-info', 'order-worker', 'order-search-employee', 'order-file-upload', 'upload-file'], function(Vue, element, ajax, table, vueSelect, orgTree, houseSelect, util, custInfo, orderInfo, orderWorker, orderSearchEmployee, orderFileUpload) {
     Vue.use(table);
     let vm = new Vue({
         el: '#app',
@@ -41,12 +41,15 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 },
                 courseTaskInfo: [],
                 courseTaskTypes: [],
+                taskCoursewareTypes: [],
                 addCourseTaskDialogVisible: false,
                 courseChaptersDetails: [],
                 courseChaptersItem: {},
                 addCourseTaskInfo: {},
                 selectCurrent: {},
                 courseInfos: [],
+                showUpload: '',
+                showTree: '',
                 defaultProps: {
                     children: 'children',
                     label: 'courseName'
@@ -55,6 +58,7 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 courseName: '',
                 courseStudyModelTypes: [],
                 chaptersTypes: [],
+                taskCoursewareType: ''
             }
         },
         mounted: function() {
@@ -69,6 +73,10 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
             this.chaptersTypes = [
                 {value : "0", label : "章节类型A"},
                 {value : "1", label : "章节类型B"}
+            ];
+            this.taskCoursewareTypes = [
+                {value : "0", label : "选择课程"},
+                {value : "1", label : "上传课件"}
             ];
         },
         methods: {
@@ -96,14 +104,8 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 },null, true);
             },
             addCourseTask: function(){
-                this.$nextTick(()=>{
-                    this.$refs.addCourseTaskInfo.resetFields();
-                });
                 let that = this;
-                ajax.get('api/organization/course/qeuryCourseTree', null, function(responseData){
-                    that.courseInfos = responseData;
-                    that.addCourseTaskDialogVisible = true;
-                });
+                that.addCourseTaskDialogVisible = true;
             },
             handleNodeClick: function(data) {
                 if (data.courseFlag){
@@ -193,7 +195,30 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 that.addCourseTaskDialogVisible = false;
                 that.addCourseTaskInfo = [];
                 that.courseChaptersDetails = [];
-            }
+            },
+            changeTaskCoursewareType: function (val) {
+                if (1 == val){
+                    this.$refs.upload.display = '';
+                    this.$refs.tree.style = 'display:none';
+                }else if (0 == val){
+                    this.$nextTick(()=>{
+                        this.$refs.addCourseTaskInfo.resetFields();
+                    });
+                    let that = this;
+                    if (null == that.courseInfos || [] == that.courseInfos || undefined == that.courseInfos || that.courseInfos.length == 0){
+                        ajax.get('api/organization/course/qeuryCourseTree', null, function(responseData){
+                            that.courseInfos = responseData;
+                            that.taskCoursewareType = val;
+                        });
+                    }
+                }
+            },
+            handleClick() {
+
+            },
+            handleSuccess: function (response, file, fileList) {
+                alert("fileId: " + this.$refs.upload.fileId);
+            },
         },
 
         /*mounted () {

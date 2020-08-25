@@ -131,10 +131,19 @@
             <el-dialog width="80%" title="新增课程任务" append-to-body :visible.sync="addCourseTaskDialogVisible">
                 <el-card class="box-card" shadow="hover">
                     <div slot="header" class="clearfix">
-                        <span>选择课程</span>
+                        <span>选择课件类型</span>
+                        <el-select v-model="taskCoursewareType" @change="changeTaskCoursewareType" filterable placeholder="请选择">
+                            <el-option
+                                    v-for="taskCoursewareType in taskCoursewareTypes"
+                                    :key="taskCoursewareType.value"
+                                    :label="taskCoursewareType.label"
+                                    :value="taskCoursewareType.value">
+                            </el-option>
+                        </el-select>
                     </div>
                     <div style="height: 20vh;overflow: auto;">
-                        <el-tree :data="courseInfos" node-key="courseId" :props="defaultProps" @node-click="handleNodeClick" accordion></el-tree>
+                        <upload-file :style="showUpload" accept=".pdf" limit="1"></upload-file>
+                        <el-tree :style="showTree" :data="courseInfos" node-key="courseId" :props="defaultProps" @node-click="handleNodeClick" accordion></el-tree>
                     </div>
                 </el-card>
                 <el-card>
@@ -277,7 +286,7 @@
         text-decoration: line-through;
     }
 </style>
-<script src="static/js/modules/bss/salary/edit.royalty.detail.js"
+<script src="static/js/modules/college/task/college.task.manage.js"
         th:src="@{static/js/modules/college/task/college.task.manage.js(v=${version})}"></script>
 </body>
 </html>
