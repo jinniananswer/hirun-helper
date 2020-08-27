@@ -280,6 +280,27 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
             handleSuccess: function (response, file, fileList) {
                 alert("fileId: " + this.$refs.upload.fileId);
             },
+            deleteStudyTaskBatch: function () {
+                let val = this.multipleSelection
+                if(val == undefined || val == 'undefined' || val.length <= 0){
+                    this.$message({
+                        showClose: true,
+                        duration: 3000,
+                        message: '您未选择需要删除的学习任务配置！请选择后再点击删除。',
+                        center: true
+                    });
+                    return;
+                }
+                alert("勾选了删除：" + val.length + "个元素")
+                let studyTaskIdList = [];
+                val.forEach(v => {
+                    studyTaskIdList.push({studyTaskId:v.studyTaskId});
+                });
+                alert(JSON.stringify(studyTaskIdList));
+                ajax.post('api/CollegeStudyTaskCfg/deleteStudyTaskBatch', val, function(responseData){
+
+                },null, true);
+            }
         },
 
         /*mounted () {

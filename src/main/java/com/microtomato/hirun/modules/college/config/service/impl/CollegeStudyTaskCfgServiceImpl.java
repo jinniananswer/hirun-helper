@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.framework.mybatis.DataSourceKey;
+import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 import com.microtomato.hirun.modules.college.config.entity.dto.CollegeStudyTaskRequestDTO;
 import com.microtomato.hirun.modules.college.config.entity.dto.CollegeStudyTaskResponseDTO;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeCourseChaptersCfg;
@@ -26,6 +28,7 @@ import java.util.List;
  * @date 2020-08-26 02:04:48
  */
 @Service("collegeStudyTaskCfgService")
+@DataSource(DataSourceKey.SYS)
 public class CollegeStudyTaskCfgServiceImpl extends ServiceImpl<CollegeStudyTaskCfgMapper, CollegeStudyTaskCfg> implements ICollegeStudyTaskCfgService {
 
     @Autowired
@@ -52,9 +55,15 @@ public class CollegeStudyTaskCfgServiceImpl extends ServiceImpl<CollegeStudyTask
         List<CollegeStudyTaskResponseDTO> records = collegeStudyTaskResponseDTOIPage.getRecords();
         for (CollegeStudyTaskResponseDTO collegeStudyTaskResponseDTO : records){
             String studyId = collegeStudyTaskResponseDTO.getStudyId();
-            List<CollegeCourseChaptersCfg> collegeCourseChaptersCfgList = collegeCourseChaptersCfgServiceImpl.queryByCourseId(studyId);
+            List<CollegeCourseChaptersCfg> collegeCourseChaptersCfgList = collegeCourseChaptersCfgServiceImpl.queryByStudyId(studyId);
             collegeStudyTaskResponseDTO.setCollegeCourseChaptersList(collegeCourseChaptersCfgList);
         }
         return collegeStudyTaskResponseDTOIPage;
+    }
+
+    @Override
+    public List<CollegeStudyTaskCfg> queryByStudyTaskIdList(List<Long> studyTaskIdList) {
+        return this.list(Wrappers.<CollegeStudyTaskCfg>lambdaQuery().eq(CollegeStudyTaskCfg::getStatus, '0')
+                .in(CollegeStudyTaskCfg::getStudyTaskId, studyTaskIdList));
     }
 }

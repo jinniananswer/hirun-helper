@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -117,6 +118,35 @@ public class CollegeStudyTaskCfgController {
                 courseChaptersCfg.setStatus("0");
             }
             collegeCourseChaptersCfgServiceImpl.saveBatch(courseChaptersList);
+        }
+    }
+
+    @PostMapping("deleteStudyTaskBatch")
+    public void deleteStudyTaskBatch(@RequestBody List<Long> studyTaskIdList){
+        //1.根据学习任务ID集合查询出所有的任务配置
+        List<CollegeStudyTaskCfg> collegeStudyTaskCfgs = this.collegeStudyTaskCfgService.queryByStudyTaskIdList(studyTaskIdList);
+        if (ArrayUtils.isNotEmpty(collegeStudyTaskCfgs)){
+            //2.获取所有的学习标识集合
+            List<String> studyIdList = new ArrayList<>();
+            for (CollegeStudyTaskCfg collegeStudyTaskCfg : collegeStudyTaskCfgs){
+                collegeStudyTaskCfg.setStatus("1");
+                studyIdList.add(collegeStudyTaskCfg.getStudyId());
+            }
+
+            //3.删除学习任务配置信息，及将修改状态
+            this.collegeStudyTaskCfgService.updateBatchById(collegeStudyTaskCfgs);
+
+            //4.根据所有学习标识集合，查询章节配置信息
+            if(ArrayUtils.isNotEmpty(studyIdList)){
+                List<CollegeCourseChaptersCfg> collegeCourseChaptersCfgs = this.collegeCourseChaptersCfgServiceImpl.queryByStudyIdList(studyIdList);
+                if (ArrayUtils.isNotEmpty(collegeCourseChaptersCfgs)){
+                    for (CollegeCourseChaptersCfg collegeCourseChaptersCfg : collegeCourseChaptersCfgs){
+                        collegeCourseChaptersCfg.setStatus("1");
+                    }
+                    //5.删除查询出的章节配置信息
+                    this.collegeCourseChaptersCfgServiceImpl.updateBatchById(collegeCourseChaptersCfgs);
+                }
+            }
         }
     }
 }

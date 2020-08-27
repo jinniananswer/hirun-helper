@@ -61,7 +61,7 @@
             <el-card class="box-card" shadow="hover">
                 <el-row style="padding-bottom: 12px">
                     <el-button type="success" icon="el-icon-folder-add" @click="addStudyTask">新增任务课程</el-button>
-                    <el-button type="danger" icon="el-icon-delete" @click="deleteStudyTask">删除任务课程</el-button>
+                    <el-button type="danger" icon="el-icon-delete" @click="deleteStudyTaskBatch">删除任务课程</el-button>
                 </el-row>
                 <el-table
                         :data="studyTaskInfo" stripe="true" height="350" style="width: 100%"

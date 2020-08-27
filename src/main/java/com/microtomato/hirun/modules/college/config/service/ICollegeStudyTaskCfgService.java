@@ -26,4 +26,6 @@ public interface ICollegeStudyTaskCfgService extends IService<CollegeStudyTaskCf
     List<CollegeStudyTaskCfg> queryByTaskType(String taskType);
 
     IPage<CollegeStudyTaskResponseDTO> queryCollegeStufyByPage(CollegeStudyTaskRequestDTO collegeStudyTaskRequestDTO, Page<CollegeStudyTaskRequestDTO> page);
+
+    List<CollegeStudyTaskCfg> queryByStudyTaskIdList(List<Long> studyTaskIdList);
 }

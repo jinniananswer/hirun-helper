@@ -16,16 +16,16 @@ public interface ICollegeCourseChaptersCfgService extends IService<CollegeCourse
 
     /**
      * 根据课程ID查询所有章节配置
-     * @param courseId
+     * @param studyId
      * @return
      */
-    List<CollegeCourseChaptersCfg> queryByCourseId(String studyId);
+    List<CollegeCourseChaptersCfg> queryByStudyId(String studyId);
 
     /**
      * 根据课程ID集合查询所有章节配置
-     * @param courseIdList
+     * @param studyIdList
      * @return
      */
-    List<CollegeCourseChaptersCfg> queryByCourseIdList(List<String> studyIdList);
+    List<CollegeCourseChaptersCfg> queryByStudyIdList(List<String> studyIdList);
 
 }

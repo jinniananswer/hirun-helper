@@ -50,7 +50,7 @@ public class TaskDomainOpenServiceImpl implements ITaskDomainOpenService {
                 for(int i = 0 ; i < collegeCourseTaskCfgList.size() ; i++){
                     CollegeStudyTaskCfg collegeStudyTaskCfg = collegeCourseTaskCfgList.get(i);
                     String studyId = collegeStudyTaskCfg.getStudyId();
-                    List<CollegeCourseChaptersCfg> collegeCourseChaptersCfgList = collegeCourseChaptersCfgServiceImpl.queryByCourseId(studyId);
+                    List<CollegeCourseChaptersCfg> collegeCourseChaptersCfgList = collegeCourseChaptersCfgServiceImpl.queryByStudyId(studyId);
                     if (ArrayUtils.isNotEmpty(collegeCourseChaptersCfgList)){
                         //如果有章节配置，则需配置章节信息
                         //上一次章节学习顺序

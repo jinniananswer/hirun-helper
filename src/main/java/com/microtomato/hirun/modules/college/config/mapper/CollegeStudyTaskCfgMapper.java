@@ -24,6 +24,7 @@ import org.apache.ibatis.annotations.Select;
 @Storage
 @DataSource(DataSourceKey.SYS)
 public interface CollegeStudyTaskCfgMapper extends BaseMapper<CollegeStudyTaskCfg> {
+
     @Select("select * from college_study_task_cfg  ${ew.customSqlSegment}")
     IPage<CollegeStudyTaskResponseDTO> queryCollegeStudyByPage(Page<CollegeStudyTaskRequestDTO> page, @Param(Constants.WRAPPER) Wrapper wrapper);
 }
