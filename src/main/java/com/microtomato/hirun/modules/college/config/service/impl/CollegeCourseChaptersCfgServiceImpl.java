@@ -28,14 +28,14 @@ public class CollegeCourseChaptersCfgServiceImpl extends ServiceImpl<CollegeCour
 
 
     @Override
-    public List<CollegeCourseChaptersCfg> queryByCourseId(String courseId) {
-        return this.list(Wrappers.<CollegeCourseChaptersCfg>lambdaQuery().eq(CollegeCourseChaptersCfg::getCourseId, courseId)
+    public List<CollegeCourseChaptersCfg> queryByCourseId(String studyId) {
+        return this.list(Wrappers.<CollegeCourseChaptersCfg>lambdaQuery().eq(CollegeCourseChaptersCfg::getStudyId, studyId)
                 .eq(CollegeCourseChaptersCfg::getStatus, '0').orderByAsc(CollegeCourseChaptersCfg::getChaptersStudyOrder));
     }
 
     @Override
-    public List<CollegeCourseChaptersCfg> queryByCourseIdList(List<String> courseIdList) {
-        return this.list(Wrappers.<CollegeCourseChaptersCfg>lambdaQuery().in(CollegeCourseChaptersCfg::getCourseId, courseIdList)
+    public List<CollegeCourseChaptersCfg> queryByCourseIdList(List<String> studyIdList) {
+        return this.list(Wrappers.<CollegeCourseChaptersCfg>lambdaQuery().in(CollegeCourseChaptersCfg::getStudyId, studyIdList)
                 .eq(CollegeCourseChaptersCfg::getStatus, '0'));
     }
 }

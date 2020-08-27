@@ -6,29 +6,29 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class CollegeCourseTaskResponseDTO {
+public class CollegeStudyTaskResponseDTO {
 
-    private Long courseTaskId;
+    private Long studyTaskId;
 
     /**
      * 课程ID
      */
-    private String courseId;
+    private String studyId;
 
     /**
      * 课程名称
      */
-    private String courseName;
+    private String studyName;
 
     /**
      * 课程类型
      */
-    private String courseType;
+    private String studyType;
 
     /**
      * 课程学习顺序
      */
-    private String courseStudyOrder;
+    private String studyOrder;
 
     /**
      * 状态

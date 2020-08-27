@@ -3,14 +3,13 @@ package com.microtomato.hirun.modules.college.task.service.impl;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeCourseChaptersCfg;
-import com.microtomato.hirun.modules.college.config.entity.po.CollegeCourseTaskCfg;
+import com.microtomato.hirun.modules.college.config.entity.po.CollegeStudyTaskCfg;
 import com.microtomato.hirun.modules.college.config.service.ICollegeCourseChaptersCfgService;
-import com.microtomato.hirun.modules.college.config.service.ICollegeCourseTaskCfgService;
+import com.microtomato.hirun.modules.college.config.service.ICollegeStudyTaskCfgService;
 import com.microtomato.hirun.modules.college.task.entity.dto.CollegeEmployeeTaskDTO;
 import com.microtomato.hirun.modules.college.task.entity.po.CollegeEmployeeTask;
 import com.microtomato.hirun.modules.college.task.service.ICollegeEmployeeTaskService;
 import com.microtomato.hirun.modules.college.task.service.ITaskDomainOpenService;
-import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,7 @@ import java.util.List;
 public class TaskDomainOpenServiceImpl implements ITaskDomainOpenService {
 
     @Autowired
-    private ICollegeCourseTaskCfgService collegeCourseTaskCfgServiceImpl;
+    private ICollegeStudyTaskCfgService collegeStudyTaskCfgServiceImpl;
 
     @Autowired
     private ICollegeCourseChaptersCfgService collegeCourseChaptersCfgServiceImpl;
@@ -37,7 +36,7 @@ public class TaskDomainOpenServiceImpl implements ITaskDomainOpenService {
         if(ArrayUtils.isNotEmpty(employeeIdList)){
             //1.获取需要分配给新员工的课程以及课程章节
             //1.1查询固定任务配置课程
-            List<CollegeCourseTaskCfg> collegeCourseTaskCfgList = collegeCourseTaskCfgServiceImpl.queryByTaskType("1");
+            List<CollegeStudyTaskCfg> collegeCourseTaskCfgList = collegeStudyTaskCfgServiceImpl.queryByTaskType("1");
             List<CollegeEmployeeTaskDTO> collegeEmployeeTaskDTOList = new ArrayList<>();
             if (ArrayUtils.isNotEmpty(collegeCourseTaskCfgList)){
                 //根据课程ID查询章节
@@ -49,9 +48,9 @@ public class TaskDomainOpenServiceImpl implements ITaskDomainOpenService {
                 LocalDateTime lastCourseEndDate = TimeUtils.getFirstSecondDay(LocalDateTime.now(), 1);
                 //当前课程中同时学习章节最后学习结束时间
                 for(int i = 0 ; i < collegeCourseTaskCfgList.size() ; i++){
-                    CollegeCourseTaskCfg collegeCourseTaskCfg = collegeCourseTaskCfgList.get(i);
-                    String courseId = collegeCourseTaskCfg.getCourseId();
-                    List<CollegeCourseChaptersCfg> collegeCourseChaptersCfgList = collegeCourseChaptersCfgServiceImpl.queryByCourseId(courseId);
+                    CollegeStudyTaskCfg collegeStudyTaskCfg = collegeCourseTaskCfgList.get(i);
+                    String studyId = collegeStudyTaskCfg.getStudyId();
+                    List<CollegeCourseChaptersCfg> collegeCourseChaptersCfgList = collegeCourseChaptersCfgServiceImpl.queryByCourseId(studyId);
                     if (ArrayUtils.isNotEmpty(collegeCourseChaptersCfgList)){
                         //如果有章节配置，则需配置章节信息
                         //上一次章节学习顺序
@@ -64,9 +63,9 @@ public class TaskDomainOpenServiceImpl implements ITaskDomainOpenService {
                         for (int j = 0 ; j < collegeCourseChaptersCfgList.size() ; j++){
                             CollegeCourseChaptersCfg collegeCourseChaptersCfg = collegeCourseChaptersCfgList.get(j);
                             CollegeEmployeeTaskDTO collegeEmployeeTaskDTO = new CollegeEmployeeTaskDTO();
-                            collegeEmployeeTaskDTO.setCourseId(courseId);
+                            collegeEmployeeTaskDTO.setStudyId(studyId);
                             collegeEmployeeTaskDTO.setChapterId(String.valueOf(collegeCourseChaptersCfg.getChaptersId()));
-                            collegeEmployeeTaskDTO.setCourseType(collegeCourseTaskCfg.getCourseType());
+                            collegeEmployeeTaskDTO.setStudyType(collegeStudyTaskCfg.getStudyType());
                             collegeEmployeeTaskDTO.setStatus("0");
                             //固定任务
                             collegeEmployeeTaskDTO.setTaskType("1");
@@ -101,16 +100,16 @@ public class TaskDomainOpenServiceImpl implements ITaskDomainOpenService {
                     }else {
                         //没有章节配置,以课程配置未准
                         CollegeEmployeeTaskDTO collegeEmployeeTaskDTO = new CollegeEmployeeTaskDTO();
-                        collegeEmployeeTaskDTO.setCourseId(courseId);
-                        collegeEmployeeTaskDTO.setCourseType(collegeCourseTaskCfg.getCourseType());
+                        collegeEmployeeTaskDTO.setStudyId(studyId);
+                        collegeEmployeeTaskDTO.setStudyType(collegeStudyTaskCfg.getStudyType());
                         collegeEmployeeTaskDTO.setStatus("0");
                         //固定任务
                         collegeEmployeeTaskDTO.setTaskType("1");
                         //当前课程学习顺序
-                        String courseStudyOrder = collegeCourseTaskCfg.getCourseStudyOrder();
+                        String studyOrder = collegeStudyTaskCfg.getStudyOrder();
                         //如果当前课程习顺序与上一课程的不一致时，学习开始时间取前面课程较大的结束时间
                         LocalDateTime startDate = TimeUtils.getFirstSecondDay(lastCourseEndDate, 1);
-                        if (StringUtils.equals(lastTimeCourseStudyOrder, courseStudyOrder)){
+                        if (StringUtils.equals(lastTimeCourseStudyOrder, studyOrder)){
                             //如果学习顺序一致，则开始时间与上一课程一致
                             startDate = lastTimeCourseStartDate;
                         }
@@ -118,13 +117,13 @@ public class TaskDomainOpenServiceImpl implements ITaskDomainOpenService {
                         //将本课程开始时间设置到上一课程的开始时间，用以下一课程判断使用
                         lastTimeCourseStartDate = startDate;
 
-                        LocalDateTime studyEndDate = TimeUtils.addSeconds(TimeUtils.getFirstSecondDay(startDate, Integer.valueOf(collegeCourseTaskCfg.getStudyTime())), -1);
+                        LocalDateTime studyEndDate = TimeUtils.addSeconds(TimeUtils.getFirstSecondDay(startDate, Integer.valueOf(collegeStudyTaskCfg.getStudyTime())), -1);
                         collegeEmployeeTaskDTO.setStudyEndDate(studyEndDate);
                         //取前面课程较大的结束时间
                         if (TimeUtils.compareTwoTime(lastCourseEndDate, studyEndDate) < 0){
                             lastCourseEndDate = studyEndDate;
                         }
-                        lastTimeCourseStudyOrder = courseStudyOrder;
+                        lastTimeCourseStudyOrder = studyOrder;
                         collegeEmployeeTaskDTOList.add(collegeEmployeeTaskDTO);
                     }
                 }

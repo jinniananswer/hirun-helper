@@ -10,13 +10,13 @@ public class CollegeCourseChaptersTaskRequestDTO {
 
     private String taskType;
 
-    private String courseId;
+    private String studyId;
 
-    private String courseName;
+    private String studyName;
 
-    private String courseType;
+    private String studyType;
 
-    private String courseStudyOrder;
+    private String studyOrder;
 
     private String staffRank;
 

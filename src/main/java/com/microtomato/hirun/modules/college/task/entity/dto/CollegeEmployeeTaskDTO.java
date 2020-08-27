@@ -10,9 +10,9 @@ public class CollegeEmployeeTaskDTO {
 
     private String taskType;
 
-    private String courseType;
+    private String studyType;
 
-    private String courseId;
+    private String studyId;
 
     private String chapterId;
 

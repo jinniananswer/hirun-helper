@@ -3,15 +3,15 @@ package com.microtomato.hirun.modules.college.config.entity.dto;
 import lombok.Data;
 
 @Data
-public class CollegeCourseTaskRequestDTO {
+public class CollegeStudyTaskRequestDTO {
 
     private Long taskType;
 
-    private Long courseId;
+    private Long studyId;
 
-    private String courseName;
+    private String studyName;
 
-    private Long courseTaskId;
+    private Long studyTaskId;
 
     private Integer page;
 

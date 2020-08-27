@@ -6,26 +6,26 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
             return {
                 queryCond: {
                     taskType: '',
-                    courseId: '',
-                    courseName: '',
-                    courseTaskId: '',
+                    studyId: '',
+                    studyName: '',
+                    studyTaskId: '',
                     limit: 20,
                     page: 1,
                     count: null
                 },
-                courseTaskRules: {
-                    courseId: [
-                        { required: true, message: '请先选择课程', trigger: 'change' }
+                studyTaskRules: {
+                    studyId: [
+                        { required: true, message: '请先选择学习内容', trigger: 'change' }
                     ],
-                    courseName: [
-                        { required: true, message: '课程名称不能为空', trigger: 'blur' }
+                    studyName: [
+                        { required: true, message: '学习内容名称不能为空', trigger: 'blur' }
                     ],
-                    courseType: [
-                        { required: true, message: '课程类型不能为空', trigger: 'blur' }
+                    studyType: [
+                        { required: true, message: '学习内容类型不能为空', trigger: 'blur' }
                     ],
-                    courseStudyOrder: [
-                        { required: true, message: '课程学习顺序不能为空', trigger: 'blur' },
-                        { type: 'number', message: '课程学习顺序必须为数字值', trigger: 'blur'}
+                    studyOrder: [
+                        { required: true, message: '学习顺序不能为空', trigger: 'blur' },
+                        { type: 'number', message: '学习顺序必须为数字值', trigger: 'blur'}
                     ],
                     staffRank: [
                         { required: true, message: '员工职级不能为空', trigger: 'blur' },
@@ -39,30 +39,31 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                         { type: 'number', message: '学习时间必须为数字值', trigger: 'blur'}
                     ]
                 },
-                courseTaskInfo: [],
-                courseTaskTypes: [],
+                studyTaskInfo: [],
+                studyTaskTypes: [],
                 taskCoursewareTypes: [],
-                addCourseTaskDialogVisible: false,
+                addStudyTaskDialogVisible: false,
                 courseChaptersDetails: [],
                 courseChaptersItem: {},
-                addCourseTaskInfo: {},
+                addStudyTaskInfo: {},
                 selectCurrent: {},
-                courseInfos: [],
-                showUpload: '',
-                showTree: '',
+                studyInfos: [],
+                showUpload: 'display:none',
+                showTree: 'display:block',
                 defaultProps: {
                     children: 'children',
-                    label: 'courseName'
+                    label: 'studyName'
                 },
-                courseId: '',
-                courseName: '',
+                studyId: '',
+                studyName: '',
+                studyType: '',
                 courseStudyModelTypes: [],
                 chaptersTypes: [],
                 taskCoursewareType: ''
             }
         },
         mounted: function() {
-            this.courseTaskTypes = [
+            this.studyTaskTypes = [
                 {value : "1", name : "固定任务"},
                 {value : "2", name : "活动任务"}
             ];
@@ -82,8 +83,8 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
         methods: {
             query: function() {
                 let that = this;
-                ajax.get('api/CollegeCourseTaskCfg/queryCollegeCourseByPage', this.queryCond, function(responseData){
-                    that.courseTaskInfo = responseData.records;
+                ajax.get('api/CollegeStudyTaskCfg/queryCollegeStufyByPage', this.queryCond, function(responseData){
+                    that.studyTaskInfo = responseData.records;
                     that.queryCond.page = responseData.current;
                     that.queryCond.count = responseData.total;
                 });
@@ -103,19 +104,21 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
 
                 },null, true);
             },
-            addCourseTask: function(){
+            addStudyTask: function(){
                 let that = this;
-                that.addCourseTaskDialogVisible = true;
+                that.addStudyTaskDialogVisible = true;
             },
             handleNodeClick: function(data) {
                 if (data.courseFlag){
-                    this.addCourseTaskInfo = data;
-                    this.courseId = data.courseId;
-                    this.courseName = data.courseName;
+                    this.addStudyTaskInfo = data;
+                    this.addStudyTaskInfo.studyType = this.studyType;
+                    this.studyId = data.studyId;
+                    this.studyName = data.studyName;
                 }else {
-                    this.addCourseTaskInfo = {};
-                    this.courseId = '';
-                    this.courseName = '';
+                    this.addStudyTaskInfo = {};
+                    this.addStudyTaskInfo.studyType = this.studyType;
+                    this.studyId = '';
+                    this.studyName = '';
                 }
             },
             deleteDesign: function(row){
@@ -145,32 +148,32 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
             },
             addDesign: function(){
                 this.courseChaptersItem = {
-                    courseId: this.courseId,
-                    chaptersName: this.courseName,
+                    studyId: this.studyId,
+                    chaptersName: this.studyName,
                     chaptersStudyOrder: 1,
                     chaptersType: 0,
                     studyTime: 1,
                     studyModel: 1
                 };
                 let that = this;
-                if (that.courseId == '' || that.courseId == null || that.courseId == undefined || that.courseId == 'undefined' || that.courseId == 'null'){
+                if (that.studyId == '' || that.studyId == null || that.studyId == undefined || that.studyId == 'undefined' || that.studyId == 'null'){
                     this.$message('请先选择课程！');
                     return;
                 }
                 let chaptersNum = 1;
-                if (null != that.addCourseTaskInfo.courseChaptersList && undefined != that.addCourseTaskInfo.courseChaptersList && that.addCourseTaskInfo.courseChaptersList.length > 0){
-                    chaptersNum = that.addCourseTaskInfo.courseChaptersList.length + 1;
+                if (null != that.addStudyTaskInfo.courseChaptersList && undefined != that.addStudyTaskInfo.courseChaptersList && that.addStudyTaskInfo.courseChaptersList.length > 0){
+                    chaptersNum = that.addStudyTaskInfo.courseChaptersList.length + 1;
                 }
-                this.courseChaptersItem.chaptersName = that.courseName + '章节' + chaptersNum;
+                this.courseChaptersItem.chaptersName = that.studyName + '章节' + chaptersNum;
                 that.$refs.courseChaptersDetails.insertAt(that.courseChaptersItem, 0);
                 that.courseChaptersDetails.push(this.courseChaptersItem)
-                that.addCourseTaskInfo.courseChaptersList = that.courseChaptersDetails
+                that.addStudyTaskInfo.courseChaptersList = that.courseChaptersDetails
             },
             changeEvent ({ row }, evnt) {
 
             },
-            submitAdd: function (addCourseTaskInfo, courseChaptersDetails) {
-                this.$refs.addCourseTaskInfo.validate((valid) => {
+            submitAdd: function (courseChaptersDetails) {
+                this.$refs.addStudyTaskInfo.validate((valid) => {
                     if(valid){
                         let that = this;
                         this.$confirm('是否保存新增课程任务?', '提示', {
@@ -178,8 +181,8 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                             cancelButtonText: '取消',
                             type: 'warning'
                         }).then(() => {
-                            that.addCourseTaskInfo.courseChaptersList = courseChaptersDetails
-                            ajax.post('api/CollegeCourseTaskCfg/addCourseTaskCfg', that.addCourseTaskInfo, function(){
+                            that.addStudyTaskInfo.courseChaptersList = courseChaptersDetails
+                            ajax.post('api/CollegeStudyTaskCfg/addStudyTaskCfg', that.addStudyTaskInfo, function(){
                                 this.$message({
                                     showClose: true,
                                     message: '课程任务新增成功',
@@ -192,22 +195,31 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
             },
             cancel: function () {
                 let that = this;
-                that.addCourseTaskDialogVisible = false;
-                that.addCourseTaskInfo = [];
+                that.addStudyTaskDialogVisible = false;
+                that.addStudyTaskInfo = [];
                 that.courseChaptersDetails = [];
             },
             changeTaskCoursewareType: function (val) {
+                this.studyType = val
                 if (1 == val){
-                    this.$refs.upload.display = '';
-                    this.$refs.tree.style = 'display:none';
+                    let that = this
+                    that.showUpload = 'display:block'
+                    that.showTree = 'display:none'
+                    that.addStudyTaskInfo = [];
+                    that.courseChaptersDetails = [];
+                    that.addStudyTaskInfo = {};
+                    that.studyId = '';
+                    that.studyName = '';
                 }else if (0 == val){
                     this.$nextTick(()=>{
-                        this.$refs.addCourseTaskInfo.resetFields();
+                        this.$refs.addStudyTaskInfo.resetFields();
                     });
+                    this.showUpload = 'display:none'
+                    this.showTree = 'display:block'
                     let that = this;
-                    if (null == that.courseInfos || [] == that.courseInfos || undefined == that.courseInfos || that.courseInfos.length == 0){
+                    if (null == that.studyInfos || [] == that.studyInfos || undefined == that.studyInfos || that.studyInfos.length == 0){
                         ajax.get('api/organization/course/qeuryCourseTree', null, function(responseData){
-                            that.courseInfos = responseData;
+                            that.studyInfos = responseData;
                             that.taskCoursewareType = val;
                         });
                     }

@@ -7,11 +7,9 @@ import java.util.List;
 @Data
 public class CourseTreeResponseDTO {
 
-    private String courseName;
+    private String studyName;
 
-    private Long courseId;
-
-    private String courseType;
+    private Long studyId;
 
     private boolean courseFlag;
 
