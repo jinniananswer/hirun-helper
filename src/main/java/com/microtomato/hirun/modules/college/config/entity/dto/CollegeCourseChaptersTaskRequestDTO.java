@@ -22,5 +22,9 @@ public class CollegeCourseChaptersTaskRequestDTO {
 
     private String studyTime;
 
+    private Integer exercisesNumber;
+
+    private Integer passScore;
+
     private List<CollegeCourseChaptersCfg> courseChaptersList;
 }

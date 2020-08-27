@@ -37,6 +37,35 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     studyTime: [
                         { required: true, message: '学习时间不能为空', trigger: 'blur' },
                         { type: 'number', message: '学习时间必须为数字值', trigger: 'blur'}
+                    ],
+                    exercisesNumber: [
+                        { type: 'number', message: '习题次数必须为数字值', trigger: 'blur'}
+                    ],
+                    passScore: [
+                        { type: 'number', message: '考试合格分数必须为数字值', trigger: 'blur'}
+                    ]
+                },
+                courseChaptersRules: {
+                    chaptersStudyOrder: [
+                        { required: true, message: '章节学习顺序不能为空', trigger: 'blur' },
+                        { type: 'number', message: '章节学习顺序必须为数字值', trigger: 'blur'}
+                    ],
+                    chaptersType: [
+                        { required: true, message: '章节类型不能为空', trigger: 'blur' }
+                    ],
+                    studyTime: [
+                        { required: true, message: '学习时间不能为空', trigger: 'blur'},
+                        { type: 'number', message: '学习时间必须为数字值', trigger: 'blur'}
+                    ],
+                    studyModel: [
+                        { required: true, message: '学习模式不能为空', trigger: 'blur' },
+                        { type: 'number', message: '学习模式必须为数字值', trigger: 'blur'}
+                    ],
+                    exercisesNumber: [
+                        { type: 'number', message: '习题次数必须为数字值', trigger: 'blur'}
+                    ],
+                    passScore: [
+                        { type: 'number', message: '考试合格分数必须为数字值', trigger: 'blur'}
                     ]
                 },
                 studyTaskInfo: [],

@@ -66,12 +66,12 @@
                 <el-table
                         :data="studyTaskInfo" stripe="true" height="350" style="width: 100%"
                         @selection-change="handleCourseTaskSelectionChange" >
-                    <el-table-column type="selection" width="40" align="center"></el-table-column>
-                    <el-table-column type="expand" align="center">
+                    <el-table-column type="selection" fixed width="40" align="center"></el-table-column>
+                    <el-table-column type="expand">
                         <template slot-scope="props">
                             <el-card class="box-card" shadow="hover">
-                                <el-button type="success" icon="el-icon-folder-add" @click="addStudyTask">新增课程章节</el-button>
-                                <el-table
+                                <el-button  icon="fa fa-plus" @click="addStudyTask">新增课程章节</el-button>
+                                <el-table border
                                         :data="props.row.collegeCourseChaptersList" stripe="true" height="300"
                                         style="width: 100%" align="center" >
                                     <el-table-column prop="studyId" width="150" label="学习内容标识" align="center"></el-table-column>
@@ -91,7 +91,7 @@
                             </el-card>
                         </template>
                     </el-table-column>
-                    <el-table-column label="学习内容标识" fixed prop="studyId" width="120" align="center">
+                    <el-table-column label="学习内容标识" prop="studyId" width="120" align="center">
                         <template slot-scope="studyTask">
                             <el-button type="text" @click="loadCoureChapters(studyTask.row)">{{
                                 studyTask.row.studyId }}
@@ -233,6 +233,7 @@
                                     max-height="800px"
                                     :auto-resize="true"
                                     :data="courseChaptersDetails"
+                                    :edit-rules="courseChaptersRules"
                                     :edit-config="{trigger: 'click', mode: 'cell', showStatus: true}"
                                     :checkbox-config="{strict: true, range: true, trigger: 'row', highlight: true}">
                                 <vxe-table-column type="checkbox" align="center"  width="40"></vxe-table-column>
