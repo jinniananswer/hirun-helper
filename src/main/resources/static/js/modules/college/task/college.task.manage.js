@@ -3,6 +3,26 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
     let vm = new Vue({
         el: '#app',
         data: function() {
+            var checkChaptersExercisesNumber = (rule, value, callback) => {
+                let studyExercisesNumber = this.courseChaptersDetails.exercisesNumber;
+                if (studyExercisesNumber != undefined && studyExercisesNumber != 'undefined' && studyExercisesNumber != null && studyExercisesNumber != 'null'){
+                    if (!value) {
+                        return callback(new Error('学习内容有习题次数，章节信息习题次数不能为空'));
+                    }else {
+                        if (!Number.isInteger(value)){
+                            callback(new Error('章节习题次数只能是数字'));
+                        }else {
+                            if (value.toString().length > 2){
+                                callback(new Error('章节习题次数请设置成100次以内'));
+                            }else if(value > studyExercisesNumber){
+                                callback(new Error('章节习题次数请不能大于学习内容习题次数'));
+                            }else {
+                                callback();
+                            }
+                        }
+                    }
+                }
+            };
             return {
                 queryCond: {
                     taskType: '',
@@ -62,7 +82,7 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                         { type: 'number', message: '学习模式必须为数字值', trigger: 'blur'}
                     ],
                     exercisesNumber: [
-                        { type: 'number', message: '习题次数必须为数字值', trigger: 'blur'}
+                        { validator: checkChaptersExercisesNumber, trigger: 'blur'  }
                     ],
                     passScore: [
                         { type: 'number', message: '考试合格分数必须为数字值', trigger: 'blur'}

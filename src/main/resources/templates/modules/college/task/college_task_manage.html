@@ -61,7 +61,7 @@
             <el-card class="box-card" shadow="hover">
                 <el-row style="padding-bottom: 12px">
                     <el-button type="success" icon="el-icon-folder-add" @click="addStudyTask">新增任务课程</el-button>
-                    <el-button type="danger" icon="el-icon-delete" @click="">删除任务课程</el-button>
+                    <el-button type="danger" icon="el-icon-delete" @click="deleteStudyTask">删除任务课程</el-button>
                 </el-row>
                 <el-table
                         :data="studyTaskInfo" stripe="true" height="350" style="width: 100%"
@@ -243,6 +243,8 @@
                                 <vxe-table-column field="chaptersType" align="center" title="章节类型" width="100" :edit-render="{name: 'select', options: chaptersTypes, events: {change: changeEvent}}"></vxe-table-column>
                                 <vxe-table-column field="studyTime" align="center" sortable title="学习时间/天" width="150" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
                                 <vxe-table-column field="studyModel"  align="center"title="学习模式" width="100"  :edit-render="{name: 'select', options: courseStudyModelTypes, events: {change: changeEvent}}"></vxe-table-column>
+                                <vxe-table-column field="exercisesNumber" align="center" sortable title="习题次数" width="150" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+                                <vxe-table-column field="passScore"  align="center"title="考试合格分数" width="100"  :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
                                 <vxe-table-column fixed="right" title="操作" align="center" width="80" show-overflow>
                                     <template v-slot="{ row }">
                                         <el-button
