@@ -15,7 +15,7 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'util'
         methods: {
             query: function() {
                 let that = this;
-                ajax.get('api/bss.salary/salary-fix/queryFixSalary', this.queryCond, function(data){
+                ajax.post('api/bss.salary/salary-fix/queryFixSalary', this.queryCond, function(data){
                     that.employees = data;
                 });
             },
