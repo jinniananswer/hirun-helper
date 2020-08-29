@@ -60,6 +60,14 @@ public class SalaryRoyaltyDetail extends BaseEntity {
     @TableField(value = "order_status")
     private String orderStatus;
 
+    /** 费用类型 1-设计费 2-工程款 */
+    @TableField(value = "fee_type")
+    private String feeType;
+
+    /** 期数 */
+    @TableField(value = "periods")
+    private Integer periods;
+
     /** 提成类型：大类 1-设计提成 2-经营提成 见sys_static_data表 royalties_type */
     @TableField(value = "type")
     private String type;

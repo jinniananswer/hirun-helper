@@ -2,8 +2,6 @@ package com.microtomato.hirun.modules.bss.salary.entity.dto;
 
 import lombok.Data;
 
-import java.util.List;
-
 /**
  * @program: hirun-helper
  * @description: 员工工资查询数据传输对象
@@ -17,9 +15,7 @@ public class SalaryMonthlyQueryDTO {
 
     private String mobileNo;
 
-    private List<Long> orgIds;
-
-    private String orgId;
+    private String orgIds;
 
     private String type;
 

@@ -22,6 +22,8 @@ public interface ISalaryFixService extends IService<SalaryFix> {
 
     List<SalaryFix> queryAllValid();
 
+    List<SalaryFix> queryAllValidAudit();
+
     void saveSalaries(List<SalaryFixDTO> salaries, boolean isAudit);
 
     void audit(List<SalaryFixDTO> employeeSalaries, boolean isPass);
