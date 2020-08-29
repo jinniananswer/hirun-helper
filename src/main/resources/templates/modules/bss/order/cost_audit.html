@@ -28,6 +28,11 @@
                                         <order-selectemployee role-id="32" v-model="collectFee.engineeringClerk"  ></order-selectemployee>
                                     </el-form-item>
                                 </el-col>
+                                <el-col :span="8" v-if="collectFee.orderStatus == '30'">
+                                    <el-form-item label="售后检测人员" prop="serviceClerk" label-width="100px">
+                                        <order-selectemployee role-id="57" v-model="collectFee.serviceClerk"  ></order-selectemployee>
+                                    </el-form-item>
+                                </el-col>
                             </el-row>
                             <el-row>
                                 <el-col :span="24">

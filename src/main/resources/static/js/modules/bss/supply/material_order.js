@@ -123,6 +123,7 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                     material.materialNum = this.materialTableData[i].materialNum;
                     material.costPrice = this.materialTableData[i].costPrice;
                     material.supplierId = this.materialTableData[i].supplierId;
+                    material.remark = this.materialTableData[i].remark;
                     data.supplyMaterial.push(material);
                 }
                 ajax.post('api/bss.supply/supply-order/materialOrderDeal', data, null, null, true);

@@ -22,6 +22,11 @@ public class OrderFeeDTO {
     private Long engineeringClerk;
 
     /**
+     * 售后文员id
+     */
+    private Long serviceClerk;
+
+    /**
      * 项目经理id
      */
     private Long projectManager;

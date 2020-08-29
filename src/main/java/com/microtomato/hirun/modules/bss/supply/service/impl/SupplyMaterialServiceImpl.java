@@ -47,10 +47,10 @@ public class SupplyMaterialServiceImpl extends ServiceImpl<SupplyMaterialMapper,
             SupplyMaterialDTO supplyMaterial =   new SupplyMaterialDTO();
             supplyMaterial.setId(material.getId());
             String  supplierName = this.SupplierServiceImpl.querySupplierById(supplierId).getName();
-            supplyMaterial.setCostPrice(material.getCostPrice());
+            supplyMaterial.setCostPrice(Double.valueOf(material.getCostPrice()));
             supplyMaterial.setMaterialType(material.getMaterialType());
             supplyMaterial.setMaterialUnit(material.getMaterialUnit());
-            supplyMaterial.setSalePrice(material.getSalePrice());
+            supplyMaterial.setSalePrice(Double.valueOf(material.getSalePrice()));
             supplyMaterial.setName(material.getName());
             supplyMaterial.setSupplierName(supplierName);
             supplyMaterial.setStandard(material.getStandard());
