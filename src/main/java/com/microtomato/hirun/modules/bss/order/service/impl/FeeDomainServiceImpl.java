@@ -213,7 +213,7 @@ public class FeeDomainServiceImpl implements IFeeDomainService {
             return 0L;
         }
 
-        List<OrderPayItem> orderPayItems = this.orderPayItemService.queryByPayItemIds(orderId, payItemIds, period);
+        List<OrderPayItem> orderPayItems = this.orderPayItemService.queryByPayItemIds(orderId, payItemIds, null);
         if (ArrayUtils.isEmpty(orderPayItems)) {
             return 0L;
         }

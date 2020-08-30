@@ -90,15 +90,6 @@
                             </template>
                         </vxe-table-column>
                     </vxe-table>
-                    <div style="text-align: center">
-                        <el-pagination
-                                layout="total, prev, pager, next"
-                                :total="queryCond.count"
-                                :current-page.sync="queryCond.page"
-                                :page-size="queryCond.limit"
-                                @current-change="query">
-                        </el-pagination>
-                    </div>
                 </el-card>
             </el-row>
 

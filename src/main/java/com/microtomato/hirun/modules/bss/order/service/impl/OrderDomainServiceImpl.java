@@ -465,47 +465,48 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
      * @return
      */
     @Override
-    public IPage<OrderTaskDTO> queryOrderTasks(OrderTaskQueryDTO condition) {
+    public List<OrderTaskDTO> queryOrderTasks(OrderTaskQueryDTO condition) {
         List<Role> roles = WebContextUtils.getUserContext().getRoles();
         Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
         if (ArrayUtils.isEmpty(roles)) {
             return null;
         }
 
-        List<Long> roleIds = new ArrayList<>();
-        for (Role role : roles) {
-            roleIds.add(role.getId());
-        }
-        List<RoleAttentionStatusCfg> roleAttentionStatusCfgs = this.roleAttentionStatusCfgService.queryInRoleIds(roleIds);
-        if (ArrayUtils.isEmpty(roleAttentionStatusCfgs)) {
-            return null;
-        }
-
-        List<String> statuses = new ArrayList<>();
+        List<OrderTaskDTO> tasks = new ArrayList<>();
         List<OrderStatusCfg> statusCfgs = new ArrayList<>();
-        for (RoleAttentionStatusCfg attentionStatusCfg : roleAttentionStatusCfgs) {
-            Long statusId = attentionStatusCfg.getAttentionStatusId();
-            OrderStatusCfg statusCfg = this.orderStatusCfgService.getById(statusId);
-            statuses.add(statusCfg.getOrderStatus());
-            statusCfgs.add(statusCfg);
+        for (Role role : roles) {
+            List<RoleAttentionStatusCfg> roleAttentionStatusCfgs = this.roleAttentionStatusCfgService.queryByRoleId(role.getId());
+            if (ArrayUtils.isEmpty(roleAttentionStatusCfgs)) {
+                continue;
+            }
+
+            List<String> statuses = new ArrayList<>();
+            for (RoleAttentionStatusCfg attentionStatusCfg : roleAttentionStatusCfgs) {
+                Long statusId = attentionStatusCfg.getAttentionStatusId();
+                OrderStatusCfg statusCfg = this.orderStatusCfgService.getById(statusId);
+                statuses.add(statusCfg.getOrderStatus());
+                statusCfgs.add(statusCfg);
+            }
+
+            QueryWrapper<OrderTaskQueryDTO> wrapper = new QueryWrapper<>();
+            wrapper.apply("b.cust_id = a.cust_id ");
+            wrapper.like(StringUtils.isNotBlank(condition.getCustName()), "b.cust_name", condition.getCustName());
+            wrapper.eq(StringUtils.isNotBlank(condition.getOrderStatus()), "a.status", condition.getOrderStatus());
+            wrapper.eq(condition.getHousesId() != null, "a.houses_id", condition.getHousesId());
+            wrapper.eq(StringUtils.isNotBlank(condition.getMobileNo()), "b.mobile_no", condition.getMobileNo());
+            wrapper.exists("select 1 from order_worker c where c.order_id = a.order_id and c.employee_id = " + employeeId + " and c.role_id = " + role.getId() + " and c.end_date > now() ");
+            wrapper.in("a.status", statuses);
+            wrapper.orderByAsc("a.status", "a.create_time");
+
+            List<OrderTaskDTO> temp = this.orderBaseMapper.queryOrderTaskInConsole(wrapper);
+            if (ArrayUtils.isNotEmpty(temp)) {
+                tasks.addAll(temp);
+            }
         }
 
-        QueryWrapper<OrderTaskQueryDTO> wrapper = new QueryWrapper<>();
-        wrapper.apply("b.cust_id = a.cust_id ");
-        wrapper.like(StringUtils.isNotBlank(condition.getCustName()), "b.cust_name", condition.getCustName());
-        wrapper.eq(StringUtils.isNotBlank(condition.getOrderStatus()), "a.status", condition.getOrderStatus());
-        wrapper.eq(condition.getHousesId() != null, "a.houses_id", condition.getHousesId());
-        wrapper.eq(StringUtils.isNotBlank(condition.getMobileNo()), "b.mobile_no", condition.getMobileNo());
-        wrapper.exists("select 1 from order_worker c where c.order_id = a.order_id and c.employee_id = " + employeeId);
-        wrapper.in("a.status", statuses);
-        wrapper.orderByAsc("a.status", "a.create_time");
 
-        IPage<OrderTaskQueryDTO> page = new Page<>(condition.getPage(), condition.getLimit());
-        IPage<OrderTaskDTO> pageTasks = this.orderBaseMapper.queryOrderTaskInConsole(page, wrapper);
-
-        List<OrderTaskDTO> tasks = pageTasks.getRecords();
         if (ArrayUtils.isEmpty(tasks)) {
-            return pageTasks;
+            return tasks;
         }
 
         tasks.forEach(task -> {
@@ -525,7 +526,7 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
             }
 
         });
-        return pageTasks;
+        return tasks;
     }
 
     /**
@@ -815,6 +816,7 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
      * @param queryCond
      * @return
      */
+    @Override
     public List<EmployeeResultsDTO> queryEmployeeResults(EmployeeResultsQueryDTO queryCond) {
         List<EmployeeResultsDTO> list = new ArrayList<>();
         if(queryCond.getEmployeeId() != null && queryCond.getEmployeeId() > 0) {

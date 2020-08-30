@@ -46,7 +46,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
         },
         mounted: function() {
             this.budget.orderId = this.orderId;
-            if(this.orderStatus == '15') {
+            if(this.orderStatus == '43') {
                 this.checkedFail = true;
                 let data = {
                     orderId : this.orderId
