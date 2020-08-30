@@ -84,8 +84,6 @@ public class UserRoleController {
             }
         }
 
-        // 添加默认权限
-        roleList.add(Role.builder().roleId(Constants.DEFAULT_ROLE_ID).roleName("默认角色").build());
         return roleList;
     }
 
