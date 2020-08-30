@@ -61,6 +61,8 @@ dependencies {
     implementation 'io.springfox:springfox-swagger-ui:2.9.2'
 
     implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:2.1.1'
+//    implementation 'io.minio:minio:6.0.13'
+    implementation 'io.minio:minio:7.0.2'
 
     // 运行期有效
     runtimeOnly 'mysql:mysql-connector-java:8.0.11'

@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,8 +104,8 @@ public class UploadFileController {
      * @param response
      * @throws IOException
      */
-    @GetMapping("/display/{id}")
-    public void display(@PathVariable("id") String id, HttpServletResponse response) throws IOException {
+    //@GetMapping("/display/{id}")
+    public void display_bak(@PathVariable("id") String id, HttpServletResponse response) throws IOException {
 
         UploadFile uploadFile = uploadFileService.getOne(Wrappers.<UploadFile>lambdaQuery().eq(UploadFile::getId, id));
         Assert.notNull(uploadFile, "展示失败,无法找到对应的文件,Id:" + id);
@@ -126,14 +127,40 @@ public class UploadFileController {
     }
 
     /**
+     * 通过浏览器显示文件
+     *
+     * @param id
+     * @param response
+     * @throws IOException
+     */
+    @GetMapping("/display/{id}")
+    public void display(@PathVariable("id") String id, HttpServletResponse response) throws IOException {
+
+
+        UploadFile uploadFile = uploadFileService.getOne(Wrappers.<UploadFile>lambdaQuery().eq(UploadFile::getId, id));
+        Assert.notNull(uploadFile, "展示失败,无法找到对应的文件,Id:" + id);
+
+        InputStream inputStream = uploadFileService.getInputStream(uploadFile);
+        String extension = "." + FilenameUtils.getExtension(uploadFile.getFilePath());
+        String contentType = mimeMap.get(extension);
+        Assert.notNull(contentType, "根据文件后缀: " + extension + "，无法识别正确的 mime 类型");
+
+        response.setHeader("Content-Type", contentType);
+        ServletOutputStream outputStream = response.getOutputStream();
+        IOUtils.copy(inputStream, outputStream);
+        outputStream.flush();
+
+    }
+
+    /**
      * 下载文件
      *
      * @param id
      * @param response
      * @throws IOException
      */
-    @GetMapping("/download/{id}")
-    public void download(@PathVariable("id") String id, HttpServletResponse response) throws IOException {
+    //@GetMapping("/download/{id}")
+    public void download_bak(@PathVariable("id") String id, HttpServletResponse response) throws IOException {
 
         UploadFile uploadFile = uploadFileService.getOne(Wrappers.<UploadFile>lambdaQuery().eq(UploadFile::getId, id));
         Assert.notNull(uploadFile, "下载失败,无法找到对应的文件,Id:" + id);
@@ -154,4 +181,28 @@ public class UploadFileController {
 
     }
 
+    /**
+     * 下载文件
+     *
+     * @param id
+     * @param response
+     * @throws IOException
+     */
+    public void download(@PathVariable("id") String id, HttpServletResponse response) throws IOException {
+
+        UploadFile uploadFile = uploadFileService.getOne(Wrappers.<UploadFile>lambdaQuery().eq(UploadFile::getId, id));
+        Assert.notNull(uploadFile, "下载失败,无法找到对应的文件,Id:" + id);
+
+        InputStream inputStream = uploadFileService.getInputStream(uploadFile);
+
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        response.setHeader("Content-Type", "application/octet-stream");
+        response.setHeader("Pragma", "no-cache");
+        response.setHeader("Expires", "0");
+        response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", uploadFile.getFileName()));
+        ServletOutputStream outputStream = response.getOutputStream();
+        IOUtils.copy(inputStream, outputStream);
+        outputStream.flush();
+
+    }
 }
