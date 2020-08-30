@@ -40,6 +40,7 @@ public class UploadFileServiceImpl extends ServiceImpl<UploadFileMapper, UploadF
 
     @Override
     public String toAbsolutePath(String relativePath) {
+        relativePath = StringUtils.removeStart(relativePath, "/");
         String absolutePath = FilenameUtils.concat(dataPath, relativePath);
         return absolutePath;
     }

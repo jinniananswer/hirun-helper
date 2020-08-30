@@ -49,6 +49,7 @@ public class OrderFileServiceImpl extends ServiceImpl<OrderFileMapper, com.micro
 
     @Override
     public String toAbsolutePath(String relativePath) {
+        relativePath = StringUtils.removeStart(relativePath, "/");
         String absolutePath = FilenameUtils.concat(dataPath, relativePath);
         return absolutePath;
     }
@@ -59,7 +60,7 @@ public class OrderFileServiceImpl extends ServiceImpl<OrderFileMapper, com.micro
      * @return
      */
     private String getDestPath() {
-        String destPath = FilenameUtils.concat(dataPath, "/" + UPLOAD + "/order");
+        String destPath = FilenameUtils.concat(dataPath, UPLOAD + "/order");
         return destPath;
     }
 

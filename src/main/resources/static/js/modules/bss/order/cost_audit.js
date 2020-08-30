@@ -72,7 +72,6 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                     }
                 }
                 if(this.collectFee.orderStatus=="30"){
-                    alert("serviceClerk==="+this.collectFee.serviceClerk);
                     if(this.collectFee.serviceClerk==""){
                         this.$message.error('售后文员没有选择，请亲重新选择哦~~~~~~~！');
                         return ;
