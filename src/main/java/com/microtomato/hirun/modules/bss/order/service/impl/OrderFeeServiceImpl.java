@@ -140,6 +140,9 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
                     String thirdFalg = "";
 
                     for (OrderPayItem payItem : payItems) {
+                        if (payItem.getParentPayItemId() == 1) {
+                            continue;
+                        }
                         Integer payPeriod = payItem.getPeriods();
                         if (1 == payPeriod) {
                             firstFalg = "1";
