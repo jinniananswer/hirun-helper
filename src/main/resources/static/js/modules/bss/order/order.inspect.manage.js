@@ -31,6 +31,12 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
             this.init();
             if (this.orderStatus == '41') {
                 this.submitButtonName = '检测中';
+            }else if (this.orderStatus == '42') {
+                this.submitButtonName = '已收取检测报告';
+            }else if (this.orderStatus == '43') {
+                this.submitButtonName = '客户未领取';
+            }else if (this.orderStatus == '44') {
+                this.submitButtonName = '客户已领取';
             }
 
         },
