@@ -2,6 +2,8 @@ package com.microtomato.hirun.modules.bss.order.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.framework.mybatis.DataSourceKey;
+import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
@@ -29,6 +31,7 @@ import java.util.List;
  */
 @Service
 @Slf4j
+@DataSource(DataSourceKey.INS)
 public class OrderWorkerActionServiceImpl extends ServiceImpl<OrderWorkerActionMapper, OrderWorkerAction> implements IOrderWorkerActionService {
 
     @Autowired
