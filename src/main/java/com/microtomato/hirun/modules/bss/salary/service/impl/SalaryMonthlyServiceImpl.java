@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.bss.salary.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
@@ -10,13 +11,15 @@ import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
-import com.microtomato.hirun.modules.bss.salary.entity.domain.SalaryDO;
 import com.microtomato.hirun.modules.bss.salary.entity.dto.SalaryMonthlyDTO;
 import com.microtomato.hirun.modules.bss.salary.entity.dto.SalaryMonthlyQueryDTO;
+import com.microtomato.hirun.modules.bss.salary.entity.po.SalaryFix;
 import com.microtomato.hirun.modules.bss.salary.entity.po.SalaryMonthly;
 import com.microtomato.hirun.modules.bss.salary.mapper.SalaryMonthlyMapper;
+import com.microtomato.hirun.modules.bss.salary.service.ISalaryFixService;
 import com.microtomato.hirun.modules.bss.salary.service.ISalaryMonthlyService;
 import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
+import com.microtomato.hirun.modules.organization.entity.po.Org;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -48,6 +51,9 @@ public class SalaryMonthlyServiceImpl extends ServiceImpl<SalaryMonthlyMapper, S
     @Autowired
     private IStaticDataService staticDataService;
 
+    @Autowired
+    private ISalaryFixService salaryFixService;
+
     /**
      * 查询员工月工资
      * @param param
@@ -56,11 +62,28 @@ public class SalaryMonthlyServiceImpl extends ServiceImpl<SalaryMonthlyMapper, S
     @Override
     public List<SalaryMonthlyDTO> queryEmployeeSalaries(SalaryMonthlyQueryDTO param) {
         QueryWrapper<SalaryMonthlyQueryDTO> wrapper = new QueryWrapper<>();
+
+        List<Long> orgs = new ArrayList<>();
+        if (StringUtils.isNotBlank(param.getOrgIds())) {
+            String[] orgIdArray = param.getOrgIds().split(",");
+            for (String s : orgIdArray) {
+                orgs.add(Long.parseLong(s));
+            }
+        } else {
+            Long orgId = WebContextUtils.getUserContext().getOrgId();
+            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+            Org company = orgDO.getBelongCompany();
+            if (company != null) {
+                orgDO = SpringContextUtils.getBean(OrgDO.class, company.getOrgId());
+                orgs = orgDO.getChildrenIds(true);
+            }
+        }
+
         wrapper.apply("c.org_id = b.org_id ")
                 .apply("(a.destroy_date is null or a.destroy_date >= date_sub(date_sub(date_format('"+param.getSalaryMonth()+"01','%y%m%d'),interval extract(day from date_format('"+param.getSalaryMonth()+"01','%y%m%d'))-1 day),interval 1 month)) ")
                 .like(StringUtils.isNotBlank(param.getName()), "a.name", param.getName())
                 .eq(StringUtils.isNotBlank(param.getMobileNo()), "a.mobile_no", param.getMobileNo())
-                .in(ArrayUtils.isNotEmpty(param.getOrgIds()), "b.org_id", param.getOrgIds())
+                .in(ArrayUtils.isNotEmpty(orgs), "b.org_id", orgs)
                 .eq(StringUtils.isNotBlank(param.getType()), "a.type", param.getType())
                 .eq(StringUtils.isNotBlank(param.getAuditStatus()), "d.audit_status", param.getAuditStatus())
                 .eq(StringUtils.isNotBlank(param.getStatus()), "a.status", param.getStatus());
@@ -70,7 +93,7 @@ public class SalaryMonthlyServiceImpl extends ServiceImpl<SalaryMonthlyMapper, S
         lastMonth = lastMonth.substring(0, 6);
 
         //todo 需要改成查询固定工资项目数据
-        List<SalaryMonthly> lastSalaries = this.queryByMonth(Integer.parseInt(lastMonth));
+        List<SalaryFix> lastSalaries = this.salaryFixService.queryAllValidAudit();
 
         if (ArrayUtils.isNotEmpty(salaries)) {
             salaries.forEach((salary) -> {
@@ -88,7 +111,7 @@ public class SalaryMonthlyServiceImpl extends ServiceImpl<SalaryMonthlyMapper, S
 
                 if (salary.getId() == null) {
                     //如果没有查到数据，则自动将上月的工资数据带过来
-                    SalaryMonthly lastSalary = this.findByEmployeeId(lastSalaries, salary.getEmployeeId());
+                    SalaryFix lastSalary = this.findByEmployeeId(lastSalaries, salary.getEmployeeId());
                     if (lastSalary != null) {
                         this.copyLastMonthSalary(salary, lastSalary);
                     }
@@ -96,8 +119,6 @@ public class SalaryMonthlyServiceImpl extends ServiceImpl<SalaryMonthlyMapper, S
             });
         }
 
-        SalaryDO salaryDO = SpringContextUtils.getBean(SalaryDO.class);
-        salaryDO.createRoyalties(54L, "10");
         return salaries;
     }
 
@@ -108,6 +129,25 @@ public class SalaryMonthlyServiceImpl extends ServiceImpl<SalaryMonthlyMapper, S
      */
     @Override
     public List<SalaryMonthlyDTO> queryAuditEmployeeSalaries(SalaryMonthlyQueryDTO param) {
+
+        List<Long> orgs = new ArrayList<>();
+        if (StringUtils.isNotBlank(param.getOrgIds())) {
+            if (StringUtils.isNotBlank(param.getOrgIds())) {
+                String[] orgIdArray = param.getOrgIds().split(",");
+                for (String s : orgIdArray) {
+                    orgs.add(Long.parseLong(s));
+                }
+            }
+        } else {
+            Long orgId = WebContextUtils.getUserContext().getOrgId();
+            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+            Org company = orgDO.getBelongCompany();
+            if (company != null) {
+                orgDO = SpringContextUtils.getBean(OrgDO.class, company.getOrgId());
+                orgs = orgDO.getChildrenIds(true);
+            }
+        }
+
         QueryWrapper<SalaryMonthlyDTO> wrapper = new QueryWrapper<>();
         wrapper.apply("c.org_id = b.org_id ")
                 .apply("d.employee_id = a.employee_id ")
@@ -116,7 +156,7 @@ public class SalaryMonthlyServiceImpl extends ServiceImpl<SalaryMonthlyMapper, S
                 .apply("(a.destroy_date is null or a.destroy_date >= date_sub(date_sub(date_format('"+param.getSalaryMonth()+"01','%y%m%d'),interval extract(day from date_format('"+param.getSalaryMonth()+"01','%y%m%d'))-1 day),interval 1 month)) ")
                 .like(StringUtils.isNotBlank(param.getName()), "a.name", param.getName())
                 .eq(StringUtils.isNotBlank(param.getMobileNo()), "a.mobile_no", param.getMobileNo())
-                .in(ArrayUtils.isNotEmpty(param.getOrgIds()), "b.org_id", param.getOrgIds())
+                .in(ArrayUtils.isNotEmpty(orgs), "b.org_id", orgs)
                 .eq(StringUtils.isNotBlank(param.getType()), "a.type", param.getType())
                 .eq(StringUtils.isNotBlank(param.getAuditStatus()), "d.audit_status", param.getAuditStatus())
                 .eq(StringUtils.isNotBlank(param.getStatus()), "a.status", param.getStatus());
@@ -283,12 +323,12 @@ public class SalaryMonthlyServiceImpl extends ServiceImpl<SalaryMonthlyMapper, S
      * @param employeeId
      * @return
      */
-    private SalaryMonthly findByEmployeeId(List<SalaryMonthly> salaries, Long employeeId) {
+    private SalaryFix findByEmployeeId(List<SalaryFix> salaries, Long employeeId) {
         if (ArrayUtils.isEmpty(salaries)) {
             return null;
         }
 
-        for (SalaryMonthly salary : salaries) {
+        for (SalaryFix salary : salaries) {
             if (employeeId.equals(salary.getEmployeeId())) {
                 return salary;
             }
@@ -518,7 +558,7 @@ public class SalaryMonthlyServiceImpl extends ServiceImpl<SalaryMonthlyMapper, S
      * @param now
      * @param last
      */
-    public void copyLastMonthSalary(SalaryMonthlyDTO now, SalaryMonthly last) {
+    public void copyLastMonthSalary(SalaryMonthlyDTO now, SalaryFix last) {
         if (now.getBasic() == null && last.getBasic() != null) {
             now.setBasic(last.getBasic().doubleValue()/100);
         }
@@ -569,6 +609,51 @@ public class SalaryMonthlyServiceImpl extends ServiceImpl<SalaryMonthlyMapper, S
 
         if (now.getTax() == null && last.getTax() != null) {
             now.setTax(last.getTax().doubleValue()/100);
+        }
+    }
+
+    /**
+     * 根据员工ID与月份查询月工资信息
+     * @param employeeId
+     * @param salaryMonth
+     * @return
+     */
+    @Override
+    public SalaryMonthly getByEmployeeIdMonth(Long employeeId, Integer salaryMonth) {
+        return this.getOne(Wrappers.<SalaryMonthly>lambdaQuery()
+                .eq(SalaryMonthly::getEmployeeId, employeeId)
+                .eq(SalaryMonthly::getSalaryMonth, salaryMonth)
+                .ge(SalaryMonthly::getEndTime, RequestTimeHolder.getRequestTime()), false);
+    }
+
+    /**
+     * 修改月工资中的提成信息
+     * @param totalRoyalty
+     * @param salaryMonth
+     * @param employeeId
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    public void updateRoyalties(Long totalRoyalty, Integer salaryMonth, Long employeeId) {
+        SalaryMonthly salaryMonthly = this.getByEmployeeIdMonth(employeeId, salaryMonth);
+        if (salaryMonthly == null) {
+            salaryMonthly = new SalaryMonthly();
+            SalaryFix salaryFix = this.salaryFixService.getByEmployeeId(employeeId);
+            if (salaryFix != null) {
+                BeanUtils.copyProperties(salaryFix, salaryMonthly);
+            }
+            salaryMonthly.setEmployeeId(employeeId);
+            salaryMonthly.setSalaryMonth(salaryMonth);
+            salaryMonthly.setAuditStatus("0");
+            salaryMonthly.setStartTime(RequestTimeHolder.getRequestTime());
+            salaryMonthly.setEndTime(TimeUtils.getForeverTime());
+        }
+        salaryMonthly.setRoyalty(totalRoyalty);
+
+        if (salaryMonthly.getId() == null) {
+            this.save(salaryMonthly);
+        } else {
+            this.updateById(salaryMonthly);
         }
     }
 }

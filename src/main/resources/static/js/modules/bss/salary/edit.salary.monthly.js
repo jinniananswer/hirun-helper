@@ -14,11 +14,26 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'util'
         },
 
         methods: {
-            query: function() {
+            query: async function() {
+                let isValid = await this.valid();
+                if (!isValid) {
+                    return;
+                }
                 let that = this;
-                ajax.get('api/bss.salary/salary-monthly/querySalary', this.queryCond, function(data){
+                ajax.post('api/bss.salary/salary-monthly/querySalary', this.queryCond, function(data){
                     that.employees = data;
                 });
+            },
+
+            async valid() {
+                let isFormValid = false;
+                this.$refs['queryCond'].validate(valid => {
+                    isFormValid = valid;
+                });
+                if (!isFormValid) {
+                    return false;
+                }
+                return true;
             },
 
             submit : function() {

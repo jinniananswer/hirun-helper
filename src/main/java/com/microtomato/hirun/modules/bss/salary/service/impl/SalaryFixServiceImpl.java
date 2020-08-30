@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.bss.salary.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
@@ -16,6 +17,7 @@ import com.microtomato.hirun.modules.bss.salary.entity.po.SalaryFix;
 import com.microtomato.hirun.modules.bss.salary.mapper.SalaryFixMapper;
 import com.microtomato.hirun.modules.bss.salary.service.ISalaryFixService;
 import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
+import com.microtomato.hirun.modules.organization.entity.po.Org;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -54,11 +56,27 @@ public class SalaryFixServiceImpl extends ServiceImpl<SalaryFixMapper, SalaryFix
      */
     @Override
     public List<SalaryFixDTO> queryEmployeeSalaries(SalaryFixQueryDTO param) {
+        List<Long> orgs = new ArrayList<>();
+        if (StringUtils.isNotBlank(param.getOrgIds())) {
+            String[] orgIdArray = param.getOrgIds().split(",");
+            for (String s : orgIdArray) {
+                orgs.add(Long.parseLong(s));
+            }
+        } else {
+            Long orgId = WebContextUtils.getUserContext().getOrgId();
+            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+            Org company = orgDO.getBelongCompany();
+            if (company != null) {
+                orgDO = SpringContextUtils.getBean(OrgDO.class, company.getOrgId());
+                orgs = orgDO.getChildrenIds(true);
+            }
+        }
+
         QueryWrapper<SalaryFixDTO> wrapper = new QueryWrapper<>();
         wrapper.apply("c.org_id = b.org_id ")
                 .like(StringUtils.isNotBlank(param.getName()), "a.name", param.getName())
                 .eq(StringUtils.isNotBlank(param.getMobileNo()), "a.mobile_no", param.getMobileNo())
-                .in(ArrayUtils.isNotEmpty(param.getOrgIds()), "b.org_id", param.getOrgIds())
+                .in(ArrayUtils.isNotEmpty(orgs), "b.org_id", orgs)
                 .eq(StringUtils.isNotBlank(param.getType()), "a.type", param.getType())
                 .eq(StringUtils.isNotBlank(param.getAuditStatus()), "d.audit_status", param.getAuditStatus())
                 .eq(StringUtils.isNotBlank(param.getStatus()), "a.status", param.getStatus());
@@ -87,13 +105,29 @@ public class SalaryFixServiceImpl extends ServiceImpl<SalaryFixMapper, SalaryFix
      */
     @Override
     public List<SalaryFixDTO> queryAuditEmployeeSalaries(SalaryFixQueryDTO param) {
+        List<Long> orgs = new ArrayList<>();
+        if (StringUtils.isNotBlank(param.getOrgIds())) {
+            String[] orgIdArray = param.getOrgIds().split(",");
+            for (String s : orgIdArray) {
+                orgs.add(Long.parseLong(s));
+            }
+        } else {
+            Long orgId = WebContextUtils.getUserContext().getOrgId();
+            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+            Org company = orgDO.getBelongCompany();
+            if (company != null) {
+                orgDO = SpringContextUtils.getBean(OrgDO.class, company.getOrgId());
+                orgs = orgDO.getChildrenIds(true);
+            }
+        }
+
         QueryWrapper<SalaryFixDTO> wrapper = new QueryWrapper<>();
         wrapper.apply("c.org_id = b.org_id ")
                 .apply("d.employee_id = a.employee_id ")
                 .apply("d.end_time > now() ")
                 .like(StringUtils.isNotBlank(param.getName()), "a.name", param.getName())
                 .eq(StringUtils.isNotBlank(param.getMobileNo()), "a.mobile_no", param.getMobileNo())
-                .in(ArrayUtils.isNotEmpty(param.getOrgIds()), "b.org_id", param.getOrgIds())
+                .in(ArrayUtils.isNotEmpty(orgs), "b.org_id", orgs)
                 .eq(StringUtils.isNotBlank(param.getType()), "a.type", param.getType())
                 .eq(StringUtils.isNotBlank(param.getAuditStatus()), "d.audit_status", param.getAuditStatus())
                 .eq(StringUtils.isNotBlank(param.getStatus()), "a.status", param.getStatus());
@@ -124,6 +158,18 @@ public class SalaryFixServiceImpl extends ServiceImpl<SalaryFixMapper, SalaryFix
         LocalDateTime now = RequestTimeHolder.getRequestTime();
         return this.list(new QueryWrapper<SalaryFix>().lambda()
                 .ge(SalaryFix::getEndTime, now));
+    }
+
+    /**
+     * 查询所有有效的员工固定工资项目
+     * @return
+     */
+    @Override
+    public List<SalaryFix> queryAllValidAudit() {
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+        return this.list(new QueryWrapper<SalaryFix>().lambda()
+                .ge(SalaryFix::getEndTime, now)
+                .eq(SalaryFix::getAuditStatus, "2"));
     }
 
     /**
@@ -471,5 +517,13 @@ public class SalaryFixServiceImpl extends ServiceImpl<SalaryFixMapper, SalaryFix
         if (salary.getBankAcctThree() == null) {
             salary.setBankAcctThree("");
         }
+    }
+
+    @Override
+    public SalaryFix getByEmployeeId(Long employeeId) {
+        return this.getOne(Wrappers.<SalaryFix>lambdaQuery()
+                .eq(SalaryFix::getEmployeeId, employeeId)
+                .ge(SalaryFix::getEndTime, RequestTimeHolder.getRequestTime())
+                .eq(SalaryFix::getAuditStatus, "2"), false);
     }
 }

@@ -162,6 +162,24 @@ public class OrgDO {
     }
 
     /**
+     * 获取所在部门位于公司的父子线上的所有组织的ID
+     * @return
+     */
+    public List<Long> getCompanyLineId() {
+        List<Org> orgs = this.getCompanyLine();
+
+        if (ArrayUtils.isNotEmpty(orgs)) {
+            List<Long> ids = new ArrayList<>();
+            orgs.forEach(org -> {
+                ids.add(org.getOrgId());
+            });
+            return ids;
+        }
+
+        return null;
+    }
+
+    /**
      * 获取所在部门位于公司的父子线上的所有组织的路径
      *
      * @return
@@ -322,6 +340,25 @@ public class OrgDO {
         }
         if (hasSelf) {
             children.add(this.org);
+        }
+        return children;
+    }
+
+    /**
+     * 获取其下所有的组织机构的ID
+     * @param hasSelf
+     * @return
+     */
+    public List<Long> getChildrenIds(boolean hasSelf) {
+        List<Org> children = this.getChildren(hasSelf);
+
+        if (ArrayUtils.isNotEmpty(children)) {
+            List<Long> ids = new ArrayList<>();
+            children.forEach(child -> {
+                ids.add(child.getOrgId());
+            });
+
+            return ids;
         }
         return null;
     }

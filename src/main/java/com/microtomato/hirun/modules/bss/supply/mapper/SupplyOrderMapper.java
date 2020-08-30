@@ -25,7 +25,7 @@ import java.util.List;
 @DataSource(DataSourceKey.INS)
 public interface SupplyOrderMapper extends BaseMapper<SupplyOrder> {
 
-    @Select("select a.id,a.supply_order_type,a.total_fee,a.create_user_id,a.supply_status,b.supplier_id  " +
+    @Select("select a.id supply_id,a.supply_order_type,sum(b.fee) money,a.create_user_id,a.supply_status,b.supplier_id  " +
             "from supply_order a ,supply_order_detail b,supply_supplier c where a.id =b.supply_id and  b.supplier_id =c.id and c.verify_person = #{employeeId} and a.supply_status = #{status} group by b.supplier_id" )
     IPage<SupplyOrderDTO> querySupplyInfo(IPage<QuerySupplyOrderDTO> queryCondtion, @Param("employeeId") Long employeeId,@Param("status")String status);
 

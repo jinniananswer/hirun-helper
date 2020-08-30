@@ -29,6 +29,7 @@ import com.microtomato.hirun.modules.bss.order.entity.po.*;
 import com.microtomato.hirun.modules.bss.order.exception.OrderException;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderBaseMapper;
 import com.microtomato.hirun.modules.bss.order.service.*;
+import com.microtomato.hirun.modules.bss.salary.entity.domain.SalaryDO;
 import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeSelectDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.SimpleEmployeeDTO;
@@ -359,9 +360,14 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
 
         String logContent = "，由订单阶段：" + stageName + "，订单状态：" + statusName + "变为新订单阶段：" + newStageName+"，新订单状态：" + newStatusName;
 
-        //todo 更新归属店面数据
-
         this.orderOperLogService.createOrderOperLog(order.getOrderId(), OrderConst.LOG_TYPE_STATUS_TRANS, newStatusCfg.getOrderStage(), newStatusCfg.getOrderStatus(), OrderConst.OPER_LOG_CONTENT_STATUS_CHANGE+logContent);
+
+        try {
+            SalaryDO salaryDO = SpringContextUtils.getBean(SalaryDO.class);
+            salaryDO.createRoyalties(order.getOrderId(), newStatusCfg.getOrderStatus());
+        } catch (Exception e) {
+            log.error("计算提成错误", e);
+        }
     }
 
     /**
@@ -564,6 +570,8 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
                 usualWorker.setAgentName(name);
             } else if (roleId.equals(30L)) {
                 usualWorker.setDesignerName(name);
+            } else if (roleId.equals(45L)) {
+                usualWorker.setCabinetDesignerName(name);
             } else if (roleId.equals(46L)) {
                 usualWorker.setMaterialName(name);
             } else if (roleId.equals(47L)) {

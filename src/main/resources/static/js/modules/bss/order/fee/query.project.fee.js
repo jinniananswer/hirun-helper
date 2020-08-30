@@ -1,4 +1,4 @@
-require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-select', 'util'], function(Vue, element, ajax, table, vueSelect, orgTree, houseSelect, util) {
+require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-select', 'util', 'order-selectemployee'], function(Vue, element, ajax, table, vueSelect, orgTree, houseSelect, util, orderSelectEmployee) {
     Vue.use(table);
     let vm = new Vue({
         el: '#app',

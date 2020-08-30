@@ -25,11 +25,13 @@ public class SupplyMaterialDTO {
 
     private Integer materialNum;
 
-    private Integer fee;
+    private Double fee;
 
-    private Integer costPrice;
+    private Double costPrice;
 
-    private Integer salePrice;
+    private Double salePrice;
 
     private String standard;
+
+    private String remark;
 }

@@ -16,7 +16,7 @@
                 <div slot="header" class="clearfix" style="font-size: 14px">
                     <span>查询条件区</span>
                 </div>
-                <el-form :inline="false" :model="queryCond" label-position="right" label-width="80px">
+                <el-form :inline="false" ref="queryCond" :model="queryCond" label-position="right" label-width="80px">
                     <el-row>
                         <el-col :span="8">
                             <el-form-item label="员工姓名">
@@ -53,7 +53,9 @@
                     </el-row>
                     <el-row>
                         <el-col :span="8">
-                            <el-form-item label="工资月份">
+                            <el-form-item label="工资月份" prop="salaryMonth"
+                                          :rules="[
+                                            { required: true, message: '请选择工资月份', trigger: 'blur' }]">
                                 <el-date-picker
                                         v-model="queryCond.salaryMonth"
                                         type="month"
@@ -102,7 +104,7 @@
                 <vxe-table-column field="floatAward" title="浮动奖励" width="100" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
                 <vxe-table-column field="other" title="其他补贴" width="100" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
                 <vxe-table-column field="backPay" title="补发工资" width="100" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
-                <vxe-table-column field="royalties" title="提成" width="100" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+                <vxe-table-column field="royalty" title="提成" width="100" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
                 <vxe-table-column field="medical" title="医疗保险" width="100" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
                 <vxe-table-column field="overage" title="养老保险" width="100" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
                 <vxe-table-column field="unemployment" title="失业保险" width="100" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>

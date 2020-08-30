@@ -16,7 +16,7 @@ public class QuerySupplyOrderDTO {
 
     private Long supplierId;
 
-    private Long id;
+    private Long supplyId;
 
     private Integer page;
 

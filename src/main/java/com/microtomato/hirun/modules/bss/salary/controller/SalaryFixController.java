@@ -5,11 +5,12 @@ import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.modules.bss.salary.entity.dto.SalaryFixDTO;
 import com.microtomato.hirun.modules.bss.salary.entity.dto.SalaryFixQueryDTO;
 import com.microtomato.hirun.modules.bss.salary.service.ISalaryFixService;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,17 +35,9 @@ public class SalaryFixController {
      * @param param
      * @return
      */
-    @GetMapping("/queryFixSalary")
+    @RequestMapping("/queryFixSalary")
     @RestResult
-    public List<SalaryFixDTO> queryFixSalary(SalaryFixQueryDTO param) {
-        if (StringUtils.isNotBlank(param.getOrgId())) {
-            String[] orgIdArray = param.getOrgId().split(",");
-            List<Long> orgIds = new ArrayList<>();
-            for (String s : orgIdArray) {
-                orgIds.add(Long.parseLong(s));
-            }
-            param.setOrgIds(orgIds);
-        }
+    public List<SalaryFixDTO> queryFixSalary(@RequestBody SalaryFixQueryDTO param) {
         return this.salaryFixService.queryEmployeeSalaries(param);
     }
 
@@ -53,17 +46,9 @@ public class SalaryFixController {
      * @param param
      * @return
      */
-    @GetMapping("/queryAuditFixSalary")
+    @RequestMapping("/queryAuditFixSalary")
     @RestResult
-    public List<SalaryFixDTO> queryAuditFixSalary(SalaryFixQueryDTO param) {
-        if (StringUtils.isNotBlank(param.getOrgId())) {
-            String[] orgIdArray = param.getOrgId().split(",");
-            List<Long> orgIds = new ArrayList<>();
-            for (String s : orgIdArray) {
-                orgIds.add(Long.parseLong(s));
-            }
-            param.setOrgIds(orgIds);
-        }
+    public List<SalaryFixDTO> queryAuditFixSalary(@RequestBody SalaryFixQueryDTO param) {
         return this.salaryFixService.queryAuditEmployeeSalaries(param);
     }
 

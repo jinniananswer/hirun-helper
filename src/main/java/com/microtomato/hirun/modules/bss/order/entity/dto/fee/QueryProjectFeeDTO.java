@@ -19,6 +19,14 @@ public class QueryProjectFeeDTO {
 
     private String shopIds;
 
+    private Long agent;
+
+    private Long designer;
+
+    private Long projectCharger;
+
+    private Long projectManager;
+
     private Integer page;
 
     private Integer limit;

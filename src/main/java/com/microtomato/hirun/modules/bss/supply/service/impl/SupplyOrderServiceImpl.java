@@ -75,7 +75,6 @@ public class SupplyOrderServiceImpl extends ServiceImpl<SupplyOrderMapper, Suppl
     @Override
     public void materialOrderDeal(SupplyOrderDTO supplyOrderInfo) {
         List<SupplyMaterialDTO> supplyMaterialOrders = supplyOrderInfo.getSupplyMaterial();
-        log.debug("supplyMaterialOrders============"+supplyMaterialOrders);
         if (ArrayUtils.isNotEmpty(supplyMaterialOrders)) {
             //拼supplyOrder表数据
             SupplyOrder supplyOrder = new SupplyOrder();
@@ -84,7 +83,7 @@ public class SupplyOrderServiceImpl extends ServiceImpl<SupplyOrderMapper, Suppl
             supplyOrder.setCreateUserId(WebContextUtils.getUserContext().getUserId());
             supplyOrder.setSupplyOrderType(supplyOrderInfo.getSupplyOrderType());
             supplyOrder.setSupplyStatus("0");
-            int totalFee = 0;
+            Double totalFee = 0d;
 
             for (SupplyMaterialDTO supplyMaterialOrder : supplyMaterialOrders) {
                 totalFee+= supplyMaterialOrder.getCostPrice() * supplyMaterialOrder.getMaterialNum();
@@ -99,9 +98,11 @@ public class SupplyOrderServiceImpl extends ServiceImpl<SupplyOrderMapper, Suppl
                 supplyOrderDetail.setSupplierId(supplyMaterialOrder.getSupplierId());
                 supplyOrderDetail.setNum(supplyMaterialOrder.getMaterialNum().toString());
                 supplyOrderDetail.setSupplyId(supplyOrder.getId());
-                supplyOrderDetail.setFee(supplyMaterialOrder.getCostPrice() * supplyMaterialOrder.getMaterialNum());
+                Double fee = supplyMaterialOrder.getCostPrice() * supplyMaterialOrder.getMaterialNum();
+                supplyOrderDetail.setFee(fee);
                 supplyOrderDetail.setCreateTime(RequestTimeHolder.getRequestTime());
                 supplyOrderDetail.setCreateUserId(WebContextUtils.getUserContext().getUserId());
+                supplyOrderDetail.setRemark(supplyMaterialOrder.getRemark());
                 supplyOrderDetailService.save(supplyOrderDetail);
             }
         }
@@ -145,7 +146,7 @@ public class SupplyOrderServiceImpl extends ServiceImpl<SupplyOrderMapper, Suppl
     @Override
     public List<SupplyMaterialDTO> querySupplyDetailInfo(QuerySupplyOrderDTO condition) {
 
-        Long supplyId = condition.getId();
+        Long supplyId = condition.getSupplyId();
         Long supplierId = condition.getSupplierId();
         List<SupplyMaterialDTO> supplyDetails = this.supplyOrderMapper.querySupplyDetailInfo(supplyId, supplierId);
         for (SupplyMaterialDTO supplyDetail : supplyDetails) {
@@ -171,7 +172,7 @@ public class SupplyOrderServiceImpl extends ServiceImpl<SupplyOrderMapper, Suppl
         supplyOrderDTOS.forEach(supplyOrderDTO -> {
             //拼supplyOrder表数据
             SupplyOrder supplyOrder = new SupplyOrder();
-            supplyOrder.setId(supplyOrderDTO.getId());
+            supplyOrder.setId(supplyOrderDTO.getSupplyId());
             supplyOrder.setSupplyStatus("1");//审核不通过
             supplyOrder.setUpdateTime(RequestTimeHolder.getRequestTime());
             supplyOrder.setUpdateUserId(WebContextUtils.getUserContext().getUserId());

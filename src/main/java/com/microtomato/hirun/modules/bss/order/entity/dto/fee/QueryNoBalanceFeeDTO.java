@@ -19,6 +19,16 @@ public class QueryNoBalanceFeeDTO {
 
     private String shopIds;
 
+    private Long agent;
+
+    private Long projectManager;
+
+    private Long projectCharger;
+
+    private Long cabinetDesigner;
+
+    private Long materialManager;
+
     private Integer page;
 
     private Integer limit;

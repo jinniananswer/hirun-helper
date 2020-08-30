@@ -42,7 +42,7 @@ public class FinanceVoucherItem extends BaseEntity {
 
     /** 金额 */
     @TableField(value = "fee")
-    private Long fee;
+    private Double fee;
 
     /** 供应商id 针对材料付款使用 */
     @TableField(value = "supplier_id")

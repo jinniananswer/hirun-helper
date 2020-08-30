@@ -18,13 +18,7 @@ public class FinanceVoucherItemDTO {
 
     private String auditStatus;
 
-    private Long supplierId;
-
     private Long orderId;
-
-    /** 供应链id 针对材料付款使用 */
-    @TableField(value = "supply_id")
-    private Long supplyId;
 
     /** 项目编码 可以为客户编码，师傅ID等 */
     @TableField(value = "project_id")
@@ -37,5 +31,6 @@ public class FinanceVoucherItemDTO {
     /** 上级费用科目，对应FinanceVoucher表ID**/
     @TableField(value = "parent_voucher_item_id")
     private String parentVoucherItemId;
+
 
 }

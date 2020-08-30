@@ -11,7 +11,6 @@ import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
-import com.microtomato.hirun.modules.bss.config.entity.po.SalaryRoyaltyStrategy;
 import com.microtomato.hirun.modules.bss.config.entity.po.SalaryStatusFeeMapping;
 import com.microtomato.hirun.modules.bss.config.service.ISalaryRoyaltyStrategyService;
 import com.microtomato.hirun.modules.bss.config.service.ISalaryStatusFeeMappingService;
@@ -27,6 +26,7 @@ import com.microtomato.hirun.modules.bss.salary.entity.dto.*;
 import com.microtomato.hirun.modules.bss.salary.entity.po.SalaryRoyaltyDetail;
 import com.microtomato.hirun.modules.bss.salary.exception.SalaryException;
 import com.microtomato.hirun.modules.bss.salary.mapper.SalaryRoyaltyDetailMapper;
+import com.microtomato.hirun.modules.bss.salary.service.ISalaryMonthlyService;
 import com.microtomato.hirun.modules.bss.salary.service.ISalaryRoyaltyDetailService;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
@@ -87,6 +87,9 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
 
     @Autowired
     private IOrderDomainService orderDomainService;
+
+    @Autowired
+    private ISalaryMonthlyService salaryMonthlyService;
 
 
     /**
@@ -174,7 +177,6 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
         DesignRoyaltyDetailDTO designRoyaltyDetail = new DesignRoyaltyDetailDTO();
         BeanUtils.copyProperties(employeeSalaryRoyaltyDetail, designRoyaltyDetail);
 
-        SalaryRoyaltyStrategy strategy = this.salaryRoyaltyStrategyService.getByStrategyId(designRoyaltyDetail.getStrategyId());
         designRoyaltyDetail.setNodeCondition(this.staticDataService.getCodeName("NODE_CONDITION", designRoyaltyDetail.getOrderStatus()));
 
         OrderFeeCompositeDTO compositeFee = this.find(compositeFees, "1", null);
@@ -236,8 +238,7 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
 
             String key = employeeSalaryRoyaltyDetail.getEmployeeId() + "_" + employeeSalaryRoyaltyDetail.getOrderStatus();
             ProjectRoyaltyDetailDTO projectRoyaltyDetail = null;
-            SalaryStatusFeeMapping statusFeeMapping = this.salaryStatusFeeMappingService.getStatusFeeMapping(employeeSalaryRoyaltyDetail.getOrderStatus());
-            Integer periods = statusFeeMapping.getPeriods();
+            Integer periods = employeeSalaryRoyaltyDetail.getPeriods();
             OrderFeeCompositeDTO orderFee = this.find(compositeFees, "2", periods);
             if (orderFee == null) {
                 throw new SalaryException(SalaryException.SalaryExceptionEnum.ORDER_FEE_NOT_FOUND, "工程款");
@@ -463,14 +464,8 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
                 isModified = true;
             }
 
-            Double thisMonthFetchDouble = designRoyaltyDetail.getThisMonthFetch();
-            if (thisMonthFetchDouble != null) {
-                thisMonthFetchDouble = thisMonthFetchDouble * 100;
-                Long thisMonthFetch = new Long(thisMonthFetchDouble.longValue());
-                detail.setThisMonthFetch(thisMonthFetch);
-            } else {
-                detail.setAlreadyFetch(0L);
-            }
+            Long thisMonthFetch = detail.getTotalRoyalty() - detail.getAlreadyFetch();
+            detail.setThisMonthFetch(thisMonthFetch);
 
             if (oldDetail != null && !detail.getThisMonthFetch().equals(oldDetail.getThisMonthFetch())) {
                 isModified = true;
@@ -486,6 +481,7 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
 
             if (detail.getId() == null) {
                 detail.setStartTime(now);
+                detail.setFeeType("1");
                 detail.setEndTime(TimeUtils.getForeverTime());
                 detail.setIsModified(null);
                 createDetails.add(detail);
@@ -500,6 +496,8 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
         if (ArrayUtils.isNotEmpty(royaltyDetails)) {
             this.updateBatchById(royaltyDetails);
         }
+
+        //todo 更新员工月工资提成信息
     }
 
     /**
@@ -542,7 +540,10 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
                 return;
             }
             SalaryStatusFeeMapping statusFeeMapping = this.salaryStatusFeeMappingService.getStatusFeeMapping(projectDetail.getOrderStatus());
-            Integer period = statusFeeMapping.getPeriods();
+            Integer period = 1;
+            if (statusFeeMapping != null) {
+                period = statusFeeMapping.getPeriods();
+            }
 
             SalaryRoyaltyDetail basicDetail = new SalaryRoyaltyDetail();
             SalaryRoyaltyDetail doorDetail = new SalaryRoyaltyDetail();
@@ -591,6 +592,8 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
                         basicDetail.setItem("29");
                     }
                     basicDetail.setIsModified(null);
+                    basicDetail.setFeeType("2");
+                    basicDetail.setPeriods(period);
                     createDetails.add(basicDetail);
                 } else {
                     basicDetail.setId(projectDetail.getBasicId());
@@ -660,6 +663,8 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
                         doorDetail.setItem("30");
                     }
                     doorDetail.setIsModified(null);
+                    doorDetail.setFeeType("2");
+                    doorDetail.setPeriods(period);
                     createDetails.add(doorDetail);
                 } else {
                     doorDetail.setId(projectDetail.getDoorId());
@@ -729,6 +734,8 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
                         furnitureDetail.setItem("31");
                     }
                     furnitureDetail.setIsModified(null);
+                    furnitureDetail.setFeeType("2");
+                    furnitureDetail.setPeriods(period);
                     createDetails.add(furnitureDetail);
                 } else {
                     furnitureDetail.setId(projectDetail.getFurnitureId());
@@ -764,6 +771,7 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
             this.updateBatchById(royaltyDetails);
         }
 
+        //todo 更新员工月工资信息
     }
 
     /**
@@ -841,8 +849,11 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
         detail.setOrgName(org.getName());
 
         SalaryStatusFeeMapping statusFeeMapping = this.salaryStatusFeeMappingService.getStatusFeeMapping(detail.getOrderStatus());
-        Integer periods = statusFeeMapping.getPeriods();
-        detail.setPeriodName(this.staticDataService.getCodeName("FEE_PERIODS", periods + ""));
+        Integer periods = 1;
+        if (statusFeeMapping != null) {
+            periods = statusFeeMapping.getPeriods();
+            detail.setPeriodName(this.staticDataService.getCodeName("FEE_PERIODS", periods + ""));
+        }
         List<OrderFeeCompositeDTO> compositeFees = this.feeDomainService.buildCompositeFee(detail.getOrderId());
         OrderFeeCompositeDTO orderFee = this.find(compositeFees, "2", periods);
         if (orderFee == null) {
@@ -1050,15 +1061,23 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
         Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
 
         List<SalaryRoyaltyDetail> salaryRoyaltyDetails = new ArrayList<>();
+        Map<Long, Integer> employeeMonth = new HashMap<>();
         designDetails.forEach(detail -> {
             SalaryRoyaltyDetail salaryRoyaltyDetail = new SalaryRoyaltyDetail();
             salaryRoyaltyDetail.setId(detail.getId());
             salaryRoyaltyDetail.setAuditStatus("2");
             salaryRoyaltyDetail.setAuditEmployeeId(employeeId);
             salaryRoyaltyDetails.add(salaryRoyaltyDetail);
+            employeeMonth.put(detail.getEmployeeId(), detail.getSalaryMonth());
         });
 
         this.updateBatchById(salaryRoyaltyDetails);
+        if (!employeeMonth.isEmpty()) {
+            employeeMonth.forEach((key, value) -> {
+                Long totalRoyalty = this.salaryRoyaltyDetailMapper.sumRoyaltyByEmployeeId(key, value);
+                this.salaryMonthlyService.updateRoyalties(totalRoyalty, value, key);
+            });
+        }
     }
 
     /**
@@ -1100,6 +1119,7 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
         Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
 
         List<SalaryRoyaltyDetail> salaryRoyaltyDetails = new ArrayList<>();
+        Map<Long, Integer> employeeMonth = new HashMap<>();
         projectDetails.forEach(detail -> {
             if (detail.getBasicId() != null) {
                 SalaryRoyaltyDetail salaryRoyaltyDetail = new SalaryRoyaltyDetail();
@@ -1124,9 +1144,17 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
                 salaryRoyaltyDetail.setAuditEmployeeId(employeeId);
                 salaryRoyaltyDetails.add(salaryRoyaltyDetail);
             }
+            employeeMonth.put(detail.getEmployeeId(), detail.getSalaryMonth());
         });
 
         this.updateBatchById(salaryRoyaltyDetails);
+
+        if (!employeeMonth.isEmpty()) {
+            employeeMonth.forEach((key, value) -> {
+                Long totalRoyalty = this.salaryRoyaltyDetailMapper.sumRoyaltyByEmployeeId(key, value);
+                this.salaryMonthlyService.updateRoyalties(totalRoyalty, value, key);
+            });
+        }
     }
 
     /**

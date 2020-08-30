@@ -5,7 +5,6 @@ import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.SPELUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.bss.config.entity.po.SalaryRoyaltyStrategy;
-import com.microtomato.hirun.modules.bss.config.entity.po.SalaryStatusFeeMapping;
 import com.microtomato.hirun.modules.bss.config.service.ISalaryRoyaltyMultiSplitService;
 import com.microtomato.hirun.modules.bss.config.service.ISalaryRoyaltyStrategyService;
 import com.microtomato.hirun.modules.bss.config.service.ISalaryStatusFeeMappingService;
@@ -102,16 +101,8 @@ public class SalaryDO {
             return;
         }
 
-        //2.组装订单费用信息
-        FeeFact feeFact = this.buildFeeFact(orderId, orderStatus);
-        if (feeFact == null) {
-            //没有费用信息，无法计算，直接返回
-            return;
-        }
-
         LocalDateTime now = LocalDateTime.now();
         RoyaltyComputeFact computeFact = new RoyaltyComputeFact();
-        computeFact.setFeeFact(feeFact);
 
         //2.4 查询订单设计费标准
         OrderPlaneSketch planeSketch = this.orderPlaneSketchService.getByOrderId(orderId);
@@ -161,16 +152,11 @@ public class SalaryDO {
         }
     }
 
-    private FeeFact buildFeeFact(Long orderId, String orderStatus) {
+    private FeeFact buildFeeFact(Long orderId, String feeType, Integer periods) {
         //1.组装订单的费用等相关信息，这些对象需要进行计算或者更细粒度的条件匹配
         //1.1 查询状态对应要捞取的参与运算的费用配置
-        SalaryStatusFeeMapping statusFeeMapping = this.statusFeeMappingService.getStatusFeeMapping(orderStatus);
-        if (statusFeeMapping == null) {
-            return null;
-        }
 
-        //1.2 根据状态对应的费用配置查询费用信息
-        OrderFee orderFee = this.orderFeeService.getByOrderIdTypePeriod(orderId, statusFeeMapping.getType(), statusFeeMapping.getPeriods());
+        OrderFee orderFee = this.orderFeeService.getByOrderIdTypePeriod(orderId, feeType, periods);
         if (orderFee == null) {
             //没有查到费用信息，无法计算
             return null;
@@ -179,7 +165,7 @@ public class SalaryDO {
         BeanUtils.copyProperties(orderFee, feeFact);
 
         //1.3 如果是工程款，查询费用明细信息
-        if (StringUtils.equals("2", statusFeeMapping.getType())) {
+        if (StringUtils.equals("2", feeType)) {
             List<OrderFeeItem> orderFeeItems = this.orderFeeItemService.queryByOrderIdFeeNo(orderId, orderFee.getFeeNo());
             if (ArrayUtils.isNotEmpty(orderFeeItems)) {
                 List<FeeItemFact> feeItemFacts = new ArrayList<>();
@@ -291,6 +277,14 @@ public class SalaryDO {
         executor.parse(computeFact);
         List<SalaryRoyaltyDetail> royaltyDetails = new ArrayList<>();
         strategies.forEach(matchStrategy -> {
+            //2.组装订单费用信息
+            FeeFact feeFact = this.buildFeeFact(orderId, matchStrategy.getFeeType(), matchStrategy.getPeriods());
+            if (feeFact == null) {
+                //没有费用信息，无法计算，直接返回
+                return;
+            }
+            computeFact.setFeeFact(feeFact);
+
             //根据匹配的配置，开始进行提成金额的计算
             String formula = matchStrategy.getFormula();
             Long value = executor.executeLong(formula, computeFact);
@@ -329,6 +323,8 @@ public class SalaryDO {
             royaltyDetail.setSalaryMonth(salaryMonth);
             royaltyDetail.setOrderId(orderId);
             royaltyDetail.setOrderStatus(orderStatus);
+            royaltyDetail.setFeeType(matchStrategy.getFeeType());
+            royaltyDetail.setPeriods(matchStrategy.getPeriods());
             royaltyDetail.setType(matchStrategy.getType());
             royaltyDetail.setItem(matchStrategy.getItem());
             royaltyDetail.setMode(matchStrategy.getMode());

@@ -37,9 +37,14 @@ public class UsualOrderWorkerDTO {
     private String materialName;
 
     /**
-     * 橱柜设计师
+     * 橱柜管家
      */
     private String cabinetName;
+
+    /**
+     * 橱柜设计师
+     */
+    private String cabinetDesignerName;
 
     /**
      * 报备人员

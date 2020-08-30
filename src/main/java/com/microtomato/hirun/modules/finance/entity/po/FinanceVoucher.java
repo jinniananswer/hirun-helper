@@ -44,7 +44,7 @@ public class FinanceVoucher extends BaseEntity {
 
     /** 领款单日期 */
     @TableField(value = "voucher_date")
-    private LocalDate voucherDate;
+    private LocalDateTime voucherDate;
 
     /** 领款单总金额 */
     @TableField(value = "total_money")
