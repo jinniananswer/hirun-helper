@@ -18,10 +18,4 @@ public class OrderTaskQueryDTO {
     private Long housesId;
 
     private String orderStatus;
-
-    private Integer page;
-
-    private Integer limit;
-
-    private Integer count;
 }

@@ -13,4 +13,10 @@ import lombok.Data;
 public class FinanceOrderTaskQueryDTO extends OrderTaskQueryDTO {
 
     private String auditStatus;
+
+    private Integer page;
+
+    private Integer limit;
+
+    private Integer count;
 }

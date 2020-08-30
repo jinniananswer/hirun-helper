@@ -51,7 +51,7 @@ public interface OrderBaseMapper extends BaseMapper<OrderBase> {
     @Select("select a.cust_id, a.order_id, a.status,a.decorate_address,a.house_layout, a.houses_id, a.indoor_area,a.type, b.cust_no, b.cust_name, b.mobile_no, a.create_time from order_base a, cust_base b" +
             " ${ew.customSqlSegment}"
     )
-    IPage<OrderTaskDTO> queryOrderTaskInConsole(IPage<OrderTaskQueryDTO> condition, @Param(Constants.WRAPPER)Wrapper wrapper);
+    List<OrderTaskDTO> queryOrderTaskInConsole(@Param(Constants.WRAPPER)Wrapper wrapper);
 
     @Select("select a.cust_id, a.order_id, a.status,a.decorate_address,a.house_layout, a.houses_id, a.indoor_area,a.type, b.cust_no, b.cust_name, b.mobile_no, a.create_time, c.total_money/100 total_money, c.pay_no, c.audit_status,c.pay_date from order_base a, cust_base b, order_pay_no c " +
             " ${ew.customSqlSegment}"
