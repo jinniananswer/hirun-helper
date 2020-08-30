@@ -26,6 +26,7 @@ import com.microtomato.hirun.modules.bss.salary.entity.dto.*;
 import com.microtomato.hirun.modules.bss.salary.entity.po.SalaryRoyaltyDetail;
 import com.microtomato.hirun.modules.bss.salary.exception.SalaryException;
 import com.microtomato.hirun.modules.bss.salary.mapper.SalaryRoyaltyDetailMapper;
+import com.microtomato.hirun.modules.bss.salary.service.ISalaryMonthlyService;
 import com.microtomato.hirun.modules.bss.salary.service.ISalaryRoyaltyDetailService;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
@@ -86,6 +87,9 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
 
     @Autowired
     private IOrderDomainService orderDomainService;
+
+    @Autowired
+    private ISalaryMonthlyService salaryMonthlyService;
 
 
     /**
@@ -460,14 +464,8 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
                 isModified = true;
             }
 
-            Double thisMonthFetchDouble = designRoyaltyDetail.getThisMonthFetch();
-            if (thisMonthFetchDouble != null) {
-                thisMonthFetchDouble = thisMonthFetchDouble * 100;
-                Long thisMonthFetch = new Long(thisMonthFetchDouble.longValue());
-                detail.setThisMonthFetch(thisMonthFetch);
-            } else {
-                detail.setAlreadyFetch(0L);
-            }
+            Long thisMonthFetch = detail.getTotalRoyalty() - detail.getAlreadyFetch();
+            detail.setThisMonthFetch(thisMonthFetch);
 
             if (oldDetail != null && !detail.getThisMonthFetch().equals(oldDetail.getThisMonthFetch())) {
                 isModified = true;
@@ -1063,15 +1061,23 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
         Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
 
         List<SalaryRoyaltyDetail> salaryRoyaltyDetails = new ArrayList<>();
+        Map<Long, Integer> employeeMonth = new HashMap<>();
         designDetails.forEach(detail -> {
             SalaryRoyaltyDetail salaryRoyaltyDetail = new SalaryRoyaltyDetail();
             salaryRoyaltyDetail.setId(detail.getId());
             salaryRoyaltyDetail.setAuditStatus("2");
             salaryRoyaltyDetail.setAuditEmployeeId(employeeId);
             salaryRoyaltyDetails.add(salaryRoyaltyDetail);
+            employeeMonth.put(detail.getEmployeeId(), detail.getSalaryMonth());
         });
 
         this.updateBatchById(salaryRoyaltyDetails);
+        if (!employeeMonth.isEmpty()) {
+            employeeMonth.forEach((key, value) -> {
+                Long totalRoyalty = this.salaryRoyaltyDetailMapper.sumRoyaltyByEmployeeId(key, value);
+                this.salaryMonthlyService.updateRoyalties(totalRoyalty, value, key);
+            });
+        }
     }
 
     /**
@@ -1113,6 +1119,7 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
         Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
 
         List<SalaryRoyaltyDetail> salaryRoyaltyDetails = new ArrayList<>();
+        Map<Long, Integer> employeeMonth = new HashMap<>();
         projectDetails.forEach(detail -> {
             if (detail.getBasicId() != null) {
                 SalaryRoyaltyDetail salaryRoyaltyDetail = new SalaryRoyaltyDetail();
@@ -1137,9 +1144,17 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
                 salaryRoyaltyDetail.setAuditEmployeeId(employeeId);
                 salaryRoyaltyDetails.add(salaryRoyaltyDetail);
             }
+            employeeMonth.put(detail.getEmployeeId(), detail.getSalaryMonth());
         });
 
         this.updateBatchById(salaryRoyaltyDetails);
+
+        if (!employeeMonth.isEmpty()) {
+            employeeMonth.forEach((key, value) -> {
+                Long totalRoyalty = this.salaryRoyaltyDetailMapper.sumRoyaltyByEmployeeId(key, value);
+                this.salaryMonthlyService.updateRoyalties(totalRoyalty, value, key);
+            });
+        }
     }
 
     /**

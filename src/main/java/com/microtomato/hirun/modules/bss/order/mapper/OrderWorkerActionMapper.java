@@ -23,10 +23,8 @@ import java.util.List;
 public interface OrderWorkerActionMapper extends BaseMapper<OrderWorkerAction> {
 
     @Select("select a.order_id, b.employee_id, a.role_id, b.order_status, b.job_role, b.job_grade, b.org_id ,b.action " +
-            "from order_worker a, order_worker_action b " +
-            " where b.worker_id = a.id" +
-            " and a.order_id =#{orderId} " +
-
+            "from order_worker a left join order_worker_action b on (b.worker_id = a.id) " +
+            " where a.order_id =#{orderId} " +
             " and b.end_date > now()"
     )
     List<OrderWorkerActionDTO> queryByOrderId(Long orderId);

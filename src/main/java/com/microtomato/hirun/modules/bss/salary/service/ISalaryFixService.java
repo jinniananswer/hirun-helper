@@ -27,4 +27,6 @@ public interface ISalaryFixService extends IService<SalaryFix> {
     void saveSalaries(List<SalaryFixDTO> salaries, boolean isAudit);
 
     void audit(List<SalaryFixDTO> employeeSalaries, boolean isPass);
+
+    SalaryFix getByEmployeeId(Long employeeId);
 }

@@ -50,4 +50,7 @@ public interface SalaryRoyaltyDetailMapper extends BaseMapper<SalaryRoyaltyDetai
             "${ew.customSqlSegment}"
     )
     IPage<StatRoyaltyDetailDTO> statByCustOrder(IPage<QueryStatRoyaltyDTO> condition, @Param(Constants.WRAPPER) Wrapper wrapper);
+
+    @Select("select sum(total_royalty - already_fetch) from salary_royalty_detail where employee_id = ${employeeId} and salary_month = ${salaryMonth} and audit_status = '2' ")
+    Long sumRoyaltyByEmployeeId(@Param("employeeId")Long employeeId, @Param("salaryMonth")Integer salaryMonth);
 }

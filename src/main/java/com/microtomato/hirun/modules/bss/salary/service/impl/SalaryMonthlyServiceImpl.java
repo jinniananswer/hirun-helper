@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.bss.salary.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
@@ -611,6 +612,48 @@ public class SalaryMonthlyServiceImpl extends ServiceImpl<SalaryMonthlyMapper, S
         }
     }
 
+    /**
+     * 根据员工ID与月份查询月工资信息
+     * @param employeeId
+     * @param salaryMonth
+     * @return
+     */
+    @Override
+    public SalaryMonthly getByEmployeeIdMonth(Long employeeId, Integer salaryMonth) {
+        return this.getOne(Wrappers.<SalaryMonthly>lambdaQuery()
+                .eq(SalaryMonthly::getEmployeeId, employeeId)
+                .eq(SalaryMonthly::getSalaryMonth, salaryMonth)
+                .ge(SalaryMonthly::getEndTime, RequestTimeHolder.getRequestTime()), false);
+    }
+
+    /**
+     * 修改月工资中的提成信息
+     * @param totalRoyalty
+     * @param salaryMonth
+     * @param employeeId
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void updateRoyalties(Long totalRoyalty, Integer salaryMonth, Long employeeId) {
+        SalaryMonthly salaryMonthly = this.getByEmployeeIdMonth(employeeId, salaryMonth);
+        if (salaryMonthly == null) {
+            salaryMonthly = new SalaryMonthly();
+            SalaryFix salaryFix = this.salaryFixService.getByEmployeeId(employeeId);
+            if (salaryFix != null) {
+                BeanUtils.copyProperties(salaryFix, salaryMonthly);
+            }
+            salaryMonthly.setEmployeeId(employeeId);
+            salaryMonthly.setSalaryMonth(salaryMonth);
+            salaryMonthly.setAuditStatus("0");
+            salaryMonthly.setStartTime(RequestTimeHolder.getRequestTime());
+            salaryMonthly.setEndTime(TimeUtils.getForeverTime());
+        }
+        salaryMonthly.setRoyalty(totalRoyalty);
+
+        if (salaryMonthly.getId() == null) {
+            this.save(salaryMonthly);
+        } else {
+            this.updateById(salaryMonthly);
+        }
     }
 }

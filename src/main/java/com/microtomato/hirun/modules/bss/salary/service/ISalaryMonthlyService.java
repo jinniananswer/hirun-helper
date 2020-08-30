@@ -25,4 +25,8 @@ public interface ISalaryMonthlyService extends IService<SalaryMonthly> {
     void saveSalaries(List<SalaryMonthlyDTO> salaries, boolean isAudit);
 
     void audit(List<SalaryMonthlyDTO> employeeSalaries, boolean isPass);
+
+    SalaryMonthly getByEmployeeIdMonth(Long employeeId, Integer salaryMonth);
+
+    void updateRoyalties(Long totalRoyalty, Integer salaryMonth, Long employeeId);
 }

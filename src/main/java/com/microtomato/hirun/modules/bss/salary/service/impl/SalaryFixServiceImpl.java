@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.bss.salary.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
@@ -516,5 +517,13 @@ public class SalaryFixServiceImpl extends ServiceImpl<SalaryFixMapper, SalaryFix
         if (salary.getBankAcctThree() == null) {
             salary.setBankAcctThree("");
         }
+    }
+
+    @Override
+    public SalaryFix getByEmployeeId(Long employeeId) {
+        return this.getOne(Wrappers.<SalaryFix>lambdaQuery()
+                .eq(SalaryFix::getEmployeeId, employeeId)
+                .ge(SalaryFix::getEndTime, RequestTimeHolder.getRequestTime())
+                .eq(SalaryFix::getAuditStatus, "2"), false);
     }
 }
