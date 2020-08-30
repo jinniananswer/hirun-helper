@@ -155,12 +155,17 @@ public class UploadFileServiceImpl extends ServiceImpl<UploadFileMapper, UploadF
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(String id) {
         this.update(
             Wrappers.<UploadFile>lambdaUpdate()
                 .setSql("enabled = false")
                 .eq(UploadFile::getId, id)
         );
+    }
+
+    @Override
+    public UploadFile selectById(String id) {
+        return this.getOne(Wrappers.<UploadFile>lambdaQuery().eq(UploadFile::getId, id));
     }
 
 }
