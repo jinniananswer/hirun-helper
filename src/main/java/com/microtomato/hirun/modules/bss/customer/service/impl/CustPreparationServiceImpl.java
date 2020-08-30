@@ -356,7 +356,7 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
     public Map<String, String> getCustomerNoAndSec() {
         Map<String, String> map = new HashMap<>();
         //todo 未定义权限编码
-        map.put("isContinueAuth", SecurityUtils.hasFuncId("") + "");
+        map.put("isContinueAuth", SecurityUtils.hasFuncId("isContinueAuth") + "");
         Long seq = dualService.nextval(CustNoMaxCycleSeq.class);
         map.put("custNo", "KH" + seq);
         return map;
