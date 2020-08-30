@@ -59,7 +59,7 @@ public class OrderFileServiceImpl extends ServiceImpl<OrderFileMapper, com.micro
      * @return
      */
     private String getDestPath() {
-        String destPath = FilenameUtils.concat(dataPath, "/" + UPLOAD + "/order");
+        String destPath = FilenameUtils.concat(dataPath, UPLOAD + "/order");
         log.info("===============================");
         log.info("dataPath: {}", dataPath);
         log.info("destPath: {}", destPath);

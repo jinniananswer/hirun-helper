@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.Assert;
@@ -108,7 +109,7 @@ public class UploadFileController {
         UploadFile uploadFile = uploadFileService.getOne(Wrappers.<UploadFile>lambdaQuery().eq(UploadFile::getId, id));
         Assert.notNull(uploadFile, "展示失败,无法找到对应的文件,Id:" + id);
 
-        String filePath = uploadFile.getFilePath();
+        String filePath = StringUtils.removeStart(uploadFile.getFilePath(), "/");
         String realPath = FilenameUtils.concat(dataPath, filePath);
 
         FileInputStream fileInputStream = FileUtils.openInputStream(new File(realPath));
@@ -137,7 +138,7 @@ public class UploadFileController {
         UploadFile uploadFile = uploadFileService.getOne(Wrappers.<UploadFile>lambdaQuery().eq(UploadFile::getId, id));
         Assert.notNull(uploadFile, "下载失败,无法找到对应的文件,Id:" + id);
 
-        String filePath = uploadFile.getFilePath();
+        String filePath = StringUtils.removeStart(uploadFile.getFilePath(), "/");
         String realPath = FilenameUtils.concat(dataPath, filePath);
 
         FileInputStream fileInputStream = FileUtils.openInputStream(new File(realPath));
