@@ -91,7 +91,7 @@ public class UploadFileController {
 
     @GetMapping("deleteById/{id}")
     @RestResult
-    public void deleteById(@PathVariable("id") Long id) {
+    public void deleteById(@PathVariable("id") String id) {
         uploadFileService.deleteById(id);
     }
 
