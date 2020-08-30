@@ -26,6 +26,6 @@ public class HousesPlanServiceImpl extends ServiceImpl<HousesPlanMapper, HousesP
                 .eq(HousesPlan::getHousesId,houseId)
                 .eq(HousesPlan::getEmployeeId,employeeId)
                 .apply("now() between start_date and end_date "));
-        return null;
+        return housesPlan;
     }
 }
