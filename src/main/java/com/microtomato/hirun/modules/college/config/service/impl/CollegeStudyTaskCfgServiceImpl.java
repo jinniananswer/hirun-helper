@@ -67,4 +67,10 @@ public class CollegeStudyTaskCfgServiceImpl extends ServiceImpl<CollegeStudyTask
         return this.list(Wrappers.<CollegeStudyTaskCfg>lambdaQuery().eq(CollegeStudyTaskCfg::getStatus, '0')
                 .in(CollegeStudyTaskCfg::getStudyTaskId, studyTaskIdList));
     }
+
+    @Override
+    public CollegeStudyTaskCfg getByStudyTaskId(Long studyTaskId) {
+        return this.getOne(Wrappers.<CollegeStudyTaskCfg>lambdaQuery().eq(CollegeStudyTaskCfg::getStudyTaskId, studyTaskId)
+                .eq(CollegeStudyTaskCfg::getStatus, "0"));
+    }
 }

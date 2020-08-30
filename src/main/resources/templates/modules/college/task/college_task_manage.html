@@ -107,10 +107,10 @@
                     <el-table-column prop="studyTime" width="120" label="学习时间/天" align="center"></el-table-column>
                     <el-table-column prop="exercisesNumber" width="100" label="习题次数" align="center"></el-table-column>
                     <el-table-column prop="passScore" width="120" label="考试合格分数" align="center"></el-table-column>
-                    <el-table-column fixed="right" label="操作" align="center" width="160">
+                    <el-table-column fixed="right" label="操作" align="center" width="200">
                         <template slot-scope="scope">
                             <el-button type="danger" width="50" size="mini" icon="el-icon-edit"
-                                       @click="">修改
+                                       @click="editStudyTask">修改
                             </el-button>
                             <el-button type="danger" width="50" size="mini" icon="el-icon-delete"
                                        @click="deleteStudyTaskRow(scope.row)">删除
@@ -129,7 +129,7 @@
                         @current-change="query">
                 </el-pagination>
             </div>
-            <el-dialog width="80%" title="新增课程任务" append-to-body :visible.sync="addStudyTaskDialogVisible">
+            <el-dialog width="80%" title="新增学习任务配置" append-to-body :visible.sync="addStudyTaskDialogVisible">
                 <el-card class="box-card" shadow="hover">
                     <div slot="header" class="clearfix">
                         <span>选择课件类型</span>
@@ -143,7 +143,7 @@
                         </el-select>
                     </div>
                     <div style="height: 20vh;overflow: auto;">
-                        <upload-file :style="showUpload" accept=".pdf" limit="1"></upload-file>
+                        <upload-file :style="showUpload" :on-success="handleSuccess" accept=".pdf" limit="1"></upload-file>
                         <el-tree :style="showTree" :data="studyInfos" node-key="courseId" :props="defaultProps" @node-click="handleNodeClick" accordion></el-tree>
                     </div>
                 </el-card>
@@ -257,6 +257,110 @@
                                                 @click="deleteDesign(row)">删除</el-button>
                                     </template>
                                 </vxe-table-column>
+                            </vxe-table>
+                        </el-row>
+                        <el-row>
+                            <div style="text-align: center">
+                                <el-button type="primary" @click="submitAdd(courseChaptersDetails)">保存</el-button>
+                                <el-button @click="cancel">取消</el-button>
+                            </div>
+                        </el-row>
+                    </el-form>
+                </el-card>
+            </el-dialog>
+
+
+            <el-dialog width="80%" title="修改学习任务配置" append-to-body :visible.sync="editStudyTaskDialogVisible">
+                <el-card>
+                    <div slot="header" class="clearfix">
+                        <span>修改任务配置信息</span>
+                    </div>
+                    <el-form :inline="false" :model="editStudyTaskInfo"  ref="editStudyTaskInfo" label-position="right"
+                             label-width="120px" :rules="studyTaskRules">
+                        <el-row>
+                            <el-col :span="8">
+                                <el-form-item label="学习内容标识" label-width="120px" prop="studyId">
+                                    <el-input :disabled="true" v-model="editStudyTaskInfo.studyId" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="学习内容名称" label-width="120px" prop="studyName">
+                                    <el-input :disabled="true" v-model="editStudyTaskInfo.studyName" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="学习内容类型" label-width="120px" prop="studyType">
+                                    <el-input :disabled="true" v-model.number="editStudyTaskInfo.studyType" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="8">
+                                <el-form-item label="学习顺序" label-width="120px" prop="studyOrder">
+                                    <el-input :disabled="true" v-model.number="editStudyTaskInfo.studyOrder" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="员工职级" label-width="120px" prop="staffRank">
+                                    <el-input :disabled="true" v-model.number="editStudyTaskInfo.staffRank" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="任务类型" label-width="120px" prop="taskType">
+                                    <el-form-item label="任务类型" label-width="120px" prop="taskType">
+                                        <el-input :disabled="true" v-model.number="editStudyTaskInfo.taskType" autocomplete="off"></el-input>
+                                    </el-form-item>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="8">
+                                <el-form-item label="习题次数" label-width="120px" prop="exercisesNumber">
+                                    <el-input v-model.number="editStudyTaskInfo.exercisesNumber" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="考试合格分数" label-width="120px" prop="passScore">
+                                    <el-input v-model.number="editStudyTaskInfo.passScore" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="学习时间/天" label-width="120px" prop="studyTime">
+                                    <el-input v-model.number="editStudyTaskInfo.studyTime" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row :style="showTree">
+                            <el-col :span="8">
+                                <el-form-item label="课程章节信息:" label-width="100px" prop="">
+
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row :style="showTree">
+                            <vxe-table
+                                    border
+                                    resizable
+                                    ref="courseChaptersDetails"
+                                    show-overflow
+                                    highlight-hover-row
+                                    highlight-cell
+                                    keep-source
+                                    max-height="800px"
+                                    :auto-resize="true"
+                                    :data="courseChaptersDetails"
+                                    :edit-rules="courseChaptersRules"
+                                    :edit-config="{trigger: 'click', mode: 'cell', showStatus: true}"
+                                    :checkbox-config="{strict: true, range: true, trigger: 'row', highlight: true}">
+                                <vxe-table-column type="checkbox" align="center"  width="40"></vxe-table-column>
+                                <vxe-table-column field="studyId" align="center" title="学习内容标识" width="120" ></vxe-table-column>
+                                <vxe-table-column field="chaptersName" align="center" sortable title="章节名称" width="250" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                                <vxe-table-column field="chaptersStudyOrder" align="center" sortable title="章节学习顺序" width="150" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+                                <vxe-table-column field="chaptersType" align="center" title="章节类型" width="100" :edit-render="{name: 'select', options: chaptersTypes, events: {change: changeEvent}}"></vxe-table-column>
+                                <vxe-table-column field="studyTime" align="center" sortable title="学习时间/天" width="150" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+                                <vxe-table-column field="studyModel"  align="center"title="学习模式" width="100"  :edit-render="{name: 'select', options: courseStudyModelTypes, events: {change: changeEvent}}"></vxe-table-column>
+                                <vxe-table-column field="exercisesNumber" align="center" sortable title="习题次数" width="150" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+                                <vxe-table-column field="passScore"  align="center"title="考试合格分数" width="100"  :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
                             </vxe-table>
                         </el-row>
                         <el-row>

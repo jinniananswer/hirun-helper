@@ -92,9 +92,11 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 studyTaskTypes: [],
                 taskCoursewareTypes: [],
                 addStudyTaskDialogVisible: false,
+                editStudyTaskDialogVisible: false,
                 courseChaptersDetails: [],
                 courseChaptersItem: {},
                 addStudyTaskInfo: {},
+                editStudyTaskInfo: {},
                 selectCurrent: {},
                 studyInfos: [],
                 showUpload: 'display:none',
@@ -277,8 +279,8 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
             handleClick() {
 
             },
-            handleSuccess: function (response, file, fileList) {
-                alert("fileId: " + this.$refs.upload.fileId);
+            handleSuccess: function (fileList) {
+                alert("fileId: " + JSON.stringify(fileList));
             },
             deleteStudyTaskBatch: function () {
                 let val = this.multipleSelection
@@ -291,17 +293,18 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     });
                     return;
                 }
-                this.$confirm('是否删除选中的学习任务?', '提示', {
+                this.$confirm('是否删除选中的学习任务?本次删除同时会连带删除选中学习任务的章节信息配置！', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
+                    let that = this
                     ajax.post('api/CollegeStudyTaskCfg/deleteStudyTaskBatch', val, function(responseData){
-                        this.multipleSelection.forEach((deleteStufyInfo) => {
-                            let studyTaskInfoList = this.studyTaskInfo;
+                        that.multipleSelection.forEach((deleteStufyInfo) => {
+                            let studyTaskInfoList = that.studyTaskInfo;
                             for(let i = 0 ; i < studyTaskInfoList.length ; i++){
                                 if(studyTaskInfoList[i]._XID == deleteStufyInfo._XID){
-                                    this.studyTaskInfo.splice(i, 1);
+                                    that.studyTaskInfo.splice(i, 1);
                                     break;
                                 }
                             }
@@ -310,7 +313,27 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 })
             },
             deleteStudyTaskRow: function (row) {
-                alert(JSON.stringify(row))
+                let deleteStudyName = row.studyName;
+                this.$confirm('是否删除' + deleteStudyName + '学习任务配置?本次删除同时会连带删除章节信息配置！', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    let that = this
+                    ajax.post('api/CollegeStudyTaskCfg/deleteStudyTaskByRow', row, function(responseData){
+                        let studyTaskInfoList = that.studyTaskInfo;
+                        for(let i = 0 ; i < studyTaskInfoList.length ; i++){
+                            if(studyTaskInfoList[i]._XID == row._XID){
+                                that.studyTaskInfo.splice(i, 1);
+                                break;
+                            }
+                        }
+                    },null, true);
+                })
+            },
+            editStudyTask: function (row) {
+                let that = this;
+                that.editStudyTaskDialogVisible = true;
             }
         },
 

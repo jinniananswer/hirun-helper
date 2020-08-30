@@ -160,4 +160,27 @@ public class CollegeStudyTaskCfgController {
             }
         }
     }
+
+    @PostMapping("deleteStudyTaskByRow")
+    @Transactional(rollbackFor = Exception.class)
+    @RestResult
+    public void deleteStudyTaskByRow(@RequestBody CollegeStudyTaskResponseDTO collegeStudyTaskResponseDTO){
+        //1.根据学习任务标识查询学习任务配置
+        CollegeStudyTaskCfg collegeStudyTaskCfg = this.collegeStudyTaskCfgService.getByStudyTaskId(collegeStudyTaskResponseDTO.getStudyTaskId());
+        if (null != collegeStudyTaskCfg){
+            //2.修改学习任务配置状态
+            collegeStudyTaskCfg.setStatus("1");
+            this.collegeStudyTaskCfgService.updateById(collegeStudyTaskCfg);
+
+            //3.根据学习内容标识查询章节配置信息
+            List<CollegeCourseChaptersCfg> collegeCourseChaptersCfgList = this.collegeCourseChaptersCfgServiceImpl.queryByStudyId(collegeStudyTaskCfg.getStudyId());
+            if (ArrayUtils.isNotEmpty(collegeCourseChaptersCfgList)){
+                //4.修改章节配置状态
+                for (CollegeCourseChaptersCfg collegeCourseChaptersCfg : collegeCourseChaptersCfgList){
+                    collegeCourseChaptersCfg.setStatus("1");
+                }
+                this.collegeCourseChaptersCfgServiceImpl.updateBatchById(collegeCourseChaptersCfgList);
+            }
+        }
+    }
 }

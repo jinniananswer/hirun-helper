@@ -28,4 +28,6 @@ public interface ICollegeStudyTaskCfgService extends IService<CollegeStudyTaskCf
     IPage<CollegeStudyTaskResponseDTO> queryCollegeStufyByPage(CollegeStudyTaskRequestDTO collegeStudyTaskRequestDTO, Page<CollegeStudyTaskRequestDTO> page);
 
     List<CollegeStudyTaskCfg> queryByStudyTaskIdList(List<Long> studyTaskIdList);
+
+    CollegeStudyTaskCfg getByStudyTaskId(Long studyTaskId);
 }
