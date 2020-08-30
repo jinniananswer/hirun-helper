@@ -13,10 +13,10 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     salaryMonth: null,
                     auditStatus: null,
                     count: 0,
-                    limit: 1,
+                    limit: 20,
                     page: 1,
                     projectCount: 0,
-                    projectLimit: 1,
+                    projectLimit: 20,
                     projectPage: 1
                 },
                 designRoyaltyDetails: [],
