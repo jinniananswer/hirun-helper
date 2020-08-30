@@ -77,7 +77,8 @@ public class OrderPayItemServiceImpl extends ServiceImpl<OrderPayItemMapper, Ord
         QueryWrapper<OrderPayItem> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(OrderPayItem::getOrderId, orderId)
             .eq(period != null, OrderPayItem::getPeriods, period)
-            .in(OrderPayItem::getPayItemId, payItemIds);
+            .in(OrderPayItem::getPayItemId, payItemIds)
+            .ge(OrderPayItem::getEndDate, RequestTimeHolder.getRequestTime());
         return this.list(queryWrapper);
     }
 }
