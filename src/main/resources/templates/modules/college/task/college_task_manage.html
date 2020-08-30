@@ -33,20 +33,20 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="8">
-                            <el-form-item label="课程ID">
-                                <vue-select v-model="queryCond.studyId"></vue-select>
+                            <el-form-item label="学习内容标识">
+                                <el-input v-model="queryCond.studyId"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="8">
-                            <el-form-item label="课程名称">
-                                <vue-select v-model="queryCond.studyName"></vue-select>
+                            <el-form-item label="学习内容名称">
+                                <el-input v-model="queryCond.studyName"></el-input>
                             </el-form-item>
                         </el-col>
                     </el-row>
                     <el-row>
                         <el-col :span="8">
-                            <el-form-item label="课程任务ID">
-                                <vue-select v-model="queryCond.studyTaskId"></vue-select>
+                            <el-form-item label="学习任务标识">
+                                <el-input v-model="queryCond.studyTaskId"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="8">
@@ -72,8 +72,8 @@
                             <el-card class="box-card" shadow="hover">
                                 <el-button  icon="fa fa-plus" @click="addStudyTask">新增课程章节</el-button>
                                 <el-table border
-                                        :data="props.row.collegeCourseChaptersList" stripe="true" height="300"
-                                        style="width: 100%" align="center" >
+                                        :data="props.row.collegeCourseChaptersList" stripe="true" height="250"
+                                        style="width: 80%" align="center" >
                                     <el-table-column prop="studyId" width="150" label="学习内容标识" align="center"></el-table-column>
                                     <el-table-column prop="chaptersName" width="200" label="章节名称" align="center"></el-table-column>
                                     <el-table-column prop="chaptersStudyOrder" width="150" label="章节学习顺序" align="center"></el-table-column>
@@ -107,10 +107,13 @@
                     <el-table-column prop="studyTime" width="120" label="学习时间/天" align="center"></el-table-column>
                     <el-table-column prop="exercisesNumber" width="100" label="习题次数" align="center"></el-table-column>
                     <el-table-column prop="passScore" width="120" label="考试合格分数" align="center"></el-table-column>
-                    <el-table-column fixed="right" label="操作" align="center" width="80">
+                    <el-table-column fixed="right" label="操作" align="center" width="160">
                         <template slot-scope="scope">
                             <el-button type="danger" width="50" size="mini" icon="el-icon-edit"
                                        @click="">修改
+                            </el-button>
+                            <el-button type="danger" width="50" size="mini" icon="el-icon-delete"
+                                       @click="deleteStudyTaskRow(scope.row)">删除
                             </el-button>
                         </template>
                     </el-table-column>

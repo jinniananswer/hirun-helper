@@ -30,7 +30,8 @@ public class CollegeCourseChaptersCfgServiceImpl extends ServiceImpl<CollegeCour
     @Override
     public List<CollegeCourseChaptersCfg> queryByStudyId(String studyId) {
         return this.list(Wrappers.<CollegeCourseChaptersCfg>lambdaQuery().eq(CollegeCourseChaptersCfg::getStudyId, studyId)
-                .eq(CollegeCourseChaptersCfg::getStatus, '0').orderByAsc(CollegeCourseChaptersCfg::getChaptersStudyOrder));
+                .eq(CollegeCourseChaptersCfg::getStatus, '0')
+                .orderByAsc(CollegeCourseChaptersCfg::getChaptersStudyOrder));
     }
 
     @Override

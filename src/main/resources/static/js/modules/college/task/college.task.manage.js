@@ -231,7 +231,7 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                             type: 'warning'
                         }).then(() => {
                             that.addStudyTaskInfo.courseChaptersList = courseChaptersDetails
-                            ajax.post('api/CollegeStudyTaskCfg/addStudyTaskCfg', that.addStudyTaskInfo, function(){
+                            ajax.post('api/CollegeStudyTaskCfg/addStudyTaskCfg', that.addStudyTaskInfo, function(responseData){
                                 this.$message({
                                     showClose: true,
                                     message: '课程任务新增成功',
@@ -291,15 +291,26 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     });
                     return;
                 }
-                alert("勾选了删除：" + val.length + "个元素")
-                let studyTaskIdList = [];
-                val.forEach(v => {
-                    studyTaskIdList.push({studyTaskId:v.studyTaskId});
-                });
-                alert(JSON.stringify(studyTaskIdList));
-                ajax.post('api/CollegeStudyTaskCfg/deleteStudyTaskBatch', val, function(responseData){
-
-                },null, true);
+                this.$confirm('是否删除选中的学习任务?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    ajax.post('api/CollegeStudyTaskCfg/deleteStudyTaskBatch', val, function(responseData){
+                        this.multipleSelection.forEach((deleteStufyInfo) => {
+                            let studyTaskInfoList = this.studyTaskInfo;
+                            for(let i = 0 ; i < studyTaskInfoList.length ; i++){
+                                if(studyTaskInfoList[i]._XID == deleteStufyInfo._XID){
+                                    this.studyTaskInfo.splice(i, 1);
+                                    break;
+                                }
+                            }
+                        })
+                    },null, true);
+                })
+            },
+            deleteStudyTaskRow: function (row) {
+                alert(JSON.stringify(row))
             }
         },
 
