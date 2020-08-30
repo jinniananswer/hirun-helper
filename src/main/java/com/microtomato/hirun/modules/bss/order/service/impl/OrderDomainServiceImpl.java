@@ -494,7 +494,7 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
             wrapper.eq(StringUtils.isNotBlank(condition.getOrderStatus()), "a.status", condition.getOrderStatus());
             wrapper.eq(condition.getHousesId() != null, "a.houses_id", condition.getHousesId());
             wrapper.eq(StringUtils.isNotBlank(condition.getMobileNo()), "b.mobile_no", condition.getMobileNo());
-            wrapper.exists("select 1 from order_worker c where c.order_id = a.order_id and c.employee_id = " + employeeId + " and c.role_id = " + role.getId());
+            wrapper.exists("select 1 from order_worker c where c.order_id = a.order_id and c.employee_id = " + employeeId + " and c.role_id = " + role.getId() + " and c.end_date > now() ");
             wrapper.in("a.status", statuses);
             wrapper.orderByAsc("a.status", "a.create_time");
 
