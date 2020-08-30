@@ -80,6 +80,7 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
 
         // 查用户角色
         List<UserRole> userRoles = userRoleServiceImpl.queryUserRole(user);
+        userRoles.add(UserRole.builder().roleId(Constants.DEFAULT_ROLE_ID).isMainRole(Boolean.FALSE).build());
         setMainRoleId(userContext, userRoles);
         
         // 根据角色查操作权限

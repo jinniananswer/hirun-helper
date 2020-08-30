@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.demo.controller;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.modules.demo.entity.po.Steven;
 import com.microtomato.hirun.modules.demo.entity.po.Zhoulin;
 import com.microtomato.hirun.modules.demo.mapper.ZhoulinMapper;
@@ -14,10 +15,7 @@ import com.microtomato.hirun.modules.user.service.IFuncTempService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -112,6 +110,13 @@ public class DemoController {
         FuncTemp one = funcTempService.getOne(Wrappers.<FuncTemp>lambdaQuery().eq(FuncTemp::getId, funcTemp.getId()));
 
         log.error("从表里查出的 PO 对象: {}", one);
+    }
+
+    @RestResult
+    @PostMapping("test1")
+    public void test1() {
+        log.info("===> test1");
+        //return true;
     }
 
 }
