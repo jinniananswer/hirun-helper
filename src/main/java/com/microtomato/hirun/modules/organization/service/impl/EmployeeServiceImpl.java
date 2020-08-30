@@ -381,10 +381,7 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         } else {
             //按role_id和org_id查
             OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
-            Org root = orgDO.getBelongShop();
-            if (root == null) {
-                root = orgDO.getBelongCompany();
-            }
+            Org root = orgDO.getBelongCompany();
 
             if (root != null) {
                 String orgLine = orgDO.getOrgLine(root.getOrgId());
