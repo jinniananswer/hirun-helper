@@ -55,7 +55,7 @@ public class OrderDomainController {
 
     @GetMapping("/queryOrderTasks")
     @RestResult
-    public IPage<OrderTaskDTO> queryOrderTasks(OrderTaskQueryDTO condition) {
+    public List<OrderTaskDTO> queryOrderTasks(OrderTaskQueryDTO condition) {
         return this.domainService.queryOrderTasks(condition);
     }
 
