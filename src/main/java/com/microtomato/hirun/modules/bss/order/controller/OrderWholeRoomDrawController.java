@@ -33,22 +33,6 @@ public class OrderWholeRoomDrawController {
     @RestResult
     public void save(@RequestBody OrderWholeRoomDrawDTO dto) {
         iOrderWholeRoomDrawService.submitWholeRoomDrawing(dto);
-        orderWorkerService.updateOrderWorker(dto.getOrderId(),30L,dto.getDesigner());
-        if (dto.getDrawingAuditor() != null) {
-            orderWorkerService.updateOrderWorker(dto.getOrderId(),44L,dto.getDrawingAuditor());
-        }
-        if (dto.getProductionLeader() != null) {
-            orderWorkerService.updateOrderWorker(dto.getOrderId(),42L,dto.getProductionLeader());
-        }
-        if (dto.getDrawingAssistant() != null) {
-            orderWorkerService.updateOrderWorker(dto.getOrderId(),39L,dto.getDrawingAssistant());
-        }
-        if (dto.getAdminAssistant() != null) {
-            orderWorkerService.updateOrderWorker(dto.getOrderId(),40L,dto.getAdminAssistant());
-        }
-        if (dto.getHydropowerDesigner() != null) {
-            orderWorkerService.updateOrderWorker(dto.getOrderId(),38L,dto.getHydropowerDesigner());
-        }
     }
 
     @GetMapping("/getWholeRoomDraw")
@@ -61,10 +45,8 @@ public class OrderWholeRoomDrawController {
     @Transactional(rollbackFor = Exception.class)
     @RestResult
     public void submitToAuditPicturesFlow(@RequestBody OrderWholeRoomDrawDTO dto) {
-        //iOrderWholeRoomDrawService.submitWholeRoomDrawing(dto);
-        iOrderWholeRoomDrawService.submitToAuditPicturesFlow(dto.getOrderId());
-        //orderWorkerService.updateOrderWorker(dto.getOrderId(),30L,dto.getDesigner());
-        //orderWorkerService.updateOrderWorker(dto.getOrderId(),44L,dto.getDrawingAuditor());
+         this.save(dto);
+         iOrderWholeRoomDrawService.submitToAuditPicturesFlow(dto.getOrderId());
     }
 
     @PostMapping("/submitToConfirmFlow")

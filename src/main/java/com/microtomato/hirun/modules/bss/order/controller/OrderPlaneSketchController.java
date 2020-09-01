@@ -41,13 +41,7 @@ public class OrderPlaneSketchController {
     @RestResult
     public void save(@RequestBody OrderPlaneSketchDTO dto) {
         this.orderPlaneSketchServiceImpl.submitPlaneSketch(dto);
-        orderWorkerService.updateOrderWorker(dto.getOrderId(),30L,dto.getDesigner());
-        if (dto.getFinanceEmployeeId()!=null) {
-            orderWorkerService.updateOrderWorker(dto.getOrderId(),34L,dto.getFinanceEmployeeId());
-        }
-        if (dto.getProjectAssistant()!=null) {
-            orderWorkerService.updateOrderWorker(dto.getOrderId(),37L,dto.getProjectAssistant());
-        }
+
     }
 
     @PostMapping("/submitToConfirmFlow")
@@ -61,9 +55,7 @@ public class OrderPlaneSketchController {
     @Transactional(rollbackFor = Exception.class)
     @RestResult
     public void submitToSignContractFlow(@RequestBody OrderPlaneSketchDTO dto) {
-        //orderPlaneSketchServiceImpl.submitPlaneSketch(dto);
-        //orderWorkerService.updateOrderWorker(dto.getOrderId(),34L,dto.getFinanceEmployeeId());
-        //orderWorkerService.updateOrderWorker(dto.getOrderId(),30L,dto.getDesigner());
+        this.save(dto);
         orderPlaneSketchServiceImpl.submitToSignContractFlow(dto);
     }
 
