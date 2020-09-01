@@ -12,15 +12,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     designer: '',
                     assistantDesigner :''
                 },
-                orderWorkActions: [],
-                orderWorkAction :{
-                    orderId : '',
-                    orderStatus : '',
-                    employeeId :'',
-                    employeeName : '',
-                    action:'',
-                    roleId : ''
-                },
+
                 custId: util.getRequest('custId'),
                 isShow : true,
                 id : util.getRequest('id'),
@@ -40,61 +32,20 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 let measureTime = this.quantityRoomInfos.measureTime;
                 let designer = this.quantityRoomInfos.designer;
                 let customerComments = this.quantityRoomInfos.customerComments;
-                let orderWorkActions = this.orderWorkActions;
-                let array = [];
-                for(let i = 0; i < this.orderWorkActions.length; i++) {
-                    if ( this.orderWorkActions[i].action == "参与量房中") {
-                        this.orderWorkActions[i].action = "measure"
-                    }
-                    array.push({
-                        action: this.orderWorkActions[i].action,
-                        employeeName: this.orderWorkActions[i].employeeName,
-                        orderStatus : this.orderWorkActions[i].orderStatus,
-                        employeeId : this.orderWorkActions[i].employeeId,
-                        roleId : this.orderWorkActions[i].roleId,
-                        orderId : this.orderWorkActions[i].orderId
-                    });
-                }
-                this.orderWorkActions = array;
+                let assistantDesigner = this.quantityRoomInfos.assistantDesigner ;
+
                 let data = {
                     orderId: orderId,
                     id: '',
                     measureTime : measureTime,
                     measureArea: measureArea,
                     designer: designer,
-                    orderWorkActions: orderWorkActions,
+                    assistantDesigner: assistantDesigner,
                     customerComments : customerComments,
                 };
                 return data;
             },
-            addSuccess : function() {
-                this.orderWorkAction = {};
-                this.orderWorkAction.employeeId = this.quantityRoomInfos.assistantDesigner;
-                if (this.quantityRoomInfos.designer == this.quantityRoomInfos.assistantDesigner) {
-                    Vue.prototype.$message({
-                        message: '不能添加当前该设计师！',
-                        type: 'error'
-                    });
-                    return false;
-                }
-                if (this.orderWorkAction.employeeId == '' || this.orderWorkAction.employeeId == null) {
-                    Vue.prototype.$message({
-                        message: '请先选择助理设计师再添加设计师！',
-                        type: 'error'
-                    });
-                    return false;
-                }
-                ajax.get('api/bss.order/order-measurehouse/getEmployeeNameEmployeeId', {employeeId:this.orderWorkAction.employeeId}, (responseData)=>{
-                    this.orderWorkAction.employeeName = responseData.employeeName ;
-                });
-                this.orderWorkAction.orderId = this.quantityRoomInfos.orderId;
-                this.orderWorkAction.action = '参与量房中';
-                this.orderWorkAction.roleId = '41';
-                this.orderWorkAction.orderStatus = this.orderStatus;
-                this.orderWorkActions.push(this.orderWorkAction);
-                //alert(JSON.stringify(this.orderWorkActions));
 
-            },
             deleteRow : function(index, rows) {
                 rows.splice(index, 1);
             },
@@ -118,23 +69,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 }
                 ajax.get('api/bss.order/order-measurehouse/getMeasureHouse', data, (responseData)=>{
                     Object.assign(this.quantityRoomInfos, responseData);
-                    this.orderWorkActions = responseData.orderWorkActions;
-                    let array = [];
-                    for(let i = 0; i < this.orderWorkActions.length; i++) {
 
-                        if ( this.orderWorkActions[i].action == "measure") {
-                            this.orderWorkActions[i].action = "参与量房中"
-                        }
-                        array.push({
-                            action: this.orderWorkActions[i].action,
-                            employeeName: this.orderWorkActions[i].employeeName,
-                            orderStatus : this.orderWorkActions[i].orderStatus,
-                            employeeId : this.orderWorkActions[i].employeeId,
-                            roleId : this.orderWorkActions[i].roleId,
-                            orderId : this.orderWorkActions[i].orderId
-                        });
-                    }
-                    this.orderWorkActions = array;
                 });
                 if (this.orderStatus=='4') {
                     this.isShow = false;
