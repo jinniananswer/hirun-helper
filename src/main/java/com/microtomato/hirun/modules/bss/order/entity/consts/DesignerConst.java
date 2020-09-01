@@ -27,4 +27,25 @@ public class DesignerConst {
      * 水电设计师操作标识，参与水电
      */
     public static final String OPER_WATER_ELEC_DESIGN = "water_elec_design";
+
+    /**
+     * 全程都参与
+     */
+    public static final String OPER_WALL_IN_DESIGN = "all_in_design";
+
+    /**
+     * 客户文员
+     * */
+    public static final Long ROLE_CODE_CUSTOMER_ClERK = 34L;
+
+    /**
+     * 审图员
+     * */
+    public static final Long ROLE_CODE_DRAWING_REVIEWER = 44L;
+
+    /**
+     * 审图员
+     * */
+    public static final Long ROLE_CODE_ASSISTANT_DESIGNER = 41L;
+
 }
