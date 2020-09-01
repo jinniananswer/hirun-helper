@@ -1,5 +1,6 @@
 package com.microtomato.hirun.modules.bss.order.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.security.UserContext;
@@ -15,6 +16,7 @@ import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerActionDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.*;
 import com.microtomato.hirun.modules.bss.order.exception.OrderException;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderPlaneSketchMapper;
+import com.microtomato.hirun.modules.bss.order.mapper.OrderWorkerMapper;
 import com.microtomato.hirun.modules.bss.order.service.*;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import lombok.extern.slf4j.Slf4j;
@@ -58,6 +60,9 @@ public class OrderPlaneSketchServiceImpl extends ServiceImpl<OrderPlaneSketchMap
 
     @Autowired
     private IOrderWorkerService orderWorkerService;
+
+    @Autowired
+    private OrderWorkerMapper orderWorkerMapper;
 
     @Autowired
     private IOrderFileService orderFileService;
@@ -108,7 +113,7 @@ public class OrderPlaneSketchServiceImpl extends ServiceImpl<OrderPlaneSketchMap
         if (ArrayUtils.isNotEmpty(orderWorkerActionDTOS)) {
             orderWorkerActionDTOS.forEach(action -> {
                 Long id = action.getEmployeeId();
-                action.setEmployeeName(employeeService.getEmployeeNameEmployeeId(id));
+                orderPlaneSketchDTO.setAssistantDesigner(id);
             });
         }
         orderPlaneSketchDTO.setOrderWorkActions(orderWorkerActionDTOS);
@@ -117,7 +122,7 @@ public class OrderPlaneSketchServiceImpl extends ServiceImpl<OrderPlaneSketchMap
         if (ArrayUtils.isNotEmpty(workers)) {
                 workers.forEach(worker -> {
                 Long id = worker.getEmployeeId();
-                if ( 34 == worker.getRoleId()) {
+                if ( DesignerConst.ROLE_CODE_CUSTOMER_ClERK.equals(worker.getRoleId())) {
                     String name = employeeService.getEmployeeNameEmployeeId(id);
                     orderPlaneSketchDTO.setFinanceEmployeeName(name);
                     orderPlaneSketchDTO.setFinanceEmployeeId(id);
@@ -178,13 +183,45 @@ public class OrderPlaneSketchServiceImpl extends ServiceImpl<OrderPlaneSketchMap
             this.updateById(orderPlaneSketchNew);
         }
         this.updateIndorrArea(orderPlaneSketchNew.getOrderId(),orderPlaneSketchNew.getIndoorArea());
-
         /**
          *订单动作
          */
-        designerCommonService.dealOrderWorkerAction(DesignerConst.OPER_DRAW_PLAN,dto);
+        if (dto.getFinanceEmployeeId() != null) {
+            orderWorkerService.updateOrderWorker(dto.getOrderId(),34L,dto.getFinanceEmployeeId());
+        }
+
+        Long workerId = null;
+        workerId = this.orderWorkerService.updateOrderWorkerByEmployeeId(orderId,30L,dto.getDesigner());
+        if ( workerId==null ) {
+            workerId =  getWorkerId(orderId,30L,dto.getDesigner());
+        }
+
+        if (dto.getDesigner().equals(dto.getAssistantDesigner())) {
+            this.orderWorkerActionService.deleteOrderWorkerAction(orderId,DesignerConst.OPER_DRAW_PLAN);
+            this.orderWorkerActionService.createOrderWorkerAction(orderId,dto.getAssistantDesigner(),workerId,null,DesignerConst.OPER_DRAW_PLAN);
+        } else {
+            //如果助理设计师为空，那么啥都不弄
+            if (dto.getAssistantDesigner() == null) {
+                this.orderWorkerActionService.deleteOrderWorkerAction(orderId,DesignerConst.OPER_DRAW_PLAN);
+            } else {
+                workerId = this.orderWorkerService.updateOrderWorker(orderId,41L,dto.getAssistantDesigner());
+                if ( workerId==null ) {
+                    workerId =  getWorkerId(orderId,41L,dto.getAssistantDesigner());
+                }
+                this.orderWorkerActionService.deleteOrderWorkerAction(orderId,DesignerConst.OPER_DRAW_PLAN);
+                this.orderWorkerActionService.createOrderWorkerAction(orderId,dto.getAssistantDesigner(),workerId,null,DesignerConst.OPER_DRAW_PLAN);
+            }
+        }
     }
 
+    public Long getWorkerId(Long orderId, Long roleId, Long employeeId) {
+        Long workerId;
+        OrderWorker orderWorker = this.orderWorkerMapper.selectOne(new QueryWrapper<OrderWorker>().lambda()
+                .eq(OrderWorker::getOrderId, orderId).eq(OrderWorker::getRoleId,roleId).eq(OrderWorker::getEmployeeId,employeeId)
+                .gt(OrderWorker::getEndDate, RequestTimeHolder.getRequestTime()));
+        workerId = orderWorker.getId();
+        return workerId;
+    }
 
     private void updateIndorrArea(Long orderId,String indoorArea){
         OrderBase order = this.orderBaseService.queryByOrderId(orderId);
