@@ -1,11 +1,16 @@
 package com.microtomato.hirun.modules.college.knowhow.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.framework.util.TimeUtils;
+import com.microtomato.hirun.modules.college.knowhow.consts.KnowhowConsts;
 import com.microtomato.hirun.modules.college.knowhow.mapper.CollegeReplyMapper;
 import com.microtomato.hirun.modules.college.knowhow.entity.po.CollegeReply;
 import com.microtomato.hirun.modules.college.knowhow.service.ICollegeReplyService;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 /**
  * (CollegeReply)表服务实现类
@@ -19,6 +24,22 @@ public class CollegeReplyServiceImpl extends ServiceImpl<CollegeReplyMapper, Col
 
     @Autowired
     private CollegeReplyMapper collegeReplyMapper;
-    
 
+    @Override
+    public CollegeReply queryReplyByQuestionId(Long questionId) {
+        CollegeReply reply = this.getOne(new QueryWrapper<CollegeReply>().lambda()
+                .eq(CollegeReply::getQuestionId, questionId)
+                .eq(CollegeReply::getStatus, KnowhowConsts.NORMAL_STATUS_VALID));
+        return reply;
+    }
+
+    @Override
+    public void insertReply(Long questionId, String replyContent, Long respondent) {
+        this.save(CollegeReply.builder()
+                .questionId(questionId)
+                .replyContent(replyContent)
+                .respondent(respondent)
+                .status(KnowhowConsts.NORMAL_STATUS_VALID)
+                .replyTime(TimeUtils.getCurrentLocalDateTime()).build());
+    }
 }

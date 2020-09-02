@@ -1,7 +1,6 @@
 package com.microtomato.hirun.modules.college.knowhow.entity.po;
 
 import java.time.LocalDateTime;
-
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -17,11 +16,11 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 /**
- * (CollegeQuestion)表实体类
+ * (CollegeReply)表实体类
  *
  * @author huanghua@asiainfo.com
  * @version 1.0.0
- * @date 2020-08-16 16:14:44
+ * @date 2020-08-16 16:10:04
  */
 @Data
 @Builder
@@ -29,52 +28,32 @@ import lombok.NoArgsConstructor;
 @Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("college_question")
-public class CollegeQuestion extends BaseEntity {
+@TableName("college_reply")
+public class CollegeReply extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
+    
+    @TableId(value = "reply_id", type = IdType.AUTO)
+    private Long replyId;
 
-    @TableId(value = "question_id", type = IdType.AUTO)
+    /** 问题ID */
+    @TableField(value = "question_id")
     private Long questionId;
 
-    /**
-     * 问题标题
-     */
-    @TableField(value = "question_tittle")
-    private String questionTittle;
+    /** 回复内容 */
+    @TableField(value = "reply_content")
+    private String replyContent;
 
-    /**
-     * 问题内容
-     */
-    @TableField(value = "question_content")
-    private String questionContent;
+    /** 解答人标识 */
+    @TableField(value = "respondent")
+    private Long respondent;
 
-    /**
-     * 问题类型
-     */
-    @TableField(value = "question_type")
-    private String questionType;
+    /** 回复时间 */
+    @TableField(value = "reply_time")
+    private LocalDateTime replyTime;
 
-    /**
-     * 点击量
-     */
-    @TableField(value = "clicks")
-    private Long clicks;
-
-    /**
-     * 状态
-     * 0:已失效（审批未通过）
-     * 1:未审批
-     * 2:已审批未回答
-     * 3:已回答
-     */
+    /** 状态 */
     @TableField(value = "status")
     private String status;
-
-    /**
-     * 创建时间
-     */
-    @TableField(value = "create_time", fill = FieldFill.INSERT)
-    private LocalDateTime createTime;
 
 }

@@ -1,6 +1,5 @@
 package com.microtomato.hirun.modules.college.knowhow.entity.po;
 
-import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -16,11 +15,11 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 /**
- * (CollegeReply)表实体类
+ * (CollegeQuestionRela)表实体类
  *
  * @author huanghua@asiainfo.com
  * @version 1.0.0
- * @date 2020-08-16 16:10:04
+ * @date 2020-08-16 16:14:44
  */
 @Data
 @Builder
@@ -28,29 +27,25 @@ import lombok.NoArgsConstructor;
 @Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("college_reply")
-public class CollegeReply extends BaseEntity {
+@TableName("college_question_rela")
+public class CollegeQuestionRela extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
     
-    @TableId(value = "reply_id", type = IdType.AUTO)
-    private Long replyId;
+    @TableId(value = "relation_id", type = IdType.AUTO)
+    private Long relationId;
+
+    /** 员工ID */
+    @TableField(value = "employee_id")
+    private Long employeeId;
 
     /** 问题ID */
     @TableField(value = "question_id")
     private Long questionId;
 
-    /** 回复内容 */
-    @TableField(value = "reply_content")
-    private String replyContent;
-
-    /** 解答人标识 */
-    @TableField(value = "respondent")
-    private String respondent;
-
-    /** 回复时间 */
-    @TableField(value = "reply_time")
-    private LocalDateTime replyTime;
+    /** 关系类型 */
+    @TableField(value = "relation_type")
+    private String relationType;
 
     /** 状态 */
     @TableField(value = "status")

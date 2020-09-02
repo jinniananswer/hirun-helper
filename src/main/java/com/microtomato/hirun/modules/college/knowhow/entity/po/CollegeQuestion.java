@@ -1,5 +1,7 @@
 package com.microtomato.hirun.modules.college.knowhow.entity.po;
 
+import java.time.LocalDateTime;
+
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -15,7 +17,7 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 /**
- * (CollegeQuestionRela)表实体类
+ * (CollegeQuestion)表实体类
  *
  * @author huanghua@asiainfo.com
  * @version 1.0.0
@@ -27,28 +29,52 @@ import lombok.NoArgsConstructor;
 @Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("college_question_rela")
-public class CollegeQuestionRela extends BaseEntity {
+@TableName("college_question")
+public class CollegeQuestion extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
-    
-    @TableId(value = "relation_id", type = IdType.AUTO)
-    private Long relationId;
 
-    /** 员工ID */
-    @TableField(value = "employee_id")
-    private String employeeId;
-
-    /** 问题ID */
-    @TableField(value = "question_id")
+    @TableId(value = "question_id", type = IdType.INPUT)
     private Long questionId;
 
-    /** 关系类型 */
-    @TableField(value = "relation_type")
-    private String relationType;
+    /**
+     * 问题标题
+     */
+    @TableField(value = "question_title")
+    private String questionTitle;
 
-    /** 状态 */
+    /**
+     * 问题内容
+     */
+    @TableField(value = "question_content")
+    private String questionContent;
+
+    /**
+     * 问题类型
+     */
+    @TableField(value = "question_type")
+    private String questionType;
+
+    /**
+     * 点击量
+     */
+    @TableField(value = "clicks")
+    private Long clicks;
+
+    /**
+     * 状态
+     * 0:已失效（审批未通过）
+     * 1:未审批
+     * 2:已审批未回答
+     * 3:已回答
+     */
     @TableField(value = "status")
     private String status;
+
+    /**
+     * 创建时间
+     */
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
+    private LocalDateTime createTime;
 
 }

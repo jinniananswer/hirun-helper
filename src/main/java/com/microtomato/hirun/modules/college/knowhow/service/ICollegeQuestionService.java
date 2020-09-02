@@ -3,6 +3,8 @@ package com.microtomato.hirun.modules.college.knowhow.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.microtomato.hirun.modules.college.knowhow.entity.po.CollegeQuestion;
 
+import java.util.List;
+
 /**
  * (CollegeQuestion)表服务接口
  *
@@ -12,6 +14,15 @@ import com.microtomato.hirun.modules.college.knowhow.entity.po.CollegeQuestion;
  */
 public interface ICollegeQuestionService extends IService<CollegeQuestion> {
 
-    CollegeQuestion getValidById(String questionId);
+    CollegeQuestion getValidById(Long questionId);
 
+    List<CollegeQuestion> queryByQuestionIds(List<Long> questionIds);
+
+    void updateByIds(List<Long> questionIds);
+
+    void updateApprovedTagByIds(List<Long> questionIds, String approvedTag);
+
+    void updateReplyQuestion(Long questionId);
+
+    void updatePublishQuestionByIds(List<Long> questionIds);
 }

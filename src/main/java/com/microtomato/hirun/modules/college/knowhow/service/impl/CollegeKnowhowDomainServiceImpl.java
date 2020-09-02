@@ -2,19 +2,27 @@ package com.microtomato.hirun.modules.college.knowhow.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.microtomato.hirun.framework.mybatis.sequence.impl.CollegeQuestionSeq;
+import com.microtomato.hirun.framework.mybatis.service.IDualService;
 import com.microtomato.hirun.framework.util.ArrayUtils;
-import com.microtomato.hirun.modules.college.knowhow.entity.dto.AddQuestionServiceDTO;
+import com.microtomato.hirun.framework.util.TimeUtils;
+import com.microtomato.hirun.modules.college.knowhow.consts.KnowhowConsts;
+import com.microtomato.hirun.modules.college.knowhow.entity.dto.QuestionServiceDTO;
 import com.microtomato.hirun.modules.college.knowhow.entity.po.CollegeQuestion;
 import com.microtomato.hirun.modules.college.knowhow.entity.po.CollegeQuestionRela;
 import com.microtomato.hirun.modules.college.knowhow.service.ICollegeKnowhowDomainService;
 import com.microtomato.hirun.modules.college.knowhow.service.ICollegeQuestionRelaService;
 import com.microtomato.hirun.modules.college.knowhow.service.ICollegeQuestionService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+
 
 /**
  * 1.知乎首页
@@ -44,14 +52,21 @@ public class CollegeKnowhowDomainServiceImpl implements ICollegeKnowhowDomainSer
     @Autowired
     private ICollegeQuestionRelaService collegeQuestionRelaService;
 
+    @Autowired
+    private IDualService dualService;
+
     /**
      * 提问
      */
     @Override
-    public void addQuestion(AddQuestionServiceDTO request) {
-        Long questionId = 0L;
+    public void addQuestion(QuestionServiceDTO request) {
         CollegeQuestion question = CollegeQuestion.builder().build();
         BeanUtils.copyProperties(request, question);
+        question.setCreateTime(TimeUtils.getCurrentLocalDateTime());
+        question.setStatus(KnowhowConsts.QUESTION_STATUS_UNAPPROVED);
+        question.setQuestionType(KnowhowConsts.QUESTION_TYPE_OTHER);
+        Long questionId = dualService.nextval(CollegeQuestionSeq.class);
+
         question.setQuestionId(questionId);
         // 1.新增一条问题记录
         collegeQuestionService.save(question);
@@ -60,7 +75,7 @@ public class CollegeKnowhowDomainServiceImpl implements ICollegeKnowhowDomainSer
 
     }
 
-    private void addQuestionRelas(Long questionId, String employeeId, String respondent, String approvedId) {
+    private void addQuestionRelas(Long questionId, Long employeeId, Long respondent, Long approvedId) {
         // 1.新增提出人关系
         collegeQuestionRelaService.save(CollegeQuestionRela.builder()
                 .employeeId(employeeId)
@@ -87,20 +102,57 @@ public class CollegeKnowhowDomainServiceImpl implements ICollegeKnowhowDomainSer
      * 我的问题、我来回答、我来审批
      */
     @Override
-    public IPage<CollegeQuestion> queryByEmployeeIdAndRelaType(String employeeId, String relationType, Page<CollegeQuestionRela> page) {
+    public IPage<CollegeQuestion> queryByEmployeeIdAndRelaType(Long employeeId, String relationType, Page<CollegeQuestionRela> page) {
         List<CollegeQuestionRela> questionRelas = collegeQuestionRelaService.queryByEmployeeIdAndRelaType(employeeId, relationType);
-        List<CollegeQuestion> questions = new ArrayList<>();
-        if (ArrayUtils.isNotEmpty(questionRelas)) {
-            for (CollegeQuestionRela questionRela : questionRelas) {
-                CollegeQuestion question = collegeQuestionService.getById(questionRela.getQuestionId());
-                if (null != question && null != question.getQuestionId()) {
-                    questions.add(question);
-                }
-            }
+
+        List<CollegeQuestion> questions = this.queryQuestionByRelas(questionRelas);
+        IPage<CollegeQuestion> pages = new Page<>(page.getSize(), page.getCurrent());
+        pages.setRecords(questions);
+        pages.setTotal(questions.size());
+        return pages;
+    }
+
+    @Override
+    public IPage<CollegeQuestion> querySelfQuestion(String questionText, String sortType, Long employeeId, String relationType, String optionTag, Page<CollegeQuestionRela> page) {
+        List<CollegeQuestionRela> questionRelas = collegeQuestionRelaService.queryByEmployeeIdAndRelaType(employeeId, relationType);
+
+        List<CollegeQuestion> questions = this.queryQuestionByRelas(questionRelas);
+        if (StringUtils.isNotEmpty(questionText)) {
+            questions = questions.stream().filter(question -> question.getQuestionContent().contains(questionText) || question.getQuestionTitle().contains(questionText)).collect(Collectors.toList());
+        }
+
+        if (KnowhowConsts.OPTION_APPROVE.equals(optionTag)) {
+            questions = questions.stream().filter(question -> KnowhowConsts.QUESTION_STATUS_UNAPPROVED.equals(question.getStatus())).collect(Collectors.toList());
+        } else if (KnowhowConsts.OPTION_REPLY.equals(optionTag)) {
+            questions = questions.stream().filter(question -> KnowhowConsts.QUESTION_STATUS_UNREPLY.equals(question.getStatus())).collect(Collectors.toList());
+        } else if (KnowhowConsts.OPTION_PUBLISH.equals(optionTag)) {
+            questions = questions.stream().filter(question -> KnowhowConsts.QUESTION_STATUS_REPLY.equals(question.getStatus())).collect(Collectors.toList());
+        }
+
+        if (KnowhowConsts.QUESTION_SORT_BY_CREATTIME.equals(sortType)) {
+            questions = questions.stream().sorted(Comparator.comparing(CollegeQuestion::getCreateTime).reversed()).collect(Collectors.toList());
+        } else if (KnowhowConsts.QUESTION_SORT_BY_CLICKS.equals(sortType)) {
+            questions = questions.stream().sorted(Comparator.comparing(CollegeQuestion::getClicks).reversed()).collect(Collectors.toList());
         }
 
         IPage<CollegeQuestion> pages = new Page<>(page.getSize(), page.getCurrent());
         pages.setRecords(questions);
+        pages.setTotal(questions.size());
         return pages;
+    }
+
+    private List<CollegeQuestion> queryQuestionByRelas(List<CollegeQuestionRela> questionRelas) {
+        List<CollegeQuestion> questions = new ArrayList<>();
+        List<Long> questionIds = new ArrayList<>();
+        if (ArrayUtils.isNotEmpty(questionRelas)) {
+            for (CollegeQuestionRela questionRela : questionRelas) {
+                questionIds.add(questionRela.getQuestionId());
+            }
+
+            questions = collegeQuestionService.queryByQuestionIds(questionIds);
+            return questions.stream().distinct().collect(Collectors.toList());
+        }
+
+        return new ArrayList<>();
     }
 }

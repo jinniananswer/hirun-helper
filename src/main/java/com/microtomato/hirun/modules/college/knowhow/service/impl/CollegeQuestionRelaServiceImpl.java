@@ -8,6 +8,7 @@ import com.microtomato.hirun.modules.college.knowhow.entity.po.CollegeQuestion;
 import com.microtomato.hirun.modules.college.knowhow.mapper.CollegeQuestionRelaMapper;
 import com.microtomato.hirun.modules.college.knowhow.entity.po.CollegeQuestionRela;
 import com.microtomato.hirun.modules.college.knowhow.service.ICollegeQuestionRelaService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -27,10 +28,10 @@ public class CollegeQuestionRelaServiceImpl extends ServiceImpl<CollegeQuestionR
     private CollegeQuestionRelaMapper collegeQuestionRelaMapper;
 
     @Override
-    public List<CollegeQuestionRela> queryByEmployeeIdAndRelaType(String employeeId, String relationType) {
+    public List<CollegeQuestionRela> queryByEmployeeIdAndRelaType(Long employeeId, String relationType) {
         return this.list(new QueryWrapper<CollegeQuestionRela>().lambda()
                 .eq(CollegeQuestionRela::getEmployeeId, employeeId)
-                .eq(CollegeQuestionRela::getRelationType, relationType)
+                .eq(StringUtils.isNotEmpty(relationType), CollegeQuestionRela::getRelationType, relationType)
                 .eq(CollegeQuestionRela::getStatus, KnowhowConsts.NORMAL_STATUS_VALID));
     }
 }

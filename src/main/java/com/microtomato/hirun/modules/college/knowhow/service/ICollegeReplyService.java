@@ -12,4 +12,18 @@ import com.microtomato.hirun.modules.college.knowhow.entity.po.CollegeReply;
  */
 public interface ICollegeReplyService extends IService<CollegeReply> {
 
+    /**
+     * 根据问题标识获取回复内容
+     * @param questionId
+     * @return
+     */
+    CollegeReply queryReplyByQuestionId(Long questionId);
+
+    /**
+     * 回复内容入表
+     * @param questionId
+     * @param replyContent
+     * @param respondent
+     */
+    void insertReply(Long questionId, String replyContent, Long respondent);
 }
