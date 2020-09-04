@@ -331,6 +331,10 @@ public class SalaryFixServiceImpl extends ServiceImpl<SalaryFixMapper, SalaryFix
             salary.setRank(new Long(Math.round(dto.getRank() * 100)));
         }
 
+        if (dto.getJob() != null) {
+            salary.setJob(new Long(Math.round(dto.getJob() * 100)));
+        }
+
         if (dto.getPerformance() != null) {
             salary.setPerformance(new Long(Math.round(dto.getPerformance() * 100)));
         }
@@ -397,7 +401,8 @@ public class SalaryFixServiceImpl extends ServiceImpl<SalaryFixMapper, SalaryFix
                 dto.getTax() == null &&
                 dto.getBankAcctOne() == null &&
                 dto.getBankAcctTwo() == null &&
-                dto.getBankAcctThree() == null) {
+                dto.getBankAcctThree() == null &&
+                dto.getJob() == null) {
             return true;
         }
 
@@ -442,7 +447,8 @@ public class SalaryFixServiceImpl extends ServiceImpl<SalaryFixMapper, SalaryFix
                 !copySalary.getTax().equals(tempSalary.getTax()) ||
                 !copySalary.getBankAcctOne().equals(tempSalary.getBankAcctOne()) ||
                 !copySalary.getBankAcctTwo().equals(tempSalary.getBankAcctTwo()) ||
-                !copySalary.getBankAcctThree().equals(tempSalary.getBankAcctThree())) {
+                !copySalary.getBankAcctThree().equals(tempSalary.getBankAcctThree()) ||
+                !copySalary.getJob().equals(tempSalary.getJob())) {
             return false;
         }
 
@@ -460,6 +466,10 @@ public class SalaryFixServiceImpl extends ServiceImpl<SalaryFixMapper, SalaryFix
 
         if (salary.getRank() == null) {
             salary.setRank(0L);
+        }
+
+        if (salary.getJob() == null) {
+            salary.setJob(0L);
         }
 
         if (salary.getPerformance() == null) {
@@ -517,6 +527,7 @@ public class SalaryFixServiceImpl extends ServiceImpl<SalaryFixMapper, SalaryFix
         if (salary.getBankAcctThree() == null) {
             salary.setBankAcctThree("");
         }
+
     }
 
     @Override

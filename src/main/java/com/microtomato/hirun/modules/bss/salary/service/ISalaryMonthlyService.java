@@ -29,4 +29,6 @@ public interface ISalaryMonthlyService extends IService<SalaryMonthly> {
     SalaryMonthly getByEmployeeIdMonth(Long employeeId, Integer salaryMonth);
 
     void updateRoyalties(Long totalRoyalty, Integer salaryMonth, Long employeeId);
+
+    void updateEmployeeMonthly(Long employeeId, String employeeName, String salaryItem, Long money, Integer salaryMonth);
 }

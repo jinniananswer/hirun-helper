@@ -47,11 +47,17 @@ public class SalaryMonthlyDTO {
 
     private Double rank;
 
+    private Double job;
+
     private Double performance;
+
+    private Double fullTime;
 
     private Double duty;
 
     private Double overtime;
+
+    private Double performanceAssess;
 
     private Double floatAward;
 
@@ -69,7 +75,17 @@ public class SalaryMonthlyDTO {
 
     private Double seriousIll;
 
+    private Double debit;
+
+    private Double companyPart;
+
     private Double tax;
+
+    private Double vacation;
+
+    private Double late;
+
+    private Double notice;
 
     private String remark;
 

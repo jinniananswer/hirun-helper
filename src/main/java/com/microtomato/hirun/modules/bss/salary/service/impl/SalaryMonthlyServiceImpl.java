@@ -15,11 +15,14 @@ import com.microtomato.hirun.modules.bss.salary.entity.dto.SalaryMonthlyDTO;
 import com.microtomato.hirun.modules.bss.salary.entity.dto.SalaryMonthlyQueryDTO;
 import com.microtomato.hirun.modules.bss.salary.entity.po.SalaryFix;
 import com.microtomato.hirun.modules.bss.salary.entity.po.SalaryMonthly;
+import com.microtomato.hirun.modules.bss.salary.exception.SalaryException;
 import com.microtomato.hirun.modules.bss.salary.mapper.SalaryMonthlyMapper;
 import com.microtomato.hirun.modules.bss.salary.service.ISalaryFixService;
 import com.microtomato.hirun.modules.bss.salary.service.ISalaryMonthlyService;
 import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
+import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
 import com.microtomato.hirun.modules.organization.entity.po.Org;
+import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -53,6 +56,9 @@ public class SalaryMonthlyServiceImpl extends ServiceImpl<SalaryMonthlyMapper, S
 
     @Autowired
     private ISalaryFixService salaryFixService;
+
+    @Autowired
+    private IEmployeeJobRoleService employeeJobRoleService;
 
     /**
      * 查询员工月工资
@@ -374,8 +380,16 @@ public class SalaryMonthlyServiceImpl extends ServiceImpl<SalaryMonthlyMapper, S
             salary.setRank(new Long(Math.round(dto.getRank() * 100)));
         }
 
+        if (dto.getJob() != null) {
+            salary.setJob(new Long(Math.round(dto.getJob() * 100)));
+        }
+
         if (dto.getPerformance() != null) {
             salary.setPerformance(new Long(Math.round(dto.getPerformance() * 100)));
+        }
+
+        if (dto.getFullTime() != null) {
+            salary.setFullTime(new Long(Math.round(dto.getFullTime() * 100)));
         }
 
         if (dto.getDuty() != null) {
@@ -418,8 +432,28 @@ public class SalaryMonthlyServiceImpl extends ServiceImpl<SalaryMonthlyMapper, S
             salary.setSeriousIll(new Long(Math.round(dto.getSeriousIll() * 100)));
         }
 
+        if (dto.getCompanyPart() != null) {
+            salary.setCompanyPart(new Long(Math.round(dto.getCompanyPart() * 100)));
+        }
+
         if (dto.getTax() != null) {
             salary.setTax(new Long(Math.round(dto.getTax() * 100)));
+        }
+
+        if (dto.getDebit() != null) {
+            salary.setDebit(new Long(Math.round(dto.getDebit() * 100)));
+        }
+
+        if (dto.getVacation() != null) {
+            salary.setVacation(new Long(Math.round(dto.getVacation() * 100)));
+        }
+
+        if (dto.getLate() != null) {
+            salary.setLate(new Long(Math.round(dto.getLate() * 100)));
+        }
+
+        if (dto.getNotice() != null) {
+            salary.setNotice(new Long(Math.round(dto.getNotice() * 100)));
         }
     }
 
@@ -442,7 +476,15 @@ public class SalaryMonthlyServiceImpl extends ServiceImpl<SalaryMonthlyMapper, S
                 dto.getOverage() == null &&
                 dto.getUnemployment() == null &&
                 dto.getSeriousIll() == null &&
-                dto.getTax() == null) {
+                dto.getTax() == null &&
+                dto.getJob() == null &&
+                dto.getFullTime() == null &&
+                dto.getCompanyPart() == null &&
+                dto.getDebit() == null &&
+                dto.getVacation() == null &&
+                dto.getLate() == null &&
+                dto.getNotice() == null &&
+                dto.getPerformance() == null) {
             return true;
         }
 
@@ -484,7 +526,15 @@ public class SalaryMonthlyServiceImpl extends ServiceImpl<SalaryMonthlyMapper, S
                 !copySalary.getOverage().equals(tempSalary.getOverage()) ||
                 !copySalary.getUnemployment().equals(tempSalary.getUnemployment()) ||
                 !copySalary.getSeriousIll().equals(tempSalary.getSeriousIll()) ||
-                !copySalary.getTax().equals(tempSalary.getTax())) {
+                !copySalary.getTax().equals(tempSalary.getTax()) ||
+                !copySalary.getJob().equals(tempSalary.getJob()) ||
+                !copySalary.getFullTime().equals(tempSalary.getFullTime()) ||
+                !copySalary.getCompanyPart().equals(tempSalary.getCompanyPart()) ||
+                !copySalary.getDebit().equals(tempSalary.getDebit()) ||
+                !copySalary.getVacation().equals(tempSalary.getVacation()) ||
+                !copySalary.getLate().equals(tempSalary.getLate()) ||
+                !copySalary.getNotice().equals(tempSalary.getNotice()) ||
+                !copySalary.getPerformanceAssess().equals(tempSalary.getPerformanceAssess())) {
             return false;
         }
 
@@ -514,6 +564,10 @@ public class SalaryMonthlyServiceImpl extends ServiceImpl<SalaryMonthlyMapper, S
 
         if (salary.getOvertime() == null) {
             salary.setOvertime(0L);
+        }
+
+        if (salary.getPerformanceAssess() == null) {
+            salary.setPerformanceAssess(0L);
         }
 
         if (salary.getFloatAward() == null) {
@@ -550,6 +604,34 @@ public class SalaryMonthlyServiceImpl extends ServiceImpl<SalaryMonthlyMapper, S
 
         if (salary.getTax() == null) {
             salary.setTax(0L);
+        }
+
+        if (salary.getJob() == null) {
+            salary.setJob(0L);
+        }
+
+        if (salary.getFullTime() == null) {
+            salary.setFullTime(0L);
+        }
+
+        if (salary.getCompanyPart() == null) {
+            salary.setCompanyPart(0L);
+        }
+
+        if (salary.getDebit() == null) {
+            salary.setDebit(0L);
+        }
+
+        if (salary.getVacation() == null) {
+            salary.setVacation(0L);
+        }
+
+        if (salary.getLate() == null) {
+            salary.setLate(0L);
+        }
+
+        if (salary.getNotice() == null) {
+            salary.setNotice(0L);
         }
     }
 
@@ -610,6 +692,10 @@ public class SalaryMonthlyServiceImpl extends ServiceImpl<SalaryMonthlyMapper, S
         if (now.getTax() == null && last.getTax() != null) {
             now.setTax(last.getTax().doubleValue()/100);
         }
+
+        if (now.getJob() == null && last.getJob() != null) {
+            now.setJob(last.getJob().doubleValue()/100);
+        }
     }
 
     /**
@@ -649,6 +735,100 @@ public class SalaryMonthlyServiceImpl extends ServiceImpl<SalaryMonthlyMapper, S
             salaryMonthly.setEndTime(TimeUtils.getForeverTime());
         }
         salaryMonthly.setRoyalty(totalRoyalty);
+
+        if (salaryMonthly.getId() == null) {
+            this.save(salaryMonthly);
+        } else {
+            this.updateById(salaryMonthly);
+        }
+    }
+
+    /**
+     * 员工补扣款信息更新月工资
+     * @param employeeId
+     * @param employeeName
+     * @param salaryItem
+     * @param money
+     * @param salaryMonth
+     */
+    @Override
+    public void updateEmployeeMonthly(Long employeeId, String employeeName, String salaryItem, Long money, Integer salaryMonth) {
+        SalaryMonthly salaryMonthly = this.getByEmployeeIdMonth(employeeId, salaryMonth);
+
+        if (salaryMonthly != null && StringUtils.equals("4", salaryMonthly.getAuditStatus())) {
+            throw new SalaryException(SalaryException.SalaryExceptionEnum.CANNOT_UPDATE_MONTHLY, employeeName, salaryMonth+"");
+        }
+
+        if (salaryMonthly == null) {
+            salaryMonthly = new SalaryMonthly();
+            SalaryFix salaryFix = this.salaryFixService.getByEmployeeId(employeeId);
+            if (salaryFix != null) {
+                BeanUtils.copyProperties(salaryFix, salaryMonthly);
+            }
+            salaryMonthly.setEmployeeId(employeeId);
+            salaryMonthly.setSalaryMonth(salaryMonth);
+            salaryMonthly.setAuditStatus("0");
+            EmployeeJobRole employeeJobRole = this.employeeJobRoleService.queryLast(employeeId);
+            if (employeeJobRole != null) {
+                salaryMonthly.setOrgId(employeeJobRole.getOrgId());
+                salaryMonthly.setJobRole(employeeJobRole.getJobRole());
+            }
+        }
+
+        this.setDefaultZero(salaryMonthly);
+        switch(salaryItem) {
+            case "1" :
+                salaryMonthly.setBasic(salaryMonthly.getBasic() + money);
+                break;
+            case "2" :
+                salaryMonthly.setRank(salaryMonthly.getRank() + money);
+                break;
+            case "3" :
+                salaryMonthly.setJob(salaryMonthly.getJob() + money);
+                break;
+            case "4" :
+                salaryMonthly.setPerformance(salaryMonthly.getPerformance() + money);
+                break;
+            case "5" :
+                salaryMonthly.setFullTime(salaryMonthly.getFullTime() + money);
+                break;
+            case "6" :
+                salaryMonthly.setDuty(salaryMonthly.getDuty() + money);
+                break;
+            case "7" :
+                salaryMonthly.setOvertime(salaryMonthly.getOvertime() + money);
+                break;
+            case "8" :
+                salaryMonthly.setPerformanceAssess(salaryMonthly.getPerformanceAssess() + money);
+                break;
+            case "9" :
+                salaryMonthly.setFloatAward(salaryMonthly.getFloatAward() + money);
+                break;
+            case "10" :
+                salaryMonthly.setOther(salaryMonthly.getOther() + money);
+                break;
+            case "11" :
+                salaryMonthly.setBackPay(salaryMonthly.getBackPay() + money);
+                break;
+            case "12" :
+                salaryMonthly.setRoyalty(salaryMonthly.getRoyalty() + money);
+                break;
+            case "13" :
+                salaryMonthly.setTax(salaryMonthly.getTax() + money);
+                break;
+            case "14" :
+                salaryMonthly.setDebit(salaryMonthly.getDebit() + money);
+                break;
+            case "15" :
+                salaryMonthly.setVacation(salaryMonthly.getVacation() + money);
+                break;
+            case "16" :
+                salaryMonthly.setLate(salaryMonthly.getLate() + money);
+                break;
+            case "17" :
+                salaryMonthly.setNotice(salaryMonthly.getNotice() + money);
+                break;
+        }
 
         if (salaryMonthly.getId() == null) {
             this.save(salaryMonthly);

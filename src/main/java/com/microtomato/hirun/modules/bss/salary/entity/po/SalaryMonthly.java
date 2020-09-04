@@ -52,9 +52,17 @@ public class SalaryMonthly extends BaseEntity {
     @TableField(value = "rank")
     private Long rank;
 
+    /** 岗位工资，单位分 */
+    @TableField(value = "job")
+    private Long job;
+
     /** 绩效工资，单位分 */
     @TableField(value = "performance")
     private Long performance;
+
+    /** 全勤，单位分 */
+    @TableField(value = "full_time")
+    private Long fullTime;
 
     /** 职务津贴，单位分 */
     @TableField(value = "duty")
@@ -63,6 +71,10 @@ public class SalaryMonthly extends BaseEntity {
     /** 加班补贴，单位分 */
     @TableField(value = "overtime")
     private Long overtime;
+
+    /** 绩效考核，单位分 */
+    @TableField(value = "performance_assess")
+    private Long performanceAssess;
 
     /** 浮动奖励，单位分 */
     @TableField(value = "float_award")
@@ -96,9 +108,29 @@ public class SalaryMonthly extends BaseEntity {
     @TableField(value = "serious_ill")
     private Long seriousIll;
 
+    /** 公司缴纳部分福利，单位分 */
+    @TableField(value = "company_part")
+    private Long companyPart;
+
     /** 税金，单位分 */
     @TableField(value = "tax")
     private Long tax;
+
+    /** 借支，单位分 */
+    @TableField(value = "debit")
+    private Long debit;
+
+    /** 事假，单位分 */
+    @TableField(value = "vacation")
+    private Long vacation;
+
+    /** 迟到，单位分 */
+    @TableField(value = "late")
+    private Long late;
+
+    /** 通报，单位分 */
+    @TableField(value = "notice")
+    private Long notice;
 
     /** 工资卡1发放金额 */
     @TableField(value = "acct_one_money")
