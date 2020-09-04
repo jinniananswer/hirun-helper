@@ -118,4 +118,6 @@ public class OrderPlaneSketchDTO {
     private List<OrderWorkerActionDTO> orderWorkActions;
 
     private String employeeName;
+
+    private Long assistantDesigner ;
 }

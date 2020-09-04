@@ -65,7 +65,7 @@ public class OrderMeasureHouse extends BaseEntity {
      * 助理设计师
      */
     @TableField("assistant_designer")
-    private String assistantDesigner;
+    private Long assistantDesigner;
 
     /**
      * 创建时间

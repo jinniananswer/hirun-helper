@@ -8,6 +8,8 @@ import com.microtomato.hirun.modules.bss.order.entity.po.OrderFile;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderFileMapper;
 import com.microtomato.hirun.modules.bss.order.service.IOrderFileService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
+import io.minio.MinioClient;
+import io.minio.PutObjectOptions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -21,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -47,6 +50,11 @@ public class OrderFileServiceImpl extends ServiceImpl<OrderFileMapper, com.micro
     @Value("${hirun.data.path}")
     private String dataPath;
 
+    private String bucketName = "order";
+
+    @Autowired
+    private MinioClient minioClient;
+
     @Override
     public String toAbsolutePath(String relativePath) {
         relativePath = StringUtils.removeStart(relativePath, "/");
@@ -64,7 +72,7 @@ public class OrderFileServiceImpl extends ServiceImpl<OrderFileMapper, com.micro
         return destPath;
     }
 
-    private OrderFile prepare(File destDir, MultipartFile multipartFile, Long orderId, Integer stage) throws IOException {
+    private OrderFile prepareBak(File destDir, MultipartFile multipartFile, Long orderId, Integer stage) throws IOException {
 
         long fileSize = multipartFile.getSize();
         String fileName = multipartFile.getOriginalFilename();
@@ -86,6 +94,45 @@ public class OrderFileServiceImpl extends ServiceImpl<OrderFileMapper, com.micro
             .enabled(true)
             .build();
         return orderFile;
+    }
+
+    private OrderFile prepare(File destDir, MultipartFile multipartFile, Long orderId, Integer stage) throws IOException {
+
+        long fileSize = multipartFile.getSize();
+        String fileName = multipartFile.getOriginalFilename();
+        String uniqueId = UUID.randomUUID().toString();
+
+        String newFileName = uniqueId + '.' + FilenameUtils.getExtension(fileName);
+        File destFile = new File(destDir, newFileName);
+        multipartFile.transferTo(destFile);
+
+        try {
+            makesureBucketExist(bucketName);
+            minioClient.putObject(bucketName, newFileName, destFile.getAbsolutePath(), new PutObjectOptions(fileSize, 1024 * 1024 * 5));
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            destFile.delete();
+        }
+
+        OrderFile orderFile = OrderFile.builder()
+            .orderId(orderId)
+            .stage(stage)
+            .fileName(fileName)
+            .filePath(newFileName)
+            .fileSize(fileSize)
+            .enabled(true)
+            .build();
+        return orderFile;
+    }
+
+    private void makesureBucketExist(String bucketName) throws Exception {
+        boolean isExist = minioClient.bucketExists(bucketName);
+        if (isExist) {
+            System.out.println("Bucket already exists.");
+        } else {
+            minioClient.makeBucket(bucketName);
+        }
     }
 
     private File makesureFolderExist(String filePath) {
@@ -160,6 +207,13 @@ public class OrderFileServiceImpl extends ServiceImpl<OrderFileMapper, com.micro
                 .setSql("enabled = false")
                 .eq(OrderFile::getId, id)
         );
+
+        OrderFile orderFile = this.getOne(Wrappers.<OrderFile>lambdaQuery().eq(OrderFile::getId, id));
+        try {
+            minioClient.removeObject(bucketName, orderFile.getFilePath());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -195,5 +249,17 @@ public class OrderFileServiceImpl extends ServiceImpl<OrderFileMapper, com.micro
             orderFiles.add(orderFile);
         }
         return orderFiles;
+    }
+
+    @Override
+    public InputStream getInputStream(OrderFile orderFile) {
+
+        InputStream is = null;
+        try {
+            is = minioClient.getObject(bucketName, orderFile.getFilePath());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return is;
     }
 }

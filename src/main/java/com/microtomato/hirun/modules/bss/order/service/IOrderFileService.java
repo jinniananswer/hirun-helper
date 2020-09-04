@@ -6,6 +6,7 @@ import com.microtomato.hirun.modules.bss.order.entity.po.OrderFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -68,4 +69,6 @@ public interface IOrderFileService extends IService<com.microtomato.hirun.module
      * @return
      */
     List<OrderFileDTO> queryOrderFiles(Long orderId);
+
+    InputStream getInputStream(OrderFile orderFile);
 }

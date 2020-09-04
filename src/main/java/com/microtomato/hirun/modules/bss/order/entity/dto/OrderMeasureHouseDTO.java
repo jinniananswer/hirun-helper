@@ -25,7 +25,7 @@ public class OrderMeasureHouseDTO  {
 
     private String customerComments;
 
-    private String assistantDesigner;
+    private Long assistantDesigner;
 
     private LocalDateTime createTime;
 

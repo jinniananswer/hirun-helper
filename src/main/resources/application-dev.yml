@@ -137,3 +137,6 @@ spring:
 
 # 数据文件位置
 hirun.data.path: D:/files
+hirun.minio.endpoint: http://39.106.228.124:8443
+hirun.minio.accessKey: hirun
+hirun.minio.secretKey: 1q1w1e1r

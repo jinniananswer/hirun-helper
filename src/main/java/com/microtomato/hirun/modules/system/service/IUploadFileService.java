@@ -5,6 +5,7 @@ import com.microtomato.hirun.modules.system.entity.po.UploadFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -18,6 +19,8 @@ import java.util.List;
 public interface IUploadFileService extends IService<UploadFile> {
 
     String toAbsolutePath(String relativePath);
+
+    InputStream getInputStream(UploadFile uploadFile);
 
     /**
      * 上传单个文件

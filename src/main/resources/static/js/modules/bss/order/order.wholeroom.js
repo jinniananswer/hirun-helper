@@ -23,15 +23,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 designerRemarks: '',//设计师备注
                 reviewedComments: ''//审核意见
             },
-            orderWorkActions: [],
-            orderWorkAction :{
-                orderId : '',
-                orderStatus : '',
-                employeeId :'',
-                employeeName : '',
-                action:'',
-                roleId : ''
-            },
+
             isShow : true,
             isBackToDesigner : false,
             isAudit : false,
@@ -51,23 +43,6 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
 
                 ajax.get('api/bss.order/order-wholeRoomDrawing/getWholeRoomDraw', data, (responseData)=>{
                     Object.assign(this.wholeRoomDrawing, responseData);
-                    this.orderWorkActions = responseData.orderWorkActions;
-                    let array = [];
-                    for(let i = 0; i < this.orderWorkActions.length; i++) {
-
-                        if ( this.orderWorkActions[i].action == "draw_construct") {
-                            this.orderWorkActions[i].action = "参与全房图设计中"
-                        }
-                        array.push({
-                            action: this.orderWorkActions[i].action,
-                            employeeName: this.orderWorkActions[i].employeeName,
-                            orderStatus : this.orderWorkActions[i].orderStatus,
-                            employeeId : this.orderWorkActions[i].employeeId,
-                            roleId : this.orderWorkActions[i].roleId,
-                            orderId : this.orderWorkActions[i].orderId
-                        });
-                    }
-                    this.orderWorkActions = array;
                 });
 
                 this.wholeRoomDrawing.orderId = util.getRequest('orderId');
@@ -94,21 +69,8 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 let drawStartDate = this.wholeRoomDrawing.drawStartDate;
                 let drawEndDate = this.wholeRoomDrawing.drawEndDate;
                 let preTime = this.wholeRoomDrawing.preTime;
-                let array = [];
-                for(let i = 0; i < this.orderWorkActions.length; i++) {
-                    if ( this.orderWorkActions[i].action == "参与全房图设计中") {
-                        this.orderWorkActions[i].action = "draw_construct"
-                    }
-                    array.push({
-                        action: this.orderWorkActions[i].action,
-                        employeeName: this.orderWorkActions[i].employeeName,
-                        orderStatus : this.orderWorkActions[i].orderStatus,
-                        employeeId : this.orderWorkActions[i].employeeId,
-                        roleId : this.orderWorkActions[i].roleId,
-                        orderId : this.orderWorkActions[i].orderId
-                    });
-                }
-                this.orderWorkActions = array;
+                let assistantDesigner = this.wholeRoomDrawing.assistantDesigner;
+
                 let data = {
                     orderId: orderId,
                     id: '',
@@ -125,50 +87,11 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     drawStartDate : drawStartDate,
                     drawEndDate : drawEndDate,
                     preTime : preTime,
+                    assistantDesigner : assistantDesigner
                 };
                 return data;
             },
-            addSuccessEmployeeName : function() {
-                this.orderWorkAction = {};
-                this.orderWorkAction.employeeId = this.wholeRoomDrawing.assistantDesigner;
-                if (this.orderWorkAction.employeeId == '' || this.orderWorkAction.employeeId == null) {
-                    Vue.prototype.$message({
-                        message: '请先选择助理设计师再添加设计师！',
-                        type: 'error'
-                    });
-                    return false;
-                }
-                ajax.get('api/bss.order/order-measurehouse/getEmployeeNameEmployeeId', {employeeId:this.orderWorkAction.employeeId}, (responseData)=>{
-                    this.orderWorkAction.employeeName = responseData.employeeName ;
-                });
-                this.orderWorkAction.orderId = this.wholeRoomDrawing.orderId;
-                this.orderWorkAction.action = '参与全房图设计中';
-                this.orderWorkAction.roleId = '41';
-                this.orderWorkAction.orderStatus = this.orderStatus;
-                this.orderWorkActions.push(this.orderWorkAction);
-            },
-            /*addSuccessHydropower : function() {
-                this.orderWorkAction = {};
-                this.orderWorkAction.employeeId = this.wholeRoomDrawing.hydropowerDesigner;
-                if (this.orderWorkAction.employeeId == '' || this.orderWorkAction.employeeId == null) {
-                    Vue.prototype.$message({
-                        message: '请先选择水电设计师再添加设计师！',
-                        type: 'error'
-                    });
-                    return false;
-                }
-                ajax.get('api/bss.order/order-measurehouse/getEmployeeNameEmployeeId', {employeeId:this.orderWorkAction.employeeId}, (responseData)=>{
-                    this.orderWorkAction.employeeName = responseData.employeeName ;
-                });
-                this.orderWorkAction.orderId = this.wholeRoomDrawing.orderId;
-                this.orderWorkAction.action = 'water_elec_design';
-                this.orderWorkAction.roleId = '19';
-                this.orderWorkAction.orderStatus = this.orderStatus;
-                this.orderWorkActions.push(this.orderWorkAction);
-            },*/
-            deleteRow : function(index, rows) {
-                rows.splice(index, 1);
-            },
+
             checkBeforeOrder: function () {
             },
             handleCommand : function(command) {
@@ -220,7 +143,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 ajax.post('api/bss.order/order-wholeRoomDrawing/submitWholeRoomDrawing', data,null,null,true);
             },
             submitToAuditPicturesFlow : function () {
-                if (this.wholeRoomDrawing.drawingAuditorName == null || this.wholeRoomDrawing.drawingAuditorName == '') {
+                if (this.wholeRoomDrawing.drawingAuditor == null || this.wholeRoomDrawing.drawingAuditor == '') {
                     Vue.prototype.$message({
                         message: '您正在提交订单至图纸审核阶段，请先选择图纸审核人员！',
                         type: 'error'

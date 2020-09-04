@@ -93,55 +93,13 @@
                                         <!--<order-selectemployee role-id="38" v-model="wholeRoomDrawing.hydropowerDesigner"></order-selectemployee>-->
                                     </el-form-item>
                                 </el-col>
-                            </el-row>
-
-                            <el-divider>助理设计师信息</el-divider>
-
-                            <el-row>
-                                <template>
-                                    <el-table
-                                            :data="orderWorkActions"
-                                            border
-                                            style="width: 100%">
-                                        <el-table-column
-                                                prop="employeeName"
-                                                label="设计师"
-                                                width="370">
-                                        </el-table-column>
-                                        <el-table-column
-                                                prop="action"
-                                                label="员工事项"
-                                                width="370">
-                                        </el-table-column>
-                                        <el-table-column
-                                                fixed="right"
-                                                label="操作"
-                                                width="60">`
-                                            <template slot-scope="scope">
-                                                <el-button
-                                                        @click.native.prevent="deleteRow(scope.$index, orderWorkActions)"
-                                                        type="text"
-                                                        size="small">
-                                                    取消
-                                                </el-button>
-                                            </template>
-                                        </el-table-column>
-                                    </el-table>
-                                </template>
-                                <!--<el-col :span="11">
-                                    <el-button type="success" @click="addSuccessHydropower" icon="el-icon-circle-plus-outline">添加水电设计师</el-button>
-                                </el-col>-->
-                            </el-row>
-                            <el-row>
                                 <el-col :span="11">
                                     <el-form-item label="助理设计师">
                                         <order-selectemployee role-id="41" v-model="wholeRoomDrawing.assistantDesigner"></order-selectemployee>
                                     </el-form-item>
                                 </el-col>
-                                <el-col :span="11">
-                                    <el-button type="info" @click="addSuccessEmployeeName" icon="el-icon-circle-plus-outline">添加助理设计师</el-button>
-                                </el-col>
                             </el-row>
+
 
                             <el-divider>审核信息</el-divider>
 
@@ -152,9 +110,12 @@
                                     </el-form-item>
                                 </el-col>
                                 <el-col v-if="true" :span="22">
-                                    <el-form-item label="请选图纸审核人员" required="true" >
-                                        <order-search-employee :employee-id.sync="wholeRoomDrawing.drawingAuditor" :employee-name.sync="wholeRoomDrawing.drawingAuditorName"></order-search-employee>
+                                    <el-form-item label="请选图纸审核人员" >
+                                        <order-selectemployee role-id="44" v-model="wholeRoomDrawing.drawingAuditor"></order-selectemployee>
                                     </el-form-item>
+                                    <!--<el-form-item label="请选图纸审核人员" required="true" >
+                                        <order-search-employee :employee-id.sync="wholeRoomDrawing.drawingAuditor" :employee-name.sync="wholeRoomDrawing.drawingAuditorName"></order-search-employee>
+                                    </el-form-item>-->
                                 </el-col>
                             </el-row>
 
