@@ -65,7 +65,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                 this.$refs['orderInspect'].validate((valid) => {
                     if (valid) {
                         that.orderInspect.orderId=that.orderId;
-                        ajax.post('api/bss.order/order-inspect/nextStep',that.orderInspect,null,null,true);
+                        ajax.post('api/bss.order/order-inspect/nextStep',that.orderInspect);
                     } else {
                         return false;
                     }
