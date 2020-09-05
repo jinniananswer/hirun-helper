@@ -85,7 +85,9 @@ public class CustBaseServiceImpl extends ServiceImpl<CustBaseMapper, CustBase> i
 
                 if (StringUtils.isNotBlank(custInfoDTO.getSex())) {
                     custInfoDTO.setSexName(this.staticDataService.getCodeName("SEX", custInfoDTO.getSex()));
-                    custInfoDTO.setCustTypeName(this.staticDataService.getCodeName("CUSTOMER_TYPE",custInfoDTO.getCustType()));
+                }
+                if(StringUtils.isNotBlank(custInfoDTO.getCustType())){
+                    custInfoDTO.setCustTypeName(this.staticDataService.getCodeName("CUSTOMER_TYPE",custBase.getCustType()));
                 }
             }
         }
