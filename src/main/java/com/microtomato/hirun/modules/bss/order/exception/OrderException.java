@@ -27,7 +27,10 @@ public class OrderException extends BaseException {
         PAY_MUST_MORE_THAN_ZERO,
 
         @Error(code = ErrorKind.BREACH_BUSINESS_RULE, message = "请先提交平面图")
-        FILE_NOT_FOUND,
+        FILE_PLANESKETCH_NOT_FOUND,
+
+        @Error(code = ErrorKind.BREACH_BUSINESS_RULE, message = "请先提交全房图")
+        FILE_WHOLEROOM_DRAWING_NOT_FOUND,
 
         @Error(code = ErrorKind.BREACH_BUSINESS_RULE, message = "收款金额必须等于付款金额")
         PAY_MUST_EQUAL_PAYITEM,
