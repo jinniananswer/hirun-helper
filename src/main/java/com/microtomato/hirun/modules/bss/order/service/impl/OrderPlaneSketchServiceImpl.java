@@ -78,6 +78,7 @@ public class OrderPlaneSketchServiceImpl extends ServiceImpl<OrderPlaneSketchMap
 
     @Override
     public void submitToConfirmFlow(@RequestBody OrderPlaneSketch orderPlaneSketch) {
+        this.existsFile(orderPlaneSketch.getOrderId());
         orderDomainService.orderStatusTrans(orderPlaneSketch.getOrderId(), OrderConst.OPER_CONFIRM);
         OrderBase order = this.orderBaseService.queryByOrderId(orderPlaneSketch.getOrderId());
         if (order == null) {
@@ -240,13 +241,7 @@ public class OrderPlaneSketchServiceImpl extends ServiceImpl<OrderPlaneSketchMap
 
     @Override
     public void submitToSignContractFlow(@RequestBody OrderPlaneSketchDTO dto) {
-        /**
-         * 判斷文件是否上傳
-         * */
-        OrderFile orderFile = orderFileService.getOrderFile(dto.getOrderId(), 456);
-        if (orderFile == null) {
-            throw new OrderException(OrderException.OrderExceptionEnum.FILE_NOT_FOUND);
-        }
+        this.existsFile(dto.getOrderId());
         /**
          * 回写套内面积
          * */
@@ -269,5 +264,15 @@ public class OrderPlaneSketchServiceImpl extends ServiceImpl<OrderPlaneSketchMap
          * 状态扭转
          * */
         this.submitToSignContractFlow(dto.getOrderId());
+    }
+
+    public void existsFile(Long OrderId) {
+        /**
+         * 判斷文件是否上傳
+         * */
+        OrderFile orderFile = orderFileService.getOrderFile(OrderId, 456);
+        if (orderFile == null) {
+            throw new OrderException(OrderException.OrderExceptionEnum.FILE_PLANESKETCH_NOT_FOUND);
+        }
     }
 }

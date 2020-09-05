@@ -12,8 +12,10 @@ import com.microtomato.hirun.modules.bss.order.entity.consts.DesignerConst;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWholeRoomDrawDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerActionDTO;
+import com.microtomato.hirun.modules.bss.order.entity.po.OrderFile;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderWholeRoomDraw;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderWorker;
+import com.microtomato.hirun.modules.bss.order.exception.OrderException;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderWholeRoomDrawMapper;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderWorkerMapper;
 import com.microtomato.hirun.modules.bss.order.service.*;
@@ -55,13 +57,18 @@ public class OrderWholeRoomDrawServiceImpl extends ServiceImpl<OrderWholeRoomDra
     @Autowired
     private OrderWorkerMapper orderWorkerMapper;
 
+    @Autowired
+    private IOrderFileService orderFileService;
+
     @Override
     public void submitToAuditPicturesFlow(Long orderId) {
+        this.existsFile(orderId);
         orderDomainService.orderStatusTrans(orderId, OrderConst.OPER_NEXT_STEP);
     }
 
     @Override
     public void submitToConfirmFlow(Long orderId) {
+        this.existsFile(orderId);
         orderDomainService.orderStatusTrans(orderId, OrderConst.OPER_CONFIRM);
     }
 
@@ -261,5 +268,15 @@ public class OrderWholeRoomDrawServiceImpl extends ServiceImpl<OrderWholeRoomDra
                 .gt(OrderWorker::getEndDate, RequestTimeHolder.getRequestTime()));
         workerId = orderWorker.getId();
         return workerId;
+    }
+
+    public void existsFile(Long OrderId) {
+        /**
+         * 判斷文件是否上傳
+         * */
+        OrderFile orderFile = orderFileService.getOrderFile(OrderId, 567);
+        if (orderFile == null) {
+            throw new OrderException(OrderException.OrderExceptionEnum.FILE_WHOLEROOM_DRAWING_NOT_FOUND);
+        }
     }
 }
