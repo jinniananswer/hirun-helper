@@ -78,14 +78,14 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
             },
             handleCommand : function(command) {
                 if ( command == 'submitToCustomerLeaderFlow') {
-                    this.$confirm('确定要执行[审核通过，提交客户部主管]吗?', '提示', {
+                    this.$confirm('确定要执行[审核通过，提交下单审核员]吗?', '提示', {
                         confirmButtonText: '确定',
                         cancelButtonText: '取消',
                         type: 'warning'
                     }).then(() => {
                         this.$message({
                         type: 'success',
-                        message: '流程操作[审核通过，提交客户部主管]成功!单据发往[占位员工]'
+                        message: '流程操作[审核通过，提交下单审核员]成功!单据发往[占位员工]'
                     });
                     this.submitToCustomerLeaderFlow();
                     }).catch(() => {
@@ -104,9 +104,9 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 ajax.post('api/bss.order/order-drawingaudit/submitDrawingauditInfo', data,null,null,true);
             },
             submitToCustomerLeaderFlow : function () {
-                if (this.wholeRoomDrawing.customerLeaderName == null || this.wholeRoomDrawing.customerLeaderName == '') {
+                if (this.wholeRoomDrawing.customerLeader == null || this.wholeRoomDrawing.customerLeader == '') {
                     Vue.prototype.$message({
-                        message: '请先选择客户部主管！',
+                        message: '请先选择下单审核员！',
                         type: 'error'
                     });
                     return false;

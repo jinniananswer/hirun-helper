@@ -16,7 +16,8 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 drawingAssistant: '',//绘图助理
                 adminAssistant: '',//行政助理
                 designerRemarks: '',//设计师备注
-                reviewedComments: ''//审核意见
+                reviewedComments: '',//审核意见
+                pageTag : 'orderaudit'
             },
             custId: util.getRequest('custId'),
         },
@@ -25,6 +26,9 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
             let data = {
                 orderId : util.getRequest('orderId'),
             }
+            ajax.get('api/bss.order/order-wholeRoomDrawing/getWholeRoomDraw', data, (responseData)=>{
+                Object.assign(this.wholeRoomDrawing, responseData);
+            });
         },
 
         methods: {
@@ -44,6 +48,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 let drawStartDate = this.wholeRoomDrawing.drawStartDate;
                 let drawEndDate = this.wholeRoomDrawing.drawEndDate;
                 let preTime = this.wholeRoomDrawing.preTime;
+                let pageTag = this.wholeRoomDrawing.pageTag;
                 let data = {
                     orderId: orderId,
                     id: '',
@@ -60,6 +65,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     drawStartDate : drawStartDate,
                     drawEndDate : drawEndDate,
                     preTime : preTime,
+                    pageTag : pageTag ,
                 };
                 return data;
             },
