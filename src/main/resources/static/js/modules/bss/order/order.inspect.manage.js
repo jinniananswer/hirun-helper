@@ -43,7 +43,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
         methods: {
             init: function () {
                 let that = this;
-                ajax.get('api/bss.order/order-inspect/queryOrderInspect', {orderId:this.orderInspect.orderId}, function (responseData) {
+                ajax.get('api/bss.order/order-inspect/queryOrderInspect', {orderId:that.orderId}, function (responseData) {
                     that.orderInspect = responseData;
                 });
             },
@@ -60,7 +60,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                 });
             },
 
-            submit: function () {
+            nextStep: function () {
                 let that = this;
                 this.$refs['orderInspect'].validate((valid) => {
                     if (valid) {
