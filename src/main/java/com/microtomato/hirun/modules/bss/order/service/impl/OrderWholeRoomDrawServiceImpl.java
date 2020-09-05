@@ -150,6 +150,34 @@ public class OrderWholeRoomDrawServiceImpl extends ServiceImpl<OrderWholeRoomDra
         return orderWholeRoomDrawDTO;
     }
 
+    public void reckon(OrderWholeRoomDrawDTO dto,Long workerId) {
+        Long orderId = dto.getOrderId();
+        int iCount = 0 ;
+        List<OrderWorkerActionDTO> orderWorkerActionDTOS = orderWorkerActionService.queryByOrderId(orderId);
+        if (ArrayUtils.isNotEmpty(orderWorkerActionDTOS)) {
+            for (OrderWorkerActionDTO orderWorkerActionDTO : orderWorkerActionDTOS) {
+                if (orderWorkerActionDTO.getAction().equals(DesignerConst.OPER_DRAW_CONSTRUCT)) {
+                    iCount ++ ;
+                }
+                if (orderWorkerActionDTO.getAction().equals(DesignerConst.OPER_DRAW_PLAN)) {
+                    iCount ++ ;
+                }
+                if (orderWorkerActionDTO.getAction().equals(DesignerConst.OPER_MEASURE)) {
+                    iCount ++ ;
+                }
+            }
+        }
+        /**
+         * 如果同一个人做完量房，平面图，全房图，那么
+         * */
+        if (iCount == 3) {
+            this.orderWorkerActionService.deleteOrderWorkerAction(orderId,DesignerConst.OPER_DRAW_CONSTRUCT);
+            this.orderWorkerActionService.deleteOrderWorkerAction(orderId,DesignerConst.OPER_DRAW_PLAN);
+            this.orderWorkerActionService.deleteOrderWorkerAction(orderId,DesignerConst.OPER_MEASURE);
+            this.orderWorkerActionService.createOrderWorkerAction(orderId,dto.getAssistantDesigner(),workerId,null,DesignerConst.OPER_WALL_IN_DESIGN);
+        }
+    }
+
     @Override
     public void  submitWholeRoomDrawing(OrderWholeRoomDrawDTO dto) {
         LocalDateTime now = RequestTimeHolder.getRequestTime();
@@ -197,21 +225,21 @@ public class OrderWholeRoomDrawServiceImpl extends ServiceImpl<OrderWholeRoomDra
             orderWorkerService.updateOrderWorker(dto.getOrderId(),40L,dto.getAdminAssistant());
         }
         if (dto.getCustomerLeader() != null) {
-            orderWorkerService.updateOrderWorker(dto.getOrderId(),19L,dto.getCustomerLeader());
+            orderWorkerService.updateOrderWorker(dto.getOrderId(),58L,dto.getCustomerLeader());
         }
         Long workerId = null;
         workerId = this.orderWorkerService.updateOrderWorkerByEmployeeId(orderId,30L,dto.getDesigner());
         if ( workerId==null ) {
             workerId =  getWorkerId(orderId,30L,dto.getDesigner());
         }
-        if (dto.getDesigner().equals(dto.getAssistantDesigner())) {
+        if (dto.getDesigner().equals(dto.getAssistantDesigner()) && dto.getCustomerLeader() == null && !"orderaudit".equals(dto.getPageTag())) {
             this.orderWorkerActionService.deleteOrderWorkerAction(orderId,DesignerConst.OPER_DRAW_CONSTRUCT);
             this.orderWorkerActionService.createOrderWorkerAction(orderId,dto.getAssistantDesigner(),workerId,null,DesignerConst.OPER_DRAW_CONSTRUCT);
-        } else {
+        } else if (!dto.getDesigner().equals(dto.getAssistantDesigner())){
             //如果助理设计师为空，那么啥都不弄
             if (dto.getAssistantDesigner() == null) {
                 this.orderWorkerActionService.deleteOrderWorkerAction(orderId,DesignerConst.OPER_DRAW_CONSTRUCT);
-            } else {
+            } else if (dto.getAssistantDesigner() != null && dto.getCustomerLeader() == null && !"orderaudit".equals(dto.getPageTag())) {
                 workerId = this.orderWorkerService.updateOrderWorker(orderId,DesignerConst.ROLE_CODE_ASSISTANT_DESIGNER,dto.getAssistantDesigner());
                 if ( workerId==null ) {
                     workerId =  getWorkerId(orderId,DesignerConst.ROLE_CODE_ASSISTANT_DESIGNER,dto.getAssistantDesigner());
@@ -220,29 +248,9 @@ public class OrderWholeRoomDrawServiceImpl extends ServiceImpl<OrderWholeRoomDra
                 this.orderWorkerActionService.createOrderWorkerAction(orderId,dto.getAssistantDesigner(),workerId,null,DesignerConst.OPER_DRAW_CONSTRUCT);
             }
         }
-        int iCount = 0 ;
-        List<OrderWorkerActionDTO> orderWorkerActionDTOS = orderWorkerActionService.queryByOrderId(orderId);
-        if (ArrayUtils.isNotEmpty(orderWorkerActionDTOS)) {
-            for (OrderWorkerActionDTO orderWorkerActionDTO : orderWorkerActionDTOS) {
-                if (orderWorkerActionDTO.getAction().equals(DesignerConst.OPER_DRAW_CONSTRUCT)) {
-                    iCount ++ ;
-                }
-                if (orderWorkerActionDTO.getAction().equals(DesignerConst.OPER_DRAW_PLAN)) {
-                    iCount ++ ;
-                }
-                if (orderWorkerActionDTO.getAction().equals(DesignerConst.OPER_MEASURE)) {
-                    iCount ++ ;
-                }
-            }
-        }
-        /**
-         * 如果同一个人做完量房，平面图，全房图，那么
-         * */
-        if (iCount == 3) {
-            this.orderWorkerActionService.deleteOrderWorkerAction(orderId,DesignerConst.OPER_DRAW_CONSTRUCT);
-            this.orderWorkerActionService.deleteOrderWorkerAction(orderId,DesignerConst.OPER_DRAW_PLAN);
-            this.orderWorkerActionService.deleteOrderWorkerAction(orderId,DesignerConst.OPER_MEASURE);
-            this.orderWorkerActionService.createOrderWorkerAction(orderId,dto.getAssistantDesigner(),workerId,null,DesignerConst.OPER_WALL_IN_DESIGN);
+
+        if (dto.getCustomerLeader() != null) {
+            reckon(dto,workerId);
         }
     }
 
