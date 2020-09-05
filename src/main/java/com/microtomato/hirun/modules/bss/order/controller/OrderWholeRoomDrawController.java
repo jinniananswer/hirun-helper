@@ -74,6 +74,7 @@ public class OrderWholeRoomDrawController {
     @Transactional(rollbackFor = Exception.class)
     @RestResult
     public void submitToCustomerLeaderFlow(@RequestBody OrderWholeRoomDrawDTO dto) {
+        this.save(dto);
         iOrderWholeRoomDrawService.submitToCustomerLeaderFlow(dto.getOrderId());
     }
 
