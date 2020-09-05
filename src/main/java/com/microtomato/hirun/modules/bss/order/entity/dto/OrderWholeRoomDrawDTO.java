@@ -118,7 +118,7 @@ public class OrderWholeRoomDrawDTO {
     private String drawingAuditorName;
 
     /**
-     * 客戶不主管
+     * 下单审核员
      */
     private Long customerLeader;
 
@@ -127,4 +127,6 @@ public class OrderWholeRoomDrawDTO {
     private List<OrderWorkerActionDTO> orderWorkActions;
 
     private String employeeName;
+
+    private  String pageTag;
 }
