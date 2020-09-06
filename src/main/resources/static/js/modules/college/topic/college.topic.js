@@ -11,6 +11,23 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                     size: 10,
                     total: 0,
                 },
+                topicEditCond: {
+                    name: '',
+                    type: '',
+                    correctAnswer: '',
+                    score: '',
+                },
+                topicOptionEditCond: {
+                    symbol: '',
+                    name: '',
+                    optionId: '',
+                },
+                topicAddCond: {
+                    name: '',
+                    type: '',
+                    correctAnswer: '',
+                    score: '',
+                },
                 options: [{
                     value: '0',
                     label: '时间倒序'
@@ -21,6 +38,9 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                 value: '',
                 topicInfo: [],
                 dialogVisible: false,
+                editTopicDialogVisible: false,
+                editTopicOptionDialogVisible: false,
+                addTopicDialogVisible: false,
                 topicIds: [],
             }
         },
@@ -73,16 +93,89 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                 this.topicIds = val;
             },
 
-            editTopicById() {
-
-            },
-
             addTopic() {
 
             },
 
             deleteTopicBatch() {
+                let val = this.topicIds;
+                var that = this;
+                if (val == undefined || val == 'undefined' || val.length <= 0) {
+                    this.$message({
+                        showClose: true,
+                        duration: 3000,
+                        message: '您未选择需要删除的习题！请选择后再点击删除。',
+                        center: true
+                    });
+                    return;
+                }
 
+                this.$confirm('确认删除选中习题?', '提示', {
+                    confirmButtonText: '确认',
+                    cancelButtonText: '取消',
+                    center: true
+                }).then(() => {
+                    ajax.post('api/ExamTopic/deleteTopicBatch', val, function (responseData) {
+                        that.query();
+                        that.$message({
+                            type: 'success',
+                            message: '删除成功!'
+                        });
+                    }, null, true);
+                }).catch(() => {
+                    that.$message({
+                        type: 'info',
+                        message: '取消删除!'
+                    });
+                });
+            },
+
+            submitEdit(topic) {
+                var that = this;
+                ajax.post('api/ExamTopic/updateByTopic', topic, function (responseData) {
+                    that.query();
+                    that.editTopicDialogVisible = false;
+                    that.topicEditCond = {};
+                    that.$message({
+                        type: 'success',
+                        message: '修改成功!'
+                    });
+                }, null, true);
+
+            },
+
+            submitTopicOptionEdit(topicOption) {
+                var that = this;
+                this.topicOptionEditCond.optionId = topicOption.optionId;
+                ajax.post('api/ExamTopic/updateTopicOption', this.topicOptionEditCond, function (responseData) {
+                    that.query();
+                    that.editTopicOptionDialogVisible = false;
+                    that.topicOptionEditCond = {};
+                    that.$message({
+                        type: 'success',
+                        message: '修改成功!'
+                    });
+                }, null, true);
+            },
+
+            submitAdd() {
+
+            },
+
+            editTopicById(topic){
+                this.$nextTick(()=>{
+                    this.$refs.topicEditCond.resetFields();
+                });
+                this.topicEditCond = JSON.parse(JSON.stringify(topic));
+                this.editTopicDialogVisible = true;
+            },
+
+            editTopicOptionById(option){
+                this.$nextTick(()=>{
+                    this.$refs.topicOptionEditCond.resetFields();
+                });
+                this.topicOptionEditCond = JSON.parse(JSON.stringify(option));
+                this.editTopicOptionDialogVisible = true;
             },
         },
     });

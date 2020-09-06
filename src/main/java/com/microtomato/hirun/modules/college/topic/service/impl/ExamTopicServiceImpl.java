@@ -8,6 +8,7 @@ import com.microtomato.hirun.modules.college.knowhow.entity.po.CollegeQuestionRe
 import com.microtomato.hirun.modules.college.topic.entity.dto.TopicServiceDTO;
 import com.microtomato.hirun.modules.college.topic.mapper.ExamTopicMapper;
 import com.microtomato.hirun.modules.college.topic.entity.po.ExamTopic;
+import com.microtomato.hirun.modules.college.topic.service.IExamTopicOptionService;
 import com.microtomato.hirun.modules.college.topic.service.IExamTopicService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,8 @@ public class ExamTopicServiceImpl extends ServiceImpl<ExamTopicMapper, ExamTopic
     @Autowired
     private ExamTopicMapper examTopicMapper;
 
-
+    @Autowired
+    private IExamTopicOptionService examTopicOptionService;
     @Override
     public IPage<TopicServiceDTO> init(Page<ExamTopic> page) {
         Page<ExamTopic> pages = examTopicMapper.selectPage(page, new QueryWrapper<ExamTopic>().lambda()
@@ -39,6 +41,7 @@ public class ExamTopicServiceImpl extends ServiceImpl<ExamTopicMapper, ExamTopic
         for (ExamTopic examTopic : list) {
             TopicServiceDTO topic = new TopicServiceDTO();
             BeanUtils.copyProperties(examTopic, topic);
+            topic.setTopicOptions(examTopicOptionService.queryByTopicId(topic.getTopicId()));
             topicList.add(topic);
         }
 
