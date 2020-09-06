@@ -19,4 +19,7 @@ public interface IOrderInspectService extends IService<OrderInspect> {
 
     void nextStep(OrderInspectDTO dto);
 
+    void submitToNotReceive(OrderInspectDTO dto);
+
+
 }

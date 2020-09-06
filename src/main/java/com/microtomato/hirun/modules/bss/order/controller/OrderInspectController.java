@@ -43,4 +43,10 @@ public class OrderInspectController {
     public void nextStep(@RequestBody OrderInspectDTO orderInspectDTO) {
          this.orderInspectService.nextStep(orderInspectDTO);
     }
+
+    @PostMapping("/submitToNotReceive")
+    @RestResult
+    public void submitToNotReceive(@RequestBody OrderInspectDTO orderInspectDTO) {
+        this.orderInspectService.submitToNotReceive(orderInspectDTO);
+    }
 }

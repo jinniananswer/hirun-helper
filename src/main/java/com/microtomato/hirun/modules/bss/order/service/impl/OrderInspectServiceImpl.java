@@ -63,4 +63,11 @@ public class OrderInspectServiceImpl extends ServiceImpl<OrderInspectMapper, Ord
         this.save(dto);
         orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_NEXT_STEP);
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    public void submitToNotReceive(OrderInspectDTO dto) {
+        this.save(dto);
+        orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_DELAY);
+    }
 }

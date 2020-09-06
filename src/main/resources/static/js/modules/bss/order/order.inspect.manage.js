@@ -23,20 +23,27 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                     ],
 
                 },
-
+                isShowChecking:false,
+                isShowReceiveReport:false,
+                isShowCustomerNotReceive:false,
+                isShowCustomerReceive:false,
+                isClose:false,
             }
         },
         computed: {},
         mounted: function () {
             this.init();
             if (this.orderStatus == '41') {
-                this.submitButtonName = '检测中';
+                this.isShowChecking = true;
             }else if (this.orderStatus == '42') {
-                this.submitButtonName = '已收取检测报告';
+                this.isShowReceiveReport = true;
             }else if (this.orderStatus == '43') {
-                this.submitButtonName = '客户未领取';
+                this.isShowCustomerNotReceive = true;
+                this.isShowCustomerReceive = true;
             }else if (this.orderStatus == '44') {
-                this.submitButtonName = '客户已领取';
+                this.isShowCustomerReceive = true;
+            }else if (this.orderStatus == '45') {
+                this.isClose = true;
             }
 
         },
@@ -46,6 +53,20 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                 ajax.get('api/bss.order/order-inspect/queryOrderInspect', {orderId:that.orderId}, function (responseData) {
                     that.orderInspect = responseData;
                 });
+            },
+
+            handleCommand : function(command) {
+                if ( command == 'submitToChecking') {
+                    this.nextStep();
+                } else if (command == 'submitToNext') {
+                    this.nextStep();
+                } else if (command == 'submitToNotReceive') {
+                    this.submitToNotReceive();
+                } else if (command =='submitToNext') {
+                    this.nextStep();
+                } else if (command == 'submitToClose') {
+                    this.nextStep();
+                }
             },
 
             submit: function () {
@@ -66,6 +87,18 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                     if (valid) {
                         that.orderInspect.orderId=that.orderId;
                         ajax.post('api/bss.order/order-inspect/nextStep',that.orderInspect);
+                    } else {
+                        return false;
+                    }
+                });
+            },
+
+            submitToNotReceive: function () {
+                let that = this;
+                this.$refs['orderInspect'].validate((valid) => {
+                    if (valid) {
+                        that.orderInspect.orderId=that.orderId;
+                        ajax.post('api/bss.order/order-inspect/submitToNotReceive',that.orderInspect);
                     } else {
                         return false;
                     }
