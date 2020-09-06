@@ -1,4 +1,4 @@
-require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'order-selectemployee', 'vue-router','house-select'], function (Vue, element, axios, ajax, vueselect, util, orderSelectEmployee, vueRouter,houseSelect) {
+require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'order-selectemployee', 'vue-router','house-select','order-file-upload', 'upload-file'], function (Vue, element, axios, ajax, vueselect, util, orderSelectEmployee, vueRouter,houseSelect,orderFileUpload) {
     let vm = new Vue({
         el: '#app',
         data: function () {
@@ -25,6 +25,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'order-selectem
                 courseFileInfo: [],
                 checked: null,
                 display: 'display:block',
+                dialogVisible: false,
             }
         },
 
@@ -122,7 +123,17 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'order-selectem
                 ajax.post('api/organization/coursefile/deleteCourseFileByIds', val, function(responseData){
 
                 },null, true);
-            }
+            },
+            handleClose(done) {
+                this.$confirm('确认关闭？')
+                    .then(_ => {
+                        done();
+                    })
+                    .catch(_ => {});
+            },
+            handleSuccess: function (fileList) {
+                alert("fileId: " + JSON.stringify(fileList));
+            },
         }
     });
 

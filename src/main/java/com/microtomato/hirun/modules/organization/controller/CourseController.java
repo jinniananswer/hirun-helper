@@ -1,5 +1,7 @@
 package com.microtomato.hirun.modules.organization.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.modules.organization.entity.dto.CourseTreeResponseDTO;
@@ -60,6 +62,12 @@ public class CourseController {
             }
         }
         return result;
+    }
+
+    @GetMapping("queryCourseInfo")
+    @RestResult
+    public IPage<Course> queryCourseInfo(Page<Course> page) {
+        return this.courseServiceImpl.queryCourseInfo(page);
     }
 
 }

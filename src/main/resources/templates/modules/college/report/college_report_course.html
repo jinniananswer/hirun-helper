@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>dolphin-admin</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script src="static/js/framework/requirejs/require.min.js"
+            th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js"
+            th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+</head>
+<body>
+<div id="app" style="display:none" :style="display?display:''">
+    <el-container>
+        <el-main>
+            <template>
+                <el-table :data="courseFileInfo" stripe="true" style="width: 100%" fit="true" border height="400px">
+                    <el-table-column prop="name" label="课程名称" fixed align="center" width="280"></el-table-column>
+                    <el-table-column prop="courseDesc" label="课程描述" align="center" width="80"></el-table-column>
+                    <el-table-column prop="counts" label="课程学习人数" align="center" width="420"></el-table-column>
+
+                </el-table>
+                <div class="pagination">
+                    <el-pagination
+                            background
+                            :current-page="courseFileQueryCond.page"
+                            :page-size="courseFileQueryCond.size"
+                            layout="total, sizes, prev, pager, next"
+                            :total="courseFileQueryCond.total"
+                            @size-change="handleSizeChange"
+                            @current-change="handleCurrentChange">
+                    </el-pagination>
+                </div>
+            </template>
+        </el-main>
+    </el-container>
+</div>
+<style>
+    .text {
+        font-size: 14px;
+    }
+
+    .item {
+        margin-bottom: 18px;
+    }
+
+    .box-card {
+        margin-bottom: 18px;
+    }
+</style>
+<script src="../../../static/js/modules/college/report/college.report.course.js"
+        th:src="@{static/js/modules/college/report/college.report.course.js(v=${version})}"></script>
+</body>
+</html>

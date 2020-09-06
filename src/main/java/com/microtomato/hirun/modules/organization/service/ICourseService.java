@@ -1,5 +1,7 @@
 package com.microtomato.hirun.modules.organization.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.modules.organization.entity.dto.CourseTreeResponseDTO;
 import com.microtomato.hirun.modules.organization.entity.po.Course;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -22,4 +24,6 @@ public interface ICourseService extends IService<Course> {
      * @return
      */
     List<Course> queryEffectiveByParentCourseId(Long parentCourseId);
+
+    IPage<Course> queryCourseInfo(Page<Course> page);
 }

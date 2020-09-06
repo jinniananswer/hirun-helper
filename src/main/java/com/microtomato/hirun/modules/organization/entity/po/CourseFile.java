@@ -53,4 +53,10 @@ public class CourseFile  extends BaseEntity {
 
     @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
+
+    @TableField("download_times")
+    private Long downloadTimes;
+
+    @TableField("check_times")
+    private Long checkTimes;
 }
