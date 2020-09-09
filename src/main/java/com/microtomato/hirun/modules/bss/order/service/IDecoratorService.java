@@ -25,7 +25,7 @@ public interface IDecoratorService extends IService<Decorator> {
      */
     List<Decorator> queryDecoratorInfo(Long orgId, Long type);
 
-    IPage<Decorator> queryDecoratorInfo(String name, String identityNo, int current, int size);
+    IPage<Decorator> queryDecoratorInfo(String name, String identityNo, String decoratorType, int current, int size);
 
     /**
      * 查询所有

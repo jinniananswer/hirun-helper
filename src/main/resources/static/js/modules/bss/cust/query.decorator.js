@@ -41,6 +41,18 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'order-selectem
                 this.decoratorQueryCond.page = currentPage;
                 this.queryDecorator();
             },
+
+            handleSelectionChange() {
+
+            },
+
+            addDecorator() {
+
+            },
+
+            deleteDecoratorBatch() {
+
+            },
         }
     });
 
