@@ -888,6 +888,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
             componentData.setPayments(payments);
         }
         componentData.setNeedPay(new Double(0));
+        componentData.setAuditStatus("");
 
         List<CollectionItemCfg> collectionItemCfgs = this.collectionItemCfgService.queryPlusCollectionyItems();
         List<CascadeDTO<CollectionItemCfg>> collectionItems = this.buildPayItemCollectionCascade(collectionItemCfgs);
@@ -976,7 +977,6 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
             }
 
         }
-
 
         return componentData;
     }
