@@ -71,7 +71,6 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
     private IStaticDataService staticDataService;
 
 
-
     /**
      * 材料供应制单
      *
@@ -163,10 +162,10 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
             return;
         }
         Long voucherType = financeVoucherDetails.get(0).getVoucherType();
-        Double totalMoney =0d;
-            for (FinanceVoucherDTO financeVoucherDetail : financeVoucherDetails) {
-                totalMoney += financeVoucherDetail.getMoney();
-            }
+        Double totalMoney = 0d;
+        for (FinanceVoucherDTO financeVoucherDetail : financeVoucherDetails) {
+            totalMoney += financeVoucherDetail.getMoney();
+        }
         Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
         LocalDateTime createTime = RequestTimeHolder.getRequestTime();
         Long orgId = WebContextUtils.getUserContext().getOrgId();
@@ -193,27 +192,27 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
 //                List<FinanceVoucherItemDTO> financeVoucherItemDTOList = financeVoucherDetail.getFinanceVoucherItemDTOList();
                 //虽然与financeVoucher一一对应，因整个制单都是一套流程，故这还是启用循环
 //                for (FinanceVoucherItemDTO financeVoucherItemDTO : financeVoucherItemDTOList) {
-                    FinanceVoucherItem financeVoucherItem = new FinanceVoucherItem();
-                    //拼finance_voucher_item表数据
-                    financeVoucherItem.setSupplierId(financeVoucherDetail.getSupplierId());
-                    financeVoucherItem.setSupplyId(financeVoucherDetail.getSupplyId());
-                    financeVoucherItem.setProjectId(financeVoucherDetail.getOrderId());
-                    financeVoucherItem.setParentVoucherItemId(financeVoucherDetail.getParentVoucherItemId());
-                    financeVoucherItem.setVoucherId(financeVoucher.getId());
-                    financeVoucherItem.setVoucherItemId(financeVoucherDetail.getVoucherItemId());
-                    financeVoucherItem.setCreateTime(createTime);
-                    financeVoucherItem.setCreateUserId(createUserId);
-                    financeVoucherItem.setStartDate(createTime);
-                    financeVoucherItem.setFee(financeVoucherDetail.getMoney());
-                    financeVoucherItem.setEndDate(TimeUtils.getForeverTime());
-                    //financeVoucherItem.setOrderId(financeVoucherDetail.getOrderId());
-                    financeVoucherItemService.save(financeVoucherItem);
+                FinanceVoucherItem financeVoucherItem = new FinanceVoucherItem();
+                //拼finance_voucher_item表数据
+                financeVoucherItem.setSupplierId(financeVoucherDetail.getSupplierId());
+                financeVoucherItem.setSupplyId(financeVoucherDetail.getSupplyId());
+                financeVoucherItem.setProjectId(financeVoucherDetail.getOrderId());
+                financeVoucherItem.setParentVoucherItemId(financeVoucherDetail.getParentVoucherItemId());
+                financeVoucherItem.setVoucherId(financeVoucher.getId());
+                financeVoucherItem.setVoucherItemId(financeVoucherDetail.getVoucherItemId());
+                financeVoucherItem.setCreateTime(createTime);
+                financeVoucherItem.setCreateUserId(createUserId);
+                financeVoucherItem.setStartDate(createTime);
+                financeVoucherItem.setFee(financeVoucherDetail.getMoney());
+                financeVoucherItem.setEndDate(TimeUtils.getForeverTime());
+                //financeVoucherItem.setOrderId(financeVoucherDetail.getOrderId());
+                financeVoucherItemService.save(financeVoucherItem);
 
-                    //制单后需要更新supply表状态
-                    SupplyOrder supplyOrder = new SupplyOrder();
-                    supplyOrder.setId(financeVoucherDetail.getSupplyId());
-                    supplyOrder.setSupplyStatus("2");//2表示已经制单，不能重复制单
-                    supplyOrderService.updateById(supplyOrder);
+                //制单后需要更新supply表状态
+                SupplyOrder supplyOrder = new SupplyOrder();
+                supplyOrder.setId(financeVoucherDetail.getSupplyId());
+                supplyOrder.setSupplyStatus("2");//2表示已经制单，不能重复制单
+                supplyOrderService.updateById(supplyOrder);
 //                }
             });
 
@@ -248,7 +247,7 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
                 financeVoucherItem.setStartDate(createTime);
                 financeVoucherItem.setFee(financeVoucherDetail.getMoney());
                 financeVoucherItem.setEndDate(TimeUtils.getForeverTime());
-               // financeVoucherItem.setOrderId(financeVoucherDetail.getOrderId());
+                // financeVoucherItem.setOrderId(financeVoucherDetail.getOrderId());
                 financeVoucherItemService.save(financeVoucherItem);
             });
         }
@@ -269,11 +268,10 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
             financeVoucher.setVoucherEmployeeId(employeeId);
             financeVoucher.setVoucherType(voucherType);
             financeVoucherService.save(financeVoucher);
-log.debug("financeVoucherDetails============"+financeVoucherDetails);
             financeVoucherDetails.forEach(financeVoucherDetail -> {
                 //拼finance_voucher_item表数据
                 FinanceVoucherItem financeVoucherItem = new FinanceVoucherItem();
-               // financeVoucherItem.setProjectId(financeVoucherDetail.getDecoratorId());
+                // financeVoucherItem.setProjectId(financeVoucherDetail.getDecoratorId());
                 financeVoucherItem.setParentVoucherItemId(financeVoucherDetail.getParentVoucherItemId());
                 financeVoucherItem.setVoucherId(financeVoucher.getId());
                 financeVoucherItem.setVoucherItemId(financeVoucherDetail.getVoucherItemId());
@@ -282,7 +280,7 @@ log.debug("financeVoucherDetails============"+financeVoucherDetails);
                 financeVoucherItem.setStartDate(createTime);
                 financeVoucherItem.setFee(financeVoucherDetail.getMoney());
                 financeVoucherItem.setEndDate(TimeUtils.getForeverTime());
-              //  financeVoucherItem.setOrderId(financeVoucherDetail.getOrderId());
+                //  financeVoucherItem.setOrderId(financeVoucherDetail.getOrderId());
                 financeVoucherItemService.save(financeVoucherItem);
             });
         }
@@ -291,10 +289,11 @@ log.debug("financeVoucherDetails============"+financeVoucherDetails);
 
     /**
      * 查询对应工人
+     *
      * @return
      */
     @Override
-    public List<DecoratorInfoDTO> selectDecorator( DecoratorInfoDTO decoratorInfoDTO) {
+    public List<DecoratorInfoDTO> selectDecorator(DecoratorInfoDTO decoratorInfoDTO) {
         List<Decorator> decorators = decoratorServiceImpl.queryAllInfo();
 
         List<DecoratorInfoDTO> decoratorInfoDTOArrayList = new ArrayList<>();
@@ -303,10 +302,10 @@ log.debug("financeVoucherDetails============"+financeVoucherDetails);
             decoratorInfoDTOs.setName(decorator.getName());
             decoratorInfoDTOs.setDecoratorId(decorator.getDecoratorId());
             decoratorInfoDTOs.setDecoratorType(decorator.getDecoratorType());
-            decoratorInfoDTOs.setDecoratorTypeName(this.staticDataService.getCodeName("DECORATOR_TYPE",decorator.getDecoratorType()));
+            decoratorInfoDTOs.setDecoratorTypeName(this.staticDataService.getCodeName("DECORATOR_TYPE", decorator.getDecoratorType()));
             decoratorInfoDTOArrayList.add(decoratorInfoDTOs);
         }
-log.debug("decoratorInfoDTOArrayList========="+decoratorInfoDTOArrayList);
+        log.debug("decoratorInfoDTOArrayList=========" + decoratorInfoDTOArrayList);
         return decoratorInfoDTOArrayList;
     }
 
