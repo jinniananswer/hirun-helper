@@ -30,6 +30,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -75,6 +77,7 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
      *
      * @param financeVoucherDetails
      */
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @Override
     public void voucherPreparationForSupply(List<FinanceVoucherDTO> financeVoucherDetails) {
         if (ArrayUtils.isEmpty(financeVoucherDetails)) {
@@ -108,6 +111,7 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
      *
      * @param financeVoucherDetails
      */
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @Override
     public void voucherPreparationForConstruction(List<FinanceVoucherDTO> financeVoucherDetails) {
         if (ArrayUtils.isEmpty(financeVoucherDetails)) {
@@ -131,6 +135,7 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
      *
      * @param financeVoucherDetails
      */
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @Override
     public void voucherPreparationForOther(List<FinanceVoucherDTO> financeVoucherDetails) {
         if (ArrayUtils.isEmpty(financeVoucherDetails)) {
@@ -151,6 +156,7 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
      *
      * @param financeVoucherDetails
      */
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @Override
     public void voucherPreparation(List<FinanceVoucherDTO> financeVoucherDetails) {
         if (ArrayUtils.isEmpty(financeVoucherDetails)) {
@@ -191,7 +197,7 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
                     //拼finance_voucher_item表数据
                     financeVoucherItem.setSupplierId(financeVoucherDetail.getSupplierId());
                     financeVoucherItem.setSupplyId(financeVoucherDetail.getSupplyId());
-                   // financeVoucherItem.setProjectId(financeVoucherDetail.getOrderId());
+                    financeVoucherItem.setProjectId(financeVoucherDetail.getOrderId());
                     financeVoucherItem.setParentVoucherItemId(financeVoucherDetail.getParentVoucherItemId());
                     financeVoucherItem.setVoucherId(financeVoucher.getId());
                     financeVoucherItem.setVoucherItemId(financeVoucherDetail.getVoucherItemId());
@@ -200,7 +206,7 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
                     financeVoucherItem.setStartDate(createTime);
                     financeVoucherItem.setFee(financeVoucherDetail.getMoney());
                     financeVoucherItem.setEndDate(TimeUtils.getForeverTime());
-                    financeVoucherItem.setOrderId(financeVoucherDetail.getOrderId());
+                    //financeVoucherItem.setOrderId(financeVoucherDetail.getOrderId());
                     financeVoucherItemService.save(financeVoucherItem);
 
                     //制单后需要更新supply表状态
@@ -242,7 +248,7 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
                 financeVoucherItem.setStartDate(createTime);
                 financeVoucherItem.setFee(financeVoucherDetail.getMoney());
                 financeVoucherItem.setEndDate(TimeUtils.getForeverTime());
-                financeVoucherItem.setOrderId(financeVoucherDetail.getOrderId());
+               // financeVoucherItem.setOrderId(financeVoucherDetail.getOrderId());
                 financeVoucherItemService.save(financeVoucherItem);
             });
         }

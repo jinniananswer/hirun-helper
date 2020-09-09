@@ -142,7 +142,7 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                         return;
                     };
                     for (let i = 0; i < data.length; i++) {
-                        if(data[i].money==0){
+                        if(data[i].money==""){
                             this.$message.error('没有输入金额，不能提交');
                             return;
                         }
@@ -205,7 +205,8 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                             decoratorId: spans[0],
                             name: spans[1],
                             decoratorType: spans[2],
-                            decoratorTypeName: spans[3]
+                            decoratorTypeName: spans[3],
+                            money: 0
                         });
                     }
                 },
