@@ -1066,36 +1066,36 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
             }
         }
         //查询工人信息
-//        if (StringUtils.equals("pay_16", id) || StringUtils.equals("pay_25", id) || StringUtils.equals("pay_28", id) || StringUtils.equals("pay_33", id) || StringUtils.equals("pay_34", id)) {
-//            List<CascadeDTO<Decorator>> grandChildrens = new ArrayList<>();
-//            List<Decorator> decorators = this.decoratorService.queryAllInfo();
-//            for (Decorator decorator : decorators) {
-//                CascadeDTO<Decorator> child = new CascadeDTO<>();
-//                child.setLabel(decorator.getName());
-//                child.setValue("pay_" + decorator.getDecoratorId());
-//                child.setSelf(decorator);
-//                grandChildrens.add(child);
-//            }
-//            if (ArrayUtils.isNotEmpty(grandChildrens)) {
-//                children.setChildren(grandChildrens);
-//            }
-//        }
+        if (StringUtils.equals("pay_16", id) || StringUtils.equals("pay_25", id) || StringUtils.equals("pay_28", id) || StringUtils.equals("pay_33", id) || StringUtils.equals("pay_34", id)) {
+            List<CascadeDTO<Decorator>> grandChildrens = new ArrayList<>();
+            List<Decorator> decorators = this.decoratorService.queryAllInfo();
+            for (Decorator decorator : decorators) {
+                CascadeDTO<Decorator> child = new CascadeDTO<>();
+                child.setLabel(decorator.getName());
+                child.setValue("pay_" + decorator.getDecoratorId());
+                child.setSelf(decorator);
+                grandChildrens.add(child);
+            }
+            if (ArrayUtils.isNotEmpty(grandChildrens)) {
+                children.setChildren(grandChildrens);
+            }
+        }
 
         //查询用户信息
-//        if (StringUtils.equals("pay_20", id)) {
-//            List<Employee> employees = this.employeeService.loadEmployee();
-//            List<CascadeDTO<Employee>> grandChildrens = new ArrayList<>();
-//            for (Employee employee : employees) {
-//                CascadeDTO<Employee> child = new CascadeDTO<>();
-//                child.setLabel(employee.getName());
-//                child.setValue("pay_" + employee.getUserId());
-//                child.setSelf(employee);
-//                grandChildrens.add(child);
-//            }
-//            if (ArrayUtils.isNotEmpty(grandChildrens)) {
-//                children.setChildren(grandChildrens);
-//            }
-//        }
+        if (StringUtils.equals("pay_20", id)) {
+            List<Employee> employees = this.employeeService.loadEmployee();
+            List<CascadeDTO<Employee>> grandChildrens = new ArrayList<>();
+            for (Employee employee : employees) {
+                CascadeDTO<Employee> child = new CascadeDTO<>();
+                child.setLabel(employee.getName());
+                child.setValue("pay_" + employee.getUserId());
+                child.setSelf(employee);
+                grandChildrens.add(child);
+            }
+            if (ArrayUtils.isNotEmpty(grandChildrens)) {
+                children.setChildren(grandChildrens);
+            }
+        }
         //查询公司信息
         if (StringUtils.equals("pay_19", id)) {
             List<Enterprise> enterprises = this.enterpriseService.queryAll();
