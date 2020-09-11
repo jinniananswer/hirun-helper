@@ -83,10 +83,10 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                         cancelButtonText: '取消',
                         type: 'warning'
                     }).then(() => {
-                        this.$message({
+/*                        this.$message({
                         type: 'success',
                         message: '流程操作[审核通过，提交下单审核员]成功!单据发往[占位员工]'
-                    });
+                    });*/
                     this.submitToCustomerLeaderFlow();
                     }).catch(() => {
                             this.$message({
