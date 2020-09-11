@@ -24,14 +24,20 @@ public class OrderInspectDTO {
     /** 机构 */
     private String institution;
 
+    private String institutionName;
+
     /** 送达日期 */
     private LocalDate offerDate;
 
     /** 检测状态 */
     private String checkStatus;
 
+    private String checkStatusName;
+
     /** 领取状态 */
     private String receiveStatus;
+
+    private String receiveStatusName;
 
     /** 领取人 */
     private String receivePeople;
@@ -60,7 +66,28 @@ public class OrderInspectDTO {
     /** 结算状态 */
     private String settleStatus;
 
+    private String settleStatusName;
+
     /** 检测结算时间 */
     private LocalDate checkSettleDate;
 
+    private String custNo;
+
+    private String custName;
+
+    private Long houseId;
+
+    private String houseAddress;
+
+    private Long custServiceEmployeeId;
+
+    private String customerServiceName;
+
+    private Long designEmployeeId;
+
+    private String designEmployeeName;
+
+    private Long shopId;
+
+    private String mobileNo;
 }
