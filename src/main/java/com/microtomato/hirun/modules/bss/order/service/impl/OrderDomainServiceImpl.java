@@ -8,7 +8,6 @@ import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
-import com.microtomato.hirun.modules.bss.config.entity.po.OrderRoleCfg;
 import com.microtomato.hirun.modules.bss.config.entity.po.OrderStatusCfg;
 import com.microtomato.hirun.modules.bss.config.entity.po.OrderStatusTransCfg;
 import com.microtomato.hirun.modules.bss.config.entity.po.RoleAttentionStatusCfg;
@@ -227,32 +226,7 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
      */
     @Override
     public List<OrderWorkerDTO> queryOrderWorkers(Long orderId) {
-        List<OrderWorkerDTO> orderWorkers = new ArrayList<>();
-
-        List<OrderRoleCfg> configs = this.orderRoleCfgService.queryAllValid();
-        if (ArrayUtils.isNotEmpty(configs)) {
-            for (OrderRoleCfg config : configs) {
-                OrderWorkerDTO orderWorker = new OrderWorkerDTO();
-                orderWorker.setRoleId(config.getRoleId());
-                orderWorker.setRoleName(config.getRoleName());
-                orderWorkers.add(orderWorker);
-            }
-        }
-
-        List<OrderWorkerDTO> existsWorkers = this.orderWorkerService.queryByOrderId(orderId);
-        if (ArrayUtils.isNotEmpty(existsWorkers)) {
-            for (OrderWorkerDTO worker : orderWorkers) {
-                worker.setStatus("wait");
-                worker.setName("暂无");
-                for (OrderWorkerDTO existsWorker : existsWorkers) {
-                    if (worker.getRoleId().equals(existsWorker.getRoleId())) {
-                        worker.setName(existsWorker.getName());
-                        //匹配上了，表示状态有效，前端则点亮
-                        worker.setStatus("finish");
-                    }
-                }
-            }
-        }
+        List<OrderWorkerDTO> orderWorkers = this.orderWorkerService.queryByOrderId(orderId);
         return orderWorkers;
     }
 

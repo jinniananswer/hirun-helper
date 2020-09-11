@@ -32,9 +32,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * @program: hirun-helper
@@ -124,6 +122,17 @@ public class SalaryDO {
             throw new SalaryException(SalaryException.SalaryExceptionEnum.DESIGN_FEE_STANDARD_NOT_FOUND, String.valueOf(orderId));
         }
 
+        Map<String, FeeFact> feeFactCache = new HashMap<>();
+        FeeFact designFact = this.buildFeeFact(orderId, "1", null);
+        FeeFact firstFact = this.buildFeeFact(orderId, "2", 1);
+        FeeFact secondFact = this.buildFeeFact(orderId, "2", 2);
+        FeeFact settlementFact = this.buildFeeFact(orderId, "2", 3);
+        feeFactCache.put(orderId + "_1_null", designFact);
+        feeFactCache.put(orderId + "_2_1", firstFact);
+        feeFactCache.put(orderId + "_2_2", secondFact);
+        feeFactCache.put(orderId + "_2_3", settlementFact);
+
+
         //3 找到参与人对应的策略配置，再根据费用相关信息进行计算
         Integer salaryMonth = Integer.parseInt(TimeUtils.formatLocalDateTimeToString(now, TimeUtils.DATE_FMT_14));
 
@@ -158,8 +167,8 @@ public class SalaryDO {
             Org org = this.orgService.queryByOrgId(orgId);
             matchFact.setNature(org.getNature());
 
-            List<SalaryRoyaltyStrategy> matchStrategies = this.match(orderBase.getOrderId(), matchFact, computeFact, strategies);
-            List<SalaryRoyaltyDetail> details = this.generateRoyaltyDetail(matchStrategies, computeFact, matchFact, orderId, salaryMonth, orderStatus);
+            List<SalaryRoyaltyStrategy> matchStrategies = this.match(orderBase.getOrderId(), matchFact, computeFact, strategies, feeFactCache);
+            List<SalaryRoyaltyDetail> details = this.generateRoyaltyDetail(matchStrategies, computeFact, matchFact, orderId, salaryMonth, orderStatus, feeFactCache);
             if (ArrayUtils.isNotEmpty(details)) {
                 royaltyDetails.addAll(details);
             }
@@ -205,7 +214,7 @@ public class SalaryDO {
      * @param strategies
      * @return
      */
-    private List<SalaryRoyaltyStrategy> match(Long orderId, RoyaltyMatchFact matchFact, RoyaltyComputeFact computeFact, List<SalaryRoyaltyStrategy> strategies) {
+    private List<SalaryRoyaltyStrategy> match(Long orderId, RoyaltyMatchFact matchFact, RoyaltyComputeFact computeFact, List<SalaryRoyaltyStrategy> strategies, Map<String, FeeFact> feeFactCache) {
         if (ArrayUtils.isEmpty(strategies)) {
             return null;
         }
@@ -213,7 +222,7 @@ public class SalaryDO {
         List<SalaryRoyaltyStrategy> temp = new ArrayList<>();
         //初步筛选，看员工ID，roleId, job_role shopId 是否匹配
         for (SalaryRoyaltyStrategy strategy : strategies) {
-            FeeFact feeFact = this.buildFeeFact(orderId, strategy.getFeeType(), strategy.getPeriods());
+            FeeFact feeFact = feeFactCache.get(orderId + "_" + strategy.getFeeType() + "_" + strategy.getPeriods());
             if (feeFact != null) {
                 matchFact.setContractFee(feeFact.getContractFee());
             }
@@ -279,7 +288,8 @@ public class SalaryDO {
         List<SalaryRoyaltyStrategy> result = new ArrayList<>();
         SPELUtils executor = new SPELUtils();
         executor.parse(matchFact);
-        temp.forEach(strategy -> {
+        for (SalaryRoyaltyStrategy strategy : temp) {
+            log.debug("-------------strategy id-----------"+strategy.getId());
             boolean isMatch = false;
             if (StringUtils.isBlank(strategy.getMatchCondition())) {
                 isMatch = true;
@@ -289,12 +299,12 @@ public class SalaryDO {
             if (isMatch) {
                 result.add(strategy);
             }
-        });
+        };
 
         return result;
     }
 
-    public List<SalaryRoyaltyDetail> generateRoyaltyDetail(List<SalaryRoyaltyStrategy> strategies, RoyaltyComputeFact computeFact, RoyaltyMatchFact matchFact, Long orderId, Integer salaryMonth, String orderStatus) {
+    public List<SalaryRoyaltyDetail> generateRoyaltyDetail(List<SalaryRoyaltyStrategy> strategies, RoyaltyComputeFact computeFact, RoyaltyMatchFact matchFact, Long orderId, Integer salaryMonth, String orderStatus, Map<String, FeeFact> feeFactCache) {
         if (ArrayUtils.isEmpty(strategies)) {
             return null;
         }
@@ -305,7 +315,7 @@ public class SalaryDO {
         List<SalaryRoyaltyDetail> royaltyDetails = new ArrayList<>();
         for (SalaryRoyaltyStrategy matchStrategy : strategies) {
             //2.组装订单费用信息
-            FeeFact feeFact = this.buildFeeFact(orderId, matchStrategy.getFeeType(), matchStrategy.getPeriods());
+            FeeFact feeFact = feeFactCache.get(orderId + "_" + matchStrategy.getFeeType() + "_" + matchStrategy.getPeriods());
             if (feeFact == null) {
                 //没有费用信息，无法计算，直接返回
                 continue;

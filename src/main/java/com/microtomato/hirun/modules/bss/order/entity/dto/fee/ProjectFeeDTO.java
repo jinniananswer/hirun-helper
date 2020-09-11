@@ -25,6 +25,10 @@ public class ProjectFeeDTO {
 
     private String decorateAddress;
 
+    private Long shopId;
+
+    private String shopName;
+
     private String type;
 
     private String status;

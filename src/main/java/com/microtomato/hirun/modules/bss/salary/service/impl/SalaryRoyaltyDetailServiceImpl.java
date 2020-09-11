@@ -191,7 +191,7 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
             designFeeStandard = planeSketch.getDesignFeeStandard();
         }
 
-        designRoyaltyDetail.setDesignFeeStandard(designFeeStandard);
+        designRoyaltyDetail.setDesignFeeStandard(designFeeStandard/100);
         Long totalRoyalty = employeeSalaryRoyaltyDetail.getTotalRoyalty();
         if (totalRoyalty != null) {
             designRoyaltyDetail.setTotalRoyalty(totalRoyalty.longValue() / 100d);
@@ -819,7 +819,7 @@ public class SalaryRoyaltyDetailServiceImpl extends ServiceImpl<SalaryRoyaltyDet
         Long orderId = detail.getOrderId();
         OrderPlaneSketchDTO planeSketch = this.orderPlaneSketchService.getPlaneSketch(orderId);
         if (planeSketch != null) {
-            detail.setDesignFeeStandard(planeSketch.getDesignFeeStandard());
+            detail.setDesignFeeStandard(planeSketch.getDesignFeeStandard()/100);
         }
         return detail;
     }
