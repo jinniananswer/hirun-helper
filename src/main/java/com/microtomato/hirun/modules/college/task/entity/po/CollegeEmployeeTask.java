@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
  *
  * @author makejava
  * @version 1.0.0
- * @date 2020-08-04 01:01:15
+ * @date 2020-09-11 02:11:33
  */
 @Data
 @Builder
@@ -95,6 +95,30 @@ public class CollegeEmployeeTask extends BaseEntity {
      * 评分
      */
     @TableField(value = "score")
-    private String score;
+    private Integer score;
+
+    /**
+     * 习题次数
+     */
+    @TableField(value = "exercises_number")
+    private Integer exercisesNumber;
+
+    /**
+     * 习题完成次数
+     */
+    @TableField(value = "exercises_completed_number")
+    private Integer exercisesCompletedNumber;
+
+    /**
+     * 考试合格分数
+     */
+    @TableField(value = "pass_score")
+    private Integer passScore;
+
+    /**
+     * 考试分数
+     */
+    @TableField(value = "exam_score")
+    private Integer examScore;
 
 }

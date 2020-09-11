@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.modules.college.config.entity.po.CollegeStudyTaskCfg;
+import com.microtomato.hirun.modules.college.config.service.ICollegeStudyTaskCfgService;
 import com.microtomato.hirun.modules.organization.entity.dto.CourseTreeResponseDTO;
 import com.microtomato.hirun.modules.organization.entity.po.Course;
 import com.microtomato.hirun.modules.organization.service.ICourseService;
@@ -32,6 +34,9 @@ public class CourseController {
     @Autowired
     private ICourseService courseServiceImpl;
 
+    @Autowired
+    private ICollegeStudyTaskCfgService collegeStudyTaskCfgServiceImpl;
+
     /**
      * 查询所有课程树状结构
      * @return
@@ -49,12 +54,18 @@ public class CourseController {
             for (Course course : courseList){
                 CourseTreeResponseDTO courseTreeResponseDTO = new CourseTreeResponseDTO();
                 courseTreeResponseDTO.setStudyName(course.getName());
-                courseTreeResponseDTO.setStudyId(course.getCourseId());
+                Long courseId = course.getCourseId();
+                courseTreeResponseDTO.setStudyId(courseId);
                 //根据本级课程ID查询下级课程
                 List<CourseTreeResponseDTO> courseTreeResponseDTOList = this.queryCourseByParentCourseId(course.getCourseId());
                 courseTreeResponseDTO.setChildren(courseTreeResponseDTOList);
                 if (ArrayUtils.isEmpty(courseTreeResponseDTOList) || courseTreeResponseDTOList.size() == 0){
                     courseTreeResponseDTO.setCourseFlag(true);
+                    //如果课程已经存在于学习任务配置，则跳过
+                    CollegeStudyTaskCfg studyTaskList = collegeStudyTaskCfgServiceImpl.getEffectiveByStudyId(String.valueOf(courseId));
+                    if (null != studyTaskList){
+                        continue;
+                    }
                 }else {
                     courseTreeResponseDTO.setCourseFlag(false);
                 }

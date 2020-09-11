@@ -8,8 +8,8 @@ import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.modules.college.task.entity.po.CollegeEmployeeTask;
 import com.microtomato.hirun.modules.college.task.service.ICollegeEmployeeTaskService;
 import com.microtomato.hirun.modules.college.task.service.ITaskDomainOpenService;
-import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.Serializable;
@@ -94,6 +94,8 @@ public class CollegeEmployeeTaskController {
     }
 
     @PostMapping("fixedTaskReleaseByEmployeeList")
+    @Transactional(rollbackFor = Exception.class)
+    @RestResult
     public void fixedTaskReleaseByEmployeeList(@RequestBody List<Long> employeeIdList) {
         this.taskDomainOpenServiceImpl.fixedTaskReleaseByEmployeeList(employeeIdList);
     }

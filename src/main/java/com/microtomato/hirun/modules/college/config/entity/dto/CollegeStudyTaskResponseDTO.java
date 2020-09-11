@@ -51,6 +51,16 @@ public class CollegeStudyTaskResponseDTO {
     private String studyTime;
 
     /**
+     * 习题次数
+     */
+    private Integer exercisesNumber;
+
+    /**
+     * 考试合格分数
+     */
+    private Integer passScore;
+
+    /**
      * 章节集合
      */
     private List<CollegeCourseChaptersCfg> collegeCourseChaptersList;

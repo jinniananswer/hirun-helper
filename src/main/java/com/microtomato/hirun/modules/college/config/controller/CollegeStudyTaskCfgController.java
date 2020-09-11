@@ -6,9 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.util.ArrayUtils;
-import com.microtomato.hirun.modules.college.config.entity.dto.CollegeCourseChaptersTaskRequestDTO;
-import com.microtomato.hirun.modules.college.config.entity.dto.CollegeStudyTaskRequestDTO;
-import com.microtomato.hirun.modules.college.config.entity.dto.CollegeStudyTaskResponseDTO;
+import com.microtomato.hirun.modules.college.config.entity.dto.*;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeCourseChaptersCfg;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeStudyTaskCfg;
 import com.microtomato.hirun.modules.college.config.service.ICollegeCourseChaptersCfgService;
@@ -104,7 +102,7 @@ public class CollegeStudyTaskCfgController {
     @RestResult
     IPage<CollegeStudyTaskResponseDTO> queryCollegeStufyByPage(CollegeStudyTaskRequestDTO collegeStudyTaskRequestDTO){
         Page<CollegeStudyTaskRequestDTO> page = new Page<>(collegeStudyTaskRequestDTO.getPage(), collegeStudyTaskRequestDTO.getLimit());
-        return this.collegeStudyTaskCfgService.queryCollegeStufyByPage(collegeStudyTaskRequestDTO, page);
+        return this.collegeStudyTaskCfgService.queryCollegeStudyByPage(collegeStudyTaskRequestDTO, page);
     }
 
     @PostMapping("addStudyTaskCfg")
@@ -182,5 +180,38 @@ public class CollegeStudyTaskCfgController {
                 this.collegeCourseChaptersCfgServiceImpl.updateBatchById(collegeCourseChaptersCfgList);
             }
         }
+    }
+
+    @PostMapping("updateStudyTaskByDTO")
+    @Transactional(rollbackFor = Exception.class)
+    @RestResult
+    public void updateStudyTaskByDTO(@RequestBody CollegeStudyTaskResponseDTO collegeStudyTaskResponseDTO){
+        //1.根据学习任务标识查询学习任务配置
+        CollegeStudyTaskCfg collegeStudyTaskCfg = this.collegeStudyTaskCfgService.getByStudyTaskId(collegeStudyTaskResponseDTO.getStudyTaskId());
+        if (null != collegeStudyTaskCfg){
+            collegeStudyTaskCfg.setExercisesNumber(collegeStudyTaskResponseDTO.getExercisesNumber());
+            collegeStudyTaskCfg.setPassScore(collegeStudyTaskResponseDTO.getPassScore());
+            collegeStudyTaskCfg.setStudyTime(collegeStudyTaskResponseDTO.getStudyTime());
+            this.collegeStudyTaskCfgService.updateById(collegeStudyTaskCfg);
+
+            List<CollegeCourseChaptersCfg> collegeCourseChaptersList = collegeStudyTaskResponseDTO.getCollegeCourseChaptersList();
+            if (ArrayUtils.isNotEmpty(collegeCourseChaptersList)){
+                this.collegeCourseChaptersCfgServiceImpl.updateBatchById(collegeCourseChaptersList);
+            }
+        }
+    }
+
+    @GetMapping("queryCollegeStudyExercisesByPage")
+    @RestResult
+    IPage<CollegeStudyExercisesResponseDTO> queryCollegeStudyExercisesByPage(CollegeStudyTaskRequestDTO collegeStudyTaskRequestDTO){
+        Page<CollegeStudyTaskRequestDTO> page = new Page<>(collegeStudyTaskRequestDTO.getPage(), collegeStudyTaskRequestDTO.getLimit());
+        return this.collegeStudyTaskCfgService.queryCollegeStudyExercisesByPage(collegeStudyTaskRequestDTO, page);
+    }
+
+    @GetMapping("queryCollegeStudyExamByPage")
+    @RestResult
+    IPage<CollegeStudyExamResponseDTO> queryCollegeStudyExamByPage(CollegeStudyTaskRequestDTO collegeStudyTaskRequestDTO){
+        Page<CollegeStudyTaskRequestDTO> page = new Page<>(collegeStudyTaskRequestDTO.getPage(), collegeStudyTaskRequestDTO.getLimit());
+        return this.collegeStudyTaskCfgService.queryCollegeStudyExamByPage(collegeStudyTaskRequestDTO, page);
     }
 }
