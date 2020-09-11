@@ -174,13 +174,13 @@ public class OrderWholeRoomDrawServiceImpl extends ServiceImpl<OrderWholeRoomDra
         List<OrderWorkerActionDTO> orderWorkerActionDTOS = orderWorkerActionService.queryByOrderId(orderId);
         if (ArrayUtils.isNotEmpty(orderWorkerActionDTOS)) {
             for (OrderWorkerActionDTO orderWorkerActionDTO : orderWorkerActionDTOS) {
-                if (orderWorkerActionDTO.getAction().equals(DesignerConst.OPER_DRAW_CONSTRUCT)) {
+                if (DesignerConst.OPER_DRAW_CONSTRUCT.equals(orderWorkerActionDTO.getAction())) {
                     iCount ++ ;
                 }
-                if (orderWorkerActionDTO.getAction().equals(DesignerConst.OPER_DRAW_PLAN)) {
+                if (DesignerConst.OPER_DRAW_PLAN.equals(orderWorkerActionDTO.getAction())) {
                     iCount ++ ;
                 }
-                if (orderWorkerActionDTO.getAction().equals(DesignerConst.OPER_MEASURE)) {
+                if (DesignerConst.OPER_MEASURE.equals(orderWorkerActionDTO.getAction())) {
                     iCount ++ ;
                 }
             }

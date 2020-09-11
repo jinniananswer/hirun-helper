@@ -1,11 +1,9 @@
 package com.microtomato.hirun.modules.bss.order.controller;
-
-
-
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.microtomato.hirun.framework.annotation.RestResult;
+import com.microtomato.hirun.modules.bss.order.QueryInspectCondDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderInspectDTO;
 import com.microtomato.hirun.modules.bss.order.service.IOrderInspectService;
-import com.microtomato.hirun.modules.bss.service.entity.dto.ComplainOrderRecordDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,5 +46,11 @@ public class OrderInspectController {
     @RestResult
     public void submitToNotReceive(@RequestBody OrderInspectDTO orderInspectDTO) {
         this.orderInspectService.submitToNotReceive(orderInspectDTO);
+    }
+
+    @GetMapping("/queryOrderInspects")
+    @RestResult
+    public IPage<OrderInspectDTO> queryOrderInspects(QueryInspectCondDTO queryCond){
+        return this.orderInspectService.queryOrderInspects(queryCond);
     }
 }
