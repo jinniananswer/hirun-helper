@@ -108,10 +108,10 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                         cancelButtonText: '取消',
                         type: 'warning'
                     }).then(() => {
-                            this.$message({
+/*                            this.$message({
                             type: 'success',
                             message: '流程操作[不做场景，提交审图]成功!单据发往[占位员工]'
-                        });
+                        });*/
                     this.submitToAuditPicturesFlow();
                     }).catch(() => {
                             this.$message({
