@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
+<head>
+    <meta charset="UTF-8">
+    <title>任务习题管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script src="static/js/framework/requirejs/require.min.js"
+            th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js"
+            th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-main>
+            <el-card class="box-card" shadow="hover">
+                <div slot="header" class="clearfix">
+                    <span>查询条件区</span>
+                </div>
+                <el-form :inline="false" :model="queryCond" label-position="right" label-width="100px">
+                    <el-row>
+                        <el-col :span="8">
+                            <el-form-item label="任务类型">
+                                <vue-select code-type="STUDY_TASK_TYPE" v-model="queryCond.taskType"></vue-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="学习内容标识">
+                                <el-input v-model="queryCond.studyId"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="学习内容名称">
+                                <el-input v-model="queryCond.studyName"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="8">
+                            <el-form-item label="学习任务标识">
+                                <el-input v-model="queryCond.studyTaskId"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item>
+                                <el-button type="primary" @click="query">查询</el-button>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </el-card>
+
+            <el-card class="box-card" shadow="hover">
+                <el-row style="padding-bottom: 12px">
+                    <el-button type="success" icon="el-icon-folder-add" @click="fixedExercisesBatch">批量设置习题</el-button>
+                </el-row>
+                <el-table
+                        :data="studyTaskInfo" stripe="true" height="350" style="width: 100%"
+                        @selection-change="handleExercisesSelectionChange" ref="studyTaskInfo">
+                    <el-table-column type="selection" fixed width="40" align="center"></el-table-column>
+                    <el-table-column type="expand" fixed>
+                        <template slot-scope="props">
+                            <el-card class="box-card" shadow="hover">
+                                <el-table
+                                        :data="props.row.collegeStudyExercisesList" stripe="true" height="250"
+                                        style="width: 100%" align="center" ref="collegeStudyExercisesList">
+                                    <el-table-column prop="studyId" width="150" label="学习内容标识" align="center"></el-table-column>
+                                    <el-table-column prop="chaptersId" width="200" label="章节ID" align="center"></el-table-column>
+                                    <el-table-column prop="examId" width="100" label="习题标识" align="center"></el-table-column>
+                                    <el-table-column prop="exercisesType" width="150" label="习题类型" align="center"></el-table-column>
+                                    <el-table-column prop="exercisesNumber" width="150" label="习题数量" align="center"></el-table-column>
+                                </el-table>
+                            </el-card>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="学习内容标识" prop="studyId" width="120" align="center">
+                        <template slot-scope="studyTask">
+                            <el-button type="text" @click="">{{
+                                studyTask.row.studyId }}
+                            </el-button>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="studyName" width="200" label="学习内容名称" align="center"></el-table-column>
+                    <el-table-column prop="studyType" width="120" label="学习内容类型" align="center"></el-table-column>
+                    <el-table-column prop="chaptersName" width="120" label="章节名称" align="center"></el-table-column>
+                    <el-table-column prop="taskType" width="120" label="任务类型" align="center"></el-table-column>
+                    <el-table-column prop="exercisesNumber" width="100" label="习题次数" align="center"></el-table-column>
+                    <el-table-column prop="passScore" width="120" label="考试合格分数" align="center"></el-table-column>
+                    <el-table-column label="操作" align="center" width="200">
+                        <template slot-scope="scope">
+                            <el-button type="danger" width="50" size="mini" icon="el-icon-edit"
+                                       @click="fixedExercises(scope.row)">设置习题
+                            </el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </el-card>
+
+            <div style="text-align: center">
+                <el-pagination
+                        layout="total, prev, pager, next"
+                        :total="queryCond.count"
+                        :current-page.sync="queryCond.page"
+                        :page-size="queryCond.limit"
+                        @current-change="query">
+                </el-pagination>
+            </div>
+
+            <el-dialog width="80%" title="设置习题" append-to-body :visible.sync="fixedExercisesDialogVisible">
+                <el-card>
+                    <div slot="header" class="clearfix">
+                        <span>设置习题配置信息</span>
+                    </div>
+                    <el-form :inline="false" :model="collegeStudyExercisesInfo"  ref="collegeStudyExercisesInfo" label-position="right"
+                             label-width="120px" :rules="collegeStudyExercisesRules">
+                        <el-row>
+                            <el-col :span="8">
+                                <el-form-item label="习题范围" label-width="120px" prop="examId">
+                                    <vue-select code-type="EXAM_RANGE" v-model="collegeStudyExercisesInfo.examId"></vue-select>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="习题类型" label-width="120px" prop="exercisesType">
+                                    <vue-select code-type="EXERCISES_TYPE" v-model="collegeStudyExercisesInfo.exercisesType"></vue-select>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="习题数量" label-width="120px" prop="exercisesNumber">
+                                    <el-input v-model.number="collegeStudyExercisesInfo.exercisesNumber" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <div style="text-align: center">
+                                <el-button type="primary" @click="submitFixedExercises(collegeStudyExercisesInfo)">保存</el-button>
+                                <el-button @click="cancel">取消</el-button>
+                            </div>
+                        </el-row>
+                    </el-form>
+                </el-card>
+            </el-dialog>
+
+        </el-main>
+    </el-container>
+</div>
+<style>
+    .text {
+        font-size: 14px;
+    }
+
+    .box-card {
+        margin-bottom: 12px;
+    }
+
+    .item {
+        margin-bottom: 18px;
+    }
+
+    .el-card__header {
+        padding: 10px;
+    }
+
+    .modify_row {
+        color: #ff4835;
+    }
+
+    .new_row {
+        color: #4DAF29;
+    }
+
+    .delete_row {
+        text-decoration: line-through;
+    }
+</style>
+<script src="static/js/modules/college/task/college.exercises.manage.js"
+        th:src="@{static/js/modules/college/task/college.exercises.manage.js(v=${version})}"></script>
+</body>
+</html>
