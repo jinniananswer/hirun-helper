@@ -34,7 +34,7 @@ public interface CustBaseMapper extends BaseMapper<CustBase> {
     @Select("select a.cust_id,a.cust_name,a.mobile_no,a.cust_status,a.consult_time,a.cust_type,b.prepare_employee_id,b.prepare_time,b.cust_property,b.status as prepare_status,b.preparation_expire_time," +
             " b.ruling_employee_id,b.ruling_time,b.ruling_remark,c.house_id,c.house_mode,c.house_building,c.house_room_no," +
             " c.house_area,c.information_source,a.ploy_type,d.status as order_status,a.ploy_name,a.ploy_time,a.tel_consult_time," +
-            " f.cust_service_employee_id,f.design_employee_id " +
+            " f.cust_service_employee_id,f.design_employee_id, d.order_id " +
             " from cust_base a left join cust_preparation b on (a.prepare_id=b.id), ins_project c,order_base d LEFT JOIN order_consult f on(d.order_id=f.order_id) " +
             " ${ew.customSqlSegment}"
     )
