@@ -445,9 +445,12 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
         List<CustOrderInfoDTO> custOrders = result.getRecords();
         if (ArrayUtils.isNotEmpty(custOrders)) {
             for (CustOrderInfoDTO custOrder : custOrders) {
+                UsualFeeDTO usualFee = this.getUsualOrderFee(custOrder.getOrderId(), custOrder.getType());
+                custOrder.setUsualFee(usualFee);
                 custOrder.setStageName(this.staticDataService.getCodeName("ORDER_STAGE", custOrder.getStage()));
                 custOrder.setSexName(this.staticDataService.getCodeName("SEX", custOrder.getSex()));
                 custOrder.setStatusName(this.staticDataService.getCodeName("ORDER_STATUS", custOrder.getStatus()));
+                custOrder.setTypeName(this.staticDataService.getCodeName("ORDER_TYPE", custOrder.getType()));
                 custOrder.setHouseLayoutName(this.staticDataService.getCodeName("HOUSE_MODE", custOrder.getHouseLayout()));
                 Long housesId = custOrder.getHousesId();
                 if (housesId != null) {
