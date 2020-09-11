@@ -12,6 +12,7 @@ import com.microtomato.hirun.modules.bss.order.entity.consts.DesignerConst;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWholeRoomDrawDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerActionDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFile;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderWholeRoomDraw;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderWorker;
@@ -121,7 +122,17 @@ public class OrderWholeRoomDrawServiceImpl extends ServiceImpl<OrderWholeRoomDra
         if (orderWholeRoomDraw != null) {
             BeanUtils.copyProperties(orderWholeRoomDraw,orderWholeRoomDrawDTO);
         }
-        orderWholeRoomDrawDTO.setDesigner(employeeId);
+
+        List<OrderWorkerDTO> orderWorkers = this.orderDomainService.queryOrderWorkers(orderId);
+        if (ArrayUtils.isNotEmpty(orderWorkers)) {
+            for (OrderWorkerDTO orderWorker : orderWorkers) {
+                if (orderWorker.getRoleId().equals(30L)) {
+                    orderWholeRoomDrawDTO.setDesigner(orderWorker.getEmployeeId());
+                    break;
+                }
+            }
+
+        }
 
         List<OrderWorkerActionDTO> orderWorkerActionDTOS = orderWorkerActionService.queryByOrderIdActionDto(orderId,DesignerConst.OPER_DRAW_CONSTRUCT);
         List<OrderWorkerActionDTO> orderWorkerActionWaterDTOS = orderWorkerActionService.queryByOrderIdActionDto(orderId,DesignerConst.OPER_WATER_ELEC_DESIGN);
