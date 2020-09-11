@@ -3,6 +3,7 @@ package com.microtomato.hirun.modules.bss.order.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.CustConsultDTO;
 import com.microtomato.hirun.modules.bss.customer.entity.po.CustBase;
 import com.microtomato.hirun.modules.bss.customer.service.ICustBaseService;
@@ -14,6 +15,10 @@ import com.microtomato.hirun.modules.bss.order.entity.po.OrderWorker;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderConsultMapper;
 import com.microtomato.hirun.modules.bss.order.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
+import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
+import com.microtomato.hirun.modules.organization.entity.po.Org;
+import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +55,9 @@ public class OrderConsultServiceImpl extends ServiceImpl<OrderConsultMapper, Ord
 
     @Autowired
     private IOrderWorkerActionService workerActionService;
+
+    @Autowired
+    private IEmployeeJobRoleService employeeJobRoleService;
 
     @Override
     public OrderConsult queryOrderConsult(Long orderId) {
@@ -118,6 +126,22 @@ public class OrderConsultServiceImpl extends ServiceImpl<OrderConsultMapper, Ord
             for (OrderWorker orderWorker : workers) {
                 if (orderWorker.getRoleId().equals(15L)) {
                     workerActionService.createOrderWorkerAction(dto.getOrderId(), orderWorker.getEmployeeId(), orderWorker.getId(), "2", "consult");
+                }
+            }
+        }
+        //新增归属门店处理
+        if(dto.getDesignEmployeeId()!=null){
+            EmployeeJobRole employeeJobRole=this.employeeJobRoleService.queryLast(dto.getDesignEmployeeId());
+            Long orgId = employeeJobRole.getOrgId();
+            if(orgId!=null){
+                OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+                Org shop = orgDO.getBelongShop();
+                if (shop != null) {
+                    //以收设计费的店铺为准
+                    OrderBase orderBase = this.orderBaseService.queryByOrderId(dto.getOrderId());
+                    orderBase.setShopId(shop.getOrgId());
+                    orderBase.setCreateShopId(shop.getOrgId());
+                    this.orderBaseService.updateById(orderBase);
                 }
             }
         }
