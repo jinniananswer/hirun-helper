@@ -55,4 +55,7 @@ public class CustQueryCondDTO {
     private String orderStatus;
 
     private String prepareStatus;
+
+    private Long agentEmployeeId;
+
 }

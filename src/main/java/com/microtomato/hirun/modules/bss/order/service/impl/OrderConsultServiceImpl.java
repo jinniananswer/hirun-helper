@@ -87,10 +87,18 @@ public class OrderConsultServiceImpl extends ServiceImpl<OrderConsultMapper, Ord
         } else {
             this.baseMapper.updateById(orderConsult);
         }
-        workerService.updateOrderWorker(dto.getOrderId(), 15L, dto.getCustServiceEmployeeId());
-        workerService.updateOrderWorker(dto.getOrderId(), 45L, dto.getDesignCupboardEmployeeId());
-        workerService.updateOrderWorker(dto.getOrderId(), 46L, dto.getMainMaterialKeeperEmployeeId());
-        workerService.updateOrderWorker(dto.getOrderId(), 47L, dto.getCupboardKeeperEmployeeId());
+        if(dto.getCustServiceEmployeeId()!=null){
+            workerService.updateOrderWorker(dto.getOrderId(), 15L, dto.getCustServiceEmployeeId());
+        }
+        if (dto.getDesignCupboardEmployeeId() != null) {
+            workerService.updateOrderWorker(dto.getOrderId(), 45L, dto.getDesignCupboardEmployeeId());
+        }
+        if(dto.getMainMaterialKeeperEmployeeId()!=null){
+            workerService.updateOrderWorker(dto.getOrderId(), 46L, dto.getMainMaterialKeeperEmployeeId());
+        }
+        if (dto.getCupboardKeeperEmployeeId() != null) {
+            workerService.updateOrderWorker(dto.getOrderId(), 47L, dto.getCupboardKeeperEmployeeId());
+        }
         if (dto.getDesignEmployeeId() != null) {
             workerService.updateOrderWorker(dto.getOrderId(), 30L, dto.getDesignEmployeeId());
         }
@@ -105,11 +113,11 @@ public class OrderConsultServiceImpl extends ServiceImpl<OrderConsultMapper, Ord
         this.saveCustomerConsultInfo(dto);
         orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_NEXT_STEP);
         //插入workerAction,用于工资计算
-        List<OrderWorker> workers=workerService.queryValidByOrderId(dto.getOrderId());
-        if(ArrayUtils.isNotEmpty(workers)){
-            for(OrderWorker orderWorker:workers){
-                if(orderWorker.getRoleId().equals(15L)){
-                    workerActionService.createOrderWorkerAction(dto.getOrderId(),orderWorker.getEmployeeId(),orderWorker.getId(),"2","consult");
+        List<OrderWorker> workers = workerService.queryValidByOrderId(dto.getOrderId());
+        if (ArrayUtils.isNotEmpty(workers)) {
+            for (OrderWorker orderWorker : workers) {
+                if (orderWorker.getRoleId().equals(15L)) {
+                    workerActionService.createOrderWorkerAction(dto.getOrderId(), orderWorker.getEmployeeId(), orderWorker.getId(), "2", "consult");
                 }
             }
         }
@@ -131,10 +139,10 @@ public class OrderConsultServiceImpl extends ServiceImpl<OrderConsultMapper, Ord
 
     @Override
     public CustConsultDTO queryOrderConsultForTrans(Long orderId) {
-        OrderConsult orderConsult=this.queryOrderConsult(orderId);
-        CustConsultDTO dto=new CustConsultDTO();
-        BeanUtils.copyProperties(orderConsult,dto);
-        OrderBase orderBase=this.orderBaseService.getById(orderId);
+        OrderConsult orderConsult = this.queryOrderConsult(orderId);
+        CustConsultDTO dto = new CustConsultDTO();
+        BeanUtils.copyProperties(orderConsult, dto);
+        OrderBase orderBase = this.orderBaseService.getById(orderId);
         dto.setCustId(orderBase.getCustId());
         return dto;
     }
