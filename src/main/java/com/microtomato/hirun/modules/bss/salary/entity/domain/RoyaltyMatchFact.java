@@ -60,6 +60,11 @@ public class RoyaltyMatchFact {
     private boolean isExcellent;
 
     /**
+     * 楼盘性质
+     */
+    private String houseNature;
+
+    /**
      * 户型
      */
     private String houseMode;

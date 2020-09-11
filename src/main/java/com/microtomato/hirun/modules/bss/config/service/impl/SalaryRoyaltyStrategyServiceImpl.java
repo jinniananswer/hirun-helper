@@ -9,7 +9,6 @@ import com.microtomato.hirun.modules.bss.config.mapper.SalaryRoyaltyStrategyMapp
 import com.microtomato.hirun.modules.bss.config.service.ISalaryRoyaltyStrategyService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,13 +35,12 @@ public class SalaryRoyaltyStrategyServiceImpl extends ServiceImpl<SalaryRoyaltyS
      * @return
      */
     @Override
-    @Cacheable("strategy-by-eid-roleid-status-action")
     public List<SalaryRoyaltyStrategy> queryByEmployeeIdRoleIdStatusAction(Long employeeId, Long roleId, String orderStatus, String action) {
         List<SalaryRoyaltyStrategy> strategies =this.list(new QueryWrapper<SalaryRoyaltyStrategy>().lambda()
             .eq(SalaryRoyaltyStrategy::getStatus, "U")
             .and(v -> v.eq(SalaryRoyaltyStrategy::getEmployeeId, employeeId).or().isNull(SalaryRoyaltyStrategy::getEmployeeId))
             .and(v -> v.eq(SalaryRoyaltyStrategy::getRoleId, roleId).or().eq(SalaryRoyaltyStrategy::getRoleId, -1L))
-            .and(v -> v.eq(SalaryRoyaltyStrategy::getAction, action))
+            .and(v -> v.eq(SalaryRoyaltyStrategy::getAction, action).or().isNull(SalaryRoyaltyStrategy::getAction))
             .eq(SalaryRoyaltyStrategy::getOrderStatus, orderStatus));
         return strategies;
     }
@@ -70,7 +68,6 @@ public class SalaryRoyaltyStrategyServiceImpl extends ServiceImpl<SalaryRoyaltyS
      * @param strategyId
      * @return
      */
-    @Cacheable("strategy-by-id")
     @Override
     public SalaryRoyaltyStrategy getByStrategyId(Long strategyId) {
         return this.getById(strategyId);

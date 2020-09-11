@@ -8,6 +8,8 @@ import com.microtomato.hirun.modules.bss.config.entity.po.SalaryRoyaltyStrategy;
 import com.microtomato.hirun.modules.bss.config.service.ISalaryRoyaltyMultiSplitService;
 import com.microtomato.hirun.modules.bss.config.service.ISalaryRoyaltyStrategyService;
 import com.microtomato.hirun.modules.bss.config.service.ISalaryStatusFeeMappingService;
+import com.microtomato.hirun.modules.bss.house.entity.po.Houses;
+import com.microtomato.hirun.modules.bss.house.service.IHousesService;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerActionDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderBase;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFee;
@@ -17,6 +19,7 @@ import com.microtomato.hirun.modules.bss.order.service.*;
 import com.microtomato.hirun.modules.bss.salary.entity.po.SalaryRoyaltyDetail;
 import com.microtomato.hirun.modules.bss.salary.exception.SalaryException;
 import com.microtomato.hirun.modules.bss.salary.service.ISalaryRoyaltyDetailService;
+import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
 import com.microtomato.hirun.modules.organization.entity.po.Org;
 import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
 import com.microtomato.hirun.modules.organization.service.IOrgService;
@@ -77,6 +80,9 @@ public class SalaryDO {
     @Autowired
     private ISalaryStatusFeeMappingService statusFeeMappingService;
 
+    @Autowired
+    private IHousesService housesService;
+
     /**
      * 根据订单状态创建提成信息
      * @param orderId
@@ -95,6 +101,11 @@ public class SalaryDO {
             return;
         }
 
+        Long housesId = orderBase.getHousesId();
+        Houses house = this.housesService.getHouse(housesId);
+        String houseNature = house != null ? String.valueOf(house.getNature()) : "";
+
+
         //1.1 先查询订单目前有哪些参与人,参与人做了哪些动作，只有该笔订单的参与人才能参与这笔订单的提成计算
         List<OrderWorkerActionDTO> workerActions = this.orderWorkerActionService.queryByOrderId(orderId);
         if (ArrayUtils.isEmpty(workerActions)) {
@@ -108,7 +119,7 @@ public class SalaryDO {
         OrderPlaneSketch planeSketch = this.orderPlaneSketchService.getByOrderId(orderId);
         Integer designFeeStandard = 0;
         if (planeSketch != null) {
-            designFeeStandard = planeSketch.getDesignFeeStandard();
+            designFeeStandard = planeSketch.getDesignFeeStandard() / 100;
         } else {
             throw new SalaryException(SalaryException.SalaryExceptionEnum.DESIGN_FEE_STANDARD_NOT_FOUND, String.valueOf(orderId));
         }
@@ -116,14 +127,12 @@ public class SalaryDO {
         //3 找到参与人对应的策略配置，再根据费用相关信息进行计算
         Integer salaryMonth = Integer.parseInt(TimeUtils.formatLocalDateTimeToString(now, TimeUtils.DATE_FMT_14));
 
-        Integer finalDesignFee = designFeeStandard;
         List<SalaryRoyaltyDetail> royaltyDetails = new ArrayList<>();
-        workerActions.forEach(workerAction -> {
-
+        for (OrderWorkerActionDTO workerAction : workerActions) {
             List<SalaryRoyaltyStrategy> strategies = this.salaryRoyaltyStrategyService.queryByEmployeeIdRoleIdStatusAction(workerAction.getEmployeeId(), workerAction.getRoleId(), orderStatus, workerAction.getAction());
             if (ArrayUtils.isEmpty(strategies)) {
                 //没有找到匹配的策略，则返回
-                return;
+                continue;
             }
 
             //构造匹配条件变量
@@ -133,19 +142,28 @@ public class SalaryDO {
                     .jobRole(workerAction.getJobRole())
                     .jobGrade(workerAction.getJobGrade())
                     .orgId(workerAction.getOrgId())
-                    .designFeeStandard(finalDesignFee)
+                    .designFeeStandard(designFeeStandard)
+                    .houseNature(houseNature)
                     .build();
 
-            Org org = this.orgService.queryByOrgId(workerAction.getOrgId());
+            Long orgId = workerAction.getOrgId();
+            if (orgId == null) {
+                EmployeeJobRole jobRole = this.employeeJobRoleService.queryLast(workerAction.getEmployeeId());
+                orgId = jobRole.getOrgId();
+                matchFact.setJobRole(jobRole.getJobRole());
+                matchFact.setOrgId(orgId);
+                matchFact.setJobGrade(jobRole.getJobGrade());
+            }
+
+            Org org = this.orgService.queryByOrgId(orgId);
             matchFact.setNature(org.getNature());
 
-            List<SalaryRoyaltyStrategy> matchStrategies = this.match(matchFact, computeFact, strategies);
+            List<SalaryRoyaltyStrategy> matchStrategies = this.match(orderBase.getOrderId(), matchFact, computeFact, strategies);
             List<SalaryRoyaltyDetail> details = this.generateRoyaltyDetail(matchStrategies, computeFact, matchFact, orderId, salaryMonth, orderStatus);
             if (ArrayUtils.isNotEmpty(details)) {
                 royaltyDetails.addAll(details);
             }
-
-        });
+        }
 
         if (ArrayUtils.isNotEmpty(royaltyDetails)) {
             this.salaryRoyaltyDetailService.saveBatch(royaltyDetails);
@@ -187,31 +205,40 @@ public class SalaryDO {
      * @param strategies
      * @return
      */
-    private List<SalaryRoyaltyStrategy> match(RoyaltyMatchFact matchFact, RoyaltyComputeFact computeFact, List<SalaryRoyaltyStrategy> strategies) {
+    private List<SalaryRoyaltyStrategy> match(Long orderId, RoyaltyMatchFact matchFact, RoyaltyComputeFact computeFact, List<SalaryRoyaltyStrategy> strategies) {
         if (ArrayUtils.isEmpty(strategies)) {
             return null;
         }
 
         List<SalaryRoyaltyStrategy> temp = new ArrayList<>();
         //初步筛选，看员工ID，roleId, job_role shopId 是否匹配
-        strategies.forEach(strategy -> {
+        for (SalaryRoyaltyStrategy strategy : strategies) {
+            FeeFact feeFact = this.buildFeeFact(orderId, strategy.getFeeType(), strategy.getPeriods());
+            if (feeFact != null) {
+                matchFact.setContractFee(feeFact.getContractFee());
+            }
             //看费用是否付齐
             if (StringUtils.equals("1", strategy.getPayComplete())) {
+                if (feeFact == null) {
+                    //没有费用信息，无法计算，直接返回
+                    continue;
+                }
+                computeFact.setFeeFact(feeFact);
                 Long needPay = computeFact.getFeeFact().getNeedPay();
                 Long payed = computeFact.getFeeFact().getPay();
                 if (!needPay.equals(payed)) {
                     //未付齐，返回
-                    return;
+                    continue;
                 }
             }
 
             //如果配置了员工ID，则为最高优先级
             if (strategy.getEmployeeId() != null && matchFact.getEmployeeId().equals(strategy.getEmployeeId())) {
                 temp.add(strategy);
-                return;
+                continue;
             } else if (strategy.getEmployeeId() != null && !matchFact.getEmployeeId().equals(strategy.getEmployeeId())) {
                 //员工不匹配，则无需进行下面的筛选了
-                return;
+                continue;
             }
 
             //如果员工ID为null
@@ -221,28 +248,28 @@ public class SalaryDO {
                     break;
                 case "-1":
                     if (matchFact.getOrgId().equals(46L) || matchFact.getOrgId().equals(98L) || matchFact.getOrgId().equals(40L)) {
-                        return;
+                        continue;
                     }
                     break;
                 case "0" :
                     if (matchFact.getOrgId().equals(40L)) {
-                        return;
+                        continue;
                     }
                     break;
                 default :
                     if (!shopId.equals(matchFact.getOrgId())) {
-                        return;
+                        continue;
                     }
                     break;
             }
 
             String jobRole = strategy.getJobRole();
             if (StringUtils.isNotBlank(jobRole) && !StringUtils.equals(matchFact.getJobRole(), jobRole)) {
-                return;
+                continue;
             }
 
             temp.add(strategy);
-        });
+        };
 
         if (ArrayUtils.isEmpty(temp)) {
             return null;
@@ -276,18 +303,42 @@ public class SalaryDO {
         SPELUtils executor = new SPELUtils();
         executor.parse(computeFact);
         List<SalaryRoyaltyDetail> royaltyDetails = new ArrayList<>();
-        strategies.forEach(matchStrategy -> {
+        for (SalaryRoyaltyStrategy matchStrategy : strategies) {
             //2.组装订单费用信息
             FeeFact feeFact = this.buildFeeFact(orderId, matchStrategy.getFeeType(), matchStrategy.getPeriods());
             if (feeFact == null) {
                 //没有费用信息，无法计算，直接返回
-                return;
+                continue;
             }
             computeFact.setFeeFact(feeFact);
 
             //根据匹配的配置，开始进行提成金额的计算
             String formula = matchStrategy.getFormula();
             Long value = executor.executeLong(formula, computeFact);
+
+            String jobRole = matchFact.getJobRole();
+            Long employeeId = matchFact.getEmployeeId();
+            Long orgId = matchFact.getOrgId();
+            Long roleId = matchFact.getRoleId();
+
+            //特殊处理，比如区域经组小组奖，客户代表组长奖
+            if (StringUtils.equals("58", jobRole) || StringUtils.equals("118", jobRole)) {
+                //区域经理小组奖
+                if (!StringUtils.equals(jobRole, matchFact.getJobRole())) {
+                    //本人不是区域经理，则找上级
+                    EmployeeJobRole employeeJobRole = this.employeeJobRoleService.queryLast(matchFact.getEmployeeId());
+                    if (employeeJobRole != null) {
+                        Long parentEmployeeId = employeeJobRole.getParentEmployeeId();
+                        if (parentEmployeeId != null) {
+                            EmployeeJobRole parentJobRole = this.employeeJobRoleService.queryLast(parentEmployeeId);
+                            if (parentJobRole != null && StringUtils.equals(parentJobRole.getJobRole(), jobRole)) {
+                                employeeId = parentEmployeeId;
+                                orgId = parentJobRole.getOrgId();
+                            }
+                        }
+                    }
+                }
+            }
 
             //todo 多人拆分的计算
             //SalaryRoyaltyMultiSplit multiSplit = this.salaryRoyaltyMultiSplitService.getMultiSplit(matchStrategy.getType(), matchStrategy.getItem(), 0);
@@ -301,12 +352,12 @@ public class SalaryDO {
                 //表示要减掉已发
                 String minusItem = matchStrategy.getMinusItem();
                 if (StringUtils.isNotBlank(minusItem)) {
-                    List<String> items = Arrays.asList(StringUtils.split(","));
+                    List<String> items = Arrays.asList(StringUtils.split(minusItem,","));
                     List<SalaryRoyaltyDetail> sendRoyaltyDetails = this.salaryRoyaltyDetailService.queryByOrderIdEmployeeIdItems(orderId, matchFact.getEmployeeId(), items);
 
                     if (ArrayUtils.isNotEmpty(sendRoyaltyDetails)) {
-                        alreadyFetch = sendRoyaltyDetails.stream().filter(sendRoyaltyDetail -> sendRoyaltyDetail.getAlreadyFetch() != null)
-                                .mapToLong(SalaryRoyaltyDetail::getAlreadyFetch)
+                        alreadyFetch = sendRoyaltyDetails.stream().filter(sendRoyaltyDetail -> sendRoyaltyDetail.getTotalRoyalty() != null)
+                                .mapToLong(SalaryRoyaltyDetail::getTotalRoyalty)
                                 .sum();
 
                         //减掉已发放的
@@ -316,10 +367,10 @@ public class SalaryDO {
             }
 
             SalaryRoyaltyDetail royaltyDetail = new SalaryRoyaltyDetail();
-            royaltyDetail.setEmployeeId(matchFact.getEmployeeId());
-            royaltyDetail.setOrgId(matchFact.getOrgId());
-            royaltyDetail.setJobRole(matchFact.getJobRole());
-            royaltyDetail.setRoleId(matchFact.getRoleId());
+            royaltyDetail.setEmployeeId(employeeId);
+            royaltyDetail.setOrgId(orgId);
+            royaltyDetail.setJobRole(jobRole);
+            royaltyDetail.setRoleId(roleId);
             royaltyDetail.setSalaryMonth(salaryMonth);
             royaltyDetail.setOrderId(orderId);
             royaltyDetail.setOrderStatus(orderStatus);
@@ -329,7 +380,7 @@ public class SalaryDO {
             royaltyDetail.setItem(matchStrategy.getItem());
             royaltyDetail.setMode(matchStrategy.getMode());
             royaltyDetail.setValue(matchStrategy.getValue());
-            royaltyDetail.setTotalRoyalty(value);
+            royaltyDetail.setTotalRoyalty(thisMonthFetch);
             royaltyDetail.setAlreadyFetch(alreadyFetch);
             royaltyDetail.setThisMonthFetch(thisMonthFetch);
             royaltyDetail.setAuditStatus("0");
@@ -338,7 +389,7 @@ public class SalaryDO {
             royaltyDetail.setEndTime(TimeUtils.getForeverTime());
             royaltyDetail.setRemark(matchStrategy.getDescription()+"，由系统自动计算");
             royaltyDetails.add(royaltyDetail);
-        });
+        }
 
         return royaltyDetails;
     }

@@ -94,7 +94,7 @@ public class OrderFeeCompositeDTO {
      * @return
      */
     public Long getDoorFee() {
-        return this.getFeeByTypeItemId("2", 6L);
+        return this.getFeeByTypeItemId("2", 7L);
     }
 
     /**
@@ -102,7 +102,7 @@ public class OrderFeeCompositeDTO {
      * @return
      */
     public Long getFurnitureFee() {
-        return this.getFeeByTypeItemId("2", 7L);
+        return this.getFeeByTypeItemId("2", 8L);
     }
 
     /**

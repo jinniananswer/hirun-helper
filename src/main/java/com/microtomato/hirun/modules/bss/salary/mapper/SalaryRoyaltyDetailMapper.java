@@ -25,7 +25,7 @@ import java.util.List;
 @DataSource(DataSourceKey.INS)
 public interface SalaryRoyaltyDetailMapper extends BaseMapper<SalaryRoyaltyDetail> {
 
-    @Select("select a.id, a.order_id, a.employee_id, a.org_id, a.job_role, a.job_grade, a.strategy_id, a.order_status, a.type, a.item, a.value, a.total_royalty, a.already_fetch, a.this_month_fetch, a.salary_month, a.audit_status, a.remark, a.audit_remark, a.is_modified, b.name employee_name, b.status employee_status\n" +
+    @Select("select a.id, a.order_id, a.employee_id, a.org_id, a.job_role, a.job_grade, a.strategy_id, a.order_status, a.fee_type, a.periods, a.type, a.item, a.value, a.total_royalty, a.already_fetch, a.this_month_fetch, a.salary_month, a.audit_status, a.remark, a.audit_remark, a.is_modified, b.name employee_name, b.status employee_status\n" +
             "from salary_royalty_detail a, ins_employee b\n" +
             "where b.employee_id = a.employee_id\n" +
             "and a.order_id = ${orderId}"
@@ -33,7 +33,7 @@ public interface SalaryRoyaltyDetailMapper extends BaseMapper<SalaryRoyaltyDetai
     List<EmployeeSalaryRoyaltyDetailDTO> querySalaries(@Param("orderId")Long orderId);
 
 
-    @Select("select c.cust_id, c.cust_name, c.cust_no, a.id, a.order_id, a.employee_id, a.org_id, a.job_role, a.job_grade, a.strategy_id, a.order_status, a.type, a.item, a.value, a.total_royalty, a.already_fetch, a.this_month_fetch, a.salary_month, a.audit_status, a.remark, a.audit_remark, a.is_modified, b.name employee_name, b.status employee_status\n" +
+    @Select("select c.cust_id, c.cust_name, c.cust_no, a.id, a.order_id, a.employee_id, a.org_id, a.job_role, a.job_grade, a.strategy_id, a.order_status,a.fee_type, a.periods, a.type, a.item, a.value, a.total_royalty, a.already_fetch, a.this_month_fetch, a.salary_month, a.audit_status, a.remark, a.audit_remark, a.is_modified, b.name employee_name, b.status employee_status\n" +
             "from salary_royalty_detail a, ins_employee b, cust_base c, order_base d\n" +
             "${ew.customSqlSegment}"
     )
