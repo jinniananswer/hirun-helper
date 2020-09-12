@@ -163,4 +163,13 @@ public class UploadFileServiceImpl extends ServiceImpl<UploadFileMapper, UploadF
         );
     }
 
+    @Override
+    public String getFileNameByFileId(String id) {
+        UploadFile uploadFile = getOne(Wrappers.<UploadFile>lambdaQuery().eq(UploadFile::getId, id));
+        if (null != uploadFile){
+            return uploadFile.getFileName();
+        }
+        return "";
+    }
+
 }

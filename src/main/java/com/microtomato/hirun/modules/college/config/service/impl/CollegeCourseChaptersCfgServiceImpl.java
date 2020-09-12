@@ -39,4 +39,14 @@ public class CollegeCourseChaptersCfgServiceImpl extends ServiceImpl<CollegeCour
         return this.list(Wrappers.<CollegeCourseChaptersCfg>lambdaQuery().in(CollegeCourseChaptersCfg::getStudyId, studyIdList)
                 .eq(CollegeCourseChaptersCfg::getStatus, '0'));
     }
+
+    @Override
+    public String getChapterNameByStudyIdAndChaptersId(String studyId, Long chaptersId) {
+        CollegeCourseChaptersCfg collegeCourseChaptersCfg = this.getOne(Wrappers.<CollegeCourseChaptersCfg>lambdaQuery().eq(CollegeCourseChaptersCfg::getStudyId, studyId)
+                .eq(CollegeCourseChaptersCfg::getChaptersId, chaptersId), false);
+        if (null != collegeCourseChaptersCfg){
+            return collegeCourseChaptersCfg.getChaptersName();
+        }
+        return "";
+    }
 }

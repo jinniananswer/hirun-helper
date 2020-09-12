@@ -44,16 +44,16 @@ public class CollegeEmployeeTask extends BaseEntity {
     private String taskType;
 
     /**
-     * 课程类别
+     * 学习内容类别
      */
-    @TableField(value = "course_type")
-    private String courseType;
+    @TableField(value = "study_type")
+    private String studyType;
 
     /**
-     * 课程ID
+     * 学习ID
      */
-    @TableField(value = "course_id")
-    private String courseId;
+    @TableField(value = "study_id")
+    private String studyId;
 
     /**
      * 章节ID

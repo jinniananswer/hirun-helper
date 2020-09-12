@@ -104,7 +104,7 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                         ajax.post('api/CollegeStudyExamCfg/fixedStudyExam', requestInfo, function(responseData){
                             that.$message({
                                 showClose: true,
-                                message: '课程任务新增成功',
+                                message: '课程任务考试题目设置成功',
                                 type: 'success'
                             });
                             let addStudyChaptersList = requestInfo.studyChaptersList

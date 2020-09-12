@@ -27,7 +27,7 @@
                         </el-col>
                         <el-col :span="8">
                             <el-form-item label="学习内容标识">
-                                <el-input v-model="queryCond.studyId"></el-input>
+                                <el-input v-model.number="queryCond.studyId"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="8">
@@ -39,7 +39,7 @@
                     <el-row>
                         <el-col :span="8">
                             <el-form-item label="学习任务标识">
-                                <el-input v-model="queryCond.studyTaskId"></el-input>
+                                <el-input v-model.number="queryCond.studyTaskId"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="8">
@@ -67,8 +67,8 @@
                                         style="width: 100%" align="center" ref="collegeStudyExamList">
                                     <el-table-column prop="studyId" width="150" label="学习内容标识" align="center"></el-table-column>
                                     <el-table-column prop="chaptersId" width="200" label="章节ID" align="center"></el-table-column>
-                                    <el-table-column prop="examId" width="100" label="习题标识" align="center"></el-table-column>
-                                    <el-table-column prop="exercisesType" width="150" label="习题类型" align="center"></el-table-column>
+                                    <el-table-column prop="examName" width="100" label="习题范围" align="center"></el-table-column>
+                                    <el-table-column prop="exercisesTypeName" width="150" label="习题类型" align="center"></el-table-column>
                                     <el-table-column prop="exercisesNumber" width="150" label="习题数量" align="center"></el-table-column>
                                 </el-table>
                             </el-card>
@@ -82,9 +82,9 @@
                         </template>
                     </el-table-column>
                     <el-table-column prop="studyName" width="200" label="学习内容名称" align="center"></el-table-column>
-                    <el-table-column prop="studyType" width="120" label="学习内容类型" align="center"></el-table-column>
+                    <el-table-column prop="studyTypeName" width="120" label="学习内容类型" align="center"></el-table-column>
                     <el-table-column prop="chaptersName" width="120" label="章节名称" align="center"></el-table-column>
-                    <el-table-column prop="taskType" width="120" label="任务类型" align="center"></el-table-column>
+                    <el-table-column prop="taskTypeName" width="120" label="任务类型" align="center"></el-table-column>
                     <el-table-column prop="exercisesNumber" width="100" label="习题次数" align="center"></el-table-column>
                     <el-table-column prop="passScore" width="120" label="考试合格分数" align="center"></el-table-column>
                     <el-table-column label="操作" align="center" width="200">
@@ -122,7 +122,7 @@
                             </el-col>
                             <el-col :span="8">
                                 <el-form-item label="考题类型" label-width="120px" prop="exercisesType">
-                                    <vue-select code-type="EXERCISES_TYPE" v-model="collegeStudyExamInfo.exercisesType"></vue-select>
+                                    <vue-select code-type="EXERCISES_TYPE" name="collegeStudyExamInfo.exercisesTypeName" v-model="collegeStudyExamInfo.exercisesType"></vue-select>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="8">

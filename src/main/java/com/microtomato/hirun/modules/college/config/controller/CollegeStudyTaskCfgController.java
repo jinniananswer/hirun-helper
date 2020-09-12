@@ -194,8 +194,14 @@ public class CollegeStudyTaskCfgController {
             collegeStudyTaskCfg.setStudyTime(collegeStudyTaskResponseDTO.getStudyTime());
             this.collegeStudyTaskCfgService.updateById(collegeStudyTaskCfg);
 
-            List<CollegeCourseChaptersCfg> collegeCourseChaptersList = collegeStudyTaskResponseDTO.getCollegeCourseChaptersList();
-            if (ArrayUtils.isNotEmpty(collegeCourseChaptersList)){
+            List<CollegeCourseChaptersTaskResponseDTO> collegeCourseChaptersTaskResponseDTOList = collegeStudyTaskResponseDTO.getCollegeCourseChaptersList();
+            if (ArrayUtils.isNotEmpty(collegeCourseChaptersTaskResponseDTOList)){
+                List<CollegeCourseChaptersCfg> collegeCourseChaptersList = new ArrayList<>();
+                for (CollegeCourseChaptersTaskResponseDTO collegeCourseChaptersTaskResponseDTO : collegeCourseChaptersTaskResponseDTOList){
+                    CollegeCourseChaptersCfg collegeCourseChaptersCfg = new CollegeCourseChaptersCfg();
+                    BeanUtils.copyProperties(collegeCourseChaptersTaskResponseDTO, collegeCourseChaptersCfg);
+                    collegeCourseChaptersList.add(collegeCourseChaptersCfg);
+                }
                 this.collegeCourseChaptersCfgServiceImpl.updateBatchById(collegeCourseChaptersList);
             }
         }

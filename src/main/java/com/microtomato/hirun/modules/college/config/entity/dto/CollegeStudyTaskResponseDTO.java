@@ -26,6 +26,11 @@ public class CollegeStudyTaskResponseDTO {
     private String studyType;
 
     /**
+     * 课程类型名称
+     */
+    private String studyTypeName;
+
+    /**
      * 课程学习顺序
      */
     private String studyOrder;
@@ -46,6 +51,11 @@ public class CollegeStudyTaskResponseDTO {
     private String taskType;
 
     /**
+     * 任务类型名称
+     */
+    private String taskTypeName;
+
+    /**
      * 学习时间/天
      */
     private String studyTime;
@@ -63,5 +73,5 @@ public class CollegeStudyTaskResponseDTO {
     /**
      * 章节集合
      */
-    private List<CollegeCourseChaptersCfg> collegeCourseChaptersList;
+    private List<CollegeCourseChaptersTaskResponseDTO> collegeCourseChaptersList;
 }

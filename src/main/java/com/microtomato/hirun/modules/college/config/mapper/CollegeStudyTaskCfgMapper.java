@@ -30,7 +30,7 @@ public interface CollegeStudyTaskCfgMapper extends BaseMapper<CollegeStudyTaskCf
     @Select("select * from college_study_task_cfg  ${ew.customSqlSegment}")
     IPage<CollegeStudyTaskResponseDTO> queryCollegeStudyByPage(Page<CollegeStudyTaskRequestDTO> page, @Param(Constants.WRAPPER) Wrapper wrapper);
 
-    @Select("select a.study_id, a.study_name, a.study_type, b.chapters_id, b.chapters_name, \n" +
+    @Select("select a.study_id, a.study_name, a.study_type, a.task_type, b.chapters_id, b.chapters_name, \n" +
             "CASE WHEN ISNULL(b.exercises_number) then a.exercises_number ELSE b.exercises_number end as exercises_number,\n" +
             "CASE WHEN ISNULL(b.pass_score) then a.pass_score ELSE b.pass_score end as pass_score\n" +
             "from (select * from college_study_task_cfg  ${ew.customSqlSegment}) a \n" +
@@ -38,7 +38,7 @@ public interface CollegeStudyTaskCfgMapper extends BaseMapper<CollegeStudyTaskCf
             "ON a.study_id = b.study_id")
     IPage<CollegeStudyExercisesResponseDTO> queryCollegeStudyExercisesByPage(Page<CollegeStudyTaskRequestDTO> page, @Param(Constants.WRAPPER) Wrapper wrapper);
 
-    @Select("select a.study_id, a.study_name, a.study_type, b.chapters_id, b.chapters_name, \n" +
+    @Select("select a.study_id, a.study_name, a.study_type, a.task_type, b.chapters_id, b.chapters_name, \n" +
             "CASE WHEN ISNULL(b.exercises_number) then a.exercises_number ELSE b.exercises_number end as exercises_number,\n" +
             "CASE WHEN ISNULL(b.pass_score) then a.pass_score ELSE b.pass_score end as pass_score\n" +
             "from (select * from college_study_task_cfg  ${ew.customSqlSegment}) a \n" +

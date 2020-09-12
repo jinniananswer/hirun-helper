@@ -44,4 +44,13 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     public IPage<Course> queryCourseInfo(Page<Course> page) {
         return this.courseMapper.selectPage(page, new QueryWrapper<Course>().lambda().eq(Course::getStatus, "0"));
     }
+
+    @Override
+    public String getCourseNameByCourseId(Long courseId) {
+        Course course = this.getOne(Wrappers.<Course>lambdaQuery().eq(Course::getCourseId, courseId), false);
+        if (null != course){
+            return course.getName();
+        }
+        return "";
+    }
 }

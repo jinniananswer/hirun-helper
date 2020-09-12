@@ -27,7 +27,7 @@
                         </el-col>
                         <el-col :span="8">
                             <el-form-item label="学习内容标识">
-                                <el-input v-model="queryCond.studyId"></el-input>
+                                <el-input v-model.number="queryCond.studyId"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="8">
@@ -39,7 +39,7 @@
                     <el-row>
                         <el-col :span="8">
                             <el-form-item label="学习任务标识">
-                                <el-input v-model="queryCond.studyTaskId"></el-input>
+                                <el-input v-model.number="queryCond.studyTaskId"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="8">
@@ -70,9 +70,9 @@
                                     <el-table-column prop="studyId" width="150" label="学习内容标识" align="center"></el-table-column>
                                     <el-table-column prop="chaptersName" width="200" label="章节名称" align="center"></el-table-column>
                                     <el-table-column prop="chaptersStudyOrder" width="150" label="章节学习顺序" align="center"></el-table-column>
-                                    <el-table-column prop="chaptersType" width="100" label="章节类型" align="center"></el-table-column>
+                                    <el-table-column prop="chaptersTypeName" width="100" label="章节类型" align="center"></el-table-column>
                                     <el-table-column prop="studyTime" width="100" label="学习时间/天" align="center"></el-table-column>
-                                    <el-table-column prop="studyModel" width="100" label="学习模式" align="center"></el-table-column>
+                                    <el-table-column prop="studyModelName" width="100" label="学习模式" align="center"></el-table-column>
                                     <el-table-column prop="exercisesNumber" width="100" label="习题次数" align="center"></el-table-column>
                                     <el-table-column prop="passScore" width="100" label="考试合格分数" align="center"></el-table-column>
                                     <el-table-column label="操作" align="center" width="80">
@@ -94,11 +94,11 @@
                         </template>
                     </el-table-column>
                     <el-table-column prop="studyName" width="200" label="学习内容名称" align="center"></el-table-column>
-                    <el-table-column prop="studyType" width="120" label="学习内容类型" align="center"></el-table-column>
+                    <el-table-column prop="studyTypeName" width="120" label="学习内容类型" align="center"></el-table-column>
                     <el-table-column prop="studyOrder" width="200" label="学习顺序"
                                      align="center"></el-table-column>
                     <el-table-column prop="staffRank" width="120" label="员工职级" align="center"></el-table-column>
-                    <el-table-column prop="taskType" width="120" label="任务类型" align="center"></el-table-column>
+                    <el-table-column prop="taskTypeName" width="120" label="任务类型" align="center"></el-table-column>
                     <el-table-column prop="studyTime" width="120" label="学习时间/天" align="center"></el-table-column>
                     <el-table-column prop="exercisesNumber" width="100" label="习题次数" align="center"></el-table-column>
                     <el-table-column prop="passScore" width="120" label="考试合格分数" align="center"></el-table-column>
@@ -277,7 +277,7 @@
                             </el-col>
                             <el-col :span="8">
                                 <el-form-item label="学习内容类型" label-width="120px" prop="studyType">
-                                    <el-input :disabled="true" v-model.number="editStudyTaskInfo.studyType" autocomplete="off"></el-input>
+                                    <el-input :disabled="true" v-model.number="editStudyTaskInfo.studyTypeName" autocomplete="off"></el-input>
                                 </el-form-item>
                             </el-col>
                         </el-row>
@@ -294,7 +294,7 @@
                             </el-col>
                             <el-col :span="8">
                                 <el-form-item label="任务类型" label-width="120px" prop="taskType">
-                                    <el-input :disabled="true" v-model.number="editStudyTaskInfo.taskType" autocomplete="off"></el-input>
+                                    <el-input :disabled="true" v-model.number="editStudyTaskInfo.taskTypeName" autocomplete="off"></el-input>
                                 </el-form-item>
                             </el-col>
                         </el-row>
@@ -452,12 +452,12 @@
                             </el-col>
                             <el-col :span="8">
                                 <el-form-item label="学习模式" label-width="120px" prop="studyModel">
-                                    <el-input :disabled="true" v-model.number="editChaptersInfo.studyModel" autocomplete="off"></el-input>
+                                    <el-input :disabled="true" v-model.number="editChaptersInfo.studyModelName" autocomplete="off"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="8">
                                 <el-form-item label="章节类型" label-width="120px" prop="chaptersType">
-                                    <el-input :disabled="true" v-model.number="editChaptersInfo.chaptersType" autocomplete="off"></el-input>
+                                    <el-input :disabled="true" v-model.number="editChaptersInfo.chaptersTypeName" autocomplete="off"></el-input>
                                 </el-form-item>
                             </el-col>
                         </el-row>

@@ -27,7 +27,7 @@
                         </el-col>
                         <el-col :span="8">
                             <el-form-item label="学习内容标识">
-                                <el-input v-model="queryCond.studyId"></el-input>
+                                <el-input v-model.number="queryCond.studyId"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="8">
@@ -39,7 +39,7 @@
                     <el-row>
                         <el-col :span="8">
                             <el-form-item label="学习任务标识">
-                                <el-input v-model="queryCond.studyTaskId"></el-input>
+                                <el-input v-model.number="queryCond.studyTaskId"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="8">

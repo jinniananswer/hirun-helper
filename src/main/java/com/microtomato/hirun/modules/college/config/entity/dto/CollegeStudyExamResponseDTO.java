@@ -14,6 +14,12 @@ public class CollegeStudyExamResponseDTO {
 
     private String studyType;
 
+    private String studyTypeName;
+
+    private String taskType;
+
+    private String taskTypeName;
+
     private String chaptersId;
 
     private String chaptersName;
@@ -22,5 +28,5 @@ public class CollegeStudyExamResponseDTO {
 
     private Integer passScore;
 
-    private List<CollegeStudyExamCfg> collegeStudyExamList;
+    private List<CollegeStudyExamCfgResponseDTO> collegeStudyExamList;
 }

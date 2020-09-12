@@ -382,7 +382,6 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 }).then(() => {
                     let that = this
                     ajax.post('api/CollegeCourseChaptersCfg/addChapters', that.addChaptersInfo, function(responseData){
-                        that.$refs.collegeCourseChaptersList.insertAt(that.addChaptersInfo, 0);
                         that.addChaptersDialogVisible = false;
                         that.$message({
                             message: '章节配置新增成功',
