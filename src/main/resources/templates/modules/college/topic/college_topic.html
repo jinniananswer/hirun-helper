@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
 <head>
     <meta charset="UTF-8">
     <title>知乎问答</title>
@@ -91,6 +91,78 @@
                 </el-pagination>
             </div>
 
+            <el-dialog width="60%" title="习题信息填写" append-to-body :visible.sync="addTopicDialogVisible">
+                <el-card class="box-card" shadow="hover">
+                    <el-form :inline="false" :model="topicAddCond"  ref="topicAddCond" label-position="right"
+                             label-width="120px">
+                        <el-row>
+                            <el-col :span="14">
+                                <el-form-item label="习题名称" label-width="120px" prop="name">
+                                    <el-input v-model="topicAddCond.name" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="10">
+                                <el-form-item label="习题类型" label-width="120px" prop="type">
+                                    <vue-select code-type="EXERCISES_TYPE" v-model="topicAddCond.type"></vue-select>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="10">
+                                <el-form-item label="正确答案选项" label-width="120px" prop="correctAnswer">
+                                    <el-input v-model.number="topicAddCond.correctAnswer" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="10">
+                                <el-form-item label="分数" label-width="120px" prop="score" label-position="right">
+                                    <el-input v-model.number="topicAddCond.score" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row :style="showTree">
+                            <vxe-toolbar>
+                                <template v-slot:buttons>
+                                    <vxe-button icon="fa fa-plus" @click="addTopicOption">新增习题选项</vxe-button>
+                                    <vxe-button icon="fa fa-plus" @click="deleteTopicOptionBatch">删除选项</vxe-button>
+                                </template>
+                            </vxe-toolbar>
+                            <vxe-table
+                                    border
+                                    resizable
+                                    ref="addTopicOptionInfos"
+                                    show-overflow
+                                    highlight-hover-row
+                                    highlight-cell
+                                    keep-source
+                                    max-height="500px"
+                                    :auto-resize="true"
+                                    :data="addTopicOptionInfos"
+                                    :edit-config="{trigger: 'click', mode: 'cell', showStatus: true}"
+                                    :checkbox-config="{strict: true, range: true, trigger: 'row', highlight: true}">
+                                <vxe-table-column type="checkbox" align="center"  width="40"></vxe-table-column>
+                                <vxe-table-column field="symbol" align="center" sortable title="习题选项" width="250" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                                <vxe-table-column field="name" align="center" sortable title="选项内容" width="150" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                                <vxe-table-column fixed="right" title="操作" align="center" width="80" show-overflow>
+                                    <template v-slot="{ row }">
+                                        <el-button
+                                                size="mini"
+                                                type="danger"
+                                                icon="el-icon-delete"
+                                                @click="deleteTopicOption(row)">删除</el-button>
+                                    </template>
+                                </vxe-table-column>
+                            </vxe-table>
+                        </el-row>
+                        <el-row>
+                            <div style="text-align: center">
+                                <el-button type="primary" @click="submitAdd(addTopicOptionInfos)">保存</el-button>
+                                <el-button @click="cancel">取消</el-button>
+                            </div>
+                        </el-row>
+                    </el-form>
+                </el-card>
+            </el-dialog>
+
             <el-dialog width="60%" title="习题修改" append-to-body :visible.sync="editTopicDialogVisible">
                 <el-form :inline="false" :model="topicEditCond" ref="topicEditCond" label-position="right"
                          label-width="120px">
@@ -144,40 +216,6 @@
                         <div style="text-align: center">
                             <el-button type="primary" @click="submitTopicOptionEdit(topicOptionEditCond)">提交修改</el-button>
                             <el-button @click="editTopicOptionDialogVisible = false">取消</el-button>
-                        </div>
-                    </el-row>
-                </el-form>
-            </el-dialog>
-
-            <el-dialog width="60%" title="习题新增" append-to-body :visible.sync="addTopicDialogVisible">
-                <el-form :inline="false" :model="topicAddCond"  ref="topicAddCond" label-position="right"
-                         label-width="120px">
-                    <el-row>
-                        <el-col :span="8">
-                            <el-form-item label="习题名称" label-width="100px" prop="name">
-                                <el-input v-model="topicAddCond.name" autocomplete="off"></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="8">
-                            <el-form-item label="习题类型" label-width="100px" prop="abbreviation">
-                                <el-input v-model="topicAddCond.type" autocomplete="off"></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="8">
-                            <el-form-item label="正确答案选项" label-width="100px" prop="mobileNo">
-                                <el-input v-model.number="topicAddCond.correctAnswer" autocomplete="off"></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="8">
-                            <el-form-item label="分数" label-width="100px" prop="mobileNo">
-                                <el-input v-model.number="topicAddCond.score" autocomplete="off"></el-input>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                    <el-row>
-                        <div style="text-align: center">
-                            <el-button type="primary" @click="submitAdd(topicAddCond)">保存</el-button>
-                            <el-button @click="addTopicDialogVisible = false">取消</el-button>
                         </div>
                     </el-row>
                 </el-form>
