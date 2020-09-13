@@ -128,8 +128,6 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
             String studyTypeName = staticDataServiceImpl.getCodeName("TASK_COURSEWARE_TYPE", studyType);
             if (StringUtils.isEmpty(studyTypeName)){
                 studyTypeName = studyType;
-            }else {
-                studyTypeName = studyTypeName.substring(studyTypeName.length() - 2, studyTypeName.length());
             }
             collegeEmployeeTaskDetailResponseDTO.setStudyTypeName(studyTypeName);
             String studyName = "";

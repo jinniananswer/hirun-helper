@@ -76,7 +76,6 @@ public class CollegeStudyTaskCfgServiceImpl extends ServiceImpl<CollegeStudyTask
             String studyTypeName = studyType;
             if (StringUtils.isNotEmpty(studyType)){
                 studyTypeName = staticDataServiceImpl.getCodeName("TASK_COURSEWARE_TYPE", studyType);
-                studyTypeName = studyTypeName.substring(studyTypeName.length() - 2, studyTypeName.length());
             }
             collegeStudyTaskResponseDTO.setStudyTypeName(studyTypeName);
             String taskType = collegeStudyTaskResponseDTO.getTaskType();
@@ -141,9 +140,45 @@ public class CollegeStudyTaskCfgServiceImpl extends ServiceImpl<CollegeStudyTask
         List<CollegeStudyExercisesResponseDTO> records = result.getRecords();
         for (CollegeStudyExercisesResponseDTO collegeStudyExercisesResponseDTO : records){
             String studyId = collegeStudyExercisesResponseDTO.getStudyId();
+            String studyType = collegeStudyExercisesResponseDTO.getStudyType();
+            String studyTypeName = studyType;
+            if (StringUtils.isNotEmpty(studyType)){
+                studyTypeName = staticDataServiceImpl.getCodeName("TASK_COURSEWARE_TYPE", studyType);
+            }
+            collegeStudyExercisesResponseDTO.setStudyTypeName(studyTypeName);
+            String taskType = collegeStudyExercisesResponseDTO.getTaskType();
+            String taskTypeName = staticDataServiceImpl.getCodeName("STUDY_TASK_TYPE", taskType);
+            if (StringUtils.isEmpty(taskTypeName)){
+                taskTypeName = taskType;
+            }
+            collegeStudyExercisesResponseDTO.setTaskTypeName(taskTypeName);
             List<CollegeStudyExercisesCfg> collegeStudyExercisesCfgList = collegeStudyExercisesCfgServiceImpl.queryEffectiveByStudyIdAndChaptersId(studyId, collegeStudyExercisesResponseDTO.getChaptersId());
+            List<CollegeStudyExercisesCfgResponseDTO> collegeStudyExercisesCfgResponseDTOList = new ArrayList<>();
             if (ArrayUtils.isNotEmpty(collegeStudyExercisesCfgList)){
-                collegeStudyExercisesResponseDTO.setCollegeStudyExercisesList(collegeStudyExercisesCfgList);
+                for (CollegeStudyExercisesCfg collegeStudyExercisesCfg : collegeStudyExercisesCfgList){
+                    CollegeStudyExercisesCfgResponseDTO collegeStudyExercisesCfgResponseDTO = new CollegeStudyExercisesCfgResponseDTO();
+                    BeanUtils.copyProperties(collegeStudyExercisesCfg, collegeStudyExercisesCfgResponseDTO);
+                    String examId = collegeStudyExercisesCfgResponseDTO.getExamId();
+                    String examName = "";
+                    if (StringUtils.isNotEmpty(examId)){
+                        examName = staticDataServiceImpl.getCodeName("EXAM_RANGE", examId);
+                    }
+                    if (StringUtils.isEmpty(examName)){
+                        examName = examId;
+                    }
+                    collegeStudyExercisesCfgResponseDTO.setExamName(examName);
+                    String exercisesType = collegeStudyExercisesCfgResponseDTO.getExercisesType();
+                    String exercisesTypeName = "";
+                    if (StringUtils.isNotEmpty(exercisesType)){
+                        exercisesTypeName = staticDataServiceImpl.getCodeName("EXERCISES_TYPE", exercisesType);
+                    }
+                    if (StringUtils.isEmpty(exercisesTypeName)){
+                        exercisesTypeName = exercisesType;
+                    }
+                    collegeStudyExercisesCfgResponseDTO.setExercisesTypeName(exercisesTypeName);
+                    collegeStudyExercisesCfgResponseDTOList.add(collegeStudyExercisesCfgResponseDTO);
+                }
+                collegeStudyExercisesResponseDTO.setCollegeStudyExercisesList(collegeStudyExercisesCfgResponseDTOList);
             }
         }
         return result;
@@ -165,7 +200,6 @@ public class CollegeStudyTaskCfgServiceImpl extends ServiceImpl<CollegeStudyTask
             String studyTypeName = studyType;
             if (StringUtils.isNotEmpty(studyType)){
                 studyTypeName = staticDataServiceImpl.getCodeName("TASK_COURSEWARE_TYPE", studyType);
-                studyTypeName = studyTypeName.substring(studyTypeName.length() - 2, studyTypeName.length());
             }
             collegeStudyExamResponseDTO.setStudyTypeName(studyTypeName);
             String taskType = collegeStudyExamResponseDTO.getTaskType();

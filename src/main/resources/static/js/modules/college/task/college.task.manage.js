@@ -193,6 +193,9 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 })
             },
             addDesign: function(){
+                this.$nextTick(()=>{
+                    this.$refs.addStudyTaskInfo.resetFields();
+                });
                 this.courseChaptersItem = {
                     studyId: this.studyId,
                     chaptersName: this.studyName,
@@ -219,6 +222,16 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
 
             },
             submitAdd: function (courseChaptersDetails) {
+                if (this.studyType == '1'){
+                    let fileList = this.$refs.upload.fileList;
+                    if (fileList == undefined || fileList == "fileList" || fileList == [] || fileList.length == 0){
+                        this.$alert("请上传课件后再提交", "错误提示", {type: 'error'})
+                        return;
+                    }
+                    this.addStudyTaskInfo.studyId = fileList[0].response;
+                    this.addStudyTaskInfo.studyName = fileList[0].name;
+                    this.addStudyTaskInfo.studyType = this.studyType;
+                }
                 this.$refs.addStudyTaskInfo.validate((valid) => {
                     if(valid){
                         let that = this;
@@ -234,6 +247,7 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                                     message: '课程任务新增成功',
                                     type: 'success'
                                 });
+                                that.studyTaskInfo.push(responseData);
                                 that.addStudyTaskDialogVisible = false;
                             });
                         })
@@ -281,8 +295,8 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
             handleClick() {
 
             },
-            handleSuccess: function (fileList) {
-                alert("fileId: " + JSON.stringify(fileList));
+            handleSuccess: function (response, file, fileList) {
+                alert(JSON.stringify(file))
             },
             deleteStudyTaskBatch: function () {
                 let val = this.multipleSelection
@@ -356,7 +370,7 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     ajax.post('api/CollegeStudyTaskCfg/updateStudyTaskByDTO', editStudyTaskInfo, function(responseData){
                         let studyTaskInfoList = that.studyTaskInfo;
                         for(let i = 0 ; i < studyTaskInfoList.length ; i++){
-                            if(studyTaskInfoList[i]._XID == editStudyTaskInfo._XID){
+                            if(studyTaskInfoList[i].studyTaskId == editStudyTaskInfo.studyTaskId){
                                 studyTaskInfoList[i] = editStudyTaskInfo;
                                 that.editStudyTaskDialogVisible = false;
                                 break;
