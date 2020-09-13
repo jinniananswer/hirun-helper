@@ -5,14 +5,18 @@ package com.microtomato.hirun.modules.college.topic.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
+import com.microtomato.hirun.framework.mybatis.sequence.impl.ExamTopicSeq;
+import com.microtomato.hirun.framework.mybatis.service.IDualService;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.modules.college.knowhow.consts.KnowhowConsts;
 import com.microtomato.hirun.modules.college.knowhow.entity.po.CollegeQuestionRela;
+import com.microtomato.hirun.modules.college.topic.entity.dto.TopicOptionServiceDTO;
 import com.microtomato.hirun.modules.college.topic.entity.dto.TopicServiceDTO;
 import com.microtomato.hirun.modules.college.topic.entity.po.ExamTopic;
 import com.microtomato.hirun.modules.college.topic.entity.po.ExamTopicOption;
 import com.microtomato.hirun.modules.college.topic.service.IExamTopicOptionService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -40,6 +44,9 @@ public class ExamTopicController {
 
     @Autowired
     private IExamTopicOptionService examTopicOptionService;
+
+    @Autowired
+    private IDualService dualService;
 
     @GetMapping("init")
     @RestResult
@@ -72,12 +79,26 @@ public class ExamTopicController {
     }
 
     @PostMapping("addTopic")
+    @Transactional(rollbackFor = Exception.class)
     @RestResult
     public void addTopic(@RequestBody TopicServiceDTO topic) {
         ExamTopic examTopic = ExamTopic.builder().build();
         BeanUtils.copyProperties(topic, examTopic);
         examTopic.setStatus("0");
+
+        Long topicId = dualService.nextval(ExamTopicSeq.class);
+        examTopic.setTopicId(topicId);
+
         this.examTopicService.save(examTopic);
-        this.examTopicOptionService.saveBatch(topic.getTopicOptions());
+
+        List<TopicOptionServiceDTO> topicOptions = topic.getTopicOptions();
+        topicOptions.stream().forEach(option -> {
+            option.setTopicId(topicId);
+            ExamTopicOption examTopicOption = new ExamTopicOption();
+            BeanUtils.copyProperties(option, examTopicOption);
+            this.examTopicOptionService.save(examTopicOption);
+        });
+        // 批量新增数据源不正确待处理
+//        this.examTopicOptionService.saveBatch(topicOptions);
     }
 }

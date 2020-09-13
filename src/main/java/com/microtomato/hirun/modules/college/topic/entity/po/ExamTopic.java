@@ -33,7 +33,7 @@ public class ExamTopic extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
     
-    @TableId(value = "topic_id", type = IdType.AUTO)
+    @TableId(value = "topic_id", type = IdType.INPUT)
     private Long topicId;
 
 

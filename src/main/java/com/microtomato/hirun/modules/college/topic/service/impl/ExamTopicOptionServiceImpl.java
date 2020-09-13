@@ -29,4 +29,14 @@ public class ExamTopicOptionServiceImpl extends ServiceImpl<ExamTopicOptionMappe
                 .eq(ExamTopicOption::getTopicId, topicId)
                 .eq(ExamTopicOption::getStatus, "0"));
     }
+
+    @Override
+    public boolean saveBatch(List<ExamTopicOption> examTopics) {
+        return super.saveBatch(examTopics);
+    }
+
+    @Override
+    public boolean save(ExamTopicOption examTopicOption) {
+        return super.save(examTopicOption);
+    }
 }

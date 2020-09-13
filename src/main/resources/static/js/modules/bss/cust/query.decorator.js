@@ -17,7 +17,14 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'order-selectem
 
                 decoratorInfo: [],
                 checked: null,
+                modifyTag: "",
                 display: 'display:block',
+                editDecoratorDialogVisible: false,
+                decoratorEditCond: {},
+                decoratorRules: {},
+                addDecoratorDialogVisible: false,
+                decoratorAddCond: {},
+                decoratorIds: [],
             }
         },
 
@@ -42,16 +49,89 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'order-selectem
                 this.queryDecorator();
             },
 
-            handleSelectionChange() {
-
+            handleSelectionChange(val) {
+                this.decoratorIds = val;
             },
 
             addDecorator() {
-
+                this.modifyTag = "0";
+                this.addDecoratorDialogVisible = true;
             },
 
             deleteDecoratorBatch() {
+                let val = this.decoratorIds;
+                var that = this;
+                if (val == undefined || val == 'undefined' || val.length <= 0) {
+                    this.$message({
+                        showClose: true,
+                        duration: 3000,
+                        message: '您未选择需要删除的工人！请选择后再点击删除。',
+                        center: true
+                    });
+                    return;
+                }
 
+                this.$confirm('确认删除选中工人?', '提示', {
+                    confirmButtonText: '确认',
+                    cancelButtonText: '取消',
+                    center: true
+                }).then(() => {
+                    ajax.post('api/bss.order/decorator/deleteDecoratorBatch', val, function () {
+                        that.queryDecorator();
+                        that.$message({
+                            type: 'success',
+                            message: '删除成功!'
+                        });
+                    }, null, true);
+                }).catch(() => {
+                    that.$message({
+                        type: 'info',
+                        message: '取消删除!'
+                    });
+                });
+            },
+
+            editDecoratorById(decorator) {
+                this.$nextTick(()=>{
+                    this.$refs.decoratorEditCond.resetFields();
+                });
+                this.modifyTag = "2";
+                this.decoratorEditCond = JSON.parse(JSON.stringify(decorator));
+                this.editDecoratorDialogVisible = true;
+            },
+
+            submitEdit(decorator) {
+                let that = this;
+                ajax.post('api/bss.order/decorator/updateById', decorator, function(responseData){
+                    that.editDecoratorDialogVisible = false;
+                    that.queryDecorator();
+                    that.$message({
+                        type: 'success',
+                        message: '修改成功!'
+                    });
+                },null, true);
+            },
+
+            submitAdd(decoratorAddCond) {
+                let that = this;
+                ajax.post('api/bss.order/decorator/addDecorator', decoratorAddCond, function(responseData){
+                    that.addDecoratorDialogVisible = false;
+                    that.queryDecorator();
+                    that.$message({
+                        type: 'success',
+                        message: '新增成功!'
+                    });
+                },null, true);
+            },
+
+            cancel() {
+                this.addDecoratorDialogVisible = false;
+                this.$refs.decoratorAddCond.resetFields();
+            },
+
+            cancelEdit() {
+                this.editDecoratorDialogVisible = false;
+                this.$refs.decoratorEditCond.resetFields();
             },
         }
     });

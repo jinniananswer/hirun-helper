@@ -4,8 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.microtomato.hirun.modules.college.knowhow.entity.po.CollegeQuestionRela;
+import com.microtomato.hirun.modules.college.topic.entity.dto.TopicOptionServiceDTO;
 import com.microtomato.hirun.modules.college.topic.entity.dto.TopicServiceDTO;
+import com.microtomato.hirun.modules.college.topic.entity.po.ExamTopicOption;
 import com.microtomato.hirun.modules.college.topic.mapper.ExamTopicMapper;
 import com.microtomato.hirun.modules.college.topic.entity.po.ExamTopic;
 import com.microtomato.hirun.modules.college.topic.service.IExamTopicOptionService;
@@ -32,6 +33,12 @@ public class ExamTopicServiceImpl extends ServiceImpl<ExamTopicMapper, ExamTopic
 
     @Autowired
     private IExamTopicOptionService examTopicOptionService;
+
+    @Override
+    public boolean save(ExamTopic examTopic) {
+        return super.save(examTopic);
+    }
+
     @Override
     public IPage<TopicServiceDTO> init(Page<ExamTopic> page) {
         Page<ExamTopic> pages = examTopicMapper.selectPage(page, new QueryWrapper<ExamTopic>().lambda()
@@ -41,7 +48,14 @@ public class ExamTopicServiceImpl extends ServiceImpl<ExamTopicMapper, ExamTopic
         for (ExamTopic examTopic : list) {
             TopicServiceDTO topic = new TopicServiceDTO();
             BeanUtils.copyProperties(examTopic, topic);
-            topic.setTopicOptions(examTopicOptionService.queryByTopicId(topic.getTopicId()));
+            List<ExamTopicOption> examTopicOptions = examTopicOptionService.queryByTopicId(topic.getTopicId());
+            List<TopicOptionServiceDTO> topicOptionServices = new ArrayList<>();
+            examTopicOptions.stream().forEach(option -> {
+                TopicOptionServiceDTO topicOptionService = new TopicOptionServiceDTO();
+                BeanUtils.copyProperties(option, topicOptionService);
+                topicOptionServices.add(topicOptionService);
+            });
+            topic.setTopicOptions(topicOptionServices);
             topicList.add(topic);
         }
 

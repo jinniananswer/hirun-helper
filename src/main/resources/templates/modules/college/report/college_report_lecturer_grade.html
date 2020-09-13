@@ -19,15 +19,14 @@
                 <el-form :inline="false" :model="queryCond" label-position="right" label-width="100px">
                     <el-row>
                         <el-col :span="8">
-                            <el-form-item label="问题信息">
-                                <el-input v-model="queryCond.questionText" placeholder="问题信息"></el-input>
+                            <el-form-item label="讲师姓名">
+                                <el-input v-model="queryCond.questionText" placeholder="讲师姓名"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="8">
-                            <el-form-item label="排序方式">
-                                <el-select v-model="queryCond.sortType" placeholder="请选择">
-                                    <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
-                                </el-select>
+                            <el-form-item label="课程名称">
+                                <el-input v-model="queryCond.questionText" placeholder="任务名称"></el-input>
+                            </el-form-item>
                             </el-form-item>
                         </el-col>
                         <el-col :span="8">
@@ -42,15 +41,10 @@
             <!-- 展示区域 -->
             <el-card class="box-card" shadow="hover">
                 <el-table :data="questionInfo" stripe="true" border height="350" style="width: 100%">
-                    <el-table-column prop="questionTitle" label="问题标题" align="center"></el-table-column>
-                    <el-table-column prop="questionContent" label="问题内容" align="center"></el-table-column>
-                    <el-table-column prop="createTime" label="问题创建时间" align="center" width="180"></el-table-column>
+                    <el-table-column prop="questionTitle" label="讲师姓名" align="center"></el-table-column>
+                    <el-table-column prop="questionContent" label="课程名称" align="center"></el-table-column>
+                    <el-table-column prop="createTime" label="评分" align="center" width="180"></el-table-column>
                     <el-table-column prop="status" label="状态" :formatter="statusTransfer" align="center" width="80"></el-table-column>
-                    <el-table-column fixed="right" label="操作" align="center" width="250">
-                        <template slot-scope="question">
-                            <el-button type="success" icon="el-icon-search" width="35" size="mini" @click="queryReply(question.row)">查看回复</el-button>
-                        </template>
-                    </el-table-column>
                 </el-table>
             </el-card>
 

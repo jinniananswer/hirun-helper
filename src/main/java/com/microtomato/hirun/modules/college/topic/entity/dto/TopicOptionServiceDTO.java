@@ -1,31 +1,22 @@
 package com.microtomato.hirun.modules.college.topic.entity.dto;
 
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.microtomato.hirun.modules.college.topic.entity.po.ExamTopicOption;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 /**
  * @author huanghua
- * @date 2020-09-05
+ * @date 2020-09-13
  */
 @Data
 @NoArgsConstructor
-public class TopicServiceDTO {
+public class TopicOptionServiceDTO {
 
     private Long topicId;
 
     private String name;
 
-    private String type;
-
-    private String correctAnswer;
-
-    private Integer score;
+    private String symbol;
 
     private String status;
-
-    private List<TopicOptionServiceDTO> topicOptions;
 }

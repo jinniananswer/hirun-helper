@@ -42,12 +42,12 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'order-selectem
             handleSizeChange: function (size) {
                 this.courseFileQueryCond.size = size;
                 this.courseFileQueryCond.page = 1;
-                this.queryDecorator();
+                this.queryCourseFileInfo();
             },
 
             handleCurrentChange: function(currentPage){
                 this.courseFileQueryCond.page = currentPage;
-                this.queryDecorator();
+                this.queryCourseFileInfo();
             },
             deleteCourseFileById(courseFile){
                 ajax.post('api/organization/coursefile/deleteCourseFileById', courseFile, function(responseData){

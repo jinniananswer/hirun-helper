@@ -14,6 +14,32 @@
 <div id="app" style="display:none" :style="display?display:''">
     <el-container>
         <el-main>
+            <el-card class="box-card">
+                <el-collapse value="1" accordion>
+                    <el-collapse-item title="查询条件" name="1">
+
+                        <el-form :inline="false" :model="courseFileQueryCond" label-position="right" label-width="80px">
+                            <el-row>
+                                <el-col :span="6">
+                                    <el-form-item label="课程名称">
+                                        <el-input v-model="courseFileQueryCond.name" placeholder="课件名称"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="课件描述">
+                                        <el-input v-model="courseFileQueryCond.fileId" placeholder="课件标识"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item style="text-align: right">
+                                        <el-button type="primary" @click="queryCourseFileInfo">查询</el-button>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                        </el-form>
+                    </el-collapse-item>
+                </el-collapse>
+            </el-card>
             <template>
                 <el-table :data="courseFileInfo" stripe="true" style="width: 100%" fit="true" border height="400px">
                     <el-table-column prop="name" label="课程名称" fixed align="center" width="280"></el-table-column>

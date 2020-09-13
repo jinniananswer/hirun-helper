@@ -44,7 +44,7 @@
                 <el-row style="padding-bottom: 12px">
                     <el-button type="success" icon="el-icon-folder-add" @click="addTopic">新增</el-button>
                     <el-button type="danger" icon="el-icon-delete" @click="deleteTopicBatch">删除</el-button>
-                    <el-button type="warning" icon="el-icon-download" @click="deleteTopicBatch">导入</el-button>
+                    <el-button type="warning" icon="el-icon-download" @click="importData">导入</el-button>
                 </el-row>
                 <el-table :data="topicInfo" stripe="true" border height="350" style="width: 100%" @selection-change="handleSelectChange">
                     <el-table-column type="selection" width="40" align="center"></el-table-column>
@@ -86,16 +86,50 @@
                 <el-pagination
                         layout="total, prev, pager, next"
                         :total="queryCond.count"
-                        :current-page.sync="queryCond.page"
+                        :current-page.sync="queryCond.current"
                         :page-size="queryCond.limit"
                         @current-change="query">
                 </el-pagination>
             </div>
 
+            <el-dialog :visible.sync="dialogImportVisible" :modal-append-to-body="false" :close-on-click-modal="false" class="dialog-import">
+                <div :class="{'import-content': importFlag === 1, 'hide-dialog': importFlag !== 1}">
+                    <el-upload class="upload-demo"
+                        :action="importUrl"
+                        :name ="name"
+                        :headers="importHeaders"
+                        :on-preview="handlePreview"
+                        :on-remove="handleRemove"
+                        :before-upload="beforeUpload"
+                        :on-error="uploadFail"
+                        :on-success="uploadSuccess"
+                        :file-list="fileList"
+                        :with-credentials="withCredentials">
+                        <!-- 是否支持发送cookie信息 -->
+                        <el-button size="small" type="primary" :disabled="processing">{{uploadTip}}</el-button>
+                        <div slot="tip" class="el-upload__tip">只能上传excel文件</div>
+                    </el-upload>
+                    <div class="download-template">
+                        <a class="btn-download" @click="download">
+                        <i class="icon-download"></i>下载模板</a>
+                    </div>
+                </div>
+                <div :class="{'import-failure': importFlag === 2, 'hide-dialog': importFlag !== 2}" >
+                    <div class="failure-tips">
+                        <i class="el-icon-warning"></i>导入失败</div>
+                    <div class="failure-reason">
+                        <h4>失败原因</h4>
+                        <ul>
+                        <li v-for="(error,index) in errorResults" :key="index">第{{error.rowIdx + 1}}行，错误：{{error.column}},{{error.value}},{{error.errorInfo}}</li>
+                        </ul>
+                    </div>
+                </div>
+            </el-dialog>
+
             <el-dialog width="60%" title="习题信息填写" append-to-body :visible.sync="addTopicDialogVisible">
                 <el-card class="box-card" shadow="hover">
                     <el-form :inline="false" :model="topicAddCond"  ref="topicAddCond" label-position="right"
-                             label-width="120px">
+                             label-width="120px" :rules="topicAddRules">
                         <el-row>
                             <el-col :span="14">
                                 <el-form-item label="习题名称" label-width="120px" prop="name">
@@ -109,22 +143,27 @@
                             </el-col>
                         </el-row>
                         <el-row>
-                            <el-col :span="10">
+                            <el-col :span="8">
                                 <el-form-item label="正确答案选项" label-width="120px" prop="correctAnswer">
                                     <el-input v-model.number="topicAddCond.correctAnswer" autocomplete="off"></el-input>
                                 </el-form-item>
                             </el-col>
-                            <el-col :span="10">
+                            <el-col :span="8">
                                 <el-form-item label="分数" label-width="120px" prop="score" label-position="right">
                                     <el-input v-model.number="topicAddCond.score" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="试题标识" label-width="120px" prop="examId" label-position="right">
+                                    <el-input v-model.number="topicAddCond.examId" autocomplete="off"></el-input>
                                 </el-form-item>
                             </el-col>
                         </el-row>
                         <el-row :style="showTree">
                             <vxe-toolbar>
                                 <template v-slot:buttons>
-                                    <vxe-button icon="fa fa-plus" @click="addTopicOption">新增习题选项</vxe-button>
-                                    <vxe-button icon="fa fa-plus" @click="deleteTopicOptionBatch">删除选项</vxe-button>
+                                    <vxe-button icon="el-icon-folder-add" @click="addTopicOption">新增习题选项</vxe-button>
+                                    <vxe-button icon="el-icon-delete" @click="deleteTopicOptionBatch">删除选项</vxe-button>
                                 </template>
                             </vxe-toolbar>
                             <vxe-table
@@ -141,9 +180,9 @@
                                     :edit-config="{trigger: 'click', mode: 'cell', showStatus: true}"
                                     :checkbox-config="{strict: true, range: true, trigger: 'row', highlight: true}">
                                 <vxe-table-column type="checkbox" align="center"  width="40"></vxe-table-column>
-                                <vxe-table-column field="symbol" align="center" sortable title="习题选项" width="250" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                                <vxe-table-column field="name" align="center" sortable title="选项内容" width="150" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                                <vxe-table-column fixed="right" title="操作" align="center" width="80" show-overflow>
+                                <vxe-table-column field="symbol" align="center" sortable title="习题选项" width="240" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                                <vxe-table-column field="name" align="center" sortable title="选项内容" width="200" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                                <vxe-table-column fixed="right" title="操作" align="center" width="200" show-overflow>
                                     <template v-slot="{ row }">
                                         <el-button
                                                 size="mini"
@@ -225,6 +264,10 @@
     </el-container>
 </div>
 <style>
+    .hide-dialog{
+        display:none;
+    }
+
     .text {
         font-size: 14px;
     }

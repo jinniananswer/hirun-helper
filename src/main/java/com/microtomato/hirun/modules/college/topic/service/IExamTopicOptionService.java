@@ -20,4 +20,6 @@ public interface IExamTopicOptionService extends IService<ExamTopicOption> {
      * @return
      */
     List<ExamTopicOption> queryByTopicId(Long topicId);
+
+    boolean saveBatch(List<ExamTopicOption> examTopics);
 }

@@ -3,7 +3,6 @@ package com.microtomato.hirun.modules.college.topic.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.microtomato.hirun.modules.college.knowhow.entity.po.CollegeQuestionRela;
 import com.microtomato.hirun.modules.college.topic.entity.dto.TopicServiceDTO;
 import com.microtomato.hirun.modules.college.topic.entity.po.ExamTopic;
 
@@ -17,4 +16,5 @@ import com.microtomato.hirun.modules.college.topic.entity.po.ExamTopic;
 public interface IExamTopicService extends IService<ExamTopic> {
 
     IPage<TopicServiceDTO> init(Page<ExamTopic> page);
+
 }
