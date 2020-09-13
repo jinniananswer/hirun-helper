@@ -495,5 +495,16 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         return this.employeeMapper.queryNewEmployeeByPage(page, queryWrapper);
     }
 
+    @Override
+    public List<Employee> queryByEmployeeIdAndLikeName(Long employeeId, String name) {
+        return this.list(Wrappers.<Employee>lambdaQuery().eq(null != employeeId, Employee::getEmployeeId, employeeId)
+                .like(StringUtils.isNotEmpty(name), Employee::getName, name));
+    }
+
+    @Override
+    public Employee getEEmployeeByEmployeeId(Long employeeId) {
+        return this.getOne(Wrappers.<Employee>lambdaQuery().eq(null != employeeId, Employee::getEmployeeId, employeeId), false);
+    }
+
 
 }

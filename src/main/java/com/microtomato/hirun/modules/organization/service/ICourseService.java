@@ -26,4 +26,11 @@ public interface ICourseService extends IService<Course> {
     List<Course> queryEffectiveByParentCourseId(Long parentCourseId);
 
     IPage<Course> queryCourseInfo(Page<Course> page);
+
+    /**
+     * 根据课程ID查询课程名称
+     * @param courseId
+     * @return
+     */
+    String getCourseNameByCourseId(Long courseId);
 }

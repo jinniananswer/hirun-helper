@@ -7,17 +7,24 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
-import com.microtomato.hirun.modules.college.config.entity.dto.CollegeStudyTaskRequestDTO;
-import com.microtomato.hirun.modules.college.config.entity.dto.CollegeStudyTaskResponseDTO;
+import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.modules.college.config.entity.dto.*;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeCourseChaptersCfg;
+import com.microtomato.hirun.modules.college.config.entity.po.CollegeStudyExamCfg;
+import com.microtomato.hirun.modules.college.config.entity.po.CollegeStudyExercisesCfg;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeStudyTaskCfg;
 import com.microtomato.hirun.modules.college.config.mapper.CollegeStudyTaskCfgMapper;
 import com.microtomato.hirun.modules.college.config.service.ICollegeCourseChaptersCfgService;
+import com.microtomato.hirun.modules.college.config.service.ICollegeStudyExamCfgService;
+import com.microtomato.hirun.modules.college.config.service.ICollegeStudyExercisesCfgService;
 import com.microtomato.hirun.modules.college.config.service.ICollegeStudyTaskCfgService;
+import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,6 +44,15 @@ public class CollegeStudyTaskCfgServiceImpl extends ServiceImpl<CollegeStudyTask
     @Autowired
     private ICollegeCourseChaptersCfgService collegeCourseChaptersCfgServiceImpl;
 
+    @Autowired
+    private ICollegeStudyExercisesCfgService collegeStudyExercisesCfgServiceImpl;
+
+    @Autowired
+    private ICollegeStudyExamCfgService collegeStudyExamCfgServiceImpl;
+
+    @Autowired
+    private IStaticDataService staticDataServiceImpl;
+
     @Override
     public List<CollegeStudyTaskCfg> queryByTaskType(String taskType) {
         return this.list(Wrappers.<CollegeStudyTaskCfg>lambdaQuery()
@@ -45,7 +61,7 @@ public class CollegeStudyTaskCfgServiceImpl extends ServiceImpl<CollegeStudyTask
     }
 
     @Override
-    public IPage<CollegeStudyTaskResponseDTO> queryCollegeStufyByPage(CollegeStudyTaskRequestDTO collegeStudyTaskRequestDTO, Page<CollegeStudyTaskRequestDTO> page) {
+    public IPage<CollegeStudyTaskResponseDTO> queryCollegeStudyByPage(CollegeStudyTaskRequestDTO collegeStudyTaskRequestDTO, Page<CollegeStudyTaskRequestDTO> page) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq(null != collegeStudyTaskRequestDTO.getTaskType(), "task_type", collegeStudyTaskRequestDTO.getTaskType());
         queryWrapper.like(StringUtils.isNotEmpty(collegeStudyTaskRequestDTO.getStudyName()), "study_name", collegeStudyTaskRequestDTO.getStudyName());
@@ -56,8 +72,41 @@ public class CollegeStudyTaskCfgServiceImpl extends ServiceImpl<CollegeStudyTask
         List<CollegeStudyTaskResponseDTO> records = collegeStudyTaskResponseDTOIPage.getRecords();
         for (CollegeStudyTaskResponseDTO collegeStudyTaskResponseDTO : records){
             String studyId = collegeStudyTaskResponseDTO.getStudyId();
+            String studyType = collegeStudyTaskResponseDTO.getStudyType();
+            String studyTypeName = studyType;
+            if (StringUtils.isNotEmpty(studyType)){
+                studyTypeName = staticDataServiceImpl.getCodeName("TASK_COURSEWARE_TYPE", studyType);
+                studyTypeName = studyTypeName.substring(studyTypeName.length() - 2, studyTypeName.length());
+            }
+            collegeStudyTaskResponseDTO.setStudyTypeName(studyTypeName);
+            String taskType = collegeStudyTaskResponseDTO.getTaskType();
+            String taskTypeName = studyType;
+            if (StringUtils.isNotEmpty(taskType)){
+                taskTypeName = staticDataServiceImpl.getCodeName("STUDY_TASK_TYPE", taskType);
+            }
+            collegeStudyTaskResponseDTO.setTaskTypeName(taskTypeName);
             List<CollegeCourseChaptersCfg> collegeCourseChaptersCfgList = collegeCourseChaptersCfgServiceImpl.queryByStudyId(studyId);
-            collegeStudyTaskResponseDTO.setCollegeCourseChaptersList(collegeCourseChaptersCfgList);
+            List<CollegeCourseChaptersTaskResponseDTO> collegeCourseChaptersTaskResponseDTOList = new ArrayList<>();
+            if (ArrayUtils.isNotEmpty(collegeCourseChaptersCfgList)){
+                for (CollegeCourseChaptersCfg collegeCourseChaptersCfg : collegeCourseChaptersCfgList){
+                    CollegeCourseChaptersTaskResponseDTO collegeCourseChaptersTaskResponseDTO = new CollegeCourseChaptersTaskResponseDTO();
+                    BeanUtils.copyProperties(collegeCourseChaptersCfg, collegeCourseChaptersTaskResponseDTO);
+                    String chaptersType = collegeCourseChaptersTaskResponseDTO.getChaptersType();
+                    String chaptersTypeName = chaptersType;
+                    if (StringUtils.isNotEmpty(chaptersType)){
+                        chaptersTypeName = staticDataServiceImpl.getCodeName("CHAPTERS_TYPE", chaptersType);
+                    }
+                    collegeCourseChaptersTaskResponseDTO.setChaptersTypeName(chaptersTypeName);
+                    String studyModel = collegeCourseChaptersTaskResponseDTO.getStudyModel();
+                    String studyModelName = studyModel;
+                    if (StringUtils.isNotEmpty(studyModel)){
+                        studyModelName = staticDataServiceImpl.getCodeName("CHAPTER_STUDY_MODEL", studyModel);
+                    }
+                    collegeCourseChaptersTaskResponseDTO.setStudyModelName(studyModelName);
+                    collegeCourseChaptersTaskResponseDTOList.add(collegeCourseChaptersTaskResponseDTO);
+                }
+            }
+            collegeStudyTaskResponseDTO.setCollegeCourseChaptersList(collegeCourseChaptersTaskResponseDTOList);
         }
         return collegeStudyTaskResponseDTOIPage;
     }
@@ -72,5 +121,88 @@ public class CollegeStudyTaskCfgServiceImpl extends ServiceImpl<CollegeStudyTask
     public CollegeStudyTaskCfg getByStudyTaskId(Long studyTaskId) {
         return this.getOne(Wrappers.<CollegeStudyTaskCfg>lambdaQuery().eq(CollegeStudyTaskCfg::getStudyTaskId, studyTaskId)
                 .eq(CollegeStudyTaskCfg::getStatus, "0"));
+    }
+
+    @Override
+    public CollegeStudyTaskCfg getEffectiveByStudyId(String studyId) {
+        return this.getOne(Wrappers.<CollegeStudyTaskCfg>lambdaQuery().eq(CollegeStudyTaskCfg::getStudyId, studyId)
+                .eq(CollegeStudyTaskCfg::getStatus, "0"), false);
+    }
+
+    @Override
+    public IPage<CollegeStudyExercisesResponseDTO> queryCollegeStudyExercisesByPage(CollegeStudyTaskRequestDTO collegeStudyTaskRequestDTO, Page<CollegeStudyTaskRequestDTO> page) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq(null != collegeStudyTaskRequestDTO.getTaskType(), "task_type", collegeStudyTaskRequestDTO.getTaskType());
+        queryWrapper.like(StringUtils.isNotEmpty(collegeStudyTaskRequestDTO.getStudyName()), "study_name", collegeStudyTaskRequestDTO.getStudyName());
+        queryWrapper.eq(null != collegeStudyTaskRequestDTO.getStudyTaskId(), "study_task_id" , collegeStudyTaskRequestDTO.getStudyTaskId());
+        queryWrapper.eq(null != collegeStudyTaskRequestDTO.getStudyId(), "study_id", collegeStudyTaskRequestDTO.getStudyId());
+        queryWrapper.eq("status", '0');
+        IPage<CollegeStudyExercisesResponseDTO> result = this.collegeStudyTaskCfgMapper.queryCollegeStudyExercisesByPage(page, queryWrapper);
+        List<CollegeStudyExercisesResponseDTO> records = result.getRecords();
+        for (CollegeStudyExercisesResponseDTO collegeStudyExercisesResponseDTO : records){
+            String studyId = collegeStudyExercisesResponseDTO.getStudyId();
+            List<CollegeStudyExercisesCfg> collegeStudyExercisesCfgList = collegeStudyExercisesCfgServiceImpl.queryEffectiveByStudyIdAndChaptersId(studyId, collegeStudyExercisesResponseDTO.getChaptersId());
+            if (ArrayUtils.isNotEmpty(collegeStudyExercisesCfgList)){
+                collegeStudyExercisesResponseDTO.setCollegeStudyExercisesList(collegeStudyExercisesCfgList);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public IPage<CollegeStudyExamResponseDTO> queryCollegeStudyExamByPage(CollegeStudyTaskRequestDTO collegeStudyTaskRequestDTO, Page<CollegeStudyTaskRequestDTO> page) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq(null != collegeStudyTaskRequestDTO.getTaskType(), "task_type", collegeStudyTaskRequestDTO.getTaskType());
+        queryWrapper.like(StringUtils.isNotEmpty(collegeStudyTaskRequestDTO.getStudyName()), "study_name", collegeStudyTaskRequestDTO.getStudyName());
+        queryWrapper.eq(null != collegeStudyTaskRequestDTO.getStudyTaskId(), "study_task_id" , collegeStudyTaskRequestDTO.getStudyTaskId());
+        queryWrapper.eq(null != collegeStudyTaskRequestDTO.getStudyId(), "study_id", collegeStudyTaskRequestDTO.getStudyId());
+        queryWrapper.eq("status", '0');
+        IPage<CollegeStudyExamResponseDTO> result = this.collegeStudyTaskCfgMapper.queryCollegeStudyExamByPage(page, queryWrapper);
+        List<CollegeStudyExamResponseDTO> records = result.getRecords();
+        for (CollegeStudyExamResponseDTO collegeStudyExamResponseDTO : records){
+            String studyId = collegeStudyExamResponseDTO.getStudyId();
+            String studyType = collegeStudyExamResponseDTO.getStudyType();
+            String studyTypeName = studyType;
+            if (StringUtils.isNotEmpty(studyType)){
+                studyTypeName = staticDataServiceImpl.getCodeName("TASK_COURSEWARE_TYPE", studyType);
+                studyTypeName = studyTypeName.substring(studyTypeName.length() - 2, studyTypeName.length());
+            }
+            collegeStudyExamResponseDTO.setStudyTypeName(studyTypeName);
+            String taskType = collegeStudyExamResponseDTO.getTaskType();
+            String taskTypeName = staticDataServiceImpl.getCodeName("STUDY_TASK_TYPE", taskType);
+            if (StringUtils.isEmpty(taskTypeName)){
+                taskTypeName = taskType;
+            }
+            collegeStudyExamResponseDTO.setTaskTypeName(taskTypeName);
+            List<CollegeStudyExamCfg> collegeStudyExercisesCfgList = collegeStudyExamCfgServiceImpl.queryEffectiveByStudyIdAndChaptersId(studyId, collegeStudyExamResponseDTO.getChaptersId());
+            if (ArrayUtils.isNotEmpty(collegeStudyExercisesCfgList)){
+                List<CollegeStudyExamCfgResponseDTO> collegeStudyExamCfgResponseDTOList = new ArrayList<>();
+                for (CollegeStudyExamCfg collegeStudyExamCfg : collegeStudyExercisesCfgList){
+                    CollegeStudyExamCfgResponseDTO collegeStudyExamCfgResponseDTO = new CollegeStudyExamCfgResponseDTO();
+                    BeanUtils.copyProperties(collegeStudyExamCfg, collegeStudyExamCfgResponseDTO);
+                    String examId = collegeStudyExamCfgResponseDTO.getExamId();
+                    String examName = "";
+                    if (StringUtils.isNotEmpty(examId)){
+                        examName = staticDataServiceImpl.getCodeName("EXAM_RANGE", examId);
+                    }
+                    if (StringUtils.isEmpty(examName)){
+                        examName = examId;
+                    }
+                    collegeStudyExamCfgResponseDTO.setExamName(examName);
+                    String exercisesType = collegeStudyExamCfgResponseDTO.getExercisesType();
+                    String exercisesTypeName = "";
+                    if (StringUtils.isNotEmpty(exercisesType)){
+                        exercisesTypeName = staticDataServiceImpl.getCodeName("EXERCISES_TYPE", exercisesType);
+                    }
+                    if (StringUtils.isEmpty(exercisesTypeName)){
+                        exercisesTypeName = exercisesType;
+                    }
+                    collegeStudyExamCfgResponseDTO.setExercisesTypeName(exercisesTypeName);
+                    collegeStudyExamCfgResponseDTOList.add(collegeStudyExamCfgResponseDTO);
+                }
+                collegeStudyExamResponseDTO.setCollegeStudyExamList(collegeStudyExamCfgResponseDTOList);
+            }
+        }
+        return result;
     }
 }

@@ -93,11 +93,17 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 taskCoursewareTypes: [],
                 addStudyTaskDialogVisible: false,
                 editStudyTaskDialogVisible: false,
+                addChaptersDialogVisible: false,
+                editChaptersDialogVisible: false,
                 courseChaptersDetails: [],
                 courseChaptersItem: {},
                 addStudyTaskInfo: {},
+                addChaptersInfo: {},
+                editChaptersInfo: {},
+                editChaptersInfoSource: {},
                 editStudyTaskInfo: {},
                 selectCurrent: {},
+                studyChaptersList: [],
                 studyInfos: [],
                 showUpload: 'display:none',
                 showTree: 'display:block',
@@ -143,21 +149,10 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
             handleCourseTaskSelectionChange(val) {
                 this.multipleSelection = val;
             },
-            fixedTaskRelease: function(){
-                let val = [];
-                this.multipleSelection.forEach(function (e, index, array) {
-                    val.push()
-                })
-                this.multipleSelection.forEach((selection) => {
-                    val.push(selection.employeeId)
-                })
-                ajax.post('api/CollegeEmployeeTask/fixedTaskReleaseByEmployeeList', val, function(responseData){
-
-                },null, true);
-            },
             addStudyTask: function(){
                 let that = this;
                 that.addStudyTaskDialogVisible = true;
+                that.addStudyTaskInfo = {}
             },
             handleNodeClick: function(data) {
                 if (data.courseFlag){
@@ -234,11 +229,12 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                         }).then(() => {
                             that.addStudyTaskInfo.courseChaptersList = courseChaptersDetails
                             ajax.post('api/CollegeStudyTaskCfg/addStudyTaskCfg', that.addStudyTaskInfo, function(responseData){
-                                this.$message({
+                                that.$message({
                                     showClose: true,
                                     message: '课程任务新增成功',
                                     type: 'success'
                                 });
+                                that.addStudyTaskDialogVisible = false;
                             });
                         })
                     }
@@ -247,8 +243,11 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
             cancel: function () {
                 let that = this;
                 that.addStudyTaskDialogVisible = false;
-                that.addStudyTaskInfo = [];
+                that.addStudyTaskInfo = {};
                 that.courseChaptersDetails = [];
+                that.editStudyTaskDialogVisible = false;
+                that.addChaptersDialogVisible = false;
+                that.editChaptersDialogVisible = false;
             },
             changeTaskCoursewareType: function (val) {
                 this.studyType = val
@@ -256,7 +255,6 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     let that = this
                     that.showUpload = 'display:block'
                     that.showTree = 'display:none'
-                    that.addStudyTaskInfo = [];
                     that.courseChaptersDetails = [];
                     that.addStudyTaskInfo = {};
                     that.studyId = '';
@@ -268,12 +266,16 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     this.showUpload = 'display:none'
                     this.showTree = 'display:block'
                     let that = this;
-                    if (null == that.studyInfos || [] == that.studyInfos || undefined == that.studyInfos || that.studyInfos.length == 0){
+                    ajax.get('api/organization/course/qeuryCourseTree', null, function(responseData){
+                        that.studyInfos = responseData;
+                        that.taskCoursewareType = val;
+                    });
+                    /*if (null == that.studyInfos || [] == that.studyInfos || undefined == that.studyInfos || that.studyInfos.length == 0){
                         ajax.get('api/organization/course/qeuryCourseTree', null, function(responseData){
                             that.studyInfos = responseData;
                             that.taskCoursewareType = val;
                         });
-                    }
+                    }*/
                 }
             },
             handleClick() {
@@ -309,6 +311,10 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                                 }
                             }
                         })
+                        that.$message({
+                            message: '学习任务删除成功',
+                            type: 'success'
+                        });
                     },null, true);
                 })
             },
@@ -324,16 +330,88 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                         let studyTaskInfoList = that.studyTaskInfo;
                         for(let i = 0 ; i < studyTaskInfoList.length ; i++){
                             if(studyTaskInfoList[i]._XID == row._XID){
-                                that.studyTaskInfo.splice(i, 1);
+                                that.editStudyTaskInfo.splice(i, 1);
                                 break;
                             }
                         }
                     },null, true);
+                    that.$message({
+                        message: '学习任务删除成功',
+                        type: 'success'
+                    });
                 })
             },
             editStudyTask: function (row) {
                 let that = this;
+                that.editStudyTaskInfo = JSON.parse(JSON.stringify(row));
                 that.editStudyTaskDialogVisible = true;
+            },
+            submitStudyTaskEdit: function (editStudyTaskInfo) {
+                this.$confirm('是否提交修改?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    let that = this
+                    ajax.post('api/CollegeStudyTaskCfg/updateStudyTaskByDTO', editStudyTaskInfo, function(responseData){
+                        let studyTaskInfoList = that.studyTaskInfo;
+                        for(let i = 0 ; i < studyTaskInfoList.length ; i++){
+                            if(studyTaskInfoList[i]._XID == editStudyTaskInfo._XID){
+                                studyTaskInfoList[i] = editStudyTaskInfo;
+                                that.editStudyTaskDialogVisible = false;
+                                break;
+                            }
+                        }
+                        that.$message({
+                            message: '学习任务修改成功',
+                            type: 'success'
+                        });
+                    },null, true);
+                })
+            },
+            addChapters: function (studyTaskInfo) {
+                let that = this;
+                that.addChaptersDialogVisible = true;
+                that.addChaptersInfo = JSON.parse(JSON.stringify(studyTaskInfo));
+            },
+            submitAddChapters: function () {
+                this.$confirm('是否提交保存?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    let that = this
+                    ajax.post('api/CollegeCourseChaptersCfg/addChapters', that.addChaptersInfo, function(responseData){
+                        that.addChaptersDialogVisible = false;
+                        that.$message({
+                            message: '章节配置新增成功',
+                            type: 'success'
+                        });
+                    },null, true);
+                })
+            },
+            editChapters: function (row) {
+                let that = this;
+                that.editChaptersDialogVisible = true;
+                that.editChaptersInfoSource = row
+                that.editChaptersInfo = JSON.parse(JSON.stringify(row));
+            },
+            submitEditChapters: function (editChaptersInfo) {
+                this.$confirm('是否提交修改?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    let that = this
+                    ajax.post('api/CollegeCourseChaptersCfg/editChapters', editChaptersInfo, function(responseData){
+                        that.editChaptersInfoSource = editChaptersInfo
+                        that.editChaptersDialogVisible = false;
+                        that.$message({
+                            message: '学习任务修改成功',
+                            type: 'success'
+                        });
+                    },null, true);
+                })
             }
         },
 

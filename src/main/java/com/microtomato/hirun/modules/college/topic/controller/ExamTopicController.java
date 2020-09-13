@@ -6,11 +6,13 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.modules.college.knowhow.consts.KnowhowConsts;
 import com.microtomato.hirun.modules.college.knowhow.entity.po.CollegeQuestionRela;
 import com.microtomato.hirun.modules.college.topic.entity.dto.TopicServiceDTO;
 import com.microtomato.hirun.modules.college.topic.entity.po.ExamTopic;
 import com.microtomato.hirun.modules.college.topic.entity.po.ExamTopicOption;
 import com.microtomato.hirun.modules.college.topic.service.IExamTopicOptionService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -67,5 +69,15 @@ public class ExamTopicController {
             }
             this.examTopicService.removeByIds(topicIds);
         }
+    }
+
+    @PostMapping("addTopic")
+    @RestResult
+    public void addTopic(@RequestBody TopicServiceDTO topic) {
+        ExamTopic examTopic = ExamTopic.builder().build();
+        BeanUtils.copyProperties(topic, examTopic);
+        examTopic.setStatus("0");
+        this.examTopicService.save(examTopic);
+        this.examTopicOptionService.saveBatch(topic.getTopicOptions());
     }
 }

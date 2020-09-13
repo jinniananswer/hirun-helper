@@ -98,7 +98,7 @@ public class TaskDomainOpenServiceImpl implements ITaskDomainOpenService {
                             collegeEmployeeTaskDTOList.add(collegeEmployeeTaskDTO);
                         }
                     }else {
-                        //没有章节配置,以课程配置未准
+                        //没有章节配置,以课程配置为准
                         CollegeEmployeeTaskDTO collegeEmployeeTaskDTO = new CollegeEmployeeTaskDTO();
                         collegeEmployeeTaskDTO.setStudyId(studyId);
                         collegeEmployeeTaskDTO.setStudyType(collegeStudyTaskCfg.getStudyType());

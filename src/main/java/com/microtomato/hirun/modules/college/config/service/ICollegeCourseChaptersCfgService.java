@@ -28,4 +28,5 @@ public interface ICollegeCourseChaptersCfgService extends IService<CollegeCourse
      */
     List<CollegeCourseChaptersCfg> queryByStudyIdList(List<String> studyIdList);
 
+    String getChapterNameByStudyIdAndChaptersId(String studyId, Long chaptersId);
 }

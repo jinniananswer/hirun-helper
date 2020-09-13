@@ -42,6 +42,9 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                 editTopicOptionDialogVisible: false,
                 addTopicDialogVisible: false,
                 topicIds: [],
+                addTopicOptionInfos: [],
+                addTopicOptionInfo: {},
+                showTree: 'display:block',
             }
         },
 
@@ -94,7 +97,9 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
             },
 
             addTopic() {
-
+                let that = this;
+                that.addTopicDialogVisible = true;
+                that.topicAddCond = {};
             },
 
             deleteTopicBatch() {
@@ -158,8 +163,34 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                 }, null, true);
             },
 
-            submitAdd() {
+            submitAdd(addTopicOptionInfos) {
+                this.$refs.addTopicOptionInfos.validate((valid) => {
+                    if(valid){
+                        let that = this;
+                        this.$confirm('是否保存新增习题?', '提示', {
+                            confirmButtonText: '确定',
+                            cancelButtonText: '取消',
+                            type: 'warning'
+                        }).then(() => {
+                            that.topicAddCond.topicOptions = that.addTopicOptionInfos;
+                            ajax.post('api/ExamTopic/addTopic', that.topicAddCond, function(responseData){
+                                that.$message({
+                                    showClose: true,
+                                    message: '习题新增成功',
+                                    type: 'success'
+                                });
+                                that.addTopicDialogVisible = false;
+                            });
+                        })
+                    }
+                });
+            },
 
+            cancel: function () {
+                let that = this;
+                that.addTopicDialogVisible = false;
+                that.topicAddCond = {};
+                that.addTopicOptionInfos = [];
             },
 
             editTopicById(topic){
@@ -177,6 +208,28 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                 this.topicOptionEditCond = JSON.parse(JSON.stringify(option));
                 this.editTopicOptionDialogVisible = true;
             },
+
+            addTopicOption() {
+                this.addTopicOptionInfo = {
+                    topicId: this.topicId,
+                    symbol: '',
+                    name: '',
+                    status: '0'
+                };
+
+                let that = this;
+                that.$refs.addTopicOptionInfos.insertAt(that.addTopicOptionInfo, 0);
+                that.addTopicOptionInfos.push(this.addTopicOptionInfo);
+                that.topicAddCond.topicOptions = that.addTopicOptionInfos;
+            },
+
+            deleteTopicOptionBatch() {
+
+            },
+
+            deleteTopicOption(row) {
+
+            }
         },
     });
 

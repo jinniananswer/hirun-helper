@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
+<head>
+    <meta charset="UTF-8">
+    <title>员工任务查询</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script src="static/js/framework/requirejs/require.min.js"
+            th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js"
+            th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-main>
+            <el-card class="box-card" shadow="hover">
+                <div slot="header" class="clearfix">
+                    <span>查询条件区</span>
+                </div>
+                <el-form :inline="false" :model="queryCond" label-position="right" label-width="100px">
+                    <el-row>
+                        <el-col :span="8">
+                            <el-form-item label="员工名称">
+                                <el-input v-model="queryCond.employeeName" placeholder="请输入员工名称"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="员工ID">
+                                <el-input v-model.number="queryCond.employeeId"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="8">
+                            <el-form-item>
+                                <el-button type="primary" @click="query">查询</el-button>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </el-card>
+
+            <el-card class="box-card" shadow="hover">
+                <el-table border
+                        :data="employeeTaskInfo" stripe="true" height="350" style="width: 100%"
+                        ref="employeeTaskInfo" align="center">
+                    <el-table-column label="员工ID" prop="employeeId" width="200" align="center">
+                        <template slot-scope="employeeTask">
+                            <el-button type="text" @click="toEmployeeTaskDetail(employeeTask.row.employeeId)">{{
+                                employeeTask.row.employeeId }}
+                            </el-button>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="employeeName" width="200" label="员工名称" align="center"></el-table-column>
+                    <el-table-column prop="taskNum" width="200" label="任务数量" align="center"></el-table-column>
+                    <el-table-column prop="studyNum" width="200" label="学习内容数量" align="center"></el-table-column>
+                </el-table>
+            </el-card>
+
+            <div style="text-align: center">
+                <el-pagination
+                        layout="total, prev, pager, next"
+                        :total="queryCond.count"
+                        :current-page.sync="queryCond.page"
+                        :page-size="queryCond.limit"
+                        @current-change="query">
+                </el-pagination>
+            </div>
+        </el-main>
+    </el-container>
+</div>
+<style>
+    .text {
+        font-size: 14px;
+    }
+
+    .box-card {
+        margin-bottom: 12px;
+    }
+
+    .item {
+        margin-bottom: 18px;
+    }
+
+    .el-card__header {
+        padding: 10px;
+    }
+
+    .modify_row {
+        color: #ff4835;
+    }
+
+    .new_row {
+        color: #4DAF29;
+    }
+
+    .delete_row {
+        text-decoration: line-through;
+    }
+</style>
+<script src="static/js/modules/college/task/employee.task.query.js"
+        th:src="@{static/js/modules/college/task/employee.task.query.js(v=${version})}"></script>
+</body>
+</html>

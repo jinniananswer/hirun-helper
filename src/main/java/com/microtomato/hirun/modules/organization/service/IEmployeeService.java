@@ -138,4 +138,8 @@ public interface IEmployeeService extends IService<Employee> {
     List<SimpleEmployeeDTO> queryEmployeeByRoleAndOrg(Long orgId,String roleType);
 
     IPage<Employee> queryNewEmployeeByPage(EmployeeQueryDTO employeeQueryDTO, Page<EmployeeQueryDTO> page);
+
+    List<Employee> queryByEmployeeIdAndLikeName(Long employeeId, String name);
+
+    Employee getEEmployeeByEmployeeId(Long employeeId);
 }

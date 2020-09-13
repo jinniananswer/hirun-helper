@@ -59,4 +59,6 @@ public interface IUploadFileService extends IService<UploadFile> {
      */
     void deleteById(Long id);
 
+    String getFileNameByFileId(String id);
+
 }

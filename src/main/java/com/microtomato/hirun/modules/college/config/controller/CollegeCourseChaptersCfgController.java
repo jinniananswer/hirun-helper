@@ -8,6 +8,7 @@ import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeCourseChaptersCfg;
 import com.microtomato.hirun.modules.college.config.service.ICollegeCourseChaptersCfgService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.Serializable;
@@ -86,5 +87,20 @@ public class CollegeCourseChaptersCfgController {
     @GetMapping("deleteByIds")
     public boolean deleteByIds(@RequestParam("idList") List<Long> idList) {
         return this.collegeCourseChaptersCfgService.removeByIds(idList);
+    }
+
+    @PostMapping("addChapters")
+    @Transactional(rollbackFor = Exception.class)
+    @RestResult
+    public void addChapters(@RequestBody CollegeCourseChaptersCfg collegeCourseChaptersCfg){
+        collegeCourseChaptersCfg.setStatus("0");
+        this.collegeCourseChaptersCfgService.save(collegeCourseChaptersCfg);
+    }
+
+    @PostMapping("editChapters")
+    @Transactional(rollbackFor = Exception.class)
+    @RestResult
+    public void editChapters(@RequestBody CollegeCourseChaptersCfg collegeCourseChaptersCfg){
+        this.collegeCourseChaptersCfgService.updateById(collegeCourseChaptersCfg);
     }
 }

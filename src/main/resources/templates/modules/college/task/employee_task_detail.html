@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>dolphin-admin</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script src="static/js/framework/requirejs/require.min.js"
+            th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js"
+            th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-main>
+            <el-row :gutter="12">
+                <el-card class="box-card" shadow="hover">
+                    <div slot="header" class="clearfix">
+                        <span>员工信息</span>
+                    </div>
+
+                    <el-tabs v-model="subActiveTab" type="border-card">
+                        <el-tab-pane label="基本信息" name="baseInfo">
+                            <el-col :span="20">
+                                <el-row :gutter="5">
+                                    <el-col :span="6">
+                                        <div class="text">
+                                            员工姓名：
+                                            <template>
+                                                <el-tag>{{employee.name}}</el-tag>
+                                            </template>
+                                        </div>
+                                    </el-col>
+                                    <el-col :span="6">
+                                        <div class="text item">
+                                            员工ID：
+                                            <template>
+                                                <el-tag>{{employee.employeeId}}</el-tag>
+                                            </template>
+                                        </div>
+                                    </el-col>
+                                    <el-col :span="6">
+                                        <div class="text item">
+                                            联系电话：
+                                            <template>
+                                                <el-tag>{{employee.mobileNo}}</el-tag>
+                                            </template>
+                                        </div>
+                                    </el-col>
+                                    <el-col :span="6">
+                                        <div class="text item">
+                                            出生日期：
+                                            <template>
+                                                <el-tag>{{employee.birthday}}</el-tag>
+                                            </template>
+                                        </div>
+                                    </el-col>
+                                </el-row>
+                                <el-row :gutter="5">
+                                    <el-col :span="6">
+                                        <div class="text">
+                                            入职时间：
+                                            <template>
+                                                <el-tag>{{employee.inDate}}</el-tag>
+                                            </template>
+                                        </div>
+                                    </el-col>
+                                    <el-col :span="6">
+                                        <div class="text">
+                                            工作时间：
+                                            <template>
+                                                <el-tag>{{employee.jobDate}}</el-tag>
+                                            </template>
+                                        </div>
+                                    </el-col>
+                                    <el-col :span="6">
+                                        <div class="text">
+                                            转正时间：
+                                            <template>
+                                                <el-tag>{{employee.regularDate}}</el-tag>
+                                            </template>
+                                        </div>
+                                    </el-col>
+                                </el-row>
+                            </el-col>
+                        </el-tab-pane>
+                    </el-tabs>
+                </el-card>
+            </el-row>
+            <el-row :gutter="12">
+                <el-col :span="12">
+                    <div class="grid-content bg-purple">
+                        <el-card class="box-card" shadow="hover">
+                            <div slot="header" class="clearfix">
+                                <span>员工任务明细</span>
+                            </div>
+                            <div class="block">
+                                <div class="block">
+                                    <el-timeline>
+                                        <el-table border
+                                                  :data="employeeTaskInfo" stripe="true" height="350" style="width: 100%"
+                                                  ref="employeeTaskInfo" align="center">
+                                            <el-table-column prop="studyName" width="200" label="学习内容" align="center"></el-table-column>
+                                            <el-table-column prop="chapterName" width="200" label="章节名称" align="center"></el-table-column>
+                                            <el-table-column prop="taskTypeName" width="200" label="任务类型" align="center"></el-table-column>
+                                            <el-table-column prop="studyTypeName" width="200" label="内容类型" align="center"></el-table-column>
+                                            <el-table-column prop="studyStartDate" width="200" label="学习开始时间" align="center"></el-table-column>
+                                            <el-table-column prop="studyEndDate" width="200" label="学习结束时间" align="center"></el-table-column>
+                                            <el-table-column prop="studyCompleteDate" width="200" label="学习完成时间" align="center"></el-table-column>
+                                            <el-table-column prop="exercisesCompletedNumber" width="200" label="练习次数" align="center"></el-table-column>
+                                            <el-table-column prop="exercisesNumber" width="200" label="习题数量" align="center"></el-table-column>
+                                            <el-table-column prop="examScore" width="200" label="考试分数" align="center"></el-table-column>
+                                            <el-table-column prop="passScore" width="200" label="考试合格分数" align="center"></el-table-column>
+                                            <el-table-column prop="score" width="200" label="评分" align="center"></el-table-column>
+                                        </el-table>
+                                    </el-timeline>
+                                </div>
+                            </div>
+                            <div style="text-align: center">
+                                <el-pagination
+                                        layout="total, prev, pager, next"
+                                        :total="queryCond.count"
+                                        :current-page.sync="queryCond.page"
+                                        :page-size="queryCond.limit"
+                                        @current-change="initEmployeeTaskDetailInfo">
+                                </el-pagination>
+                            </div>
+                        </el-card>
+                        <el-card class="box-card" shadow="hover">
+                            <div>
+                                <el-divider content-position="left"><span style="font-weight: 700">任务评价情况</span>
+                                </el-divider>
+                            </div>
+                            <template>
+                            </template>
+                        </el-card>
+                    </div>
+                </el-col>
+                <el-col :span="12">
+                    <div class="grid-content bg-purple-light">
+                        <el-collapse value="1" accordion>
+                            <el-card class="box-card" shadow="hover">
+                                <div>
+                                    <el-divider content-position="left"><span style="font-weight: 700">学习任务完成情况</span>
+                                    </el-divider>
+                                </div>
+                                <template>
+                                    <el-row :gutter="12">
+                                        <el-col :span="6">
+                                            <span>任务总数：
+                                                <template>
+                                                    <el-tag>{{taskDetailInfo.allTaskNum}}</el-tag>
+                                                </template>
+                                            </span>
+                                        </el-col>
+                                    </el-row>
+                                    <el-row :gutter="12" align="center">
+                                        <el-col :span="6">
+                                            <el-row>
+                                                <el-col>
+                                                    <span>完成数量：
+                                                        <template>
+                                                            <el-tag>{{taskDetailInfo.taskFinishNum}}</el-tag>
+                                                        </template>
+                                                    </span>
+                                                </el-col>
+                                            </el-row>
+                                            <el-row>
+                                                <el-col>
+                                                    <el-progress type="circle" :percentage="taskDetailInfo.taskFinish"></el-progress>
+                                                </el-col>
+                                            </el-row>
+                                        </el-col>
+                                        <el-col :span="6">
+                                            <el-row>
+                                                <el-col>
+                                                    <span>未完成数量：
+                                                        <template>
+                                                            <el-tag>{{taskDetailInfo.taskUnFinishNum}}</el-tag>
+                                                        </template>
+                                                    </span>
+                                                </el-col>
+                                            </el-row>
+                                            <el-row>
+                                                <el-col>
+                                                    <el-progress type="circle" :percentage="taskDetailInfo.taskUnFinish"></el-progress>
+                                                </el-col>
+                                            </el-row>
+                                        </el-col>
+                                    </el-row>
+                                </template>
+                            </el-card>
+                        </el-collapse>
+                        <el-card class="box-card" shadow="hover">
+                            <div>
+                                <el-divider content-position="left"><span style="font-weight: 700">学习任务习题练习情况</span>
+                                </el-divider>
+                            </div>
+                            <template>
+                                <el-row :gutter="12">
+                                    <el-col :span="6">
+                                            <span>任务总数：
+                                                <template>
+                                                    <el-tag>{{taskDetailInfo.allTaskNum}}</el-tag>
+                                                </template>
+                                            </span>
+                                    </el-col>
+                                </el-row>
+                                <el-row :gutter="12" align="center">
+                                    <el-col :span="6">
+                                        <el-row>
+                                            <span>已练习数量：
+                                                <template>
+                                                    <el-tag>{{taskDetailInfo.exercisesFinishNum}}</el-tag>
+                                                </template>
+                                            </span>
+                                        </el-row>
+                                        <el-row>
+                                            <el-col>
+                                                <el-progress type="circle" :percentage="taskDetailInfo.exercisesFinish"></el-progress>
+                                            </el-col>
+                                        </el-row>
+                                    </el-col>
+                                    <el-col :span="6">
+                                        <el-row>
+                                            <el-col>
+                                                <span>练习中数量：
+                                                    <template>
+                                                        <el-tag>{{taskDetailInfo.exercisesUnderWayNum}}</el-tag>
+                                                    </template>
+                                                </span>
+                                            </el-col>
+                                        </el-row>
+                                        <el-row>
+                                            <el-col>
+                                                <el-progress type="circle" :percentage="taskDetailInfo.exercisesUnderWay"></el-progress>
+                                            </el-col>
+                                        </el-row>
+                                    </el-col>
+                                    <el-col :span="6">
+                                        <el-row>
+                                            <el-col>
+                                                <span>未练习数量：
+                                                    <template>
+                                                        <el-tag>{{taskDetailInfo.exercisesUnFinishNum}}</el-tag>
+                                                    </template>
+                                                </span>
+                                            </el-col>
+                                        </el-row>
+                                        <el-row>
+                                            <el-col>
+                                                <el-progress type="circle" :percentage="taskDetailInfo.exercisesUnFinish"></el-progress>
+                                            </el-col>
+                                        </el-row>
+                                    </el-col>
+                                </el-row>
+                            </template>
+                        </el-card>
+                        <el-card class="box-card" shadow="hover">
+                            <div>
+                                <el-divider content-position="left"><span style="font-weight: 700">学习任务考试情况</span>
+                                </el-divider>
+                            </div>
+                            <template>
+                                <el-row :gutter="12">
+                                    <el-col :span="6">
+                                            <span>任务总数：
+                                                <template>
+                                                    <el-tag>{{taskDetailInfo.allTaskNum}}</el-tag>
+                                                </template>
+                                            </span>
+                                    </el-col>
+                                </el-row>
+                                <el-row :gutter="12" align="center">
+                                    <el-col :span="6">
+                                        <el-row>
+                                            <el-col>
+                                                <span>已考试数量：
+                                                    <template>
+                                                        <el-tag>{{taskDetailInfo.examFinishNum}}</el-tag>
+                                                    </template>
+                                                </span>
+                                            </el-col>
+                                        </el-row>
+                                        <el-row>
+                                            <el-col>
+                                                <el-progress type="circle" :percentage="taskDetailInfo.examFinish"></el-progress>
+                                            </el-col>
+                                        </el-row>
+                                        <el-row>
+                                            <span>及格数量：
+                                                    <template>
+                                                        <el-tag>{{taskDetailInfo.examPassNum}}</el-tag>
+                                                    </template>
+                                            </span>
+                                            <el-progress :percentage="taskDetailInfo.examPass" :color="customColorMethod"></el-progress>
+                                        </el-row>
+                                        <el-row>
+                                            <span>不及格数量：
+                                                    <template>
+                                                        <el-tag>{{taskDetailInfo.examUnPassNum}}</el-tag>
+                                                    </template>
+                                            </span>
+                                            <el-progress :percentage="taskDetailInfo.examUnPass" :color="customColorMethod"></el-progress>
+                                        </el-row>
+                                    </el-col>
+                                    <el-col :span="6">
+                                        <el-row>
+                                            <el-col>
+                                                    <span>未考试数量：
+                                                        <template>
+                                                            <el-tag>{{taskDetailInfo.examUnFinishNum}}</el-tag>
+                                                        </template>
+                                                    </span>
+                                            </el-col>
+                                        </el-row>
+                                        <el-row>
+                                            <el-col>
+                                                <el-progress type="circle" :percentage="taskDetailInfo.examUnFinish"></el-progress>
+                                            </el-col>
+                                        </el-row>
+                                    </el-col>
+                                </el-row>
+                            </template>
+                        </el-card>
+                    </div>
+                </el-col>
+            </el-row>
+        </el-main>
+    </el-container>
+
+</div>
+
+<style>
+    .text {
+        font-size: 14px;
+    }
+
+    .item {
+        margin-bottom: 18px;
+    }
+
+    .box-card {
+        margin-bottom: 12px;
+    }
+
+    .el-card__header {
+        padding: 10px;
+    }
+</style>
+
+<script src="static/js/modules/college/task/employee.task.detail.js"
+        th:src="@{static/js/modules/college/task/employee.task.detail.js(v=${version})}"></script>
+</body>
+</html>
