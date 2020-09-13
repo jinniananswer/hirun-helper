@@ -59,14 +59,12 @@
                                     户型：<template v-if="order.houseLayoutName != null && order.houseLayoutName != ''"><el-tag>{{order.houseLayoutName}}</el-tag></template>
                                 </div>
                             </el-col>
-                        </el-row >
-                        <el-row :gutter="5">
                             <el-col :span="6">
                                 <div class="text">
                                     订单类型：<template v-if="order.typeName != null && order.typeName != ''"><el-tag>{{order.typeName}}</el-tag></template>
                                 </div>
                             </el-col>
-                        </el-row>
+                        </el-row >
                     </el-card>
                     <el-card class="box-card" shadow="hover">
                         <div slot="header">
