@@ -5,81 +5,65 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
         data: function() {
             return {
                 queryCond: {
-                    taskType: '',
-                    studyId: '',
-                    studyName: '',
-                    studyTaskId: '',
+                    employeeId: '',
+                    employeeName: '',
+                    startDate: '',
+                    endDate: '',
                     limit: 20,
                     page: 1,
                     count: null
                 },
-                collegeStudyExercisesRules: {
-                    examId: [
-                        { required: true, message: '请先选择习题范围', trigger: 'change' }
-                    ],
-                    exercisesType: [
-                        { required: true, message: '请先选择习题类型', trigger: 'blur' }
-                    ],
-                    exercisesNumber: [
-                        { required: true, message: '习题数量不能为空', trigger: 'blur' },
-                        { type: 'number', message: '习题数量必须为数字值', trigger: 'blur'}
-                    ]
-                },
-                studyTaskInfo: [],
-                exercisesType: '',
-                collegeStudyExercisesList: [],
-                fixedExercisesDialogVisible: false,
-                collegeStudyExercisesInfo: {}
+                taskDeferApplyInfos: []
             }
         },
         methods: {
             query: function() {
                 let that = this;
-                ajax.get('api/CollegeStudyTaskCfg/queryCollegeStudyExercisesByPage', this.queryCond, function(responseData){
+                ajax.get('api/CollegeStudyTaskCfg/queryCollegeStudyExamByPage', this.queryCond, function(responseData){
                     that.studyTaskInfo = responseData.records;
                     that.queryCond.page = responseData.current;
                     that.queryCond.count = responseData.total;
                 });
             },
-            handleExercisesSelectionChange(val) {
+            handleTaskDeferApplySelectionChange(val) {
                 this.multipleSelection = val;
             },
-            fixedExercisesBatch: function () {
+            fixedExamBatch: function () {
                 let val = this.multipleSelection
                 if(val == undefined || val == 'undefined' || val.length <= 0){
                     this.$message({
                         showClose: true,
                         duration: 3000,
-                        message: '您未选择需要设置习题目标的任务配置！请选择后再点击设置。',
+                        message: '您未选择需要设置考试目标的任务配置！请选择后再点击设置。',
                         center: true
                     });
                     return;
                 }
-                this.collegeStudyExercisesInfo = {};
+                this.collegeStudyExamInfo = {};
                 //批量设置
-                this.collegeStudyExercisesInfo.fixedType = '0';
-                this.fixedExercisesDialogVisible = true;
+                this.collegeStudyExamInfo.fixedType = '0';
+                this.fixedExamDialogVisible = true;
             },
-            fixedExercises: function (row) {
-                this.collegeStudyExercisesInfo = {};
+            fixedExam: function (row) {
+                this.collegeStudyExamInfo = {};
                 //单条设置
-                this.collegeStudyExercisesInfo.fixedType = '1';
+                this.collegeStudyExamInfo.fixedType = '1';
                 let studyChaptersList = [];
                 let studyChapters = {};
                 studyChapters.studyId = row.studyId;
                 studyChapters.chaptersId = row.chaptersId;
                 studyChaptersList.push(studyChapters);
-                this.collegeStudyExercisesInfo.studyChaptersList = studyChaptersList
-                this.fixedExercisesDialogVisible = true;
+                this.collegeStudyExamInfo.studyChaptersList = studyChaptersList
+                this.fixedExamDialogVisible = true;
             },
             cancel: function () {
-                this.fixedExercisesDialogVisible = false;
+                this.fixedExamDialogVisible = false;
             },
-            submitFixedExercises: function(collegeStudyExercisesInfo){
-                this.$refs.collegeStudyExercisesInfo.validate((valid) => {
+            submitFixedExercises: function(collegeStudyExamInfo){
+                this.$refs.collegeStudyExamInfo.validate((valid) => {
                     if (valid) {
-                        let fixedType = collegeStudyExercisesInfo.fixedType;
-                        let requestInfo = collegeStudyExercisesInfo;
+                        let fixedType = collegeStudyExamInfo.fixedType;
+                        let requestInfo = collegeStudyExamInfo;
                         if (fixedType == '0'){
                             let val = this.multipleSelection
                             if(val == undefined || val == 'undefined' || val.length <= 0){
@@ -101,7 +85,12 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                             requestInfo.studyChaptersList = studyChaptersList;
                         }
                         let that = this;
-                        ajax.post('api/CollegeStudyExercisesCfg/fixedStudyExercises', requestInfo, function(responseData){
+                        ajax.post('api/CollegeStudyExamCfg/fixedStudyExam', requestInfo, function(responseData){
+                            that.$message({
+                                showClose: true,
+                                message: '课程任务考试题目设置成功',
+                                type: 'success'
+                            });
                             let addStudyChaptersList = requestInfo.studyChaptersList
                             addStudyChaptersList.forEach((addStudyChapters)=>{
                                 that.studyTaskInfo.forEach((studyTask)=>{
@@ -112,21 +101,12 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                                         collegeStudyExam.examId = requestInfo.examId
                                         collegeStudyExam.exercisesType = requestInfo.exercisesType
                                         collegeStudyExam.exercisesNumber = requestInfo.exercisesNumber
-                                        collegeStudyExam.exercisesTypeName = responseData.exercisesTypeName
-                                        collegeStudyExam.examName = responseData.examName
-                                        if(studyTask.collegeStudyExercisesList == undefined || studyTask.collegeStudyExercisesList == "undefined"){
-                                            studyTask.collegeStudyExercisesList = [];
-                                        }
-                                        studyTask.collegeStudyExercisesList.push(collegeStudyExam);
+                                        studyTask.collegeStudyExamList.push(collegeStudyExam);
                                     }
                                 })
                             })
-                            that.$message({
-                                showClose: true,
-                                message: '课程任务新增成功',
-                                type: 'success'
-                            });
-                            that.fixedExercisesDialogVisible = false;
+
+                            that.fixedExamDialogVisible = false;
                         });
                     }
                 });

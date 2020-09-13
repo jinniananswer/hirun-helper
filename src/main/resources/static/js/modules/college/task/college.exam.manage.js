@@ -117,6 +117,11 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                                         collegeStudyExam.examId = requestInfo.examId
                                         collegeStudyExam.exercisesType = requestInfo.exercisesType
                                         collegeStudyExam.exercisesNumber = requestInfo.exercisesNumber
+                                        collegeStudyExam.exercisesTypeName = responseData.exercisesTypeName
+                                        collegeStudyExam.examName = responseData.examName
+                                        if(studyTask.collegeStudyExamList == undefined || studyTask.collegeStudyExamList == "undefined"){
+                                            studyTask.collegeStudyExamList = [];
+                                        }
                                         studyTask.collegeStudyExamList.push(collegeStudyExam);
                                     }
                                 })

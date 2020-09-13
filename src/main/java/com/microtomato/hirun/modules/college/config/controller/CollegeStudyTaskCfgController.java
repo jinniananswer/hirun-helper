@@ -11,8 +11,11 @@ import com.microtomato.hirun.modules.college.config.entity.po.CollegeCourseChapt
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeStudyTaskCfg;
 import com.microtomato.hirun.modules.college.config.service.ICollegeCourseChaptersCfgService;
 import com.microtomato.hirun.modules.college.config.service.ICollegeStudyTaskCfgService;
+import com.microtomato.hirun.modules.system.service.IStaticDataService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,6 +42,9 @@ public class CollegeStudyTaskCfgController {
 
     @Autowired
     private ICollegeCourseChaptersCfgService collegeCourseChaptersCfgServiceImpl;
+
+    @Autowired
+    private IStaticDataService staticDataServiceImpl;
 
     /**
      * 分页查询所有数据
@@ -108,18 +114,53 @@ public class CollegeStudyTaskCfgController {
     @PostMapping("addStudyTaskCfg")
     @Transactional(rollbackFor = Exception.class)
     @RestResult
-    public void addStudyTaskCfg(@RequestBody CollegeCourseChaptersTaskRequestDTO collegeCourseChaptersTaskRequestDTO){
+    public CollegeStudyTaskResponseDTO addStudyTaskCfg(@RequestBody CollegeCourseChaptersTaskRequestDTO collegeCourseChaptersTaskRequestDTO){
+        CollegeStudyTaskResponseDTO result = new CollegeStudyTaskResponseDTO();
         CollegeStudyTaskCfg collegeStudyTaskCfg = new CollegeStudyTaskCfg();
         BeanUtils.copyProperties(collegeCourseChaptersTaskRequestDTO, collegeStudyTaskCfg);
+        BeanUtils.copyProperties(collegeCourseChaptersTaskRequestDTO, result);
         collegeStudyTaskCfg.setStatus("0");
         this.collegeStudyTaskCfgService.save(collegeStudyTaskCfg);
         List<CollegeCourseChaptersCfg> courseChaptersList = collegeCourseChaptersTaskRequestDTO.getCourseChaptersList();
         if (ArrayUtils.isNotEmpty(courseChaptersList)){
+            List<CollegeCourseChaptersTaskResponseDTO> collegeCourseChaptersTaskResponseDTOList = new ArrayList<>();
             for (CollegeCourseChaptersCfg courseChaptersCfg : courseChaptersList){
                 courseChaptersCfg.setStatus("0");
+                CollegeCourseChaptersTaskResponseDTO collegeCourseChaptersTaskResponseDTO = new CollegeCourseChaptersTaskResponseDTO();
+                BeanUtils.copyProperties(courseChaptersCfg, collegeCourseChaptersTaskResponseDTO);
+                String chaptersType = collegeCourseChaptersTaskResponseDTO.getChaptersType();
+                String chaptersTypeName = chaptersType;
+                if (StringUtils.isNotEmpty(chaptersType)){
+                    chaptersTypeName = staticDataServiceImpl.getCodeName("CHAPTERS_TYPE", chaptersType);
+                }
+                collegeCourseChaptersTaskResponseDTO.setChaptersTypeName(chaptersTypeName);
+                String studyModel = collegeCourseChaptersTaskResponseDTO.getStudyModel();
+                String studyModelName = studyModel;
+                if (StringUtils.isNotEmpty(studyModel)){
+                    studyModelName = staticDataServiceImpl.getCodeName("CHAPTER_STUDY_MODEL", studyModel);
+                }
+                collegeCourseChaptersTaskResponseDTO.setStudyModelName(studyModelName);
+                collegeCourseChaptersTaskResponseDTOList.add(collegeCourseChaptersTaskResponseDTO);
             }
             collegeCourseChaptersCfgServiceImpl.saveBatch(courseChaptersList);
+            result.setCollegeCourseChaptersList(collegeCourseChaptersTaskResponseDTOList);
         }
+        String studyType = result.getStudyType();
+        String studyTypeName = "";
+        if (StringUtils.isNotEmpty(studyType)){
+            studyTypeName = staticDataServiceImpl.getCodeName("TASK_COURSEWARE_TYPE", studyType);
+        }
+        if (StringUtils.isEmpty(studyTypeName)){
+            studyTypeName = studyType;
+        }
+        result.setStudyTypeName(studyTypeName);
+        String taskType = result.getTaskType();
+        String taskTypeName = staticDataServiceImpl.getCodeName("STUDY_TASK_TYPE", taskType);
+        if (StringUtils.isEmpty(taskTypeName)){
+            taskTypeName = taskType;
+        }
+        result.setTaskTypeName(taskTypeName);
+        return result;
     }
 
     @PostMapping("deleteStudyTaskBatch")

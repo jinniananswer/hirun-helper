@@ -6,13 +6,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.util.ArrayUtils;
-import com.microtomato.hirun.modules.college.config.entity.dto.CollegeFixedExamRequestDTO;
-import com.microtomato.hirun.modules.college.config.entity.dto.CollegeFixedExamTaskDTO;
-import com.microtomato.hirun.modules.college.config.entity.dto.CollegeFixedExercisesRequestDTO;
-import com.microtomato.hirun.modules.college.config.entity.dto.CollegeFixedExercisesTaskDTO;
+import com.microtomato.hirun.modules.college.config.entity.dto.*;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeStudyExamCfg;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeStudyExercisesCfg;
 import com.microtomato.hirun.modules.college.config.service.ICollegeStudyExamCfgService;
+import com.microtomato.hirun.modules.system.service.IStaticDataService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +37,9 @@ public class CollegeStudyExamCfgController {
      */
     @Autowired
     private ICollegeStudyExamCfgService collegeStudyExamCfgService;
+
+    @Autowired
+    private IStaticDataService staticDataServiceImpl;
 
     /**
      * 分页查询所有数据
@@ -100,7 +102,8 @@ public class CollegeStudyExamCfgController {
     @PostMapping("fixedStudyExam")
     @Transactional(rollbackFor = Exception.class)
     @RestResult
-    public void fixedStudyExam(@RequestBody CollegeFixedExamRequestDTO collegeFixedExamRequestDTO){
+    public CollegeFixedExamResponseDTO fixedStudyExam(@RequestBody CollegeFixedExamRequestDTO collegeFixedExamRequestDTO){
+        CollegeFixedExamResponseDTO result = new CollegeFixedExamResponseDTO();
         if (null != collegeFixedExamRequestDTO){
             List<CollegeFixedExamTaskDTO> studyChaptersList = collegeFixedExamRequestDTO.getStudyChaptersList();
             if (ArrayUtils.isNotEmpty(studyChaptersList)){
@@ -119,6 +122,25 @@ public class CollegeStudyExamCfgController {
                     this.collegeStudyExamCfgService.saveBatch(collegeStudyExamCfgList);
                 }
             }
+            String examId = collegeFixedExamRequestDTO.getExamId();
+            String examName = "";
+            if (StringUtils.isNotEmpty(examId)){
+                examName = staticDataServiceImpl.getCodeName("EXAM_RANGE", examId);
+            }
+            if (StringUtils.isEmpty(examName)){
+                examName = examId;
+            }
+            result.setExamName(examName);
+            String exercisesType = collegeFixedExamRequestDTO.getExercisesType();
+            String exercisesTypeName = "";
+            if (StringUtils.isNotEmpty(exercisesType)){
+                exercisesTypeName = staticDataServiceImpl.getCodeName("EXERCISES_TYPE", exercisesType);
+            }
+            if (StringUtils.isEmpty(exercisesTypeName)){
+                exercisesTypeName = exercisesType;
+            }
+            result.setExercisesTypeName(exercisesTypeName);
         }
+        return result;
     }
 }

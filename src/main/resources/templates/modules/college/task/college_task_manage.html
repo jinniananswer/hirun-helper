@@ -138,7 +138,7 @@
                         </el-select>
                     </div>
                     <div style="height: 20vh;overflow: auto;">
-                        <upload-file :style="showUpload" :on-success="handleSuccess" accept=".pdf" limit="1"></upload-file>
+                        <upload-file :style="showUpload" ref="upload" accept=".pdf" limit="1"></upload-file>
                         <el-tree :style="showTree" :data="studyInfos" node-key="courseId" :props="defaultProps" @node-click="handleNodeClick" accordion></el-tree>
                     </div>
                 </el-card>
@@ -148,7 +148,7 @@
                     </div>
                     <el-form :inline="false" :model="addStudyTaskInfo"  ref="addStudyTaskInfo" label-position="right"
                              label-width="120px" :rules="studyTaskRules">
-                        <el-row>
+                        <el-row :style="showTree">
                             <el-col :span="8">
                                 <el-form-item label="学习内容标识" label-width="120px" prop="studyId">
                                     <el-input :disabled="true" v-model="addStudyTaskInfo.studyId" autocomplete="off"></el-input>
@@ -341,7 +341,7 @@
                                 <vxe-table-column field="chaptersName" align="center" title="章节名称" width="250"></vxe-table-column>
                                 <vxe-table-column field="chaptersStudyOrder" align="center" title="章节学习顺序" width="150" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
                                 <vxe-table-column field="studyTime" align="center" title="学习时间/天" width="150" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
-                                <vxe-table-column field="studyModel"  align="center"title="学习模式" width="100"></vxe-table-column>
+                                <vxe-table-column field="studyModelNamec "  align="center"title="学习模式" width="100"></vxe-table-column>
                                 <vxe-table-column field="exercisesNumber" align="center" title="习题次数" width="100" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
                                 <vxe-table-column field="passScore" align="center"title="考试合格分数" width="150" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
                                 <vxe-table-column field="chaptersType" align="center" title="章节类型" width="100"></vxe-table-column>

@@ -6,14 +6,17 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.modules.college.config.entity.dto.CollegeFixedExamResponseDTO;
 import com.microtomato.hirun.modules.college.config.entity.dto.CollegeFixedExercisesRequestDTO;
 import com.microtomato.hirun.modules.college.config.entity.dto.CollegeFixedExercisesTaskDTO;
 import com.microtomato.hirun.modules.college.config.entity.dto.CollegeStudyTaskResponseDTO;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeStudyExercisesCfg;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeStudyTaskCfg;
 import com.microtomato.hirun.modules.college.config.service.ICollegeStudyExercisesCfgService;
+import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import io.netty.util.internal.ObjectUtil;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +42,9 @@ public class CollegeStudyExercisesCfgController {
      */
     @Autowired
     private ICollegeStudyExercisesCfgService collegeStudyExercisesCfgService;
+
+    @Autowired
+    private IStaticDataService staticDataServiceImpl;
 
     /**
      * 分页查询所有数据
@@ -101,7 +107,8 @@ public class CollegeStudyExercisesCfgController {
     @PostMapping("fixedStudyExercises")
     @Transactional(rollbackFor = Exception.class)
     @RestResult
-    public void fixedStudyExercises(@RequestBody CollegeFixedExercisesRequestDTO collegeFixedExercisesRequestDTO){
+    public CollegeFixedExamResponseDTO fixedStudyExercises(@RequestBody CollegeFixedExercisesRequestDTO collegeFixedExercisesRequestDTO){
+        CollegeFixedExamResponseDTO result = new CollegeFixedExamResponseDTO();
         if (null != collegeFixedExercisesRequestDTO){
             List<CollegeFixedExercisesTaskDTO> studyChaptersList = collegeFixedExercisesRequestDTO.getStudyChaptersList();
             if (ArrayUtils.isNotEmpty(studyChaptersList)){
@@ -119,7 +126,26 @@ public class CollegeStudyExercisesCfgController {
                 if (ArrayUtils.isNotEmpty(collegeStudyExercisesCfgList) && collegeStudyExercisesCfgList.size() > 0){
                     this.collegeStudyExercisesCfgService.saveBatch(collegeStudyExercisesCfgList);
                 }
+                String examId = collegeFixedExercisesRequestDTO.getExamId();
+                String examName = "";
+                if (StringUtils.isNotEmpty(examId)){
+                    examName = staticDataServiceImpl.getCodeName("EXAM_RANGE", examId);
+                }
+                if (StringUtils.isEmpty(examName)){
+                    examName = examId;
+                }
+                result.setExamName(examName);
+                String exercisesType = collegeFixedExercisesRequestDTO.getExercisesType();
+                String exercisesTypeName = "";
+                if (StringUtils.isNotEmpty(exercisesType)){
+                    exercisesTypeName = staticDataServiceImpl.getCodeName("EXERCISES_TYPE", exercisesType);
+                }
+                if (StringUtils.isEmpty(exercisesTypeName)){
+                    exercisesTypeName = exercisesType;
+                }
+                result.setExercisesTypeName(exercisesTypeName);
             }
         }
+        return result;
     }
 }
