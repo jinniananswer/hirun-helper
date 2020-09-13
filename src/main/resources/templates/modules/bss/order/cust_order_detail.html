@@ -18,6 +18,61 @@
                         <div slot="header">
                             <span>订单基本信息</span>
                         </div>
+                        <el-row :gutter="20">
+                            <el-col :span="4">
+                                <el-row :gutter="12">
+                                    <el-col :span="8">
+                                        <el-avatar :size="60" v-if="customer.headUrl != null" :src="customer.headUrl"></el-avatar>
+                                        <el-avatar :size="60" v-else>{{customer.custName!=null?customer.custName.substring(0,1):''}}</el-avatar>
+                                    </el-col>
+                                    <el-col :span="16">
+                                        <h3 v-if="customer.custName != null && customer.custName != ''">{{customer.custName}}</h3>
+                                        <h3 v-else>未录入</h3>
+                                    </el-col>
+                                </el-row>
+                            </el-col>
+                            <el-col :span="20">
+                                <el-row :gutter="5">
+                                    <el-col :span="8">
+                                        <div class="text">
+                                            客户姓名：<template v-if="customer.custName != null && customer.custName != ''"><el-tag type="danger">{{customer.custName}}</el-tag></template>
+                                        </div>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <div class="text item">
+                                            客户电话：<template v-if="customer.mobileNo != null && customer.mobileNo != ''"><el-tag>{{customer.mobileNo}}</el-tag></template>
+                                        </div>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <div class="text item">
+                                            咨询时间：<template v-if="customer.consultTime != null && customer.consultTime != ''"><el-tag>{{customer.consultTime}}</el-tag></template>
+                                        </div>
+                                    </el-col>
+                                </el-row >
+                                <el-row :gutter="5">
+                                    <el-col :span="8">
+                                        <div class="text">
+                                            客户类型：<template v-if="customer.custTypeName != null && customer.custTypeName != ''"><el-tag type="danger">{{customer.custTypeName}}</el-tag></template>
+                                        </div>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <div class="text item">
+                                            职业：<template v-if="customer.profession != null && customer.profession != ''"><el-tag>{{customer.profession}}</el-tag></template>
+                                        </div>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <div class="text item">
+                                            学历：<template v-if="customer.educational != null && customer.educational != ''"><el-tag>{{customer.educational}}</el-tag></template>
+                                        </div>
+                                    </el-col>
+                                </el-row >
+                            </el-col>
+                        </el-row>
+                    </el-card>
+                    <el-card class="box-card" shadow="hover">
+                        <div slot="header">
+                            <span>订单基本信息</span>
+                        </div>
                         <div class="text item" style="margin-left: 18px;padding-bottom: 10px;width:95%" >
                             <el-slider
                                     v-model="order.stage"
