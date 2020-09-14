@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.college.task.entity.dto;
 
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -21,4 +22,14 @@ public class CollegeEmployeeTaskDTO {
     private LocalDateTime studyStartDate;
 
     private LocalDateTime studyEndDate;
+
+    /**
+     * 习题次数
+     */
+    private Integer exercisesNumber;
+
+    /**
+     * 考试合格分数
+     */
+    private Integer passScore;
 }

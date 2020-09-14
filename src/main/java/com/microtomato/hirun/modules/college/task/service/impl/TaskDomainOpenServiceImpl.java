@@ -43,26 +43,33 @@ public class TaskDomainOpenServiceImpl implements ITaskDomainOpenService {
                 //上一次课程学习顺序
                 String lastTimeCourseStudyOrder = "-1";
                 //上一课程的学习开始时间
-                LocalDateTime lastTimeCourseStartDate = TimeUtils.getFirstSecondDay(LocalDateTime.now(), 1);
+                LocalDateTime lastTimeCourseStartDate = LocalDateTime.now();
                 //相同学习顺序课程中较大的结束时间，用于下一次课程时间设置判断
-                LocalDateTime lastCourseEndDate = TimeUtils.getFirstSecondDay(LocalDateTime.now(), 1);
-                //当前课程中同时学习章节最后学习结束时间
+                LocalDateTime lastCourseEndDate = LocalDateTime.now();
                 for(int i = 0 ; i < collegeCourseTaskCfgList.size() ; i++){
                     CollegeStudyTaskCfg collegeStudyTaskCfg = collegeCourseTaskCfgList.get(i);
                     String studyId = collegeStudyTaskCfg.getStudyId();
                     List<CollegeCourseChaptersCfg> collegeCourseChaptersCfgList = collegeCourseChaptersCfgServiceImpl.queryByStudyId(studyId);
                     if (ArrayUtils.isNotEmpty(collegeCourseChaptersCfgList)){
                         //如果有章节配置，则需配置章节信息
+                        //当前课程学习顺序
+                        String studyOrder = collegeStudyTaskCfg.getStudyOrder();
+                        //如果当前课程习顺序与上一课程的不一致时，学习开始时间取前面课程较大的结束时间
+                        LocalDateTime lastTimeChaptersStartDate = TimeUtils.getFirstSecondDay(lastCourseEndDate, 1);;
+                        if (StringUtils.equals(lastTimeCourseStudyOrder, studyOrder)){
+                            //如果学习顺序一致，则开始时间与上一课程一致
+                            lastTimeChaptersStartDate = lastTimeCourseStartDate;
+                        }
+                        lastTimeCourseStudyOrder = studyOrder;
                         //上一次章节学习顺序
                         String lastTimeChaptersStudyOrder = "-1";
-                        //上一章节的学习开始时间
-                        LocalDateTime lastTimeChaptersStartDate = lastTimeCourseStartDate;
                         //同时学习的章节中，以学习天数较长的学习结束时间的后一天为下一分批学习章节的学习开始时间
                         //当前课程中同时学习章节最后学习结束时间
                         LocalDateTime lastChaptersEndDate = lastCourseEndDate;
                         for (int j = 0 ; j < collegeCourseChaptersCfgList.size() ; j++){
                             CollegeCourseChaptersCfg collegeCourseChaptersCfg = collegeCourseChaptersCfgList.get(j);
                             CollegeEmployeeTaskDTO collegeEmployeeTaskDTO = new CollegeEmployeeTaskDTO();
+                            BeanUtils.copyProperties(collegeCourseChaptersCfg, collegeEmployeeTaskDTO);
                             collegeEmployeeTaskDTO.setStudyId(studyId);
                             collegeEmployeeTaskDTO.setChapterId(String.valueOf(collegeCourseChaptersCfg.getChaptersId()));
                             collegeEmployeeTaskDTO.setStudyType(collegeStudyTaskCfg.getStudyType());
@@ -80,19 +87,21 @@ public class TaskDomainOpenServiceImpl implements ITaskDomainOpenService {
                             if (StringUtils.equals("1", studyModel) || StringUtils.equals(lastTimeChaptersStudyOrder, chaptersStudyOrder)){
                                 startDate = lastTimeChaptersStartDate;
                             }
+                            if (j == 0){
+                                lastTimeCourseStartDate = startDate;
+                            }
                             collegeEmployeeTaskDTO.setStudyStartDate(startDate);
                             //将本章节开始时间设置到上一章节的开始时间，用以下一章节判断使用
                             lastTimeChaptersStartDate = startDate;
 
                             LocalDateTime studyEndDate = TimeUtils.addSeconds(TimeUtils.getFirstSecondDay(startDate, Integer.valueOf(collegeCourseChaptersCfg.getStudyTime())), -1);
                             collegeEmployeeTaskDTO.setStudyEndDate(studyEndDate);
-                            //取当前章节较大的结束时间
-                            if (TimeUtils.compareTwoTime(lastChaptersEndDate, studyEndDate) < 0){
-                                lastChaptersEndDate = studyEndDate;
-                            }
-                            if (j == collegeCourseChaptersCfgList.size() - 1){
 
-                                lastCourseEndDate = lastChaptersEndDate;
+                            //将本章节结束时间设置到上一章节的结束时间，用以下一章节判断使用
+                            lastChaptersEndDate = studyEndDate;
+                            //取当前章节较大的结束时间
+                            if (TimeUtils.compareTwoTime(lastCourseEndDate, studyEndDate) < 0){
+                                lastCourseEndDate = studyEndDate;
                             }
                             lastTimeChaptersStudyOrder = chaptersStudyOrder;
                             collegeEmployeeTaskDTOList.add(collegeEmployeeTaskDTO);
@@ -100,11 +109,8 @@ public class TaskDomainOpenServiceImpl implements ITaskDomainOpenService {
                     }else {
                         //没有章节配置,以课程配置为准
                         CollegeEmployeeTaskDTO collegeEmployeeTaskDTO = new CollegeEmployeeTaskDTO();
-                        collegeEmployeeTaskDTO.setStudyId(studyId);
-                        collegeEmployeeTaskDTO.setStudyType(collegeStudyTaskCfg.getStudyType());
+                        BeanUtils.copyProperties(collegeStudyTaskCfg, collegeEmployeeTaskDTO);
                         collegeEmployeeTaskDTO.setStatus("0");
-                        //固定任务
-                        collegeEmployeeTaskDTO.setTaskType("1");
                         //当前课程学习顺序
                         String studyOrder = collegeStudyTaskCfg.getStudyOrder();
                         //如果当前课程习顺序与上一课程的不一致时，学习开始时间取前面课程较大的结束时间

@@ -193,9 +193,6 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 })
             },
             addDesign: function(){
-                this.$nextTick(()=>{
-                    this.$refs.addStudyTaskInfo.resetFields();
-                });
                 this.courseChaptersItem = {
                     studyId: this.studyId,
                     chaptersName: this.studyName,
@@ -248,6 +245,8 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                                     type: 'success'
                                 });
                                 that.studyTaskInfo.push(responseData);
+                                that.addStudyTaskInfo = {};
+                                that.courseChaptersDetails = [];
                                 that.addStudyTaskDialogVisible = false;
                             });
                         })
@@ -319,7 +318,7 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                         that.multipleSelection.forEach((deleteStufyInfo) => {
                             let studyTaskInfoList = that.studyTaskInfo;
                             for(let i = 0 ; i < studyTaskInfoList.length ; i++){
-                                if(studyTaskInfoList[i]._XID == deleteStufyInfo._XID){
+                                if(studyTaskInfoList[i].studyTaskId == deleteStufyInfo.studyTaskId){
                                     that.studyTaskInfo.splice(i, 1);
                                     break;
                                 }
@@ -343,8 +342,8 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     ajax.post('api/CollegeStudyTaskCfg/deleteStudyTaskByRow', row, function(responseData){
                         let studyTaskInfoList = that.studyTaskInfo;
                         for(let i = 0 ; i < studyTaskInfoList.length ; i++){
-                            if(studyTaskInfoList[i]._XID == row._XID){
-                                that.editStudyTaskInfo.splice(i, 1);
+                            if(studyTaskInfoList[i].studyTaskId == row.studyTaskId){
+                                that.studyTaskInfo.splice(i, 1);
                                 break;
                             }
                         }
