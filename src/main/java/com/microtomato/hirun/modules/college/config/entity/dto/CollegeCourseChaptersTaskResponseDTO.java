@@ -19,6 +19,11 @@ public class CollegeCourseChaptersTaskResponseDTO {
     private String studyId;
 
     /**
+     * 学习名称
+     */
+    private String studyName;
+
+    /**
      * 章节名称
      */
     private String chaptersName;

@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
  *
  * @author makejava
  * @version 1.0.0
- * @date 2020-08-28 01:14:50
+ * @date 2020-09-16 03:43:49
  */
 @Data
 @Builder
@@ -60,10 +60,10 @@ public class CollegeStudyTaskCfg extends BaseEntity {
     private String status;
 
     /**
-     * 员工职级
+     * 员工工作类型
      */
-    @TableField(value = "staff_rank")
-    private String staffRank;
+    @TableField(value = "job_type")
+    private String jobType;
 
     /**
      * 任务类型:1-固定任务，2-活动任务

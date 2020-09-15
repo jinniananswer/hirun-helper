@@ -40,5 +40,5 @@ public interface ICollegeStudyTaskCfgService extends IService<CollegeStudyTaskCf
 
     IPage<CollegeStudyExamResponseDTO> queryCollegeStudyExamByPage(CollegeStudyTaskRequestDTO collegeStudyTaskRequestDTO, Page<CollegeStudyTaskRequestDTO> page);
 
-
+    CollegeStudyTaskResponseDTO getCollegeStudyTaskByStudyTaskId(String studyTaskId);
 }

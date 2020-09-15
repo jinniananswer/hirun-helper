@@ -5,8 +5,16 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
+import com.microtomato.hirun.modules.college.config.entity.dto.CollegeCourseChaptersTaskResponseDTO;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeCourseChaptersCfg;
+import com.microtomato.hirun.modules.college.config.entity.po.CollegeStudyTaskCfg;
 import com.microtomato.hirun.modules.college.config.service.ICollegeCourseChaptersCfgService;
+import com.microtomato.hirun.modules.college.config.service.ICollegeStudyTaskCfgService;
+import com.microtomato.hirun.modules.college.task.entity.po.CollegeStudyTopicCfg;
+import com.microtomato.hirun.modules.college.task.service.ICollegeStudyTopicCfgService;
+import com.microtomato.hirun.modules.system.service.IStaticDataService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +38,15 @@ public class CollegeCourseChaptersCfgController {
      */
     @Autowired
     private ICollegeCourseChaptersCfgService collegeCourseChaptersCfgService;
+
+    @Autowired
+    private ICollegeStudyTopicCfgService collegeStudyTopicCfgServiceImpl;
+
+    @Autowired
+    private IStaticDataService staticDataServiceImpl;
+
+    @Autowired
+    private ICollegeStudyTaskCfgService collegeStudyTaskCfgServiceImpl;
 
     /**
      * 分页查询所有数据
@@ -92,9 +109,36 @@ public class CollegeCourseChaptersCfgController {
     @PostMapping("addChapters")
     @Transactional(rollbackFor = Exception.class)
     @RestResult
-    public void addChapters(@RequestBody CollegeCourseChaptersCfg collegeCourseChaptersCfg){
+    public CollegeCourseChaptersTaskResponseDTO addChapters(@RequestBody CollegeCourseChaptersCfg collegeCourseChaptersCfg){
         collegeCourseChaptersCfg.setStatus("0");
         this.collegeCourseChaptersCfgService.save(collegeCourseChaptersCfg);
+        CollegeStudyTopicCfg collegeStudyTopicCfg = new CollegeStudyTopicCfg();
+        collegeStudyTopicCfg.setStatus("0");
+        collegeStudyTopicCfg.setChaptersId(String.valueOf(collegeCourseChaptersCfg.getChaptersId()));
+        collegeStudyTopicCfg.setStudyId(collegeCourseChaptersCfg.getStudyId());
+        collegeStudyTopicCfg.setStudyTopicDesc(collegeCourseChaptersCfg.getChaptersName() + "课件与习题范围关系");
+        collegeStudyTopicCfg.setStudyTopicName(collegeCourseChaptersCfg.getChaptersName() + "习题");
+        collegeStudyTopicCfgServiceImpl.save(collegeStudyTopicCfg);
+        CollegeCourseChaptersTaskResponseDTO result = new CollegeCourseChaptersTaskResponseDTO();
+        BeanUtils.copyProperties(collegeCourseChaptersCfg, result);
+        String chaptersType = result.getChaptersType();
+        String chaptersTypeName = chaptersType;
+        if (StringUtils.isNotEmpty(chaptersType)){
+            chaptersTypeName = staticDataServiceImpl.getCodeName("CHAPTERS_TYPE", chaptersType);
+        }
+        result.setChaptersTypeName(chaptersTypeName);
+        String studyModel = result.getStudyModel();
+        String studyModelName = studyModel;
+        if (StringUtils.isNotEmpty(studyModel)){
+            studyModelName = staticDataServiceImpl.getCodeName("CHAPTER_STUDY_MODEL", studyModel);
+        }
+        result.setStudyModelName(studyModelName);
+        String studyId = collegeCourseChaptersCfg.getStudyId();
+        CollegeStudyTaskCfg collegeStudyTaskCfg = collegeStudyTaskCfgServiceImpl.getEffectiveByStudyId(studyId);
+        if (null != collegeStudyTaskCfg){
+            result.setStudyName(collegeStudyTaskCfg.getStudyName());
+        }
+        return result;
     }
 
     @PostMapping("editChapters")

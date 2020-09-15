@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>dolphin-admin</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script src="static/js/framework/requirejs/require.min.js"
+            th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js"
+            th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-main>
+            <el-row :gutter="12">
+                <el-card class="box-card" shadow="hover">
+                    <div slot="header" class="clearfix">
+                        <span>任务信息</span>
+                    </div>
+                    <el-tabs v-model="subActiveTab" type="border-card">
+                        <el-tab-pane label="基本信息" name="baseInfo">
+                            <el-col :span="20">
+                                <el-row :gutter="5">
+                                    <el-col :span="12">
+                                        <div class="text">
+                                            学习内容名称：
+                                            <template>
+                                                <el-tag>{{studyTaskInfo.studyName}}</el-tag>
+                                            </template>
+                                        </div>
+                                    </el-col>
+                                </el-row>
+                                <el-row :gutter="5">
+                                    <el-col :span="8">
+                                        <div class="text item">
+                                            学习内容类型：
+                                            <template>
+                                                <el-tag>{{studyTaskInfo.studyTypeName}}</el-tag>
+                                            </template>
+                                        </div>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <div class="text item">
+                                            员工工作类型：
+                                            <template>
+                                                <el-tag>{{studyTaskInfo.jobTypeName}}</el-tag>
+                                            </template>
+                                        </div>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <div class="text item">
+                                            任务类型：
+                                            <template>
+                                                <el-tag>{{studyTaskInfo.taskTypeName}}</el-tag>
+                                            </template>
+                                        </div>
+                                    </el-col>
+                                </el-row>
+                                <el-row>
+                                    <el-col :span="8">
+                                        <div class="text">
+                                            学习时间/天：
+                                            <template>
+                                                <el-tag>{{studyTaskInfo.studyTime}}</el-tag>
+                                            </template>
+                                        </div>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <div class="text">
+                                            习题次数：
+                                            <template>
+                                                <el-tag>{{studyTaskInfo.exercisesNumber}}</el-tag>
+                                            </template>
+                                        </div>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <div class="text">
+                                            考试合格分数：
+                                            <template>
+                                                <el-tag>{{studyTaskInfo.passScore}}</el-tag>
+                                            </template>
+                                        </div>
+                                    </el-col>
+                                </el-row>
+                            </el-col>
+                        </el-tab-pane>
+                    </el-tabs>
+                </el-card>
+            </el-row>
+            <el-row :gutter="12">
+                <el-card class="box-card" shadow="hover">
+                    <div slot="header" class="clearfix">
+                        <span>学习章节任务信息</span>
+                    </div>
+                    <div class="block">
+                        <div class="block">
+                            <el-timeline>
+                                <el-button  icon="fa fa-plus" @click="addChapters()">新增课程章节</el-button>
+                                <el-table border
+                                          :data="collegeCourseChapterInfo" stripe="true" height="250"
+                                          style="width: 100%" align="center" ref="collegeCourseChapterInfo">
+                                    <el-table-column prop="studyName" width="150" label="学习内容" align="center"></el-table-column>
+                                    <el-table-column prop="chaptersName" width="200" label="章节名称" align="center"></el-table-column>
+                                    <el-table-column prop="chaptersStudyOrder" width="150" label="章节学习顺序" align="center"></el-table-column>
+                                    <el-table-column prop="chaptersTypeName" width="100" label="章节类型" align="center"></el-table-column>
+                                    <el-table-column prop="studyTime" width="100" label="学习时间/天" align="center"></el-table-column>
+                                    <el-table-column prop="studyModelName" width="100" label="学习模式" align="center"></el-table-column>
+                                    <el-table-column prop="exercisesNumber" width="100" label="习题次数" align="center"></el-table-column>
+                                    <el-table-column prop="passScore" width="100" label="考试合格分数" align="center"></el-table-column>
+                                    <el-table-column label="操作" align="center" width="80">
+                                        <template slot-scope="scope">
+                                            <el-button type="danger" width="50" size="mini" icon="el-icon-edit"
+                                                       @click="editChapters(scope.row)">修改
+                                            </el-button>
+                                        </template>
+                                    </el-table-column>
+                                </el-table>
+                            </el-timeline>
+                        </div>
+                    </div>
+                    <div style="text-align: center">
+                        <el-pagination
+                                layout="total, prev, pager, next"
+                                :total="queryCond.count"
+                                :current-page.sync="queryCond.page"
+                                :page-size="queryCond.limit"
+                                @current-change="initTaskInfo">
+                        </el-pagination>
+                    </div>
+                </el-card>
+                <el-card class="box-card" shadow="hover">
+                    <div>
+                        <el-divider content-position="left"><span style="font-weight: 700">学习任务工作岗位信息</span>
+                        </el-divider>
+                    </div>
+                    <template>
+                    </template>
+                </el-card>
+            </el-row>
+
+            <el-dialog width="80%" title="新增学习章节配置" append-to-body :visible.sync="addChaptersDialogVisible">
+                <el-card>
+                    <div slot="header" class="clearfix">
+                        <span>学习章节配置信息</span>
+                    </div>
+                    <el-form :inline="false" :model="addChaptersInfo" ref="addChaptersInfo" label-position="right"
+                             label-width="120px">
+                        <el-row>
+                            <el-col :span="8">
+                                <el-form-item label="学习内容" label-width="120px" prop="studyName">
+                                    <el-input :disabled="true" v-model="addChaptersInfo.studyName" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="章节名称" label-width="120px" prop="chaptersName">
+                                    <el-input v-model="addChaptersInfo.chaptersName" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="章节学习顺序" label-width="120px" prop="chaptersStudyOrder">
+                                    <el-input v-model.number="addChaptersInfo.chaptersStudyOrder" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="8">
+                                <el-form-item label="学习时间/天" label-width="120px" prop="studyTime">
+                                    <el-input v-model.number="addChaptersInfo.studyTime" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="学习模式" label-width="120px" prop="studyModel">
+                                    <vue-select code-type="COURSE_STUDY_MODEL" v-model="addChaptersInfo.studyModel"></vue-select>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="章节类型" label-width="120px" prop="chaptersType">
+                                    <vue-select code-type="CHAPTERS_TYPE" v-model="addChaptersInfo.chaptersType"></vue-select>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="8">
+                                <el-form-item label="习题次数" label-width="120px" prop="exercisesNumber">
+                                    <el-input v-model.number="addChaptersInfo.exercisesNumber" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="考试合格分数" label-width="120px" prop="passScore">
+                                    <el-input v-model.number="addChaptersInfo.passScore" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <div style="text-align: center">
+                                <el-button type="primary" @click="submitAddChapters(addChaptersInfo)">保存</el-button>
+                                <el-button @click="cancel">取消</el-button>
+                            </div>
+                        </el-row>
+                    </el-form>
+                </el-card>
+            </el-dialog>
+
+            <el-dialog width="80%" title="修改学习章节配置" append-to-body :visible.sync="editChaptersDialogVisible">
+                <el-card>
+                    <div slot="header" class="clearfix">
+                        <span>学习章节配置信息</span>
+                    </div>
+                    <el-form :inline="false" :model="editChaptersInfo" ref="editChaptersInfo" label-position="right"
+                             label-width="120px">
+                        <el-row>
+                            <el-col :span="8">
+                                <el-form-item label="学习内容标识" label-width="120px" prop="studyId">
+                                    <el-input :disabled="true" v-model="editChaptersInfo.studyId" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="章节名称" label-width="120px" prop="chaptersName">
+                                    <el-input :disabled="true" v-model="editChaptersInfo.chaptersName" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="章节学习顺序" label-width="120px" prop="chaptersStudyOrder">
+                                    <el-input :disabled="true" v-model.number="editChaptersInfo.chaptersStudyOrder" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="8">
+                                <el-form-item label="学习时间/天" label-width="120px" prop="studyTime">
+                                    <el-input v-model.number="editChaptersInfo.studyTime" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="学习模式" label-width="120px" prop="studyModel">
+                                    <el-input :disabled="true" v-model.number="editChaptersInfo.studyModelName" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="章节类型" label-width="120px" prop="chaptersType">
+                                    <el-input :disabled="true" v-model.number="editChaptersInfo.chaptersTypeName" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="8">
+                                <el-form-item label="习题次数" label-width="120px" prop="exercisesNumber">
+                                    <el-input v-model.number="editChaptersInfo.exercisesNumber" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="考试合格分数" label-width="120px" prop="passScore">
+                                    <el-input v-model.number="editChaptersInfo.passScore" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <div style="text-align: center">
+                                <el-button type="primary" @click="submitEditChapters(editChaptersInfo)">保存</el-button>
+                                <el-button @click="cancel">取消</el-button>
+                            </div>
+                        </el-row>
+                    </el-form>
+                </el-card>
+            </el-dialog>
+        </el-main>
+    </el-container>
+
+</div>
+
+<style>
+    .text {
+        font-size: 14px;
+    }
+
+    .item {
+        margin-bottom: 18px;
+    }
+
+    .box-card {
+        margin-bottom: 12px;
+    }
+
+    .el-card__header {
+        padding: 10px;
+    }
+</style>
+
+<script src="static/js/modules/college/task/study.task.detail.js"
+        th:src="@{static/js/modules/college/task/study.task.detail.js(v=${version})}"></script>
+</body>
+</html>

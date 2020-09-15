@@ -84,6 +84,12 @@ public class CollegeStudyTaskCfgServiceImpl extends ServiceImpl<CollegeStudyTask
                 taskTypeName = staticDataServiceImpl.getCodeName("STUDY_TASK_TYPE", taskType);
             }
             collegeStudyTaskResponseDTO.setTaskTypeName(taskTypeName);
+            String jobType = collegeStudyTaskResponseDTO.getJobType();
+            String jobTypeName = jobType;
+            if (StringUtils.isNotEmpty(jobType)){
+                jobTypeName = staticDataServiceImpl.getCodeName("JOB_TYPE", jobType);
+            }
+            collegeStudyTaskResponseDTO.setJobTypeName(jobTypeName);
             List<CollegeCourseChaptersCfg> collegeCourseChaptersCfgList = collegeCourseChaptersCfgServiceImpl.queryByStudyId(studyId);
             List<CollegeCourseChaptersTaskResponseDTO> collegeCourseChaptersTaskResponseDTOList = new ArrayList<>();
             if (ArrayUtils.isNotEmpty(collegeCourseChaptersCfgList)){
@@ -235,6 +241,72 @@ public class CollegeStudyTaskCfgServiceImpl extends ServiceImpl<CollegeStudyTask
                     collegeStudyExamCfgResponseDTOList.add(collegeStudyExamCfgResponseDTO);
                 }
                 collegeStudyExamResponseDTO.setCollegeStudyExamList(collegeStudyExamCfgResponseDTOList);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public CollegeStudyTaskResponseDTO getCollegeStudyTaskByStudyTaskId(String studyTaskId) {
+        CollegeStudyTaskResponseDTO result = new CollegeStudyTaskResponseDTO();
+        if (StringUtils.isNotEmpty(studyTaskId)){
+            CollegeStudyTaskCfg collegeStudyTaskCfg = this.getByStudyTaskId(Long.valueOf(studyTaskId));
+            if (null != collegeStudyTaskCfg){
+                BeanUtils.copyProperties(collegeStudyTaskCfg, result);
+                String jobType = result.getJobType();
+                String jobTypeName = "";
+                if (StringUtils.isNotEmpty(jobType)){
+                    jobTypeName = staticDataServiceImpl.getCodeName("JOB_TYPE", jobType);
+                }
+                if (StringUtils.isEmpty(jobTypeName)){
+                    jobTypeName = jobType;
+                }
+                result.setJobTypeName(jobTypeName);
+
+                String studyType = result.getStudyType();
+                String studyTypeName = "";
+                if (StringUtils.isNotEmpty(studyType)){
+                    studyTypeName = staticDataServiceImpl.getCodeName("TASK_COURSEWARE_TYPE", studyType);
+                }
+                if (StringUtils.isEmpty(studyTypeName)){
+                    studyTypeName = studyType;
+                }
+                result.setStudyTypeName(studyTypeName);
+
+                String taskType = result.getTaskType();
+                String taskTypeName = "";
+                if (StringUtils.isNotEmpty(taskType)){
+                    taskTypeName = staticDataServiceImpl.getCodeName("STUDY_TASK_TYPE", taskType);
+                }
+                if (StringUtils.isEmpty(taskTypeName)){
+                    taskTypeName = taskType;
+                }
+                result.setTaskTypeName(taskTypeName);
+
+                //设置章节信息
+                List<CollegeCourseChaptersCfg> collegeCourseChaptersCfgList = collegeCourseChaptersCfgServiceImpl.queryByStudyId(result.getStudyId());
+                List<CollegeCourseChaptersTaskResponseDTO> collegeCourseChaptersTaskResponseDTOList = new ArrayList<>();
+                if (ArrayUtils.isNotEmpty(collegeCourseChaptersCfgList)){
+                    for (CollegeCourseChaptersCfg collegeCourseChaptersCfg : collegeCourseChaptersCfgList){
+                        CollegeCourseChaptersTaskResponseDTO collegeCourseChaptersTaskResponseDTO = new CollegeCourseChaptersTaskResponseDTO();
+                        BeanUtils.copyProperties(collegeCourseChaptersCfg, collegeCourseChaptersTaskResponseDTO);
+                        collegeCourseChaptersTaskResponseDTO.setStudyName(result.getStudyName());
+                        String chaptersType = collegeCourseChaptersTaskResponseDTO.getChaptersType();
+                        String chaptersTypeName = chaptersType;
+                        if (StringUtils.isNotEmpty(chaptersType)){
+                            chaptersTypeName = staticDataServiceImpl.getCodeName("CHAPTERS_TYPE", chaptersType);
+                        }
+                        collegeCourseChaptersTaskResponseDTO.setChaptersTypeName(chaptersTypeName);
+                        String studyModel = collegeCourseChaptersTaskResponseDTO.getStudyModel();
+                        String studyModelName = studyModel;
+                        if (StringUtils.isNotEmpty(studyModel)){
+                            studyModelName = staticDataServiceImpl.getCodeName("CHAPTER_STUDY_MODEL", studyModel);
+                        }
+                        collegeCourseChaptersTaskResponseDTO.setStudyModelName(studyModelName);
+                        collegeCourseChaptersTaskResponseDTOList.add(collegeCourseChaptersTaskResponseDTO);
+                    }
+                }
+                result.setCollegeCourseChaptersList(collegeCourseChaptersTaskResponseDTOList);
             }
         }
         return result;

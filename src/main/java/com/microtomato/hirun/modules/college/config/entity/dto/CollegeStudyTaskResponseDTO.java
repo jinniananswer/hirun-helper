@@ -41,9 +41,14 @@ public class CollegeStudyTaskResponseDTO {
     private String status;
 
     /**
-     * 员工职级
+     * 员工工作类型标识
      */
-    private String staffRank;
+    private String jobType;
+
+    /**
+     * 员工工作类型名称
+     */
+    private String jobTypeName;
 
     /**
      * 任务类型:1-固定任务，2-活动任务
@@ -74,4 +79,9 @@ public class CollegeStudyTaskResponseDTO {
      * 章节集合
      */
     private List<CollegeCourseChaptersTaskResponseDTO> collegeCourseChaptersList;
+
+    /**
+     * 员工岗位集合
+     */
+    List<String> jobRoleInfos;
 }

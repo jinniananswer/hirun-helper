@@ -26,5 +26,12 @@ public class CollegeCourseChaptersTaskRequestDTO {
 
     private Integer passScore;
 
+    private String jobType;
+
     private List<CollegeCourseChaptersCfg> courseChaptersList;
+
+    /**
+     * 员工岗位集合
+     */
+    List<String> jobRoleInfos;
 }
