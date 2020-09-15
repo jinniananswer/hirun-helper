@@ -47,9 +47,8 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                         { required: true, message: '学习顺序不能为空', trigger: 'blur' },
                         { type: 'number', message: '学习顺序必须为数字值', trigger: 'blur'}
                     ],
-                    staffRank: [
-                        { required: true, message: '员工职级不能为空', trigger: 'blur' },
-                        { type: 'number', message: '员工职级必须为数字值', trigger: 'blur'}
+                    jobType: [
+                        { required: true, message: '员工工作类型不能为空', trigger: 'blur' }
                     ],
                     taskType: [
                         { required: true, message: '任务类型不能为空', trigger: 'blur'}
@@ -93,17 +92,11 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 taskCoursewareTypes: [],
                 addStudyTaskDialogVisible: false,
                 editStudyTaskDialogVisible: false,
-                addChaptersDialogVisible: false,
-                editChaptersDialogVisible: false,
                 courseChaptersDetails: [],
                 courseChaptersItem: {},
                 addStudyTaskInfo: {},
-                addChaptersInfo: {},
-                editChaptersInfo: {},
-                editChaptersInfoSource: {},
                 editStudyTaskInfo: {},
                 selectCurrent: {},
-                studyChaptersList: [],
                 studyInfos: [],
                 showUpload: 'display:none',
                 showTree: 'display:block',
@@ -111,12 +104,15 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     children: 'children',
                     label: 'studyName'
                 },
+                showJob: 'display:none',
                 studyId: '',
                 studyName: '',
                 studyType: '',
                 courseStudyModelTypes: [],
                 chaptersTypes: [],
-                taskCoursewareType: ''
+                taskCoursewareType: '',
+                jobRoleInfos: [],
+                selectJobRoleInfos: []
             }
         },
         mounted: function() {
@@ -153,6 +149,11 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 let that = this;
                 that.addStudyTaskDialogVisible = true;
                 that.addStudyTaskInfo = {}
+                if (null == that.jobRoleInfos || [] == that.jobRoleInfos || undefined == that.jobRoleInfos || that.jobRoleInfos.length == 0){
+                    ajax.get('api/CollegeStudyTaskCfg/queryJobRoleTransferInfo', null, function(responseData){
+                        that.jobRoleInfos = responseData;
+                    });
+                }
             },
             handleNodeClick: function(data) {
                 if (data.courseFlag){
@@ -219,6 +220,11 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
 
             },
             submitAdd: function (courseChaptersDetails) {
+                if ("0" == this.addStudyTaskInfo.jobType && (this.selectJobRoleInfos == [] || this.selectJobRoleInfos == undefined || this.selectJobRoleInfos.length == 0)){
+                    this.$alert("正式员工请选择员工岗位再提交", "错误提示", {type: 'error'})
+                    return;
+                }
+                this.addStudyTaskInfo.jobRoleInfos = this.selectJobRoleInfos;
                 if (this.studyType == '1'){
                     let fileList = this.$refs.upload.fileList;
                     if (fileList == undefined || fileList == "fileList" || fileList == [] || fileList.length == 0){
@@ -382,49 +388,18 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     },null, true);
                 })
             },
-            addChapters: function (studyTaskInfo) {
-                let that = this;
-                that.addChaptersDialogVisible = true;
-                that.addChaptersInfo = JSON.parse(JSON.stringify(studyTaskInfo));
+            changeJobType: function (val) {
+                if(val == 0){
+                    this.showJob = 'display:block'
+                }else if(val == 1){
+                    this.showJob = 'display:none'
+                }
             },
-            submitAddChapters: function () {
-                this.$confirm('是否提交保存?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(() => {
-                    let that = this
-                    ajax.post('api/CollegeCourseChaptersCfg/addChapters', that.addChaptersInfo, function(responseData){
-                        that.addChaptersDialogVisible = false;
-                        that.$message({
-                            message: '章节配置新增成功',
-                            type: 'success'
-                        });
-                    },null, true);
-                })
+            filterJobRoleMethod: function (query, item) {
+                return item.label.indexOf(query) > -1;
             },
-            editChapters: function (row) {
-                let that = this;
-                that.editChaptersDialogVisible = true;
-                that.editChaptersInfoSource = row
-                that.editChaptersInfo = JSON.parse(JSON.stringify(row));
-            },
-            submitEditChapters: function (editChaptersInfo) {
-                this.$confirm('是否提交修改?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(() => {
-                    let that = this
-                    ajax.post('api/CollegeCourseChaptersCfg/editChapters', editChaptersInfo, function(responseData){
-                        that.editChaptersInfoSource = editChaptersInfo
-                        that.editChaptersDialogVisible = false;
-                        that.$message({
-                            message: '学习任务修改成功',
-                            type: 'success'
-                        });
-                    },null, true);
-                })
+            toTaskDetail: function (studyTaskId) {
+                util.openPage('openUrl?url=modules/college/task/study_task_detail&studyTaskId='+studyTaskId, '任务详情');
             }
         },
 
