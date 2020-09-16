@@ -22,7 +22,7 @@ public class KnowhowConsts {
     public static final String QUESTION_STATUS_INVALID = "0";
 
     /**
-     * 已发布未审批问题
+     * 未审批问题
      */
     public static final String QUESTION_STATUS_UNAPPROVED = "1";
 
@@ -47,9 +47,19 @@ public class KnowhowConsts {
     public static final String QUESTION_STATUS_DEPLOYED = "4";
 
     /**
-     * 其他类型
+     * 施工类型
      */
-    public static final String QUESTION_TYPE_OTHER = "3";
+    public static final String QUESTION_TYPE_ROADWORK = "1";
+
+    /**
+     * 订单类型
+     */
+    public static final String QUESTION_TYPE_ORDER = "2";
+
+    /**
+     * 售后类型
+     */
+    public static final String QUESTION_TYPE_AFTER_SALE = "3";
 
     public static final String QUESTION_VERIFY_APPROVED = "1";
 

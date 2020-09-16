@@ -61,4 +61,6 @@ public interface IUploadFileService extends IService<UploadFile> {
 
     String getFileNameByFileId(String id);
 
+    UploadFile getByFileId(String id);
+
 }

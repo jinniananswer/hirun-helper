@@ -82,7 +82,7 @@
                 <el-dialog title="课件上传" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
                     <upload-file ref="upload" accept=".pdf" :on-success="handleSuccess" limit="3"></upload-file>
                     <span slot="footer" class="dialog-footer">
-                        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+                        <el-button type="primary" @click="submitUpload">确 定</el-button>
                     </span>
                 </el-dialog>
 

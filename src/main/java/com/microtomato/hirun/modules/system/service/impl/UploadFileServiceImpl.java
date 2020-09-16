@@ -172,4 +172,9 @@ public class UploadFileServiceImpl extends ServiceImpl<UploadFileMapper, UploadF
         return "";
     }
 
+    @Override
+    public UploadFile getByFileId(String id) {
+        return getOne(Wrappers.<UploadFile>lambdaQuery().eq(UploadFile::getId, id));
+    }
+
 }

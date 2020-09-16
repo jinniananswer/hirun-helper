@@ -17,4 +17,5 @@ public interface IExamTopicService extends IService<ExamTopic> {
 
     IPage<TopicServiceDTO> init(Page<ExamTopic> page);
 
+    IPage<TopicServiceDTO> queryByCond(String topicText, Long examId, String type, Page<ExamTopic> page);
 }

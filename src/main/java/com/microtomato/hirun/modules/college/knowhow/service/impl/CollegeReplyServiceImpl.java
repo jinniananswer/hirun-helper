@@ -7,6 +7,7 @@ import com.microtomato.hirun.modules.college.knowhow.consts.KnowhowConsts;
 import com.microtomato.hirun.modules.college.knowhow.mapper.CollegeReplyMapper;
 import com.microtomato.hirun.modules.college.knowhow.entity.po.CollegeReply;
 import com.microtomato.hirun.modules.college.knowhow.service.ICollegeReplyService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 

@@ -18,19 +18,24 @@
             <el-card class="box-card" shadow="hover">
                 <el-form :inline="false" :model="queryCond" label-position="right" label-width="100px">
                     <el-row>
-                        <el-col :span="8">
+                        <el-col :span="6">
                             <el-form-item label="问题信息">
                                 <el-input v-model="queryCond.questionText" placeholder="问题信息"></el-input>
                             </el-form-item>
                         </el-col>
-                        <el-col :span="8">
+                        <el-col :span="6">
+                            <el-form-item label="问题类型">
+                                <vue-select code-type="QUESTION_TYPE" v-model="queryCond.questionType"></vue-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="6">
                             <el-form-item label="排序方式">
                                 <el-select v-model="queryCond.sortType" placeholder="请选择">
                                     <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
                                 </el-select>
                             </el-form-item>
                         </el-col>
-                        <el-col :span="8">
+                        <el-col :span="6">
                             <el-form-item>
                                 <el-button type="primary" @click="queryByCond">查询</el-button>
                             </el-form-item>
@@ -41,17 +46,48 @@
 
             <!-- 展示区域 -->
             <el-card class="box-card" shadow="hover">
-                <el-row style="padding-bottom: 12px">
-                    <el-button type="warning" icon="el-icon-document" @click="verify">审批</el-button>
-                </el-row>
+                <el-tabs v-model="activeName" @tab-click="handleClick">
+                    <el-tab-pane label="问题审核" name="questionVerify">
+                        <el-row style="padding-bottom: 12px">
+                            <el-button type="success" icon="el-icon-document" @click="verify('1')">审批通过</el-button>
+                            <el-button type="danger" icon="el-icon-document" @click="verify('0')">审批驳回</el-button>
+                        </el-row>
 
-                <el-table :data="questionInfo" stripe="true" border height="350" style="width: 100%" @selection-change="handleSelectChange">
-                    <el-table-column type="selection" width="40" align="center"></el-table-column>
-                    <el-table-column prop="questionTitle" label="问题标题" align="center"></el-table-column>
-                    <el-table-column prop="questionContent" label="问题内容" align="center"></el-table-column>
-                    <el-table-column prop="createTime" label="问题创建时间" align="center" width="180"></el-table-column>
-                    <el-table-column prop="status" label="状态" :formatter="statusTransfer" align="center" width="80"></el-table-column>
-                </el-table>
+                        <el-table :data="questionInfo" stripe="true" border height="350" style="width: 100%" @selection-change="handleSelectChange">
+                            <el-table-column type="selection" width="40" align="center"></el-table-column>
+                            <el-table-column prop="questionTitle" label="问题标题" align="center"></el-table-column>
+                            <el-table-column prop="questionContent" label="问题内容" align="center"></el-table-column>
+                            <el-table-column prop="questionType" label="问题类型" :formatter="typeTransfer" align="center"></el-table-column>
+                            <el-table-column prop="createTime" label="问题创建时间" align="center" width="180"></el-table-column>
+                            <el-table-column prop="status" label="状态" :formatter="statusTransfer" align="center" width="80"></el-table-column>
+                        </el-table>
+                    </el-tab-pane>
+                    <el-tab-pane label="问题发布" name="questionPublish">
+                        <el-row style="padding-bottom: 12px">
+                            <el-button type="success" icon="el-icon-document" @click="publish">发布</el-button>
+                        </el-row>
+                        <el-table :data="questionInfo" stripe="true" border height="350" style="width: 100%" @selection-change="handleSelectChange">
+                            <el-table-column type="selection" width="40" align="center"></el-table-column>
+                            <el-table-column prop="questionTitle" label="问题标题" align="center"></el-table-column>
+                            <el-table-column prop="questionContent" label="问题内容" align="center"></el-table-column>
+                            <el-table-column prop="questionType" label="问题类型" :formatter="typeTransfer" align="center"></el-table-column>
+                            <el-table-column prop="createTime" label="问题创建时间" align="center" width="180"></el-table-column>
+                            <el-table-column prop="status" label="状态" :formatter="statusTransfer" align="center" width="80"></el-table-column>
+                        </el-table>
+                    </el-tab-pane>
+                    <el-tab-pane label="问题列表" name="questionList">
+                        <el-table :data="questionInfo" stripe="true" border height="350" style="width: 100%" @selection-change="handleSelectChange">
+                            <el-table-column type="selection" width="40" align="center"></el-table-column>
+                            <el-table-column prop="questionTitle" label="问题标题" align="center"></el-table-column>
+                            <el-table-column prop="questionContent" label="问题内容" align="center"></el-table-column>
+                            <el-table-column prop="questionType" label="问题类型" :formatter="typeTransfer" align="center"></el-table-column>
+                            <el-table-column prop="createTime" label="问题创建时间" align="center" width="180"></el-table-column>
+                            <el-table-column prop="clicks" label="点击量" align="center" width="80"></el-table-column>
+                            <el-table-column prop="status" label="状态" :formatter="statusTransfer" align="center" width="80"></el-table-column>
+                        </el-table>
+                    </el-tab-pane>
+                </el-tabs>
+
             </el-card>
 
             <!-- 分页信息 -->

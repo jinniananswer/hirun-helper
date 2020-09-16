@@ -72,4 +72,10 @@ public class CollegeQuestionServiceImpl extends ServiceImpl<CollegeQuestionMappe
                 .set(CollegeQuestion::getStatus, KnowhowConsts.QUESTION_STATUS_DEPLOYED));
     }
 
+    @Override
+    public void updateClicksById(String questionId) {
+        this.update(new UpdateWrapper<CollegeQuestion>().lambda()
+                .eq(CollegeQuestion::getQuestionId, questionId).setSql("clicks = clicks + 1"));
+    }
+
 }

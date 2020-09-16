@@ -11,6 +11,7 @@ import com.microtomato.hirun.modules.college.topic.mapper.ExamTopicMapper;
 import com.microtomato.hirun.modules.college.topic.entity.po.ExamTopic;
 import com.microtomato.hirun.modules.college.topic.service.IExamTopicOptionService;
 import com.microtomato.hirun.modules.college.topic.service.IExamTopicService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,9 +42,17 @@ public class ExamTopicServiceImpl extends ServiceImpl<ExamTopicMapper, ExamTopic
 
     @Override
     public IPage<TopicServiceDTO> init(Page<ExamTopic> page) {
+
         Page<ExamTopic> pages = examTopicMapper.selectPage(page, new QueryWrapper<ExamTopic>().lambda()
                 .eq(ExamTopic::getStatus, "0"));
-        List<ExamTopic> list = pages.getRecords();
+
+        IPage<TopicServiceDTO> topics = new Page<>(page.getCurrent(), page.getSize());
+        topics.setTotal(pages.getTotal());
+        topics.setRecords(getTopicInfo(pages.getRecords()));
+        return topics;
+    }
+
+    private List<TopicServiceDTO> getTopicInfo(List<ExamTopic> list) {
         List<TopicServiceDTO> topicList = new ArrayList<>();
         for (ExamTopic examTopic : list) {
             TopicServiceDTO topic = new TopicServiceDTO();
@@ -59,9 +68,21 @@ public class ExamTopicServiceImpl extends ServiceImpl<ExamTopicMapper, ExamTopic
             topicList.add(topic);
         }
 
+        return topicList;
+    }
+
+    @Override
+    public IPage<TopicServiceDTO> queryByCond(String topicText, Long examId, String type, Page<ExamTopic> page) {
+        Page<ExamTopic> pages = examTopicMapper.selectPage(page, new QueryWrapper<ExamTopic>().lambda()
+                .eq(null != examId, ExamTopic::getExamId, examId)
+                .eq(ExamTopic::getStatus, "0")
+                .like(StringUtils.isNotEmpty(topicText), ExamTopic::getName, topicText)
+                .eq(StringUtils.isNotEmpty(type), ExamTopic::getType, type));
+        List<ExamTopic> list = pages.getRecords();
+
         IPage<TopicServiceDTO> topics = new Page<>(page.getCurrent(), page.getSize());
         topics.setTotal(pages.getTotal());
-        topics.setRecords(topicList);
+        topics.setRecords(getTopicInfo(list));
         return topics;
     }
 }

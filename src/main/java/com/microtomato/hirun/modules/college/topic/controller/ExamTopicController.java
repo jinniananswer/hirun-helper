@@ -54,6 +54,12 @@ public class ExamTopicController {
         return examTopicService.init(page);
     }
 
+    @GetMapping("queryByCond")
+    @RestResult
+    public IPage<TopicServiceDTO> queryByCond(String topicText, Long examId, String type, Page<ExamTopic> page) {
+        return examTopicService.queryByCond(topicText, examId, type, page);
+    }
+
     @PostMapping("updateByTopic")
     @RestResult
     public void updateByTopic(@RequestBody ExamTopic topic) {
