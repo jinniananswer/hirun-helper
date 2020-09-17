@@ -51,10 +51,11 @@ public class AutoSetMetaObjectAdvice implements MetaObjectHandler {
         Long userId = getUserId();
         LocalDateTime requestTime = getRequestTime();
 
-        this.setInsertFieldValByName(CREATE_TIME, requestTime, metaObject);
-        this.setInsertFieldValByName(UPDATE_TIME, requestTime, metaObject);
-        this.setInsertFieldValByName(CREATE_USER_ID, userId, metaObject);
-        this.setInsertFieldValByName(UPDATE_USER_ID, userId, metaObject);
+        this.strictInsertFill(metaObject, CREATE_TIME, LocalDateTime.class, requestTime);
+        this.strictInsertFill(metaObject, UPDATE_TIME, LocalDateTime.class, requestTime);
+        this.strictInsertFill(metaObject, CREATE_USER_ID, Long.class, userId);
+        this.strictInsertFill(metaObject, UPDATE_USER_ID, Long.class, userId);
+
     }
 
     /**
@@ -67,8 +68,8 @@ public class AutoSetMetaObjectAdvice implements MetaObjectHandler {
         Long userId = getUserId();
         LocalDateTime requestTime = getRequestTime();
 
-        this.setUpdateFieldValByName(UPDATE_TIME, requestTime, metaObject);
-        this.setUpdateFieldValByName(UPDATE_USER_ID, userId, metaObject);
+        this.strictUpdateFill(metaObject, UPDATE_TIME, LocalDateTime.class, requestTime);
+        this.strictUpdateFill(metaObject, UPDATE_USER_ID, Long.class, userId);
     }
 
     private Long getUserId() {
