@@ -103,8 +103,8 @@
                                         <el-table border
                                                   :data="employeeTaskInfo" stripe="true" height="350" style="width: 100%"
                                                   ref="employeeTaskInfo" align="center">
+                                            <el-table-column prop="taskName" width="120" label="任务名称" align="center"></el-table-column>
                                             <el-table-column prop="studyName" width="120" label="学习内容" align="center"></el-table-column>
-                                            <el-table-column prop="chapterName" width="120" label="章节名称" align="center"></el-table-column>
                                             <el-table-column prop="taskTypeName" width="120" label="任务类型" align="center"></el-table-column>
                                             <el-table-column prop="studyTypeName" width="120" label="内容类型" align="center"></el-table-column>
                                             <el-table-column prop="studyStartDate" width="200" label="学习开始时间" align="center"></el-table-column>
@@ -174,22 +174,6 @@
                                                 </el-col>
                                             </el-row>
                                         </el-col>
-                                        <el-col :span="8">
-                                            <el-row>
-                                                <el-col>
-                                                    <span>未完成数量：
-                                                        <template>
-                                                            <el-tag>{{taskDetailInfo.taskUnFinishNum}}</el-tag>
-                                                        </template>
-                                                    </span>
-                                                </el-col>
-                                            </el-row>
-                                            <el-row>
-                                                <el-col>
-                                                    <el-progress type="circle" :percentage="taskDetailInfo.taskUnFinish"></el-progress>
-                                                </el-col>
-                                            </el-row>
-                                        </el-col>
                                     </el-row>
                                 </template>
                             </el-card>
@@ -212,7 +196,7 @@
                                 <el-row :gutter="12" align="center">
                                     <el-col :span="8">
                                         <el-row>
-                                            <span>已练习数量：
+                                            <span>习题完成数量：
                                                 <template>
                                                     <el-tag>{{taskDetailInfo.exercisesFinishNum}}</el-tag>
                                                 </template>
@@ -221,38 +205,6 @@
                                         <el-row>
                                             <el-col>
                                                 <el-progress type="circle" :percentage="taskDetailInfo.exercisesFinish"></el-progress>
-                                            </el-col>
-                                        </el-row>
-                                    </el-col>
-                                    <el-col :span="8">
-                                        <el-row>
-                                            <el-col>
-                                                <span>练习中数量：
-                                                    <template>
-                                                        <el-tag>{{taskDetailInfo.exercisesUnderWayNum}}</el-tag>
-                                                    </template>
-                                                </span>
-                                            </el-col>
-                                        </el-row>
-                                        <el-row>
-                                            <el-col>
-                                                <el-progress type="circle" :percentage="taskDetailInfo.exercisesUnderWay"></el-progress>
-                                            </el-col>
-                                        </el-row>
-                                    </el-col>
-                                    <el-col :span="8">
-                                        <el-row>
-                                            <el-col>
-                                                <span>未练习数量：
-                                                    <template>
-                                                        <el-tag>{{taskDetailInfo.exercisesUnFinishNum}}</el-tag>
-                                                    </template>
-                                                </span>
-                                            </el-col>
-                                        </el-row>
-                                        <el-row>
-                                            <el-col>
-                                                <el-progress type="circle" :percentage="taskDetailInfo.exercisesUnFinish"></el-progress>
                                             </el-col>
                                         </el-row>
                                     </el-col>
@@ -278,48 +230,16 @@
                                     <el-col :span="8">
                                         <el-row>
                                             <el-col>
-                                                <span>已考试数量：
+                                                <span>已合格数量：
                                                     <template>
-                                                        <el-tag>{{taskDetailInfo.examFinishNum}}</el-tag>
+                                                        <el-tag>{{taskDetailInfo.examPassNumNum}}</el-tag>
                                                     </template>
                                                 </span>
                                             </el-col>
                                         </el-row>
                                         <el-row>
                                             <el-col>
-                                                <el-progress type="circle" :percentage="taskDetailInfo.examFinish"></el-progress>
-                                            </el-col>
-                                        </el-row>
-                                        <el-row>
-                                            <span>及格数量：
-                                                    <template>
-                                                        <el-tag>{{taskDetailInfo.examPassNum}}</el-tag>
-                                                    </template>
-                                            </span>
-                                            <el-progress :percentage="taskDetailInfo.examPass" :color="customColorMethod"></el-progress>
-                                        </el-row>
-                                        <el-row>
-                                            <span>不及格数量：
-                                                    <template>
-                                                        <el-tag>{{taskDetailInfo.examUnPassNum}}</el-tag>
-                                                    </template>
-                                            </span>
-                                            <el-progress :percentage="taskDetailInfo.examUnPass" :color="customColorMethod"></el-progress>
-                                        </el-row>
-                                    </el-col>
-                                    <el-col :span="8">
-                                        <el-row>
-                                            <el-col>
-                                                    <span>未考试数量：
-                                                        <template>
-                                                            <el-tag>{{taskDetailInfo.examUnFinishNum}}</el-tag>
-                                                        </template>
-                                                    </span>
-                                            </el-col>
-                                        </el-row>
-                                        <el-row>
-                                            <el-col>
-                                                <el-progress type="circle" :percentage="taskDetailInfo.examUnFinish"></el-progress>
+                                                <el-progress type="circle" :percentage="taskDetailInfo.examPassNum"></el-progress>
                                             </el-col>
                                         </el-row>
                                     </el-col>

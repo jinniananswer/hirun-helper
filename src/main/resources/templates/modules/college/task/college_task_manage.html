@@ -26,22 +26,17 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="8">
-                            <el-form-item label="学习内容标识">
-                                <el-input v-model.number="queryCond.studyId"></el-input>
+                            <el-form-item label="任务名称">
+                                <el-input v-model.number="queryCond.taskName"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="8">
-                            <el-form-item label="学习内容名称">
-                                <el-input v-model="queryCond.studyName"></el-input>
+                            <el-form-item label="学习任务标识">
+                                <el-input v-model="queryCond.studyTaskId"></el-input>
                             </el-form-item>
                         </el-col>
                     </el-row>
                     <el-row>
-                        <el-col :span="8">
-                            <el-form-item label="学习任务标识">
-                                <el-input v-model.number="queryCond.studyTaskId"></el-input>
-                            </el-form-item>
-                        </el-col>
                         <el-col :span="8">
                             <el-form-item>
                                 <el-button type="primary" @click="query">查询</el-button>
@@ -55,21 +50,25 @@
                 <el-row style="padding-bottom: 12px">
                     <el-button type="success" icon="el-icon-folder-add" @click="addStudyTask">新增任务课程</el-button>
                     <el-button type="danger" icon="el-icon-delete" @click="deleteStudyTaskBatch">删除任务课程</el-button>
+                    <el-button type="success" icon="el-icon-folder-add" @click="fixedExamBatch('0')">设置任务练习</el-button>
+                    <el-button type="success" icon="el-icon-folder-add" @click="fixedExamBatch('1')">设置任务考试</el-button>
+                    <el-button type="success" icon="el-icon-folder-add" @click="fixedTask">发布任务</el-button>
                 </el-row>
                 <el-table
                         :data="studyTaskInfo" stripe="true" height="350" style="width: 100%"
                         @selection-change="handleCourseTaskSelectionChange" ref="collegeCourseChaptersList">
                     <el-table-column type="selection" fixed width="40" align="center"></el-table-column>
-                    <el-table-column prop="studyName" width="200" label="学习内容名称" align="center">
+                    <el-table-column prop="studyName" width="200" label="任务名称" align="center">
                         <template slot-scope="studyTask">
                             <el-button type="text" @click="toTaskDetail(studyTask.row.studyTaskId)">{{
-                                studyTask.row.studyName }}
+                                studyTask.row.taskName }}
                             </el-button>
                         </template>
                     </el-table-column>
                     <el-table-column prop="studyTypeName" width="120" label="学习内容类型" align="center"></el-table-column>
-                    <el-table-column prop="studyOrder" width="200" label="学习顺序"
-                                     align="center"></el-table-column>
+                    <el-table-column prop="studyStartTypeName" width="200" label="任务开始方式" align="center"></el-table-column>
+                    <el-table-column prop="studyModelName" width="200" label="学习模式" align="center"></el-table-column>
+                    <el-table-column prop="togetherStudyTaskName" width="200" label="同时学习任务名称" align="center"></el-table-column>
                     <el-table-column prop="jobTypeName" width="120" label="员工工作类型" align="center"></el-table-column>
                     <el-table-column prop="taskTypeName" width="120" label="任务类型" align="center"></el-table-column>
                     <el-table-column prop="studyTime" width="120" label="学习时间/天" align="center"></el-table-column>
@@ -121,27 +120,15 @@
                     </div>
                     <el-form :inline="false" :model="addStudyTaskInfo"  ref="addStudyTaskInfo" label-position="right"
                              label-width="120px" :rules="studyTaskRules">
-                        <el-row :style="showTree">
-                            <el-col :span="8">
-                                <el-form-item label="学习内容标识" label-width="120px" prop="studyId">
-                                    <el-input :disabled="true" v-model="addStudyTaskInfo.studyId" autocomplete="off"></el-input>
-                                </el-form-item>
-                            </el-col>
-                            <el-col :span="8">
-                                <el-form-item label="学习内容名称" label-width="120px" prop="studyName">
-                                    <el-input :disabled="true" v-model="addStudyTaskInfo.studyName" autocomplete="off"></el-input>
-                                </el-form-item>
-                            </el-col>
-                            <el-col :span="8">
-                                <el-form-item label="学习内容类型" label-width="120px" prop="studyType">
-                                    <el-input :disabled="true" v-model.number="addStudyTaskInfo.studyType" autocomplete="off"></el-input>
-                                </el-form-item>
-                            </el-col>
-                        </el-row>
                         <el-row>
                             <el-col :span="8">
-                                <el-form-item label="学习顺序" label-width="120px" prop="studyOrder">
-                                    <el-input v-model.number="addStudyTaskInfo.studyOrder" autocomplete="off"></el-input>
+                                <el-form-item label="任务名称" label-width="120px" prop="taskName">
+                                    <el-input v-model="addStudyTaskInfo.taskName" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8" :style="showTree">
+                                <el-form-item label="学习内容名称" label-width="120px" prop="studyName">
+                                    <el-input :disabled="true" v-model="addStudyTaskInfo.studyName" autocomplete="off"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="8">
@@ -149,13 +136,13 @@
                                     <vue-select code-type="STUDY_TASK_TYPE" v-model="addStudyTaskInfo.taskType"></vue-select>
                                 </el-form-item>
                             </el-col>
+                        </el-row>
+                        <el-row>
                             <el-col :span="8">
                                 <el-form-item label="学习时间/天" label-width="120px" prop="studyTime">
                                     <el-input v-model.number="addStudyTaskInfo.studyTime" autocomplete="off"></el-input>
                                 </el-form-item>
                             </el-col>
-                        </el-row>
-                        <el-row>
                             <el-col :span="8">
                                 <el-form-item label="习题次数" label-width="120px" prop="exercisesNumber">
                                     <el-input v-model.number="addStudyTaskInfo.exercisesNumber" autocomplete="off"></el-input>
@@ -164,6 +151,35 @@
                             <el-col :span="8">
                                 <el-form-item label="考试合格分数" label-width="120px" prop="passScore">
                                     <el-input v-model.number="addStudyTaskInfo.passScore" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="8">
+                                <el-form-item label="任务开始方式" label-width="120px" prop="studyStartType">
+                                    <vue-select @change="changeStudyStartType" code-type="STUDY_START_TYPE" v-model="addStudyTaskInfo.studyStartType"></vue-select>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item :style="showAppointDay" label="指定天数" label-width="150px" prop="appointDay">
+                                    <el-input v-model.number="addStudyTaskInfo.appointDay" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item :style="showStudyModel" label="学习模式" label-width="120px" prop="studyModel">
+                                    <vue-select @change="changeStudyModel" code-type="STUDY_MODEL" v-model="addStudyTaskInfo.studyModel"></vue-select>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item :style="showTogetherStudyTask" label="同时学习任务" label-width="120px" prop="togetherStudyTaskId">
+                                    <el-select v-model="addStudyTaskInfo.togetherStudyTaskId" placeholder="请选择">
+                                        <el-option
+                                            v-for="item in togetherStudyTaskList"
+                                            :key="item.studyTaskId"
+                                            :label="item.taskName"
+                                            :value="item.studyTaskId">
+                                        </el-option>
+                                    </el-select>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="8">
@@ -192,8 +208,8 @@
                                 </el-transfer>
                             </template>
                         </el-row>
-
-                        <el-row :style="showTree">
+                       <!--  章节暂时屏蔽
+                             <el-row :style="showTree">
                             <el-col :span="8">
                                 <el-form-item label="课程章节信息:" label-width="100px" prop="">
 
@@ -224,10 +240,8 @@
                                 <vxe-table-column type="checkbox" align="center"  width="40"></vxe-table-column>
                                 <vxe-table-column field="studyId" align="center" title="学习内容标识" width="120" ></vxe-table-column>
                                 <vxe-table-column field="chaptersName" align="center" sortable title="章节名称" width="250" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                                <vxe-table-column field="chaptersStudyOrder" align="center" sortable title="章节学习顺序" width="150" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
                                 <vxe-table-column field="chaptersType" align="center" title="章节类型" width="100" :edit-render="{name: 'select', options: chaptersTypes, events: {change: changeEvent}}"></vxe-table-column>
                                 <vxe-table-column field="studyTime" align="center" sortable title="学习时间/天" width="150" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
-                                <vxe-table-column field="studyModel"  align="center"title="学习模式" width="100"  :edit-render="{name: 'select', options: courseStudyModelTypes, events: {change: changeEvent}}"></vxe-table-column>
                                 <vxe-table-column field="exercisesNumber" align="center" sortable title="习题次数" width="150" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
                                 <vxe-table-column field="passScore"  align="center"title="考试合格分数" width="100"  :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
                                 <vxe-table-column fixed="right" title="操作" align="center" width="80" show-overflow>
@@ -241,6 +255,7 @@
                                 </vxe-table-column>
                             </vxe-table>
                         </el-row>
+                       -->
                         <el-row>
                             <div style="text-align: center">
                                 <el-button type="primary" @click="submitAdd(courseChaptersDetails)">保存</el-button>
@@ -260,13 +275,8 @@
                              label-width="120px" :rules="studyTaskRules">
                         <el-row>
                             <el-col :span="8">
-                                <el-form-item label="学习内容标识" label-width="120px" prop="studyId">
-                                    <el-input :disabled="true" v-model="editStudyTaskInfo.studyId" autocomplete="off"></el-input>
-                                </el-form-item>
-                            </el-col>
-                            <el-col :span="8">
-                                <el-form-item label="学习内容名称" label-width="120px" prop="studyName">
-                                    <el-input :disabled="true" v-model="editStudyTaskInfo.studyName" autocomplete="off"></el-input>
+                                <el-form-item label="任务名称" label-width="120px" prop="taskName">
+                                    <el-input :disabled="true" v-model="editStudyTaskInfo.taskName" autocomplete="off"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="8">
@@ -274,16 +284,16 @@
                                     <el-input :disabled="true" v-model.number="editStudyTaskInfo.studyTypeName" autocomplete="off"></el-input>
                                 </el-form-item>
                             </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="学习模式" label-width="120px" prop="studyModelName">
+                                    <el-input :disabled="true" v-model.number="editStudyTaskInfo.studyModelName" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
                         </el-row>
                         <el-row>
                             <el-col :span="8">
-                                <el-form-item label="学习顺序" label-width="120px" prop="studyOrder">
-                                    <el-input :disabled="true" v-model.number="editStudyTaskInfo.studyOrder" autocomplete="off"></el-input>
-                                </el-form-item>
-                            </el-col>
-                            <el-col :span="8">
-                                <el-form-item label="员工职级" label-width="120px" prop="staffRank">
-                                    <el-input :disabled="true" v-model.number="editStudyTaskInfo.staffRank" autocomplete="off"></el-input>
+                                <el-form-item label="员工工作类型" label-width="120px" prop="jobTypeName">
+                                    <el-input :disabled="true" v-model.number="editStudyTaskInfo.jobTypeName" autocomplete="off"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="8">
@@ -291,13 +301,13 @@
                                     <el-input :disabled="true" v-model.number="editStudyTaskInfo.taskTypeName" autocomplete="off"></el-input>
                                 </el-form-item>
                             </el-col>
-                        </el-row>
-                        <el-row>
                             <el-col :span="8">
                                 <el-form-item label="习题次数" label-width="120px" prop="exercisesNumber">
                                     <el-input v-model.number="editStudyTaskInfo.exercisesNumber" autocomplete="off"></el-input>
                                 </el-form-item>
                             </el-col>
+                        </el-row>
+                        <el-row>
                             <el-col :span="8">
                                 <el-form-item label="考试合格分数" label-width="120px" prop="passScore">
                                     <el-input v-model.number="editStudyTaskInfo.passScore" autocomplete="off"></el-input>
@@ -319,6 +329,68 @@
                 </el-card>
             </el-dialog>
 
+            <el-dialog width="80%" title="设置习题" append-to-body :visible.sync="fixedExamDialogVisible">
+                <el-card>
+                    <div slot="header" class="clearfix">
+                        <span>设置习题配置信息</span>
+                    </div>
+                    <el-form :inline="false" :model="studyTopicTypeInfo"  ref="studyTopicTypeInfo" label-position="right"
+                             label-width="120px">
+                        <el-row>
+                            <el-col :span="8" :style="showExercises">
+                                <el-form-item label="最多练习次数" label-width="120px" prop="examMaxNum">
+                                    <el-input v-model.number="studyTopicTypeInfo.examMaxNum" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8" :style="showExam">
+                                <el-form-item label="考试合格分数" label-width="120px" prop="passScore">
+                                    <el-input v-model.number="studyTopicTypeInfo.passScore" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <vxe-toolbar>
+                                <template v-slot:buttons>
+                                    <vxe-button icon="fa fa-plus" @click="addTopicType">添加习题题目类型</vxe-button>
+                                    <vxe-button icon="fa fa-plus" @click="deleteSelectedTopicType">删除习题题目类型</vxe-button>
+                                </template>
+                            </vxe-toolbar>
+                            <vxe-table
+                                    border
+                                    resizable
+                                    ref="studyTopicTypeInfoDetails"
+                                    show-overflow
+                                    highlight-hover-row
+                                    highlight-cell
+                                    keep-source
+                                    max-height="800px"
+                                    :auto-resize="true"
+                                    :data="studyTopicTypeInfoDetails"
+                                    :edit-config="{trigger: 'click', mode: 'cell', showStatus: true}"
+                                    :checkbox-config="{strict: true, range: true, trigger: 'row', highlight: true}">
+                                <vxe-table-column type="checkbox" align="center" width="40"></vxe-table-column>
+                                <vxe-table-column field="exercisesType" align="center" title="题目类型" width="100" :edit-render="{name: 'select', options: studyTopicTypeOptions}"></vxe-table-column>
+                                <vxe-table-column field="exercisesNumber" align="center" sortable title="题目数量" width="250" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+                                <vxe-table-column fixed="right" title="操作" align="center" width="80" show-overflow>
+                                    <template v-slot="{ row }">
+                                        <el-button
+                                                size="mini"
+                                                type="danger"
+                                                icon="el-icon-delete"
+                                                @click="deleteTopicType(row)">删除</el-button>
+                                    </template>
+                                </vxe-table-column>
+                            </vxe-table>
+                        </el-row>
+                        <el-row>
+                            <div style="text-align: center">
+                                <el-button type="primary" @click="submitFixedExam(studyTopicTypeInfo)">保存</el-button>
+                                <el-button @click="cancel">取消</el-button>
+                            </div>
+                        </el-row>
+                    </el-form>
+                </el-card>
+            </el-dialog>
         </el-main>
     </el-container>
 </div>

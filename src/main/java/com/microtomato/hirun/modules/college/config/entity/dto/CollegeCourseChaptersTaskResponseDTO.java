@@ -29,9 +29,16 @@ public class CollegeCourseChaptersTaskResponseDTO {
     private String chaptersName;
 
     /**
-     * 章节学习顺序
+     * 同时学习的章节ID
      */
-    private String chaptersStudyOrder;
+    @TableField(value = "together_chapters_id")
+    private String togetherChaptersId;
+
+    /**
+     * 同时学习的章节名称
+     */
+    @TableField(value = "together_chapters_id")
+    private String togetherChaptersName;
 
     /**
      * 章节类型

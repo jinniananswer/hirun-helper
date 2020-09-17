@@ -31,7 +31,7 @@ public class CollegeCourseChaptersCfgServiceImpl extends ServiceImpl<CollegeCour
     public List<CollegeCourseChaptersCfg> queryByStudyId(String studyId) {
         return this.list(Wrappers.<CollegeCourseChaptersCfg>lambdaQuery().eq(CollegeCourseChaptersCfg::getStudyId, studyId)
                 .eq(CollegeCourseChaptersCfg::getStatus, '0')
-                .orderByAsc(CollegeCourseChaptersCfg::getChaptersStudyOrder));
+                .orderByAsc(CollegeCourseChaptersCfg::getChaptersId));
     }
 
     @Override
@@ -41,8 +41,8 @@ public class CollegeCourseChaptersCfgServiceImpl extends ServiceImpl<CollegeCour
     }
 
     @Override
-    public String getChapterNameByStudyIdAndChaptersId(String studyId, Long chaptersId) {
-        CollegeCourseChaptersCfg collegeCourseChaptersCfg = this.getOne(Wrappers.<CollegeCourseChaptersCfg>lambdaQuery().eq(CollegeCourseChaptersCfg::getStudyId, studyId)
+    public String getChapterNameByChaptersId(Long chaptersId) {
+        CollegeCourseChaptersCfg collegeCourseChaptersCfg = this.getOne(Wrappers.<CollegeCourseChaptersCfg>lambdaQuery()
                 .eq(CollegeCourseChaptersCfg::getChaptersId, chaptersId), false);
         if (null != collegeCourseChaptersCfg){
             return collegeCourseChaptersCfg.getChaptersName();

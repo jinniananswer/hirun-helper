@@ -12,7 +12,9 @@ import com.microtomato.hirun.modules.college.config.service.ICollegeCourseChapte
 import com.microtomato.hirun.modules.college.config.service.ICollegeStudyTaskCfgService;
 import com.microtomato.hirun.modules.college.task.entity.po.CollegeStudyTopicCfg;
 import com.microtomato.hirun.modules.college.task.service.ICollegeStudyTopicCfgService;
+import com.microtomato.hirun.modules.organization.service.ICourseService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
+import com.microtomato.hirun.modules.system.service.IUploadFileService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +49,12 @@ public class CollegeCourseChaptersCfgController {
 
     @Autowired
     private ICollegeStudyTaskCfgService collegeStudyTaskCfgServiceImpl;
+
+    @Autowired
+    private IUploadFileService uploadFileServiceImpl;
+
+    @Autowired
+    private ICourseService courseServiceImpl;
 
     /**
      * 分页查询所有数据
@@ -130,13 +138,20 @@ public class CollegeCourseChaptersCfgController {
         String studyModel = result.getStudyModel();
         String studyModelName = studyModel;
         if (StringUtils.isNotEmpty(studyModel)){
-            studyModelName = staticDataServiceImpl.getCodeName("CHAPTER_STUDY_MODEL", studyModel);
+            studyModelName = staticDataServiceImpl.getCodeName("STUDY_MODEL", studyModel);
         }
         result.setStudyModelName(studyModelName);
         String studyId = collegeCourseChaptersCfg.getStudyId();
         CollegeStudyTaskCfg collegeStudyTaskCfg = collegeStudyTaskCfgServiceImpl.getEffectiveByStudyId(studyId);
         if (null != collegeStudyTaskCfg){
-            result.setStudyName(collegeStudyTaskCfg.getStudyName());
+            String studyType = collegeStudyTaskCfg.getStudyType();
+            String studyName = "";
+            if (StringUtils.equals("1", studyType)){
+                studyName = uploadFileServiceImpl.getFileNameByFileId(studyId);
+            }else {
+                studyName = courseServiceImpl.getCourseNameByCourseId(Long.valueOf(studyId));
+            }
+            result.setStudyName(studyName);
         }
         return result;
     }

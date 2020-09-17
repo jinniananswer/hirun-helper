@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
  *
  * @author makejava
  * @version 1.0.0
- * @date 2020-09-11 02:11:33
+ * @date 2020-09-18 02:48:02
  */
 @Data
 @Builder
@@ -38,28 +38,10 @@ public class CollegeEmployeeTask extends BaseEntity {
     private String employeeId;
 
     /**
-     * 任务类型：1-固定任务，2-活动任务
+     * 学习任务标识
      */
-    @TableField(value = "task_type")
-    private String taskType;
-
-    /**
-     * 学习内容类别
-     */
-    @TableField(value = "study_type")
-    private String studyType;
-
-    /**
-     * 学习ID
-     */
-    @TableField(value = "study_id")
-    private String studyId;
-
-    /**
-     * 章节ID
-     */
-    @TableField(value = "chapter_id")
-    private String chapterId;
+    @TableField(value = "study_task_id")
+    private String studyTaskId;
 
     /**
      * 状态
@@ -98,22 +80,10 @@ public class CollegeEmployeeTask extends BaseEntity {
     private Integer score;
 
     /**
-     * 习题次数
-     */
-    @TableField(value = "exercises_number")
-    private Integer exercisesNumber;
-
-    /**
      * 习题完成次数
      */
     @TableField(value = "exercises_completed_number")
     private Integer exercisesCompletedNumber;
-
-    /**
-     * 考试合格分数
-     */
-    @TableField(value = "pass_score")
-    private Integer passScore;
 
     /**
      * 考试分数

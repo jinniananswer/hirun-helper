@@ -47,7 +47,10 @@ import java.util.*;
  */
 @Slf4j
 @Service
-public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> implements IEmployeeService {
+
+
+public class
+EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> implements IEmployeeService {
 
     @Autowired
     private EmployeeMapper employeeMapper;
@@ -504,6 +507,26 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
     @Override
     public Employee getEEmployeeByEmployeeId(Long employeeId) {
         return this.getOne(Wrappers.<Employee>lambdaQuery().eq(null != employeeId, Employee::getEmployeeId, employeeId), false);
+    }
+
+    @Override
+    public List<Employee> queryNewEffectiveEmployee() {
+        return this.list(Wrappers.<Employee>lambdaQuery().eq(Employee::getStatus, "0")
+                .gt(Employee::getRegularDate, LocalDateTime.now()));
+    }
+
+    @Override
+    public List<Employee> queryAllEffectiveEmployee() {
+        return this.list(Wrappers.<Employee>lambdaQuery().eq(Employee::getStatus, "0"));
+    }
+
+    @Override
+    public List<Employee> queryEffectiveByJobRoleList(List<String> jobRoleList) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.in("job_role", jobRoleList);
+        queryWrapper.apply(" a.employee_id=b.employee_id " +
+                " and a.status='0' and (now() between b.start_date and b.end_date) and is_main='1'");
+        return this.employeeMapper.queryEffectiveByJobRoleList(queryWrapper);
     }
 
 

@@ -10,13 +10,9 @@ import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.modules.college.config.entity.dto.*;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeCourseChaptersCfg;
-import com.microtomato.hirun.modules.college.config.entity.po.CollegeStudyExamCfg;
-import com.microtomato.hirun.modules.college.config.entity.po.CollegeStudyExercisesCfg;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeStudyTaskCfg;
 import com.microtomato.hirun.modules.college.config.mapper.CollegeStudyTaskCfgMapper;
 import com.microtomato.hirun.modules.college.config.service.ICollegeCourseChaptersCfgService;
-import com.microtomato.hirun.modules.college.config.service.ICollegeStudyExamCfgService;
-import com.microtomato.hirun.modules.college.config.service.ICollegeStudyExercisesCfgService;
 import com.microtomato.hirun.modules.college.config.service.ICollegeStudyTaskCfgService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import org.apache.commons.lang3.StringUtils;
@@ -45,19 +41,13 @@ public class CollegeStudyTaskCfgServiceImpl extends ServiceImpl<CollegeStudyTask
     private ICollegeCourseChaptersCfgService collegeCourseChaptersCfgServiceImpl;
 
     @Autowired
-    private ICollegeStudyExercisesCfgService collegeStudyExercisesCfgServiceImpl;
-
-    @Autowired
-    private ICollegeStudyExamCfgService collegeStudyExamCfgServiceImpl;
-
-    @Autowired
     private IStaticDataService staticDataServiceImpl;
 
     @Override
     public List<CollegeStudyTaskCfg> queryByTaskType(String taskType) {
         return this.list(Wrappers.<CollegeStudyTaskCfg>lambdaQuery()
                 .eq(CollegeStudyTaskCfg::getTaskType, taskType).eq(CollegeStudyTaskCfg::getStatus, '0')
-                .orderByAsc(CollegeStudyTaskCfg::getStudyOrder));
+                .orderByAsc(CollegeStudyTaskCfg::getStudyTaskId));
     }
 
     @Override
@@ -90,6 +80,29 @@ public class CollegeStudyTaskCfgServiceImpl extends ServiceImpl<CollegeStudyTask
                 jobTypeName = staticDataServiceImpl.getCodeName("JOB_TYPE", jobType);
             }
             collegeStudyTaskResponseDTO.setJobTypeName(jobTypeName);
+            String studyModel = collegeStudyTaskResponseDTO.getStudyModel();
+            String studyModelName = studyModel;
+            if (StringUtils.isNotEmpty(studyModel)){
+                studyModelName = staticDataServiceImpl.getCodeName("STUDY_MODEL", studyModel);
+            }
+            collegeStudyTaskResponseDTO.setStudyModelName(studyModelName);
+            String togetherStudyTaskId = collegeStudyTaskResponseDTO.getTogetherStudyTaskId();
+            if (StringUtils.isNotEmpty(togetherStudyTaskId)){
+                CollegeStudyTaskCfg togetherCollegeStudyTaskCfg = this.getEffectiveByStudyTaskId(Long.valueOf(togetherStudyTaskId));
+                if (null != togetherCollegeStudyTaskCfg){
+                    collegeStudyTaskResponseDTO.setTogetherStudyTaskName(togetherCollegeStudyTaskCfg.getTaskName());
+                }
+            }
+
+            String studyStartType = collegeStudyTaskResponseDTO.getStudyStartType();
+            String studyStartTypeName = "";
+            if (StringUtils.isNotEmpty(studyStartType)){
+                studyStartTypeName = staticDataServiceImpl.getCodeName("STUDY_START_TYPE", studyStartType);
+            }
+            if (StringUtils.isEmpty(studyStartTypeName)){
+                studyStartTypeName = studyStartType;
+            }
+            collegeStudyTaskResponseDTO.setStudyStartTypeName(studyStartTypeName);
             List<CollegeCourseChaptersCfg> collegeCourseChaptersCfgList = collegeCourseChaptersCfgServiceImpl.queryByStudyId(studyId);
             List<CollegeCourseChaptersTaskResponseDTO> collegeCourseChaptersTaskResponseDTOList = new ArrayList<>();
             if (ArrayUtils.isNotEmpty(collegeCourseChaptersCfgList)){
@@ -102,12 +115,18 @@ public class CollegeStudyTaskCfgServiceImpl extends ServiceImpl<CollegeStudyTask
                         chaptersTypeName = staticDataServiceImpl.getCodeName("CHAPTERS_TYPE", chaptersType);
                     }
                     collegeCourseChaptersTaskResponseDTO.setChaptersTypeName(chaptersTypeName);
-                    String studyModel = collegeCourseChaptersTaskResponseDTO.getStudyModel();
-                    String studyModelName = studyModel;
-                    if (StringUtils.isNotEmpty(studyModel)){
-                        studyModelName = staticDataServiceImpl.getCodeName("CHAPTER_STUDY_MODEL", studyModel);
+                    String chapterStudyModel = collegeCourseChaptersTaskResponseDTO.getStudyModel();
+                    String chapterStudyModelName = chapterStudyModel;
+                    if (StringUtils.isNotEmpty(chapterStudyModel)){
+                        chapterStudyModelName = staticDataServiceImpl.getCodeName("STUDY_MODEL", chapterStudyModel);
                     }
-                    collegeCourseChaptersTaskResponseDTO.setStudyModelName(studyModelName);
+                    collegeCourseChaptersTaskResponseDTO.setStudyModelName(chapterStudyModelName);
+                    String togetherChaptersId = collegeCourseChaptersTaskResponseDTO.getTogetherChaptersId();
+                    String togetherChaptersName = "";
+                    if(StringUtils.isNotEmpty(togetherChaptersId)){
+                        togetherChaptersName = collegeCourseChaptersCfgServiceImpl.getChapterNameByChaptersId(Long.valueOf(togetherChaptersId));
+                    }
+                    collegeCourseChaptersTaskResponseDTO.setTogetherChaptersName(togetherChaptersName);
                     collegeCourseChaptersTaskResponseDTOList.add(collegeCourseChaptersTaskResponseDTO);
                 }
             }
@@ -123,7 +142,7 @@ public class CollegeStudyTaskCfgServiceImpl extends ServiceImpl<CollegeStudyTask
     }
 
     @Override
-    public CollegeStudyTaskCfg getByStudyTaskId(Long studyTaskId) {
+    public CollegeStudyTaskCfg getEffectiveByStudyTaskId(Long studyTaskId) {
         return this.getOne(Wrappers.<CollegeStudyTaskCfg>lambdaQuery().eq(CollegeStudyTaskCfg::getStudyTaskId, studyTaskId)
                 .eq(CollegeStudyTaskCfg::getStatus, "0"));
     }
@@ -135,122 +154,10 @@ public class CollegeStudyTaskCfgServiceImpl extends ServiceImpl<CollegeStudyTask
     }
 
     @Override
-    public IPage<CollegeStudyExercisesResponseDTO> queryCollegeStudyExercisesByPage(CollegeStudyTaskRequestDTO collegeStudyTaskRequestDTO, Page<CollegeStudyTaskRequestDTO> page) {
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq(null != collegeStudyTaskRequestDTO.getTaskType(), "task_type", collegeStudyTaskRequestDTO.getTaskType());
-        queryWrapper.like(StringUtils.isNotEmpty(collegeStudyTaskRequestDTO.getStudyName()), "study_name", collegeStudyTaskRequestDTO.getStudyName());
-        queryWrapper.eq(null != collegeStudyTaskRequestDTO.getStudyTaskId(), "study_task_id" , collegeStudyTaskRequestDTO.getStudyTaskId());
-        queryWrapper.eq(null != collegeStudyTaskRequestDTO.getStudyId(), "study_id", collegeStudyTaskRequestDTO.getStudyId());
-        queryWrapper.eq("status", '0');
-        IPage<CollegeStudyExercisesResponseDTO> result = this.collegeStudyTaskCfgMapper.queryCollegeStudyExercisesByPage(page, queryWrapper);
-        List<CollegeStudyExercisesResponseDTO> records = result.getRecords();
-        for (CollegeStudyExercisesResponseDTO collegeStudyExercisesResponseDTO : records){
-            String studyId = collegeStudyExercisesResponseDTO.getStudyId();
-            String studyType = collegeStudyExercisesResponseDTO.getStudyType();
-            String studyTypeName = studyType;
-            if (StringUtils.isNotEmpty(studyType)){
-                studyTypeName = staticDataServiceImpl.getCodeName("TASK_COURSEWARE_TYPE", studyType);
-            }
-            collegeStudyExercisesResponseDTO.setStudyTypeName(studyTypeName);
-            String taskType = collegeStudyExercisesResponseDTO.getTaskType();
-            String taskTypeName = staticDataServiceImpl.getCodeName("STUDY_TASK_TYPE", taskType);
-            if (StringUtils.isEmpty(taskTypeName)){
-                taskTypeName = taskType;
-            }
-            collegeStudyExercisesResponseDTO.setTaskTypeName(taskTypeName);
-            List<CollegeStudyExercisesCfg> collegeStudyExercisesCfgList = collegeStudyExercisesCfgServiceImpl.queryEffectiveByStudyIdAndChaptersId(studyId, collegeStudyExercisesResponseDTO.getChaptersId());
-            List<CollegeStudyExercisesCfgResponseDTO> collegeStudyExercisesCfgResponseDTOList = new ArrayList<>();
-            if (ArrayUtils.isNotEmpty(collegeStudyExercisesCfgList)){
-                for (CollegeStudyExercisesCfg collegeStudyExercisesCfg : collegeStudyExercisesCfgList){
-                    CollegeStudyExercisesCfgResponseDTO collegeStudyExercisesCfgResponseDTO = new CollegeStudyExercisesCfgResponseDTO();
-                    BeanUtils.copyProperties(collegeStudyExercisesCfg, collegeStudyExercisesCfgResponseDTO);
-                    String examId = collegeStudyExercisesCfgResponseDTO.getExamId();
-                    String examName = "";
-                    if (StringUtils.isNotEmpty(examId)){
-                        examName = staticDataServiceImpl.getCodeName("EXAM_RANGE", examId);
-                    }
-                    if (StringUtils.isEmpty(examName)){
-                        examName = examId;
-                    }
-                    collegeStudyExercisesCfgResponseDTO.setExamName(examName);
-                    String exercisesType = collegeStudyExercisesCfgResponseDTO.getExercisesType();
-                    String exercisesTypeName = "";
-                    if (StringUtils.isNotEmpty(exercisesType)){
-                        exercisesTypeName = staticDataServiceImpl.getCodeName("EXERCISES_TYPE", exercisesType);
-                    }
-                    if (StringUtils.isEmpty(exercisesTypeName)){
-                        exercisesTypeName = exercisesType;
-                    }
-                    collegeStudyExercisesCfgResponseDTO.setExercisesTypeName(exercisesTypeName);
-                    collegeStudyExercisesCfgResponseDTOList.add(collegeStudyExercisesCfgResponseDTO);
-                }
-                collegeStudyExercisesResponseDTO.setCollegeStudyExercisesList(collegeStudyExercisesCfgResponseDTOList);
-            }
-        }
-        return result;
-    }
-
-    @Override
-    public IPage<CollegeStudyExamResponseDTO> queryCollegeStudyExamByPage(CollegeStudyTaskRequestDTO collegeStudyTaskRequestDTO, Page<CollegeStudyTaskRequestDTO> page) {
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq(null != collegeStudyTaskRequestDTO.getTaskType(), "task_type", collegeStudyTaskRequestDTO.getTaskType());
-        queryWrapper.like(StringUtils.isNotEmpty(collegeStudyTaskRequestDTO.getStudyName()), "study_name", collegeStudyTaskRequestDTO.getStudyName());
-        queryWrapper.eq(null != collegeStudyTaskRequestDTO.getStudyTaskId(), "study_task_id" , collegeStudyTaskRequestDTO.getStudyTaskId());
-        queryWrapper.eq(null != collegeStudyTaskRequestDTO.getStudyId(), "study_id", collegeStudyTaskRequestDTO.getStudyId());
-        queryWrapper.eq("status", '0');
-        IPage<CollegeStudyExamResponseDTO> result = this.collegeStudyTaskCfgMapper.queryCollegeStudyExamByPage(page, queryWrapper);
-        List<CollegeStudyExamResponseDTO> records = result.getRecords();
-        for (CollegeStudyExamResponseDTO collegeStudyExamResponseDTO : records){
-            String studyId = collegeStudyExamResponseDTO.getStudyId();
-            String studyType = collegeStudyExamResponseDTO.getStudyType();
-            String studyTypeName = studyType;
-            if (StringUtils.isNotEmpty(studyType)){
-                studyTypeName = staticDataServiceImpl.getCodeName("TASK_COURSEWARE_TYPE", studyType);
-            }
-            collegeStudyExamResponseDTO.setStudyTypeName(studyTypeName);
-            String taskType = collegeStudyExamResponseDTO.getTaskType();
-            String taskTypeName = staticDataServiceImpl.getCodeName("STUDY_TASK_TYPE", taskType);
-            if (StringUtils.isEmpty(taskTypeName)){
-                taskTypeName = taskType;
-            }
-            collegeStudyExamResponseDTO.setTaskTypeName(taskTypeName);
-            List<CollegeStudyExamCfg> collegeStudyExercisesCfgList = collegeStudyExamCfgServiceImpl.queryEffectiveByStudyIdAndChaptersId(studyId, collegeStudyExamResponseDTO.getChaptersId());
-            if (ArrayUtils.isNotEmpty(collegeStudyExercisesCfgList)){
-                List<CollegeStudyExamCfgResponseDTO> collegeStudyExamCfgResponseDTOList = new ArrayList<>();
-                for (CollegeStudyExamCfg collegeStudyExamCfg : collegeStudyExercisesCfgList){
-                    CollegeStudyExamCfgResponseDTO collegeStudyExamCfgResponseDTO = new CollegeStudyExamCfgResponseDTO();
-                    BeanUtils.copyProperties(collegeStudyExamCfg, collegeStudyExamCfgResponseDTO);
-                    String examId = collegeStudyExamCfgResponseDTO.getExamId();
-                    String examName = "";
-                    if (StringUtils.isNotEmpty(examId)){
-                        examName = staticDataServiceImpl.getCodeName("EXAM_RANGE", examId);
-                    }
-                    if (StringUtils.isEmpty(examName)){
-                        examName = examId;
-                    }
-                    collegeStudyExamCfgResponseDTO.setExamName(examName);
-                    String exercisesType = collegeStudyExamCfgResponseDTO.getExercisesType();
-                    String exercisesTypeName = "";
-                    if (StringUtils.isNotEmpty(exercisesType)){
-                        exercisesTypeName = staticDataServiceImpl.getCodeName("EXERCISES_TYPE", exercisesType);
-                    }
-                    if (StringUtils.isEmpty(exercisesTypeName)){
-                        exercisesTypeName = exercisesType;
-                    }
-                    collegeStudyExamCfgResponseDTO.setExercisesTypeName(exercisesTypeName);
-                    collegeStudyExamCfgResponseDTOList.add(collegeStudyExamCfgResponseDTO);
-                }
-                collegeStudyExamResponseDTO.setCollegeStudyExamList(collegeStudyExamCfgResponseDTOList);
-            }
-        }
-        return result;
-    }
-
-    @Override
     public CollegeStudyTaskResponseDTO getCollegeStudyTaskByStudyTaskId(String studyTaskId) {
         CollegeStudyTaskResponseDTO result = new CollegeStudyTaskResponseDTO();
         if (StringUtils.isNotEmpty(studyTaskId)){
-            CollegeStudyTaskCfg collegeStudyTaskCfg = this.getByStudyTaskId(Long.valueOf(studyTaskId));
+            CollegeStudyTaskCfg collegeStudyTaskCfg = this.getEffectiveByStudyTaskId(Long.valueOf(studyTaskId));
             if (null != collegeStudyTaskCfg){
                 BeanUtils.copyProperties(collegeStudyTaskCfg, result);
                 String jobType = result.getJobType();
@@ -283,7 +190,7 @@ public class CollegeStudyTaskCfgServiceImpl extends ServiceImpl<CollegeStudyTask
                 }
                 result.setTaskTypeName(taskTypeName);
 
-                //设置章节信息
+                /*//设置章节信息
                 List<CollegeCourseChaptersCfg> collegeCourseChaptersCfgList = collegeCourseChaptersCfgServiceImpl.queryByStudyId(result.getStudyId());
                 List<CollegeCourseChaptersTaskResponseDTO> collegeCourseChaptersTaskResponseDTOList = new ArrayList<>();
                 if (ArrayUtils.isNotEmpty(collegeCourseChaptersCfgList)){
@@ -300,15 +207,42 @@ public class CollegeStudyTaskCfgServiceImpl extends ServiceImpl<CollegeStudyTask
                         String studyModel = collegeCourseChaptersTaskResponseDTO.getStudyModel();
                         String studyModelName = studyModel;
                         if (StringUtils.isNotEmpty(studyModel)){
-                            studyModelName = staticDataServiceImpl.getCodeName("CHAPTER_STUDY_MODEL", studyModel);
+                            studyModelName = staticDataServiceImpl.getCodeName("STUDY_MODEL", studyModel);
                         }
                         collegeCourseChaptersTaskResponseDTO.setStudyModelName(studyModelName);
+                        String togetherChaptersId = collegeCourseChaptersTaskResponseDTO.getTogetherChaptersId();
+                        String togetherChaptersName = "";
+                        if(StringUtils.isNotEmpty(togetherChaptersId)){
+                            togetherChaptersName = collegeCourseChaptersCfgServiceImpl.getChapterNameByChaptersId(Long.valueOf(togetherChaptersId));
+                        }
+                        collegeCourseChaptersTaskResponseDTO.setTogetherChaptersName(togetherChaptersName);
                         collegeCourseChaptersTaskResponseDTOList.add(collegeCourseChaptersTaskResponseDTO);
                     }
                 }
-                result.setCollegeCourseChaptersList(collegeCourseChaptersTaskResponseDTOList);
+                result.setCollegeCourseChaptersList(collegeCourseChaptersTaskResponseDTOList);*/
             }
         }
         return result;
+    }
+
+    @Override
+    public List<CollegeTogetherStudyTaskResponseDTO> queryEffectiveTogetherStudyTaskList() {
+        List<CollegeTogetherStudyTaskResponseDTO> result = new ArrayList<>();
+        List<CollegeStudyTaskCfg> collegeStudyTaskCfgList = this.list(Wrappers.<CollegeStudyTaskCfg>lambdaQuery().eq(CollegeStudyTaskCfg::getStatus, "0")
+                .orderByAsc(CollegeStudyTaskCfg::getStudyTaskId));
+        if (ArrayUtils.isNotEmpty(collegeStudyTaskCfgList)){
+            for (CollegeStudyTaskCfg collegeStudyTaskCfg : collegeStudyTaskCfgList){
+                CollegeTogetherStudyTaskResponseDTO collegeTogetherStudyTaskResponseDTO = new CollegeTogetherStudyTaskResponseDTO();
+                BeanUtils.copyProperties(collegeStudyTaskCfg, collegeTogetherStudyTaskResponseDTO);
+                collegeTogetherStudyTaskResponseDTO.setStudyTaskId(String.valueOf(collegeStudyTaskCfg.getStudyTaskId()));
+                result.add(collegeTogetherStudyTaskResponseDTO);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public CollegeStudyTaskCfg getAllByStudyTaskId(Long studyTaskId) {
+        return this.getOne(Wrappers.<CollegeStudyTaskCfg>lambdaQuery().eq(CollegeStudyTaskCfg::getStudyTaskId, studyTaskId));
     }
 }

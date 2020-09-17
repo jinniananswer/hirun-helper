@@ -33,4 +33,8 @@ public interface ICollegeEmployeeTaskService extends IService<CollegeEmployeeTas
     List<CollegeEmployeeTask> queryEffectiveByEmployeeId(String employeeId);
 
     IPage<CollegeEmployeeTaskDetailResponseDTO> queryEmployeeTaskDetailByPage(CollegeEmployeeTaskDetailRequestDTO collegeEmployeeTaskDetailRequestDTO, Page<CollegeEmployeeTaskDetailRequestDTO> page);
+
+    CollegeEmployeeTask getLastEffectiveByEmployeeId(String employeeId);
+
+    CollegeEmployeeTask getLastEffectiveByEmployeeIdAndStudyTaskId(String employeeId, String studyTaskId);
 }

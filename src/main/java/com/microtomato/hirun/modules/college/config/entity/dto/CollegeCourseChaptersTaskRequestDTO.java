@@ -14,11 +14,30 @@ public class CollegeCourseChaptersTaskRequestDTO {
 
     private String studyName;
 
+    private String taskName;
+
     private String studyType;
 
     private String studyOrder;
+    /**
+     * 学习模式
+     */
+    private String studyModel;
 
-    private String staffRank;
+    /**
+     * 同时学习的任务ID
+     */
+    private String togetherStudyTaskId;
+
+    /**
+     * 任务开始方式
+     */
+    private String studyStartType;
+
+    /**
+     * 指定天数后开始
+     */
+    private Integer appointDay;
 
     private String studyTime;
 

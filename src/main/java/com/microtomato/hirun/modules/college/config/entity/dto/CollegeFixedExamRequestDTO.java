@@ -7,12 +7,14 @@ import java.util.List;
 @Data
 public class CollegeFixedExamRequestDTO {
 
-    private String examId;
+    private Integer examMaxNum;
 
-    private String exercisesType;
+    private String examType;
 
-    private Integer exercisesNumber;
+    private Integer passScore;
 
-    private List<CollegeFixedExamTaskDTO> studyChaptersList;
+    private List<CollegeTopicInfoRequestDTO> studyTopicTypeInfoDetails;
+
+    private List<CollegeFixedExamTaskDTO> taskInfoList;
 
 }

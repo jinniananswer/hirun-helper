@@ -167,7 +167,10 @@ public class UploadFileServiceImpl extends ServiceImpl<UploadFileMapper, UploadF
     public String getFileNameByFileId(String id) {
         UploadFile uploadFile = getOne(Wrappers.<UploadFile>lambdaQuery().eq(UploadFile::getId, id));
         if (null != uploadFile){
-            return uploadFile.getFileName();
+            String fileName = uploadFile.getFileName();
+            if (StringUtils.isNotEmpty(fileName)){
+                return fileName.substring(0, fileName.lastIndexOf("."));
+            }
         }
         return "";
     }

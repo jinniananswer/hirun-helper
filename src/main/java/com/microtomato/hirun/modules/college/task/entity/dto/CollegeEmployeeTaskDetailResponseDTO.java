@@ -10,6 +10,10 @@ public class CollegeEmployeeTaskDetailResponseDTO {
 
     private String employeeId;
 
+    private String studyTaskId;
+
+    private String taskName;
+
     private String studyId;
 
     private String studyName;

@@ -9,11 +9,11 @@ import lombok.*;
 import lombok.experimental.Accessors;
 
 /**
- * (CollegeStudyExercisesCfg)表实体类
+ * (CollegeExamCfg)表实体类
  *
  * @author makejava
  * @version 1.0.0
- * @date 2020-09-04 01:04:12
+ * @date 2020-09-18 01:12:19
  */
 @Data
 @Builder
@@ -21,13 +21,22 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("college_study_exercises_cfg")
-public class CollegeStudyExercisesCfg extends BaseEntity {
+@TableName("college_exam_cfg")
+public class CollegeExamCfg extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "study_exercises_id", type = IdType.AUTO)
-    private Long studyExercisesId;
+    /**
+     * 题目练习标识
+     */
+    @TableId(value = "exam_topic_id", type = IdType.AUTO)
+    private Long examTopicId;
+
+    /**
+     * 学习任务标识
+     */
+    @TableField(value = "study_task_id")
+    private String studyTaskId;
 
     /**
      * 学习标识
@@ -42,22 +51,22 @@ public class CollegeStudyExercisesCfg extends BaseEntity {
     private String chaptersId;
 
     /**
-     * 考试标识
+     * 考试最大次数
      */
-    @TableField(value = "exam_id")
-    private String examId;
+    @TableField(value = "exam_max_num")
+    private Integer examMaxNum;
 
     /**
-     * 习题类型
+     * 考试合格分数
      */
-    @TableField(value = "exercises_type")
-    private String exercisesType;
+    @TableField(value = "pass_score")
+    private Integer passScore;
 
     /**
-     * 习题数量
+     * 考试类型：0-练习，1-考试
      */
-    @TableField(value = "exercises_number")
-    private Integer exercisesNumber;
+    @TableField(value = "exam_type")
+    private String examType;
 
     /**
      * 状态

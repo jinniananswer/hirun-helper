@@ -29,8 +29,19 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 exercisesType: '',
                 collegeStudyExercisesList: [],
                 fixedExercisesDialogVisible: false,
-                collegeStudyExercisesInfo: {}
+                studyTopicTypeInfo: {},
+                studyTopicTypeInfoDetails: [],
+                studyTopicTypeOptions: [],
+                studyTopicTypeInfoDetails: []
             }
+        },
+        mounted: function() {
+            this.studyTopicTypeOptions = [
+                {value : "1", label : "单选"},
+                {value : "2", label : "多选"},
+                {value : "3", label : "判断"},
+                {value : "4", label : "填空"}
+            ];
         },
         methods: {
             query: function() {
@@ -55,31 +66,31 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     });
                     return;
                 }
-                this.collegeStudyExercisesInfo = {};
+                this.studyTopicTypeInfo = {};
                 //批量设置
-                this.collegeStudyExercisesInfo.fixedType = '0';
+                this.studyTopicTypeInfo.fixedType = '0';
                 this.fixedExercisesDialogVisible = true;
             },
             fixedExercises: function (row) {
-                this.collegeStudyExercisesInfo = {};
+                this.studyTopicTypeInfo = {};
                 //单条设置
-                this.collegeStudyExercisesInfo.fixedType = '1';
+                this.studyTopicTypeInfo.fixedType = '1';
                 let studyChaptersList = [];
                 let studyChapters = {};
                 studyChapters.studyId = row.studyId;
                 studyChapters.chaptersId = row.chaptersId;
                 studyChaptersList.push(studyChapters);
-                this.collegeStudyExercisesInfo.studyChaptersList = studyChaptersList
+                this.studyTopicTypeInfo.studyChaptersList = studyChaptersList
                 this.fixedExercisesDialogVisible = true;
             },
             cancel: function () {
                 this.fixedExercisesDialogVisible = false;
             },
-            submitFixedExercises: function(collegeStudyExercisesInfo){
-                this.$refs.collegeStudyExercisesInfo.validate((valid) => {
+            submitFixedExercises: function(studyTopicTypeInfo){
+                this.$refs.studyTopicTypeInfo.validate((valid) => {
                     if (valid) {
-                        let fixedType = collegeStudyExercisesInfo.fixedType;
-                        let requestInfo = collegeStudyExercisesInfo;
+                        let fixedType = studyTopicTypeInfo.fixedType;
+                        let requestInfo = studyTopicTypeInfo;
                         if (fixedType == '0'){
                             let val = this.multipleSelection
                             if(val == undefined || val == 'undefined' || val.length <= 0){
@@ -102,34 +113,31 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                         }
                         let that = this;
                         ajax.post('api/CollegeStudyExercisesCfg/fixedStudyExercises', requestInfo, function(responseData){
-                            let addStudyChaptersList = requestInfo.studyChaptersList
-                            addStudyChaptersList.forEach((addStudyChapters)=>{
-                                that.studyTaskInfo.forEach((studyTask)=>{
-                                    if (studyTask.studyId == addStudyChapters.studyId && studyTask.chaptersId == addStudyChapters.chaptersId){
-                                        let collegeStudyExam = {};
-                                        collegeStudyExam.studyId = studyTask.studyId
-                                        collegeStudyExam.chaptersId = studyTask.chaptersId
-                                        collegeStudyExam.examId = requestInfo.examId
-                                        collegeStudyExam.exercisesType = requestInfo.exercisesType
-                                        collegeStudyExam.exercisesNumber = requestInfo.exercisesNumber
-                                        collegeStudyExam.exercisesTypeName = responseData.exercisesTypeName
-                                        collegeStudyExam.examName = responseData.examName
-                                        if(studyTask.collegeStudyExercisesList == undefined || studyTask.collegeStudyExercisesList == "undefined"){
-                                            studyTask.collegeStudyExercisesList = [];
-                                        }
-                                        studyTask.collegeStudyExercisesList.push(collegeStudyExam);
-                                    }
-                                })
-                            })
                             that.$message({
                                 showClose: true,
                                 message: '课程任务新增成功',
                                 type: 'success'
                             });
                             that.fixedExercisesDialogVisible = false;
+                            that.studyTopicTypeInfo = {}
+                            that.studyTopicTypeInfoDetails = []
                         });
                     }
                 });
+            },
+
+            addTopicType: function () {
+                this.topicInfoItem = {
+                    exercisesNumber: 0,
+                    exercisesType: "1"
+                };
+                let that = this;
+                that.$refs.studyTopicTypeInfoDetails.insertAt(that.topicInfoItem, 0);
+                that.studyTopicTypeInfoDetails.push(that.topicInfoItem)
+                that.studyTopicTypeInfo.studyTopicTypeInfoDetails = that.studyTopicTypeInfoDetails
+            },
+            deleteTopicType: function () {
+
             }
         }
     });

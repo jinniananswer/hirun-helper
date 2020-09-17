@@ -9,11 +9,11 @@ import lombok.*;
 import lombok.experimental.Accessors;
 
 /**
- * (CollegeStudyExamCfg)表实体类
+ * (CollegeExamRelCfg)表实体类
  *
  * @author makejava
  * @version 1.0.0
- * @date 2020-09-11 00:30:29
+ * @date 2020-09-18 01:12:54
  */
 @Data
 @Builder
@@ -21,43 +21,34 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("college_study_exam_cfg")
-public class CollegeStudyExamCfg extends BaseEntity {
+@TableName("college_exam_rel_cfg")
+public class CollegeExamRelCfg extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "study_exam_id", type = IdType.AUTO)
-    private Long studyExamId;
+    /**
+     * 考题关系标识
+     */
+    @TableId(value = "exercises_rel_id", type = IdType.AUTO)
+    private Long exercisesRelId;
 
     /**
      * 学习标识
      */
-    @TableField(value = "study_id")
-    private String studyId;
+    @TableField(value = "study_exercises_id")
+    private String studyExercisesId;
 
     /**
-     * 章节ID
+     * 题目类型
      */
-    @TableField(value = "chapters_id")
-    private String chaptersId;
+    @TableField(value = "topic_type")
+    private String topicType;
 
     /**
-     * 考试标识
+     * 题目数量
      */
-    @TableField(value = "exam_id")
-    private String examId;
-
-    /**
-     * 考试题目类型
-     */
-    @TableField(value = "exercises_type")
-    private String exercisesType;
-
-    /**
-     * 考试题目数量
-     */
-    @TableField(value = "exercises_number")
-    private Integer exercisesNumber;
+    @TableField(value = "topic_num")
+    private Integer topicNum;
 
     /**
      * 状态

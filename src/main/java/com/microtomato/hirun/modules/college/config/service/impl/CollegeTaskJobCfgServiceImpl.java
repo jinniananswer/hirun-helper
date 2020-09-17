@@ -1,11 +1,14 @@
 package com.microtomato.hirun.modules.college.config.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeTaskJobCfg;
 import com.microtomato.hirun.modules.college.config.mapper.CollegeTaskJobCfgMapper;
 import com.microtomato.hirun.modules.college.config.service.ICollegeTaskJobCfgService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * (CollegeTaskJobCfg)表服务实现类
@@ -21,4 +24,8 @@ public class CollegeTaskJobCfgServiceImpl extends ServiceImpl<CollegeTaskJobCfgM
     private CollegeTaskJobCfgMapper collegeTaskJobCfgMapper;
 
 
+    @Override
+    public List<CollegeTaskJobCfg> queryEffectiveByTaskId(String taskId) {
+        return this.list(Wrappers.<CollegeTaskJobCfg>lambdaQuery().eq(CollegeTaskJobCfg::getTaskId, taskId));
+    }
 }

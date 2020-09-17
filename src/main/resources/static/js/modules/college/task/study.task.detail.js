@@ -78,7 +78,7 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     ajax.post('api/CollegeCourseChaptersCfg/editChapters', editChaptersInfo, function(responseData){
                         that.editChaptersInfoSource = editChaptersInfo
                         that.editChaptersDialogVisible = false;
-                        let collegeCourseChapterInfo = that.studyTaskInfo.collegeCourseChapterInfo;
+                        let collegeCourseChapterInfo = that.collegeCourseChapterInfo;
                         for(let i = 0 ; i < collegeCourseChapterInfo.length ; i++){
                             if(collegeCourseChapterInfo[i].chaptersId == editChaptersInfo.chaptersId){
                                 collegeCourseChapterInfo[i] = editChaptersInfo;

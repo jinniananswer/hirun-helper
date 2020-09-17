@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
  *
  * @author makejava
  * @version 1.0.0
- * @date 2020-09-16 03:43:49
+ * @date 2020-09-18 03:15:15
  */
 @Data
 @Builder
@@ -30,16 +30,16 @@ public class CollegeStudyTaskCfg extends BaseEntity {
     private Long studyTaskId;
 
     /**
+     * 任务名称
+     */
+    @TableField(value = "task_name")
+    private String taskName;
+
+    /**
      * 学习内容标识
      */
     @TableField(value = "study_id")
     private String studyId;
-
-    /**
-     * 学习内容名称
-     */
-    @TableField(value = "study_name")
-    private String studyName;
 
     /**
      * 学习内容类型 0-课程，1-课件
@@ -48,10 +48,28 @@ public class CollegeStudyTaskCfg extends BaseEntity {
     private String studyType;
 
     /**
-     * 学习顺序
+     * 任务开始方式
      */
-    @TableField(value = "study_order")
-    private String studyOrder;
+    @TableField(value = "study_start_type")
+    private String studyStartType;
+
+    /**
+     * 指定天数后开始
+     */
+    @TableField(value = "appoint_day")
+    private Integer appointDay;
+
+    /**
+     * 学习模式
+     */
+    @TableField(value = "study_model")
+    private String studyModel;
+
+    /**
+     * 同时学习的任务ID
+     */
+    @TableField(value = "together_study_task_id")
+    private String togetherStudyTaskId;
 
     /**
      * 状态

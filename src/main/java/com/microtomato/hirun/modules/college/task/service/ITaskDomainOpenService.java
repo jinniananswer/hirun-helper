@@ -10,4 +10,6 @@ public interface ITaskDomainOpenService {
      * @param employeeList
      */
     void fixedTaskReleaseByEmployeeList(List<Long> employeeIdList);
+
+    void fixedTaskReleaseByTaskList(List<Long> studyTaskIdList);
 }

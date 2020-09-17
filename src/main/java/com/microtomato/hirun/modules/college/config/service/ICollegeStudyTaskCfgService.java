@@ -3,11 +3,7 @@ package com.microtomato.hirun.modules.college.config.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.microtomato.hirun.modules.college.config.entity.dto.CollegeStudyExamResponseDTO;
-import com.microtomato.hirun.modules.college.config.entity.dto.CollegeStudyExercisesResponseDTO;
-import com.microtomato.hirun.modules.college.config.entity.dto.CollegeStudyTaskRequestDTO;
-import com.microtomato.hirun.modules.college.config.entity.dto.CollegeStudyTaskResponseDTO;
-import com.microtomato.hirun.modules.college.config.entity.po.CollegeStudyExamCfg;
+import com.microtomato.hirun.modules.college.config.entity.dto.*;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeStudyTaskCfg;
 
 import java.util.List;
@@ -32,13 +28,13 @@ public interface ICollegeStudyTaskCfgService extends IService<CollegeStudyTaskCf
 
     List<CollegeStudyTaskCfg> queryByStudyTaskIdList(List<Long> studyTaskIdList);
 
-    CollegeStudyTaskCfg getByStudyTaskId(Long studyTaskId);
+    CollegeStudyTaskCfg getEffectiveByStudyTaskId(Long studyTaskId);
 
     CollegeStudyTaskCfg getEffectiveByStudyId(String studyId);
 
-    IPage<CollegeStudyExercisesResponseDTO> queryCollegeStudyExercisesByPage(CollegeStudyTaskRequestDTO collegeStudyTaskRequestDTO, Page<CollegeStudyTaskRequestDTO> page);
-
-    IPage<CollegeStudyExamResponseDTO> queryCollegeStudyExamByPage(CollegeStudyTaskRequestDTO collegeStudyTaskRequestDTO, Page<CollegeStudyTaskRequestDTO> page);
-
     CollegeStudyTaskResponseDTO getCollegeStudyTaskByStudyTaskId(String studyTaskId);
+
+    List<CollegeTogetherStudyTaskResponseDTO> queryEffectiveTogetherStudyTaskList();
+
+    CollegeStudyTaskCfg getAllByStudyTaskId(Long studyTaskId);
 }

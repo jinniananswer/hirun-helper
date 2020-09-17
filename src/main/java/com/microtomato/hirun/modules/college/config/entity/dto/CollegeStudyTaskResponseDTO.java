@@ -1,5 +1,6 @@
 package com.microtomato.hirun.modules.college.config.entity.dto;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeCourseChaptersCfg;
 import lombok.Data;
 
@@ -16,9 +17,9 @@ public class CollegeStudyTaskResponseDTO {
     private String studyId;
 
     /**
-     * 课程名称
+     * 任务名称
      */
-    private String studyName;
+    private String taskName;
 
     /**
      * 课程类型
@@ -31,9 +32,34 @@ public class CollegeStudyTaskResponseDTO {
     private String studyTypeName;
 
     /**
-     * 课程学习顺序
+     * 学习模式
      */
-    private String studyOrder;
+    private String studyModel;
+
+    /**
+     * 学习模式名称
+     */
+    private String studyModelName;
+
+    /**
+     * 同时学习的任务ID
+     */
+    private String togetherStudyTaskId;
+
+    /**
+     * 同时学习的任务名称
+     */
+    private String togetherStudyTaskName;
+
+    /**
+     * 任务开始方式
+     */
+    private String studyStartType;
+
+    /**
+     * 任务开始方式名称
+     */
+    private String studyStartTypeName;
 
     /**
      * 状态

@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.modules.college.config.entity.po.CollegeStudyTaskCfg;
+import com.microtomato.hirun.modules.college.config.service.ICollegeStudyTaskCfgService;
 import com.microtomato.hirun.modules.college.task.entity.dto.*;
 import com.microtomato.hirun.modules.college.task.entity.po.CollegeEmployeeTask;
 import com.microtomato.hirun.modules.college.task.service.ICollegeEmployeeTaskService;
@@ -43,6 +45,9 @@ public class CollegeEmployeeTaskController {
 
     @Autowired
     private IEmployeeService employeeServiceImpl;
+
+    @Autowired
+    private ICollegeStudyTaskCfgService collegeStudyTaskCfgServiceImpl;
 
     /**
      * 分页查询所有数据
@@ -132,39 +137,28 @@ public class CollegeEmployeeTaskController {
         CollegeTaskStatisticsResponseDTO result = new CollegeTaskStatisticsResponseDTO();
         int taskFinishNum = 0;
         int exercisesFinishNum = 0;
-        int exercisesUnderWayNum = 0;
-        int exercisesUnFinishNum = 0;
         int allTaskNum = 0;
-        int examFinishNum = 0;
-        int examUnFinishNum = 0;
         int examPassNum = 0;
-        int examUnPassNum = 0;
         if (ArrayUtils.isNotEmpty(collegeEmployeeTaskList)){
             allTaskNum = collegeEmployeeTaskList.size();
             for (CollegeEmployeeTask collegeEmployeeTask : collegeEmployeeTaskList){
+                String studyTaskId = collegeEmployeeTask.getStudyTaskId();
+                CollegeStudyTaskCfg collegeStudyTask = collegeStudyTaskCfgServiceImpl.getAllByStudyTaskId(Long.valueOf(studyTaskId));
                 LocalDateTime studyCompleteDate = collegeEmployeeTask.getStudyCompleteDate();
                 if (null != studyCompleteDate){
                     taskFinishNum++;
                 }
                 Integer exercisesCompletedNumber = collegeEmployeeTask.getExercisesCompletedNumber();
-                Integer exercisesNumber = collegeEmployeeTask.getExercisesNumber();
-                if (null == exercisesCompletedNumber || exercisesCompletedNumber == 0){
-                    exercisesUnFinishNum++;
-                }else if (exercisesCompletedNumber < exercisesNumber){
-                    exercisesUnderWayNum++;
-                }else if (exercisesCompletedNumber >= exercisesNumber){
-                    exercisesFinishNum++;
+                if (null != exercisesCompletedNumber){
+                    Integer exercisesNumber = collegeStudyTask.getExercisesNumber();
+                    if (exercisesCompletedNumber >= exercisesNumber){
+                        exercisesFinishNum++;
+                    }
                 }
-
                 Integer examScore = collegeEmployeeTask.getExamScore();
-                Integer passScore = collegeEmployeeTask.getPassScore();
-                if (null == examScore){
-                    examUnFinishNum++;
-                }else {
-                    examFinishNum++;
-                    if (examScore < passScore){
-                        examUnPassNum++;
-                    }else {
+                if (null != examScore){
+                    Integer passScore = collegeStudyTask.getPassScore();
+                    if (null != examScore && examScore > passScore){
                         examPassNum++;
                     }
                 }
@@ -173,46 +167,19 @@ public class CollegeEmployeeTaskController {
         }
         int taskFinish = 0;
         int exercisesFinish = 0;
-        int exercisesUnderWay = 0;
-        int exercisesUnFinish = 100;
-        int examFinish = 0;
-        int examUnFinish = 100;
         int examPass = 0;
-        int examUnPass = 100;
         if (allTaskNum > 0){
             taskFinish = (taskFinishNum * 100) / allTaskNum;
             exercisesFinish = (exercisesFinishNum * 100 ) / allTaskNum;
-            exercisesUnderWay = (exercisesUnderWayNum * 100) / allTaskNum;
-            exercisesUnFinish = 100 - exercisesFinish - exercisesUnderWay;
-
-            examFinish = (examFinishNum * 100) / allTaskNum;
-            examUnFinish = 100 - examFinish;
-
-            if (examFinishNum > 0){
-                examPass = (examPassNum * 100) / examFinishNum;
-                examUnPass = 100 - examPass;
-            }
+            examPass = (examPassNum * 100) / allTaskNum;
         }
         result.setExercisesFinish(exercisesFinish);
         result.setExercisesFinishNum(exercisesFinishNum);
-        result.setExercisesUnderWay(exercisesUnderWay);
-        result.setExercisesUnderWayNum(exercisesUnderWayNum);
-        result.setExercisesUnFinish(exercisesUnFinish);
-        result.setExercisesUnFinishNum(exercisesUnFinishNum);
         result.setTaskFinish(taskFinish);
         result.setTaskFinishNum(taskFinishNum);
         result.setAllTaskNum(allTaskNum);
-        result.setTaskUnFinish(100 - taskFinish);
-        result.setTaskUnFinishNum(allTaskNum - taskFinishNum);
-
-        result.setExamFinish(examFinish);
-        result.setExamFinishNum(examFinishNum);
-        result.setExamUnFinish(examUnFinish);
-        result.setExamUnFinishNum(examUnFinishNum);
         result.setExamPass(examPass);
         result.setExamPassNum(examPassNum);
-        result.setExamUnPass(examUnPass);
-        result.setExamUnPassNum(examUnPassNum);
         return result;
     }
 
@@ -221,5 +188,12 @@ public class CollegeEmployeeTaskController {
     IPage<CollegeEmployeeTaskDetailResponseDTO> queryEmployeeTaskDetailByPage(CollegeEmployeeTaskDetailRequestDTO collegeEmployeeTaskDetailRequestDTO){
         Page<CollegeEmployeeTaskDetailRequestDTO> page = new Page<>(collegeEmployeeTaskDetailRequestDTO.getPage(), collegeEmployeeTaskDetailRequestDTO.getLimit());
         return this.collegeEmployeeTaskService.queryEmployeeTaskDetailByPage(collegeEmployeeTaskDetailRequestDTO, page);
+    }
+
+    @PostMapping("fixedTaskReleaseByTaskList")
+    @Transactional(rollbackFor = Exception.class)
+    @RestResult
+    public void fixedTaskReleaseByTaskList(@RequestBody List<Long> studyTaskIdList) {
+        this.taskDomainOpenServiceImpl.fixedTaskReleaseByTaskList(studyTaskIdList);
     }
 }

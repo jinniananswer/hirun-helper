@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
  *
  * @author makejava
  * @version 1.0.0
- * @date 2020-08-28 01:14:37
+ * @date 2020-09-16 23:05:27
  */
 @Data
 @Builder
@@ -42,12 +42,6 @@ public class CollegeCourseChaptersCfg extends BaseEntity {
     private String chaptersName;
 
     /**
-     * 章节学习顺序
-     */
-    @TableField(value = "chapters_study_order")
-    private String chaptersStudyOrder;
-
-    /**
      * 章节类型
      */
     @TableField(value = "chapters_type")
@@ -64,12 +58,6 @@ public class CollegeCourseChaptersCfg extends BaseEntity {
      */
     @TableField(value = "study_time")
     private String studyTime;
-
-    /**
-     * 学习模式：0-分批学习，1-同时学习
-     */
-    @TableField(value = "study_model")
-    private String studyModel;
 
     /**
      * 习题次数

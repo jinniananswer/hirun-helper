@@ -142,4 +142,14 @@ public interface IEmployeeService extends IService<Employee> {
     List<Employee> queryByEmployeeIdAndLikeName(Long employeeId, String name);
 
     Employee getEEmployeeByEmployeeId(Long employeeId);
+
+    /**
+     * 获取所有未转正新员工
+     * @return
+     */
+    List<Employee> queryNewEffectiveEmployee();
+
+    List<Employee> queryAllEffectiveEmployee();
+
+    List<Employee> queryEffectiveByJobRoleList(List<String> jobRoleList);
 }

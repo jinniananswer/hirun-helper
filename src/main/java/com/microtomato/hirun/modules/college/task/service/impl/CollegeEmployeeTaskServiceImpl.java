@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.modules.college.config.entity.po.CollegeStudyTaskCfg;
 import com.microtomato.hirun.modules.college.config.service.ICollegeCourseChaptersCfgService;
 import com.microtomato.hirun.modules.college.config.service.ICollegeStudyTaskCfgService;
 import com.microtomato.hirun.modules.college.task.entity.dto.CollegeEmployeeTaskDetailRequestDTO;
@@ -23,6 +24,7 @@ import com.microtomato.hirun.modules.organization.service.impl.EmployeeServiceIm
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import com.microtomato.hirun.modules.system.service.IUploadFileService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -60,12 +62,14 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
     private IStaticDataService staticDataServiceImpl;
 
     @Autowired
+    private ICollegeStudyTaskCfgService collegeStudyTaskCfgServiceImpl;
+
+    @Autowired
     private ICollegeCourseChaptersCfgService collegeCourseChaptersCfgServiceImpl;
 
     @Override
     public List<CollegeEmployeeTask> queryByEmployeeIdAndTaskType(String employeeId, String taskType) {
-        return this.list(Wrappers.<CollegeEmployeeTask>lambdaQuery().eq(CollegeEmployeeTask::getEmployeeId, employeeId)
-                .eq(CollegeEmployeeTask::getTaskType, taskType));
+        return this.list(Wrappers.<CollegeEmployeeTask>lambdaQuery().eq(CollegeEmployeeTask::getEmployeeId, employeeId));
     }
 
     @Override
@@ -98,7 +102,7 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
                     taskNum = collegeEmployeeTaskList.size();
                     Map<String, String> studyMap = new HashMap<>();
                     for (CollegeEmployeeTask collegeEmployeeTask : collegeEmployeeTaskList){
-                        studyMap.put(collegeEmployeeTask.getStudyId(), null);
+                        studyMap.put(collegeEmployeeTask.getStudyTaskId(), null);
                     }
                     studyNum = studyMap.size();
                 }
@@ -113,7 +117,8 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
     @Override
     public List<CollegeEmployeeTask> queryEffectiveByEmployeeId(String employeeId) {
         return this.list(Wrappers.<CollegeEmployeeTask>lambdaQuery().eq(CollegeEmployeeTask::getEmployeeId, employeeId)
-                .eq(CollegeEmployeeTask::getStatus, "0"));
+                .eq(CollegeEmployeeTask::getStatus, "0")
+                .orderByDesc(CollegeEmployeeTask::getStudyEndDate));
     }
 
     @Override
@@ -124,6 +129,11 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
         IPage<CollegeEmployeeTaskDetailResponseDTO> result = this.collegeEmployeeTaskMapper.queryEmployeeTaskDetailByPage(page, queryWrapper);
         List<CollegeEmployeeTaskDetailResponseDTO> records = result.getRecords();
         for (CollegeEmployeeTaskDetailResponseDTO collegeEmployeeTaskDetailResponseDTO : records){
+            String studyTaskId = collegeEmployeeTaskDetailResponseDTO.getStudyTaskId();
+            CollegeStudyTaskCfg collegeStudyTaskCfg = collegeStudyTaskCfgServiceImpl.getEffectiveByStudyTaskId(Long.valueOf(studyTaskId));
+            if (null != collegeStudyTaskCfg){
+                BeanUtils.copyProperties(collegeStudyTaskCfg, collegeEmployeeTaskDetailResponseDTO);
+            }
             String studyType = collegeEmployeeTaskDetailResponseDTO.getStudyType();
             String studyTypeName = staticDataServiceImpl.getCodeName("TASK_COURSEWARE_TYPE", studyType);
             if (StringUtils.isEmpty(studyTypeName)){
@@ -143,7 +153,7 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
             collegeEmployeeTaskDetailResponseDTO.setStudyName(studyName);
             String chapterId = collegeEmployeeTaskDetailResponseDTO.getChapterId();
             if (StringUtils.isNotEmpty(chapterId)){
-                String chapterName = collegeCourseChaptersCfgServiceImpl.getChapterNameByStudyIdAndChaptersId(studyId, Long.valueOf(chapterId));
+                String chapterName = collegeCourseChaptersCfgServiceImpl.getChapterNameByChaptersId(Long.valueOf(chapterId));
                 if (StringUtils.isEmpty(chapterName)){
                     chapterName = chapterId;
                 }
@@ -159,5 +169,25 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
         return result;
     }
 
+    @Override
+    public CollegeEmployeeTask getLastEffectiveByEmployeeId(String employeeId) {
+        List<CollegeEmployeeTask> collegeEmployeeTaskList = this.queryEffectiveByEmployeeId(employeeId);
+        if (ArrayUtils.isNotEmpty(collegeEmployeeTaskList)){
+            return collegeEmployeeTaskList.get(0);
+        }
+        return null;
+    }
+
+    @Override
+    public CollegeEmployeeTask getLastEffectiveByEmployeeIdAndStudyTaskId(String employeeId, String studyTaskId) {
+        List<CollegeEmployeeTask> collegeEmployeeTaskList = this.list(Wrappers.<CollegeEmployeeTask>lambdaQuery().eq(CollegeEmployeeTask::getEmployeeId, employeeId)
+                .eq(CollegeEmployeeTask::getStatus, "0")
+                .eq(CollegeEmployeeTask::getStudyTaskId, studyTaskId)
+                .orderByDesc(CollegeEmployeeTask::getStudyEndDate));
+        if (ArrayUtils.isNotEmpty(collegeEmployeeTaskList)){
+            return collegeEmployeeTaskList.get(0);
+        }
+        return null;
+    }
 
 }
