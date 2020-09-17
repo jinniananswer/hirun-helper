@@ -25,4 +25,6 @@ public interface ICollegeQuestionService extends IService<CollegeQuestion> {
     void updateReplyQuestion(Long questionId);
 
     void updatePublishQuestionByIds(List<Long> questionIds);
+
+    void updateClicksById(String questionId);
 }

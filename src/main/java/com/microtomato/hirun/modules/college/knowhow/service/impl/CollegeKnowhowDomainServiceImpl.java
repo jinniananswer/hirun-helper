@@ -1,5 +1,6 @@
 package com.microtomato.hirun.modules.college.knowhow.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.mybatis.sequence.impl.CollegeQuestionSeq;
@@ -64,7 +65,6 @@ public class CollegeKnowhowDomainServiceImpl implements ICollegeKnowhowDomainSer
         BeanUtils.copyProperties(request, question);
         question.setCreateTime(TimeUtils.getCurrentLocalDateTime());
         question.setStatus(KnowhowConsts.QUESTION_STATUS_UNAPPROVED);
-        question.setQuestionType(KnowhowConsts.QUESTION_TYPE_OTHER);
         Long questionId = dualService.nextval(CollegeQuestionSeq.class);
 
         question.setQuestionId(questionId);
@@ -80,21 +80,21 @@ public class CollegeKnowhowDomainServiceImpl implements ICollegeKnowhowDomainSer
         collegeQuestionRelaService.save(CollegeQuestionRela.builder()
                 .employeeId(employeeId)
                 .questionId(questionId)
-                .status("1")
+                .status(KnowhowConsts.NORMAL_STATUS_VALID)
                 .relationType("0").build());
 
         // 2.新增回答人关系
         collegeQuestionRelaService.save(CollegeQuestionRela.builder()
                 .employeeId(respondent)
                 .questionId(questionId)
-                .status("1")
+                .status(KnowhowConsts.NORMAL_STATUS_VALID)
                 .relationType("1").build());
 
         // 1.新增审批人关系
         collegeQuestionRelaService.save(CollegeQuestionRela.builder()
                 .employeeId(approvedId)
                 .questionId(questionId)
-                .status("1")
+                .status(KnowhowConsts.NORMAL_STATUS_VALID)
                 .relationType("2").build());
     }
 
@@ -135,6 +135,15 @@ public class CollegeKnowhowDomainServiceImpl implements ICollegeKnowhowDomainSer
             questions = questions.stream().sorted(Comparator.comparing(CollegeQuestion::getClicks).reversed()).collect(Collectors.toList());
         }
 
+        IPage<CollegeQuestion> pages = new Page<>(page.getSize(), page.getCurrent());
+        pages.setRecords(questions);
+        pages.setTotal(questions.size());
+        return pages;
+    }
+
+    @Override
+    public IPage<CollegeQuestion> queryAllQuestion(Page<CollegeQuestion> page) {
+        List<CollegeQuestion> questions = collegeQuestionService.list(new QueryWrapper<CollegeQuestion>().lambda());
         IPage<CollegeQuestion> pages = new Page<>(page.getSize(), page.getCurrent());
         pages.setRecords(questions);
         pages.setTotal(questions.size());

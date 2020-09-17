@@ -74,6 +74,8 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                     return '未发布'
                 } else if (status === '4') {
                     return '已发布'
+                } else if(status === '5'){
+                    return '审批失败'
                 }
             },
 

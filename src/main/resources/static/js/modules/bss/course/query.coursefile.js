@@ -62,6 +62,20 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'order-selectem
                 this.courseFileEditCond = JSON.parse(JSON.stringify(courseFile));
                 this.editCourseFileDialogVisible = true;
             },
+            submitUpload(){
+                let fileId =  this.$refs.upload.fileId;
+                let that = this;
+                ajax.post('api/organization/coursefile/addUploadCourseFile', fileId, function(responseData){
+                    that.queryCourseFileInfo();
+                    that.dialogVisible = false;
+                    that.$refs.upload = {};
+                    that.$message({
+                        showClose: true,
+                        message: '课件上传成功',
+                        type: 'success'
+                    });
+                },null, true);
+            },
             submitEdit(courseFileEditCond){
                 this.$refs.courseFileEditCond.validate((valid) => {
                     if(valid){

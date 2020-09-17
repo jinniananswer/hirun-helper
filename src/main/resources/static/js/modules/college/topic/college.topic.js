@@ -7,6 +7,7 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                 queryCond: {
                     topicText: '',
                     type: '',
+                    examId: '',
                     current: 1,
                     size: 10,
                     total: 0,
@@ -164,6 +165,24 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                 });
             },
 
+            deleteTopicOptionBatch() {
+                let data = this.$refs.addTopicOptionInfos.getCheckboxRecords();
+                if (data == null || data.length <= 0) {
+                    this.$message.error('没有选中任何记录，无法删除');
+                    return;
+                }
+            },
+
+            deleteTopicOption(row) {
+                let topicOptionsInfos = this.addTopicOptionInfos;
+                for(let i = 0 ; i < topicOptionsInfos.length ; i++){
+                    if(topicOptionsInfos[i]._XID == row._XID){
+                        this.addTopicOptionInfos.splice(i, 1);
+                        break;
+                    }
+                }
+            },
+
             submitEdit(topic) {
                 var that = this;
                 ajax.post('api/ExamTopic/updateByTopic', topic, function (responseData) {
@@ -251,14 +270,6 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                 that.$refs.addTopicOptionInfos.insertAt(that.addTopicOptionInfo, 0);
                 that.addTopicOptionInfos.push(this.addTopicOptionInfo);
                 that.topicAddCond.topicOptions = that.addTopicOptionInfos;
-            },
-
-            deleteTopicOptionBatch() {
-
-            },
-
-            deleteTopicOption(row) {
-
             },
 
             importData() {

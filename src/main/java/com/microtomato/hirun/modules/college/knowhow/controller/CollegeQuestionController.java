@@ -10,12 +10,16 @@ import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.college.knowhow.consts.KnowhowConsts;
 import com.microtomato.hirun.modules.college.knowhow.entity.dto.QuestionServiceDTO;
+import com.microtomato.hirun.modules.college.knowhow.entity.dto.ReplyServiceDTO;
 import com.microtomato.hirun.modules.college.knowhow.entity.po.CollegeQuestionRela;
 import com.microtomato.hirun.modules.college.knowhow.entity.po.CollegeReply;
 import com.microtomato.hirun.modules.college.knowhow.service.ICollegeKnowhowDomainService;
 import com.microtomato.hirun.modules.college.knowhow.service.ICollegeQuestionRelaService;
 import com.microtomato.hirun.modules.college.knowhow.service.ICollegeReplyService;
+import com.microtomato.hirun.modules.college.teacher.entity.po.Teacher;
+import com.microtomato.hirun.modules.college.teacher.service.ITeacherService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -53,6 +57,9 @@ public class CollegeQuestionController {
     @Autowired
     private ICollegeReplyService collegeReplyService;
 
+    @Autowired
+    private ITeacherService teacherService;
+
     /**
      * 初始化知乎首页
      */
@@ -82,6 +89,15 @@ public class CollegeQuestionController {
     }
 
     /**
+     * 查询老师列表
+     */
+    @GetMapping("queryTeacher")
+    @RestResult
+    public List<Teacher> queryTeacher() {
+        return teacherService.queryTeacher();
+    }
+
+    /**
      * 根据条件查询
      */
     @GetMapping("querySelfQuestion")
@@ -89,6 +105,15 @@ public class CollegeQuestionController {
     public IPage<CollegeQuestion> querySelfQuestion(Page<CollegeQuestionRela> page, String questionText, String sortType, String relationType, String optionTag) {
         UserContext userContext = WebContextUtils.getUserContext();
         return this.collegeKnowhowDomainService.querySelfQuestion(questionText, sortType, userContext.getEmployeeId(), relationType, optionTag,  page);
+    }
+
+    /**
+     * 根据条件查询
+     */
+    @GetMapping("queryAllQuestion")
+    @RestResult
+    public IPage<CollegeQuestion> queryAllQuestion(Page<CollegeQuestion> page) {
+        return this.collegeKnowhowDomainService.queryAllQuestion(page);
     }
 
     /**
@@ -110,8 +135,14 @@ public class CollegeQuestionController {
      */
     @GetMapping("queryReplyByQuestionId")
     @RestResult
-    public CollegeReply queryReplyByQuestionId(String questionId) {
-        return this.collegeReplyService.queryReplyByQuestionId(Long.valueOf(questionId));
+    public ReplyServiceDTO queryReplyByQuestionId(String questionId) {
+        ReplyServiceDTO reployService = new ReplyServiceDTO();
+        CollegeReply reply = this.collegeReplyService.queryReplyByQuestionId(Long.valueOf(questionId));
+        BeanUtils.copyProperties(reply, reployService);
+
+        reployService.setReplyer(teacherService.getById(reply.getRespondent()).getName());
+        collegeQuestionService.updateClicksById(questionId);
+        return reployService;
     }
 
     /**
@@ -125,12 +156,12 @@ public class CollegeQuestionController {
         request.setEmployeeId(userContext.getEmployeeId());
         // 暂时写死审批人与回答人
         request.setApprovedId(userContext.getEmployeeId());
-        request.setRespondent(userContext.getEmployeeId());
+        request.setRespondent(request.getRespondent());
         this.collegeKnowhowDomainService.addQuestion(request);
     }
 
     /**
-     * 问题删除
+     * 问题删除，逻辑删除，状态改为已失效
      * @param request
      */
     @PostMapping("deleteQuestionByIds")

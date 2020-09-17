@@ -18,19 +18,22 @@
             <el-card class="box-card" shadow="hover">
                 <el-form :inline="false" :model="queryCond" label-position="right" label-width="100px">
                     <el-row>
-                        <el-col :span="8">
+                        <el-col :span="6">
                             <el-form-item label="习题信息">
                                 <el-input v-model="queryCond.topicText" placeholder="习题信息"></el-input>
                             </el-form-item>
                         </el-col>
-                        <el-col :span="8">
+                        <el-col :span="6">
                             <el-form-item label="习题类型">
-                                <el-select v-model="queryCond.type" placeholder="请选择">
-                                    <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
-                                </el-select>
+                                <vue-select code-type="EXERCISES_TYPE" v-model="queryCond.type"></vue-select>
                             </el-form-item>
                         </el-col>
-                        <el-col :span="8">
+                        <el-col :span="6">
+                            <el-form-item label="习题范围">
+                                <vue-select code-type="EXAM_RANGE" v-model="queryCond.examId"></vue-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="6">
                             <el-form-item>
                                 <el-button type="primary" @click="queryByCond">查询</el-button>
                             </el-form-item>
@@ -143,7 +146,7 @@
                             </el-col>
                         </el-row>
                         <el-row>
-                            <el-col :span="8">
+                            <el-col :span="7">
                                 <el-form-item label="正确答案选项" label-width="120px" prop="correctAnswer">
                                     <el-input v-model.number="topicAddCond.correctAnswer" autocomplete="off"></el-input>
                                 </el-form-item>
@@ -153,9 +156,9 @@
                                     <el-input v-model.number="topicAddCond.score" autocomplete="off"></el-input>
                                 </el-form-item>
                             </el-col>
-                            <el-col :span="8">
-                                <el-form-item label="试题标识" label-width="120px" prop="examId" label-position="right">
-                                    <el-input v-model.number="topicAddCond.examId" autocomplete="off"></el-input>
+                            <el-col :span="9">
+                                <el-form-item label="习题范围" label-width="120px" prop="examId" label-position="right">
+                                    <vue-select code-type="EXAM_RANGE" v-model="queryCond.examId"></vue-select>
                                 </el-form-item>
                             </el-col>
                         </el-row>
@@ -180,9 +183,9 @@
                                     :edit-config="{trigger: 'click', mode: 'cell', showStatus: true}"
                                     :checkbox-config="{strict: true, range: true, trigger: 'row', highlight: true}">
                                 <vxe-table-column type="checkbox" align="center"  width="40"></vxe-table-column>
-                                <vxe-table-column field="symbol" align="center" sortable title="习题选项" width="240" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                                <vxe-table-column field="name" align="center" sortable title="选项内容" width="200" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                                <vxe-table-column fixed="right" title="操作" align="center" width="200" show-overflow>
+                                <vxe-table-column field="symbol" align="center" sortable title="习题选项" width="180" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                                <vxe-table-column field="name" align="center" sortable title="选项内容" width="180" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                                <vxe-table-column fixed="right" title="操作" align="center" width="180" show-overflow>
                                     <template v-slot="{ row }">
                                         <el-button
                                                 size="mini"
