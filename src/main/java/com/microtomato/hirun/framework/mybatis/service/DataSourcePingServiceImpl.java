@@ -22,7 +22,7 @@ import java.util.Map;
  * @date 2020-01-01
  */
 @Slf4j
-@Service
+//@Service
 public class DataSourcePingServiceImpl implements ApplicationContextAware {
 
     static {
