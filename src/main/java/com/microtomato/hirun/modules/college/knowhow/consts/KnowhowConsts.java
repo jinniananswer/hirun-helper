@@ -71,6 +71,8 @@ public class KnowhowConsts {
 
     public static final String OPTION_PUBLISH = "PUBLISH";
 
+    public static final String OPTION_SQUARE = "SQUARE";
+
     public static final String QUESTION_SORT_BY_CLICKS = "1";
 
     public static final String QUESTION_SORT_BY_CREATTIME = "0";

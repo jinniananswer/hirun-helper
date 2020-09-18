@@ -37,7 +37,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'order-selectem
             queryCourseFileInfo: function () {
                 let that = this;
                 ajax.get('api/organization/course/queryCourseInfo', this.courseFileQueryCond, function (responseData) {
-                    vm.courseFileInfo = responseData.records;
+                    that.courseFileInfo = responseData.records;
                     that.courseFileQueryCond.page = responseData.current;
                     that.courseFileQueryCond.total = responseData.total;
                 });
