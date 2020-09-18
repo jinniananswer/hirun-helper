@@ -123,4 +123,10 @@ public class EmployeeJobRoleServiceImpl extends ServiceImpl<EmployeeJobRoleMappe
 
         return this.update(employeeJobRole,updateWrapper);
     }
+
+    @Override
+    public List<EmployeeJobRole> queryEffectiveByOrgIdList(List<Long> orgIdList) {
+        return this.list(Wrappers.<EmployeeJobRole>lambdaQuery().in(EmployeeJobRole::getOrgId, orgIdList)
+                .gt(EmployeeJobRole::getEndDate, TimeUtils.now()));
+    }
 }

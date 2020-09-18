@@ -28,7 +28,7 @@ import org.apache.ibatis.annotations.Select;
 @Storage
 @DataSource(DataSourceKey.INS)
 public interface CollegeEmployeeTaskMapper extends BaseMapper<CollegeEmployeeTask> {
-    @Select("select employee_id from college_employee_task  ${ew.customSqlSegment}")
+    @Select("select * from college_employee_task  ${ew.customSqlSegment}")
     IPage<CollegeEmployeeTaskQueryResponseDTO> queryEmployeeTask(Page<CollegeEmployeeTaskQueryRequestDTO> page, @Param(Constants.WRAPPER) Wrapper wrapper);
 
     @Select("select * from college_employee_task  ${ew.customSqlSegment}")
