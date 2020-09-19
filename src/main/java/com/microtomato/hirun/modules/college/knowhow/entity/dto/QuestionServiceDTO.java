@@ -27,4 +27,6 @@ public class QuestionServiceDTO {
     private String approvedTag;
 
     private String replyContent;
+
+    private String cancelTag;
 }

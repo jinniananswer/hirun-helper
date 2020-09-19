@@ -49,8 +49,8 @@
                 <el-tabs v-model="activeName" @tab-click="handleClick">
                     <el-tab-pane label="问题审核" name="questionVerify">
                         <el-row style="padding-bottom: 12px">
-                            <el-button type="success" icon="el-icon-document" @click="verify('1')">审批通过</el-button>
-                            <el-button type="danger" icon="el-icon-document" @click="verify('0')">审批驳回</el-button>
+                            <el-button size="medium" type="primary" icon="el-icon-document" @click="verify('1')">审批通过</el-button>
+                            <el-button size="medium" type="info" icon="el-icon-document" @click="verify('0')">审批驳回</el-button>
                         </el-row>
 
                         <el-table :data="questionInfo" stripe="true" border height="350" style="width: 100%" @selection-change="handleSelectChange">
@@ -64,11 +64,17 @@
                     </el-tab-pane>
                     <el-tab-pane label="问题发布" name="questionPublish">
                         <el-row style="padding-bottom: 12px">
-                            <el-button type="success" icon="el-icon-document" @click="publish">发布</el-button>
+                            <el-button size="medium" type="primary" icon="el-icon-document" @click="publish">发布</el-button>
                         </el-row>
                         <el-table :data="questionInfo" stripe="true" border height="350" style="width: 100%" @selection-change="handleSelectChange">
                             <el-table-column type="selection" width="40" align="center"></el-table-column>
-                            <el-table-column prop="questionTitle" label="问题标题" align="center"></el-table-column>
+                            <el-table-column prop="questionTitle" label="问题标题" align="center">
+                                <template slot-scope="questionColumn">
+                                    <el-button type="text" @click="showQuestionDetail(questionColumn.row)">
+                                        {{questionColumn.row.questionTitle}}
+                                    </el-button>
+                                </template>
+                            </el-table-column>
                             <el-table-column prop="questionContent" label="问题内容" align="center"></el-table-column>
                             <el-table-column prop="questionType" label="问题类型" :formatter="typeTransfer" align="center"></el-table-column>
                             <el-table-column prop="createTime" label="问题创建时间" align="center" width="180"></el-table-column>
@@ -78,17 +84,36 @@
                     <el-tab-pane label="问题列表" name="questionList">
                         <el-table :data="questionInfo" stripe="true" border height="350" style="width: 100%" @selection-change="handleSelectChange">
                             <el-table-column type="selection" width="40" align="center"></el-table-column>
-                            <el-table-column prop="questionTitle" label="问题标题" align="center"></el-table-column>
+                            <el-table-column prop="questionTitle" label="问题标题" align="center">
+                                <template slot-scope="questionColumn">
+                                    <el-button type="text" @click="showQuestionDetail(questionColumn.row)">
+                                        {{questionColumn.row.questionTitle}}
+                                    </el-button>
+                                </template>
+                            </el-table-column>
                             <el-table-column prop="questionContent" label="问题内容" align="center"></el-table-column>
                             <el-table-column prop="questionType" label="问题类型" :formatter="typeTransfer" align="center"></el-table-column>
                             <el-table-column prop="createTime" label="问题创建时间" align="center" width="180"></el-table-column>
                             <el-table-column prop="clicks" label="点击量" align="center" width="80"></el-table-column>
+                            <el-table-column prop="thumbsUp" label="点赞数" align="center" width="80"></el-table-column>
                             <el-table-column prop="status" label="状态" :formatter="statusTransfer" align="center" width="80"></el-table-column>
                         </el-table>
                     </el-tab-pane>
                 </el-tabs>
 
             </el-card>
+
+            <el-dialog :title="questionDetail.questionTitle" :visible.sync="questionDetailDialogVisible" width="60%" :before-close="handleClose">
+                <span type="textarea">{{questionDetail.questionContent}}</span>
+                <el-divider></el-divider>
+                <el-row>
+                    <el-col :span="6"><div class="grid-content bg-purple">{{questionDetail.createTime}}</div></el-col>
+                    <el-col :span="6" offset="12"><div class="grid-content bg-purple">提出人：黄桦</div></el-col>
+                </el-row>
+                <span slot="footer" class="dialog-footer">
+                    <el-button type="primary" @click="questionDetailDialogVisible = false">确 定</el-button>
+                </span>
+            </el-dialog>
 
             <!-- 分页信息 -->
             <div style="text-align: center">
