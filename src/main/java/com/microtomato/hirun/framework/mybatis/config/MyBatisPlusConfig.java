@@ -87,8 +87,8 @@ public class MyBatisPlusConfig {
     @Bean(name = "sqlSessionTemplate")
     public MySqlSessionTemplate customSqlSessionTemplate() throws Exception {
 
-        sqlSessionFactoryMap.put(DataSourceKey.SYS, createSqlSessionFactory(sysDataSource(), false));
-        sqlSessionFactoryMap.put(DataSourceKey.INS, createSqlSessionFactory(insDataSource(), false));
+        sqlSessionFactoryMap.put(DataSourceKey.SYS, createSqlSessionFactory(sysDataSource(), true));
+        sqlSessionFactoryMap.put(DataSourceKey.INS, createSqlSessionFactory(insDataSource(), true));
 
         MySqlSessionTemplate sqlSessionTemplate = new MySqlSessionTemplate(sqlSessionFactoryMap.get(DataSourceKey.SYS));
         sqlSessionTemplate.setTargetSqlSessionFactories(sqlSessionFactoryMap);
@@ -120,6 +120,8 @@ public class MyBatisPlusConfig {
             sqlSessionFactory.setConfiguration(configuration);
             sqlSessionFactory.setDataSource(dataSource);
             sqlSessionFactory.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath*:/mapper/**/*.xml"));
+            sqlSessionFactory.setPlugins(fetchInterceptors());
+
         } else {
             ReusableConfiguration rc1 = (ReusableConfiguration) factory.getConfiguration();
             ReusableConfiguration rc2 = (ReusableConfiguration) rc1.clone();
@@ -131,8 +133,6 @@ public class MyBatisPlusConfig {
             sqlSessionFactory.setDataSource(dataSource);
             sqlSessionFactory.setMapperLocations(null);
         }
-
-        sqlSessionFactory.setPlugins(fetchInterceptors());
 
         // 重写了 GlobalConfig 的 MyGlobalConfig 注入到 sqlSessionFactory 使其生效
         MyGlobalConfig globalConfig = new MyGlobalConfig();
