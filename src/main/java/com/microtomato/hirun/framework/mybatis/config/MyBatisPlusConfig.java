@@ -87,8 +87,8 @@ public class MyBatisPlusConfig {
     @Bean(name = "sqlSessionTemplate")
     public MySqlSessionTemplate customSqlSessionTemplate() throws Exception {
 
-        sqlSessionFactoryMap.put(DataSourceKey.SYS, createSqlSessionFactory(sysDataSource(), true));
-        sqlSessionFactoryMap.put(DataSourceKey.INS, createSqlSessionFactory(insDataSource(), true));
+        sqlSessionFactoryMap.put(DataSourceKey.SYS, createSqlSessionFactory(sysDataSource(), false));
+        sqlSessionFactoryMap.put(DataSourceKey.INS, createSqlSessionFactory(insDataSource(), false));
 
         MySqlSessionTemplate sqlSessionTemplate = new MySqlSessionTemplate(sqlSessionFactoryMap.get(DataSourceKey.SYS));
         sqlSessionTemplate.setTargetSqlSessionFactories(sqlSessionFactoryMap);
