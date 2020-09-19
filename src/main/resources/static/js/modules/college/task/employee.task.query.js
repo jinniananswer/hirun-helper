@@ -7,6 +7,7 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 queryCond: {
                     employeeName: '',
                     employeeId: '',
+                    orgId: '',
                     limit: 20,
                     page: 1,
                     count: null

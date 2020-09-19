@@ -21,13 +21,13 @@
                 <el-form :inline="false" :model="queryCond" label-position="right" label-width="100px">
                     <el-row>
                         <el-col :span="8">
-                            <el-form-item label="员工名称">
+                            <el-form-item label="员工姓名">
                                 <el-input v-model="queryCond.employeeName" placeholder="请输入员工名称"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="8">
-                            <el-form-item label="员工ID">
-                                <el-input v-model.number="queryCond.employeeId"></el-input>
+                            <el-form-item label="员工部门">
+                                <org-orgtree :org-id.sync="queryCond.orgId" :org-name.sync="queryCond.orgName" mode="multi"></org-orgtree>
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -45,16 +45,19 @@
                 <el-table border
                         :data="employeeTaskInfo" stripe="true" height="350" style="width: 100%"
                         ref="employeeTaskInfo" align="center">
-                    <el-table-column label="员工ID" prop="employeeId" width="200" align="center">
+                    <el-table-column label="员工姓名" prop="employeeName" width="200" align="center">
                         <template slot-scope="employeeTask">
                             <el-button type="text" @click="toEmployeeTaskDetail(employeeTask.row.employeeId)">{{
-                                employeeTask.row.employeeId }}
+                                employeeTask.row.employeeName }}
                             </el-button>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="employeeName" width="200" label="员工名称" align="center"></el-table-column>
+                    <el-table-column prop="orgName" width="200" label="归属部门" align="center"></el-table-column>
+                    <el-table-column prop="jobRoleName" width="200" label="工作岗位" align="center"></el-table-column>
+                    <el-table-column prop="sex" width="100" label="性别" align="center"></el-table-column>
+                    <el-table-column prop="mobileNo" width="200" label="联系电话" align="center"></el-table-column>
                     <el-table-column prop="taskNum" width="200" label="任务数量" align="center"></el-table-column>
-                    <el-table-column prop="studyNum" width="200" label="学习内容数量" align="center"></el-table-column>
+                    <el-table-column prop="finishNum" width="200" label="已完成数量" align="center"></el-table-column>
                 </el-table>
             </el-card>
 

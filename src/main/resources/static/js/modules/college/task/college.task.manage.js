@@ -595,16 +595,13 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                         message: '课程任务发布成功',
                         type: 'success'
                     });
-                    that.clearShow();
+                    that.showExercises = 'display:none';
+                    that.showExam = 'display:none';
+                    that.showStudyModel = 'display:none';
+                    that.showTogetherStudyTask = 'display:none';
+                    that.showAppointDay = 'display:none';
                 });
             }
-        },
-        clearShow: function () {
-            this.showExercises = 'display:none';
-            this.showExam = 'display:none';
-            this.showStudyModel = 'display:none';
-            this.showTogetherStudyTask = 'display:none';
-            this.showAppointDay = 'display:none';
         }
 
         /*mounted () {
