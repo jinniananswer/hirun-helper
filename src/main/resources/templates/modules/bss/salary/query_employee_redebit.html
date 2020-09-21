@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>员工补扣款查询</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script src="static/js/framework/requirejs/require.min.js" th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js" th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-main>
+            <el-card class="box-card" shadow="hover">
+                <div slot="header" class="clearfix" style="font-size: 14px">
+                    <span>查询条件区</span>
+                </div>
+                <el-form :inline="false" ref="queryCond" :model="queryCond" label-position="right" label-width="80px">
+                    <el-row>
+                        <el-col :span="8">
+                            <el-form-item label="工资项目">
+                                <vue-select code-type="SALARY_ITEM" v-model="queryCond.salaryItem"></vue-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="补扣类型">
+                                <vue-select code-type="REDEBIT_ITEM" v-model="queryCond.redebitItem"></vue-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="所在部门">
+                                <org-orgtree :org-id.sync="queryCond.orgIds" :org-name.sync="queryCond.orgName" mode="multi"></org-orgtree>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="8">
+                            <el-form-item label="员工姓名">
+                                <order-search-employee :employee-id.sync="queryCond.employeeId" :employee-name.sync="queryCond.employeeName"></order-search-employee>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="工资月份">
+                                <el-date-picker
+                                        v-model="queryCond.salaryMonth"
+                                        type="month"
+                                        format="yyyyMM"
+                                        value-format="yyyyMM"
+                                        style="width:100%"
+                                        placeholder="选择月">
+                                </el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="审核状态">
+                                <vue-select code-type="SALARY_AUDIT_STATUS" v-model="queryCond.auditStatus"></vue-select>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="8">
+                            <el-form-item>
+                                <el-button type="primary" @click="query">查询</el-button>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </el-card>
+
+            <el-row style="padding-bottom: 12px">
+                <el-button type="success" @click="initNewRedebit">新增补扣款</el-button>
+                <el-button type="danger" @click="deleteRedebit">删除</el-button>
+            </el-row>
+
+            <el-card class="box-card" shadow="hover">
+                <vxe-table
+                        border
+                        resizable
+                        ref="employeeRedebitTable"
+                        show-overflow
+                        highlight-hover-row
+                        max-height="800px"
+                        :auto-resize="true"
+                        :data="employees"
+                        :checkbox-config="{strict: true, checkMethod: checkMethod, range: true, trigger: 'row', highlight: true}">
+                    <vxe-table-column type="checkbox" fixed="left" width="40"></vxe-table-column>
+                    <vxe-table-column field="name" title="员工姓名" width="100" fixed="left" style="background-color: #ff4835"></vxe-table-column>
+                    <vxe-table-column field="orgPath" title="部门" sortable width="240" fixed="left"></vxe-table-column>
+                    <vxe-table-column field="redebitItemName" title="补扣款类型" sortable width="120" fixed="left"></vxe-table-column>
+                    <vxe-table-column field="salaryItemName" title="工资项目" sortable width="100" fixed="left"></vxe-table-column>
+                    <vxe-table-column field="money" title="金额" sortable width="100" fixed="left"></vxe-table-column>
+                    <vxe-table-column field="inEmployeeName" title="录入人" width="100"></vxe-table-column>
+                    <vxe-table-column field="inDate" title="录入时间" width="140"></vxe-table-column>
+                    <vxe-table-column field="salaryMonth" title="工资月份" width="100"></vxe-table-column>
+                    <vxe-table-column field="auditStatusName" title="审核状态" width="100"></vxe-table-column>
+                    <vxe-table-column field="auditEmployeeName" title="审核人" width="100"></vxe-table-column>
+                    <vxe-table-column field="auditTime" title="审核时间" width="200"></vxe-table-column>
+                    <vxe-table-column field="reason" title="原因说明" width="200"></vxe-table-column>
+
+                </vxe-table>
+                <div style="text-align: center">
+                    <el-pagination
+                            layout="total, prev, pager, next"
+                            :total="queryCond.count"
+                            :current-page.sync="queryCond.page"
+                            :page-size="queryCond.limit"
+                            @current-change="query">
+                    </el-pagination>
+                </div>
+            </el-card>
+
+            <el-row style="padding-bottom: 12px">
+                <el-button type="success" @click="initNewRedebit">新增补扣款</el-button>
+                <el-button type="danger" @click="deleteRedebit">删除</el-button>
+            </el-row>
+
+            <el-dialog width="80%" title="请输入设计提成内容" append-to-body :visible.sync="dialogVisible">
+                <el-alert
+                        title="选择应付项目，录入正数为补款，录入负数为扣款；选择应扣项目，录入正数为扣款，录入负数为补款"
+                        type="warning"
+                        show-icon>
+                </el-alert>
+                <br/>
+                <el-form :inline="false" :model="salaryRedebit" :rules="rules" ref="redebitForm" label-position="right" label-width="120px">
+                    <el-row>
+                        <el-col :span="8">
+                            <el-form-item label="员工姓名" prop="employeeName">
+                                <order-search-employee :employee-id.sync="salaryRedebit.employeeId" :employee-name.sync="salaryRedebit.employeeName"></order-search-employee>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="工资项目" prop="salaryItem">
+                                <vue-select code-type="SALARY_ITEM" v-model="salaryRedebit.salaryItem"></vue-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="补扣类型" prop="redebitItem">
+                                <vue-select code-type="REDEBIT_ITEM" v-model="salaryRedebit.redebitItem"></vue-select>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="8">
+                            <el-form-item label="补扣金额" prop="money">
+                                <el-input v-model.number="salaryRedebit.money"
+                                          placeholder="请输入金额"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="发放月份" prop="salaryMonth">
+                                <el-date-picker
+                                        v-model="salaryRedebit.salaryMonth"
+                                        type="month"
+                                        format="yyyyMM"
+                                        value-format="yyyyMM"
+                                        style="width:100%"
+                                        placeholder="选择月">
+                                </el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="录入时间" prop="inDate">
+                                <el-date-picker
+                                        v-model="salaryRedebit.inDate"
+                                        type="month"
+                                        format="yyyy-MM-dd"
+                                        value-format="yyyy-MM-dd"
+                                        style="width:100%"
+                                        placeholder="选择录入日期">
+                                </el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="24">
+                            <el-form-item label="原因说明">
+                                <el-input
+                                        type="textarea"
+                                        :rows="3"
+                                        placeholder="请输入原因说明"
+                                        v-model="salaryRedebit.reason">
+                                </el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row style="padding-top: 12px">
+                        <el-button type="primary" @click="create">新增补扣款信息</el-button>
+                    </el-row>
+                </el-form>
+            </el-dialog>
+        </el-main>
+    </el-container>
+</div>
+<style>
+    .text {
+        font-size: 14px;
+    }
+
+    .box-card {
+        margin-bottom: 12px;
+    }
+
+    .el-card__header {
+        padding:10px;
+    }
+
+    .modify_row {
+        color: #ff4835;
+    }
+</style>
+<script src="static/js/modules/bss/salary/query.employee.redebit.js" th:src="@{static/js/modules/bss/salary/query.employee.redebit.js(v=${version})}"></script>
+</body>
+</html>

@@ -69,6 +69,11 @@ spring:
         log-base-dir: ../logs
     transaction-manager-id: tx
 
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
 #  main:
 #    allow-bean-definition-overriding: true
 

@@ -5,19 +5,21 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
+import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.organization.entity.consts.EmployeeConst;
 import com.microtomato.hirun.modules.organization.entity.domain.EmployeeDO;
 import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
 import com.microtomato.hirun.modules.organization.entity.dto.*;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
+import com.microtomato.hirun.modules.organization.entity.po.Org;
 import com.microtomato.hirun.modules.organization.mapper.EmployeeMapper;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import com.microtomato.hirun.modules.organization.service.IOrgService;
-import com.microtomato.hirun.modules.system.entity.domain.AddressDO;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -26,8 +28,11 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -51,7 +56,6 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
 
     @Autowired
     private IStaticDataService staticDataService;
-
 
     @Override
     public Employee queryByIdentityNo(String identityNo) {
@@ -360,5 +364,119 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         return queryWrapper;
     }
 
+    @Override
+    public List<SimpleEmployeeDTO> querySimpleEmployeeInfo(Long orgId, Long roleId, Boolean isSelf) {
+        List<SimpleEmployeeDTO> employees = null;
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.apply("a.employee_id=b.employee_id " +
+                " and a.status='0' and (now() between b.start_date and b.end_date) and is_main='1'");
+        if (isSelf) {
+            //只查询自己
+            UserContext userContext = WebContextUtils.getUserContext();
+            queryWrapper.eq("a.employee_id", userContext.getEmployeeId());
+            employees=this.employeeMapper.queryEmployee4Select(queryWrapper);
+        } else if (StringUtils.equals(roleId + "", "-1")) {
+            //查所有
+            employees=this.employeeMapper.queryEmployee4Select(queryWrapper);
+        } else {
+            //按role_id和org_id查
+            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+            Org root = orgDO.getBelongCompany();
 
+            if (root != null) {
+                String orgLine = orgDO.getOrgLine(root.getOrgId());
+                employees = this.employeeMapper.querySimpleEmployees(roleId, orgLine);
+            }
+        }
+        return employees;
+    }
+
+    /**
+     * 权限权限和查询条件查询简易员工信息， 主要供员工选择组件使用
+     * @param select
+     * @return
+     */
+    @Override
+    public List<SimpleEmployeeDTO> queryEmployeeBySelectMode(EmployeeSelectDTO select) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.apply("a.employee_id=b.employee_id " +
+                " and a.status='0' and (now() between b.start_date and b.end_date) and is_main='1'");
+
+        List<SimpleEmployeeDTO> employees = new ArrayList<>();
+        List<Long> orgIds = new ArrayList<>();
+        String mode = select.getMode();
+        Long roleId = select.getRoleId();
+        if (StringUtils.equals("self", mode)) {
+            //自身模式，只查自己
+            UserContext userContext = WebContextUtils.getUserContext();
+            queryWrapper.eq("a.employee_id", userContext.getEmployeeId());
+            //清空查询条件
+            roleId = null;
+        } else if (StringUtils.equals("priv", mode)) {
+            //权限模式，根据自己的部门查看权限选择对应角色的人
+            List<Org> orgs = this.orgService.listOrgsSecurity();
+            orgs.forEach((org) -> {
+                orgIds.add(org.getOrgId());
+            });
+        } else if (StringUtils.equals("stride", mode)) {
+            //跨店模式，根据自己所在的公司的所有下级部门，根据角色id选择对应的人
+            UserContext userContext = WebContextUtils.getUserContext();
+            Long orgId = userContext.getOrgId();
+            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+
+            List<Org> orgLines = orgDO.getCompanyLine();
+            if (ArrayUtils.isNotEmpty(orgLines)) {
+                orgLines.forEach((org) -> {
+                    orgIds.add(org.getOrgId());
+                });
+            }
+        }
+
+        if (ArrayUtils.isNotEmpty(orgIds)) {
+            queryWrapper.in("b.org_id", orgIds);
+        }
+
+        if (roleId != null && !roleId.equals(-1L)) {
+            queryWrapper.apply(" exists( select 1 from ins_user_role c where c.user_id = a.user_id and (now() between c.start_date and c.end_date) and c.role_id = "+ roleId +")");
+        }
+
+        employees = this.employeeMapper.queryEmployee4Select(queryWrapper);
+        if (ArrayUtils.isNotEmpty(employees)) {
+            employees.forEach((employee) -> {
+                employee.setJobRoleName(this.staticDataService.getCodeName("JOB_ROLE", employee.getJobRole()));
+            });
+        }
+        return employees;
+    }
+
+    @Override
+    public List<SimpleEmployeeDTO> queryEmployeeByOrgId(Long orgId) {
+        if(orgId==null){
+            orgId=WebContextUtils.getUserContext().getOrgId();
+        }
+        OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+        String orgLine=orgDO.getOrgLine(orgId);
+        List<SimpleEmployeeDTO> employees=this.employeeMapper.querySimpleEmployeesByOrgId(orgLine);
+        return employees;
+    }
+
+    @Override
+    public List<SimpleEmployeeDTO> queryEmployeeByOrgLine(String orgLine) {
+        return this.employeeMapper.querySimpleEmployeesByOrgId(orgLine);
+    }
+
+    @Override
+    public List<SimpleEmployeeDTO> queryEmployeeByRoleAndOrg(Long orgId, String roleType) {
+        if(orgId==null){
+            orgId=WebContextUtils.getUserContext().getOrgId();
+        }
+        OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+        String orgLine=orgDO.getOrgLine(orgId);
+
+        QueryWrapper<SimpleEmployeeDTO> wrapper = new QueryWrapper<>();
+        wrapper.apply("c.org_id = b.org_id and a.user_id = e.user_id " +
+                "  and e.end_date > now() and a.status='0' and e.role_id in ( " +
+                roleType+") and b.org_id in ("+orgLine+")");
+        return this.employeeMapper.queryEmployeeByRoleAndOrg(wrapper);
+    }
 }

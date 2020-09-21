@@ -58,6 +58,8 @@ public class EmployeeArchiveDTO implements Serializable {
     private String parentEmployeeName;
     private String destroyWayName;
     private String destroyReason;
+    private String secondEntry;
+    private String beforeHirunYear;
 
     private List<EmployeeWorkExperienceDTO> workExperiences;
     private EmployeeContactManDTO contactMan;

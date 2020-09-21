@@ -2,6 +2,7 @@ package com.microtomato.hirun.modules.user.controller;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.microtomato.hirun.framework.annotation.RestResult;
+import com.microtomato.hirun.framework.util.Constants;
 import com.microtomato.hirun.modules.user.entity.dto.GrantUserRoleDTO;
 import com.microtomato.hirun.modules.user.entity.po.Role;
 import com.microtomato.hirun.modules.user.entity.po.UserRole;
@@ -82,6 +83,7 @@ public class UserRoleController {
                 roleList.add(role);
             }
         }
+
         return roleList;
     }
 

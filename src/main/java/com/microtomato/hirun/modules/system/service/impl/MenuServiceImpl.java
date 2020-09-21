@@ -16,7 +16,6 @@ import com.microtomato.hirun.modules.user.service.IMenuRoleService;
 import com.microtomato.hirun.modules.user.service.IMenuTempService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -55,6 +54,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 				.select(MenuRole::getMenuId)
 				.eq(MenuRole::getRoleId, role.getId())
 				.eq(MenuRole::getStatus, Constants.STATUS_OK)
+				.orderByAsc(MenuRole::getMenuId)
 		);
 		menuRoleList.forEach(menuRole -> myMenuIds.add(menuRole.getMenuId()));
 
@@ -72,7 +72,10 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 		List<Menu> menuList = menuServiceImpl.list(
 			Wrappers.<Menu>lambdaQuery()
 				.select(Menu::getMenuId)
+				.ne(Menu::getDisabled, true)
 				.in(Menu::getType, "P", "H")
+				.orderByAsc(Menu::getMenuId)
+
 		);
 		menuList.forEach(menu -> rtn.add(menu.getMenuId()));
 		return rtn;
@@ -88,6 +91,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 				.select(MenuTemp::getMenuId)
 				.eq(MenuTemp::getUserId, userContext.getUserId())
 				.gt(MenuTemp::getExpireDate, LocalDateTime.now())
+				.orderByAsc(MenuTemp::getMenuId)
 		);
 		menuTempList.forEach(menuTemp -> rtn.add(menuTemp.getMenuId()));
 
@@ -107,7 +111,9 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 
 		List<Menu> menuList = this.list(
 			Wrappers.<Menu>lambdaQuery()
-			.in(Menu::getType, "P", "H")
+				.ne(Menu::getDisabled, true)
+				.in(Menu::getType, "P", "H")
+				.orderByAsc(Menu::getMenuId)
 		);
 
 		// 转换成 menuid 为 key 的 Map
@@ -131,6 +137,8 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 			Wrappers.<Menu>lambdaQuery()
 				.select(Menu::getMenuId)
 				.eq(Menu::getMenuUrl, menuUrl)
+				.ne(Menu::getDisabled, true)
+				.orderByAsc(Menu::getMenuId)
 		);
 		if (null == one) {
 			return -1L;

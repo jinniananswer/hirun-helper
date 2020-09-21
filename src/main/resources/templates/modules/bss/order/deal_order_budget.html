@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>二级精算</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script src="static/js/framework/requirejs/require.min.js" th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js" th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-main>
+            <el-row>
+                <div class="grid-content bg-purple-light">
+                    <order-info :order-id="budget.orderId"></order-info>
+                    <el-form :inline="false" :model="budget" label-width="130px" :rules="budgetRules"
+                             ref="budget">
+                        <el-card class="box-card">
+                            <div slot="header" class="clearfix">
+                                操作区域
+                            </div>
+                            <el-row :gutter="20">
+                                <el-col :span="24">
+                                    <span style="color: #F56C6C">如果这个客户有做活动，请先选择享受活动</span>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="预算总费用" required="true" prop="fee">
+                                        <el-input v-model.number="budget.fee"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="实际看预算时间" required="true" style="width: 100%;"
+                                        prop="reportedBudgetDate">
+                                        <el-date-picker
+                                                v-model="budget.reportedBudgetDate"
+                                                align="right"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                placeholder="选择日期"
+                                                :disabled = "false"
+                                                style="width: 100%;"
+                                        >
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="享受活动">
+                                        <el-select v-model="budget.activityId" placeholder="请选择" style="width: 100%">
+                                            <el-option
+                                                    v-for="activity in activities"
+                                                    :key="activity.value"
+                                                    :label="activity.name"
+                                                    :value="activity.value">
+                                            </el-option>
+                                        </el-select>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="对审人" required="true" prop="checkEmployeeId">
+                                        <order-selectemployee v-model="budget.checkEmployeeId" :role-id="43" :disabled="checkedFail"></order-selectemployee>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="24">
+                                    <el-form-item label="客户意见">
+                                        <el-input type="textarea" :rows="2" v-model="budget.custIdea"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <div style="text-align: center">
+                                    <el-button type="primary" @click="submit">{{submitButtonName}}</el-button>
+                                    <el-button>
+                                        <order-file-upload ref="upload" button-name="上传预算表"
+                                                                  accept=".xls,.xlsx" limit="1" :order-id="orderId" stage="13">
+                                        </order-file-upload>
+                                    </el-button>
+
+                                    <!--<el-button type="primary" @click="uploadFile">上传文件</el-button>-->
+                                </div>
+                            </el-row>
+                        </el-card>
+                        <el-card class="box-card">
+                            <div slot="header" class="clearfix">
+                                <span>对审表信息</span>
+                                <span v-if="budget.checkDate != ''" style="float: right; padding: 3px 0" type="text">对审时间:{{budget.checkDate}}</span>
+                            </div>
+                            <el-row :gutter="20">
+                                <el-col :span="24">
+                                    <el-form-item label="汇总金额是否正确" label-width="240px">
+                                        <el-input v-model="budget.totalFeeCheckResult" :disabled = true></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="24">
+                                    <el-form-item label="所做项目位置标注是否不清" label-width="240px">
+                                        <el-input v-model="budget.locationRemarkCheckResult" :disabled = true></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="24">
+                                    <el-form-item label="格式文字表达是否正确" label-width="240px">
+                                        <el-input v-model="budget.contentExpressionCheckResult" :disabled = true></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="24">
+                                    <el-form-item label="表格上单价是否正确" label-width="240px">
+                                        <el-input v-model="budget.unitPriceCheckResult" :disabled = true></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="24">
+                                    <el-form-item label="徽标是否错误、变形" label-width="240px">
+                                        <el-input v-model="budget.logoCheckResult" :disabled = true></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="24">
+                                    <el-form-item label="表格上单价前后是否一致" label-width="240px">
+                                        <el-input v-model="budget.unitPriceConsistenceCheckResult" :disabled = true></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="24">
+                                    <el-form-item label="表格上材料是否标注清楚" label-width="240px">
+                                        <el-input v-model="budget.materialRemarkCheckResult" :disabled = true></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="24">
+                                    <el-form-item label="序号排列是否清楚" label-width="240px">
+                                        <el-input v-model="budget.serialNumberCheckResult" :disabled = true></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="24">
+                                    <el-form-item label="预算材料与预算表后说明是否统一" label-width="240px">
+                                        <el-input v-model="budget.materialRemarkConsistenceCheckResult" :disabled = true></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="24">
+                                    <el-form-item label="字体大小有没有调整" label-width="240px">
+                                        <el-input v-model="budget.fontSizeCheckResult" :disabled = true></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="24">
+                                    <el-form-item label="对客户自购的材料是否标注清楚" label-width="240px">
+                                        <el-input v-model="budget.selfPurchaseRemarkCheckResult" :disabled = true></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="24">
+                                    <el-form-item label="汇总表与明细表数字前后是否一致" label-width="240px">
+                                        <el-input v-model="budget.numberConsistenceCheckResult" :disabled = true></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                        </el-card>
+                    </el-form>
+                </div>
+                <div>
+                    <cust-visit cust-id="365"></cust-visit>
+                </div>
+            </el-row>
+
+        </el-main>
+    </el-container>
+</div>
+<style>
+    .text {
+        font-size: 14px;
+    }
+
+    .item {
+        margin-bottom: 18px;
+    }
+
+    .box-card {
+        margin-bottom: 12px;
+    }
+
+    .el-card__header {
+        padding:10px;
+    }
+</style>
+<script src="static/js/modules/bss/order/deal.order.budget.js" th:src="@{static/js/modules/bss/order/deal.order.budget.js(v=${version})}"></script>
+</body>
+</html>

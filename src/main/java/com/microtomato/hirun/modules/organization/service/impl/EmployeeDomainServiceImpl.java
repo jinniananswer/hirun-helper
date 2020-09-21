@@ -1,5 +1,6 @@
 package com.microtomato.hirun.modules.organization.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -97,6 +98,10 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
 
     @Autowired
     private IEmployeeTagService employeeTagService;
+
+    @Autowired
+    private IEmployeeHolidayService holidayService;
+
 
     @Override
     public List<EmployeeInfoDTO> searchEmployee(String searchText) {
@@ -485,6 +490,15 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             employeeInfoDTOResult.setTypeName(this.staticDataService.getCodeName("EMPLOYEE_TYPE", employeeInfoDTOResult.getType()));
             employeeInfoDTOResult.setJobRoleNatureName(this.staticDataService.getCodeName("JOB_NATURE", employeeInfoDTOResult.getJobRoleNature()));
             employeeInfoDTOResult.setParentEmployeeName(employeeService.getEmployeeNameEmployeeId(employeeInfoDTOResult.getParentEmployeeId()));
+
+            List<EmployeeTag> employeeTags=employeeTagService.list(new QueryWrapper<EmployeeTag>().lambda()
+                    .eq(EmployeeTag::getEmployeeId,employeeInfoDTOResult.getEmployeeId())
+                    .eq(EmployeeTag::getTagType,"2"));
+            if(ArrayUtils.isEmpty(employeeTags)){
+                employeeInfoDTOResult.setSecondEntry("否");
+            }else {
+                employeeInfoDTOResult.setSecondEntry("是");
+            }
         }
         return iPage;
     }
@@ -590,6 +604,15 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
         archive.setOrgPath(orgDO.getCompanyLinePath());
         archive.setJobRoleNatureName(this.staticDataService.getCodeName("JOB_NATURE", jobRole.getJobRoleNature()));
 
+        List<EmployeeTag> employeeTags=employeeTagService.list(new QueryWrapper<EmployeeTag>().lambda()
+                .eq(EmployeeTag::getEmployeeId,employeeId).eq(EmployeeTag::getTagType,"2"));
+
+        if(ArrayUtils.isEmpty(employeeTags)){
+            archive.setSecondEntry("否");
+        }else {
+            archive.setSecondEntry("是");
+        }
+
         return archive;
     }
 
@@ -618,7 +641,19 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             employeeInfo.setEmployeeStatusName(this.staticDataService.getCodeName("EMPLOYEE_STATUS", employeeInfo.getEmployeeStatus()));
             employeeInfo.setJobRoleNatureName(this.staticDataService.getCodeName("JOB_NATURE", employeeInfo.getJobRoleNature()));
             employeeInfo.setDestroyWay(this.staticDataService.getCodeName("DESTROY_WAY", employeeInfo.getDestroyWay()));
+            List<EmployeeHoliday> holidays=this.holidayService.list(new QueryWrapper<EmployeeHoliday>().lambda()
+                    .eq(EmployeeHoliday::getEmployeeId,employeeInfo.getEmployeeId()).orderByDesc(EmployeeHoliday::getCreateTime));
 
+            if(ArrayUtils.isEmpty(holidays)){
+                continue;
+            }
+            String holidayRecord="";
+            for(EmployeeHoliday holiday:holidays){
+                holidayRecord+=this.staticDataService.getCodeName("HOLIDAY_TYPE",holiday.getHolidayType()+"")
+                        +" 开始时间: "+holiday.getStartTime()+" 结束时间: "+holiday.getEndTime()+"  "+holiday.getRemark()
+                        +"\r\n";
+            }
+            employeeInfo.setHolidayRecord(holidayRecord);
         }
         return list;
     }

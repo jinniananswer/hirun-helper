@@ -90,4 +90,10 @@ public class Menu extends BaseEntity {
     @TableField("is_common_use")
     private String isCommonUse;
 
+    /**
+     * 是否禁用
+     */
+    @TableField("disabled")
+    private Boolean disabled;
+
 }

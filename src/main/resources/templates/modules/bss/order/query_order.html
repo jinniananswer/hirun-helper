@@ -9,36 +9,40 @@
     <script src="static/js/framework/requirejs/require.config.js" th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
 </head>
 <body>
-<div id="app" style="display:none" :style="display?display:''">
+<div id="app">
     <el-container>
         <el-main>
-            <el-card class="box-card">
+            <el-card class="box-card" shadow="hover">
                 <div slot="header" class="clearfix">
                     <span>查询条件区</span>
-                    <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
                 </div>
-                <el-form :inline="false" :model="custQueryCond" label-position="right" label-width="80px">
+                <el-form :inline="false" :model="queryCond" label-position="right" label-width="80px">
                     <el-row>
                         <el-col :span="8">
                             <el-form-item label="客户姓名">
-                                <el-input v-model="custQueryCond.name" placeholder="客户姓名"></el-input>
+                                <el-input v-model="queryCond.custName" placeholder="请输入客户姓名"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="8">
                             <el-form-item label="客户性别">
-                                <vue-select code-type="SEX" v-model="defaultSex" @change="changeSex"></vue-select>
+                                <vue-select code-type="SEX" v-model="queryCond.sex"></vue-select>
                             </el-form-item>
                         </el-col>
                         <el-col :span="8">
-                            <el-form-item label="微信昵称">
-                                <el-input v-model="custQueryCond.wechatNicName" placeholder="微信昵称"></el-input>
+                            <el-form-item label="联系电话">
+                                <el-input v-model="queryCond.mobileNo" placeholder="请输入联系电话"></el-input>
                             </el-form-item>
                         </el-col>
                     </el-row>
                     <el-row>
                         <el-col :span="8">
-                            <el-form-item label="联系电话">
-                                <el-input v-model="custQueryCond.mobileNo" placeholder="客户联系电话"></el-input>
+                            <el-form-item label="归属楼盘">
+                                <house-select v-model="queryCond.housesId"></house-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="订单状态">
+                                <vue-select code-type="ORDER_STATUS" v-model="queryCond.orderStatus"></vue-select>
                             </el-form-item>
                         </el-col>
                         <el-col :span="8">
@@ -53,40 +57,121 @@
                 </el-form>
             </el-card>
 
-            <template>
-                <el-table
-                        :data="custOrder"
-                        stripe="true"
-                        style="width: 100%">
-                    <el-table-column
-                            prop="name"
-                            label="客户姓名"
-                            fixed
-                            align="center"
-                            width="180">
-                    </el-table-column>
-                    <el-table-column
-                            prop="sex"
-                            label="性别"
-                            width="180">
-                    </el-table-column>
-                    <el-table-column
-                            prop="mobileNo"
-                            label="联系电话"
-                            align="center"
-                            width="180">
-                    </el-table-column>
-                    <el-table-column
-                            prop="wechatNicName"
-                            label="微信昵称"
-                            width="180">
-                    </el-table-column>
-                    <el-table-column
-                            prop="address"
-                            label="地址">
-                    </el-table-column>
-                </el-table>
-            </template>
+            <el-table
+                    :data="custOrder"
+                    stripe="true"
+                    border
+                    height="400"
+                    style="width: 100%">
+                <el-table-column
+                        label="客户姓名"
+                        fixed
+                        width="100"
+                        align="center">
+                    <template slot-scope="scope">
+                        <el-button type="text" @click="toOrderDetail(scope.row.orderId, scope.row.custId)">{{ scope.row.custName }}</el-button>
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        prop="sexName"
+                        width="60"
+                        label="性别">
+                </el-table-column>
+                <el-table-column
+                        prop="mobileNo"
+                        width="120"
+                        label="联系电话"
+                        align="center">
+                </el-table-column>
+                <el-table-column
+                        prop="decorateAddress"
+                        width="200"
+                        label="装修地址">
+                </el-table-column>
+                <el-table-column
+                        width="150"
+                        prop="housesName"
+                        label="所属楼盘">
+                </el-table-column>
+                <el-table-column
+                        prop="houseLayoutName"
+                        label="户型">
+                </el-table-column>
+                <el-table-column
+                        width="100"
+                        prop="floorage"
+                        label="建筑面积">
+                </el-table-column>
+                <el-table-column
+                        width="100"
+                        prop="indoorArea"
+                        label="室内面积">
+                </el-table-column>
+                <el-table-column
+                        width="100"
+                        prop="typeName"
+                        label="订单类型">
+                </el-table-column>
+                <el-table-column
+                        width="100"
+                        prop="stageName"
+                        label="订单阶段">
+                </el-table-column>
+                <el-table-column
+                        width="100"
+                        prop="statusName"
+                        label="订单状态">
+                </el-table-column>
+                <el-table-column
+                        width="100"
+                        prop="usualFee.designFee"
+                        label="设计费">
+                </el-table-column>
+                <el-table-column
+                        width="100"
+                        prop="designPay"
+                        label="设计费已付">
+                </el-table-column>
+                <el-table-column
+                        width="120"
+                        prop="usualFee.contractFee"
+                        label="首期合同金额">
+                </el-table-column>
+                <el-table-column
+                        width="100"
+                        prop="contractPay"
+                        label="首期已付">
+                </el-table-column>
+                <el-table-column
+                        width="120"
+                        prop="usualFee.secondContractFee"
+                        label="二期合同金额">
+                </el-table-column>
+                <el-table-column
+                        width="100"
+                        prop="secondContractPay"
+                        label="二期已付">
+                </el-table-column>
+                <el-table-column
+                        width="120"
+                        prop="usualFee.settlementContractFee"
+                        label="结算合同金额">
+                </el-table-column>
+                <el-table-column
+                        width="100"
+                        prop="settlementPay"
+                        label="尾款已付">
+                </el-table-column>
+            </el-table>
+            <div style="text-align: center">
+                <el-pagination
+                        layout="total, prev, pager, next"
+                        :total="queryCond.count"
+                        :current-page.sync="queryCond.page"
+                        :page-size="queryCond.limit"
+                        @current-change="onSubmit">
+                </el-pagination>
+            </div>
         </el-main>
     </el-container>
 </div>
@@ -101,6 +186,19 @@
 
     .box-card {
         margin-bottom: 18px;
+    }
+
+    .el-pagination .btn-prev {
+        background-color:rgba(0,0,0,0)
+    }
+    .el-pagination button:disabled {
+        background-color:rgba(0,0,0,0)
+    }
+    .el-pagination .btn-next {
+        background-color:rgba(0,0,0,0)
+    }
+    .el-pagination .el-pager li {
+        background-color:rgba(0,0,0,0)
     }
 </style>
 <script src="static/js/modules/bss/order/query.order.js" th:src="@{static/js/modules/bss/order/query.order.js(v=${version})}"></script>

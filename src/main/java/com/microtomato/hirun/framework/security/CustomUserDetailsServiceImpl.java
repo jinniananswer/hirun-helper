@@ -50,6 +50,15 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private IFuncRoleService funcRoleServiceImpl;
 
+    private void setMainRoleId(UserContext userContext, List<UserRole> userRoles) {
+        for (UserRole userRole : userRoles) {
+            if (userRole.getIsMainRole()) {
+                userContext.setMainRoleId(userRole.getRoleId());
+                return;
+            }
+        }
+    }
+
     /**
      * 在 Security 中，角色和权限共用 GrantedAuthority 接口，唯一的不同角色就是多了个前缀 "ROLE_"
      *
@@ -71,7 +80,9 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
 
         // 查用户角色
         List<UserRole> userRoles = userRoleServiceImpl.queryUserRole(user);
-
+        userRoles.add(UserRole.builder().roleId(Constants.DEFAULT_ROLE_ID).isMainRole(Boolean.FALSE).build());
+        setMainRoleId(userContext, userRoles);
+        
         // 根据角色查操作权限
         List<Func> funcList = queryFuncSet(user.getUserId(), userRoles);
 

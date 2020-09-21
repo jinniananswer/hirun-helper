@@ -120,6 +120,7 @@ layui.extend({
                         {field: 'companyAge', title: '司龄', width: 80, sort: true, align: 'center'},
                         {field: 'parentEmployeeName', title: '上级', width: 100, align: 'center'},
                         {field: 'jobAge', title: '工作年限', width: 120, sort: true, align: 'center'},
+                        {field: 'secondEntry', title: '是否复职', width: 120, sort: true, align: 'center'},
                         {
                             field: 'status',
                             title: '状态',

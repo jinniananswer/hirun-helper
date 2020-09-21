@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>文件上传Demo</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <script src="static/js/framework/requirejs/require.min.js" th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js" th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+</head>
+<body>
+<div id="app">
+    <!--
+    <order-file-upload ref="upload" button-name="上传平面图" accept=".txt,.png" limit="1" order-id="123" stage="456"></order-file-upload>
+    <el-link type="primary" href="api/bss.order/order-file/download/123/456">下载文件</el-link>
+    -->
+    <upload-file ref="upload" accept=".pdf" limit="3"></upload-file>
+</div>
+<style>
+    [v-cloak] {
+        display: none;
+    }
+</style>
+<script src="../../../../static/js/modules/demo/upload.file.js" th:src="@{static/js/modules/demo/upload.file.js(v=${version})}"></script>
+</body>
+</html>

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>二级精算</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script src="static/js/framework/requirejs/require.min.js" th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js" th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-main>
+            <el-row>
+                <div class="grid-content bg-purple-light">
+                    <order-info :order-id="orderId"></order-info>
+                    <el-form :rules="decorateContractRules" :inline="false" :model="decorateContract"
+                             ref="decorateContract" label-width="130px">
+                        <el-card class="box-card">
+                            <div slot="header" class="clearfix">
+                                操作区域
+                            </div>
+                            <el-row :gutter="20">
+                                <el-col :span="12">
+                                    <el-form-item label="签订合同时间" required="true" prop="signDate" >
+                                        <el-date-picker
+                                                v-model="decorateContract.signDate"
+                                                align="right"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                placeholder="选择日期"
+                                                :disabled = "false"
+                                                style="width: 100%;"
+                                        >
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="合同开始时间" required="true" prop="startDate">
+                                        <el-date-picker
+                                                v-model="decorateContract.startDate"
+                                                align="right"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                placeholder="选择日期"
+                                                :disabled = "false"
+                                                style="width: 100%;"
+                                        >
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="合同结束时间" prop="endDate" required="true">
+                                        <el-date-picker
+                                                v-model="decorateContract.endDate"
+                                                align="right"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                placeholder="选择日期"
+                                                :disabled = "false"
+                                                style="width: 100%;"
+                                        >
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="合同二期款时间" required="true" prop="chargeSecondFeeDate">
+                                        <el-date-picker
+                                                v-model="decorateContract.chargeSecondFeeDate"
+                                                align="right"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                placeholder="选择日期"
+                                                :disabled = "false"
+                                                style="width: 100%;"
+                                        >
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="业务级别" required="true" prop="busiLevel">
+                                        <vue-select code-type="BUSI_LEVEL" v-model="decorateContract.busiLevel"></vue-select>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="环保检测机构" required="true" prop="environmentalTestingAgency">
+                                        <vue-select code-type="environmentalTestingAgency" v-model="decorateContract.environmentalTestingAgency"></vue-select>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="合同总金额" required="true">
+                                        <el-input v-model="getContractFee" :disabled="true"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="基础装修总金额" required="true" prop="baseDecorationFee">
+                                        <el-input v-model="decorateContract.baseDecorationFee"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="门总金额" required="true" prop="doorFee">
+                                        <el-input v-model="decorateContract.doorFee"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="家具总金额" required="true" prop="furnitureFee">
+                                        <el-input v-model="decorateContract.furnitureFee"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="享受活动">
+                                        <el-select v-model="decorateContract.activityId" placeholder="请选择" style="width: 100%">
+                                            <el-option
+                                                    v-for="activity in activities"
+                                                    :key="activity.value"
+                                                    :label="activity.name"
+                                                    :value="activity.value">
+                                            </el-option>
+                                        </el-select>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="返设计费" required="true" prop="returnDesignFee">
+                                        <el-input v-model="decorateContract.returnDesignFee"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="税金" required="true" prop="taxFee">
+                                        <el-input v-model="decorateContract.taxFee"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="现金优惠" required="true" prop="cashDiscount">
+                                        <el-input v-model="decorateContract.cashDiscount"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="财务人员" required="true" prop="financeEmployeeId">
+                                        <order-search-employee :employee-id.sync="decorateContract.financeEmployeeId"
+                                                               :employee-name.sync="decorateContract.financeEmployeeName">
+
+                                        </order-search-employee>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="24">
+                                    <el-form-item label="优惠项目">
+                                        <el-input type="textarea" :rows="2" v-model="decorateContract.remark"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <div style="text-align: center">
+                                    <el-button type="primary" @click="submit">提交财务审核首付款</el-button>
+                                    <el-button @click="discountItemDetail = true">优惠项目录入</el-button>
+                                    <el-button>
+                                        <order-file-upload ref="upload" button-name="上传合同附件"
+                                                           accept=".png,.jpg" limit="1" :order-id="orderId" stage="16">
+                                        </order-file-upload>
+                                    </el-button>
+                                </div>
+                            </el-row>
+                        </el-card>
+                        <el-card class="box-card">
+                            <div slot="header" class="clearfix">
+                                <span>首付款信息</span>
+                            </div>
+                            <el-divider content-position="left">基础装修</el-divider>
+                            <el-row :gutter="20">
+                                <el-col :span="12">
+                                    <el-form-item label="应收工程首付款">
+                                        <el-input v-model="getFirstContractFee" :disabled="true"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="已收工程首付款">
+                                        <el-input :value="0" :disabled="true"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-divider content-position="left">主材产品</el-divider>
+                            <el-row :gutter="20">
+                                <el-col :span="12">
+                                    <el-form-item label="已收主材">
+                                        <el-input :value="0" :disabled="true"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="已收橱柜">
+                                        <el-input :value="0" :disabled="true"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                        </el-card>
+                    </el-form>
+                </div>
+                <div>
+                    <cust-visit :cust-id="custId"></cust-visit>
+                </div>
+            </el-row>
+
+        </el-main>
+
+    </el-container>
+    <el-dialog title="优惠明细" :visible.sync="discountItemDetail" @open="openDiscountItemDetailDialog"
+               fullscreen="true">
+        <el-button type="primary" @click="saveDiscountItemList">保存</el-button>
+        <vxe-table
+                :data="discountItemDetailList"
+                size="small"
+                keep-source
+                stripe
+                highlight-current-row
+                highlight-hover-row
+                border
+                resizable
+                show-overflow
+                height="340"
+                :edit-config="{trigger: 'click', mode: 'cell', showStatus: true}"
+                show-footer
+                ref="discountItemTable">
+            <vxe-table-column align="center" field="employeeName" title="录入人"></vxe-table-column>
+            <vxe-table-column align="center" field="createTime" title="录入时间"></vxe-table-column>
+            <vxe-table-column align="center" field="discountItemName" title="优惠项目"></vxe-table-column>
+            <vxe-table-column align="center" field="contractDiscountFee" title="合同优惠金额" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+            <vxe-table-column align="center" field="settleDiscountFee" title="结算优惠金额" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+            <vxe-table-column align="center" field="approveEmployeeId" title="优惠审批人"
+                              :edit-render="{name: 'select', options: approveEmployeeList}">
+
+            </vxe-table-column>
+            <vxe-table-column align="center" field="approveDate" title="审批时间"></vxe-table-column>
+            <vxe-table-column align="center" field="statusName" title="状态"></vxe-table-column>
+            <vxe-table-column align="center" field="remark" title="备注" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+        </vxe-table>
+    </el-dialog>
+</div>
+<style>
+    .text {
+        font-size: 14px;
+    }
+
+    .item {
+        margin-bottom: 18px;
+    }
+
+    .box-card {
+        margin-bottom: 12px;
+    }
+
+    .el-card__header {
+        padding:10px;
+    }
+</style>
+<script src="static/js/modules/bss/order/sign.decorate.contract.js" th:src="@{static/js/modules/bss/order/sign.decorate.contract.js(v=${version})}"></script>
+</body>
+</html>

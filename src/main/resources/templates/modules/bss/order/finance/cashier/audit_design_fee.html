@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>dolphin-admin</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script src="static/js/framework/requirejs/require.min.js"
+            th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js"
+            th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-main>
+            <el-row>
+                <div class="grid-content bg-purple-light">
+                    <order-info order-id="1"></order-info>
+                    <el-card class="box-card">
+                        <div slot="header" class="clearfix">
+                            <span>设计合同信息</span>
+                            <!-- <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>-->
+                        </div>
+                        <el-form :inline="false" :model="custQueryCond" label-position="right" label-width="120px">
+                            <el-row>
+                                <el-col :span="8">
+                                    <el-form-item label="合同签订时间">
+                                        <el-date-picker v-model="custQueryCond.contractStartDate" align="right"
+                                                        type="date" placeholder="选择日期" style="width:100%">
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="合同结束时间">
+                                        <el-date-picker v-model="custQueryCond.contractEndDate" align="right"
+                                                        type="date" placeholder="选择日期" style="width:100%">
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="设计师">
+                                        <el-input v-model="custQueryCond.designer" placeholder=""></el-input>
+                                        <!--                                            <vue-select code-type="designer" v-model="defaultSex" @change="changeSex"></vue-select>-->
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="8">
+                                    <el-form-item label="已收量房费(元)">
+                                        <el-input v-model="custQueryCond.roomchargeFee" placeholder=""></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="套内面积">
+                                        <el-input v-model="custQueryCond.jacketArea" placeholder=""></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="设计费标准">
+                                        <vue-select code-type="designFeeStandard" v-model="defaultStandard"
+                                        ></vue-select>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="8">
+                                    <el-form-item label="合同设计费(元)">
+                                        <el-input v-model="custQueryCond.contractDesignFee"
+                                                  placeholder=""></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="设计主题">
+                                        <el-input v-model="custQueryCond.designTheme" placeholder=""></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="方案助理">
+                                        <el-input v-model="custQueryCond.projectAssistant"
+                                                  placeholder=""></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="8">
+                                    <el-form-item label="方案助理职称">
+                                        <el-input v-model="custQueryCond.projectAssistantTitle"
+                                                  placeholder=""></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="备注">
+                                        <el-input v-model="custQueryCond.remarks" placeholder=""></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                        </el-form>
+                    </el-card>
+                    <el-card class="box-card">
+                        <div slot="header">
+                            <span>收费操作区</span>
+                        </div>
+                        <el-form :inline="false" :rules="rules" :model="collectedDesignFee" label-position="right"
+                                 label-width="130px" ref="collectedDesignFee">
+                            <el-row>
+                                <!--                                    <el-col :span="8">-->
+                                <!--                                        <el-form-item label="收据编号">-->
+                                <!--                                            <el-input v-model="collectedDesignFee.receiptNumber" placeholder=""></el-input>-->
+                                <!--                                        </el-form-item>-->
+                                <!--                                    </el-col>-->
+                                <el-col :span="8">
+                                    <el-form-item label="收费大类">
+                                        <el-input v-model="collectedDesignFee.parentFeeItemName" placeholder=""
+                                                  style="width: 100px"
+                                                  :disabled="true"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="设计费小类">
+                                        <el-input v-model="collectedDesignFee.feeItemName" placeholder=""
+                                                  style="width: 100px"
+                                                  :disabled="true"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="8">
+                                    <el-form-item label="收款人">
+                                        <el-input v-model="collectedDesignFee.payee" placeholder=""
+                                                  :disabled="true"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="收款日期">
+                                        <el-date-picker v-model="collectedDesignFee.collectionDate" align="right"
+                                                        type="date" placeholder="选择日期" :disabled="true"
+                                                        style="width:150%">
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="收款金额(元)">
+                                        <el-input v-model="collectedDesignFee.collectedFee" placeholder=""
+                                                  @blur="checkMoney"></el-input>
+                                        <el-input v-model="collectedDesignFee.oldCollectedFee" placeholder=""
+                                                  v-if="false"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <span>付费信息</span>
+                                <el-divider></el-divider>
+                                <el-col :span="8">
+                                    <el-form-item label="现金(元)">
+                                        <el-input v-model="collectedDesignFee.cash" placeholder=""></el-input>
+                                        <el-input v-model="collectedDesignFee.oldCash" placeholder=""
+                                                  v-if="false"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="兴业刷卡(元)">
+                                        <el-input v-model="collectedDesignFee.industrialBankCard"
+                                                  placeholder=""></el-input>
+                                        <el-input v-model="collectedDesignFee.oldIndustrialBankCard" placeholder=""
+                                                  v-if="false"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="浦发刷卡(元)">
+                                        <el-input v-model="collectedDesignFee.pudongDevelopmentBankCard"
+                                                  placeholder=""></el-input>
+                                        <el-input v-model="collectedDesignFee.oldPudongDevelopmentBankCard"
+                                                  placeholder="" v-if="false"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="8">
+                                    <el-form-item label="建行基本户(元)">
+                                        <el-input v-model="collectedDesignFee.constructionBankBasic"
+                                                  placeholder=""></el-input>
+                                        <el-input v-model="collectedDesignFee.oldConstructionBankBasic"
+                                                  placeholder="" v-if="false"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="建行3797(元)">
+                                        <el-input v-model="collectedDesignFee.constructionBank3797"
+                                                  placeholder=""></el-input>
+                                        <el-input v-model="collectedDesignFee.oldConstructionBank3797"
+                                                  placeholder="" v-if="false"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="工行3301(元)">
+                                        <el-input v-model="collectedDesignFee.gong3301" placeholder=""></el-input>
+                                        <el-input v-model="collectedDesignFee.oldGong3301" placeholder=""
+                                                  v-if="false"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="8">
+                                    <el-form-item label="工行分期(元)">
+                                        <el-input v-model="collectedDesignFee.gongInstallment"
+                                                  placeholder=""></el-input>
+                                        <el-input v-model="collectedDesignFee.oldGongInstallment" placeholder=""
+                                                  v-if="false"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="农行分期(元)">
+                                        <el-input v-model="collectedDesignFee.nongInstallment"
+                                                  placeholder=""></el-input>
+                                        <el-input v-model="collectedDesignFee.oldNongInstallment" placeholder=""
+                                                  v-if="false"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+
+                                <!--                                    <el-col :span="8">-->
+                                <!--                                        <el-form-item label="袁备用金(元)">-->
+                                <!--                                            <el-input v-model="collectedDesignFee.yuanFund" placeholder=""></el-input>-->
+                                <!--                                        </el-form-item>-->
+                                <!--                                    </el-col>-->
+                            </el-row>
+                            <el-row>
+                                <!--                                    <el-col :span="8">-->
+                                <!--                                        <el-form-item label="芙备用金(元)">-->
+                                <!--                                            <el-input v-model="collectedDesignFee.fuFund" placeholder=""></el-input>-->
+                                <!--                                        </el-form-item>-->
+                                <!--                                    </el-col>-->
+                                <!--                                    <el-col :span="8">-->
+                                <!--                                        <el-form-item label="河西备用金(元)">-->
+                                <!--                                            <el-input v-model="collectedDesignFee.hxFund" placeholder=""></el-input>-->
+                                <!--                                        </el-form-item>-->
+                                <!--                                    </el-col>-->
+                                <el-col :span="12">
+                                    <el-form-item label="收款摘要">
+                                        <el-input v-model="collectedDesignFee.remark" placeholder=""
+                                                  style="width:200%"></el-input>
+                                        <el-input v-model="collectedDesignFee.oldRemark" placeholder=""
+                                                  v-if="false"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                        </el-form>
+                        <el-row>
+                            <div style="text-align: center">
+                                <el-button type="primary" @click="auditSubmit">审核</el-button>
+                                <el-button type="primary" @click="auditUpdate">修改并审核</el-button>
+                                <el-button type="danger" @click="submit">审核不通过</el-button>
+                            </div>
+                        </el-row>
+                    </el-card>
+                    </el-card>
+                </div>
+            </el-row>
+        </el-main>
+    </el-container>
+</div>
+<style>
+    .text {
+        font-size: 14px;
+    }
+
+    .item {
+        margin-bottom: 18px;
+    }
+
+    .box-card {
+        margin-bottom: 12px;
+    }
+
+    .el-card__header {
+        padding: 10px;
+    }
+</style>
+<script src="static/js/modules/bss/order/finance/cashier/audit.fee.js"
+        th:src="@{static/js/modules/bss/order/finance/cashier/audit.fee.js(v=${version})}"></script>
+</body>
+</html>

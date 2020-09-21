@@ -1,16 +1,14 @@
 package com.microtomato.hirun.modules.demo.entity.po;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.microtomato.hirun.framework.data.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableField;
-import lombok.Data;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.microtomato.hirun.framework.data.BaseEntity;
+import lombok.*;
 import lombok.experimental.Accessors;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
 
 /**
  * <p>
@@ -37,5 +35,6 @@ public class Zhoulin extends BaseEntity {
     @TableField("name")
     private String name;
 
-
+    @TableField("birthday")
+    private LocalDate birthday;
 }

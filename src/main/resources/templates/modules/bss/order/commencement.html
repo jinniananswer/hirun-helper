@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>dolphin-admin</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script src="static/js/framework/requirejs/require.min.js"
+            th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js"
+            th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-main>
+            <el-row>
+                <div class="grid-content bg-purple-light">
+                    <order-info :order-id="task.orderId"></order-info>
+                    <el-card class="box-card">
+                        <div slot="header">
+                            <span>操作区</span>
+                        </div>
+
+                        <el-form :inline="false" :rules="commencementrules" label-position="right" label-width="80px" :model="task" ref="task">
+                            <el-row>
+                                <el-col :span="8">
+                                    <el-form-item label="水电工" prop="plumberAndElectrician" label-width="100px">
+                                        <order-selectdecorator type="0"
+                                                               v-model="task.plumberAndElectrician"></order-selectdecorator>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="水电工人数" prop="plumberElectNum" label-width="100px">
+                                        <el-input v-model="task.plumberElectNum" placeholder=""></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="8">
+                                    <el-form-item label="镶贴工" prop="inlayer" label-width="100px">
+                                        <order-selectdecorator type="1"
+                                                               v-model="task.inlayer"></order-selectdecorator>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="镶贴工人数" prop="inlayerNum" label-width="100px">
+                                        <el-input v-model="task.inlayerNum" placeholder=""></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="8">
+                                    <el-form-item label="木工" prop="carpentry" label-width="100px">
+                                        <order-selectdecorator type="2"
+                                                               v-model="task.carpentry"></order-selectdecorator>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="木工人数" prop="carpentryNum" label-width="100px">
+                                        <el-input v-model="task.carpentryNum" placeholder=""></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="8">
+                                    <el-form-item label="涂裱工" prop="paperhanger" label-width="100px">
+                                        <order-selectdecorator type="3"
+                                                               v-model="task.paperhanger"></order-selectdecorator>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="涂裱工人数" prop="paperhangerNum" label-width="100px">
+                                        <el-input v-model="task.paperhangerNum" placeholder=""></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="8">
+                                    <el-form-item label="敲墙工" prop="wallKnocking" label-width="100px">
+                                        <order-selectdecorator type="4"
+                                                               v-model="task.wallKnocking"></order-selectdecorator>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="敲墙工人数" prop="wallknockingNum" label-width="100px">
+                                        <el-input v-model="task.wallknockingNum" placeholder=""></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="24">
+                                    <el-form-item label="备注" prop="Remark" label-width="100px">
+                                        <el-input type="textarea" v-model="task.auditRemark"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-form-item style="text-align: center ">
+                                <el-button type="primary" @click="save">保存</el-button>
+                                <el-button type="primary" @click="submitAssignment">开工交底提交</el-button>
+                                <!--                                    <el-button type="primary" @click="auditFailed">审核不通过</el-button>-->
+                            </el-form-item>
+                        </el-form>
+                    </el-card>
+
+                    </el-card>
+                </div>
+            </el-row>
+        </el-main>
+    </el-container>
+</div>
+<style>
+    .text {
+        font-size: 14px;
+    }
+
+    .item {
+        margin-bottom: 18px;
+    }
+
+    .box-card {
+        margin-bottom: 12px;
+    }
+
+    .el-card__header {
+        padding: 10px;
+    }
+</style>
+<script src="../../../static/js/modules/bss/order/engineering_task.js"
+        th:src="@{static/js/modules/bss/order/engineering_task.js(v=${version})}"></script>
+</body>
+</html>

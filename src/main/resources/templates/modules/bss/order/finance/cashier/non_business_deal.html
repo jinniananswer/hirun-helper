@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>dolphin-admin</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script src="static/js/framework/requirejs/require.min.js"
+            th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js"
+            th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-main>
+            <el-card class="box-card" shadow="hover">
+                <div slot="header" class="clearfix">
+                    <span>查询条件区</span>
+                </div>
+                <el-form :inline="false" :model="queryCond" label-position="right" label-width="80px">
+                    <el-row>
+                        <el-col :span="8">
+                            <el-form-item label="单据状态">
+                                <vue-select code-type="AUDIT_STATUS" v-model="queryCond.auditStatus"></vue-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="收款人">
+                                <order-selectemployee role-id="34"
+                                                      v-model="queryCond.employeeId"></order-selectemployee>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="8">
+                            <el-form-item label="收款时间开始">
+                                <el-date-picker
+                                        v-model="queryCond.startDate"
+                                        type="date"
+                                        value-format="yyyy-MM-dd"
+                                        style="width:100%"
+                                        placeholder="选择日期">
+                                </el-date-picker>
+                            </el-form-item>
+                        </el-col>
+
+                        <el-col :span="8">
+                            <el-form-item label="收款时间截至">
+                                <el-date-picker
+                                        v-model="queryCond.endDate"
+                                        type="date"
+                                        value-format="yyyy-MM-dd"
+                                        style="width:100%"
+                                        placeholder="选择日期">
+                                </el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item>
+                                <el-button type="primary" @click="queryPayInfoByCond">查询</el-button>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </el-card>
+            <el-table
+                    :data="normalPayInfos"
+                    stripe="true"
+                    border
+                    height="400"
+                    style="width: 100%">
+                <el-table-column
+                        label="收款单号"
+                        fixed
+                        min-width>
+                    <template slot-scope="scope">
+                        <el-button type="text" @click="toPayDetail(scope.row.payNo)">{{ scope.row.payNo }}</el-button>
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        prop="auditStatusName"
+                        label="单据状态"
+                        fixed
+                        min-width>
+                </el-table-column>
+                <el-table-column
+                        prop="totalMoney"
+                        label="收取金额"
+                        fixed
+                        min-width>
+                </el-table-column>
+                <el-table-column
+                        prop="employeeName"
+                        label="收款人"
+                        fixed
+                        min-width>
+                </el-table-column>
+                <el-table-column
+                        prop="payDate"
+                        label="收款时间"
+                        fixed
+                        min-width>
+                </el-table-column>
+            </el-table>
+        </el-main>
+    </el-container>
+
+</div>
+
+<style>
+    .text {
+        font-size: 14px;
+    }
+
+    .item {
+        margin-bottom: 18px;
+    }
+
+    .box-card {
+        margin-bottom: 12px;
+    }
+
+    .el-card__header {
+        padding: 10px;
+    }
+</style>
+
+<script src="static/js/modules/bss/order/finance/cashier/collect.fee.js"
+        th:src="@{static/js/modules/bss/order/finance/cashier/collect.fee.js(v=${version})}"></script>
+</body>
+</html>

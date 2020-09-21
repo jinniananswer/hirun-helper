@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>签订木制品合同</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script src="static/js/framework/requirejs/require.min.js" th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js" th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-main>
+            <el-row>
+                <div class="grid-content bg-purple-light">
+                    <order-info :order-id="orderId"></order-info>
+                    <el-form :rules="woodContractRules" :inline="false" :model="woodContract"
+                             ref="woodContract" label-width="130px">
+                        <el-card class="box-card">
+                            <div slot="header" class="clearfix">
+                                操作区域
+                            </div>
+                            <el-row :gutter="20">
+                                <el-col :span="12">
+                                    <el-form-item label="签订合同时间" required="true" prop="signDate" >
+                                        <el-date-picker
+                                                v-model="woodContract.signDate"
+                                                align="right"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                placeholder="选择日期"
+                                                :disabled = "false"
+                                                style="width: 100%;"
+                                        >
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="合同开始时间" required="true" prop="startDate">
+                                        <el-date-picker
+                                                v-model="woodContract.startDate"
+                                                align="right"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                placeholder="选择日期"
+                                                :disabled = "false"
+                                                style="width: 100%;"
+                                        >
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="合同结束时间" prop="endDate" required="true">
+                                        <el-date-picker
+                                                v-model="woodContract.endDate"
+                                                align="right"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                placeholder="选择日期"
+                                                :disabled = "false"
+                                                style="width: 100%;"
+                                        >
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="环保检测机构" required="true" prop="environmentalTestingAgency">
+                                        <vue-select code-type="environmentalTestingAgency" v-model="woodContract.environmentalTestingAgency"></vue-select>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="合同总金额" required="true">
+                                        <el-input v-model="getContractFee" :disabled="true"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="橱柜总金额" required="true">
+                                        <el-input v-model="woodContract.cupboardFee"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="门总金额" prop="doorFee">
+                                        <el-input v-model="woodContract.doorFee"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="家具总金额" prop="furnitureFee">
+                                        <el-input v-model="woodContract.furnitureFee"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="返设计费" prop="returnDesignFee">
+                                        <el-input v-model="woodContract.returnDesignFee"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="税金" prop="taxFee">
+                                        <el-input v-model="woodContract.taxFee"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="财务人员" required="true" prop="financeEmployeeId">
+                                        <order-search-employee :employee-id.sync="woodContract.financeEmployeeId"
+                                                               :employee-name.sync="woodContract.financeEmployeeName"></order-search-employee>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="项目经理" required="true" prop="projectEmployeeId">
+                                        <order-search-employee :employee-id.sync="woodContract.projectEmployeeId"
+                                                               :employee-name.sync="woodContract.projectEmployeeName"></order-search-employee>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <div style="text-align: center">
+                                    <el-button type="primary" @click="submit">提交财务核对木制品首付款</el-button>
+                                </div>
+                            </el-row>
+                        </el-card>
+                        <el-card class="box-card">
+                            <div slot="header" class="clearfix">
+                                <span>首付款信息</span>
+                            </div>
+                            <el-row :gutter="20">
+                                <el-col :span="12">
+                                    <el-form-item label="应收工程首付款">
+                                        <el-input v-model="getFirstContractFee" :disabled="true"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="已收木制品首付款">
+                                        <el-input :value="0" :disabled="true" v-model="woodContract.chargedWoodFee"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="橱柜首付">
+                                        <el-input :value="0" :disabled="true" v-model="getFirstCupBoardFee"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                        </el-card>
+                    </el-form>
+                </div>
+            </el-row>
+
+        </el-main>
+
+    </el-container>
+
+</div>
+<style>
+    .text {
+        font-size: 14px;
+    }
+
+    .item {
+        margin-bottom: 18px;
+    }
+
+    .box-card {
+        margin-bottom: 12px;
+    }
+
+    .el-card__header {
+        padding:10px;
+    }
+</style>
+<script src="static/js/modules/bss/order/sign.wood.contract.js" th:src="@{static/js/modules/bss/order/sign.wood.contract.js(v=${version})}"></script>
+</body>
+</html>

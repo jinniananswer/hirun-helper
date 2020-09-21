@@ -89,7 +89,7 @@ public class  MySqlSessionTemplate extends SqlSessionTemplate {
 
     @Override
     public SqlSessionFactory getSqlSessionFactory() {
-        String dataSource = DataSourceContextHolder.getDataSource();
+        String dataSource = DataSourceContextHolder.peek();
         SqlSessionFactory targetSqlSessionFactory = targetSqlSessionFactories.get(dataSource);
 
         if (null != targetSqlSessionFactory) {

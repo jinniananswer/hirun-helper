@@ -1,10 +1,13 @@
 package com.microtomato.hirun.framework.mybatis.config;
 
-import com.atomikos.jdbc.nonxa.AtomikosNonXADataSourceBean;
+import com.alibaba.druid.support.http.StatViewServlet;
+import com.alibaba.druid.support.http.WebStatFilter;
+import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.baomidou.mybatisplus.autoconfigure.SpringBootVFS;
-import com.baomidou.mybatisplus.core.MybatisConfiguration;
 import com.baomidou.mybatisplus.core.parser.ISqlParser;
 import com.baomidou.mybatisplus.extension.parsers.BlockAttackSqlParser;
+import com.baomidou.mybatisplus.extension.parsers.DynamicTableNameParser;
+import com.baomidou.mybatisplus.extension.parsers.ITableNameHandler;
 import com.baomidou.mybatisplus.extension.plugins.OptimisticLockerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.SqlExplainInterceptor;
@@ -14,8 +17,12 @@ import com.microtomato.hirun.framework.interceptor.SqlPerformanceInterceptor;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.MyGlobalConfig;
 import com.microtomato.hirun.framework.mybatis.MySqlSessionTemplate;
+import com.microtomato.hirun.framework.mybatis.aop.RowBoundsLimitInterceptor;
+import com.microtomato.hirun.framework.mybatis.threadlocal.ShardTableContextHolder;
 import com.microtomato.hirun.framework.util.PackageUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.type.JdbcType;
@@ -23,6 +30,8 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -30,10 +39,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Steven
@@ -60,25 +66,30 @@ public class MyBatisPlusConfig {
     @Autowired
     private AutoSetMetaObjectAdvice autoSetMetaObjectAdvice;
 
+    @Autowired
+    private RowBoundsLimitInterceptor rowBoundsLimitInterceptor;
+
+    private Map<String, SqlSessionFactory> sqlSessionFactoryMap = new HashMap<>(16);
+
     @Primary
     @Bean
     @ConfigurationProperties(prefix = "spring.datasource.atomikos.sys")
-    public AtomikosNonXADataSourceBean sysDataSource() {
-        return DataSourceBuilder.create().type(AtomikosNonXADataSourceBean.class).build();
+    public AtomikosDataSourceBean sysDataSource() {
+        return DataSourceBuilder.create().type(AtomikosDataSourceBean.class).build();
     }
 
     @Bean
     @ConfigurationProperties(prefix = "spring.datasource.atomikos.ins")
-    public AtomikosNonXADataSourceBean insDataSource() {
-        return DataSourceBuilder.create().type(AtomikosNonXADataSourceBean.class).build();
+    public AtomikosDataSourceBean insDataSource() {
+        return DataSourceBuilder.create().type(AtomikosDataSourceBean.class).build();
     }
 
     @Bean(name = "sqlSessionTemplate")
     public MySqlSessionTemplate customSqlSessionTemplate() throws Exception {
-        Map<String, SqlSessionFactory> sqlSessionFactoryMap = new HashMap<String, SqlSessionFactory>() {{
-            put(DataSourceKey.SYS, createSqlSessionFactory(sysDataSource()));
-            put(DataSourceKey.INS, createSqlSessionFactory(insDataSource()));
-        }};
+
+        sqlSessionFactoryMap.put(DataSourceKey.SYS, createSqlSessionFactory(sysDataSource(), true));
+        sqlSessionFactoryMap.put(DataSourceKey.INS, createSqlSessionFactory(insDataSource(), true));
+
         MySqlSessionTemplate sqlSessionTemplate = new MySqlSessionTemplate(sqlSessionFactoryMap.get(DataSourceKey.SYS));
         sqlSessionTemplate.setTargetSqlSessionFactories(sqlSessionFactoryMap);
         return sqlSessionTemplate;
@@ -88,25 +99,40 @@ public class MyBatisPlusConfig {
      * 创建数据源
      *
      * @param dataSource
+     * @param reuse      是否复用前面的 Configuration 以加速启动过程。
      * @return
      */
-    private SqlSessionFactory createSqlSessionFactory(AtomikosNonXADataSourceBean dataSource) throws Exception {
+    private SqlSessionFactory createSqlSessionFactory(AtomikosDataSourceBean dataSource, boolean reuse) throws Exception {
 
-        log.info("初始化数据源: {}", dataSource.getUser());
+        long start = System.currentTimeMillis();
+        log.info("数据源初始化开始: {}", dataSource.toString());
         dataSource.init();
 
         MybatisSqlSessionFactoryBean sqlSessionFactory = new MybatisSqlSessionFactoryBean();
-        sqlSessionFactory.setDataSource(dataSource);
-        sqlSessionFactory.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath*:/mapper/**/*.xml"));
         sqlSessionFactory.setVfs(SpringBootVFS.class);
 
-        MybatisConfiguration configuration = new MybatisConfiguration();
-        configuration.setJdbcTypeForNull(JdbcType.NULL);
-        configuration.setMapUnderscoreToCamelCase(true);
-        configuration.setCacheEnabled(true);
+        SqlSessionFactory factory = getFirstOrNull(sqlSessionFactoryMap);
+        if (null == factory || false == reuse) {
+            ReusableConfiguration configuration = new ReusableConfiguration();
+            configuration.setJdbcTypeForNull(JdbcType.NULL);
+            configuration.setMapUnderscoreToCamelCase(true);
+            configuration.setCacheEnabled(true);
+            sqlSessionFactory.setConfiguration(configuration);
+            sqlSessionFactory.setDataSource(dataSource);
+            sqlSessionFactory.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath*:/mapper/**/*.xml"));
+            sqlSessionFactory.setPlugins(fetchInterceptors());
 
-        sqlSessionFactory.setConfiguration(configuration);
-        sqlSessionFactory.setPlugins(fetchInterceptors());
+        } else {
+            ReusableConfiguration rc1 = (ReusableConfiguration) factory.getConfiguration();
+            ReusableConfiguration rc2 = (ReusableConfiguration) rc1.clone();
+            Environment environment = rc1.getEnvironment();
+            Environment env = new Environment(environment.getId(), environment.getTransactionFactory(), dataSource);
+            rc2.setEnvironment(env);
+
+            sqlSessionFactory.setConfiguration(rc2);
+            sqlSessionFactory.setDataSource(dataSource);
+            sqlSessionFactory.setMapperLocations(null);
+        }
 
         // 重写了 GlobalConfig 的 MyGlobalConfig 注入到 sqlSessionFactory 使其生效
         MyGlobalConfig globalConfig = new MyGlobalConfig();
@@ -116,7 +142,20 @@ public class MyBatisPlusConfig {
         sqlSessionFactory.setGlobalConfig(globalConfig);
         sqlSessionFactory.afterPropertiesSet();
 
-        return sqlSessionFactory.getObject();
+        SqlSessionFactory rtn = sqlSessionFactory.getObject();
+        log.info("数据源初始化完成: {} ，耗时: {} ms", dataSource.toString(), (System.currentTimeMillis() - start));
+        return rtn;
+    }
+
+    private SqlSessionFactory getFirstOrNull(Map<String, SqlSessionFactory> map) {
+        SqlSessionFactory sqlSessionFactory = null;
+        for (Map.Entry<String, SqlSessionFactory> entry : map.entrySet()) {
+            sqlSessionFactory = entry.getValue();
+            if (null != sqlSessionFactory) {
+                break;
+            }
+        }
+        return sqlSessionFactory;
     }
 
     /**
@@ -140,6 +179,10 @@ public class MyBatisPlusConfig {
 
         if (null != sqlPerformanceInterceptor) {
             interceptors.add(sqlPerformanceInterceptor);
+        }
+
+        if (null != rowBoundsLimitInterceptor) {
+            interceptors.add(rowBoundsLimitInterceptor);
         }
 
         for (Interceptor interceptor : interceptors) {
@@ -166,7 +209,28 @@ public class MyBatisPlusConfig {
     @Bean
     public PaginationInterceptor paginationInterceptor() {
         PaginationInterceptor paginationInterceptor = new PaginationInterceptor();
+        paginationInterceptor.setSqlParserList(Collections.singletonList(shardTableParser()));
         return paginationInterceptor;
+    }
+
+    /**
+     * 分表解析器
+     *
+     * @return
+     */
+    private ISqlParser shardTableParser() {
+
+        log.info("配置分表解析器...");
+
+        DynamicTableNameParser dynamicTableNameParser = new DynamicTableNameParser();
+        Map<String, ITableNameHandler> tableNameHandlerMap = new HashMap<>(16);
+        dynamicTableNameParser.setTableNameHandlerMap(tableNameHandlerMap);
+
+        // 指定要分表的表名
+        tableNameHandlerMap.put("sys_steven", (metaObject, sql, tableName) -> StringUtils.joinWith("_", tableName, ShardTableContextHolder.peek()));
+
+        tableNameHandlerMap.keySet().forEach(tableName -> log.info("  分表: {} ", tableName));
+        return dynamicTableNameParser;
     }
 
     /**
@@ -199,6 +263,32 @@ public class MyBatisPlusConfig {
         // SQL 告警时间，超过在控制台以红色打印，单位毫秒
         sqlPerformanceInterceptor.setWarnTime(80);
         return sqlPerformanceInterceptor;
+    }
+
+    @Bean
+    public ServletRegistrationBean druidServlet() {
+        log.info("Init Druid Servlet Configuration ");
+        ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean(new StatViewServlet(), "/druid/*");
+        // IP白名单，不设默认都可以
+//        servletRegistrationBean.addInitParameter("allow", "192.168.2.25,127.0.0.1");
+        // IP黑名单(共同存在时，deny优先于allow)
+        servletRegistrationBean.addInitParameter("deny", "192.168.1.100");
+        //控制台管理用户
+        servletRegistrationBean.addInitParameter("loginUsername", "root");
+        servletRegistrationBean.addInitParameter("loginPassword", "root");
+        //是否能够重置数据 禁用HTML页面上的“Reset All”功能
+        servletRegistrationBean.addInitParameter("resetEnable", "false");
+        return servletRegistrationBean;
+    }
+
+    @Bean
+    public FilterRegistrationBean filterRegistrationBean() {
+        FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean(new WebStatFilter());
+        //添加过滤规则
+        filterRegistrationBean.addUrlPatterns("/*");
+        //添加不需要忽略的格式信息
+        filterRegistrationBean.addInitParameter("exclusions", "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*");
+        return filterRegistrationBean;
     }
 
 }

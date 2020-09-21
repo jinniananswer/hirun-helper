@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>检测中心</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script src="static/js/framework/requirejs/require.min.js" th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js" th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-main>
+            <el-row>
+                <div class="grid-content bg-purple-light">
+                    <order-info :order-id="orderId"></order-info>
+                    <el-form :rules="orderInspectRule" :inline="false" :model="orderInspect"
+                             ref="orderInspect" label-width="130px">
+                        <el-card class="box-card">
+                            <div slot="header" class="clearfix">
+                                操作区域
+                            </div>
+                            <el-row :gutter="20">
+                                <el-col :span="12">
+                                    <el-form-item label="申报日期" required="true" prop="applyDate" >
+                                        <el-date-picker
+                                                v-model="orderInspect.applyDate"
+                                                align="right"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                placeholder="选择日期"
+                                                :disabled = "false"
+                                                style="width: 100%;"
+                                        >
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="环保检测机构" required="true" prop="institution">
+                                        <vue-select code-type="environmentalTestingAgency" v-model="orderInspect.institution"></vue-select>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="送达日期" required="true" prop="offerDate" >
+                                        <el-date-picker
+                                                v-model="orderInspect.offerDate"
+                                                align="right"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                placeholder="选择日期"
+                                                :disabled = "false"
+                                                style="width: 100%;"
+                                        >
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="检测状态">
+                                        <vue-select code-type="INSPECT_CHECK_STATUS" v-model="orderInspect.checkStatus"></vue-select>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="领取状态" >
+                                        <vue-select code-type="INSPECT_RECEIVE_STATUS" v-model="orderInspect.receiveStatus"></vue-select>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="领取人" >
+                                        <el-input v-model="orderInspect.receivePeople" ></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="领取日期"  >
+                                        <el-date-picker
+                                                v-model="orderInspect.receiveDate"
+                                                align="right"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                placeholder="选择日期"
+                                                :disabled = "false"
+                                                style="width: 100%;"
+                                        >
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="领取情况" >
+                                        <el-input v-model="orderInspect.receiveRemark" ></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="通知情况" >
+                                        <el-input v-model="orderInspect.noticeRemark" ></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="24">
+                                    <el-form-item label="备注" >
+                                        <el-input v-model="orderInspect.remark" ></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="保修开始" >
+                                        <el-date-picker
+                                                v-model="orderInspect.guaranteeStartDate"
+                                                align="right"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                placeholder="选择日期"
+                                                :disabled = "false"
+                                                style="width: 100%;"
+                                        >
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="保修结束" >
+                                        <el-date-picker
+                                                v-model="orderInspect.guaranteeEndDate"
+                                                align="right"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                placeholder="选择日期"
+                                                :disabled = "false"
+                                                style="width: 100%;"
+                                        >
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="是否保修">
+                                        <vue-select code-type="YES_NO" v-model="orderInspect.isGuarantee"></vue-select>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="结算状态" >
+                                        <vue-select code-type="ORDER_SETTLE_STATUS" v-model="orderInspect.settleStatus"></vue-select>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="检测结算日期">
+                                        <el-date-picker
+                                                v-model="orderInspect.checkSettleDate"
+                                                align="right"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                placeholder="选择日期"
+                                                :disabled = "false"
+                                                style="width: 100%;"
+                                        >
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <div style="text-align: center">
+                                    <el-form-item>
+                                        <el-button type="primary" @click="submit">保存</el-button>
+                                        <el-dropdown  @command="handleCommand">
+                                            <el-button  align="left" type="primary">
+                                                流程操作<i class="el-icon-arrow-down el-icon--right"></i>
+                                            </el-button>
+                                            <el-dropdown-menu slot="dropdown">
+                                                <el-dropdown-item v-if="isShowChecking" command="submitToChecking">检测中</el-dropdown-item>
+                                                <el-dropdown-item v-if="isShowReceiveReport" command="submitToNext">已收取检测报告</el-dropdown-item>
+                                                <el-dropdown-item v-if="isShowCustomerNotReceive" command="submitToNotReceive">客户未领取</el-dropdown-item>
+                                                <el-dropdown-item v-if="isShowCustomerReceive" command="submitToNext">客户已领取</el-dropdown-item>
+                                                <el-dropdown-item v-if="isClose" command="submitToClose">关闭单据</el-dropdown-item>
+                                            </el-dropdown-menu>
+                                        </el-dropdown>
+                                    </el-form-item>
+                                </div>
+                            </el-row>
+                        </el-card>
+                    </el-form>
+                </div>
+                <div>
+                    <cust-visit :cust-id="custId"></cust-visit>
+                </div>
+            </el-row>
+
+        </el-main>
+
+    </el-container>
+
+</div>
+<style>
+    .text {
+        font-size: 14px;
+    }
+
+    .item {
+        margin-bottom: 18px;
+    }
+
+    .box-card {
+        margin-bottom: 12px;
+    }
+
+    .el-card__header {
+        padding:10px;
+    }
+</style>
+<script src="static/js/modules/bss/order/order.inspect.manage.js" th:src="@{static/js/modules/bss/order/order.inspect.manage.js(v=${version})}"></script>
+</body>
+</html>
