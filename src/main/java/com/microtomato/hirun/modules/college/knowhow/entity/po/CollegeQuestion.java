@@ -62,6 +62,12 @@ public class CollegeQuestion extends BaseEntity {
     private Long clicks;
 
     /**
+     * 点赞数
+     */
+    @TableField(value = "thumbs_up")
+    private Long thumbsUp;
+
+    /**
      * 状态
      * 0:已失效（审批未通过）
      * 1:未审批

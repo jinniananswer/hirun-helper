@@ -10,6 +10,8 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                     sortType: '',
                     relationType: '',
                     optionTag: '',
+                    replyTitle: '',
+                    questionId: '',
                     status:'',
                     limit: 20,
                     page: 1,
@@ -25,9 +27,11 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                 value: '',
                 questionInfo: [],
                 dialogVisible: false,
-                dialogVisible1: false,
+                questionDetailDialogVisible: false,
                 questionIds: [],
                 activeName: 'questionVerify',
+                replyInfo: [],
+                questionDetail: {},
             }
         },
 
@@ -37,6 +41,28 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
         },
 
         methods: {
+            showQuestionDetail(row) {
+                this.questionDetailDialogVisible = true;
+                this.questionDetail = {
+                    questionTitle: row.questionTitle,
+                    questionContent: row.questionContent,
+                    createTime: row.createTime,
+                };
+                // this.queryReply(row);
+            },
+            queryReply(row) {
+                let that = this;
+                this.queryCond.questionId = row.questionId;
+                this.queryCond.replyTitle = row.questionContent;
+                ajax.get('api/CollegeQuestion/queryReplyByQuestionId', this.queryCond, function (responseData) {
+                    that.questionDetailDialogVisible = true;
+                    if (null == responseData) {
+                        return;
+                    }
+                    that.replyInfo = responseData;
+
+                });
+            },
             queryAllQuestion() {
                 let that = this;
                 ajax.get('api/CollegeQuestion/queryAllQuestion', this.queryCond, function (responseData) {
@@ -126,11 +152,7 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
             },
 
             handleClose(done) {
-                this.$confirm('确认关闭？')
-                    .then(_ => {
-                        done();
-                    })
-                    .catch(_ => {});
+                done();
             },
 
             handleSelectChange(val) {

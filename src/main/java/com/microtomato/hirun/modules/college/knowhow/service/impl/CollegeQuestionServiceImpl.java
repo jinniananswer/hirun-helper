@@ -78,4 +78,12 @@ public class CollegeQuestionServiceImpl extends ServiceImpl<CollegeQuestionMappe
                 .eq(CollegeQuestion::getQuestionId, questionId).setSql("clicks = clicks + 1"));
     }
 
+    @Override
+    public void thumbsUpById(Long questionId, String cancelTag) {
+        this.update(new UpdateWrapper<CollegeQuestion>().lambda()
+                .eq(CollegeQuestion::getQuestionId, questionId)
+                .setSql(StringUtils.equals("0", cancelTag), "thumbs_up = thumbs_up + 1")
+                .setSql(StringUtils.equals("1", cancelTag), "thumbs_up = thumbs_up - 1"));
+    }
+
 }

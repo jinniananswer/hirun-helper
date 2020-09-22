@@ -21,6 +21,8 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                 value: '',
                 topicInfo: [],
                 dialogVisible: false,
+                taskInfos: [],
+                taskInfo: {},
             }
         },
 
@@ -30,29 +32,63 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
         },
 
         methods: {
+            format(percentage) {
+                return percentage === 100 ? '满' : `${percentage}%`;
+            },
+            showTaskDetailReport() {
+
+            },
             query: function () {
-                var that = this;
-                ajax.get('api/CollegeTopic/init', this.queryCond, function (responseData) {
-                    if (0 == responseData.total) {
-                        that.topicInfo = '';
-                        return;
-                    }
-                    that.topicInfo = responseData.records;
-                    that.queryCond.page = responseData.current;
-                    that.queryCond.count = responseData.total;
-                });
+
             },
 
             queryByCond: function () {
-                var that = this;
-                ajax.get('api/CollegeTopic/queryByCond', this.queryCond, function (responseData) {
-                    if (0 == responseData.total) {
-                        return;
-                    }
-                    that.topicInfo = responseData.records;
-                    that.queryCond.page = responseData.current;
-                    that.queryCond.count = responseData.total;
-                });
+                this.taskInfo = {
+                    taskName: '企业文化学习',
+                    rates: '66.7',
+                    allNums: '12',
+                    completeNums: '8',
+                    examNums: '10',
+                    exerciseNums: '11',
+                };
+                this.taskInfos.push(this.taskInfo);
+                this.taskInfo = {
+                    taskName: '家装知识学习',
+                    rates: '100',
+                    allNums: '12',
+                    completeNums: '12',
+                    examNums: '12',
+                    exerciseNums: '12',
+                };
+                this.taskInfos.push(this.taskInfo);
+                this.taskInfo = {
+                    taskName: '通用知识学习',
+                    rates: '50',
+                    allNums: '12',
+                    completeNums: '6',
+                    examNums: '7',
+                    exerciseNums: '9',
+                };
+                this.taskInfos.push(this.taskInfo);
+                this.taskInfo = {
+                    taskName: '整体产品材料任务',
+                    rates: '100',
+                    allNums: '8',
+                    completeNums: '8',
+                    examNums: '8',
+                    exerciseNums: '8',
+                };
+                this.taskInfos.push(this.taskInfo);
+                this.taskInfo = {
+                    taskName: '客户服务',
+                    rates: '83.3',
+                    allNums: '6',
+                    completeNums: '5',
+                    examNums: '6',
+                    exerciseNums: '6',
+                };
+                this.taskInfos.push(this.taskInfo);
+                this.queryCond.count = 5;
             },
         },
     });

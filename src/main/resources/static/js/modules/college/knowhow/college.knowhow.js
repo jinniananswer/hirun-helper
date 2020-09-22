@@ -11,6 +11,7 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                     relationType: '',
                     questionId: '',
                     questionReply: '',
+                    replyTitle: '',
                     showType: '',
                     status:'',
                     respondent: '',
@@ -32,12 +33,18 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                 }],
                 value: '',
                 questionInfo: [],
+                wikiInfos: [],
+                wikiInfo: {},
                 replyInfo: {},
                 dialogVisible: false,
                 addQuestionDialogVisible: false,
                 replyDialogVisible: false,
+                wikiDialogVisible: false,
                 activeName: 'questionSquare',
                 teachers: [],
+                thumbsUpInfos: [],
+                thumbsUpInfo: {},
+                cancelTag: '',
             }
         },
 
@@ -49,6 +56,58 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
         },
 
         methods: {
+            queryWiki() {
+                this.wikiInfo = {
+                    wikiTitle: '十二生肖',
+                    wikiContent: '鼠牛虎兔龙蛇马羊猴鸡狗猪',
+                    wikiType: '1',
+                    wikier: '金念',
+                    wikiId: '1',
+                    createTime: '2020-09-11 14:53:22'
+                };
+                this.wikiInfos.push(this.wikiInfo);
+            },
+            comment() {
+
+            },
+            showWikiDetail(wikiId) {
+                this.wikiDialogVisible = true;
+            },
+            thumbsUpWiki(row) {
+                let that = this;
+
+            },
+            thumbsUp(row) {
+                let that = this;
+                let id = row.questionId;
+                let tag = false;
+
+                this.thumbsUpInfos.forEach(t => {
+                    if (t.questionId == id) {
+                        tag = t.thumbsUpTag;
+                    }
+                });
+                this.thumbsUpInfo = {
+                    questionId: id,
+                    thumbsUpTag: !tag,
+                };
+                this.thumbsUpInfos.push(this.thumbsUpInfo);
+                this.queryCond.cancelTag = this.thumbsUpInfo.thumbsUpTag ? '0' : '1';
+                this.queryCond.questionId = row.questionId;
+                let tempInfo = {
+                    questionId: id,
+                    cancelTag: this.thumbsUpInfo.thumbsUpTag ? '0' : '1',
+                };
+                ajax.post('api/CollegeQuestion/thumbsUp', this.queryCond, function (responseData) {
+                    that.$message({
+                        showClose: true,
+                        message: that.thumbsUpInfo.thumbsUpTag ? '点赞成功！' : '点赞取消！',
+                        type: that.thumbsUpInfo.thumbsUpTag ? 'success' : 'info',
+                    });
+                    that.queryCond.showType = 'questionSquare';
+                    that.query();
+                });
+            },
             queryTeacher() {
                 var that = this;
                 ajax.get('api/CollegeQuestion/queryTeacher', null, function (responseData) {
@@ -62,16 +121,22 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
 
             handleClick(val) {
                 if ('selfQuestion' == val.name) {
+                    this.wikiInfos = [];
                     this.queryCond.showType = val.name;
                     this.queryByCond();
                 } else if ('questionSquare' == val.name) {
+                    this.wikiInfos = [];
                     this.queryCond.showType = val.name;
                     this.query();
-                } else {
+                } else if ('letMeResponse' == val.name) {
+                    this.wikiInfos = [];
                     this.queryCond.showType = val.name;
                     this.queryCond.optionTag = 'REPLY';
                     this.queryCond.relationType = '1';
                     this.queryByCond();
+                } else {
+                    this.queryWiki();
+                    this.queryCond.count = 1;
                 }
 
             },
@@ -149,6 +214,19 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                     return '订单类'
                 } else if(type === '3'){
                     return '售后类'
+                } else if(type === '4'){
+                    return '设计类'
+                }
+            },
+
+            wikiTypeTransfer: function (row, column) {
+                let type = row.wikiType;
+                if(type === '1'){
+                    return '生活'
+                } else if(type === '2'){
+                    return '设计'
+                } else if(type === '3'){
+                    return '施工'
                 }
             },
 
@@ -159,6 +237,7 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
             queryReply(row, column) {
                 var that = this;
                 this.queryCond.questionId = row.questionId;
+                this.queryCond.replyTitle = row.questionTitle;
                 ajax.get('api/CollegeQuestion/queryReplyByQuestionId', this.queryCond, function (responseData) {
                     that.replyInfo = responseData;
                     that.dialogVisible = true;
@@ -168,6 +247,7 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
             reply(row, column) {
                 let id = row.questionId;
                 this.queryCond.questionId = id;
+                this.queryCond.replyTitle = row.questionTitle;
                 this.replyDialogVisible = true;
             },
 

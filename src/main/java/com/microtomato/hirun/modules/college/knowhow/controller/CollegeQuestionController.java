@@ -61,6 +61,15 @@ public class CollegeQuestionController {
     private ITeacherService teacherService;
 
     /**
+     * 点赞
+     */
+    @PostMapping("thumbsUp")
+    @RestResult
+    public void thumbsUp(@RequestBody QuestionServiceDTO request) {
+        collegeQuestionService.thumbsUpById(request.getQuestionId(), request.getCancelTag());
+    }
+
+    /**
      * 初始化知乎首页
      */
     @GetMapping("initKnowhowPage")
@@ -138,6 +147,9 @@ public class CollegeQuestionController {
     public ReplyServiceDTO queryReplyByQuestionId(String questionId) {
         ReplyServiceDTO reployService = new ReplyServiceDTO();
         CollegeReply reply = this.collegeReplyService.queryReplyByQuestionId(Long.valueOf(questionId));
+        if (null == reply || null == reply.getReplyId()) {
+            return new ReplyServiceDTO();
+        }
         BeanUtils.copyProperties(reply, reployService);
 
         reployService.setReplyer(teacherService.getById(reply.getRespondent()).getName());

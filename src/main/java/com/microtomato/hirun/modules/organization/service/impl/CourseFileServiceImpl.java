@@ -37,7 +37,8 @@ public class CourseFileServiceImpl extends ServiceImpl<CourseFileMapper, CourseF
         LambdaQueryWrapper<CourseFile> lambdaQueryWrapper = Wrappers.lambdaQuery();
         lambdaQueryWrapper.eq(null != courseFile.getFileId(), CourseFile::getFileId, courseFile.getFileId())
                 .eq(null != courseFile.getCourseId(), CourseFile::getCourseId, courseFile.getCourseId())
-                .like(StringUtils.isNotEmpty(courseFile.getName()), CourseFile::getName, courseFile.getName());
+                .like(StringUtils.isNotEmpty(courseFile.getName()), CourseFile::getName, courseFile.getName())
+                .like(StringUtils.isNotEmpty(courseFile.getStoragePath()), CourseFile::getStoragePath, courseFile.getStoragePath());
         Page<CourseFile> page = new Page<>(current, size);
         IPage<CourseFile> courseFilePages = courseFileMapper.selectPage(page, lambdaQueryWrapper);
 
