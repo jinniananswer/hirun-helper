@@ -469,4 +469,11 @@ public class CollegeEmployeeTaskController {
     public void fixedTaskReleaseByTaskList(@RequestBody List<Long> studyTaskIdList) {
         this.taskDomainOpenServiceImpl.fixedTaskReleaseByTaskList(studyTaskIdList);
     }
+
+    @PostMapping("taskReleaseByTaskList")
+    @Transactional(rollbackFor = Exception.class)
+    @RestResult
+    public void taskReleaseByTaskList(@RequestBody List<Long> studyTaskIdList){
+        this.taskDomainOpenServiceImpl.taskReleaseByTaskList(studyTaskIdList);
+    }
 }

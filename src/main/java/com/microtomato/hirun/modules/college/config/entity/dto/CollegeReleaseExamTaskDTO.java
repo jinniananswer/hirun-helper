@@ -3,7 +3,7 @@ package com.microtomato.hirun.modules.college.config.entity.dto;
 import lombok.Data;
 
 @Data
-public class CollegeFixedExamTaskDTO {
+public class CollegeReleaseExamTaskDTO {
 
     private String studyId;
 

@@ -103,6 +103,12 @@ public class CollegeStudyTaskCfgServiceImpl extends ServiceImpl<CollegeStudyTask
                 studyStartTypeName = studyStartType;
             }
             collegeStudyTaskResponseDTO.setStudyStartTypeName(studyStartTypeName);
+            String releaseStatus = collegeStudyTaskResponseDTO.getReleaseStatus();
+            String releaseStatusName = staticDataServiceImpl.getCodeName("RELEASE_STATUS", releaseStatus);
+            if (StringUtils.isEmpty(releaseStatusName)){
+                releaseStatusName = releaseStatus;
+            }
+            collegeStudyTaskResponseDTO.setReleaseStatusName(releaseStatusName);
             List<CollegeCourseChaptersCfg> collegeCourseChaptersCfgList = collegeCourseChaptersCfgServiceImpl.queryByStudyId(studyId);
             List<CollegeCourseChaptersTaskResponseDTO> collegeCourseChaptersTaskResponseDTOList = new ArrayList<>();
             if (ArrayUtils.isNotEmpty(collegeCourseChaptersCfgList)){
@@ -244,5 +250,12 @@ public class CollegeStudyTaskCfgServiceImpl extends ServiceImpl<CollegeStudyTask
     @Override
     public CollegeStudyTaskCfg getAllByStudyTaskId(Long studyTaskId) {
         return this.getOne(Wrappers.<CollegeStudyTaskCfg>lambdaQuery().eq(CollegeStudyTaskCfg::getStudyTaskId, studyTaskId));
+    }
+
+    @Override
+    public List<CollegeStudyTaskCfg> queryEffectiveReleased() {
+        return this.list(Wrappers.<CollegeStudyTaskCfg>lambdaQuery().eq(CollegeStudyTaskCfg::getStatus, '0')
+                .in(CollegeStudyTaskCfg::getReleaseStatus, '1')
+                .orderByAsc(CollegeStudyTaskCfg::getStudyTaskId));
     }
 }
