@@ -7,10 +7,9 @@ import com.microtomato.hirun.modules.bss.order.service.IOrderMeasureHouseService
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 /**
  * @author ：xiaocl
@@ -31,7 +30,7 @@ public class OrderMeasureHouseController {
     private IEmployeeService employeeService;
 
     @PostMapping("/submitToPlanesketchFlow")
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @RestResult
     public void submitToPlanesketchFlow(@RequestBody OrderMeasureHouseDTO orderMeasureHouse) {
         this.save(orderMeasureHouse);
@@ -39,26 +38,28 @@ public class OrderMeasureHouseController {
     }
 
     @PostMapping("/submitToOnlyWoodworkFlow")
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @RestResult
     public void submitToOnlyWoodworkFlow(@RequestBody OrderMeasureHouse orderMeasureHouse) {
         orderMeasureHouseServiceImpl.submitToPlanesketchFlow(orderMeasureHouse.getOrderId());
     }
 
     @PostMapping("/saveMeasureHouseInfos")
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @RestResult
     public void save(@RequestBody OrderMeasureHouseDTO dto) {
         orderMeasureHouseServiceImpl.saveMeasureHouseInfos(dto);
     }
 
     @PostMapping("/submitToSneakFlow")
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @RestResult
     public void submitToSneakFlow(@RequestBody OrderMeasureHouse orderMeasureHouse) {
         orderMeasureHouseServiceImpl.submitToSneakFlow(orderMeasureHouse.getOrderId());
     }
 
     @PostMapping("/submitToMeasureSuspendFlow")
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @RestResult
     public void submitToMeasureSuspendFlow(@RequestBody OrderMeasureHouse orderMeasureHouse) {
         orderMeasureHouseServiceImpl.submitToMeasureSuspendFlow(orderMeasureHouse.getOrderId());
@@ -68,13 +69,5 @@ public class OrderMeasureHouseController {
     @RestResult
     public OrderMeasureHouseDTO getMeasureHouse(Long orderId) {
         return orderMeasureHouseServiceImpl.getMeasureHouse(orderId);
-    }
-
-    @GetMapping("/getEmployeeNameEmployeeId")
-    @RestResult
-    public OrderMeasureHouseDTO getEmployeeNameEmployeeId(Long employeeId) {
-        OrderMeasureHouseDTO orderMeasureHouseDTO = new OrderMeasureHouseDTO();
-        orderMeasureHouseDTO.setEmployeeName(employeeService.getEmployeeNameEmployeeId(employeeId));
-        return orderMeasureHouseDTO;
     }
 }
