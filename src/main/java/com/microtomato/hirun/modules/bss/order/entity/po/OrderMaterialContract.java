@@ -1,4 +1,4 @@
-package com.microtomato.hirun.modules.order.entity.po;
+package com.microtomato.hirun.modules.bss.order.entity.po;
 
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
  *
  * @author huanghua@asiainfo.com
  * @version 1.0.0
- * @date 2020-09-21 12:41:46
+ * @date 2020-09-24 00:05:40
  */
 @Data
 @Builder
