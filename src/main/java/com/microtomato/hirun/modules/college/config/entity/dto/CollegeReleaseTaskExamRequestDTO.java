@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class CollegeFixedExamRequestDTO {
+public class CollegeReleaseTaskExamRequestDTO {
 
     private Integer examMaxNum;
 
@@ -15,6 +15,6 @@ public class CollegeFixedExamRequestDTO {
 
     private List<CollegeTopicInfoRequestDTO> studyTopicTypeInfoDetails;
 
-    private List<CollegeFixedExamTaskDTO> taskInfoList;
+    private List<CollegeReleaseExamTaskDTO> taskInfoList;
 
 }

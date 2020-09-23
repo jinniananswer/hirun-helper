@@ -37,4 +37,6 @@ public interface ICollegeStudyTaskCfgService extends IService<CollegeStudyTaskCf
     List<CollegeTogetherStudyTaskResponseDTO> queryEffectiveTogetherStudyTaskList();
 
     CollegeStudyTaskCfg getAllByStudyTaskId(Long studyTaskId);
+
+    List<CollegeStudyTaskCfg> queryEffectiveReleased();
 }

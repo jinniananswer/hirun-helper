@@ -15,51 +15,48 @@
     <el-container>
         <el-main>
             <el-card class="box-card">
-                <el-collapse value="1" accordion>
-                    <el-collapse-item title="查询条件" name="1">
-
-                        <el-form :inline="false" :model="courseFileQueryCond" label-position="right" label-width="80px">
-                            <el-row>
-                                <el-col :span="6">
-                                    <el-form-item label="课件名称">
-                                        <el-input v-model="courseFileQueryCond.name" placeholder="课件名称"></el-input>
-                                    </el-form-item>
-                                </el-col>
-                                <el-col :span="6">
-                                    <el-form-item label="课件地址">
-                                        <el-input v-model="courseFileQueryCond.fileId" placeholder="课件标识"></el-input>
-                                    </el-form-item>
-                                </el-col>
-                                <el-col :span="8">
-                                    <el-form-item style="text-align: right">
-                                        <el-button type="primary" @click="queryCourseFileInfo">查询</el-button>
-                                    </el-form-item>
-                                </el-col>
-                            </el-row>
-                        </el-form>
-                    </el-collapse-item>
-                </el-collapse>
+                <el-form :inline="false" :model="courseFileQueryCond" label-position="right" label-width="80px">
+                    <el-row>
+                        <el-col :span="6">
+                            <el-form-item label="课件名称">
+                                <el-input v-model="courseFileQueryCond.name" placeholder="课件名称"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="6">
+                            <el-form-item label="课件地址">
+                                <el-input v-model="courseFileQueryCond.fileId" placeholder="课件标识"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item style="text-align: right">
+                                <el-button type="primary" @click="queryByCond">查询</el-button>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
             </el-card>
-            <template>
-                <el-table :data="courseFileInfo" stripe="true" style="width: 100%" fit="true" border height="400px">
-                    <el-table-column prop="name" label="课件名称" fixed align="center" width="280"></el-table-column>
-                    <el-table-column prop="courseId" label="课程标识" align="center" width="80"></el-table-column>
-                    <el-table-column prop="storagePath" label="课件地址" align="center" width="420"></el-table-column>
-                    <el-table-column prop="downloadTimes" label="下载次数" align="center" width="100"></el-table-column>
-                    <el-table-column prop="checkTimes" label="在线访问次数" align="center" width="120"></el-table-column>
-                </el-table>
-                <div class="pagination">
-                    <el-pagination
-                            background
-                            :current-page="courseFileQueryCond.page"
-                            :page-size="courseFileQueryCond.size"
-                            layout="total, sizes, prev, pager, next"
-                            :total="courseFileQueryCond.total"
-                            @size-change="handleSizeChange"
-                            @current-change="handleCurrentChange">
-                    </el-pagination>
-                </div>
-            </template>
+            <el-card>
+                <template>
+                    <el-table :data="courseFileInfo" stripe="true" style="width: 100%" fit="true" border height="400px">
+                        <el-table-column prop="name" label="课件名称" fixed align="center" width="280"></el-table-column>
+                        <el-table-column prop="courseId" label="课程标识" align="center"></el-table-column>
+                        <el-table-column prop="storagePath" label="课件地址" align="center" width="420"></el-table-column>
+                        <el-table-column prop="downloadTimes" label="下载次数" align="center"></el-table-column>
+                        <el-table-column prop="checkTimes" label="在线访问次数" align="center"></el-table-column>
+                    </el-table>
+                    <div class="pagination">
+                        <el-pagination
+                                background
+                                :current-page="courseFileQueryCond.page"
+                                :page-size="courseFileQueryCond.size"
+                                layout="total, sizes, prev, pager, next"
+                                :total="courseFileQueryCond.total"
+                                @size-change="handleSizeChange"
+                                @current-change="handleCurrentChange">
+                        </el-pagination>
+                    </div>
+                </template>
+            </el-card>
         </el-main>
     </el-container>
 </div>

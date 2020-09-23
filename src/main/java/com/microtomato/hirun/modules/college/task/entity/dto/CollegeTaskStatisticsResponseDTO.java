@@ -19,16 +19,6 @@ public class CollegeTaskStatisticsResponseDTO {
     private Integer taskFinishNum;
 
     /**
-     * 任务未完成百分比
-     */
-    private Integer taskUnFinish;
-
-    /**
-     * 任务未完成数量
-     */
-    private Integer taskUnFinishNum;
-
-    /**
      * 习题完成百分比
      */
     private Integer exercisesFinish;
@@ -39,49 +29,9 @@ public class CollegeTaskStatisticsResponseDTO {
     private Integer exercisesFinishNum;
 
     /**
-     * 习题进行中百分比
-     */
-    private Integer exercisesUnderWay;
-
-    /**
-     * 习题进行中数量
-     */
-    private Integer exercisesUnderWayNum;
-
-    /**
-     * 习题未完成百分比
-     */
-    private Integer exercisesUnFinish;
-
-    /**
-     * 习题未完成数量
-     */
-    private Integer exercisesUnFinishNum;
-
-    /**
      * 全部任务数量
      */
     private Integer allTaskNum;
-
-    /**
-     * 考试完成百分比
-     */
-    private Integer examFinish;
-
-    /**
-     * 考试完成数量
-     */
-    private Integer examFinishNum;
-
-    /**
-     * 考试未完成百分比
-     */
-    private Integer examUnFinish;
-
-    /**
-     * 考试未完成数量
-     */
-    private Integer examUnFinishNum;
 
     /**
      * 考试通过百分比
@@ -94,12 +44,30 @@ public class CollegeTaskStatisticsResponseDTO {
     private Integer examPassNum;
 
     /**
-     * 考试未通过百分比
+     * 所有评分任务平均分
      */
-    private Integer examUnPass;
+    private Double argTaskScore;
 
     /**
-     * 考试未通过数量
+     * 所有练习评分平均分
      */
-    private Integer examUnPassNum;
+    private Double argExercisesScore;
+
+    /**
+     * 所有学习评分平均分
+     */
+    private Double argStudyScore;
+
+    /**
+     * 所有考试评分平均分
+     */
+    private Double argExamScore;
+
+    private CollegeEmployeeTaskScoreDTO allEmployeeTaskScoreInfo;
+
+    private CollegeEmployeeTaskScoreDTO orgEmployeeTaskScoreInfo;
+
+
+
+
 }

@@ -41,6 +41,8 @@ public class CollegeCourseChaptersTaskRequestDTO {
 
     private String studyTime;
 
+    private Integer studyLength;
+
     private Integer exercisesNumber;
 
     private Integer passScore;
@@ -53,4 +55,14 @@ public class CollegeCourseChaptersTaskRequestDTO {
      * 员工岗位集合
      */
     List<String> jobRoleInfos;
+
+    /**
+     * 任务有效期
+     */
+    private Integer taskValidityTerm;
+
+    /**
+     * 任务描述
+     */
+    private String taskDesc;
 }

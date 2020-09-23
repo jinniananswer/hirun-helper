@@ -92,6 +92,11 @@ public class CollegeStudyTaskResponseDTO {
     private String studyTime;
 
     /**
+     * 内容学习时长
+     */
+    private Integer studyLength;
+
+    /**
      * 习题次数
      */
     private Integer exercisesNumber;
@@ -110,4 +115,24 @@ public class CollegeStudyTaskResponseDTO {
      * 员工岗位集合
      */
     List<String> jobRoleInfos;
+
+    /**
+     * 任务有效期
+     */
+    private Integer taskValidityTerm;
+
+    /**
+     * 任务描述
+     */
+    private String taskDesc;
+
+    /**
+     * 任务发布状态
+     */
+    private String releaseStatus;
+
+    /**
+     * 任务发布状态名称
+     */
+    private String releaseStatusName;
 }

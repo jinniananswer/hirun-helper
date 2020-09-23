@@ -12,11 +12,7 @@ public class CollegeEmployeeTaskQueryRequestDTO {
 
     private Long employeeId;
 
-    private String taskType;
-
-    private String studyId;
-
-    private String studyName;
+    private String orgId;
 
     private Integer page;
 

@@ -19,7 +19,11 @@ import com.microtomato.hirun.modules.college.task.entity.po.CollegeEmployeeTask;
 import com.microtomato.hirun.modules.college.task.mapper.CollegeEmployeeTaskMapper;
 import com.microtomato.hirun.modules.college.task.service.ICollegeEmployeeTaskService;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
+import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
+import com.microtomato.hirun.modules.organization.entity.po.Org;
 import com.microtomato.hirun.modules.organization.service.ICourseService;
+import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
+import com.microtomato.hirun.modules.organization.service.IOrgService;
 import com.microtomato.hirun.modules.organization.service.impl.EmployeeServiceImpl;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import com.microtomato.hirun.modules.system.service.IUploadFileService;
@@ -28,6 +32,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -67,6 +72,12 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
     @Autowired
     private ICollegeCourseChaptersCfgService collegeCourseChaptersCfgServiceImpl;
 
+    @Autowired
+    private IEmployeeJobRoleService employeeJobRoleServiceImpl;
+
+    @Autowired
+    private IOrgService orgServiceImpl;
+
     @Override
     public List<CollegeEmployeeTask> queryByEmployeeIdAndTaskType(String employeeId, String taskType) {
         return this.list(Wrappers.<CollegeEmployeeTask>lambdaQuery().eq(CollegeEmployeeTask::getEmployeeId, employeeId));
@@ -74,15 +85,14 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
 
     @Override
     public IPage<CollegeEmployeeTaskQueryResponseDTO> queryEmployeeTask(CollegeEmployeeTaskQueryRequestDTO collegeEmployeeTaskQueryRequestDTO, Page<CollegeEmployeeTaskQueryRequestDTO> page) {
-        List<Employee> employeeList = employeeServiceImpl.queryByEmployeeIdAndLikeName(collegeEmployeeTaskQueryRequestDTO.getEmployeeId(), collegeEmployeeTaskQueryRequestDTO.getEmployeeName());
-        Map<String, String> employeeMap = new HashMap<>();
+        List<Employee> employeeList = employeeServiceImpl.queryByorgIdAndEmployeeIdAndLikeName(collegeEmployeeTaskQueryRequestDTO.getOrgId(), collegeEmployeeTaskQueryRequestDTO.getEmployeeId(), collegeEmployeeTaskQueryRequestDTO.getEmployeeName());
+        Map<String, Employee> employeeMap = new HashMap<>();
         List<String> employeeIdList = new ArrayList<>();
         if (ArrayUtils.isNotEmpty(employeeList)){
             for (Employee employee : employeeList){
                 String employeeId = String.valueOf(employee.getEmployeeId());
-                String name = employee.getName();
                 employeeIdList.add(employeeId);
-                employeeMap.put(employeeId, name);
+                employeeMap.put(employeeId, employee);
             }
         }
         if (ArrayUtils.isNotEmpty(employeeIdList)){
@@ -94,20 +104,41 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
             List<CollegeEmployeeTaskQueryResponseDTO> records = result.getRecords();
             for (CollegeEmployeeTaskQueryResponseDTO collegeEmployeeTaskQueryResponseDTO : records){
                 String employeeId = collegeEmployeeTaskQueryResponseDTO.getEmployeeId();
-                collegeEmployeeTaskQueryResponseDTO.setEmployeeName(employeeMap.get(employeeId));
+                Employee employee = employeeMap.get(employeeId);
+                if (null != employee){
+                    collegeEmployeeTaskQueryResponseDTO.setEmployeeName(employee.getName());
+                    EmployeeJobRole employeeJobRole = employeeJobRoleServiceImpl.queryValidMain(Long.valueOf(employeeId));
+                    if (null != employeeJobRole){
+                        String jobRoleName = this.staticDataServiceImpl.getCodeName("JOB_ROLE", employeeJobRole.getJobRole());
+                        collegeEmployeeTaskQueryResponseDTO.setJobRoleName(jobRoleName);
+                        Org org = orgServiceImpl.queryByOrgId(employeeJobRole.getOrgId());
+                        if (null != org){
+                            collegeEmployeeTaskQueryResponseDTO.setOrgName(org.getName());
+                        }
+                    }
+                    String sex = employee.getSex();
+                    String sexName = staticDataServiceImpl.getCodeName("SEX", sex);
+                    if (StringUtils.isEmpty(sexName)){
+                        sexName = sex;
+                    }
+                    collegeEmployeeTaskQueryResponseDTO.setSex(sexName);
+                    collegeEmployeeTaskQueryResponseDTO.setMobileNo(employee.getMobileNo());
+                }
+
                 int taskNum = 0;
-                int studyNum = 0;
+                int finishNum = 0;
                 List<CollegeEmployeeTask> collegeEmployeeTaskList = this.queryEffectiveByEmployeeId(employeeId);
                 if (ArrayUtils.isNotEmpty(collegeEmployeeTaskList)){
                     taskNum = collegeEmployeeTaskList.size();
-                    Map<String, String> studyMap = new HashMap<>();
                     for (CollegeEmployeeTask collegeEmployeeTask : collegeEmployeeTaskList){
-                        studyMap.put(collegeEmployeeTask.getStudyTaskId(), null);
+                        LocalDateTime studyCompleteDate = collegeEmployeeTask.getStudyCompleteDate();
+                        if (null != studyCompleteDate){
+                            finishNum++;
+                        }
                     }
-                    studyNum = studyMap.size();
                 }
                 collegeEmployeeTaskQueryResponseDTO.setTaskNum(taskNum);
-                collegeEmployeeTaskQueryResponseDTO.setStudyNum(studyNum);
+                collegeEmployeeTaskQueryResponseDTO.setFinishNum(finishNum);
             }
             return result;
         }
@@ -188,6 +219,19 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
             return collegeEmployeeTaskList.get(0);
         }
         return null;
+    }
+
+    @Override
+    public List<CollegeEmployeeTask> queryAllEffective() {
+        return this.list(Wrappers.<CollegeEmployeeTask>lambdaQuery().eq(CollegeEmployeeTask::getStatus, "0")
+                .orderByDesc(CollegeEmployeeTask::getStudyEndDate));
+    }
+
+    @Override
+    public List<CollegeEmployeeTask> queryEffectiveByEmployeeIdList(List<String> employeeIdList) {
+        return this.list(Wrappers.<CollegeEmployeeTask>lambdaQuery().in(CollegeEmployeeTask::getEmployeeId, employeeIdList)
+                .eq(CollegeEmployeeTask::getStatus, "0")
+                .orderByDesc(CollegeEmployeeTask::getStudyEndDate));
     }
 
 }

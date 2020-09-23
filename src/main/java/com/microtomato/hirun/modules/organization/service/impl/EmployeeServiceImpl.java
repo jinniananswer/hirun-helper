@@ -18,6 +18,7 @@ import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
 import com.microtomato.hirun.modules.organization.entity.po.Org;
 import com.microtomato.hirun.modules.organization.mapper.EmployeeMapper;
+import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import com.microtomato.hirun.modules.organization.service.IOrgService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
@@ -49,8 +50,7 @@ import java.util.*;
 @Service
 
 
-public class
-EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> implements IEmployeeService {
+public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> implements IEmployeeService {
 
     @Autowired
     private EmployeeMapper employeeMapper;
@@ -60,6 +60,12 @@ EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> implements IEm
 
     @Autowired
     private IStaticDataService staticDataService;
+
+    @Autowired
+    private IEmployeeJobRoleService employeeJobRoleServiceImpl;
+
+    @Autowired
+    private IOrgService orgServiceImpl;
 
     @Override
     public Employee queryByIdentityNo(String identityNo) {
@@ -499,8 +505,31 @@ EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> implements IEm
     }
 
     @Override
-    public List<Employee> queryByEmployeeIdAndLikeName(Long employeeId, String name) {
+    public List<Employee> queryByorgIdAndEmployeeIdAndLikeName(String orgId, Long employeeId, String name) {
+        List<Long> orgIdList = new ArrayList<>();
+        if (StringUtils.isNotEmpty(orgId)){
+            Org org = orgServiceImpl.queryByOrgId(Long.valueOf(orgId));
+            if (null != org){
+                orgIdList.add(org.getOrgId());
+                List<Org> children = orgServiceImpl.findChildren(org);
+                if (ArrayUtils.isNotEmpty(children)){
+                    for (Org childrenOrg : children){
+                        orgIdList.add(childrenOrg.getOrgId());
+                    }
+                }
+            }
+        }
+        List<Long> employeeIdList = new ArrayList<>();
+        if (ArrayUtils.isNotEmpty(orgIdList)){
+            List<EmployeeJobRole> employeeJobRoleList = employeeJobRoleServiceImpl.queryEffectiveByOrgIdList(orgIdList);
+            if(ArrayUtils.isNotEmpty(employeeJobRoleList)){
+                for (EmployeeJobRole employeeJobRole : employeeJobRoleList){
+                    employeeIdList.add(employeeJobRole.getEmployeeId());
+                }
+            }
+        }
         return this.list(Wrappers.<Employee>lambdaQuery().eq(null != employeeId, Employee::getEmployeeId, employeeId)
+                .in(ArrayUtils.isNotEmpty(employeeIdList), Employee::getEmployeeId, employeeIdList)
                 .like(StringUtils.isNotEmpty(name), Employee::getName, name));
     }
 
@@ -524,6 +553,16 @@ EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> implements IEm
     public List<Employee> queryEffectiveByJobRoleList(List<String> jobRoleList) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.in("job_role", jobRoleList);
+        queryWrapper.apply(" a.employee_id=b.employee_id " +
+                " and a.status='0' and (now() between b.start_date and b.end_date) and is_main='1'");
+        return this.employeeMapper.queryEffectiveByJobRoleList(queryWrapper);
+    }
+
+    @Override
+    public List<Employee> queryNewEffectiveByJobRoleList(List<String> jobRoleList) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.in("job_role", jobRoleList);
+        queryWrapper.gt("regular_date", LocalDateTime.now());
         queryWrapper.apply(" a.employee_id=b.employee_id " +
                 " and a.status='0' and (now() between b.start_date and b.end_date) and is_main='1'");
         return this.employeeMapper.queryEffectiveByJobRoleList(queryWrapper);

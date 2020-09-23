@@ -230,6 +230,7 @@ public class TaskDomainOpenServiceImpl implements ITaskDomainOpenService {
                         LocalDateTime startDate = now;
                         LocalDateTime endDate = now;
                         if (StringUtils.equals("3", studyStartType)){
+                            //如果接上个任务开始
                             String studyModel = collegeStudyTaskCfg.getStudyModel();
                             if (StringUtils.equals("1", studyModel)){
                                 //如果是同时学习
@@ -285,6 +286,21 @@ public class TaskDomainOpenServiceImpl implements ITaskDomainOpenService {
                         collegeEmployeeTaskServiceImpl.saveBatch(collegeEmployeeTaskList);
                     }
                 }
+            }
+        }
+    }
+
+    @Override
+    public void taskReleaseByTaskList(List<Long> studyTaskIdList) {
+        LocalDateTime now = LocalDateTime.now();
+        if (ArrayUtils.isNotEmpty(studyTaskIdList)){
+            List<CollegeStudyTaskCfg> collegeStudyTaskCfgList = collegeStudyTaskCfgServiceImpl.queryByStudyTaskIdList(studyTaskIdList);
+            if (ArrayUtils.isNotEmpty(collegeStudyTaskCfgList)){
+                for (CollegeStudyTaskCfg collegeStudyTaskCfg : collegeStudyTaskCfgList){
+                    collegeStudyTaskCfg.setReleaseStatus("1");
+                    collegeStudyTaskCfg.setTaskReleaseDate(now);
+                }
+                collegeStudyTaskCfgServiceImpl.updateBatchById(collegeStudyTaskCfgList);
             }
         }
     }

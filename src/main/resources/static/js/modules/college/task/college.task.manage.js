@@ -34,17 +34,11 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     count: null
                 },
                 studyTaskRules: {
-                    studyName: [
-                        { required: true, message: '请先选择学习内容', trigger: 'change' }
-                    ],
                     taskName: [
                         { required: true, message: '任务名称不能为空', trigger: 'blur' }
                     ],
                     studyType: [
                         { required: true, message: '学习内容类型不能为空', trigger: 'blur' }
-                    ],
-                    studyStartType: [
-                        { required: true, message: '任务开始类型不能为空', trigger: 'blur' }
                     ],
                     jobType: [
                         { required: true, message: '员工工作类型不能为空', trigger: 'blur' }
@@ -55,6 +49,9 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     studyTime: [
                         { required: true, message: '学习时间不能为空', trigger: 'blur' },
                         { type: 'number', message: '学习时间必须为数字值', trigger: 'blur'}
+                    ],
+                    studyStartType: [
+                        { required: true, message: '任务开始方式不能为空', trigger: 'blur' }
                     ],
                     exercisesNumber: [
                         { type: 'number', message: '习题次数必须为数字值', trigger: 'blur'}
@@ -117,12 +114,17 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 selectJobRoleInfos: [],
                 togetherStudyTaskList: [],
                 studyTopicTypeInfo: {},
-                fixedExamDialogVisible: false,
+                releaseExamDialogVisible: false,
                 studyTopicTypeInfoDetails: [],
                 studyTopicTypeOptions: [],
                 examType: '',
                 showExercises: 'display:block',
-                showExam: 'display:block'
+                showExam: 'display:block',
+                showTaskValidityTerm: 'display:none',
+                showStudyLength: 'display:none',
+                showTaskDesc: 'display:none',
+                showExercisesNumber: 'display:none',
+                showPassScore: 'display:none'
             }
         },
         mounted: function() {
@@ -140,7 +142,8 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
             ];
             this.taskCoursewareTypes = [
                 {value : "0", label : "选择课程"},
-                {value : "1", label : "上传课件"}
+                {value : "1", label : "上传课件"},
+                {value : "2", label : "实践任务"}
             ];
             this.studyTopicTypeOptions = [
                 {value : "1", label : "单选"},
@@ -162,6 +165,7 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 this.multipleSelection = val;
             },
             addStudyTask: function(){
+                this.initAddStudyTaskDialogVisible();
                 let that = this;
                 that.addStudyTaskDialogVisible = true;
                 that.addStudyTaskInfo = {}
@@ -236,8 +240,12 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
 
             },
             submitAdd: function (courseChaptersDetails) {
-                if ("0" == this.addStudyTaskInfo.jobType && (this.selectJobRoleInfos == [] || this.selectJobRoleInfos == undefined || this.selectJobRoleInfos.length == 0)){
-                    this.$alert("正式员工请选择员工岗位再提交", "错误提示", {type: 'error'})
+                if (null == this.studyType || undefined == this.studyType || '' == this.studyType){
+                    this.$alert("请选择任务学习类型后再提交", "错误提示", {type: 'error'})
+                    return;
+                }
+                if ("2" != this.addStudyTaskInfo.jobType && (this.selectJobRoleInfos == [] || this.selectJobRoleInfos == undefined || this.selectJobRoleInfos.length == 0)){
+                    this.$alert("工作类型非所有员工的请选择员工岗位再提交", "错误提示", {type: 'error'})
                     return;
                 }
                 this.addStudyTaskInfo.jobRoleInfos = this.selectJobRoleInfos;
@@ -250,6 +258,24 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     this.addStudyTaskInfo.studyId = fileList[0].response;
                     this.addStudyTaskInfo.studyName = fileList[0].name;
                     this.addStudyTaskInfo.studyType = this.studyType;
+                }else if (this.studyType == '2'){
+                    //判断任务描述
+                    this.addStudyTaskInfo.studyType = this.studyType;
+                    if (null == this.addStudyTaskInfo.taskDesc || undefined == this.addStudyTaskInfo.taskDesc || '' == this.addStudyTaskInfo.taskDesc){
+                        this.$alert("实践任务，任务描述不能为空", "错误提示", {type: 'error'})
+                        return;
+                    }
+                }
+                //判断学习时长
+                if (this.studyType != '2'){
+                    if (null == this.addStudyTaskInfo.studyLength || undefined == this.addStudyTaskInfo.studyLength || '' == this.addStudyTaskInfo.studyLength || 0 == this.addStudyTaskInfo.studyLength){
+                        this.$alert("学习任务，学习时长不能为空", "错误提示", {type: 'error'})
+                        return;
+                    }
+                    if (null == this.addStudyTaskInfo.taskName || undefined == this.addStudyTaskInfo.taskName || '' == this.addStudyTaskInfo.taskName || 0 == this.addStudyTaskInfo.taskName){
+                        this.$alert("学习任务，请先选择学习内容", "错误提示", {type: 'error'})
+                        return;
+                    }
                 }
                 //判断任务开始类型
                 let studyStartType = this.addStudyTaskInfo.studyStartType;
@@ -267,6 +293,13 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                             this.$alert("同时学习模式，请选择同时学习任务", "错误提示", {type: 'error'})
                             return;
                         }
+                    }
+                }
+                let taskType = this.addStudyTaskInfo.taskType;
+                if (2 == taskType){
+                    if (null == this.addStudyTaskInfo.taskValidityTerm || undefined == this.addStudyTaskInfo.taskValidityTerm || '' == this.addStudyTaskInfo.taskValidityTerm || 0 == this.addStudyTaskInfo.taskValidityTerm){
+                        this.$alert("活动任务任务，任务有效期不能为空", "错误提示", {type: 'error'})
+                        return;
                     }
                 }
                 this.$refs.addStudyTaskInfo.validate((valid) => {
@@ -302,15 +335,21 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 that.addChaptersDialogVisible = false;
                 that.editChaptersDialogVisible = false;
                 that.showJob = 'display:none';
-                this.fixedExamDialogVisible = false;
+                this.releaseExamDialogVisible = false;
                 this.studyTopicTypeInfo = {};
             },
             changeTaskCoursewareType: function (val) {
                 this.studyType = val
+                this.showStudyLength = 'display:none'
+                this.showTaskDesc = 'display:none'
+                this.showTree = 'display:none'
+                this.showUpload = 'display:none'
+                this.showExercisesNumber = 'display:block'
+                this.showPassScore = 'display:block'
                 if (1 == val){
                     let that = this
                     that.showUpload = 'display:block'
-                    that.showTree = 'display:none'
+                    that.showStudyLength = 'display:block'
                     that.courseChaptersDetails = [];
                     that.addStudyTaskInfo = {};
                     that.studyId = '';
@@ -319,8 +358,8 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     this.$nextTick(()=>{
                         this.$refs.addStudyTaskInfo.resetFields();
                     });
-                    this.showUpload = 'display:none'
                     this.showTree = 'display:block'
+                    this.showStudyLength = 'display:block'
                     let that = this;
                     ajax.get('api/organization/course/qeuryCourseTree', null, function(responseData){
                         that.studyInfos = responseData;
@@ -332,6 +371,11 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                             that.taskCoursewareType = val;
                         });
                     }*/
+                }else if (2 == val){
+                    this.showTaskDesc = 'display:block'
+                    this.showStudyLength = 'display:none'
+                    this.showExercisesNumber = 'display:none'
+                    this.showPassScore = 'display:none'
                 }
             },
             handleClick() {
@@ -423,9 +467,9 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 })
             },
             changeJobType: function (val) {
-                if(val == 0){
+                if(val == 0 || val == 1){
                     this.showJob = 'display:block'
-                }else if(val == 1){
+                }else if(val == 2){
                     this.showJob = 'display:none'
                 }
             },
@@ -471,7 +515,7 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     this.showTogetherStudyTask = 'display:none';
                 }
             },
-            fixedExamBatch: function (examType) {
+            releaseTaskExamBatch: function (examType) {
                 let val = this.multipleSelection
                 if(val == undefined || val == 'undefined' || val.length <= 0){
                     this.$message({
@@ -484,8 +528,8 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 }
                 this.studyTopicTypeInfo = {};
                 //批量设置
-                this.studyTopicTypeInfo.fixedType = '0';
-                this.fixedExamDialogVisible = true;
+                this.studyTopicTypeInfo.releaseType = '0';
+                this.releaseExamDialogVisible = true;
                 this.examType = examType;
                 this.showExercises = 'display:none'
                 this.showExam = 'display:none'
@@ -497,12 +541,12 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     this.showExam = 'display:block'
                 }
             },
-            submitFixedExam: function(studyTopicTypeInfo){
+            submitReleaseExam: function(studyTopicTypeInfo){
                 this.$refs.studyTopicTypeInfo.validate((valid) => {
                     if (valid) {
-                        let fixedType = studyTopicTypeInfo.fixedType;
+                        let releaseType = studyTopicTypeInfo.releaseType;
                         let requestInfo = studyTopicTypeInfo;
-                        if (fixedType == '0'){
+                        if (releaseType == '0'){
                             let val = this.multipleSelection
                             if(val == undefined || val == 'undefined' || val.length <= 0){
                                 this.$message({
@@ -523,13 +567,13 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                         }
                         let that = this;
                         requestInfo.examType = that.examType
-                        ajax.post('api/CollegeExamCfg/fixedExam', requestInfo, function(responseData){
+                        ajax.post('api/CollegeExamCfg/releaseTaskExam', requestInfo, function(responseData){
                             that.$message({
                                 showClose: true,
                                 message: '课程任务新增成功',
                                 type: 'success'
                             });
-                            that.fixedExamDialogVisible = false;
+                            that.releaseExamDialogVisible = false;
                             that.studyTopicTypeInfo = {}
                             that.studyTopicTypeInfoDetails = []
                             that.examType = ''
@@ -573,7 +617,7 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     }
                 }
             },
-            fixedTask: function () {
+            releaseTask: function () {
                 let val = this.multipleSelection
                 if(val == undefined || val == 'undefined' || val.length <= 0){
                     this.$message({
@@ -589,22 +633,45 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     requestInfo.push(studyInfo.studyTaskId);
                 })
                 let that = this;
-                ajax.post('api/CollegeEmployeeTask/fixedTaskReleaseByTaskList', requestInfo, function(responseData){
+                ajax.post('api/CollegeEmployeeTask/taskReleaseByTaskList', requestInfo, function(responseData){
                     that.$message({
                         showClose: true,
-                        message: '课程任务发布成功',
+                        message: '任务发布成功',
                         type: 'success'
                     });
-                    that.clearShow();
+                    that.showExercises = 'display:none';
+                    that.showExam = 'display:none';
+                    that.showStudyModel = 'display:none';
+                    that.showTogetherStudyTask = 'display:none';
+                    that.showAppointDay = 'display:none';
+                    this.showTaskValidityTerm = 'display:none';
                 });
+            },
+            changeTaskType: function (val) {
+                if (2 == val){
+                    this.showTaskValidityTerm = 'display:block';
+                }else {
+                    this.showTaskValidityTerm = 'display:none';
+                    this.showAppointDay = 'display:none';
+                    this.showStudyModel = 'display:none';
+                    this.showTogetherStudyTask = 'display:none';
+                }
+            },
+            initAddStudyTaskDialogVisible: function () {
+                this.changeTaskCoursewareType();
+                this.taskCoursewareType = '';
+                this.showTaskValidityTerm = 'display:none';
+                this.showAppointDay = 'display:none';
+                this.showStudyModel = 'display:none';
+                this.showTogetherStudyTask = 'display:none';
+                this.showStudyLength = 'display:none'
+                this.showTaskDesc = 'display:none'
+                this.showTree = 'display:none'
+                this.showUpload = 'display:none'
+                this.showExercisesNumber = 'display:none'
+                this.showPassScore = 'display:none'
+                this.showJob = 'display:none'
             }
-        },
-        clearShow: function () {
-            this.showExercises = 'display:none';
-            this.showExam = 'display:none';
-            this.showStudyModel = 'display:none';
-            this.showTogetherStudyTask = 'display:none';
-            this.showAppointDay = 'display:none';
         }
 
         /*mounted () {

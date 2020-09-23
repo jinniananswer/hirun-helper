@@ -33,4 +33,6 @@ public interface IEmployeeJobRoleService extends IService<EmployeeJobRole> {
      * @return
      */
     boolean batchUpdateParentEmployee(String ids,Long parentEmployeeId);
+
+    List<EmployeeJobRole> queryEffectiveByOrgIdList(List<Long> orgIdList);
 }

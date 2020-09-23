@@ -139,7 +139,7 @@ public interface IEmployeeService extends IService<Employee> {
 
     IPage<Employee> queryNewEmployeeByPage(EmployeeQueryDTO employeeQueryDTO, Page<EmployeeQueryDTO> page);
 
-    List<Employee> queryByEmployeeIdAndLikeName(Long employeeId, String name);
+    List<Employee> queryByorgIdAndEmployeeIdAndLikeName(String orgId, Long employeeId, String name);
 
     Employee getEEmployeeByEmployeeId(Long employeeId);
 
@@ -152,4 +152,6 @@ public interface IEmployeeService extends IService<Employee> {
     List<Employee> queryAllEffectiveEmployee();
 
     List<Employee> queryEffectiveByJobRoleList(List<String> jobRoleList);
+
+    List<Employee> queryNewEffectiveByJobRoleList(List<String> jobRoleList);
 }

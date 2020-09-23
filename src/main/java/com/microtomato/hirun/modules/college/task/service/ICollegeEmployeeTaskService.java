@@ -37,4 +37,8 @@ public interface ICollegeEmployeeTaskService extends IService<CollegeEmployeeTas
     CollegeEmployeeTask getLastEffectiveByEmployeeId(String employeeId);
 
     CollegeEmployeeTask getLastEffectiveByEmployeeIdAndStudyTaskId(String employeeId, String studyTaskId);
+
+    List<CollegeEmployeeTask> queryAllEffective();
+
+    List<CollegeEmployeeTask> queryEffectiveByEmployeeIdList(List<String> employeeIdList);
 }

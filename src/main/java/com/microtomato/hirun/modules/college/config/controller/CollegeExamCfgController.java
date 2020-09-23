@@ -6,8 +6,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.util.ArrayUtils;
-import com.microtomato.hirun.modules.college.config.entity.dto.CollegeFixedExamRequestDTO;
-import com.microtomato.hirun.modules.college.config.entity.dto.CollegeFixedExamTaskDTO;
+import com.microtomato.hirun.modules.college.config.entity.dto.CollegeReleaseTaskExamRequestDTO;
+import com.microtomato.hirun.modules.college.config.entity.dto.CollegeReleaseExamTaskDTO;
 import com.microtomato.hirun.modules.college.config.entity.dto.CollegeTopicInfoRequestDTO;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeExamCfg;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeExamRelCfg;
@@ -100,23 +100,23 @@ public class CollegeExamCfgController {
         return this.collegeExamCfgService.removeByIds(idList);
     }
 
-    @PostMapping("fixedExam")
+    @PostMapping("releaseTaskExam")
     @Transactional(rollbackFor = Exception.class)
     @RestResult
-    public void fixedExam(@RequestBody CollegeFixedExamRequestDTO collegeFixedExamRequestDTO){
-        if (null != collegeFixedExamRequestDTO){
+    public void releaseTaskExam(@RequestBody CollegeReleaseTaskExamRequestDTO collegeReleaseTaskExamRequestDTO){
+        if (null != collegeReleaseTaskExamRequestDTO){
             List<CollegeExamRelCfg> collegeExamRelCfgList = new ArrayList<>();
-            List<CollegeFixedExamTaskDTO> studyChaptersList = collegeFixedExamRequestDTO.getTaskInfoList();
+            List<CollegeReleaseExamTaskDTO> studyChaptersList = collegeReleaseTaskExamRequestDTO.getTaskInfoList();
             if (ArrayUtils.isNotEmpty(studyChaptersList)){
-                for (CollegeFixedExamTaskDTO collegeFixedExamTaskDTO : studyChaptersList){
-                    String studyTaskId = collegeFixedExamTaskDTO.getStudyTaskId();
+                for (CollegeReleaseExamTaskDTO collegeReleaseExamTaskDTO : studyChaptersList){
+                    String studyTaskId = collegeReleaseExamTaskDTO.getStudyTaskId();
                     CollegeExamCfg collegeExamCfg = new CollegeExamCfg();
-                    BeanUtils.copyProperties(collegeFixedExamRequestDTO, collegeExamCfg);
+                    BeanUtils.copyProperties(collegeReleaseTaskExamRequestDTO, collegeExamCfg);
                     collegeExamCfg.setStudyTaskId(studyTaskId);
                     collegeExamCfg.setStatus("0");
                     this.collegeExamCfgService.save(collegeExamCfg);
                     Long examTopicId = collegeExamCfg.getExamTopicId();
-                    List<CollegeTopicInfoRequestDTO> studyTopicTypeInfoDetails = collegeFixedExamRequestDTO.getStudyTopicTypeInfoDetails();
+                    List<CollegeTopicInfoRequestDTO> studyTopicTypeInfoDetails = collegeReleaseTaskExamRequestDTO.getStudyTopicTypeInfoDetails();
                     if (ArrayUtils.isNotEmpty(studyTopicTypeInfoDetails)){
                         for (CollegeTopicInfoRequestDTO collegeTopicInfoRequestDTO : studyTopicTypeInfoDetails){
                             String exercisesNumber = collegeTopicInfoRequestDTO.getExercisesNumber();

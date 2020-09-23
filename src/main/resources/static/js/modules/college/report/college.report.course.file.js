@@ -34,6 +34,11 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'order-selectem
         },
 
         methods: {
+            queryByCond() {
+                this.courseFileQueryCond.page = 1;
+                this.queryCourseFileInfo();
+            },
+
             queryCourseFileInfo: function () {
                 let that = this;
                 ajax.get('api/organization/coursefile/queryCourseFileInfo', this.courseFileQueryCond, function (responseData) {
@@ -46,12 +51,12 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'order-selectem
             handleSizeChange: function (size) {
                 this.courseFileQueryCond.size = size;
                 this.courseFileQueryCond.page = 1;
-                this.queryDecorator();
+                this.queryCourseFileInfo();
             },
 
             handleCurrentChange: function(currentPage){
                 this.courseFileQueryCond.page = currentPage;
-                this.queryDecorator();
+                this.queryCourseFileInfo();
             },
         }
     });

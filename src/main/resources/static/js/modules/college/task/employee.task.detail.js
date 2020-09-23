@@ -14,7 +14,15 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 employee: {},
                 subActiveTab: 'baseInfo',
                 taskDetailInfo: {},
-                employeeTaskInfo: []
+                employeeTaskInfo: [],
+                evaluateTaskDialogVisible: false,
+                colors: ['#99A9BF', '#F7BA2A', '#FF9900'],
+                taskScore: null,
+                exercisesScore: null,
+                examScore: null,
+                studyScore: null,
+                taskInfo: {},
+                argTaskScore: null
             }
         },
         methods: {
@@ -36,6 +44,7 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 }
                 ajax.get('api/CollegeEmployeeTask/getEmployeeTaskDetailByEmployeeId', {employeeId:employeeId}, function(responseData){
                     that.taskDetailInfo = responseData;
+                    that.argTaskScore = responseData.argTaskScore;
                 });
             },
             initEmployeeTaskDetailInfo: function(){
@@ -49,7 +58,7 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     that.employeeTaskInfo = responseData.records;
                 });
             },
-            customColorMethod(percentage) {
+            customColorMethod: function(percentage) {
                 if (percentage < 30) {
                     return '#909399';
                 } else if (percentage < 70) {
@@ -57,6 +66,86 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 } else {
                     return '#67c23a';
                 }
+            },
+            evaluateTask: function(row){
+                let taskId = row.taskId;
+                let that = this;
+                ajax.get('api/CollegeEmployeeTaskScore/isEvaluateTaskByTaskId', {taskId:taskId}, function(responseData){
+                    let isEvaluateTask = responseData.evaluateTask
+                    if (!isEvaluateTask){
+                        that.$message({
+                            showClose: true,
+                            duration: 3000,
+                            message: responseData.scoreNotReasons,
+                            center: true
+                        });
+                        return;
+                    }else {
+                        that.evaluateTaskDialogVisible = true;
+                        that.taskInfo = row;
+                    }
+                });
+            },
+            submitScore: function(){
+                if (null == this.taskScore || undefined == this.taskScore || 0 == this.taskScore){
+                    this.$message({
+                        showClose: true,
+                        duration: 3000,
+                        message: '请对该任务进行评分！最低一颗星，最高五颗星',
+                        center: true
+                    });
+                    return;
+                }
+                if (null == this.studyScore || undefined == this.studyScore || 0 == this.studyScore){
+                    this.$message({
+                        showClose: true,
+                        duration: 3000,
+                        message: '请对该任务学习情况进行评分！最低一颗星，最高五颗星',
+                        center: true
+                    });
+                    return;
+                }
+                if (null == this.examScore || undefined == this.examScore || 0 == this.examScore){
+                    this.$message({
+                        showClose: true,
+                        duration: 3000,
+                        message: '请对该任务考试情况进行评分！最低一颗星，最高五颗星',
+                        center: true
+                    });
+                    return;
+                }
+                if (null == this.exercisesScore || undefined == this.exercisesScore || 0 == this.exercisesScore){
+                    this.$message({
+                        showClose: true,
+                        duration: 3000,
+                        message: '请对该任务练习情况进行评分！最低一颗星，最高五颗星',
+                        center: true
+                    });
+                    return;
+                }
+                let scoreInfo = {}
+                scoreInfo.taskId = this.taskInfo.taskId;
+                scoreInfo.taskScore = this.taskScore;
+                scoreInfo.studyScore = this.studyScore;
+                scoreInfo.exercisesScore = this.exercisesScore;
+                scoreInfo.examScore = this.examScore;
+                let that = this
+                ajax.post('api/CollegeEmployeeTaskScore/evaluateTask', scoreInfo, function(responseData){
+                    that.$message({
+                        message: '员工任务评分成功',
+                        type: 'success'
+                    });
+                    that.taskScore = null;
+                    that.studyScore = null;
+                    that.exercisesScore = null;
+                    that.examScore = null;
+                    that.taskInfo = {};
+                    that.evaluateTaskDialogVisible = false;
+                },null, true);
+            },
+            cancel: function () {
+                let that = this;
+                that.evaluateTaskDialogVisible = false;
             },
         },
         mounted () {

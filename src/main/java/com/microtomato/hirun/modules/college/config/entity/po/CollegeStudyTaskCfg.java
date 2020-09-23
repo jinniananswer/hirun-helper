@@ -8,12 +8,14 @@ import com.microtomato.hirun.framework.data.BaseEntity;
 import lombok.*;
 import lombok.experimental.Accessors;
 
+import java.time.LocalDateTime;
+
 /**
  * (CollegeStudyTaskCfg)表实体类
  *
  * @author makejava
  * @version 1.0.0
- * @date 2020-09-18 03:15:15
+ * @date 2020-09-23 01:00:57
  */
 @Data
 @Builder
@@ -96,6 +98,12 @@ public class CollegeStudyTaskCfg extends BaseEntity {
     private String studyTime;
 
     /**
+     * 内容学习时长/小时
+     */
+    @TableField(value = "study_length")
+    private Integer studyLength;
+
+    /**
      * 习题次数
      */
     @TableField(value = "exercises_number")
@@ -106,5 +114,29 @@ public class CollegeStudyTaskCfg extends BaseEntity {
      */
     @TableField(value = "pass_score")
     private Integer passScore;
+
+    /**
+     * 任务发布时间
+     */
+    @TableField(value = "task_release_date")
+    private LocalDateTime taskReleaseDate;
+
+    /**
+     * 发布状态 0-未发布 1-已发布
+     */
+    @TableField(value = "release_status")
+    private String releaseStatus;
+
+    /**
+     * 任务有效期/天
+     */
+    @TableField(value = "task_validity_term")
+    private Integer taskValidityTerm;
+
+    /**
+     * 实践任务描述
+     */
+    @TableField(value = "task_desc")
+    private String taskDesc;
 
 }
