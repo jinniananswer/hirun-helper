@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -93,18 +94,19 @@ public class OrderWorkerActionServiceImpl extends ServiceImpl<OrderWorkerActionM
      */
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @Override
-    public void deleteOrderWorkerAction(Long orderId,String action) {
+    public List<Long> deleteOrderWorkerAction(Long orderId,String action) {
         //先终止原来的数据
         LocalDateTime now = RequestTimeHolder.getRequestTime();
-        //List<OrderWorkerAction> oldActions = this.queryByOrderIdEmployeeIdAction(orderId,employeeId,action);
         List<OrderWorkerAction> oldActions = this.queryByOrderIdAction(orderId,action);
+        List<Long> workerIds = new ArrayList<Long>();
         if (ArrayUtils.isNotEmpty(oldActions)) {
             oldActions.forEach(oldAction -> {
                 oldAction.setEndDate(now);
-                this.updateById(oldAction);
+                workerIds.add(oldAction.getWorkerId());
             });
-            //this.updateBatchById(oldActions);
+            this.updateBatchById(oldActions);
         }
+        return workerIds;
     }
 
     /**
@@ -143,18 +145,5 @@ public class OrderWorkerActionServiceImpl extends ServiceImpl<OrderWorkerActionM
         workerAction.setOrderStatus(currentOrderStatus);
 
         this.save(workerAction);
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
-    public void deleteOrderWorkerByEmployeeIdAction(Long orderId, Long employeeId, String action) {
-        LocalDateTime now = RequestTimeHolder.getRequestTime();
-        List<OrderWorkerAction> oldActions = this.queryByOrderIdEmployeeIdAction(orderId,employeeId,action);
-        if (ArrayUtils.isNotEmpty(oldActions)) {
-            oldActions.forEach(oldAction -> {
-                oldAction.setEndDate(now);
-                this.updateById(oldAction);
-            });
-        }
     }
 }

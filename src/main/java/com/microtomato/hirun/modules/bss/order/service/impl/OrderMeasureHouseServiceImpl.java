@@ -1,23 +1,16 @@
 package com.microtomato.hirun.modules.bss.order.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
-import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
-import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.bss.order.entity.consts.DesignerConst;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderMeasureHouseDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerActionDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderBase;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderMeasureHouse;
-import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayNo;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderWorker;
-import com.microtomato.hirun.modules.bss.order.exception.OrderException;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderMeasureHouseMapper;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderWorkerMapper;
 import com.microtomato.hirun.modules.bss.order.service.*;
@@ -79,25 +72,21 @@ public class OrderMeasureHouseServiceImpl extends ServiceImpl<OrderMeasureHouseM
 
     @Override
     public OrderMeasureHouseDTO getMeasureHouse(Long orderId) {
-        UserContext userContext = WebContextUtils.getUserContext();
-        Long employeeId = userContext.getEmployeeId();
         LocalDateTime now = LocalDateTime.now();
+
+        OrderWorker orderWorker = this.orderWorkerService.getOneOrderWorkerByOrderIdRoleId(orderId, 30L);
         OrderMeasureHouse orderMeasureHouse = this.getOne(
                 Wrappers.<OrderMeasureHouse>lambdaQuery()
                         .eq(OrderMeasureHouse::getOrderId, orderId)
                         .ge(OrderMeasureHouse::getEndDate, now)
         );
-
-        if (orderMeasureHouse != null)  {
-            orderMeasureHouse.setCreateTime(null);
-            orderMeasureHouse.setUpdateTime(null);
-        }
         OrderMeasureHouseDTO orderMeasureHouseDTO = new OrderMeasureHouseDTO();
 
         if (orderMeasureHouse != null) {
             BeanUtils.copyProperties(orderMeasureHouse,orderMeasureHouseDTO);
         }
-        orderMeasureHouseDTO.setDesigner(employeeId);
+        orderMeasureHouseDTO.setDesigner(orderWorker.getEmployeeId());
+        orderMeasureHouseDTO.setOrderId(orderWorker.getOrderId());
         return orderMeasureHouseDTO;
     }
 
@@ -134,30 +123,21 @@ public class OrderMeasureHouseServiceImpl extends ServiceImpl<OrderMeasureHouseM
         /**
          *订单动作
          */
-        Long workerId = null;
-        workerId = this.orderWorkerService.updateOrderWorkerByEmployeeId(orderId,30L,dto.getDesigner());
-        if ( workerId==null ) {
-            workerId =  getWorkerId(orderId,30L,dto.getDesigner());
+        this.orderWorkerService.updateOrderWorker(orderId,30L,dto.getDesigner());
+
+        OrderBase orderBase = this.orderBaseService.queryByOrderId(orderId);
+
+        List<Long> workerIds = this.orderWorkerActionService.deleteOrderWorkerAction(orderId, DesignerConst.OPER_MEASURE);
+        this.orderWorkerService.deleteOrderWorker(workerIds);
+
+        Long assistantDesignerId = dto.getAssistantDesigner();
+        if (assistantDesignerId != null) {
+            Long workerId = this.orderWorkerService.updateOrderWorker(orderId, 41L, assistantDesignerId);
+            this.orderWorkerActionService.createOrderWorkerAction(orderId, assistantDesignerId, workerId, orderBase.getStatus(), DesignerConst.OPER_MEASURE);
         }
 
-        if (dto.getDesigner().equals(dto.getAssistantDesigner())) {
-            this.orderWorkerActionService.deleteOrderWorkerAction(orderId,DesignerConst.OPER_MEASURE);
-            this.orderWorkerActionService.createOrderWorkerAction(orderId,dto.getAssistantDesigner(),workerId,null,DesignerConst.OPER_MEASURE);
-        } else {
-            //如果助理设计师为空，那么
-            if (dto.getAssistantDesigner() == null) {
-                this.orderWorkerActionService.deleteOrderWorkerAction(orderId,DesignerConst.OPER_MEASURE);
-            } else {
-                workerId = this.orderWorkerService.updateOrderWorker(orderId,41L,dto.getAssistantDesigner());
-                if ( workerId==null ) {
-                    workerId =  getWorkerId(orderId,41L,dto.getAssistantDesigner());
-                }
-                this.orderWorkerActionService.deleteOrderWorkerAction(orderId,DesignerConst.OPER_MEASURE);
-                this.orderWorkerActionService.createOrderWorkerAction(orderId,dto.getAssistantDesigner(),workerId,null,DesignerConst.OPER_MEASURE);
-            }
-        }
-
-        this.orderBaseService.update(new UpdateWrapper<OrderBase>().lambda().eq(OrderBase::getOrderId,orderId).set(OrderBase::getIndoorArea,dto.getMeasureArea()));
+        orderBase.setIndoorArea(dto.getMeasureArea());
+        this.orderBaseService.updateById(orderBase);
 
     }
 
