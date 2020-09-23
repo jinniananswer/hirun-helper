@@ -1,7 +1,7 @@
 package com.microtomato.hirun.modules.bss.order.entity.dto.finance;
 
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderTaskQueryDTO;
-import lombok.Data;
+import lombok.*;
 
 /**
  * @program: hirun-helper
@@ -9,7 +9,10 @@ import lombok.Data;
  * @author: jinnian
  * @create: 2020-07-11 16:37
  **/
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
+@ToString
 public class FinanceOrderTaskQueryDTO extends OrderTaskQueryDTO {
 
     private String auditStatus;

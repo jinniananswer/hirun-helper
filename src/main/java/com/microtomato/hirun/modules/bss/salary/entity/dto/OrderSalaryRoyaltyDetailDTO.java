@@ -1,6 +1,6 @@
 package com.microtomato.hirun.modules.bss.salary.entity.dto;
 
-import lombok.Data;
+import lombok.*;
 
 /**
  * @program: hirun-helper
@@ -8,7 +8,10 @@ import lombok.Data;
  * @author: jinnian
  * @create: 2020-07-01 16:01
  **/
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
+@ToString
 public class OrderSalaryRoyaltyDetailDTO extends EmployeeSalaryRoyaltyDetailDTO {
 
     private Long custId;
