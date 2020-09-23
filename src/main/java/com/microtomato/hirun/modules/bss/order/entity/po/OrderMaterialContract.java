@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 /**
  * (OrderMaterialContract)表实体类
  *
- * @author huanghua@asiainfo.com
+ * @author liuhui7
  * @version 1.0.0
  * @date 2020-09-24 00:05:40
  */
@@ -44,6 +44,10 @@ public class OrderMaterialContract extends BaseEntity {
     @TableField(value = "material_type")
     private String materialType;
 
+    /** 品牌类型 */
+    @TableField(value = "brand_code")
+    private String brandCode;
+
     /** 合同金额 */
     @TableField(value = "contract_fee")
     private Long contractFee;
@@ -55,6 +59,9 @@ public class OrderMaterialContract extends BaseEntity {
 
     @TableField(value = "actual_fee")
     private Long actualFee;
+
+    @TableField(value = "pay_time")
+    private LocalDateTime payTime;
 
 
     @TableField(value = "start_date")
