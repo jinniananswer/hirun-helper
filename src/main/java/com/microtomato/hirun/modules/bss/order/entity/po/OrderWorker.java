@@ -40,6 +40,18 @@ public class OrderWorker extends BaseEntity {
     @TableField("employee_id")
     private Long employeeId;
 
+    @TableField("org_id")
+    private Long orgId;
+
+    @TableField("job_role")
+    private String jobRole;
+
+    @TableField("job_grade")
+    private String jobGrade;
+
+    @TableField("parent_employee_id")
+    private Long parentEmployeeId;
+
     /**
      * 开始时间
      */
