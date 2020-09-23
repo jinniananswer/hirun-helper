@@ -1,4 +1,4 @@
-package com.microtomato.hirun.modules.order.controller;
+package com.microtomato.hirun.modules.bss.order.controller;
 
 
 
@@ -8,8 +8,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.microtomato.hirun.modules.order.entity.po.OrderMaterialContract;
-import com.microtomato.hirun.modules.order.service.IOrderMaterialContractService;
+import com.microtomato.hirun.modules.bss.order.entity.po.OrderMaterialContract;
+import com.microtomato.hirun.modules.bss.order.service.IOrderMaterialContractService;
 import com.microtomato.hirun.framework.annotation.RestResult;
 
 import java.io.Serializable;
@@ -20,7 +20,7 @@ import java.util.List;
  *
  * @author huanghua@asiainfo.com
  * @version 1.0.0
- * @date 2020-09-21 12:41:46
+ * @date 2020-09-24 00:05:42
  */
 @RestController
 @RequestMapping("/api/OrderMaterialContract")
