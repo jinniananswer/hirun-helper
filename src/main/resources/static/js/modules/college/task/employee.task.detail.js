@@ -4,17 +4,34 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
         el: '#app',
         data: function() {
             return {
-                queryCond: {
+                queryCourseTaskCond: {
                     employeeId: '',
+                    studyType: '',
+                    limit: 20,
+                    page: 1,
+                    count: null
+                },
+                queryCoursewareTaskCond: {
+                    employeeId: '',
+                    studyType: '',
+                    limit: 20,
+                    page: 1,
+                    count: null
+                },
+                queryPracticeTaskCond: {
+                    employeeId: '',
+                    studyType: '',
                     limit: 20,
                     page: 1,
                     count: null
                 },
                 employeeId: util.getRequest("employeeId"),
                 employee: {},
-                subActiveTab: 'baseInfo',
+                subActiveTab: 'courseTaskInfo',
                 taskDetailInfo: {},
-                employeeTaskInfo: [],
+                employeeCourseTaskInfo: [],
+                employeeCoursewareTaskInfo: [],
+                employeePracticeTaskInfo: [],
                 evaluateTaskDialogVisible: false,
                 colors: ['#99A9BF', '#F7BA2A', '#FF9900'],
                 taskScore: null,
@@ -47,15 +64,40 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     that.argTaskScore = responseData.argTaskScore;
                 });
             },
-            initEmployeeTaskDetailInfo: function(){
+            queryEmployeeCourseTaskInfo: function(){
                 let that = this;
                 let employeeId=that.employeeId;
                 if(employeeId=='undefined'){
                     employeeId=null;
                 }
-                that.queryCond.employeeId = employeeId;
-                ajax.get('api/CollegeEmployeeTask/queryEmployeeTaskDetailByPage', this.queryCond, function(responseData){
-                    that.employeeTaskInfo = responseData.records;
+                that.queryCourseTaskCond.employeeId = employeeId;
+                that.queryCourseTaskCond.studyType = '0';
+                ajax.get('api/CollegeEmployeeTask/queryEmployeeTaskDetailByPage', that.queryCourseTaskCond, function(responseData){
+                    that.employeeCourseTaskInfo = responseData.records;
+                });
+            },
+            queryEmployeeCoursewareTaskInfo: function(){
+                let that = this;
+                let employeeId=that.employeeId;
+                if(employeeId=='undefined'){
+                    employeeId=null;
+                }
+                that.queryCoursewareTaskCond.employeeId = employeeId;
+                that.queryCoursewareTaskCond.studyType = '1';
+                ajax.get('api/CollegeEmployeeTask/queryEmployeeTaskDetailByPage', that.queryCoursewareTaskCond, function(responseData){
+                    that.employeeCoursewareTaskInfo = responseData.records;
+                });
+            },
+            queryEmployeePracticeTaskInfo: function(){
+                let that = this;
+                let employeeId=that.employeeId;
+                if(employeeId=='undefined'){
+                    employeeId=null;
+                }
+                that.queryPracticeTaskCond.employeeId = employeeId;
+                that.queryPracticeTaskCond.studyType = '2';
+                ajax.get('api/CollegeEmployeeTask/queryEmployeeTaskDetailByPage', that.queryPracticeTaskCond, function(responseData){
+                    that.employeePracticeTaskInfo = responseData.records;
                 });
             },
             customColorMethod: function(percentage) {
@@ -151,7 +193,9 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
         mounted () {
             this.initEmployeeInfo();
             this.initTaskInfo();
-            this.initEmployeeTaskDetailInfo();
+            this.queryEmployeeCourseTaskInfo();
+            this.queryEmployeeCoursewareTaskInfo();
+            this.queryEmployeePracticeTaskInfo();
         },
     });
 

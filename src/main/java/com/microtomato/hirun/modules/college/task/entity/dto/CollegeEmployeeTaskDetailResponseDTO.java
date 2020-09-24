@@ -47,4 +47,12 @@ public class CollegeEmployeeTaskDetailResponseDTO {
     private Integer passScore;
 
     private Integer score;
+
+    private Integer studyDateLength;
+
+    private String taskDesc;
+
+    private String taskRemainderTime;
+
+    private Double taskProgress;
 }

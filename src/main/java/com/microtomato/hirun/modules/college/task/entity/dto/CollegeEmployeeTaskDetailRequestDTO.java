@@ -10,6 +10,8 @@ public class CollegeEmployeeTaskDetailRequestDTO {
 
     private String employeeId;
 
+    private String studyType;
+
     private Integer page;
 
     private Integer limit;
