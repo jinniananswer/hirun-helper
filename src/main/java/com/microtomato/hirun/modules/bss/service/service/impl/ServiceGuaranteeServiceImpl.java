@@ -37,7 +37,6 @@ public class ServiceGuaranteeServiceImpl extends ServiceImpl<ServiceGuaranteeMap
         GuaranteeDTO guaranteeDTO=new GuaranteeDTO();
 
         if(serviceGuarantee==null){
-            guaranteeDTO.setOrderId(orderId);
             return guaranteeDTO;
         }
         BeanUtils.copyProperties(serviceGuarantee,guaranteeDTO);

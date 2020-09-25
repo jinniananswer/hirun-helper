@@ -2,7 +2,7 @@ package com.microtomato.hirun.modules.bss.order.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.microtomato.hirun.modules.bss.order.QueryInspectCondDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.QueryInspectCondDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderInspectDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderInspect;
 

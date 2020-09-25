@@ -5,6 +5,10 @@ package com.microtomato.hirun.modules.bss.order.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.microtomato.hirun.modules.bss.order.entity.dto.OrderInspectDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.OrderMaterialContractDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.QueryMaterialCondDTO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -18,12 +22,13 @@ import java.util.List;
 /**
  * (OrderMaterialContract)表控制层
  *
- * @author huanghua@asiainfo.com
+ * @author liuhui7
  * @version 1.0.0
  * @date 2020-09-24 00:05:42
  */
 @RestController
-@RequestMapping("/api/OrderMaterialContract")
+@Slf4j
+@RequestMapping("/api/bss.order/order-material-contract")
 public class OrderMaterialContractController {
 
     /**
@@ -88,5 +93,12 @@ public class OrderMaterialContractController {
     @GetMapping("deleteByIds")
     public boolean deleteByIds(@RequestParam("idList") List<Long> idList) {
         return this.orderMaterialContractService.removeByIds(idList);
+    }
+
+    @GetMapping("/queryMaterialContract")
+    @RestResult
+    public List<OrderMaterialContractDTO> queryMaterialContracts(QueryMaterialCondDTO queryCond){
+        log.debug(queryCond.toString());
+        return orderMaterialContractService.queryMaterialContracts(queryCond);
     }
 }

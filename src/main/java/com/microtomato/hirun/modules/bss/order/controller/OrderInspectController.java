@@ -1,7 +1,7 @@
 package com.microtomato.hirun.modules.bss.order.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.microtomato.hirun.framework.annotation.RestResult;
-import com.microtomato.hirun.modules.bss.order.QueryInspectCondDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.QueryInspectCondDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderInspectDTO;
 import com.microtomato.hirun.modules.bss.order.service.IOrderInspectService;
 import org.springframework.beans.factory.annotation.Autowired;

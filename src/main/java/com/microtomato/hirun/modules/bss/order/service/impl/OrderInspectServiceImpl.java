@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.modules.bss.house.service.IHousesService;
-import com.microtomato.hirun.modules.bss.order.QueryInspectCondDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.QueryInspectCondDTO;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderInspectDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderInspect;

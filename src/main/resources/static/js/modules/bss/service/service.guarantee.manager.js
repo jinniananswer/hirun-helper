@@ -15,21 +15,9 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     count: null
                 },
                 serviceGuaranteeInfo: {
-                    id:'',
-                    customerEmployeeName: '',
-                    designEmployeeName: '',
-                    projectEmployeeName:'',
-                    checkTime: '',
-                    hydropowerName: '',
-                    woodworkerName: '',
-                    inlayName:'',
-                    paintName:'',
-                    createTime:util.getNowTime(),
-                    guaranteeStartDate:'',
-                    guaranteeEndDate:'',
-                    custId: util.getRequest('custId'),
-                    orderId: util.getRequest('orderId'),
                 },
+                custId: util.getRequest('custId'),
+                orderId: util.getRequest('orderId'),
                 dialogVisible:false,
                 activeTab:'designRoyaltyTab',
                 custOrder:[],
@@ -65,18 +53,18 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
             },
 
             selectCustOrder: function(orderId, custId) {
-                this.serviceGuaranteeInfo.custId = custId;
-                this.serviceGuaranteeInfo.orderId = orderId;
+                this.custId = custId;
+                this.orderId = orderId;
                 this.dialogVisible = false;
                 this.show = 'display:block';
                 let that = this;
-                ajax.get('api/bss.service/ServiceGuarantee/queryCustomerGuaranteeInfo', {orderId: this.serviceGuaranteeInfo.orderId}, function(responseData) {
+                ajax.get('api/bss.service/service-guarantee/queryCustomerGuaranteeInfo', {orderId: that.orderId}, function(responseData) {
                     that.serviceGuaranteeInfo=responseData;
                 });
             },
 
             save : function() {
-                if(this.serviceGuaranteeInfo.guaranteeStartDate==''){
+/*                if(this.serviceGuaranteeInfo.guaranteeStartDate==''){
                     this.$message.error('保修开始时间不能为空');
                     return false;
                 }
@@ -84,7 +72,17 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     this.$message.error('保修结束时间不能为空');
                     return false;
                 }
-                ajax.post('api/bss.service/ServiceGuarantee/saveGuaranteeInfo', this.serviceGuaranteeInfo,null,null,true);
+                this.serviceGuaranteeInfo.orderId=this.orderId;
+                this.serviceGuaranteeInfo.custId=this.custId;*/
+
+                this.$refs.serviceGuaranteeInfo.validate((valid) => {
+                    if (valid) {
+                        this.serviceGuaranteeInfo.orderId=this.orderId;
+                        this.serviceGuaranteeInfo.custId=this.custId;
+                        ajax.post('api/bss.service/service-guarantee/saveGuaranteeInfo', this.serviceGuaranteeInfo,null,null,true);
+                    }
+                })
+
             },
 
 

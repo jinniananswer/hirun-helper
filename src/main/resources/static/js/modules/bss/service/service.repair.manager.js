@@ -89,9 +89,6 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 serviceRepairHistoryRecordList:[],
                 activeTab:'repairActiveTable',
                 guaranteeInfo:{
-                    guaranteeStartDate:'',
-                    guaranteeEndDate:'',
-                    createTime:''
                 },
                 validRules: {
                     repairWorker: [
