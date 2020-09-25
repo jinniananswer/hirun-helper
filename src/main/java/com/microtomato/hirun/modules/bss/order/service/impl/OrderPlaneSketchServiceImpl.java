@@ -1,13 +1,10 @@
 package com.microtomato.hirun.modules.bss.order.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
-import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.bss.order.entity.consts.DesignerConst;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.FeeDTO;
@@ -25,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,9 +52,6 @@ public class OrderPlaneSketchServiceImpl extends ServiceImpl<OrderPlaneSketchMap
 
     @Autowired
     private IOrderBaseService orderBaseService;
-
-    @Autowired
-    private IDesignerCommonService designerCommonService;
 
     @Autowired
     private IOrderWorkerService orderWorkerService;
@@ -97,40 +92,42 @@ public class OrderPlaneSketchServiceImpl extends ServiceImpl<OrderPlaneSketchMap
                         .ge(OrderPlaneSketch::getEndDate, now)
         );
 
-        if (orderPlaneSketch != null) {
-            orderPlaneSketch.setCreateTime(null);
-            orderPlaneSketch.setUpdateTime(null);
-        }
-        UserContext userContext = WebContextUtils.getUserContext();
-        Long employeeId = userContext.getEmployeeId();
+        OrderWorker orderWorker = this.orderWorkerService.getOneOrderWorkerByOrderIdRoleId(orderId, 30L);
         OrderPlaneSketchDTO orderPlaneSketchDTO = new OrderPlaneSketchDTO();
 
         if (orderPlaneSketch != null) {
             BeanUtils.copyProperties(orderPlaneSketch,orderPlaneSketchDTO);
         }
-        orderPlaneSketchDTO.setDesigner(employeeId);
-        List<OrderWorkerActionDTO> orderWorkerActionDTOS = orderWorkerActionService.queryByOrderIdActionDto(orderId,DesignerConst.OPER_DRAW_PLAN);
+        orderPlaneSketchDTO.setDesigner(orderWorker.getEmployeeId());
+        List<OrderWorkerActionDTO> orderWorkerActionDTOS = orderWorkerActionService.queryByOrderIdActionDto(orderId, DesignerConst.OPER_DRAW_PLAN);
 
         if (ArrayUtils.isNotEmpty(orderWorkerActionDTOS)) {
-            orderWorkerActionDTOS.forEach(action -> {
-                Long id = action.getEmployeeId();
-                orderPlaneSketchDTO.setAssistantDesigner(id);
-            });
+            Long id = orderWorkerActionDTOS.get(0).getEmployeeId();
+            orderPlaneSketchDTO.setAssistantDesigner(id);
         }
-        orderPlaneSketchDTO.setOrderWorkActions(orderWorkerActionDTOS);
 
         List<OrderWorker> workers =  orderWorkerService.queryValidByOrderId(orderId);
         if (ArrayUtils.isNotEmpty(workers)) {
-                workers.forEach(worker -> {
+            workers.forEach(worker -> {
                 Long id = worker.getEmployeeId();
                 if ( DesignerConst.ROLE_CODE_CUSTOMER_ClERK.equals(worker.getRoleId())) {
                     String name = employeeService.getEmployeeNameEmployeeId(id);
                     orderPlaneSketchDTO.setFinanceEmployeeName(name);
                     orderPlaneSketchDTO.setFinanceEmployeeId(id);
+                    return;
                 }
             });
         }
 
+        OrderBase orderBase = this.orderBaseService.queryByOrderId(orderId);
+        orderPlaneSketchDTO.setIndoorArea(orderBase.getIndoorArea());
+
+        if (orderPlaneSketchDTO.getPlaneSketchStartDate() == null) {
+            LocalDate today = RequestTimeHolder.getRequestTime().toLocalDate();
+            LocalDate endDate = today.plusMonths(3);
+            orderPlaneSketchDTO.setPlaneSketchStartDate(today);
+            orderPlaneSketchDTO.setPlaneSketchEndDate(endDate);
+        }
         return orderPlaneSketchDTO;
     }
 
@@ -183,55 +180,49 @@ public class OrderPlaneSketchServiceImpl extends ServiceImpl<OrderPlaneSketchMap
         } else {
             this.updateById(orderPlaneSketchNew);
         }
-        this.updateIndorrArea(orderPlaneSketchNew.getOrderId(),orderPlaneSketchNew.getIndoorArea());
         /**
-         *订单动作
+         *订单动作,设置收银员
          */
         if (dto.getFinanceEmployeeId() != null) {
             orderWorkerService.updateOrderWorker(dto.getOrderId(),34L,dto.getFinanceEmployeeId());
         }
 
-        Long workerId = null;
-        workerId = this.orderWorkerService.updateOrderWorkerByEmployeeId(orderId,30L,dto.getDesigner());
-        if ( workerId==null ) {
-            workerId =  getWorkerId(orderId,30L,dto.getDesigner());
-        }
+        OrderBase orderBase = this.orderBaseService.queryByOrderId(orderId);
+        orderBase.setIndoorArea(orderPlaneSketchNew.getIndoorArea());
+        this.orderBaseService.updateById(orderBase);
 
-        if (dto.getDesigner().equals(dto.getAssistantDesigner())) {
-            this.orderWorkerActionService.deleteOrderWorkerAction(orderId,DesignerConst.OPER_DRAW_PLAN);
-            this.orderWorkerActionService.createOrderWorkerAction(orderId,dto.getAssistantDesigner(),workerId,null,DesignerConst.OPER_DRAW_PLAN);
-        } else {
-            //如果助理设计师为空，那么啥都不弄
-            if (dto.getAssistantDesigner() == null) {
-                this.orderWorkerActionService.deleteOrderWorkerAction(orderId,DesignerConst.OPER_DRAW_PLAN);
-            } else {
-                workerId = this.orderWorkerService.updateOrderWorker(orderId,41L,dto.getAssistantDesigner());
-                if ( workerId==null ) {
-                    workerId =  getWorkerId(orderId,41L,dto.getAssistantDesigner());
+        List<Long> workerIds = this.orderWorkerActionService.deleteOrderWorkerAction(orderId, DesignerConst.OPER_DRAW_PLAN);
+        if (ArrayUtils.isNotEmpty(workerIds)) {
+            //检查是否有其它动作
+            List<OrderWorkerAction> otherActions = this.orderWorkerActionService.hasOtherAction(workerIds, DesignerConst.OPER_DRAW_PLAN);
+            List<Long> onlyDrawPlanWorkerIds = new ArrayList<>();
+
+            for (Long workerId : workerIds) {
+
+                boolean isFind = false;
+                for (OrderWorkerAction otherAction : otherActions) {
+                    if (otherAction.getWorkerId().equals(workerId)) {
+                        isFind = true;
+                        break;
+                    }
                 }
-                this.orderWorkerActionService.deleteOrderWorkerAction(orderId,DesignerConst.OPER_DRAW_PLAN);
-                this.orderWorkerActionService.createOrderWorkerAction(orderId,dto.getAssistantDesigner(),workerId,null,DesignerConst.OPER_DRAW_PLAN);
+
+                if (!isFind) {
+                    onlyDrawPlanWorkerIds.add(workerId);
+                }
+            }
+
+            if (ArrayUtils.isNotEmpty(onlyDrawPlanWorkerIds)) {
+                this.orderWorkerService.deleteOrderWorker(workerIds);
             }
         }
-    }
 
-    public Long getWorkerId(Long orderId, Long roleId, Long employeeId) {
-        Long workerId;
-        OrderWorker orderWorker = this.orderWorkerMapper.selectOne(new QueryWrapper<OrderWorker>().lambda()
-                .eq(OrderWorker::getOrderId, orderId).eq(OrderWorker::getRoleId,roleId).eq(OrderWorker::getEmployeeId,employeeId)
-                .gt(OrderWorker::getEndDate, RequestTimeHolder.getRequestTime()));
-        workerId = orderWorker.getId();
-        return workerId;
-    }
-
-    private void updateIndorrArea(Long orderId,String indoorArea){
-        OrderBase order = this.orderBaseService.queryByOrderId(orderId);
-
-        if (order == null) {
-            throw new OrderException(OrderException.OrderExceptionEnum.ORDER_FEE_NOT_FOUND);
+        Long assistantDesignerId = dto.getAssistantDesigner();
+        if (assistantDesignerId != null) {
+            Long workerId = this.orderWorkerService.updateOrderWorker(orderId,41L,dto.getAssistantDesigner());
+            this.orderWorkerActionService.createOrderWorkerAction(orderId, assistantDesignerId, workerId, orderBase.getStatus(), DesignerConst.OPER_DRAW_PLAN);
         }
-        order.setIndoorArea(indoorArea);
-        this.orderBaseService.updateById(order);
+
     }
 
     @Override

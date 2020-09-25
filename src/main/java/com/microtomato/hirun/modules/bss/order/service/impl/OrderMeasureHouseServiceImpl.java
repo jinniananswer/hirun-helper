@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
+import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.bss.order.entity.consts.DesignerConst;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
@@ -120,15 +121,14 @@ public class OrderMeasureHouseServiceImpl extends ServiceImpl<OrderMeasureHouseM
         } else {
             this.updateById(orderMeasureHouseNew);
         }
-        /**
-         *订单动作
-         */
-        this.orderWorkerService.updateOrderWorker(orderId,30L,dto.getDesigner());
 
         OrderBase orderBase = this.orderBaseService.queryByOrderId(orderId);
 
         List<Long> workerIds = this.orderWorkerActionService.deleteOrderWorkerAction(orderId, DesignerConst.OPER_MEASURE);
-        this.orderWorkerService.deleteOrderWorker(workerIds);
+        if (ArrayUtils.isNotEmpty(workerIds)) {
+            this.orderWorkerService.deleteOrderWorker(workerIds);
+
+        }
 
         Long assistantDesignerId = dto.getAssistantDesigner();
         if (assistantDesignerId != null) {

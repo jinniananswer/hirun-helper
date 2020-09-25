@@ -23,6 +23,8 @@ public interface IOrderWorkerActionService extends IService<OrderWorkerAction> {
 
     List<OrderWorkerAction> queryByOrderIdEmployeeIdAction(Long orderId, Long employeeId,String action) ;
 
+    List<OrderWorkerAction> hasOtherAction(List<Long> workerIds, String action);
+
     void createOrderWorkerAction(Long orderId, Long employeeId, Long workerId, String currentOrderStatus, String action);
 
     List<Long> deleteOrderWorkerAction(Long orderId,String action);

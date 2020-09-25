@@ -110,6 +110,21 @@ public class OrderWorkerActionServiceImpl extends ServiceImpl<OrderWorkerActionM
     }
 
     /**
+     * 查看是否还有其它动作
+     * @param workerIds
+     * @param action
+     * @return
+     */
+    @Override
+    public List<OrderWorkerAction> hasOtherAction(List<Long> workerIds, String action) {
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+        return this.list(Wrappers.<OrderWorkerAction>lambdaQuery()
+                .in(OrderWorkerAction::getWorkerId, workerIds)
+                .ne(OrderWorkerAction::getAction, action)
+                .ge(OrderWorkerAction::getEndDate, now));
+    }
+
+    /**
      * 创建订单参与工作人员动作数据
      * @param orderId
      * @param employeeId
