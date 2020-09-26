@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>dolphin-admin</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script src="static/js/framework/requirejs/require.min.js" th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js" th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+</head>
+<body>
+<div id="app" v-cloak>
+    <el-container>
+        <el-main>
+            <el-row>
+                <div class="grid-content bg-purple-light">
+                    <order-info :order-id="factoryOrder.orderId"></order-info>
+                    <el-card class="box-card">
+                        <div slot="header" class="clearfix">
+                            <span>工厂产品订单</span>
+                        </div>
+                        <el-form :inline="false" :rules="rules" :model="factoryOrder" ref="factoryOrder" label-position="right" label-width="100px">
+                            <el-row>
+                                <el-col :span="8">
+                                    <el-form-item label="驻点人员" required="true" prop="designer">
+                                        <el-input v-model="factoryOrder.garrisonName" placeholder="驻点人员"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="订单管理员" prop="assistantDesigner">
+                                        <order-selectemployee role-id="59" v-model="factoryOrder.factoryOrderManager"></order-selectemployee>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="接收图纸日期">
+                                        <el-date-picker
+                                                v-model="factoryOrder.receivePictureDate"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                style="width:100%"
+                                                placeholder="选择日期">
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="8">
+                                    <el-form-item label="接收预算表日期">
+                                        <el-date-picker
+                                                v-model="factoryOrder.receiveBudgetDate"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                style="width:100%"
+                                                placeholder="选择日期">
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="接尺寸表日期">
+                                        <el-date-picker
+                                                v-model="factoryOrder.receiveSizeDate"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                style="width:100%"
+                                                placeholder="选择日期">
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="驻点收到日期">
+                                        <el-date-picker
+                                                v-model="factoryOrder.receiveGarrisonDate"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                style="width:100%"
+                                                placeholder="选择日期">
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="8">
+                                    <el-form-item label="订单正本日期">
+                                        <el-date-picker
+                                                v-model="factoryOrder.orderOriginalDate"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                style="width:100%"
+                                                placeholder="选择日期">
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="收到订单正本日期">
+                                        <el-date-picker
+                                                v-model="factoryOrder.receiveOrderOriginalDate"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                style="width:100%"
+                                                placeholder="选择日期">
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="24">
+                                    <el-form-item label="木制品签单项目">
+                                        <el-input type="textarea" :rows="2" v-model="factoryOrder.signItem" placeholder="木制品签单项目"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="24">
+                                    <el-form-item label="产品描述">
+                                        <el-input type="textarea" :rows="2" v-model="factoryOrder.productDescription" placeholder="产品描述"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="8">
+                                    <el-form-item label="装修验收日期">
+                                        <el-date-picker
+                                                v-model="factoryOrder.checkDate"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                style="width:100%"
+                                                placeholder="选择日期">
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="订单交付日期">
+                                        <el-date-picker
+                                                v-model="factoryOrder.deliverDate"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                style="width:100%"
+                                                placeholder="选择日期">
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="8">
+                                    <el-form-item label="木门预计到货日期">
+                                        <el-date-picker
+                                                v-model="factoryOrder.doorExpectedDate"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                style="width:100%"
+                                                placeholder="选择日期">
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="木门实际到货日期">
+                                        <el-date-picker
+                                                v-model="factoryOrder.doorActualDate"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                style="width:100%"
+                                                placeholder="选择日期">
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="实际入库日期">
+                                        <el-date-picker
+                                                v-model="factoryOrder.storageDate"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                style="width:100%"
+                                                placeholder="选择日期">
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="8">
+                                    <el-form-item label="家具预计到货日期">
+                                        <el-date-picker
+                                                v-model="factoryOrder.furnitureExpectedDate"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                style="width:100%"
+                                                placeholder="选择日期">
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="家具实际到货日期">
+                                        <el-date-picker
+                                                v-model="factoryOrder.furnitureActualDate"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                style="width:100%"
+                                                placeholder="选择日期">
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="实际安装日期">
+                                        <el-date-picker
+                                                v-model="factoryOrder.setupDate"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                style="width:100%"
+                                                placeholder="选择日期">
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="24">
+                                    <el-form-item label="跟踪情况">
+                                        <el-input type="textarea" :rows="2" v-model="factoryOrder.followInfo" placeholder="木制品签单项目"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="24">
+                                    <el-form-item label="工厂进度">
+                                        <el-input type="textarea" :rows="2" v-model="factoryOrder.factorySchedule" placeholder="产品描述"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="24">
+                                    <el-form-item label="返工及变更">
+                                        <el-input type="textarea" :rows="2" v-model="factoryOrder.backChange" placeholder="产品描述"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="8">
+                                    <el-form-item label="责任方" required="true" prop="designer">
+                                        <el-input v-model="factoryOrder.responsible" placeholder="责任方"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="驻点重新接单日期" prop="assistantDesigner">
+                                        <el-date-picker
+                                                v-model="factoryOrder.regarrisonDate"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                style="width:100%"
+                                                placeholder="选择日期">
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="驻点核尺日期">
+                                        <el-date-picker
+                                                v-model="factoryOrder.garrisonCheckSizeDate"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                style="width:100%"
+                                                placeholder="选择日期">
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="8">
+                                    <el-form-item label="不做木制品" required="true" prop="designer">
+                                        <el-switch
+                                                v-model="factoryOrder.garrisonCheckSizeDate"
+                                                active-color="#13ce66"
+                                                inactive-color="#ff4949"
+                                                active-value="1"
+                                                inactive-value="0">
+                                        </el-switch>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="跟单完毕" prop="assistantDesigner">
+                                        <el-switch
+                                                v-model="factoryOrder.garrisonCheckSizeDate"
+                                                active-color="#13ce66"
+                                                inactive-color="#ff4949"
+                                                active-value="1"
+                                                inactive-value="0">
+                                        </el-switch>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row style="padding-top: 12px" :style="show">
+                                <el-button type="primary" @click="save">保存</el-button>
+                                <el-button type="danger" @click="close">关闭</el-button>
+                            </el-row>
+                        </el-form>
+                    </el-card>
+
+                    <el-card class="box-card">
+                    </el-card>
+                </div>
+            </el-row>
+        </el-main>
+    </el-container>
+</div>
+<style>
+    .text {
+        font-size: 14px;
+    }
+
+    .item {
+        margin-bottom: 18px;
+    }
+
+    .box-card {
+        margin-bottom: 12px;
+    }
+
+    .el-card__header {
+        padding:10px;
+    }
+</style>
+<script src="static/js/modules/bss/order/factory/edit.factory.order.js" th:src="@{static/js/modules/bss/order/factory/edit.factory.order.js(v=${version})}"></script>
+</body>
+</html>

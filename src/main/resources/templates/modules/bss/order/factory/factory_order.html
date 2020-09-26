@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>财务主营业务控制台</title>
+    <title>设计费查询</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <script src="static/js/framework/requirejs/require.min.js" th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
@@ -17,7 +17,7 @@
                     <div slot="header" class="clearfix">
                         <span>查询条件区</span>
                     </div>
-                    <el-form :inline="false" :model="queryCond" label-position="right" label-width="80px">
+                    <el-form :inline="false" :model="queryCond" label-position="right" label-width="100px">
                         <el-row>
                             <el-col :span="8">
                                 <el-form-item label="客户姓名">
@@ -37,10 +37,39 @@
                         </el-row>
                         <el-row>
                             <el-col :span="8">
-                                <el-form-item label="审核状态">
-                                    <vue-select code-type="AUDIT_STATUS" v-model="queryCond.auditStatus"></vue-select>
+                                <el-form-item label="归属店面">
+                                    <org-orgtree :org-id.sync="queryCond.orgIds" :org-name.sync="queryCond.orgName" mode="multi"></org-orgtree>
                                 </el-form-item>
                             </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="客户代表">
+                                    <order-selectemployee role-id="15" v-model="queryCond.agent"  ></order-selectemployee>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="设计师">
+                                    <order-selectemployee role-id="30" v-model="queryCond.designer"  ></order-selectemployee>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="8">
+                                <el-form-item label="项目经理">
+                                    <order-selectemployee role-id="33" v-model="queryCond.projectManager"  ></order-selectemployee>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="工程主管">
+                                    <order-selectemployee role-id="48" v-model="queryCond.projectCharger"  ></order-selectemployee>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="订单管理员" label-width>
+                                    <order-selectemployee role-id="59" v-model="queryCond.factoryOrderManager"  ></order-selectemployee>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
                             <el-col :span="8">
                                 <el-form-item>
                                     <el-button type="primary" @click="query">查询</el-button>
@@ -55,36 +84,31 @@
                     <vxe-table
                             border
                             resizable
-                            ref="orderTasks"
+                            ref="factoryOrderTable"
                             show-overflow
                             highlight-hover-row
                             highlight-cell
                             keep-source
                             max-height="800px"
                             :auto-resize="true"
-                            :data="tasks">
+                            :data="factoryOrders">
                         <vxe-table-column field="custNo" title="客户编号" sortable width="150" fixed="left"></vxe-table-column>
-                        <vxe-table-column field="custName" title="客户姓名" sortable width="100" fixed="left"></vxe-table-column>
-                        <vxe-table-column field="mobileNo" title="联系电话" sortable width="150" fixed="left"></vxe-table-column>
-                        <vxe-table-column field="auditStatusName" title="审核状态" sortable width="100" fixed="left"></vxe-table-column>
-                        <vxe-table-column field="totalMoney" title="总收取费用" sortable width="120" fixed="left"></vxe-table-column>
-                        <vxe-table-column field="housesName" title="楼盘" sortable width="150"></vxe-table-column>
-                        <vxe-table-column field="decorateAddress" title="地址" sortable width="250" ></vxe-table-column>
-                        <vxe-table-column field="typeName" title="订单类型" sortable width="100" ></vxe-table-column>
-                        <vxe-table-column field="statusName" title="当前状态" sortable width="100"></vxe-table-column>
-                        <vxe-table-column field="houseLayoutName" title="户型" sortable width="100"></vxe-table-column>
-                        <vxe-table-column field="indoorArea" title="套内面积" sortable width="100"></vxe-table-column>
-
-                        <vxe-table-column title="操作" width="100" fixed="right" show-overflow>
+                        <vxe-table-column field="custName" title="客户姓名" sortable width="100" fixed="left">
                             <template v-slot="{ row }">
-                                <el-button
-                                        size="mini"
-                                        type="danger"
-                                        icon="el-icon-setting"
-                                        :disabled="row.auditStatus ==  '1'"
-                                        @click="openProcess(row.orderId, row.custId, row.payNo, row.auditStatus)">处理</el-button>
+                                <el-button type="text" @click="redirect(row)">{{ row.custName }}</el-button>
                             </template>
                         </vxe-table-column>
+                        <vxe-table-column field="produceNo" title="生产编号" sortable width="100" fixed="left"></vxe-table-column>
+                        <vxe-table-column field="decorateAddress" title="地址" sortable width="200" fixed="left"></vxe-table-column>
+                        <vxe-table-column field="orderStatusName" title="订单状态" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="contractStartDate" title="合同开始时间" sortable width="150"></vxe-table-column>
+                        <vxe-table-column field="pastDays" title="已开工天数" sortable width="150"></vxe-table-column>
+                        <vxe-table-column field="usualWorker.agentName" title="客户代表" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="usualWorker.designerName" title="设计师" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="usualWorker.projectManagerName" title="项目经理" sortable width="100"></vxe-table-column>
+                        <vxe-table-column field="usualWorker.projectChargerName" title="工程主管" sortable width="120"></vxe-table-column>
+                        <vxe-table-column field="usualWorker.factoryOrderManagerName" title="订单管理员" sortable width="120"></vxe-table-column>
+
                     </vxe-table>
                     <div style="text-align: center">
                         <el-pagination
@@ -130,6 +154,6 @@
         text-decoration:line-through;
     }
 </style>
-<script src="static/js/modules/bss/order/finance/finance.order.console.js" th:src="@{static/js/modules/bss/order/finance/finance.order.console.js(v=${version})}"></script>
+<script src="static/js/modules/bss/order/factory/factory.order.js" th:src="@{static/js/modules/bss/order/factory/factory.order.js(v=${version})}"></script>
 </body>
 </html>
