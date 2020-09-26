@@ -157,10 +157,15 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 let  insertRecords= this.$refs.serviceRepairRecordList.getInsertRecords();
                 let removeRecords=this.$refs.serviceRepairRecordList.getRemoveRecords();
                 let updateRecords =this.$refs.serviceRepairRecordList.getUpdateRecords();
-                ajax.post('api/bss.service/service-repair-order/saveRepairOrder', {insertRecords:insertRecords,removeRecords:removeRecords,updateRecords:updateRecords,customerId:this.custId,orderId:this.orderId,repairNo:this.repairNo});
+                ajax.post('api/bss.service/service-repair-order/saveRepairOrder', {insertRecords:insertRecords,removeRecords:removeRecords,updateRecords:updateRecords,customerId:this.custId,orderId:this.orderId,repairNo:this.repairNo},null,null,true);
             },
 
-
+            nextStep :function(){
+                let  insertRecords= this.$refs.serviceRepairRecordList.getInsertRecords();
+                let removeRecords=this.$refs.serviceRepairRecordList.getRemoveRecords();
+                let updateRecords =this.$refs.serviceRepairRecordList.getUpdateRecords();
+                ajax.post('api/bss.service/service-repair-order/nextStep', {insertRecords:insertRecords,removeRecords:removeRecords,updateRecords:updateRecords,customerId:this.custId,orderId:this.orderId,repairNo:this.repairNo});
+            },
 
 
             async removeRecord (row) {

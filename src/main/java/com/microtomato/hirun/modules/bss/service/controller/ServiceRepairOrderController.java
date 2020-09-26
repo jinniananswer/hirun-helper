@@ -37,4 +37,10 @@ public class ServiceRepairOrderController {
     public RepairOrderRecordDTO queryRepairRecordInfo(Long orderId,Long customerId,String repairNo) {
         return serviceRepairOrderService.queryRepairRecordInfo(orderId,customerId,repairNo);
     }
+
+    @PostMapping("/nextStep")
+    @RestResult
+    public void nextStep(@RequestBody RepairOrderInfoDTO records) {
+        this.serviceRepairOrderService.nextStep(records);
+    }
 }

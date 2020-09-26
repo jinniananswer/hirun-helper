@@ -23,4 +23,7 @@ public interface IServiceRepairOrderService extends IService<ServiceRepairOrder>
      * @return
      */
     RepairOrderRecordDTO queryRepairRecordInfo(Long orderId,Long customerId,String repairNo);
+
+    void nextStep(RepairOrderInfoDTO infoDTO);
+
 }

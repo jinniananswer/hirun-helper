@@ -86,9 +86,9 @@ public class ServiceRepairOrderServiceImpl extends ServiceImpl<ServiceRepairOrde
             }
 
             if (ArrayUtils.isNotEmpty(infoDTO.getUpdateRecords())) {
-                for (RepairOrderDTO removeRecord : infoDTO.getRemoveRecords()) {
+                for (RepairOrderDTO updateRecord : infoDTO.getUpdateRecords()) {
                     ServiceRepairOrder repairOrder = new ServiceRepairOrder();
-                    BeanUtils.copyProperties(removeRecord, repairOrder);
+                    BeanUtils.copyProperties(updateRecord, repairOrder);
                     this.baseMapper.updateById(repairOrder);
                 }
             }
@@ -136,5 +136,27 @@ public class ServiceRepairOrderServiceImpl extends ServiceImpl<ServiceRepairOrde
         }
 
         return repairOrderRecordDTO;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    public void nextStep(RepairOrderInfoDTO infoDTO) {
+        //保存数据
+        this.saveRepairRecord(infoDTO);
+        //取数据做状态更新
+        List<ServiceRepairOrder> repairNoRecord=this.baseMapper.selectList(new QueryWrapper<ServiceRepairOrder>().lambda()
+                .eq(ServiceRepairOrder::getRepairNo,infoDTO.getRepairNo())
+                .in(ServiceRepairOrder::getStatus, Arrays.asList(1,2)));
+
+        if(ArrayUtils.isNotEmpty(repairNoRecord)){
+            for(ServiceRepairOrder serviceRepairOrder:repairNoRecord){
+                if(StringUtils.equals(serviceRepairOrder.getStatus(),"1")){
+                    serviceRepairOrder.setStatus("2");
+                }else if(StringUtils.equals(serviceRepairOrder.getStatus(),"2")){
+                    serviceRepairOrder.setStatus("3");
+                }
+                this.baseMapper.updateById(serviceRepairOrder);
+            }
+        }
     }
 }
