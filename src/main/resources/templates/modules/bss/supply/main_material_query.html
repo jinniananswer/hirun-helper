@@ -2,202 +2,181 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
-    <title>主材查询</title>
+    <title>dolphin-admin</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <link rel="stylesheet" href="../../../../static/element-ui/css/index.css" th:href="@{static/element-ui/css/index.css(v=${version})}">
-    <script src="../../../../static/js/framework/requirejs/require.min.js" th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
-    <script src="../../../../static/js/framework/requirejs/require.config.js" th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
-
-<!--    <link rel="stylesheet" href="../../../../static/element-ui/css/index.css" th:href="@{static/element-ui/css/index.css(v=${version})}">-->
-<!--    <script src="../../../../static/js/framework/vue/vue.min.js" th:src="@{static/js/framework/vue/vue.min.js(v=${version})}"></script>-->
-<!--    <script src="../../../../static/element-ui/js/index.js" th:src="@{static/element-ui/js/index.js(v=${version})}"></script>-->
-<!--    <script src="../../../../static/js/framework/axios/axios.min.js" th:src="@{static/js/framework/axios/axios.min.js(v=${version})}"></script>-->
+    <script src="static/js/framework/requirejs/require.min.js"
+            th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js"
+            th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
 </head>
 <body>
-<div id="app" v-cloak>
+<div id="app">
+    <el-container>
+        <el-main>
+            <el-card class="box-card">
+                <el-collapse value="1" accordion>
+                    <el-collapse-item title="查询条件" name="1">
 
-    <el-card>
-        <el-collapse value="1"  accordion>
-            <el-collapse-item title="查询条件" name="1">
-                <el-form ref="form" inline="true" label-width="80px">
-                    <el-row>
-                        <el-col :span="4">
-                            <el-form-item>
-                                <el-input placeholder="合同编号"></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="4">
-                            <el-form-item>
-                                <el-input placeholder="客户姓名"></el-input>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="4">
-                            <el-form-item>
-                                <el-select filterable placeholder="楼盘名称">
-                                    <el-option label="区域一" value="shanghai"></el-option>
-                                    <el-option label="区域二" value="beijing"></el-option>
-                                </el-select>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="4">
-                            <el-form-item>
-                                <el-select placeholder="店名">
-                                    <el-option label="区域一" value="shanghai"></el-option>
-                                    <el-option label="区域二" value="beijing"></el-option>
-                                </el-select>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="4">
-                            <el-form-item>
-                                <el-select filterable placeholder="客户代表">
-                                    <el-option label="区域一" value="shanghai"></el-option>
-                                    <el-option label="区域二" value="beijing"></el-option>
-                                </el-select>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="4">
-                            <el-form-item>
-                                <el-select filterable placeholder="设计师">
-                                    <el-option label="区域一" value="shanghai"></el-option>
-                                    <el-option label="区域二" value="beijing"></el-option>
-                                </el-select>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
+                        <el-form ref="form" inline="false" label-width="80px" label-position="right" :model="queryCond">
+                            <el-row>
+<!--                                <el-col :span="8">
+                                    <el-form-item label="合同编号">
+                                        <el-input v-model="queryCond.contractNo" placeholder="请输入合同编码"></el-input>
+                                    </el-form-item>
+                                </el-col>-->
+                                <el-col :span="8">
+                                    <el-form-item label="客户姓名">
+                                        <el-input v-model="queryCond.custName" placeholder="请输入客户姓名"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="楼盘">
+                                        <house-select v-model="queryCond.houseId" placeholder="楼盘"></house-select>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="客户代表">
+                                        <order-selectemployee role-id="15"
+                                                              v-model="queryCond.agentEmployeeId"></order-selectemployee>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
 
-                    <el-row>
-                        <el-col :span="4">
-                            <el-form-item>
-                                <el-select filterable placeholder="家装顾问">
-                                    <el-option label="区域一" value="shanghai"></el-option>
-                                    <el-option label="区域二" value="beijing"></el-option>
-                                </el-select>
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="4">
-                            <el-form-item>
-                                <el-select filterable placeholder="项目经理">
-                                    <el-option label="区域一" value="shanghai"></el-option>
-                                    <el-option label="区域二" value="beijing"></el-option>
-                                </el-select>
-                            </el-form-item>
-                        </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="设计师">
+                                        <order-selectemployee role-id="19"
+                                                              v-model="queryCond.designEmployeeId"></order-selectemployee>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="项目经理">
+                                        <order-selectemployee role-id="33"
+                                                              v-model="queryCond.projectEmployeeId"></order-selectemployee>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="主材管家">
+                                        <order-selectemployee role-id="46"
+                                                              v-model="queryCond.mainMaterialEmployeeId"></order-selectemployee>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="8">
+                                    <el-form-item label="品牌">
+                                        <el-select filterable placeholder="品牌">
+                                            <el-option label="区域一" value="shanghai"></el-option>
+                                            <el-option label="区域二" value="beijing"></el-option>
+                                        </el-select>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="开始时间">
+                                        <el-date-picker
+                                                v-model="queryCond.startTime"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                placeholder="收款开始时间"
+                                                style="width:100%">
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="结束时间">
+                                        <el-date-picker
+                                                v-model="queryCond.endTime"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                placeholder="收款结束时间"
+                                                style="width:100%">
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="8">
+                                    <el-button type="primary" icon="el-icon-search" @click="query">查 询</el-button>
+                                </el-col>
+                            </el-row>
+                        </el-form>
+                    </el-collapse-item>
+                </el-collapse>
+            </el-card>
 
-                        <el-col :span="4">
-                            <el-form-item>
-                                <el-select filterable placeholder="主材管家">
-                                    <el-option label="区域一" value="shanghai"></el-option>
-                                    <el-option label="区域二" value="beijing"></el-option>
-                                </el-select>
-                            </el-form-item>
-                        </el-col>
-
-                        <el-col :span="4">
-                            <el-form-item>
-                                <el-select filterable placeholder="品牌">
-                                    <el-option label="区域一" value="shanghai"></el-option>
-                                    <el-option label="区域二" value="beijing"></el-option>
-                                </el-select>
-                            </el-form-item>
-                        </el-col>
-
-                        <el-col :span="4">
-                            <el-form-item>
-                                <el-select filterable placeholder="橱柜设计师">
-                                    <el-option label="区域一" value="shanghai"></el-option>
-                                    <el-option label="区域二" value="beijing"></el-option>
-                                </el-select>
-                            </el-form-item>
-                        </el-col>
-
-                    </el-row>
-
-                    <el-row>
-                        <el-col :span="12">
-                            <el-date-picker
-                                    type="daterange"
-                                    align="right"
-                                    unlink-panels
-                                    range-separator="至"
-                                    start-placeholder="收款日期（开始）"
-                                    end-placeholder="收款日期（结束）">
-                            </el-date-picker>
-                        </el-col>
-
-                        <el-col :span="6">
-                            <el-button type="primary" icon="el-icon-search">查 询</el-button>
-                        </el-col>
-                    </el-row>
-
-                </el-form>
-            </el-collapse-item>
-        </el-collapse>
-
-        <div>
-            <div align="center">
-                <el-button type="primary" @click="save()" style="margin:10px;">保存修改</el-button>
-                <el-button type="primary" @click="$refs.xTable.revertData()" plain>全部还原</el-button>
-            </div>
-            <vxe-table
-                    size="small"
-                    keep-source
-                    stripe
-                    highlight-current-row
-                    highlight-hover-row
-                    border
-                    resizable
-                    show-overflow
-                    height="340"
-                    show-footer
-                    :footer-method="footerMethod"
-                    :data="tableData"
-                    :edit-rules="validRules"
-                    :edit-config="{trigger: 'dblclick', mode: 'row'}"
-                    ref="xTable">
-                <vxe-table-column align="center" width="60"  fixed="left" type="seq"></vxe-table-column>
-                <vxe-table-column align="center" width="120" fixed="left" field="custNo" title="客户编号" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                <vxe-table-column align="center" width="120" fixed="left" field="contactNo" title="合同编号" :edit-render="{name: 'select', options: sexList, events: {change: changeEvent}}"></vxe-table-column>
-                <vxe-table-column align="center" width="120" fixed="left" field="custName" title="客户姓名" :edit-render="{name: 'select', options: statusList}"></vxe-table-column>
-                <vxe-table-column align="center" width="120" fixed="left" field="brand" title="品牌" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
-                <vxe-table-column align="right"  width="120" field="contractAmount" title="合同金额" :edit-render="{name: 'input', attrs: {type: 'date', format: 'yyyy-MM-dd'}}"></vxe-table-column>
-                <vxe-table-column align="right"  width="120" field="discountedPrice" title="优惠金额" :edit-render="{name: 'input', attrs: {type: 'number'}}" :formatter="['toFixedString', 2]"></vxe-table-column>
-                <vxe-table-column align="right"  width="120" field="totalReceivable" title="应收合计" :edit-render="{name: 'input', attrs: {type: 'text'}}" :formatter="['commafy', {spaceNumber: 4, separator: ' '}]"></vxe-table-column>
-                <vxe-table-column align="right"  width="120" field="实收款" title="实收款" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                <vxe-table-column align="right"  width="120" field="difference" title="差额" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                <vxe-table-column align="left"   width="120" field="remark" title="备注" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                <vxe-table-column align="center" width="120" field="accountTime" title="算户时间" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                <vxe-table-column align="center" width="120" field="accountYear" title="算户年份" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                <vxe-table-column align="left"   width="120" field="shopName" title="店名" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                <vxe-table-column align="left"   width="120" field="buildingAddress" title="楼盘地址" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                <vxe-table-column align="center" width="120" field="designer" title="设计师" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                <vxe-table-column align="center" width="120" field="customerRepresentative" title="客户代表" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                <vxe-table-column align="center" width="120" field="projectManager" title="项目经理" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                <vxe-table-column align="center" width="120" field="homeImprovementConsultant" title="家装顾问" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                <vxe-table-column align="center" width="120" field="funds" title="款项" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                <vxe-table-column align="center" width="120" field="type" title="类别" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                <vxe-table-column align="center" width="120" field="cabinetDesigner" title="橱柜设计师" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                <vxe-table-column align="center" width="120" field="mainMaterialButler" title="主材管家" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                <vxe-table-column align="center" width="120" field="bookTime" title="下预订单时间" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                <vxe-table-column align="center" width="120" field="orderTime" title="下订单时间" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                <vxe-table-column align="center" width="120" field="deliveryTime" title="送货时间" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                <vxe-table-column align="center" width="120" field="installationTime" title="安装时间" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                <vxe-table-column align="center" width="120" field="followBillTime" title="跟单时间" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                <vxe-table-column align="center" width="120" field="deductTime" title="提成时间" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                <vxe-table-column align="left"   width="120" field="followBillDesc" title="跟单情况" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-            </vxe-table>
-        </div>
-    </el-card>
-
+            <template>
+                <vxe-table
+                        size="small"
+                        keep-source
+                        stripe
+                        highlight-current-row
+                        highlight-hover-row
+                        border
+                        resizable
+                        show-overflow
+                        height="340"
+                        show-footer
+                        :footer-method="footerMethod"
+                        :data="tableData"
+                        :edit-rules="validRules"
+                        :edit-config="{trigger: 'dblclick', mode: 'row'}"
+                        ref="xTable">
+                    <vxe-table-column align="center" width="150" fixed="left" field="custNo" title="客户编号"></vxe-table-column>
+                    <!--
+                                    <vxe-table-column align="center" width="120" fixed="left" field="contactNo" title="合同编号" :edit-render="{name: 'select', options: sexList, events: {change: changeEvent}}"></vxe-table-column>
+                    -->
+                    <!--
+                                    <vxe-table-column align="center" width="120" fixed="left" field="custName" title="客户姓名" :edit-render="{name: 'select', options: statusList}"></vxe-table-column>
+                    -->
+                    <vxe-table-column align="center" width="120" fixed="left" field="brandCode" title="品牌"></vxe-table-column>
+                    <vxe-table-column align="right" width="120" field="contractFee" title="合同金额"></vxe-table-column>
+                    <vxe-table-column align="right" width="120" field="discountFee" title="优惠金额" :formatter="['toFixedString', 2]"></vxe-table-column>
+                    <vxe-table-column align="right" width="120" field="totalReceivable" title="应收合计"></vxe-table-column>
+                    <vxe-table-column align="right" width="120" field="actualFee" title="实收款"></vxe-table-column>
+                    <vxe-table-column align="right" width="120" field="difference" title="差额"></vxe-table-column>
+                    <vxe-table-column align="left" width="120" field="remark" title="备注"></vxe-table-column>
+                    <!--<vxe-table-column align="center" width="120" field="accountTime" title="算户时间"
+                                      :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                    <vxe-table-column align="center" width="120" field="accountYear" title="算户年份"
+                                      :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>-->
+                    <vxe-table-column align="left" width="120" field="shopName" title="店名"></vxe-table-column>
+                    <vxe-table-column align="left" width="120" field="buildingAddress" title="楼盘地址"></vxe-table-column>
+                    <vxe-table-column align="center" width="120" field="designName" title="设计师"></vxe-table-column>
+                    <vxe-table-column align="center" width="120" field="agentName" title="客户代表"></vxe-table-column>
+                    <vxe-table-column align="center" width="120" field="projectManager" title="项目经理"></vxe-table-column>
+                    <vxe-table-column align="center" width="120" field="homeImprovementConsultant" title="家装顾问"></vxe-table-column>
+                    <vxe-table-column align="center" width="120" field="funds" title="款项"></vxe-table-column>
+                    <vxe-table-column align="center" width="120" field="type" title="类别"></vxe-table-column>
+                    <vxe-table-column align="center" width="120" field="cabinetDesigner" title="橱柜设计师"></vxe-table-column>
+                    <vxe-table-column align="center" width="120" field="mainMaterialButler" title="主材管家"></vxe-table-column>
+                    <vxe-table-column align="center" width="120" field="bookTime" title="下预订单时间"></vxe-table-column>
+                    <vxe-table-column align="center" width="120" field="orderTime" title="下订单时间"></vxe-table-column>
+                    <vxe-table-column align="center" width="120" field="deliveryTime" title="送货时间"></vxe-table-column>
+                    <vxe-table-column align="center" width="120" field="installationTime" title="安装时间"></vxe-table-column>
+                    <vxe-table-column align="center" width="120" field="followBillTime" title="跟单时间"></vxe-table-column>
+                    <vxe-table-column align="center" width="120" field="deductTime" title="提成时间"></vxe-table-column>
+                    <vxe-table-column align="left" width="120" field="followBillDesc" title="跟单情况"></vxe-table-column>
+                </vxe-table>
+            </template>
+        </el-main>
+    </el-container>
 </div>
 <style>
-    [v-cloak] {
-        display: none;
+    .text {
+        font-size: 14px;
     }
 
+    .item {
+        margin-bottom: 18px;
+    }
+
+    .box-card {
+        margin-bottom: 18px;
+    }
 </style>
-<script src="../../../../static/js/modules/bss/supply/main_material_query.js" th:src="@{static/js/modules/bss/supply/main_material_query.js(v=${version})}"></script>
+<script src="../../../../static/js/modules/bss/supply/main_material_query.js"
+        th:src="@{static/js/modules/bss/supply/main_material_query.js(v=${version})}"></script>
 </body>
 
 </html>

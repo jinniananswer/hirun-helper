@@ -8,7 +8,7 @@ import com.microtomato.hirun.framework.annotation.Storage;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.microtomato.hirun.modules.bss.order.QueryInspectCondDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.QueryInspectCondDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderInspectDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderInspect;
 import org.apache.ibatis.annotations.Param;

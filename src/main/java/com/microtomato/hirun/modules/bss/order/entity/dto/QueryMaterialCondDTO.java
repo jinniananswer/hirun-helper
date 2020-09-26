@@ -1,4 +1,4 @@
-package com.microtomato.hirun.modules.bss.order;
+package com.microtomato.hirun.modules.bss.order.entity.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -10,22 +10,22 @@ import java.time.LocalDate;
 
 /**
  * @program: hirun-helper
- * @description: 检测查询信息查询条件传输对象
+ * @description: 主材查询条件传输对象
  * @author: liuhui
  * @create: 2020-02-05 23:54
  **/
 @Data
-public class QueryInspectCondDTO {
+public class QueryMaterialCondDTO {
 
     private String custName;
 
     private Long designEmployeeId;
 
-    private String checkStatus;
+    private Long projectEmployeeId;
 
-    private String receiveStatus;
+    private Long mainMaterialEmployeeId;
 
-    private String settleStatus;
+    private String brandCode;
 
     private String timeType;
 
@@ -36,8 +36,6 @@ public class QueryInspectCondDTO {
     @JsonSerialize(using = JsonLocalDateTimeSerializer.class)
     @JsonDeserialize(using = JsonLocalDateTimeDeserializer.class)
     private LocalDate endTime;
-
-    private String institution;
 
     private Integer page;
 
