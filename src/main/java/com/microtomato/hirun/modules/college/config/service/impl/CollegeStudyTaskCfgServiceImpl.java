@@ -32,6 +32,7 @@ import java.util.List;
  */
 @Service("collegeStudyTaskCfgService")
 @DataSource(DataSourceKey.SYS)
+
 public class CollegeStudyTaskCfgServiceImpl extends ServiceImpl<CollegeStudyTaskCfgMapper, CollegeStudyTaskCfg> implements ICollegeStudyTaskCfgService {
 
     @Autowired
@@ -257,5 +258,12 @@ public class CollegeStudyTaskCfgServiceImpl extends ServiceImpl<CollegeStudyTask
         return this.list(Wrappers.<CollegeStudyTaskCfg>lambdaQuery().eq(CollegeStudyTaskCfg::getStatus, '0')
                 .in(CollegeStudyTaskCfg::getReleaseStatus, '1')
                 .orderByAsc(CollegeStudyTaskCfg::getStudyTaskId));
+    }
+
+    @Override
+    public List<CollegeStudyTaskCfg> queryByStudyType(String studyType) {
+        return this.list(Wrappers.<CollegeStudyTaskCfg>lambdaQuery()
+                .eq(CollegeStudyTaskCfg::getStudyType, studyType)
+                .orderByDesc(CollegeStudyTaskCfg::getStudyTaskId));
     }
 }

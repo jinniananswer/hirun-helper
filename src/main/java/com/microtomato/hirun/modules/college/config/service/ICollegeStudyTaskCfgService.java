@@ -39,4 +39,6 @@ public interface ICollegeStudyTaskCfgService extends IService<CollegeStudyTaskCf
     CollegeStudyTaskCfg getAllByStudyTaskId(Long studyTaskId);
 
     List<CollegeStudyTaskCfg> queryEffectiveReleased();
+
+    List<CollegeStudyTaskCfg> queryByStudyType(String studyType);
 }

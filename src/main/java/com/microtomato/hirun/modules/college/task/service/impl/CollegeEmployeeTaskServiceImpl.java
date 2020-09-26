@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeStudyTaskCfg;
 import com.microtomato.hirun.modules.college.config.service.ICollegeCourseChaptersCfgService;
 import com.microtomato.hirun.modules.college.config.service.ICollegeStudyTaskCfgService;
@@ -32,7 +33,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -157,15 +160,26 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("employee_id", collegeEmployeeTaskDetailRequestDTO.getEmployeeId());
         queryWrapper.eq("status", '0');
+        String studyType = collegeEmployeeTaskDetailRequestDTO.getStudyType();
+        List<CollegeStudyTaskCfg> collegeStudyTaskCfgList = collegeStudyTaskCfgServiceImpl.queryByStudyType(studyType);
+        Map<String, CollegeStudyTaskCfg> collegeStudyTaskCfgMap = new HashMap<>();
+        List<String> studyTaskIdList = new ArrayList<>();
+        if (ArrayUtils.isNotEmpty(collegeStudyTaskCfgList)){
+            for (CollegeStudyTaskCfg collegeStudyTaskCfg : collegeStudyTaskCfgList){
+                String studyTaskId = String.valueOf(collegeStudyTaskCfg.getStudyTaskId());
+                studyTaskIdList.add(studyTaskId);
+                collegeStudyTaskCfgMap.put(studyTaskId, collegeStudyTaskCfg);
+            }
+        }
+        queryWrapper.in("study_task_id", studyTaskIdList);
         IPage<CollegeEmployeeTaskDetailResponseDTO> result = this.collegeEmployeeTaskMapper.queryEmployeeTaskDetailByPage(page, queryWrapper);
         List<CollegeEmployeeTaskDetailResponseDTO> records = result.getRecords();
         for (CollegeEmployeeTaskDetailResponseDTO collegeEmployeeTaskDetailResponseDTO : records){
             String studyTaskId = collegeEmployeeTaskDetailResponseDTO.getStudyTaskId();
-            CollegeStudyTaskCfg collegeStudyTaskCfg = collegeStudyTaskCfgServiceImpl.getEffectiveByStudyTaskId(Long.valueOf(studyTaskId));
+            CollegeStudyTaskCfg collegeStudyTaskCfg = collegeStudyTaskCfgMap.get(studyTaskId);
             if (null != collegeStudyTaskCfg){
                 BeanUtils.copyProperties(collegeStudyTaskCfg, collegeEmployeeTaskDetailResponseDTO);
             }
-            String studyType = collegeEmployeeTaskDetailResponseDTO.getStudyType();
             String studyTypeName = staticDataServiceImpl.getCodeName("TASK_COURSEWARE_TYPE", studyType);
             if (StringUtils.isEmpty(studyTypeName)){
                 studyTypeName = studyType;
@@ -196,6 +210,93 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
                 taskTypeName = taskType;
             }
             collegeEmployeeTaskDetailResponseDTO.setTaskTypeName(taskTypeName);
+            Integer studyDateLength = collegeEmployeeTaskDetailResponseDTO.getStudyDateLength();
+            Integer studyLength = collegeStudyTaskCfg.getStudyLength();
+            Double taskProgress = 0.0;
+            if (null != studyDateLength && null != studyLength){
+                if (studyDateLength > studyLength){
+                    studyDateLength = studyLength;
+                }
+                taskProgress = new BigDecimal((float)studyDateLength * 100/studyLength).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
+            }
+            collegeEmployeeTaskDetailResponseDTO.setTaskProgress(taskProgress);
+            LocalDateTime now = LocalDateTime.now();
+            //学习完成时间
+            LocalDateTime studyCompleteDate = collegeEmployeeTaskDetailResponseDTO.getStudyCompleteDate();
+            //学习结束时间
+            LocalDateTime studyEndDate = collegeEmployeeTaskDetailResponseDTO.getStudyEndDate();
+            String taskRemainderTime = "任务";
+            //是否延期
+            boolean isDelay = false;
+            //是否学习完成
+            boolean isStudyComplete = false;
+            //是否完成习题
+            boolean isExercises = false;
+            //是否完成考试
+            boolean isExam = false;
+            if (null != studyCompleteDate){
+                isStudyComplete = true;
+                if (TimeUtils.compareTwoTime(studyCompleteDate, studyEndDate) > 0){
+                    isDelay = true;
+                }
+                
+            }else {
+                if (TimeUtils.compareTwoTime(now, studyEndDate) > 0){
+                    isDelay = true;
+                } 
+            }
+            
+            Integer exercisesCompletedNumber = collegeEmployeeTaskDetailResponseDTO.getExercisesCompletedNumber();
+            Integer exercisesNumber = collegeEmployeeTaskDetailResponseDTO.getExercisesNumber();
+            if (null != exercisesCompletedNumber && null != exercisesNumber && exercisesCompletedNumber >= exercisesNumber){
+                isExercises = true;
+            }
+            Integer examScore = collegeEmployeeTaskDetailResponseDTO.getExamScore();
+            if (null != examScore){
+                isExam = true;
+            }
+            if (StringUtils.equals("2", studyType)){
+                //如果是实践任务
+                if (isDelay){
+                    if (isStudyComplete){
+                        taskRemainderTime = "延期完成";
+                    }else {
+                        taskRemainderTime = "已延期";
+                    }
+                }else {
+                    if (isStudyComplete){
+                        taskRemainderTime = "已完成";
+                    }else {
+                        taskRemainderTime = "进行中";
+                    }
+                }
+            }else {
+                if (!isDelay && isStudyComplete && isExercises && isExam){
+                    taskRemainderTime += "完成";
+                }else {
+                    if (isDelay){
+                        if (isStudyComplete && isExercises && isExam){
+                            taskRemainderTime += "延期完成";
+                        }else {
+                            taskRemainderTime += "延期未完成";
+                        }
+                    }else {
+                        long twoTimeDiffSecond = studyEndDate.toEpochSecond(ZoneOffset.UTC) - now.toEpochSecond(ZoneOffset.UTC);
+                        if (twoTimeDiffSecond > 0){
+                            log.debug("twoTimeDiffSecond:" + twoTimeDiffSecond);
+                            long day = twoTimeDiffSecond / 86400;
+                            long hour = (twoTimeDiffSecond % 86400) / 3600;
+                            long minute = (twoTimeDiffSecond % 3600) / 60;
+                            long second = twoTimeDiffSecond % 60;
+                            taskRemainderTime = day + "天" + hour + "小时" + minute + "分钟" + second + "秒";
+                            log.debug("taskRemainderTime:" + taskRemainderTime);
+                        }else {
+                            taskRemainderTime += "已延期";
+                        }
+                    }
+                }
+            }
+            collegeEmployeeTaskDetailResponseDTO.setTaskRemainderTime(taskRemainderTime);
         }
         return result;
     }

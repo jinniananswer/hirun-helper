@@ -96,40 +96,108 @@
                             <div slot="header" class="clearfix">
                                 <span>员工任务明细</span>
                             </div>
-                            <el-timeline>
-                                <el-table border
-                                          :data="employeeTaskInfo" stripe="true" height="350" style="width: 100%"
-                                          ref="employeeTaskInfo" align="center">
-                                    <el-table-column prop="taskName" width="120" label="任务名称" align="center"></el-table-column>
-                                    <el-table-column prop="studyName" width="120" label="学习内容" align="center"></el-table-column>
-                                    <el-table-column prop="taskTypeName" width="120" label="任务类型" align="center"></el-table-column>
-                                    <el-table-column prop="studyTypeName" width="120" label="内容类型" align="center"></el-table-column>
-                                    <el-table-column prop="studyStartDate" width="200" label="学习开始时间" align="center"></el-table-column>
-                                    <el-table-column prop="studyEndDate" width="200" label="学习结束时间" align="center"></el-table-column>
-                                    <el-table-column prop="studyCompleteDate" width="200" label="学习完成时间" align="center"></el-table-column>
-                                    <el-table-column prop="exercisesCompletedNumber" width="120" label="练习次数" align="center"></el-table-column>
-                                    <el-table-column prop="exercisesNumber" width="120" label="习题数量" align="center"></el-table-column>
-                                    <el-table-column prop="examScore" width="120" label="考试分数" align="center"></el-table-column>
-                                    <el-table-column prop="passScore" width="120" label="考试合格分数" align="center"></el-table-column>
-                                    <el-table-column prop="score" width="120" label="评分" align="center"></el-table-column>
-                                    <el-table-column fixed="right" label="操作" align="center" width="100">
-                                        <template slot-scope="scope">
-                                            <el-button type="danger" width="50" size="mini" icon="el-icon-edit"
-                                                       @click="evaluateTask(scope.row)">任务评价
-                                            </el-button>
-                                        </template>
-                                    </el-table-column>
-                                </el-table>
-                            </el-timeline>
-                            <div style="text-align: center">
-                                <el-pagination
-                                        layout="total, prev, pager, next"
-                                        :total="queryCond.count"
-                                        :current-page.sync="queryCond.page"
-                                        :page-size="queryCond.limit"
-                                        @current-change="initEmployeeTaskDetailInfo">
-                                </el-pagination>
-                            </div>
+                            <el-tabs v-model="subActiveTab" type="border-card">
+                                <el-tab-pane label="课程学习任务" name="courseTaskInfo">
+                                    <el-timeline>
+                                        <el-table border
+                                                  :data="employeeCourseTaskInfo" stripe="true" height="350" style="width: 100%"
+                                                  ref="employeeCourseTaskInfo" align="center">
+                                            <el-table-column prop="taskName" width="120" label="任务名称" align="center"></el-table-column>
+                                            <el-table-column prop="studyName" width="120" label="学习内容" align="center"></el-table-column>
+                                            <el-table-column prop="taskProgress" width="200" label="任务进度" align="center">
+                                                <template slot-scope="scope">
+                                                    <el-progress :percentage="scope.row.taskProgress" :color="customColorMethod"></el-progress>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column prop="taskRemainderTime" width="200" label="任务剩余时间" align="center"></el-table-column>
+                                            <el-table-column prop="studyStartDate" width="200" label="学习开始时间" align="center"></el-table-column>
+                                            <el-table-column prop="studyEndDate" width="200" label="学习结束时间" align="center"></el-table-column>
+                                            <el-table-column prop="studyCompleteDate" width="200" label="学习完成时间" align="center"></el-table-column>
+                                            <el-table-column prop="taskTypeName" width="120" label="任务类型" align="center"></el-table-column>
+                                            <el-table-column prop="exercisesCompletedNumber" width="120" label="练习次数" align="center"></el-table-column>
+                                            <el-table-column prop="exercisesNumber" width="120" label="习题数量" align="center"></el-table-column>
+                                            <el-table-column prop="examScore" width="120" label="考试分数" align="center"></el-table-column>
+                                            <el-table-column prop="passScore" width="120" label="考试合格分数" align="center"></el-table-column>
+                                            <el-table-column prop="score" width="120" label="评分" align="center"></el-table-column>
+                                        </el-table>
+                                    </el-timeline>
+                                    <div style="text-align: center">
+                                        <el-pagination
+                                                layout="total, prev, pager, next"
+                                                :total="queryCourseTaskCond.count"
+                                                :current-page.sync="queryCourseTaskCond.page"
+                                                :page-size="queryCourseTaskCond.limit"
+                                                @current-change="queryEmployeeCourseTaskInfo">
+                                        </el-pagination>
+                                    </div>
+                                </el-tab-pane>
+                                <el-tab-pane label="课件学习任务" name="coursewareTaskInfo">
+                                    <el-timeline>
+                                        <el-table border
+                                                  :data="employeeCoursewareTaskInfo" stripe="true" height="350" style="width: 100%"
+                                                  ref="employeeCoursewareTaskInfo" align="center">
+                                            <el-table-column prop="taskName" width="120" label="任务名称" align="center"></el-table-column>
+                                            <el-table-column prop="studyName" width="120" label="学习内容" align="center"></el-table-column>
+                                            <el-table-column prop="taskProgress" width="200" label="任务进度" align="center">
+                                                <template slot-scope="scope">
+                                                    <el-progress :percentage="scope.row.taskProgress" :color="customColorMethod"></el-progress>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column prop="taskRemainderTime" width="200" label="任务剩余时间" align="center"></el-table-column>
+                                            <el-table-column prop="studyStartDate" width="200" label="学习开始时间" align="center"></el-table-column>
+                                            <el-table-column prop="studyEndDate" width="200" label="学习结束时间" align="center"></el-table-column>
+                                            <el-table-column prop="studyCompleteDate" width="200" label="学习完成时间" align="center"></el-table-column>
+                                            <el-table-column prop="exercisesCompletedNumber" width="120" label="练习次数" align="center"></el-table-column>
+                                            <el-table-column prop="taskTypeName" width="120" label="任务类型" align="center"></el-table-column>
+                                            <el-table-column prop="exercisesNumber" width="120" label="习题数量" align="center"></el-table-column>
+                                            <el-table-column prop="examScore" width="120" label="考试分数" align="center"></el-table-column>
+                                            <el-table-column prop="passScore" width="120" label="考试合格分数" align="center"></el-table-column>
+                                            <el-table-column prop="score" width="120" label="评分" align="center"></el-table-column>
+                                        </el-table>
+                                    </el-timeline>
+                                    <div style="text-align: center">
+                                        <el-pagination
+                                                layout="total, prev, pager, next"
+                                                :total="queryCoursewareTaskCond.count"
+                                                :current-page.sync="queryCoursewareTaskCond.page"
+                                                :page-size="queryCoursewareTaskCond.limit"
+                                                @current-change="queryEmployeeCoursewareTaskInfo">
+                                        </el-pagination>
+                                    </div>
+                                </el-tab-pane>
+                                <el-tab-pane label="实践操作任务" name="practiceTaskInfo">
+                                    <el-timeline>
+                                        <el-table border
+                                                  :data="employeePracticeTaskInfo" stripe="true" height="350" style="width: 100%"
+                                                  ref="employeePracticeTaskInfo" align="center">
+                                            <el-table-column prop="taskName" width="120" label="任务名称" align="center"></el-table-column>
+                                            <el-table-column prop="taskDesc" width="200" label="描述" align="center"></el-table-column>
+                                            <el-table-column prop="taskRemainderTime" width="120" label="任务剩余时间" align="center"></el-table-column>
+                                            <el-table-column prop="studyStartDate" width="200" label="任务开始时间" align="center"></el-table-column>
+                                            <el-table-column prop="studyEndDate" width="200" label="任务结束时间" align="center"></el-table-column>
+                                            <el-table-column prop="studyCompleteDate" width="200" label="任务完成时间" align="center"></el-table-column>
+                                            <el-table-column prop="taskTypeName" width="120" label="任务类型" align="center"></el-table-column>
+                                            <el-table-column prop="score" width="120" label="评分" align="center"></el-table-column>
+                                            <el-table-column fixed="right" label="操作" align="center" width="100">
+                                                <template slot-scope="scope">
+                                                    <el-button type="danger" width="50" size="mini" icon="el-icon-edit"
+                                                               @click="evaluateTask(scope.row)">任务评价
+                                                    </el-button>
+                                                </template>
+                                            </el-table-column>
+                                        </el-table>
+                                    </el-timeline>
+                                    <div style="text-align: center">
+                                        <el-pagination
+                                                layout="total, prev, pager, next"
+                                                :total="queryPracticeTaskCond.count"
+                                                :current-page.sync="queryPracticeTaskCond.page"
+                                                :page-size="queryPracticeTaskCond.limit"
+                                                @current-change="queryEmployeePracticeTaskInfo">
+                                        </el-pagination>
+                                    </div>
+                                </el-tab-pane>
+                            </el-tabs>
                         </el-card>
                         <el-card class="box-card" shadow="hover">
                             <div class="grid-content bg-purple-light">
@@ -232,9 +300,7 @@
                                             <el-row>
                                                 <el-col>
                                                     <span>完成数量：
-                                                        <template v-if="taskDetailInfo.taskFinishNum != null && taskDetailInfo.taskFinishNum != ''">
-                                                            <el-tag type="danger">{{taskDetailInfo.taskFinishNum}}</el-tag>
-                                                        </template>
+                                                        <el-tag type="danger">{{taskDetailInfo.taskFinishNum}}</el-tag>
                                                     </span>
                                                 </el-col>
                                             </el-row>
@@ -267,9 +333,7 @@
                                     <el-col :span="12">
                                         <el-row>
                                             <span>习题完成数量：
-                                                <template v-if="taskDetailInfo.exercisesFinishNum != null && taskDetailInfo.exercisesFinishNum != ''">
-                                                    <el-tag type="danger">{{taskDetailInfo.exercisesFinishNum}}</el-tag>
-                                                </template>
+                                                <el-tag type="danger">{{taskDetailInfo.exercisesFinishNum}}</el-tag>
                                             </span>
                                         </el-row>
                                         <el-row>
@@ -301,9 +365,7 @@
                                         <el-row>
                                             <el-col>
                                                 <span>已合格数量：
-                                                    <template v-if="taskDetailInfo.examPassNum != null && taskDetailInfo.examPassNum != ''">
-                                                        <el-tag type="danger">{{taskDetailInfo.examPassNum}}</el-tag>
-                                                    </template>
+                                                    <el-tag type="danger">{{taskDetailInfo.examPassNum}}</el-tag>
                                                 </span>
                                             </el-col>
                                         </el-row>
@@ -324,7 +386,7 @@
                 <el-card>
                     <div slot="header" class="clearfix">
                         <el-tabs v-model="subActiveTab" type="border-card">
-                            <el-tab-pane label="任务信息" name="baseInfo">
+                            <el-tab-pane label="任务信息" name="studyTaskInfo">
                                 <el-col :span="20">
                                     <el-row :gutter="5">
                                         <el-col :span="8">
@@ -332,6 +394,17 @@
                                                 任务名称：
                                                 <template v-if="taskInfo.taskName != null && taskInfo.taskName!= ''">
                                                     <el-tag type="danger">{{taskInfo.taskName}}</el-tag>
+                                                </template>
+                                            </div>
+                                        </el-col>
+                                    </el-row>
+
+                                    <el-row :gutter="5">
+                                        <el-col :span="8">
+                                            <div class="text">
+                                                任务描述：
+                                                <template v-if="taskInfo.taskDesc != null && taskInfo.taskDesc!= ''">
+                                                    <el-tag type="danger">{{taskInfo.taskDesc}}</el-tag>
                                                 </template>
                                             </div>
                                         </el-col>
@@ -362,47 +435,11 @@
                                             </div>
                                         </el-col>
                                     </el-row>
-                                    <el-row>
-                                        <el-col :span="8">
-                                            <div class="text">
-                                                要求练习次数：
-                                                <template v-if="taskInfo.exercisesNumber != null && taskInfo.exercisesNumber!= ''">
-                                                    <el-tag type="danger">{{taskInfo.exercisesNumber}}</el-tag>
-                                                </template>
-                                            </div>
-                                        </el-col>
-                                        <el-col :span="8">
-                                            <div class="text">
-                                                考试分数：
-                                                <template v-if="taskInfo.examScore != null && taskInfo.examScore!= ''">
-                                                    <el-tag type="danger">{{taskInfo.examScore}}</el-tag>
-                                                </template>
-                                            </div>
-                                        </el-col>
-                                        <el-col :span="8">
-                                            <div class="text">
-                                                练习完成次数：
-                                                <template v-if="taskInfo.exercisesCompletedNumber != null && taskInfo.exercisesCompletedNumber!= ''">
-                                                    <el-tag type="danger">{{taskInfo.exercisesCompletedNumber}}</el-tag>
-                                                </template>
-                                            </div>
-                                        </el-col>
-                                    </el-row>
-                                    <el-row>
-                                        <el-col :span="8">
-                                            <div class="text">
-                                                考试合格分数：
-                                                <template v-if="taskInfo.passScore != null && taskInfo.passScore!= ''">
-                                                    <el-tag type="danger">{{taskInfo.passScore}}</el-tag>
-                                                </template>
-                                            </div>
-                                        </el-col>
-                                    </el-row>
                                 </el-col>
                             </el-tab-pane>
                         </el-tabs>
                     </div>
-                    <el-form :inline="false" :model="employeeTaskInfo"  ref="employeeTaskInfo" label-position="right"
+                    <el-form :inline="false" :model="employeeCourseTaskInfo"  ref="employeeCourseTaskInfo" label-position="right"
                              label-width="120px" size="medium">
                         <el-row>
                             <span class="demonstration">任务总评分</span>
