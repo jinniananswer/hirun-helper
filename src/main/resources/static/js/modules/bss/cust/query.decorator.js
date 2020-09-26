@@ -25,10 +25,31 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'order-selectem
                 addDecoratorDialogVisible: false,
                 decoratorAddCond: {},
                 decoratorIds: [],
+                decoratorAddRules: {
+                    name: [
+                        { required: true, message: '工人姓名不能为空', trigger: 'blur' }
+                    ],
+                    identityNo: [
+                        { required: true, message: '身份证信息不能为空', trigger: 'blur' }
+                    ],
+                    mobileNo: [
+                        { required: true, message: '联系电话不能为空', trigger: 'blur' }
+                    ],
+                },
             }
         },
 
         methods: {
+            typeTransfer(row, column) {
+                let type = row.decoratorType;
+                if(type === '0'){
+                    return '水电工'
+                } else if(type === '1'){
+                    return '泥工'
+                } else if(type === '2'){
+                    return '木工'
+                }
+            },
             queryDecorator: function () {
                 let that = this;
                 ajax.get('api/bss.order/decorator/queryDecoratorInfo', this.decoratorQueryCond, function (responseData) {
@@ -71,7 +92,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'order-selectem
                     return;
                 }
 
-                this.$confirm('确认删除选中工人?', '提示', {
+                this.$confirm('确认删除选中工人信息?', '提示', {
                     confirmButtonText: '确认',
                     cancelButtonText: '取消',
                     center: true
