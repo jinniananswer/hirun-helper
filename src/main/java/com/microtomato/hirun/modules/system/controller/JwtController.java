@@ -42,7 +42,11 @@ public class JwtController {
         log.info("=================================================");
 
         // TODO: 密码认证
-        //
+        // TODO: 查角色，设置 主角色Id 到 token 中
+        // TODO: 查角色操作权限
+        // TODO: 查登录用户的 orgId, employeeId
+
+        // TODO: 过滤器，可以认证 Session 亦可认证 token
 
         UserContext userContext = UserContext.builder().userId(1L).mobileNo("13787235663").build();
         String token = jwtService.createJwt(userContext);
