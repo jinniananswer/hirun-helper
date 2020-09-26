@@ -3,8 +3,6 @@ package com.microtomato.hirun.modules.bss.order.entity.dto;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * @author ：xiaocl
@@ -24,16 +22,6 @@ public class OrderWholeRoomDrawDTO {
      * 订单id
      */
     private Long orderId;
-
-    /**
-     * 开始时间
-     */
-    private LocalDate startTime;
-
-    /**
-     * 结束时间
-     */
-    private LocalDate endTime;
 
     /**
      * 绘图开始时间
@@ -86,26 +74,6 @@ public class OrderWholeRoomDrawDTO {
     private String reviewedComments;
 
     /**
-     * 创建时间
-     */
-    private LocalDateTime createTime;
-
-    /**
-     * 创建员工
-     */
-    private Long createUserId;
-
-    /**
-     * 更新时间
-     */
-    private LocalDateTime updateTime;
-
-    /**
-     * 更新员工
-     */
-    private Long updateUserId;
-
-    /**
      * 设计师
      */
     private Long designer;
@@ -124,7 +92,6 @@ public class OrderWholeRoomDrawDTO {
 
     private String customerLeaderName;
 
-    private List<OrderWorkerActionDTO> orderWorkActions;
 
     private String employeeName;
 

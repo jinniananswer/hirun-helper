@@ -71,7 +71,6 @@ public class DesignerCommonServiceImpl implements IDesignerCommonService {
         if ( obj instanceof OrderWholeRoomDrawDTO) {
             orderWholeRoomDrawDTO = (OrderWholeRoomDrawDTO) obj;
             orderId = orderWholeRoomDrawDTO.getOrderId();
-            orderWorkerActionDTO = orderWholeRoomDrawDTO.getOrderWorkActions();
             workerId = this.orderWorkerService.updateOrderWorkerByEmployeeId(orderId,30L,orderWholeRoomDrawDTO.getDesigner());
             if ( workerId==null ) {
                 workerId =  getWorkerId(orderId,30L,orderWholeRoomDrawDTO.getDesigner());

@@ -3,19 +3,14 @@ package com.microtomato.hirun.modules.bss.order.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
-import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.bss.order.entity.consts.DesignerConst;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWholeRoomDrawDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerActionDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerDTO;
-import com.microtomato.hirun.modules.bss.order.entity.po.OrderFile;
-import com.microtomato.hirun.modules.bss.order.entity.po.OrderWholeRoomDraw;
-import com.microtomato.hirun.modules.bss.order.entity.po.OrderWorker;
+import com.microtomato.hirun.modules.bss.order.entity.po.*;
 import com.microtomato.hirun.modules.bss.order.exception.OrderException;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderWholeRoomDrawMapper;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderWorkerMapper;
@@ -26,7 +21,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -60,6 +57,9 @@ public class OrderWholeRoomDrawServiceImpl extends ServiceImpl<OrderWholeRoomDra
 
     @Autowired
     private IOrderFileService orderFileService;
+
+    @Autowired
+    private IOrderBaseService orderBaseService;
 
     @Override
     public void submitToAuditPicturesFlow(Long orderId) {
@@ -106,98 +106,54 @@ public class OrderWholeRoomDrawServiceImpl extends ServiceImpl<OrderWholeRoomDra
 
     @Override
     public OrderWholeRoomDrawDTO getOrderWholeRoomDrawByOrderId(Long orderId) {
-        UserContext userContext = WebContextUtils.getUserContext();
-        Long employeeId = userContext.getEmployeeId();
         LocalDateTime now = RequestTimeHolder.getRequestTime();
         OrderWholeRoomDraw orderWholeRoomDraw = this.getOne(
                 Wrappers.<OrderWholeRoomDraw>lambdaQuery()
                         .eq(OrderWholeRoomDraw::getOrderId, orderId)
                         .ge(OrderWholeRoomDraw::getEndDate, now)
         );
-        if (orderWholeRoomDraw != null) {
-            orderWholeRoomDraw.setCreateTime(null);
-            orderWholeRoomDraw.setUpdateTime(null);
-        }
+
         OrderWholeRoomDrawDTO orderWholeRoomDrawDTO = new OrderWholeRoomDrawDTO();
         if (orderWholeRoomDraw != null) {
             BeanUtils.copyProperties(orderWholeRoomDraw,orderWholeRoomDrawDTO);
         }
 
-        List<OrderWorkerDTO> orderWorkers = this.orderDomainService.queryOrderWorkers(orderId);
+        orderWholeRoomDrawDTO.setOrderId(orderId);
+
+        List<OrderWorkerActionDTO> orderWorkerActionDTOS = orderWorkerActionService.queryByOrderIdActionDto(orderId, DesignerConst.OPER_DRAW_CONSTRUCT);
+        if (ArrayUtils.isNotEmpty(orderWorkerActionDTOS)) {
+            orderWholeRoomDrawDTO.setAssistantDesigner(orderWorkerActionDTOS.get(0).getEmployeeId());
+        }
+
+        List<OrderWorker> orderWorkers = this.orderWorkerService.queryValidByOrderId(orderId);
         if (ArrayUtils.isNotEmpty(orderWorkers)) {
-            for (OrderWorkerDTO orderWorker : orderWorkers) {
+            for (OrderWorker orderWorker : orderWorkers) {
                 if (orderWorker.getRoleId().equals(30L)) {
                     orderWholeRoomDrawDTO.setDesigner(orderWorker.getEmployeeId());
-                    break;
+                } else if (orderWorker.getRoleId().equals(44L)) {
+                    orderWholeRoomDrawDTO.setDrawingAuditor(orderWorker.getEmployeeId());
+                } else if (orderWorker.getRoleId().equals(38L)) {
+                    orderWholeRoomDrawDTO.setHydropowerDesigner(orderWorker.getEmployeeId());
+                } else if (orderWorker.getRoleId().equals(42L)) {
+                    orderWholeRoomDrawDTO.setProductionLeader(orderWorker.getEmployeeId());
+                } else if (orderWorker.getRoleId().equals(40L)) {
+                    orderWholeRoomDrawDTO.setAdminAssistant(orderWorker.getEmployeeId());
                 }
             }
-
         }
 
-        List<OrderWorkerActionDTO> orderWorkerActionDTOS = orderWorkerActionService.queryByOrderIdActionDto(orderId,DesignerConst.OPER_DRAW_CONSTRUCT);
-        List<OrderWorkerActionDTO> orderWorkerActionWaterDTOS = orderWorkerActionService.queryByOrderIdActionDto(orderId,DesignerConst.OPER_WATER_ELEC_DESIGN);
-        if (ArrayUtils.isNotEmpty(orderWorkerActionDTOS)) {
-            orderWorkerActionDTOS.forEach(action -> {
-                Long id = action.getEmployeeId();
-                action.setEmployeeName(employeeService.getEmployeeNameEmployeeId(id));
-            });
-        }
-        orderWholeRoomDrawDTO.setOrderWorkActions(orderWorkerActionDTOS);
-
-        List<OrderWorker> workers =  orderWorkerService.queryValidByOrderId(orderId);
-        if (ArrayUtils.isNotEmpty(workers)) {
-            workers.forEach(worker -> {
-                Long id = worker.getEmployeeId();
-                if ( DesignerConst.ROLE_CODE_DRAWING_REVIEWER.equals(worker.getRoleId())) {
-                    orderWholeRoomDrawDTO.setDrawingAuditor(id);
-                }
-                if ( 19 == worker.getRoleId()) {
-                    String name = employeeService.getEmployeeNameEmployeeId(id);
-                    orderWholeRoomDrawDTO.setCustomerLeader(id);
-                    orderWholeRoomDrawDTO.setCustomerLeaderName(name);
-                }
-            });
-        }
-
-        if (ArrayUtils.isNotEmpty(orderWorkerActionWaterDTOS)) {
-             orderWorkerActionWaterDTOS.forEach(orderWorkerActionWaterDTO -> {
-                    orderWholeRoomDrawDTO.setHydropowerDesigner(orderWorkerActionWaterDTO.getEmployeeId());
-            });
+        if (orderWholeRoomDrawDTO.getDrawStartDate() == null) {
+            LocalDate today = RequestTimeHolder.getRequestTime().toLocalDate();
+            LocalDate endDate = today.plusMonths(3);
+            orderWholeRoomDrawDTO.setDrawStartDate(today);
+            orderWholeRoomDrawDTO.setDrawEndDate(endDate);
         }
 
         return orderWholeRoomDrawDTO;
     }
 
-    public void reckon(OrderWholeRoomDrawDTO dto,Long workerId) {
-        Long orderId = dto.getOrderId();
-        int iCount = 0 ;
-        List<OrderWorkerActionDTO> orderWorkerActionDTOS = orderWorkerActionService.queryByOrderId(orderId);
-        if (ArrayUtils.isNotEmpty(orderWorkerActionDTOS)) {
-            for (OrderWorkerActionDTO orderWorkerActionDTO : orderWorkerActionDTOS) {
-                if (DesignerConst.OPER_DRAW_CONSTRUCT.equals(orderWorkerActionDTO.getAction())) {
-                    iCount ++ ;
-                }
-                if (DesignerConst.OPER_DRAW_PLAN.equals(orderWorkerActionDTO.getAction())) {
-                    iCount ++ ;
-                }
-                if (DesignerConst.OPER_MEASURE.equals(orderWorkerActionDTO.getAction())) {
-                    iCount ++ ;
-                }
-            }
-        }
-        /**
-         * 如果同一个人做完量房，平面图，全房图，那么
-         * */
-        if (iCount == 3) {
-            this.orderWorkerActionService.deleteOrderWorkerAction(orderId,DesignerConst.OPER_DRAW_CONSTRUCT);
-            this.orderWorkerActionService.deleteOrderWorkerAction(orderId,DesignerConst.OPER_DRAW_PLAN);
-            this.orderWorkerActionService.deleteOrderWorkerAction(orderId,DesignerConst.OPER_MEASURE);
-            this.orderWorkerActionService.createOrderWorkerAction(orderId,dto.getAssistantDesigner(),workerId,null,DesignerConst.OPER_WALL_IN_DESIGN);
-        }
-    }
-
     @Override
-    public void  submitWholeRoomDrawing(OrderWholeRoomDrawDTO dto) {
+    public void submitWholeRoomDrawing(OrderWholeRoomDrawDTO dto) {
         LocalDateTime now = RequestTimeHolder.getRequestTime();
         Long orderId = dto.getOrderId();
 
@@ -223,11 +179,7 @@ public class OrderWholeRoomDrawServiceImpl extends ServiceImpl<OrderWholeRoomDra
             this.updateById(orderWholeRoomDrawNew);
         }
         if (orderWholeRoomDrawNew.getHydropowerDesigner() != null) {
-            Long workerId = this.orderWorkerService.updateOrderWorkerByEmployeeId(orderId,38L,orderWholeRoomDrawNew.getHydropowerDesigner());
-            if ( workerId==null ) {
-                workerId =  getWorkerId(orderId,38L,dto.getHydropowerDesigner());
-            }
-            this.orderWorkerActionService.createOrderWorkerAction(dto.getOrderId(),dto.getHydropowerDesigner(),workerId,"",DesignerConst.OPER_WATER_ELEC_DESIGN);
+            this.orderWorkerService.updateOrderWorkerByEmployeeId(orderId,38L,orderWholeRoomDrawNew.getHydropowerDesigner());
         }
 
         if (dto.getDrawingAuditor() != null) {
@@ -236,39 +188,42 @@ public class OrderWholeRoomDrawServiceImpl extends ServiceImpl<OrderWholeRoomDra
         if (dto.getProductionLeader() != null) {
             orderWorkerService.updateOrderWorker(dto.getOrderId(),42L,dto.getProductionLeader());
         }
-        if (dto.getDrawingAssistant() != null) {
-            orderWorkerService.updateOrderWorker(dto.getOrderId(),39L,dto.getDrawingAssistant());
-        }
+
         if (dto.getAdminAssistant() != null) {
             orderWorkerService.updateOrderWorker(dto.getOrderId(),40L,dto.getAdminAssistant());
         }
-        if (dto.getCustomerLeader() != null) {
-            orderWorkerService.updateOrderWorker(dto.getOrderId(),58L,dto.getCustomerLeader());
-        }
-        Long workerId = null;
-        workerId = this.orderWorkerService.updateOrderWorkerByEmployeeId(orderId,30L,dto.getDesigner());
-        if ( workerId==null ) {
-            workerId =  getWorkerId(orderId,30L,dto.getDesigner());
-        }
-        if (dto.getDesigner().equals(dto.getAssistantDesigner()) && dto.getCustomerLeader() == null && !"orderaudit".equals(dto.getPageTag())) {
-            this.orderWorkerActionService.deleteOrderWorkerAction(orderId,DesignerConst.OPER_DRAW_CONSTRUCT);
-            this.orderWorkerActionService.createOrderWorkerAction(orderId,dto.getAssistantDesigner(),workerId,null,DesignerConst.OPER_DRAW_CONSTRUCT);
-        } else if (!dto.getDesigner().equals(dto.getAssistantDesigner())){
-            //如果助理设计师为空，那么啥都不弄
-            if (dto.getAssistantDesigner() == null) {
-                this.orderWorkerActionService.deleteOrderWorkerAction(orderId,DesignerConst.OPER_DRAW_CONSTRUCT);
-            } else if (dto.getAssistantDesigner() != null && dto.getCustomerLeader() == null && !"orderaudit".equals(dto.getPageTag())) {
-                workerId = this.orderWorkerService.updateOrderWorker(orderId,DesignerConst.ROLE_CODE_ASSISTANT_DESIGNER,dto.getAssistantDesigner());
-                if ( workerId==null ) {
-                    workerId =  getWorkerId(orderId,DesignerConst.ROLE_CODE_ASSISTANT_DESIGNER,dto.getAssistantDesigner());
+
+        OrderBase orderBase = this.orderBaseService.queryByOrderId(orderId);
+
+        List<Long> workerIds = this.orderWorkerActionService.deleteOrderWorkerAction(orderId, DesignerConst.OPER_DRAW_CONSTRUCT);
+        if (ArrayUtils.isNotEmpty(workerIds)) {
+            //检查是否有其它动作
+            List<OrderWorkerAction> otherActions = this.orderWorkerActionService.hasOtherAction(workerIds, DesignerConst.OPER_DRAW_CONSTRUCT);
+            List<Long> onlyDrawPlanWorkerIds = new ArrayList<>();
+
+            for (Long workerId : workerIds) {
+
+                boolean isFind = false;
+                for (OrderWorkerAction otherAction : otherActions) {
+                    if (otherAction.getWorkerId().equals(workerId)) {
+                        isFind = true;
+                        break;
+                    }
                 }
-                this.orderWorkerActionService.deleteOrderWorkerAction(orderId,DesignerConst.OPER_DRAW_CONSTRUCT);
-                this.orderWorkerActionService.createOrderWorkerAction(orderId,dto.getAssistantDesigner(),workerId,null,DesignerConst.OPER_DRAW_CONSTRUCT);
+
+                if (!isFind) {
+                    onlyDrawPlanWorkerIds.add(workerId);
+                }
+            }
+
+            if (ArrayUtils.isNotEmpty(onlyDrawPlanWorkerIds)) {
+                this.orderWorkerService.deleteOrderWorker(workerIds);
             }
         }
-
-        if (dto.getCustomerLeader() != null) {
-            reckon(dto,workerId);
+        Long assistantDesignerId = dto.getAssistantDesigner();
+        if (assistantDesignerId != null) {
+            Long workerId = this.orderWorkerService.updateOrderWorker(orderId,41L,dto.getAssistantDesigner());
+            this.orderWorkerActionService.createOrderWorkerAction(orderId, assistantDesignerId, workerId, orderBase.getStatus(), DesignerConst.OPER_DRAW_CONSTRUCT);
         }
     }
 

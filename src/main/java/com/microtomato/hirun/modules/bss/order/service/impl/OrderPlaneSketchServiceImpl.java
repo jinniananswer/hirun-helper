@@ -106,22 +106,14 @@ public class OrderPlaneSketchServiceImpl extends ServiceImpl<OrderPlaneSketchMap
             orderPlaneSketchDTO.setAssistantDesigner(id);
         }
 
-        List<OrderWorker> workers =  orderWorkerService.queryValidByOrderId(orderId);
-        if (ArrayUtils.isNotEmpty(workers)) {
-            workers.forEach(worker -> {
-                Long id = worker.getEmployeeId();
-                if ( DesignerConst.ROLE_CODE_CUSTOMER_ClERK.equals(worker.getRoleId())) {
-                    String name = employeeService.getEmployeeNameEmployeeId(id);
-                    orderPlaneSketchDTO.setFinanceEmployeeName(name);
-                    orderPlaneSketchDTO.setFinanceEmployeeId(id);
-                    return;
-                }
-            });
+        OrderWorker financer = this.orderWorkerService.getOneOrderWorkerByOrderIdRoleId(orderId, 34L);
+        if (financer != null) {
+            orderPlaneSketchDTO.setFinanceEmployeeId(financer.getEmployeeId());
         }
 
         OrderBase orderBase = this.orderBaseService.queryByOrderId(orderId);
         orderPlaneSketchDTO.setIndoorArea(orderBase.getIndoorArea());
-
+        orderPlaneSketchDTO.setOrderId(orderId);
         if (orderPlaneSketchDTO.getPlaneSketchStartDate() == null) {
             LocalDate today = RequestTimeHolder.getRequestTime().toLocalDate();
             LocalDate endDate = today.plusMonths(3);
@@ -232,16 +224,7 @@ public class OrderPlaneSketchServiceImpl extends ServiceImpl<OrderPlaneSketchMap
 
     @Override
     public void submitToSignContractFlow(@RequestBody OrderPlaneSketchDTO dto) {
-        this.existsFile(dto.getOrderId());
-        /**
-         * 回写套内面积
-         * */
-        OrderBase order = this.orderBaseService.queryByOrderId(dto.getOrderId());
-        if (order == null) {
-            throw new OrderException(OrderException.OrderExceptionEnum.ORDER_FEE_NOT_FOUND);
-        }
-        order.setIndoorArea(dto.getIndoorArea());
-        this.orderBaseService.updateById(order);
+        //this.existsFile(dto.getOrderId());
         /**
          * 回写费用
          * */
