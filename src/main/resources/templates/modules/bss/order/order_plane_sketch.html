@@ -27,14 +27,9 @@
                                         <order-selectemployee role-id="30" v-model="planFigureInfos.designer" :disabled="true"></order-selectemployee>
                                     </el-form-item>
                                 </el-col>
-                                <el-col :span="8">
+                                <el-col :span="16">
                                     <el-form-item label="平面助理" prop="assistantDesigner">
                                         <order-selectemployee role-id="41" v-model="planFigureInfos.assistantDesigner"></order-selectemployee>
-                                    </el-form-item>
-                                </el-col>
-                                <el-col :span="8">
-                                    <el-form-item label="方案助理">
-                                        <order-selectemployee role-id="37" v-model="planFigureInfos.projectAssistant"></order-selectemployee>
                                     </el-form-item>
                                 </el-col>
                             </el-row>
@@ -57,7 +52,7 @@
                             </el-row>
                             <el-row>
                                 <el-col :span="8" >
-                                    <el-form-item label="设计合同（开始）" >
+                                    <el-form-item label="开始日期" >
                                         <el-date-picker
                                                 v-model="planFigureInfos.planeSketchStartDate"
                                                 type="date"
@@ -68,7 +63,7 @@
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="8">
-                                    <el-form-item label="设计合同（终止）">
+                                    <el-form-item label="结束日期">
                                         <el-date-picker
                                                 v-model="planFigureInfos.planeSketchEndDate"
                                                 type="date"
