@@ -31,7 +31,14 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
             orderStatus : util.getRequest('orderStatus'),
             eid:null,
             employeeName:'',
-            downloadFileUrl : ''
+            wholeRoomRules : {
+                drawingAuditor: [
+                    { required: true, message: '请选择图纸审核员！', trigger: 'change' }
+                ],
+                assistantDesigner: [
+                    { required: true, message: '请选择全房图助理！', trigger: 'change' }
+                ]
+            },
         },
 
         methods: {
@@ -45,7 +52,6 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     Object.assign(this.wholeRoomDrawing, responseData);
                 });
 
-                this.wholeRoomDrawing.orderId = util.getRequest('orderId');
                 if (this.orderStatus=='36') {
                     this.isShow = false;
                 } else if (this.orderStatus=='37') {
@@ -53,66 +59,16 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 } else if (this.orderStatus=='12') {
                     this.isAudit = true;
                 }
-                this.downloadFileUrl = 'api/bss.order/order-file/download/' + util.getRequest("orderId") + "/567";
-            },
-            getDatas : function() {
-                let orderId = this.wholeRoomDrawing.orderId;
-                let reviewedComments = this.wholeRoomDrawing.reviewedComments;
-                let designerRemarks = this.wholeRoomDrawing.designerRemarks;
-                let adminAssistant = this.wholeRoomDrawing.adminAssistant ;
-                let drawingAssistant = this.wholeRoomDrawing.drawingAssistant;
-                let hydropowerDesigner = this.wholeRoomDrawing.hydropowerDesigner;
-                let productionLeader = this.wholeRoomDrawing.productionLeader;
-                let designer = this.wholeRoomDrawing.designer;
-                let drawingAuditor = this.wholeRoomDrawing.drawingAuditor;
-                let orderWorkActions = this.orderWorkActions;
-                let drawStartDate = this.wholeRoomDrawing.drawStartDate;
-                let drawEndDate = this.wholeRoomDrawing.drawEndDate;
-                let preTime = this.wholeRoomDrawing.preTime;
-                let assistantDesigner = this.wholeRoomDrawing.assistantDesigner;
-
-                let data = {
-                    orderId: orderId,
-                    id: '',
-                    measureTime: util.getNowDate(),
-                    reviewedComments: reviewedComments,
-                    designerRemarks : designerRemarks,
-                    adminAssistant : adminAssistant,
-                    drawingAssistant : drawingAssistant,
-                    productionLeader : productionLeader,
-                    hydropowerDesigner : hydropowerDesigner,
-                    drawingAuditor : drawingAuditor,
-                    designer: designer,
-                    orderWorkActions: orderWorkActions,
-                    drawStartDate : drawStartDate,
-                    drawEndDate : drawEndDate,
-                    preTime : preTime,
-                    assistantDesigner : assistantDesigner
-                };
-                return data;
             },
 
-            checkBeforeOrder: function () {
-            },
             handleCommand : function(command) {
                 if ( command == 'submitToAuditPicturesFlow') {
-                    if (this.wholeRoomDrawing.productionLeader == '') {
-                        Vue.prototype.$message({
-                            message: '请选择制作组长！',
-                            type: 'error'
-                        });
-                        return false;
-                    }
                     this.$confirm('确定要执行[不做场景，提交审图]吗?', '提示', {
                         confirmButtonText: '确定',
                         cancelButtonText: '取消',
                         type: 'warning'
                     }).then(() => {
-/*                            this.$message({
-                            type: 'success',
-                            message: '流程操作[不做场景，提交审图]成功!单据发往[占位员工]'
-                        });*/
-                    this.submitToAuditPicturesFlow();
+                        this.submitToAuditPicturesFlow();
                     }).catch(() => {
                             this.$message({
                             type: 'info',
@@ -131,26 +87,24 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 }
             },
             save: function () {
-                if (this.wholeRoomDrawing.productionLeader == '') {
-                    Vue.prototype.$message({
-                        message: '请选择制作组长！',
-                        type: 'error'
-                    });
-                    return false;
-                }
-                let data = this.getDatas();
-                //alert(JSON.stringify(data));
-                ajax.post('api/bss.order/order-wholeRoomDrawing/submitWholeRoomDrawing', data,null,null,true);
+                this.$refs["wholeRoomForm"].validate((valid) => {
+                    if (valid) {
+                        ajax.post('api/bss.order/order-wholeRoomDrawing/submitWholeRoomDrawing', this.wholeRoomDrawing,null,null,true);
+                    } else {
+                        this.$message.error('填写信息不完整，请亲仔细检查哦~~~~~~~！');
+                        return;
+                    }
+                });
             },
             submitToAuditPicturesFlow : function () {
-                if (this.wholeRoomDrawing.drawingAuditor == null || this.wholeRoomDrawing.drawingAuditor == '') {
-                    Vue.prototype.$message({
-                        message: '您正在提交订单至图纸审核阶段，请先选择图纸审核人员！',
-                        type: 'error'
-                    });
-                    return false;
-                }
-                ajax.post('api/bss.order/order-wholeRoomDrawing/submitToAuditPicturesFlow', this.wholeRoomDrawing);
+                this.$refs["wholeRoomForm"].validate((valid) => {
+                    if (valid) {
+                        ajax.post('api/bss.order/order-wholeRoomDrawing/submitToAuditPicturesFlow', this.wholeRoomDrawing);
+                    } else {
+                        this.$message.error('填写信息不完整，请亲仔细检查哦~~~~~~~！');
+                        return;
+                    }
+                });
             },
             submitToConfirmFlow : function () {
                 ajax.post('api/bss.order/order-wholeRoomDrawing/submitToConfirmFlow', this.wholeRoomDrawing);

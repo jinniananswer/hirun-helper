@@ -53,7 +53,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     { required: true, message: '请选择设计主题！', trigger: 'blur' }
                 ],
                 financeEmployeeId : [
-                    { required: true, message: '请选择客户文员！', trigger: 'blur' }
+                    { required: true, message: '请选择收银员！', trigger: 'blur' }
                 ],
             },
         },
@@ -124,16 +124,14 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
 
             //签订设计合同
             submitToSignContractFlow : function () {
-                if (this.planFigureInfos.financeEmployeeId == null || this.planFigureInfos.financeEmployeeId == '') {
-                    Vue.prototype.$message({
-                        message: '您正在提交订单至财务签订设计合同，请先选客户文员！',
-                        type: 'error'
-                    });
-                    return false;
-                }
-
-                this.planFigureInfos.employeeId = this.planFigureInfos.financeEmployeeId;
-                ajax.post('api/bss.order/order-planSketch/submitToSignContractFlow', this.planFigureInfos,null);
+                this.$refs["planFigureInfos"].validate((valid) => {
+                    if (valid) {
+                        ajax.post('api/bss.order/order-planSketch/submitToSignContractFlow', this.planFigureInfos,null);
+                    } else {
+                        this.$message.error('填写信息不完整，请亲仔细检查哦~~~~~~~！');
+                        return;
+                    }
+                });
             },
 
             toSignContractFlow : function () {
