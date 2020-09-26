@@ -51,11 +51,11 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'house-select']
                     abbreviation: [
                         { required: true, message: '供应商简称不能为空', trigger: 'change' }
                     ],
-                    mobileNo: [
-                        { validator: checkMobileNo, trigger: 'blur'  }
-                    ],
                     landline: [
                         { required: true, message: '座机不能为空', trigger: 'change' }
+                    ],
+                    mobileNo: [
+                        {required: true, message: '请填写联系人号码', trigger: 'blur'}
                     ],
                     mailbox: [
                         { required: true, message: '邮箱不能为空', trigger: 'change' },
@@ -104,19 +104,19 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'house-select']
                     });
                     return;
                 }
-                alert("勾选了删除：" + val.length + "个元素")
                 let supplierIdList = [];
                 val.forEach(v => {
                     supplierIdList.push({supplierId:v.id});
                 });
-                alert(JSON.stringify(supplierIdList));
+                let that = this;
                 ajax.post('api/bss.supply/supplier/deleteSupplierByIds', val, function(responseData){
-
+                    that.querySupplier();
                 },null, true);
             },
             deleteSupplierById(supplier){
+                let that = this;
                 ajax.post('api/bss.supply/supplier/deleteSupplierById', supplier, function(responseData){
-
+                    that.querySupplier();
                 },null, true);
             },
             editSupplierById(supplier){
@@ -139,12 +139,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'house-select']
                             ajax.post('api/bss.supply/supplier/updateSupplierById', this.editSupplierInfo, function(responseData){
                                 that.editSupplierDialogVisible = false;
                                 let supplierSize = that.supplierInfo.length;
-                                for(let i = 0 ; i < supplierSize ; i++){
-                                    if(that.supplierInfo[i].id == editSupplierInfo.id){
-                                        that.supplierInfo[i] = editSupplierInfo;
-                                        alert(JSON.stringify(that.supplierInfo[i]))
-                                    }
-                                }
+                                that.querySupplier();
                             },null, true);
                         })
                     }
@@ -174,6 +169,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'house-select']
                 let that = this;
                 ajax.post('api/bss.supply/supplier/addSupplier', addSupplierInfo, function(responseData){
                     that.addSupplierDialogVisible = false;
+                    that.querySupplier();
                 },null, true);
             }
         }
