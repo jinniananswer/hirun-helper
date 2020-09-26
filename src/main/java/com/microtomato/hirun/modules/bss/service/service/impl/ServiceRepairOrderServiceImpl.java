@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.mybatis.sequence.impl.CustNoMaxCycleSeq;
 import com.microtomato.hirun.framework.mybatis.service.IDualService;
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.modules.bss.house.service.IHousesService;
+import com.microtomato.hirun.modules.bss.order.service.IOrderDomainService;
 import com.microtomato.hirun.modules.bss.service.entity.dto.*;
 import com.microtomato.hirun.modules.bss.service.entity.po.ServiceRepairOrder;
 import com.microtomato.hirun.modules.bss.service.mapper.ServiceRepairOrderMapper;
@@ -45,6 +47,12 @@ public class ServiceRepairOrderServiceImpl extends ServiceImpl<ServiceRepairOrde
 
     @Autowired
     private IStaticDataService staticDataService;
+
+    @Autowired
+    private IHousesService housesService;
+
+    @Autowired
+    private IOrderDomainService orderDomainService;
 
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
@@ -158,5 +166,41 @@ public class ServiceRepairOrderServiceImpl extends ServiceImpl<ServiceRepairOrde
                 this.baseMapper.updateById(serviceRepairOrder);
             }
         }
+    }
+
+    @Override
+    public List<RepairOrderDTO> queryRepairAllRecord(QueryRepairCondDTO condDTO) {
+
+        QueryWrapper<QueryRepairCondDTO> queryWrapper = new QueryWrapper<>();
+        queryWrapper.like(StringUtils.isNotBlank(condDTO.getCustName()),"a.cust_name",condDTO.getCustName());
+        queryWrapper.eq(StringUtils.isNotBlank(condDTO.getIsFee()),"c.is_fee",condDTO.getIsFee());
+        queryWrapper.eq(StringUtils.isNotBlank(condDTO.getRepairWorkerType()),"c.repair_worker_type",condDTO.getRepairWorkerType());
+        queryWrapper.eq(condDTO.getHouseId()!=null,"b.houses_id",condDTO.getHouseId());
+        queryWrapper.like(StringUtils.isNotBlank(condDTO.getRepairWorker()),"c.repair_worker",condDTO.getRepairWorker());
+
+        queryWrapper.apply("a.cust_id=b.cust_id and a.cust_id=c.customer_id");
+        queryWrapper.between(StringUtils.equals("1",condDTO.getRepairTimeType()),"c.accept_time",condDTO.getStartTime(),condDTO.getEndTime());
+        queryWrapper.between(StringUtils.equals("2",condDTO.getRepairTimeType()),"c.plan_repair_date",condDTO.getStartTime(),condDTO.getEndTime());
+        queryWrapper.between(StringUtils.equals("3",condDTO.getRepairTimeType()),"c.offer_time",condDTO.getStartTime(),condDTO.getEndTime());
+        queryWrapper.between(StringUtils.equals("4",condDTO.getRepairTimeType()),"c.receipt_time",condDTO.getStartTime(),condDTO.getEndTime());
+        queryWrapper.between(StringUtils.equals("5",condDTO.getRepairTimeType()),"c.actual_worker_salary_date",condDTO.getStartTime(),condDTO.getEndTime());
+
+        queryWrapper.apply(condDTO.getCustomerServiceEmployeeId()!=null,
+                " EXISTS (select 1 from order_worker d where d.order_id=b.order_id and end_date > now() " +
+                        " and role_id='15' and d.employee_id="+condDTO.getCustomerServiceEmployeeId()+")");
+
+
+        List<RepairOrderDTO> list=this.baseMapper.queryRepairAllRecord(queryWrapper);
+        if(ArrayUtils.isEmpty(list)){
+            return null;
+        }
+        for(RepairOrderDTO dto:list){
+            dto.setStatusName(staticDataService.getCodeName("REPAIR_STATUS", dto.getStatus()));
+            dto.setIsFeeName(staticDataService.getCodeName("YES_NO", dto.getIsFee()));
+            dto.setRepairWorkerTypeName(staticDataService.getCodeName("REPAIR_WORKER_TYPE", dto.getRepairWorkerType()));
+            dto.setHouseName(housesService.queryHouseName(dto.getHouseId()));
+            dto.setAgentName(orderDomainService.getUsualOrderWorker(dto.getOrderId()).getAgentName());
+        }
+        return list;
     }
 }

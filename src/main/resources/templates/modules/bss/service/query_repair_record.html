@@ -103,12 +103,13 @@
                     :auto-resize="true"
                     :data="serviceRepairHistoryRecordList"
                     :edit-config="{trigger: 'click', mode: 'cell', showStatus: true}">
-                <vxe-table-column field="isFeeName" title="维修编号"  width="100"></vxe-table-column>
-                <vxe-table-column field="isFeeName" title="客户编号"  width="100"></vxe-table-column>
-                <vxe-table-column field="isFeeName" title="客户姓名"  width="100"></vxe-table-column>
-                <vxe-table-column field="isFeeName" title="楼盘地址"  width="100"></vxe-table-column>
-                <vxe-table-column field="isFeeName" title="客户电话"  width="100"></vxe-table-column>
-                <vxe-table-column field="isFeeName" title="客户电话"  width="100"></vxe-table-column>
+                <vxe-table-column field="repairNo" title="维修编号"  width="150" fixed="left"></vxe-table-column>
+                <vxe-table-column field="custNo" title="客户编号"  width="150" fixed="left"></vxe-table-column>
+                <vxe-table-column field="custName" title="客户姓名"  width="100" fixed="left"></vxe-table-column>
+                <vxe-table-column field="houseName" title="楼盘地址"  width="100"></vxe-table-column>
+                <vxe-table-column field="mobileNo" title="客户电话"  width="150"></vxe-table-column>
+                <vxe-table-column field="agentName" title="客户代表"  width="100" ></vxe-table-column>
+                <vxe-table-column field="statusName" title="状态"  width="100" ></vxe-table-column>
                 <vxe-table-column field="repairWorkerTypeName" title="维修工种"  width="150" ></vxe-table-column>
                 <vxe-table-column field="repairItem" title="维修项目"  width="150" ></vxe-table-column>
                 <vxe-table-column field="repairReason" title="维修原因"  width="150"></vxe-table-column>
@@ -117,20 +118,20 @@
                 <vxe-table-column field="buildHeadman" title="施工组长"  width="150" ></vxe-table-column>
                 <vxe-table-column field="repairWorker" title="维修人员" width="150" ></vxe-table-column>
                 <vxe-table-column field="repairWorkerCount" title="维修人数" width="150" ></vxe-table-column>
-                <vxe-table-column field="acceptTime" title="受理时间" width="160" ></vxe-table-column>
-                <vxe-table-column field="offerTime" title="取单时间" width="160" ></vxe-table-column>
-                <vxe-table-column field="receiptTime" title="回单时间" width="160"></vxe-table-column>
-                <vxe-table-column field="planRepairDate" title="预约维修时间" width="160" ></vxe-table-column>
-                <vxe-table-column field="actualRepairStartDate" title="维修开始时间" width="160" ></vxe-table-column>
-                <vxe-table-column field="actualRepairEndDate" title="维修结束时间" width="160" ></vxe-table-column>
+                <vxe-table-column field="acceptTime" title="受理时间" width="180" ></vxe-table-column>
+                <vxe-table-column field="offerTime" title="取单时间" width="100" ></vxe-table-column>
+                <vxe-table-column field="receiptTime" title="回单时间" width="100"></vxe-table-column>
+                <vxe-table-column field="planRepairDate" title="预约维修时间" width="100" ></vxe-table-column>
+                <vxe-table-column field="actualRepairStartDate" title="维修开始时间" width="100" ></vxe-table-column>
+                <vxe-table-column field="actualRepairEndDate" title="维修结束时间" width="100" ></vxe-table-column>
                 <vxe-table-column field="repairVisitContent" title="维修回访" width="160" ></vxe-table-column>
-                <vxe-table-column field="repairVisitTime" title="维修回访时间" width="160"></vxe-table-column>
+                <vxe-table-column field="repairVisitTime" title="维修回访时间" width="100"></vxe-table-column>
                 <vxe-table-column field="repairSatisfaction" title="满意度" width="160" ></vxe-table-column>
-                <vxe-table-column field="repairFee" title="收费金额" width="160" ></vxe-table-column>
-                <vxe-table-column field="repairAwardFee" title="收费奖励" width="160" ></vxe-table-column>
-                <vxe-table-column field="repairMaterialFee" title="材料费用" width="160" ></vxe-table-column>
-                <vxe-table-column field="repairWorkerSalary" title="人工工资" width="160" ></vxe-table-column>
-                <vxe-table-column field="actualWorkerSalaryDate" title="开具工资的时间" width="160" ></vxe-table-column>
+                <vxe-table-column field="repairFee" title="收费金额" width="100" ></vxe-table-column>
+                <vxe-table-column field="repairAwardFee" title="收费奖励" width="100" ></vxe-table-column>
+                <vxe-table-column field="repairMaterialFee" title="材料费用" width="100" ></vxe-table-column>
+                <vxe-table-column field="repairWorkerSalary" title="人工工资" width="100" ></vxe-table-column>
+                <vxe-table-column field="actualWorkerSalaryDate" title="开具工资的时间" width="100" ></vxe-table-column>
                 <vxe-table-column field="remark" title="备注" width="160" ></vxe-table-column>
             </vxe-table>
         </el-main>
