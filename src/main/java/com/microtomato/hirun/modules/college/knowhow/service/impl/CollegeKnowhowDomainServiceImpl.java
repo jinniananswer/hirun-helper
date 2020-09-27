@@ -127,6 +127,8 @@ public class CollegeKnowhowDomainServiceImpl implements ICollegeKnowhowDomainSer
             questions = questions.stream().filter(question -> KnowhowConsts.QUESTION_STATUS_UNREPLY.equals(question.getStatus())).collect(Collectors.toList());
         } else if (KnowhowConsts.OPTION_PUBLISH.equals(optionTag)) {
             questions = questions.stream().filter(question -> KnowhowConsts.QUESTION_STATUS_REPLY.equals(question.getStatus())).collect(Collectors.toList());
+        } else if (KnowhowConsts.OPTION_SQUARE.equals(optionTag)) {
+            questions = questions.stream().filter(question -> KnowhowConsts.QUESTION_STATUS_DEPLOYED.equals(question.getStatus())).collect(Collectors.toList());
         }
 
         if (KnowhowConsts.QUESTION_SORT_BY_CREATTIME.equals(sortType)) {

@@ -54,6 +54,8 @@ public class Course extends BaseEntity {
     @TableField("remark")
     private String remark;
 
+    private Long counts;
+
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)
     private Long createUserId;
 

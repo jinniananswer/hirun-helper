@@ -138,7 +138,9 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                     this.queryWiki();
                     this.queryCond.count = 1;
                 }
-
+                this.queryCond.questionText = '';
+                this.queryCond.questionType = '';
+                this.queryCond.sortType = '';
             },
             query: function () {
                 var that = this;
@@ -156,8 +158,7 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
             queryByCond: function () {
                 var that = this;
                 if ('questionSquare' == that.queryCond.showType) {
-                    this.query();
-                    return;
+                    that.queryCond.optionTag = 'SQUARE';
                 } else if ('letMeResponse' == that.queryCond.showType) {
                     that.queryCond.optionTag = 'REPLY';
                     that.queryCond.relationType = '1';
@@ -281,7 +282,7 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                     });
 
                     that.addQuestionDialogVisible = false;
-                    that.form = [];
+                    that.queryCond = {};
                     that.queryByEmployeeIdAndRelaType();
                 }, null, true);
             },
