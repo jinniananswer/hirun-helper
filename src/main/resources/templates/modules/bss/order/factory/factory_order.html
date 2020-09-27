@@ -99,6 +99,7 @@
                             </template>
                         </vxe-table-column>
                         <vxe-table-column field="produceNo" title="生产编号" sortable width="100" fixed="left"></vxe-table-column>
+                        <vxe-table-column field="factoryStatusName" title="跟单状态" sortable width="100" fixed="left"></vxe-table-column>
                         <vxe-table-column field="decorateAddress" title="地址" sortable width="200" fixed="left"></vxe-table-column>
                         <vxe-table-column field="orderStatusName" title="订单状态" sortable width="100"></vxe-table-column>
                         <vxe-table-column field="contractStartDate" title="合同开始时间" sortable width="150"></vxe-table-column>
@@ -152,6 +153,9 @@
 
     .delete_row {
         text-decoration:line-through;
+    }
+    [v-cloak] {
+        display: none;
     }
 </style>
 <script src="static/js/modules/bss/order/factory/factory.order.js" th:src="@{static/js/modules/bss/order/factory/factory.order.js(v=${version})}"></script>

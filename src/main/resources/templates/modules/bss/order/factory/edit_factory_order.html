@@ -19,15 +19,15 @@
                         <div slot="header" class="clearfix">
                             <span>工厂产品订单</span>
                         </div>
-                        <el-form :inline="false" :rules="rules" :model="factoryOrder" ref="factoryOrder" label-position="right" label-width="100px">
+                        <el-form :inline="false" :model="factoryOrder" ref="factoryOrder" label-position="right" label-width="140px">
                             <el-row>
                                 <el-col :span="8">
-                                    <el-form-item label="驻点人员" required="true" prop="designer">
+                                    <el-form-item label="驻点人员">
                                         <el-input v-model="factoryOrder.garrisonName" placeholder="驻点人员"></el-input>
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="8">
-                                    <el-form-item label="订单管理员" prop="assistantDesigner">
+                                    <el-form-item label="订单管理员">
                                         <order-selectemployee role-id="59" v-model="factoryOrder.factoryOrderManager"></order-selectemployee>
                                     </el-form-item>
                                 </el-col>
@@ -233,12 +233,12 @@
                             </el-row>
                             <el-row>
                                 <el-col :span="8">
-                                    <el-form-item label="责任方" required="true" prop="designer">
+                                    <el-form-item label="责任方">
                                         <el-input v-model="factoryOrder.responsible" placeholder="责任方"></el-input>
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="8">
-                                    <el-form-item label="驻点重新接单日期" prop="assistantDesigner">
+                                    <el-form-item label="驻点重新接单日期">
                                         <el-date-picker
                                                 v-model="factoryOrder.regarrisonDate"
                                                 type="date"
@@ -262,9 +262,14 @@
                             </el-row>
                             <el-row>
                                 <el-col :span="8">
-                                    <el-form-item label="不做木制品" required="true" prop="designer">
+                                    <el-form-item label="生产批号">
+                                        <el-input v-model="factoryOrder.produceNo" placeholder="生产批号"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="不做木制品">
                                         <el-switch
-                                                v-model="factoryOrder.garrisonCheckSizeDate"
+                                                v-model="factoryOrder.noWood"
                                                 active-color="#13ce66"
                                                 inactive-color="#ff4949"
                                                 active-value="1"
@@ -273,9 +278,9 @@
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="8">
-                                    <el-form-item label="跟单完毕" prop="assistantDesigner">
+                                    <el-form-item label="跟单完毕">
                                         <el-switch
-                                                v-model="factoryOrder.garrisonCheckSizeDate"
+                                                v-model="factoryOrder.followFinish"
                                                 active-color="#13ce66"
                                                 inactive-color="#ff4949"
                                                 active-value="1"
@@ -284,14 +289,38 @@
                                     </el-form-item>
                                 </el-col>
                             </el-row>
-                            <el-row style="padding-top: 12px" :style="show">
-                                <el-button type="primary" @click="save">保存</el-button>
-                                <el-button type="danger" @click="close">关闭</el-button>
-                            </el-row>
+                            <el-form-item style="padding-top: 12px">
+                                <el-button type="primary" :disabled="saveDisabled" @click="save">保存</el-button>
+                                <el-button type="danger" :disabled="saveDisabled" @click="close">关闭单据</el-button>
+                            </el-form-item>
                         </el-form>
                     </el-card>
 
                     <el-card class="box-card">
+                        <div slot="header" class="clearfix">
+                            <span>跟单信息</span>
+                        </div>
+                        <el-row style="padding-bottom: 12px">
+                            <el-button type="primary" :disabled="saveDisabled" @click="createFollow">新增跟单信息</el-button>
+                            <el-button type="success" :disabled="saveDisabled" @click="saveFollows">提交保存</el-button>
+                        </el-row>
+                        <vxe-table
+                                border
+                                resizable
+                                ref="followTable"
+                                :data="factoryOrder.follows"
+                                :mouse-config="{selected: true}"
+                                :keyboard-config="{isArrow: true, isDel: true, isEnter: true, isTab: true, isEdit: true, editMethod}"
+                                :edit-config="{trigger: 'click', mode: 'cell'}"
+                                >
+                            <vxe-table-column field="followDate" title="跟单时间" :edit-render="{name: '$input', props: {type: 'date'}}" width="200"></vxe-table-column>
+                            <vxe-table-column field="nature" title="性质" :edit-render="{name: 'input', immediate: true, attrs: {type: 'text'}}" width="100"></vxe-table-column>
+                            <vxe-table-column field="content" title="内容" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                            <vxe-table-column field="responsible" title="责任人" :edit-render="{name: 'input', attrs: {type: 'text'}}" width="100"></vxe-table-column>
+                            <vxe-table-column field="orderDate" title="下单时间" :edit-render="{name: '$input', props: {type: 'date'}}" width="150"></vxe-table-column>
+                            <vxe-table-column field="orderMan" title="下单人" :edit-render="{name: 'input', attrs: {type: 'text'}}" width="100"></vxe-table-column>
+                            <vxe-table-column field="deliverDate" title="送货时间" :edit-render="{name: '$input', props: {type: 'date'}}" width="150"></vxe-table-column>
+                        </vxe-table>
                     </el-card>
                 </div>
             </el-row>
@@ -313,6 +342,9 @@
 
     .el-card__header {
         padding:10px;
+    }
+    [v-cloak] {
+        display: none;
     }
 </style>
 <script src="static/js/modules/bss/order/factory/edit.factory.order.js" th:src="@{static/js/modules/bss/order/factory/edit.factory.order.js(v=${version})}"></script>
