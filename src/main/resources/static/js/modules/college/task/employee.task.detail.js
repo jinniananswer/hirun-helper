@@ -28,6 +28,8 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 employeeId: util.getRequest("employeeId"),
                 employee: {},
                 subActiveTab: 'courseTaskInfo',
+                subEmployeeActiveTab: 'baseInfo',
+                subTaskEvaluateActiveTab: 'taskInfo',
                 taskDetailInfo: {},
                 employeeCourseTaskInfo: [],
                 employeeCoursewareTaskInfo: [],
@@ -39,7 +41,10 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 examScore: null,
                 studyScore: null,
                 taskInfo: {},
-                argTaskScore: null
+                argTaskScore: null,
+                writtenExperience: '',
+                imgExperienceList: [],
+                url: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'
             }
         },
         methods: {
@@ -112,20 +117,11 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
             evaluateTask: function(row){
                 let taskId = row.taskId;
                 let that = this;
-                ajax.get('api/CollegeEmployeeTaskScore/isEvaluateTaskByTaskId', {taskId:taskId}, function(responseData){
-                    let isEvaluateTask = responseData.evaluateTask
-                    if (!isEvaluateTask){
-                        that.$message({
-                            showClose: true,
-                            duration: 3000,
-                            message: responseData.scoreNotReasons,
-                            center: true
-                        });
-                        return;
-                    }else {
-                        that.evaluateTaskDialogVisible = true;
-                        that.taskInfo = row;
-                    }
+                ajax.get('api/CollegeTaskExperience/queryByTaskId', {taskId:taskId}, function(responseData){
+                    that.writtenExperience = responseData.writtenExperience
+                    that.imgExperienceList = responseData.imgExperienceList
+                    that.evaluateTaskDialogVisible = true;
+                    that.taskInfo = row;
                 });
             },
             submitScore: function(){

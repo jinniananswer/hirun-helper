@@ -19,7 +19,7 @@
                     <div slot="header" class="clearfix">
                         <span>员工信息</span>
                     </div>
-                    <el-tabs v-model="subActiveTab" type="border-card">
+                    <el-tabs v-model="subEmployeeActiveTab" type="border-card">
                         <el-tab-pane label="基本信息" name="baseInfo">
                             <el-col :span="20">
                                 <el-row :gutter="5">
@@ -385,8 +385,8 @@
             <el-dialog width="80%" title="任务评价" append-to-body :visible.sync="evaluateTaskDialogVisible">
                 <el-card>
                     <div slot="header" class="clearfix">
-                        <el-tabs v-model="subActiveTab" type="border-card">
-                            <el-tab-pane label="任务信息" name="studyTaskInfo">
+                        <el-tabs v-model="subTaskEvaluateActiveTab" type="border-card">
+                            <el-tab-pane label="任务信息" name="taskInfo">
                                 <el-col :span="20">
                                     <el-row :gutter="5">
                                         <el-col :span="8">
@@ -400,7 +400,7 @@
                                     </el-row>
 
                                     <el-row :gutter="5">
-                                        <el-col :span="8">
+                                        <el-col :span="20">
                                             <div class="text">
                                                 任务描述：
                                                 <template v-if="taskInfo.taskDesc != null && taskInfo.taskDesc!= ''">
@@ -438,6 +438,25 @@
                                 </el-col>
                             </el-tab-pane>
                         </el-tabs>
+                        <div slot="header" class="clearfix">
+                            <div>
+                                <el-input
+                                        type="textarea"
+                                        autosize
+                                        :disabled="true"
+                                        :autosize="{ minRows: 2, maxRows: 4}"
+                                        size="medium"
+                                        v-model="writtenExperience">
+                                </el-input>
+                            </div>
+                            <div class="">
+                                <el-image
+                                        style="width: 100px; height: 100px"
+                                        :src="url"
+                                        :preview-src-list="imgExperienceList">
+                                </el-image>
+                            </div>
+                        </div>
                     </div>
                     <el-form :inline="false" :model="employeeCourseTaskInfo"  ref="employeeCourseTaskInfo" label-position="right"
                              label-width="120px" size="medium">
