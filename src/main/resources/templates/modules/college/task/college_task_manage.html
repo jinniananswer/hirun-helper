@@ -11,7 +11,7 @@
             th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
 </head>
 <body>
-<div id="app">
+<div id="app" v-cloak>
     <el-container>
         <el-main>
             <el-card class="box-card" shadow="hover">
@@ -439,6 +439,10 @@
 
     .delete_row {
         text-decoration: line-through;
+    }
+
+    [v-cloak] {
+        display: none;
     }
 </style>
 <script src="static/js/modules/college/task/college.task.manage.js"
