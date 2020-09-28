@@ -251,7 +251,7 @@ public class CollegeEmployeeTaskController {
         String allEmployeeTaskScoreCxceedPercentage = "100";
         if (ArrayUtils.isNotEmpty(allArgTaskScoreList)){
             if(allTaskScoreRanking > 1){
-                allEmployeeTaskScoreCxceedPercentage = String.valueOf(new BigDecimal((float) (allArgTaskScoreList.size() - allTaskScoreRanking) * 100 / (allArgTaskScoreList.size() - 1)).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());
+                allEmployeeTaskScoreCxceedPercentage = String.valueOf(new BigDecimal((float) (allArgTaskScoreList.size() + 1 - allTaskScoreRanking) * 100 / allArgTaskScoreList.size()).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());
             }
         }
         allEmployeeTaskScoreInfo.setEmployeeTaskScoreCxceedPercentage(allEmployeeTaskScoreCxceedPercentage + "%");
@@ -262,7 +262,7 @@ public class CollegeEmployeeTaskController {
         String allEmployeeExercisesScoreCxceedPercentage = "100";
         if (ArrayUtils.isNotEmpty(allArgExercisesScoreList)){
             if (allExercisesRanking > 1){
-                allEmployeeExercisesScoreCxceedPercentage = String.valueOf(new BigDecimal((float) (allArgExercisesScoreList.size() - allExercisesRanking) * 100 / (allArgExercisesScoreList.size() - 1)).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());
+                allEmployeeExercisesScoreCxceedPercentage = String.valueOf(new BigDecimal((float) (allArgExercisesScoreList.size() + 1 - allExercisesRanking) * 100 / allArgExercisesScoreList.size()).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());
             }
         }
         allEmployeeTaskScoreInfo.setEmployeeExercisesScoreCxceedPercentage(allEmployeeExercisesScoreCxceedPercentage + "%");
@@ -273,7 +273,7 @@ public class CollegeEmployeeTaskController {
         String allEmployeeStudyScoreCxceedPercentage = "100";
         if (ArrayUtils.isNotEmpty(allArgStudyScoreList)){
             if (allStudyScoreRanking > 1){
-                allEmployeeStudyScoreCxceedPercentage = String.valueOf(new BigDecimal((float) (allArgStudyScoreList.size() - allStudyScoreRanking) * 100 / (allArgStudyScoreList.size() - 1)).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());
+                allEmployeeStudyScoreCxceedPercentage = String.valueOf(new BigDecimal((float) (allArgStudyScoreList.size() + 1 - allStudyScoreRanking) * 100 / allArgStudyScoreList.size()).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());
             }
         }
         allEmployeeTaskScoreInfo.setEmployeeStudyScoreCxceedPercentage(allEmployeeStudyScoreCxceedPercentage + "%");
@@ -284,7 +284,7 @@ public class CollegeEmployeeTaskController {
         String allEmployeeExamScoreCxceedPercentage = "100";
         if (ArrayUtils.isNotEmpty(allArgExamScoreList)){
             if (allExamScoreRanking > 1){
-                allEmployeeExamScoreCxceedPercentage = String.valueOf(new BigDecimal((float) (allArgExamScoreList.size() - allExamScoreRanking) * 100 / (allArgExamScoreList.size() - 1)).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());
+                allEmployeeExamScoreCxceedPercentage = String.valueOf(new BigDecimal((float) (allArgExamScoreList.size() + 1 - allExamScoreRanking) * 100 / allArgExamScoreList.size()).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());
             }
         }
         allEmployeeTaskScoreInfo.setEmployeeExamScoreCxceedPercentage(allEmployeeExamScoreCxceedPercentage + "%");
@@ -325,7 +325,7 @@ public class CollegeEmployeeTaskController {
         String orgEmployeeTaskScoreCxceedPercentage = "100";
         if (ArrayUtils.isNotEmpty(orgArgTaskScoreList)){
             if(orgTaskScoreRanking > 1){
-                orgEmployeeTaskScoreCxceedPercentage = String.valueOf(new BigDecimal((float) (orgArgTaskScoreList.size() - orgTaskScoreRanking) * 100 / (orgArgTaskScoreList.size() - 1)).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());
+                orgEmployeeTaskScoreCxceedPercentage = String.valueOf(new BigDecimal((float) (orgArgTaskScoreList.size() + 1 - orgTaskScoreRanking) * 100 / orgArgTaskScoreList.size()).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());
             }
         }
         orgEmployeeTaskScoreInfo.setEmployeeTaskScoreCxceedPercentage(orgEmployeeTaskScoreCxceedPercentage + "%");
@@ -336,7 +336,7 @@ public class CollegeEmployeeTaskController {
         String orgEmployeeExercisesScoreCxceedPercentage = "100";
         if (ArrayUtils.isNotEmpty(orgArgExercisesScoreList)){
             if (orgExercisesRanking > 1){
-                orgEmployeeExercisesScoreCxceedPercentage = String.valueOf(new BigDecimal((float) (orgArgExercisesScoreList.size() - orgExercisesRanking) * 100 / (orgArgExercisesScoreList.size() - 1)).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());
+                orgEmployeeExercisesScoreCxceedPercentage = String.valueOf(new BigDecimal((float) (orgArgExercisesScoreList.size() + 1 - orgExercisesRanking) * 100 / orgArgExercisesScoreList.size()).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());
             }
         }
         orgEmployeeTaskScoreInfo.setEmployeeExercisesScoreCxceedPercentage(orgEmployeeExercisesScoreCxceedPercentage + "%");
@@ -347,7 +347,7 @@ public class CollegeEmployeeTaskController {
         String orgEmployeeStudyScoreCxceedPercentage = "100";
         if (ArrayUtils.isNotEmpty(orgArgStudyScoreList)){
             if (orgStudyScoreRanking > 1){
-                orgEmployeeStudyScoreCxceedPercentage = String.valueOf(new BigDecimal((float) (orgArgStudyScoreList.size() - orgStudyScoreRanking) * 100 / (orgArgStudyScoreList.size() - 1)).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());
+                orgEmployeeStudyScoreCxceedPercentage = String.valueOf(new BigDecimal((float) (orgArgStudyScoreList.size() + 1 - orgStudyScoreRanking) * 100 / orgArgStudyScoreList.size()).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());
             }
         }
         orgEmployeeTaskScoreInfo.setEmployeeStudyScoreCxceedPercentage(orgEmployeeStudyScoreCxceedPercentage + "%");
@@ -358,7 +358,7 @@ public class CollegeEmployeeTaskController {
         String orgEmployeeExamScoreCxceedPercentage = "100";
         if (ArrayUtils.isNotEmpty(orgArgExamScoreList)){
             if (orgExamScoreRanking > 1){
-                orgEmployeeExamScoreCxceedPercentage = String.valueOf(new BigDecimal((float) (orgArgExamScoreList.size() - orgExamScoreRanking) * 100 / (orgArgExamScoreList.size() - 1)).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());
+                orgEmployeeExamScoreCxceedPercentage = String.valueOf(new BigDecimal((float) (orgArgExamScoreList.size() + 1 - orgExamScoreRanking) * 100 / orgArgExamScoreList.size()).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());
             }
         }
         orgEmployeeTaskScoreInfo.setEmployeeExamScoreCxceedPercentage(orgEmployeeExamScoreCxceedPercentage + "%");
