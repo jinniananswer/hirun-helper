@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -66,8 +67,8 @@ public class OrderFileController {
         return orderFileService.getOrderFile(orderId, stage);
     }
 
-    @RequestMapping("download/{orderId}/{stage}")
-    public ResponseEntity<InputStreamResource> download(@PathVariable("orderId") Long orderId, @PathVariable("stage") Integer stage) throws IOException {
+    //@RequestMapping("download/{orderId}/{stage}")
+    public ResponseEntity<InputStreamResource> download_bak(@PathVariable("orderId") Long orderId, @PathVariable("stage") Integer stage) throws IOException {
         OrderFile orderFile = orderFileService.getOrderFile(orderId, stage);
         String filePath = orderFile.getFilePath();
         String absolutePath = orderFileService.toAbsolutePath(filePath);
@@ -89,4 +90,23 @@ public class OrderFileController {
             .body(new InputStreamResource(file.getInputStream()));
     }
 
+    @RequestMapping("download/{orderId}/{stage}")
+    public ResponseEntity<InputStreamResource> download(@PathVariable("orderId") Long orderId, @PathVariable("stage") Integer stage) throws IOException {
+        OrderFile orderFile = orderFileService.getOrderFile(orderId, stage);
+        InputStream inputStream = orderFileService.getInputStream(orderFile);
+        String filename = new String(orderFile.getFileName().getBytes("UTF-8"),"ISO-8859-1");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
+        headers.add("Content-Disposition", String.format("attachment; filename=\"%s\"", filename));
+        headers.add("Pragma", "no-cache");
+        headers.add("Expires", "0");
+
+        return ResponseEntity
+            .ok()
+            .headers(headers)
+            .contentLength(orderFile.getFileSize())
+            .contentType(MediaType.parseMediaType("application/octet-stream"))
+            .body(new InputStreamResource(inputStream));
+    }
 }

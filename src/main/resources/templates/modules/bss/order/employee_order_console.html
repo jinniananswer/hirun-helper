@@ -9,7 +9,7 @@
     <script src="static/js/framework/requirejs/require.config.js" th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
 </head>
 <body>
-<div id="app">
+<div id="app" v-cloak>
     <el-container>
         <el-main>
             <el-row>
@@ -90,15 +90,6 @@
                             </template>
                         </vxe-table-column>
                     </vxe-table>
-                    <div style="text-align: center">
-                        <el-pagination
-                                layout="total, prev, pager, next"
-                                :total="queryCond.count"
-                                :current-page.sync="queryCond.page"
-                                :page-size="queryCond.limit"
-                                @current-change="query">
-                        </el-pagination>
-                    </div>
                 </el-card>
             </el-row>
 
@@ -132,6 +123,9 @@
 
     .delete_row {
         text-decoration:line-through;
+    }
+    [v-cloak] {
+        display: none;
     }
 </style>
 <script src="static/js/modules/bss/order/employee.order.console.js" th:src="@{static/js/modules/bss/order/employee.order.console.js(v=${version})}"></script>

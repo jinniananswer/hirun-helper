@@ -10,7 +10,7 @@
     <script src="static/js/framework/requirejs/require.config.js" th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
 </head>
 <body>
-<div id="app">
+<div id="app" v-cloak>
     <!--
     <order-file-upload ref="upload" button-name="上传平面图" accept=".txt,.png" limit="1" order-id="123" stage="456"></order-file-upload>
     <el-link type="primary" href="api/bss.order/order-file/download/123/456">下载文件</el-link>

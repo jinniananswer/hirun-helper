@@ -9,7 +9,7 @@
     <script src="static/js/framework/requirejs/require.config.js" th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
 </head>
 <body>
-<div id="app">
+<div id="app" v-cloak>
     <el-container>
         <el-main>
             <el-row>
@@ -134,61 +134,15 @@
             </el-row>
             <el-row :style="show">
                 <div class="grid-content bg-purple-light">
-                    <order-info :order-id="serviceGuaranteeInfo.orderId"></order-info>
+                    <order-info :order-id="orderId"></order-info>
                     <el-card class="box-card">
                         <div slot="header">
                             <span>操作区</span>
                         </div>
                         <el-card class="box-card" shadow="hover" :style="show">
                             <el-tabs v-model="activeTab">
-                                <el-tab-pane label="服务人员及其他" name="designRoyaltyTab">
+                                <el-tab-pane label="保修卡信息" name="designRoyaltyTab">
                                     <el-form :inline="false" :rules="rules" label-position="right" label-width="80px" :model="serviceGuaranteeInfo" ref="serviceGuaranteeInfo">
-                                        <el-row>
-                                            <el-col :span="8">
-                                                <el-form-item label="客户代表" label-width="100px">
-                                                    <el-input v-model="serviceGuaranteeInfo.customerEmployeeName" readonly></el-input>
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8">
-                                                <el-form-item label="设计师"  label-width="100px">
-                                                    <el-input v-model="serviceGuaranteeInfo.designEmployeeName" readonly></el-input>
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8">
-                                                <el-form-item label="项目经理"  label-width="100px">
-                                                    <el-input v-model="serviceGuaranteeInfo.projectEmployeeName" readonly></el-input>
-                                                </el-form-item>
-                                            </el-col>
-                                        </el-row>
-                                        <el-row>
-                                            <el-col :span="8">
-                                                <el-form-item label="验收时间"  label-width="100px">
-                                                    <el-input v-model="serviceGuaranteeInfo.checkTime" readonly></el-input>
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8">
-                                                <el-form-item label="水电组长"label-width="100px">
-                                                    <el-input v-model="serviceGuaranteeInfo.hydropowerName" readonly></el-input>
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8">
-                                                <el-form-item label="木工组长" label-width="100px">
-                                                    <el-input v-model="serviceGuaranteeInfo.woodworkerName" readonly></el-input>
-                                                </el-form-item>
-                                            </el-col>
-                                        </el-row>
-                                        <el-row>
-                                            <el-col :span="8">
-                                                <el-form-item label="镶贴组长" label-width="100px">
-                                                    <el-input v-model="serviceGuaranteeInfo.inlayName" readonly></el-input>
-                                                </el-form-item>
-                                            </el-col>
-                                            <el-col :span="8">
-                                                <el-form-item label="涂表组长"label-width="100px">
-                                                    <el-input v-model="serviceGuaranteeInfo.paintName" readonly ></el-input>
-                                                </el-form-item>
-                                            </el-col>
-                                        </el-row>
                                         <el-row>
                                             <el-col :span="8">
                                                 <el-form-item label="保修开始时间" prop="guaranteeStartDate" label-width="120px">
@@ -204,12 +158,12 @@
                                                     </el-date-picker>
                                                 </el-form-item>
                                             </el-col>
-                                            <el-col :span="8">
+<!--                                            <el-col :span="8">
                                                 <el-form-item label="保修录入时间" label-width="100px">
                                                     <el-date-picker type="serviceGuaranteeInfo.createTime" value-format="yyyy-MM-dd HH:mm:ss" readonly >
                                                     </el-date-picker>
                                                 </el-form-item>
-                                            </el-col>
+                                            </el-col>-->
                                         </el-row>
                                         <el-row style="padding-top: 12px" :style="show">
                                             <el-button type="success" @click="save">提交保存</el-button>
@@ -252,6 +206,9 @@
 
     .delete_row {
         text-decoration:line-through;
+    }
+    [v-cloak] {
+        display: none;
     }
 </style>
 <script src="static/js/modules/bss/service/service.guarantee.manager.js" th:src="@{static/js/modules/bss/service/service.guarantee.manager.js(v=${version})}"></script>

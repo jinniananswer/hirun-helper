@@ -36,6 +36,14 @@ public class SalaryRoyaltyStrategy extends BaseEntity {
     @TableField(value = "order_status")
     private String orderStatus;
 
+    /** 费用类型 1-设计费 2-工程款 */
+    @TableField(value = "fee_type")
+    private String feeType;
+
+    /** 期数 */
+    @TableField(value = "periods")
+    private Integer periods;
+
     /** 流程动作 如量房，画平面，见static表 royalties_action */
     @TableField(value = "action")
     private String action;

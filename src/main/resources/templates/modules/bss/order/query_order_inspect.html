@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>dolphin-admin</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script src="static/js/framework/requirejs/require.min.js"
+            th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js"
+            th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+</head>
+<body>
+<div id="app" v-cloak>
+    <el-container>
+        <el-main>
+            <el-card class="box-card">
+                <el-collapse value="1" accordion>
+                    <el-collapse-item title="查询条件" name="1">
+
+                        <el-form :inline="false" :model="queryCond" label-position="right" label-width="80px">
+                            <el-row>
+                                <el-col :span="6">
+                                    <el-form-item label="客户姓名">
+                                        <el-input v-model="queryCond.custName" placeholder="客户姓名"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="楼盘">
+                                        <house-select v-model="queryCond.houseId"></house-select>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="设计师">
+                                        <order-selectemployee role-id="30"
+                                                              v-model="queryCond.designEmployeeId"></order-selectemployee>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="环保机构">
+                                        <vue-select code-type="environmentalTestingAgency"
+                                                    v-model="queryCond.institution"></vue-select>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="6">
+                                    <el-form-item label="检测状态">
+                                        <vue-select code-type="INSPECT_CHECK_STATUS"
+                                                    v-model="queryCond.checkStatus"></vue-select>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="领取状态">
+                                        <vue-select code-type="INSPECT_RECEIVE_STATUS"
+                                                    v-model="queryCond.receiveStatus"></vue-select>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="结算状态">
+                                        <vue-select code-type="ORDER_SETTLE_STATUS"
+                                                    v-model="queryCond.settleStatus"></vue-select>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="客户代表">
+                                        <order-selectemployee role-id="15"
+                                                              v-model="queryCond.agentEmployeeId"></order-selectemployee>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <!--<el-col :span="6">
+                                    <el-form-item label="业务时间">
+                                        <vue-select code-type="BUSITIME_TYPE"
+                                                    v-model="queryCond.timeType"></vue-select>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="开始时间">
+                                        <el-date-picker
+                                                v-model="queryCond.startTime"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                placeholder="选择日期"
+                                                style="width:100%">
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-form-item label="结束时间">
+                                        <el-date-picker
+                                                v-model="queryCond.endTime"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"
+                                                placeholder="选择日期"
+                                                style="width:100%">
+                                        </el-date-picker>
+                                    </el-form-item>
+                                </el-col>-->
+                                <el-col :span="20">
+                                    <el-form-item style="text-align: right">
+                                        <el-button type="primary" @click="queryOrderInspect">查询</el-button>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                        </el-form>
+                    </el-collapse-item>
+                </el-collapse>
+            </el-card>
+
+            <template>
+                <vxe-table
+                        border
+                        resizable
+                        show-overflow
+                        highlight-hover-row
+                        max-height="800px"
+                        :auto-resize="true"
+                        :data="orderInspectInfo">
+                    <vxe-table-column field="custNo" title="客户编号" width="150" fixed="left"></vxe-table-column>
+                    <vxe-table-column field="custName" title="客户姓名" width="100" fixed="left"></vxe-table-column>
+                    <vxe-table-column field="houseAddress" title="装修地址" width="150" fixed="left"></vxe-table-column>
+                    <vxe-table-column field="mobileNo" title="客户电话" sortable width="120" fixed="left"></vxe-table-column>
+                    <vxe-table-column field="customerServiceName" title="客户代表"  width="100" ></vxe-table-column>
+                    <vxe-table-column field="designEmployeeName" title="设计师" sortable width="100"></vxe-table-column>
+                    <vxe-table-column field="checkStatusName" title="检测状态" width="120"></vxe-table-column>
+                    <vxe-table-column field="receiveDate" title="领取时间" sortable width="120" ></vxe-table-column>
+                    <vxe-table-column field="settleStatusName" title="检测结算状态" width="150"></vxe-table-column>
+                    <vxe-table-column field="checkSettleDate" title="检测结算时间" width="120"></vxe-table-column>
+                    <vxe-table-column field="institutionName" title="环保机构" sortable width="120" ></vxe-table-column>
+                    <vxe-table-column field="applyDate" title="申报时间" width="100"></vxe-table-column>
+                    <vxe-table-column field="offerDate" title="送达时间" width="100"></vxe-table-column>
+                    <vxe-table-column field="receiveStatusName" title="领取状态" width="100"></vxe-table-column>
+                    <vxe-table-column field="receivePeople" title="领取人" width="100"></vxe-table-column>
+                    <vxe-table-column field="guaranteeStartDate" title="保修开始时间" width="120"></vxe-table-column>
+                    <vxe-table-column field="guaranteeEndDate" title="保修结束时间" width="120"></vxe-table-column>
+                    <vxe-table-column field="shopName" title="店名" width="180"></vxe-table-column>
+                    <vxe-table-column field="remark" title="备注" width="180"></vxe-table-column>
+                </vxe-table>
+                <div class="pagination">
+                    <el-pagination
+                            background
+                            :current-page="queryCond.page"
+                            :page-size="queryCond.size"
+                            layout="total, sizes, prev, pager, next"
+                            :total="queryCond.total"
+                            @size-change="handleSizeChange"
+                            @current-change="handleCurrentChange">
+                    </el-pagination>
+                </div>
+            </template>
+        </el-main>
+    </el-container>
+</>
+<style>
+    .text {
+        font-size: 14px;
+    }
+
+    .item {
+        margin-bottom: 18px;
+    }
+
+    .box-card {
+        margin-bottom: 18px;
+    }
+    [v-cloak] {
+        display: none;
+    }
+</style>
+<script src="../../../static/js/modules/bss/order/query.order.inspect.js"
+        th:src="@{static/js/modules/bss/order/query.order.inspect.js(v=${version})}"></script>
+</body>
+
+</html>

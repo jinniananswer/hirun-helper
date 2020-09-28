@@ -51,6 +51,8 @@ public class SalaryFixDTO {
 
     private Double rank;
 
+    private Double job;
+
     private Double performance;
 
     private Double duty;

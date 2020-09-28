@@ -8,7 +8,6 @@ import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
-import com.microtomato.hirun.modules.bss.config.entity.po.OrderRoleCfg;
 import com.microtomato.hirun.modules.bss.config.entity.po.OrderStatusCfg;
 import com.microtomato.hirun.modules.bss.config.entity.po.OrderStatusTransCfg;
 import com.microtomato.hirun.modules.bss.config.entity.po.RoleAttentionStatusCfg;
@@ -29,6 +28,7 @@ import com.microtomato.hirun.modules.bss.order.entity.po.*;
 import com.microtomato.hirun.modules.bss.order.exception.OrderException;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderBaseMapper;
 import com.microtomato.hirun.modules.bss.order.service.*;
+import com.microtomato.hirun.modules.bss.salary.entity.domain.SalaryDO;
 import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeSelectDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.SimpleEmployeeDTO;
@@ -226,32 +226,7 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
      */
     @Override
     public List<OrderWorkerDTO> queryOrderWorkers(Long orderId) {
-        List<OrderWorkerDTO> orderWorkers = new ArrayList<>();
-
-        List<OrderRoleCfg> configs = this.orderRoleCfgService.queryAllValid();
-        if (ArrayUtils.isNotEmpty(configs)) {
-            for (OrderRoleCfg config : configs) {
-                OrderWorkerDTO orderWorker = new OrderWorkerDTO();
-                orderWorker.setRoleId(config.getRoleId());
-                orderWorker.setRoleName(config.getRoleName());
-                orderWorkers.add(orderWorker);
-            }
-        }
-
-        List<OrderWorkerDTO> existsWorkers = this.orderWorkerService.queryByOrderId(orderId);
-        if (ArrayUtils.isNotEmpty(existsWorkers)) {
-            for (OrderWorkerDTO worker : orderWorkers) {
-                worker.setStatus("wait");
-                worker.setName("暂无");
-                for (OrderWorkerDTO existsWorker : existsWorkers) {
-                    if (worker.getRoleId().equals(existsWorker.getRoleId())) {
-                        worker.setName(existsWorker.getName());
-                        //匹配上了，表示状态有效，前端则点亮
-                        worker.setStatus("finish");
-                    }
-                }
-            }
-        }
+        List<OrderWorkerDTO> orderWorkers = this.orderWorkerService.queryByOrderId(orderId);
         return orderWorkers;
     }
 
@@ -359,9 +334,14 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
 
         String logContent = "，由订单阶段：" + stageName + "，订单状态：" + statusName + "变为新订单阶段：" + newStageName+"，新订单状态：" + newStatusName;
 
-        //todo 更新归属店面数据
-
         this.orderOperLogService.createOrderOperLog(order.getOrderId(), OrderConst.LOG_TYPE_STATUS_TRANS, newStatusCfg.getOrderStage(), newStatusCfg.getOrderStatus(), OrderConst.OPER_LOG_CONTENT_STATUS_CHANGE+logContent);
+
+        try {
+            SalaryDO salaryDO = SpringContextUtils.getBean(SalaryDO.class);
+            salaryDO.createRoyalties(order.getOrderId(), newStatusCfg.getOrderStatus());
+        } catch (Exception e) {
+            log.error("计算提成错误", e);
+        }
     }
 
     /**
@@ -439,9 +419,12 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
         List<CustOrderInfoDTO> custOrders = result.getRecords();
         if (ArrayUtils.isNotEmpty(custOrders)) {
             for (CustOrderInfoDTO custOrder : custOrders) {
+                UsualFeeDTO usualFee = this.getUsualOrderFee(custOrder.getOrderId(), custOrder.getType());
+                custOrder.setUsualFee(usualFee);
                 custOrder.setStageName(this.staticDataService.getCodeName("ORDER_STAGE", custOrder.getStage()));
                 custOrder.setSexName(this.staticDataService.getCodeName("SEX", custOrder.getSex()));
                 custOrder.setStatusName(this.staticDataService.getCodeName("ORDER_STATUS", custOrder.getStatus()));
+                custOrder.setTypeName(this.staticDataService.getCodeName("ORDER_TYPE", custOrder.getType()));
                 custOrder.setHouseLayoutName(this.staticDataService.getCodeName("HOUSE_MODE", custOrder.getHouseLayout()));
                 Long housesId = custOrder.getHousesId();
                 if (housesId != null) {
@@ -459,47 +442,48 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
      * @return
      */
     @Override
-    public IPage<OrderTaskDTO> queryOrderTasks(OrderTaskQueryDTO condition) {
+    public List<OrderTaskDTO> queryOrderTasks(OrderTaskQueryDTO condition) {
         List<Role> roles = WebContextUtils.getUserContext().getRoles();
         Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
         if (ArrayUtils.isEmpty(roles)) {
             return null;
         }
 
-        List<Long> roleIds = new ArrayList<>();
-        for (Role role : roles) {
-            roleIds.add(role.getId());
-        }
-        List<RoleAttentionStatusCfg> roleAttentionStatusCfgs = this.roleAttentionStatusCfgService.queryInRoleIds(roleIds);
-        if (ArrayUtils.isEmpty(roleAttentionStatusCfgs)) {
-            return null;
-        }
-
-        List<String> statuses = new ArrayList<>();
+        List<OrderTaskDTO> tasks = new ArrayList<>();
         List<OrderStatusCfg> statusCfgs = new ArrayList<>();
-        for (RoleAttentionStatusCfg attentionStatusCfg : roleAttentionStatusCfgs) {
-            Long statusId = attentionStatusCfg.getAttentionStatusId();
-            OrderStatusCfg statusCfg = this.orderStatusCfgService.getById(statusId);
-            statuses.add(statusCfg.getOrderStatus());
-            statusCfgs.add(statusCfg);
+        for (Role role : roles) {
+            List<RoleAttentionStatusCfg> roleAttentionStatusCfgs = this.roleAttentionStatusCfgService.queryByRoleId(role.getId());
+            if (ArrayUtils.isEmpty(roleAttentionStatusCfgs)) {
+                continue;
+            }
+
+            List<String> statuses = new ArrayList<>();
+            for (RoleAttentionStatusCfg attentionStatusCfg : roleAttentionStatusCfgs) {
+                Long statusId = attentionStatusCfg.getAttentionStatusId();
+                OrderStatusCfg statusCfg = this.orderStatusCfgService.getById(statusId);
+                statuses.add(statusCfg.getOrderStatus());
+                statusCfgs.add(statusCfg);
+            }
+
+            QueryWrapper<OrderTaskQueryDTO> wrapper = new QueryWrapper<>();
+            wrapper.apply("b.cust_id = a.cust_id ");
+            wrapper.like(StringUtils.isNotBlank(condition.getCustName()), "b.cust_name", condition.getCustName());
+            wrapper.eq(StringUtils.isNotBlank(condition.getOrderStatus()), "a.status", condition.getOrderStatus());
+            wrapper.eq(condition.getHousesId() != null, "a.houses_id", condition.getHousesId());
+            wrapper.eq(StringUtils.isNotBlank(condition.getMobileNo()), "b.mobile_no", condition.getMobileNo());
+            wrapper.exists("select 1 from order_worker c where c.order_id = a.order_id and c.employee_id = " + employeeId + " and c.role_id = " + role.getId() + " and c.end_date > now() ");
+            wrapper.in("a.status", statuses);
+            wrapper.orderByAsc("a.status", "a.create_time");
+
+            List<OrderTaskDTO> temp = this.orderBaseMapper.queryOrderTaskInConsole(wrapper);
+            if (ArrayUtils.isNotEmpty(temp)) {
+                tasks.addAll(temp);
+            }
         }
 
-        QueryWrapper<OrderTaskQueryDTO> wrapper = new QueryWrapper<>();
-        wrapper.apply("b.cust_id = a.cust_id ");
-        wrapper.like(StringUtils.isNotBlank(condition.getCustName()), "b.cust_name", condition.getCustName());
-        wrapper.eq(StringUtils.isNotBlank(condition.getOrderStatus()), "a.status", condition.getOrderStatus());
-        wrapper.eq(condition.getHousesId() != null, "a.houses_id", condition.getHousesId());
-        wrapper.eq(StringUtils.isNotBlank(condition.getMobileNo()), "b.mobile_no", condition.getMobileNo());
-        wrapper.exists("select 1 from order_worker c where c.order_id = a.order_id and c.employee_id = " + employeeId);
-        wrapper.in("a.status", statuses);
-        wrapper.orderByAsc("a.status", "a.create_time");
 
-        IPage<OrderTaskQueryDTO> page = new Page<>(condition.getPage(), condition.getLimit());
-        IPage<OrderTaskDTO> pageTasks = this.orderBaseMapper.queryOrderTaskInConsole(page, wrapper);
-
-        List<OrderTaskDTO> tasks = pageTasks.getRecords();
         if (ArrayUtils.isEmpty(tasks)) {
-            return pageTasks;
+            return tasks;
         }
 
         tasks.forEach(task -> {
@@ -519,7 +503,7 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
             }
 
         });
-        return pageTasks;
+        return tasks;
     }
 
     /**
@@ -574,6 +558,10 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
                 usualWorker.setReportName(name);
             } else if (roleId.equals(33L)) {
                 usualWorker.setProjectManagerName(name);
+            } else if (roleId.equals(48L)) {
+                usualWorker.setProjectChargerName(name);
+            } else if (roleId.equals(59L)) {
+                usualWorker.setFactoryOrderManagerName(name);
             }
         });
 
@@ -809,6 +797,7 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
      * @param queryCond
      * @return
      */
+    @Override
     public List<EmployeeResultsDTO> queryEmployeeResults(EmployeeResultsQueryDTO queryCond) {
         List<EmployeeResultsDTO> list = new ArrayList<>();
         if(queryCond.getEmployeeId() != null && queryCond.getEmployeeId() > 0) {

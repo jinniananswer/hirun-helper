@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.exception.ErrorKind;
 import com.microtomato.hirun.framework.exception.cases.NotFoundException;
+import com.microtomato.hirun.framework.mybatis.DataSourceKey;
+import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
@@ -14,6 +16,7 @@ import com.microtomato.hirun.modules.bss.order.entity.po.OrderWorker;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderWorkerMapper;
 import com.microtomato.hirun.modules.bss.order.service.IOrderWorkerService;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
+import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
 import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
@@ -38,6 +41,7 @@ import java.util.List;
  */
 @Slf4j
 @Service
+@DataSource(DataSourceKey.INS)
 public class OrderWorkerServiceImpl extends ServiceImpl<OrderWorkerMapper, OrderWorker> implements IOrderWorkerService {
 
     @Autowired
@@ -73,22 +77,42 @@ public class OrderWorkerServiceImpl extends ServiceImpl<OrderWorkerMapper, Order
         if (orderId == null || roleId == null || employeeId == null) {
             throw new NotFoundException("参数缺失", ErrorKind.NOT_FOUND.getCode());
         }
-        OrderWorker orderWorker = this.orderWorkerMapper.selectOne(new QueryWrapper<OrderWorker>().lambda()
-                .eq(OrderWorker::getOrderId, orderId).eq(OrderWorker::getRoleId, roleId)
-                .gt(OrderWorker::getEndDate, RequestTimeHolder.getRequestTime()));
 
-        if (orderWorker != null) {
-            //如果Employee一样，则不更新
-            if (orderWorker.getEmployeeId().equals(employeeId)) {
-                return null;
+        if (!roleId.equals(41L)) {
+            //助理设计师允许多人
+            OrderWorker orderWorker = this.orderWorkerMapper.selectOne(new QueryWrapper<OrderWorker>().lambda()
+                    .eq(OrderWorker::getOrderId, orderId).eq(OrderWorker::getRoleId, roleId)
+                    .gt(OrderWorker::getEndDate, RequestTimeHolder.getRequestTime()));
+
+            if (orderWorker != null) {
+                //如果Employee一样，则不更新
+                if (orderWorker.getEmployeeId().equals(employeeId)) {
+                    return orderWorker.getId();
+                }
+                orderWorker.setEndDate(LocalDateTime.now());
+                this.orderWorkerMapper.updateById(orderWorker);
             }
-            orderWorker.setEndDate(LocalDateTime.now());
-            this.orderWorkerMapper.updateById(orderWorker);
+        } else {
+            OrderWorker orderWorker = this.orderWorkerMapper.selectOne(new QueryWrapper<OrderWorker>().lambda()
+                    .eq(OrderWorker::getOrderId, orderId).eq(OrderWorker::getRoleId, roleId)
+                    .eq(OrderWorker::getEmployeeId, employeeId)
+                    .gt(OrderWorker::getEndDate, RequestTimeHolder.getRequestTime()));
+
+            if (orderWorker != null) {
+                return orderWorker.getId();
+            }
         }
         OrderWorker newOrderWorker = new OrderWorker();
         newOrderWorker.setOrderId(orderId);
         newOrderWorker.setRoleId(roleId);
         newOrderWorker.setEmployeeId(employeeId);
+        EmployeeJobRole employeeJobRole = this.employeeJobRoleService.queryLast(employeeId);
+        if (employeeJobRole != null) {
+            newOrderWorker.setOrgId(employeeJobRole.getOrgId());
+            newOrderWorker.setJobRole(employeeJobRole.getJobRole());
+            newOrderWorker.setJobGrade(employeeJobRole.getJobGrade());
+            newOrderWorker.setParentEmployeeId(employeeJobRole.getParentEmployeeId());
+        }
         newOrderWorker.setStartDate(RequestTimeHolder.getRequestTime());
         newOrderWorker.setEndDate(TimeUtils.getForeverTime());
         this.orderWorkerMapper.insert(newOrderWorker);
@@ -178,5 +202,43 @@ public class OrderWorkerServiceImpl extends ServiceImpl<OrderWorkerMapper, Order
         });
 
         return orderWorkers;
+    }
+
+    /**
+     * 根据订单ID与角色ID查找有效的一条记录
+     * @param orderId
+     * @param roleId
+     * @return
+     */
+    @Override
+    public OrderWorker getOneOrderWorkerByOrderIdRoleId(Long orderId, Long roleId) {
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+        OrderWorker orderWorker = this.getOne(Wrappers.<OrderWorker>lambdaQuery()
+                .eq(OrderWorker::getOrderId, orderId)
+                .eq(OrderWorker::getRoleId, roleId)
+                .le(OrderWorker::getStartDate, now)
+                .ge(OrderWorker::getEndDate, now), false);
+        return orderWorker;
+    }
+
+    /**
+     * 根据主键终止工作人员记录
+     * @param ids
+     */
+    @Override
+    public void deleteOrderWorker(List<Long> ids) {
+        if (ArrayUtils.isEmpty(ids)) {
+            return;
+        }
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+        List<OrderWorker> orderWorkers = new ArrayList<>();
+        ids.forEach(id -> {
+            OrderWorker orderWorker = new OrderWorker();
+            orderWorker.setId(id);
+            orderWorker.setEndDate(now);
+            orderWorkers.add(orderWorker);
+        });
+
+        this.updateBatchById(orderWorkers);
     }
 }

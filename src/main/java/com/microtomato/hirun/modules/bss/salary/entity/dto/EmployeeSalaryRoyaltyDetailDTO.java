@@ -17,6 +17,10 @@ public class EmployeeSalaryRoyaltyDetailDTO {
 
     private String orderStatus;
 
+    private String feeType;
+
+    private Integer periods;
+
     private Long strategyId;
 
     private String type;

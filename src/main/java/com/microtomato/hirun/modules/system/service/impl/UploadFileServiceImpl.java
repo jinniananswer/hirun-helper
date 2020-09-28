@@ -6,9 +6,13 @@ import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.system.entity.po.UploadFile;
 import com.microtomato.hirun.modules.system.mapper.UploadFileMapper;
 import com.microtomato.hirun.modules.system.service.IUploadFileService;
+import io.minio.MinioClient;
+import io.minio.PutObjectOptions;
+import io.minio.errors.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -17,6 +21,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -38,13 +45,19 @@ public class UploadFileServiceImpl extends ServiceImpl<UploadFileMapper, UploadF
     @Value("${hirun.data.path}")
     private String dataPath;
 
+    private String bucketName = "upload";
+
+    @Autowired
+    private MinioClient minioClient;
+
     @Override
     public String toAbsolutePath(String relativePath) {
+        relativePath = StringUtils.removeStart(relativePath, "/");
         String absolutePath = FilenameUtils.concat(dataPath, relativePath);
         return absolutePath;
     }
 
-    private UploadFile prepare(File destDir, MultipartFile multipartFile) throws IOException {
+    private UploadFile prepare_bak(File destDir, MultipartFile multipartFile) throws IOException {
 
         long fileSize = multipartFile.getSize();
         String fileName = multipartFile.getOriginalFilename();
@@ -66,6 +79,57 @@ public class UploadFileServiceImpl extends ServiceImpl<UploadFileMapper, UploadF
             .createEmployeeId(WebContextUtils.getUserContext().getEmployeeId())
             .build();
         return uploadFile;
+    }
+
+    private UploadFile prepare(File destDir, MultipartFile multipartFile) throws IOException {
+
+        long fileSize = multipartFile.getSize();
+        String fileName = multipartFile.getOriginalFilename();
+        String uniqueId = UUID.randomUUID().toString();
+
+        String newFileName = uniqueId + '.' + FilenameUtils.getExtension(fileName);
+        File destFile = new File(destDir, newFileName);
+        multipartFile.transferTo(destFile);
+
+        try {
+            makesureBucketExist(bucketName);
+            minioClient.putObject(bucketName, newFileName, destFile.getAbsolutePath(), new PutObjectOptions(fileSize, 1024 * 1024 * 5));
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            destFile.delete();
+        }
+
+        UploadFile uploadFile = UploadFile.builder()
+            .id(uniqueId)
+            .fileName(fileName)
+            .filePath(newFileName)
+            .fileSize(fileSize)
+            .enabled(false)
+            .createEmployeeId(WebContextUtils.getUserContext().getEmployeeId())
+            .build();
+        return uploadFile;
+    }
+
+    @Override
+    public InputStream getInputStream(UploadFile uploadFile) {
+
+        InputStream is = null;
+        try {
+            is = minioClient.getObject(bucketName, uploadFile.getFilePath());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return is;
+    }
+
+    private void makesureBucketExist(String bucketName) throws Exception {
+        boolean isExist = minioClient.bucketExists(bucketName);
+        if (isExist) {
+            System.out.println("Bucket already exists.");
+        } else {
+            minioClient.makeBucket(bucketName);
+        }
     }
 
     private File makesureFolderExist(String filePath) {
@@ -155,12 +219,24 @@ public class UploadFileServiceImpl extends ServiceImpl<UploadFileMapper, UploadF
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(String id) {
         this.update(
             Wrappers.<UploadFile>lambdaUpdate()
                 .setSql("enabled = false")
                 .eq(UploadFile::getId, id)
         );
+
+        UploadFile uploadFile = this.getOne(Wrappers.<UploadFile>lambdaQuery().eq(UploadFile::getId, id));
+        try {
+            minioClient.removeObject(bucketName, uploadFile.getFilePath());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public UploadFile selectById(String id) {
+        return this.getOne(Wrappers.<UploadFile>lambdaQuery().eq(UploadFile::getId, id));
     }
 
     @Override

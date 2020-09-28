@@ -15,6 +15,7 @@ import com.microtomato.hirun.modules.bss.order.service.IOrderWholeRoomDrawServic
 import com.microtomato.hirun.modules.bss.order.service.IOrderWorkerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,26 +30,10 @@ public class OrderWholeRoomDrawController {
     private IOrderWorkerService orderWorkerService;
 
     @PostMapping("/submitWholeRoomDrawing")
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @RestResult
     public void save(@RequestBody OrderWholeRoomDrawDTO dto) {
         iOrderWholeRoomDrawService.submitWholeRoomDrawing(dto);
-        orderWorkerService.updateOrderWorker(dto.getOrderId(),30L,dto.getDesigner());
-        if (dto.getDrawingAuditor() != null) {
-            orderWorkerService.updateOrderWorker(dto.getOrderId(),44L,dto.getDrawingAuditor());
-        }
-        if (dto.getProductionLeader() != null) {
-            orderWorkerService.updateOrderWorker(dto.getOrderId(),42L,dto.getProductionLeader());
-        }
-        if (dto.getDrawingAssistant() != null) {
-            orderWorkerService.updateOrderWorker(dto.getOrderId(),39L,dto.getDrawingAssistant());
-        }
-        if (dto.getAdminAssistant() != null) {
-            orderWorkerService.updateOrderWorker(dto.getOrderId(),40L,dto.getAdminAssistant());
-        }
-        if (dto.getHydropowerDesigner() != null) {
-            orderWorkerService.updateOrderWorker(dto.getOrderId(),38L,dto.getHydropowerDesigner());
-        }
     }
 
     @GetMapping("/getWholeRoomDraw")
@@ -58,52 +43,51 @@ public class OrderWholeRoomDrawController {
     }
 
     @PostMapping("/submitToAuditPicturesFlow")
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @RestResult
     public void submitToAuditPicturesFlow(@RequestBody OrderWholeRoomDrawDTO dto) {
-        //iOrderWholeRoomDrawService.submitWholeRoomDrawing(dto);
-        iOrderWholeRoomDrawService.submitToAuditPicturesFlow(dto.getOrderId());
-        //orderWorkerService.updateOrderWorker(dto.getOrderId(),30L,dto.getDesigner());
-        //orderWorkerService.updateOrderWorker(dto.getOrderId(),44L,dto.getDrawingAuditor());
+         this.save(dto);
+         iOrderWholeRoomDrawService.submitToAuditPicturesFlow(dto.getOrderId());
     }
 
     @PostMapping("/submitToConfirmFlow")
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @RestResult
     public void submitToConfirmFlow(@RequestBody OrderWholeRoomDraw orderWholeRoomDraw) {
         iOrderWholeRoomDrawService.submitToConfirmFlow(orderWholeRoomDraw.getOrderId());
     }
 
     @PostMapping("/submitCancelDesignExpensesFlow")
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @RestResult
     public void submitCancelDesignExpensesFlow(@RequestBody OrderWholeRoomDraw orderWholeRoomDraw) {
         iOrderWholeRoomDrawService.submitCancelDesignExpensesFlow(orderWholeRoomDraw.getOrderId());
     }
 
     @PostMapping("/submitToWholeRoomDelayTimeFlow")
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @RestResult
     public void submitToWholeRoomDelayTimeFlow(@RequestBody OrderWholeRoomDraw orderWholeRoomDraw) {
         iOrderWholeRoomDrawService.submitToWholeRoomDelayTimeFlow(orderWholeRoomDraw.getOrderId());
     }
 
     @PostMapping("/submitToCustomerLeaderFlow")
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @RestResult
     public void submitToCustomerLeaderFlow(@RequestBody OrderWholeRoomDrawDTO dto) {
+        this.save(dto);
         iOrderWholeRoomDrawService.submitToCustomerLeaderFlow(dto.getOrderId());
     }
 
     @PostMapping("/submitToBackWholeRoomFlow")
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @RestResult
     public void submitToBackWholeRoomFlow(@RequestBody OrderWholeRoomDraw orderWholeRoomDraw) {
         iOrderWholeRoomDrawService.submitToBackWholeRoomFlow(orderWholeRoomDraw.getOrderId());
     }
 
     @PostMapping("/submitToTwoLevelActuarialCalculationFlow")
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @RestResult
     public void submitToTwoLevelActuarialCalculationFlow(@RequestBody OrderWholeRoomDraw orderWholeRoomDraw) {
         iOrderWholeRoomDrawService.submitToTwoLevelActuarialCalculationFlow(orderWholeRoomDraw.getOrderId());
@@ -113,7 +97,7 @@ public class OrderWholeRoomDrawController {
     }
 
     @PostMapping("/submitToBackToDesignerFlow")
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @RestResult
     public void submitToBackToDesignerFlow(@RequestBody OrderWholeRoomDraw orderWholeRoomDraw) {
         iOrderWholeRoomDrawService.submitToBackToDesignerFlow(orderWholeRoomDraw.getOrderId());

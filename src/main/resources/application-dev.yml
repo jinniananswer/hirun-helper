@@ -31,21 +31,9 @@ spring:
   datasource:
     atomikos:
       sys:
-#        uniqueResourceName: sys
-#        driverClassName: com.mysql.cj.jdbc.Driver
-#        url: jdbc:mysql://39.106.228.124:3306/sys?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=GMT%2B8
-#        user: sys
-#        password: ENC(kOszr+P7A1igBzGeAY/bpx0ZLffsMGc/)
-#        minPoolSize: 2
-#        maxPoolSize: 5
-#        maxIdleTime: 60
-#        maxLifetime: 1200
-#        testQuery: SELECT 1
-#        maintenanceInterval: 60
-
         unique-resource-name: sys
-        min-pool-size: 2
-        max-pool-size: 5
+        min-pool-size: 0
+        max-pool-size: 50
         max-lifetime: 20000
         borrow-connection-timeout: 10000
         xa-data-source-class-name: com.alibaba.druid.pool.xa.DruidXADataSource
@@ -54,39 +42,29 @@ spring:
           username: sys
           password: ENC(kOszr+P7A1igBzGeAY/bpx0ZLffsMGc/)
           driverClassName: com.mysql.cj.jdbc.Driver
-          initialSize: 2
-          minIdle: 2
-          maxActive: 5
+          initialSize: 5
+          minIdle: 5
+          maxActive: 50
           maxWait: 60000
           timeBetweenEvictionRunsMillis: 30000
-          minEvictableIdleTimeMillis: 300000
-          numTestsPerEvictionRun: 2
+          #minEvictableIdleTimeMillis: 1800000
+          #maxEvictableIdleTimeMillis: 25200000
+          validationQuery: select 1
           testWhileIdle: true
           testOnBorrow: false
           testOnReturn: false
-          poolPreparedStatements: true
-          validationQuery: select 1
-          maxPoolPreparedStatementPerConnectionSize: 20
+          numTestsPerEvictionRun: 2
+          poolPreparedStatements: false
+          keepAlive: true
+          keepAliveBetweenTimeMillis: 30000
           filters: stat,slf4j,wall
 
 
 
       ins:
-#        uniqueResourceName: ins
-#        driverClassName: com.mysql.cj.jdbc.Driver
-#        url: jdbc:mysql://39.106.228.124:3306/ins?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=GMT%2B8
-#        user: ins
-#        password: ENC(iLNwZcUXiXjVM2TOiymyEwsRUeZMnFKY)
-#        minPoolSize: 2
-#        maxPoolSize: 5
-#        maxIdleTime: 60
-#        maxLifetime: 1200
-#        testQuery: SELECT 1
-#        maintenanceInterval: 60
-
         unique-resource-name: ins
-        min-pool-size: 2
-        max-pool-size: 5
+        min-pool-size: 0
+        max-pool-size: 50
         max-lifetime: 20000
         borrow-connection-timeout: 10000
         xa-data-source-class-name: com.alibaba.druid.pool.xa.DruidXADataSource
@@ -95,19 +73,21 @@ spring:
           username: ins
           password: ENC(iLNwZcUXiXjVM2TOiymyEwsRUeZMnFKY)
           driverClassName: com.mysql.cj.jdbc.Driver
-          initialSize: 2
-          minIdle: 2
-          maxActive: 5
+          initialSize: 5
+          minIdle: 5
+          maxActive: 50
           maxWait: 60000
           timeBetweenEvictionRunsMillis: 30000
-          minEvictableIdleTimeMillis: 300000
-          numTestsPerEvictionRun: 2
+          #minEvictableIdleTimeMillis: 1800000
+          #maxEvictableIdleTimeMillis: 25200000
+          validationQuery: select 1
           testWhileIdle: true
           testOnBorrow: false
           testOnReturn: false
-          poolPreparedStatements: true
-          validationQuery: select 1
-          maxPoolPreparedStatementPerConnectionSize: 20
+          numTestsPerEvictionRun: 2
+          poolPreparedStatements: false
+          keepAlive: true
+          keepAliveBetweenTimeMillis: 30000
           filters: stat,slf4j,wall
 
 
@@ -137,3 +117,6 @@ spring:
 
 # 数据文件位置
 hirun.data.path: D:/files
+hirun.minio.endpoint: http://39.106.228.124:8443
+hirun.minio.accessKey: hirun
+hirun.minio.secretKey: 1q1w1e1r

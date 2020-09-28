@@ -9,7 +9,7 @@
     <script src="static/js/framework/requirejs/require.config.js" th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
 </head>
 <body>
-<div id="app">
+<div id="app" v-cloak>
     <el-container>
         <el-main>
             <el-row>
@@ -316,7 +316,7 @@
                                             </template>
                                         </vxe-table-column>
                                         <vxe-table-column field="salaryMonth" title="发放月份" width="100" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
-                                        <vxe-table-column field="remark" title="提成备注" width="100" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+                                        <vxe-table-column field="remark" title="提成备注" width="100" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
                                         <vxe-table-column title="操作" width="100" show-overflow>
                                             <template v-slot="{ row }">
                                                 <el-button
@@ -460,6 +460,9 @@
 
     .delete_row {
         text-decoration:line-through;
+    }
+    [v-cloak] {
+        display: none;
     }
 </style>
 <script src="static/js/modules/bss/salary/edit.royalty.detail.js" th:src="@{static/js/modules/bss/salary/edit.royalty.detail.js(v=${version})}"></script>

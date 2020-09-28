@@ -140,6 +140,9 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
                     String thirdFalg = "";
 
                     for (OrderPayItem payItem : payItems) {
+                        if (payItem.getPayItemId() != 7) {
+                            continue;
+                        }
                         Integer payPeriod = payItem.getPeriods();
                         if (1 == payPeriod) {
                             firstFalg = "1";
@@ -378,7 +381,7 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
                         OrderPlaneSketch planeSketch = this.findPlaneSketch(orderId, planeSketches);
                         if (planeSketch != null) {
                             designFee.setDesignTheme(this.staticDataService.getCodeName("DESIGN_THEME", planeSketch.getDesignTheme()));
-                            designFee.setDesignFeeStandard(planeSketch.getDesignFeeStandard());
+                            designFee.setDesignFeeStandard(planeSketch.getDesignFeeStandard() / 100);
                         }
                     });
                 }
@@ -571,6 +574,14 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
                 OrderStatusCfg orderStatusCfg = this.orderStatusCfgService.getCfgByTypeStatus(projectFee.getType(), orderStatus);
                 if (orderStatusCfg != null) {
                     projectFee.setOrderStatusName(orderStatusCfg.getStatusName());
+                }
+            }
+
+            Long shopId = projectFee.getShopId();
+            if (shopId != null) {
+                Org shop = this.orgService.queryByOrgId(shopId);
+                if (shop != null) {
+                    projectFee.setShopName(shop.getName());
                 }
             }
         });

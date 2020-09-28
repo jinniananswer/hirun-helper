@@ -83,7 +83,7 @@ public class FeeFact {
      * @return
      */
     public Long getDoorFee() {
-        return this.getFeeByTypeItemId("2", 6L);
+        return this.getFeeByTypeItemId("2", 8L);
     }
 
     /**

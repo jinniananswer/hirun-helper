@@ -23,6 +23,10 @@ public class CustOrderInfoDTO {
 
     private Long orderId;
 
+    private String type;
+
+    private String typeName;
+
     private Long housesId;
 
     private String housesName;
@@ -44,4 +48,14 @@ public class CustOrderInfoDTO {
     private String floorage;
 
     private String indoorArea;
+
+    private UsualFeeDTO usualFee;
+
+    private Double designPay;
+
+    private Double contractPay;
+
+    private Double secondContractPay;
+
+    private Double settlementPay;
 }

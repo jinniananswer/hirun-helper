@@ -75,7 +75,7 @@ public class SPELUtils {
      */
     public Long executeLong(String expression, Object... objects) {
         this.parse(objects);
-        Long result = (Long)parser.parseExpression(expression).getValue(this.ctx);
+        Long result = Math.round(new Double(parser.parseExpression(expression).getValue(this.ctx).toString()));
         return result;
     }
 

@@ -11,7 +11,7 @@
             th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
 </head>
 <body>
-<div id="app">
+<div id="app" v-cloak>
     <el-container>
         <el-main>
             <el-row :gutter="12">
@@ -300,7 +300,7 @@
                                             </div>
                                             <el-row style="padding-bottom: 12px">
                                                 <el-button type="success" @click="voucherPreparationForConstruction">
-                                                    制单
+                                                    施工制单
                                                 </el-button>
                                             </el-row>
                                             <vxe-table

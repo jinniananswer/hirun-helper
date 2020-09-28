@@ -63,7 +63,42 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
                     </el-col>
                     <el-col :span="20">
                         <el-tabs v-model="activeTab">
-                            <el-tab-pane label="客户信息" name="customerInfo">客户信息</el-tab-pane>
+                            <el-tab-pane label="客户信息" name="customerInfo">
+                                <el-row :gutter="5">
+                                    <el-col :span="8">
+                                        <div class="text">
+                                            客户姓名：<template v-if="customer.custName != null && customer.custName != ''"><el-tag type="danger">{{customer.custName}}</el-tag></template>
+                                        </div>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <div class="text item">
+                                            客户电话：<template v-if="customer.mobileNo != null && customer.mobileNo != ''"><el-tag>{{customer.mobileNo}}</el-tag></template>
+                                        </div>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <div class="text item">
+                                            咨询时间：<template v-if="customer.consultTime != null && customer.consultTime != ''"><el-tag>{{customer.consultTime}}</el-tag></template>
+                                        </div>
+                                    </el-col>
+                                </el-row >  
+                                <el-row :gutter="5">
+                                    <el-col :span="8">
+                                        <div class="text">
+                                            客户类型：<template v-if="customer.custTypeName != null && customer.custTypeName != ''"><el-tag type="danger">{{customer.custTypeName}}</el-tag></template>
+                                        </div>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <div class="text item">
+                                            职业：<template v-if="customer.profession != null && customer.profession != ''"><el-tag>{{customer.profession}}</el-tag></template>
+                                        </div>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <div class="text item">
+                                            学历：<template v-if="customer.educational != null && customer.educational != ''"><el-tag>{{customer.educational}}</el-tag></template>
+                                        </div>
+                                    </el-col>
+                                </el-row >                                           
+                            </el-tab-pane>
                             <el-tab-pane label="订单信息" name="orderInfo">
                                 <div class="text item" style="margin-left: 18px;padding-bottom: 10px;width:95%" >
                                     <el-slider

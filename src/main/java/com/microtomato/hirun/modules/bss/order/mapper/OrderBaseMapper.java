@@ -37,7 +37,7 @@ public interface OrderBaseMapper extends BaseMapper<OrderBase> {
     )
     List<PendingOrderDTO> queryAttentionStatusOrders(@Param("statuses")String statuses, @Param("employeeId") Long employeeId);
 
-    @Select("select a.order_id, a.cust_id, a.houses_id, a.decorate_address, a.house_layout, a.floorage, a.indoor_area, a.stage,a. status, b.cust_name, b.mobile_no, b.sex from order_base a, cust_base b " +
+    @Select("select a.order_id, a.cust_id, a.houses_id, a.type, a.decorate_address, a.house_layout, a.floorage, a.indoor_area, a.stage, a.status, a.design_pay/100 design_pay, a.contract_pay/100 contract_pay, a.second_contract_pay/100 second_contract_pay, a.settlement_pay/100 settlement_pay, b.cust_name, b.mobile_no, b.sex from order_base a, cust_base b " +
             "${ew.customSqlSegment}")
     IPage<CustOrderInfoDTO> queryCustOrderInfo(Page<CustOrderQueryDTO> queryCondition, @Param(Constants.WRAPPER) Wrapper wrapper);
 
@@ -51,7 +51,7 @@ public interface OrderBaseMapper extends BaseMapper<OrderBase> {
     @Select("select a.cust_id, a.order_id, a.status,a.decorate_address,a.house_layout, a.houses_id, a.indoor_area,a.type, b.cust_no, b.cust_name, b.mobile_no, a.create_time from order_base a, cust_base b" +
             " ${ew.customSqlSegment}"
     )
-    IPage<OrderTaskDTO> queryOrderTaskInConsole(IPage<OrderTaskQueryDTO> condition, @Param(Constants.WRAPPER)Wrapper wrapper);
+    List<OrderTaskDTO> queryOrderTaskInConsole(@Param(Constants.WRAPPER)Wrapper wrapper);
 
     @Select("select a.cust_id, a.order_id, a.status,a.decorate_address,a.house_layout, a.houses_id, a.indoor_area,a.type, b.cust_no, b.cust_name, b.mobile_no, a.create_time, c.total_money/100 total_money, c.pay_no, c.audit_status,c.pay_date from order_base a, cust_base b, order_pay_no c " +
             " ${ew.customSqlSegment}"

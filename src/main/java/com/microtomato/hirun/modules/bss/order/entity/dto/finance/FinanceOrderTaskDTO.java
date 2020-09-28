@@ -1,7 +1,7 @@
 package com.microtomato.hirun.modules.bss.order.entity.dto.finance;
 
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderTaskDTO;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -11,7 +11,10 @@ import java.time.LocalDateTime;
  * @author: jinnian
  * @create: 2020-07-11 16:37
  **/
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
+@ToString
 public class FinanceOrderTaskDTO extends OrderTaskDTO {
 
     private Double totalMoney;

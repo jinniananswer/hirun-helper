@@ -2,6 +2,8 @@ package com.microtomato.hirun.modules.bss.salary.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.microtomato.hirun.framework.annotation.RestResult;
+import com.microtomato.hirun.framework.util.SpringContextUtils;
+import com.microtomato.hirun.modules.bss.salary.entity.domain.SalaryDO;
 import com.microtomato.hirun.modules.bss.salary.entity.dto.*;
 import com.microtomato.hirun.modules.bss.salary.service.ISalaryRoyaltyDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,5 +106,12 @@ public class SalaryRoyaltyDetailController {
     @RestResult
     public IPage<StatRoyaltyDetailDTO> statByCustOrder(QueryStatRoyaltyDTO condition) {
         return this.salaryRoyaltyDetailService.statByCustOrder(condition);
+    }
+
+    @GetMapping("/reCompute")
+    @RestResult
+    public void reCompute(Long orderId, String orderStatus) {
+        SalaryDO salaryDO = SpringContextUtils.getBean(SalaryDO.class);
+        salaryDO.createRoyalties(orderId, orderStatus);
     }
 }

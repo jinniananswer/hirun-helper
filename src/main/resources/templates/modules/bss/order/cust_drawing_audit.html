@@ -9,7 +9,7 @@
     <script src="static/js/framework/requirejs/require.config.js" th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
 </head>
 <body>
-<div id="app">
+<div id="app" v-cloak>
     <el-container>
         <el-main>
             <el-row>
@@ -68,6 +68,11 @@
                                         <order-selectemployee role-id="42" v-model="wholeRoomDrawing.productionLeader"></order-selectemployee>
                                     </el-form-item>
                                 </el-col>
+                                <el-col :span="11">
+                                    <el-form-item label="助理设计师">
+                                        <order-selectemployee role-id="41" v-model="wholeRoomDrawing.assistantDesigner"></order-selectemployee>
+                                    </el-form-item>
+                                </el-col>
                             </el-row>
                             <el-row>
                                 <el-col :span="11">
@@ -100,31 +105,13 @@
                                     </el-form-item>
                                 </el-col>
                                 <el-col v-if="true" :span="22">
-                                    <el-form-item label="请选择客户部主管" required="true">
-                                        <order-search-employee :employee-id.sync="wholeRoomDrawing.customerLeader" :employee-name.sync="wholeRoomDrawing.customerLeaderName"></order-search-employee>
+                                    <el-form-item label="请选择下单审核员" required="true">
+                                        <order-selectemployee role-id="58" v-model="wholeRoomDrawing.customerLeader"></order-selectemployee>
                                     </el-form-item>
                                 </el-col>
                             </el-row>
-                            <el-divider>助理设计师信息</el-divider>
-                            <el-row>
-                                <template>
-                                    <el-table
-                                            :data="orderWorkActions"
-                                            border
-                                            style="width: 100%">
-                                        <el-table-column
-                                                prop="employeeName"
-                                                label="设计师"
-                                                width="400">
-                                        </el-table-column>
-                                        <el-table-column
-                                                prop="action"
-                                                label="员工事项"
-                                                width="400">
-                                        </el-table-column>
-                                    </el-table>
-                                </template>
-                            </el-row>
+
+
                             <el-divider></el-divider>
                             <el-form-item>
                                 <el-button type="primary" @click="save">保存</el-button>
@@ -133,7 +120,7 @@
                                         审核后流程操作<i class="el-icon-arrow-down el-icon--right"></i>
                                     </el-button>
                                     <el-dropdown-menu slot="dropdown">
-                                        <el-dropdown-item command="submitToCustomerLeaderFlow">审核通过，提交客户部主管</el-dropdown-item>
+                                        <el-dropdown-item command="submitToCustomerLeaderFlow">审核通过，提交下单审核</el-dropdown-item>
                                         <el-dropdown-item command="submitToBackWholeRoomFlow">审核未通过</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </el-dropdown>
@@ -164,6 +151,9 @@
 
     .el-card__header {
         padding:10px;
+    }
+    [v-cloak] {
+        display: none;
     }
 </style>
 <script src="static/js/modules/bss/order/cust.drawingaudit.js" th:src="@{static/js/modules/bss/order/cust.drawingaudit.js(v=${version})}"></script>

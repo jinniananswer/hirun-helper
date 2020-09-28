@@ -11,7 +11,7 @@
             th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
 </head>
 <body>
-<div id="app" style="display:none" :style="display?display:''">
+<div id="app" v-cloak>
     <el-container>
         <el-main>
             <el-card class="box-card">
@@ -86,7 +86,7 @@
             </el-card>
 
             <template>
-                <el-table :data="customerInfo" stripe="true" style="width: 100%" fit="true" border height="400px">
+<!--                <el-table :data="customerInfo" stripe="true" style="width: 100%" fit="true" border height="400px">
                     <el-table-column prop="custNo" label="客户编号" fixed align="center" width="180"></el-table-column>
                     <el-table-column prop="custName" label="客户姓名" fixed align="center" width="100"></el-table-column>
                     <el-table-column prop="mobileNo" label="客户电话" align="center" width="180"></el-table-column>
@@ -108,7 +108,34 @@
                     <el-table-column prop="rulingEmployeeName" label="裁定人" align="center"></el-table-column>
                     <el-table-column prop="rulingTime" label="裁定时间" width="180" align="center"></el-table-column>
                     <el-table-column prop="rulingRemark" label="主管裁定备注" width="180" align="center"></el-table-column>
-                </el-table>
+                </el-table>-->
+                <vxe-table
+                        border
+                        resizable
+                        show-overflow
+                        highlight-hover-row
+                        max-height="800px"
+                        :auto-resize="true"
+                        :data="customerInfo">
+                    <vxe-table-column field="custNo" title="客户编号" sortable width="150" fixed="left"></vxe-table-column>
+                    <vxe-table-column field="custName" title="客户姓名" width="100" fixed="left"></vxe-table-column>
+                    <vxe-table-column field="mobileNo" title="客户电话" width="120" fixed="left"></vxe-table-column>
+                    <vxe-table-column field="refereeInfo" title="老客户施工地址"  width="150" fixed="left"></vxe-table-column>
+                    <vxe-table-column field="houseAddress" title="楼盘" sortable width="100" fixed="left"></vxe-table-column>
+                    <vxe-table-column field="houseModeName" title="户型" sortable width="100" fixed="left"></vxe-table-column>
+                    <vxe-table-column field="prepareEmployeeName" title="申报人" sortable width="100"></vxe-table-column>
+                    <vxe-table-column field="customerServiceName" title="客户代表" sortable width="100" ></vxe-table-column>
+                    <vxe-table-column field="designEmployeeName" title="设计师" width="100"></vxe-table-column>
+                    <vxe-table-column field="prepareStatusName" title="是否成功" sortable width="120" ></vxe-table-column>
+                    <vxe-table-column field="prepareExpireStatus" title="申报状态" width="100"></vxe-table-column>
+                    <vxe-table-column field="prepareTime" title="申报时间" width="100"></vxe-table-column>
+                    <vxe-table-column field="enterEmployeeName" title="录入人" width="100"></vxe-table-column>
+                    <vxe-table-column field="consultTime" title="上门时间" width="120"></vxe-table-column>
+                    <vxe-table-column field="remark" title="备注" width="100"></vxe-table-column>
+                    <vxe-table-column field="rulingEmployeeName" title="裁定人" width="180"></vxe-table-column>
+                    <vxe-table-column field="rulingTime" title="裁定时间" width="180"></vxe-table-column>
+                    <vxe-table-column field="rulingRemark" title="主管裁定" width="180"></vxe-table-column>
+                </vxe-table>
                 <div class="pagination">
                     <el-pagination
                             background
@@ -135,6 +162,9 @@
 
     .box-card {
         margin-bottom: 18px;
+    }
+    [v-cloak] {
+        display: none;
     }
 </style>
 <script src="../../../static/js/modules/bss/cust/query.preparation.js"

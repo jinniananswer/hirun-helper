@@ -11,7 +11,7 @@
             th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
 </head>
 <body>
-<div id="app">
+<div id="app" v-cloak>
     <el-container>
         <el-main>
             <el-row>
@@ -43,7 +43,7 @@
                             </el-row>
                             <el-row>
                                 <el-col :span="8">
-                                    <el-form-item label="橱柜设计师" prop="designCupboardEmployeeId" label-width="100px">
+                                    <el-form-item label="橱柜设计师"  label-width="100px">
                                         <order-selectemployee role-id="45" v-model="customerConsult.designCupboardEmployeeId" ></order-selectemployee>
                                     </el-form-item>
                                 </el-col>
@@ -53,8 +53,8 @@
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="8">
-                                    <el-form-item label="橱柜管家" prop="cupboardKeeperEmployeeId" label-width="100px">
-                                        <order-selectemployee role-id="46" v-model="customerConsult.cupboardKeeperEmployeeId"></order-selectemployee>
+                                    <el-form-item label="橱柜管家"  label-width="100px">
+                                        <order-selectemployee role-id="47" v-model="customerConsult.cupboardKeeperEmployeeId"></order-selectemployee>
                                     </el-form-item>
                                 </el-col>
                             </el-row>
@@ -96,6 +96,9 @@
 
     .el-card__header {
         padding: 10px;
+    }
+    [v-cloak] {
+        display: none;
     }
 </style>
 <script src="../../../static/js/modules/bss/order/customer.consult.js"

@@ -5,11 +5,12 @@ import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.modules.bss.salary.entity.dto.SalaryMonthlyDTO;
 import com.microtomato.hirun.modules.bss.salary.entity.dto.SalaryMonthlyQueryDTO;
 import com.microtomato.hirun.modules.bss.salary.service.ISalaryMonthlyService;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,17 +35,9 @@ public class SalaryMonthlyController {
      * @param param
      * @return
      */
-    @GetMapping("/querySalary")
+    @RequestMapping("/querySalary")
     @RestResult
-    public List<SalaryMonthlyDTO> querySalary(SalaryMonthlyQueryDTO param) {
-        if (StringUtils.isNotBlank(param.getOrgId())) {
-            String[] orgIdArray = param.getOrgId().split(",");
-            List<Long> orgIds = new ArrayList<>();
-            for (String s : orgIdArray) {
-                orgIds.add(Long.parseLong(s));
-            }
-            param.setOrgIds(orgIds);
-        }
+    public List<SalaryMonthlyDTO> querySalary(@RequestBody SalaryMonthlyQueryDTO param) {
         return this.salaryMonthlyService.queryEmployeeSalaries(param);
     }
 
@@ -53,17 +46,9 @@ public class SalaryMonthlyController {
      * @param param
      * @return
      */
-    @GetMapping("/queryAuditSalary")
+    @RequestMapping("/queryAuditSalary")
     @RestResult
-    public List<SalaryMonthlyDTO> queryAuditFixSalary(SalaryMonthlyQueryDTO param) {
-        if (StringUtils.isNotBlank(param.getOrgId())) {
-            String[] orgIdArray = param.getOrgId().split(",");
-            List<Long> orgIds = new ArrayList<>();
-            for (String s : orgIdArray) {
-                orgIds.add(Long.parseLong(s));
-            }
-            param.setOrgIds(orgIds);
-        }
+    public List<SalaryMonthlyDTO> queryAuditFixSalary(@RequestBody SalaryMonthlyQueryDTO param) {
         return this.salaryMonthlyService.queryAuditEmployeeSalaries(param);
     }
 

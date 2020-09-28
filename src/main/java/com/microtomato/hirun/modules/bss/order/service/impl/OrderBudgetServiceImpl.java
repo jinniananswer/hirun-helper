@@ -50,7 +50,7 @@ public class OrderBudgetServiceImpl extends ServiceImpl<OrderBudgetMapper, Order
         OrderBudget orderBudget = null;
         if(dto.getId() == null) {
             orderBudget = new OrderBudget();
-            orderWorkerService.updateOrderWorker(dto.getOrderId(), 15L, dto.getCheckEmployeeId());
+            orderWorkerService.updateOrderWorker(dto.getOrderId(), 43L, dto.getCheckEmployeeId());
         } else {
             orderBudget = this.getById(dto.getId());
         }

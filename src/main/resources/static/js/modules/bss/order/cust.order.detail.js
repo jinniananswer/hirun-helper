@@ -8,6 +8,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 order:{
 
                 },
+                customer: {},
                 stages:{
                     0: '酝酿',
                     10: '初选',
@@ -42,6 +43,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                         data.stage.push(-10);
                         data.stage.push(stage);
                         that.order = data;
+                        that.customer = data.customer;
 
                         if (data.xqlteInfo != null) {
                             if (data.xqlteInfo.funcInfo != null && data.xqlteInfo.funcInfo.FUNC_A != null) {

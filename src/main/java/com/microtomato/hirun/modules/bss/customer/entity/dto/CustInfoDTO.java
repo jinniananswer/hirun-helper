@@ -146,4 +146,6 @@ public class CustInfoDTO {
     private String remark;
 
     private String prepareExpireStatus;
+
+    private String workCompany;
 }

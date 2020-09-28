@@ -6,10 +6,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'util', 'vxe-table', 'vueselect','ho
             return {
                 tasks: [],
                 queryCond: {
-                    orderStatus: util.getRequest('status'),
-                    count: 0,
-                    limit: 20,
-                    page: 1,
+                    orderStatus: util.getRequest('status')
                 },
                 options: []
             }
@@ -32,9 +29,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'util', 'vxe-table', 'vueselect','ho
                     if (data == null) {
                         return null;
                     }
-                    that.tasks = data.records;
-                    that.queryCond.page = data.current;
-                    that.queryCond.count = data.total;
+                    that.tasks = data;
                 })
             },
 

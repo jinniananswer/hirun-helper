@@ -9,7 +9,7 @@
     <script src="static/js/framework/requirejs/require.config.js" th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
 </head>
 <body>
-<div id="app">
+<div id="app" v-cloak>
     <el-container>
         <el-main>
             <el-row>
@@ -19,15 +19,41 @@
                         <div slot="header" class="clearfix">
                             <span>全房图信息</span>
                         </div>
-                        <el-form :inline="false" :model="wholeRoomDrawing" label-position="right" label-width="140px">
+                        <el-form :inline="false" :rules="wholeRoomRules" :model="wholeRoomDrawing" ref="wholeRoomForm" label-position="right" label-width="140px">
                             <el-row>
-                                <el-col :span="11">
+                                <el-col :span="8">
                                     <el-form-item label="设计师" required="true" prop="designer">
                                         <order-selectemployee role-id="30" v-model="wholeRoomDrawing.designer" :disabled="true"></order-selectemployee>
                                     </el-form-item>
                                 </el-col>
-                                <el-col :span="11">
-                                    <el-form-item label="开始时间">
+                                <el-col :span="8">
+                                    <el-form-item label="全房图助理" prop="assistantDesigner">
+                                        <order-selectemployee role-id="41" v-model="wholeRoomDrawing.assistantDesigner"></order-selectemployee>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="制作组长">
+                                        <order-selectemployee role-id="42" v-model="wholeRoomDrawing.productionLeader"></order-selectemployee>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="8">
+                                    <el-form-item label="行政助理">
+                                        <order-selectemployee role-id="40" v-model="wholeRoomDrawing.adminAssistant"></order-selectemployee>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="水电设计师">
+                                        <order-selectemployee role-id="38" v-model="wholeRoomDrawing.hydropowerDesigner"></order-selectemployee>
+                                        <!--<order-selectemployee role-id="38" v-model="wholeRoomDrawing.hydropowerDesigner"></order-selectemployee>-->
+                                    </el-form-item>
+                                </el-col>
+
+                            </el-row>
+                            <el-row>
+                                <el-col :span="8">
+                                    <el-form-item label="开始日期">
                                         <el-date-picker
                                                 v-model="wholeRoomDrawing.drawStartDate"
                                                 type="date"
@@ -37,10 +63,8 @@
                                         </el-date-picker>
                                     </el-form-item>
                                 </el-col>
-                            </el-row>
-                            <el-row>
-                                <el-col :span="11">
-                                    <el-form-item label="结束时间">
+                                <el-col :span="8">
+                                    <el-form-item label="结束日期">
                                         <el-date-picker
                                                 v-model="wholeRoomDrawing.drawEndDate"
                                                 type="date"
@@ -50,8 +74,8 @@
                                         </el-date-picker>
                                     </el-form-item>
                                 </el-col>
-                                <el-col :span="11">
-                                    <el-form-item label="预约看图时间">
+                                <el-col :span="8">
+                                    <el-form-item label="预约看图日期">
                                         <el-date-picker
                                                 v-model="wholeRoomDrawing.preTime"
                                                 type="date"
@@ -63,97 +87,19 @@
                                 </el-col>
                             </el-row>
                             <el-row>
-                                <el-col :span="11">
-                                    <el-form-item label="制作组长" required="true" prop="designer">
-                                        <order-selectemployee role-id="42" v-model="wholeRoomDrawing.productionLeader"></order-selectemployee>
-                                    </el-form-item>
-                                </el-col>
-                                <el-col :span="11">
-                                    <el-form-item label="绘图助理">
-                                        <order-selectemployee role-id="39" v-model="wholeRoomDrawing.drawingAssistant"></order-selectemployee>
-                                    </el-form-item>
-                                </el-col>
-                            </el-row>
-                            <el-row>
-                                <el-col :span="11">
-                                    <el-form-item label="行政助理">
-                                        <order-selectemployee role-id="40" v-model="wholeRoomDrawing.adminAssistant"></order-selectemployee>
-                                    </el-form-item>
-                                </el-col>
-                                <el-col :span="11">
+                                <el-col :span="24">
                                     <el-form-item label="设计师备注">
                                         <el-input v-model="wholeRoomDrawing.designerRemarks" placeholder="设计师备注"></el-input>
                                     </el-form-item>
-                                </el-col>
-                            </el-row>
-                            <el-row>
-                                <el-col :span="11">
-                                    <el-form-item label="水电设计师">
-                                        <order-selectemployee role-id="38" v-model="wholeRoomDrawing.hydropowerDesigner"></order-selectemployee>
-                                        <!--<order-selectemployee role-id="38" v-model="wholeRoomDrawing.hydropowerDesigner"></order-selectemployee>-->
-                                    </el-form-item>
-                                </el-col>
-                            </el-row>
-
-                            <el-divider>助理设计师信息</el-divider>
-
-                            <el-row>
-                                <template>
-                                    <el-table
-                                            :data="orderWorkActions"
-                                            border
-                                            style="width: 100%">
-                                        <el-table-column
-                                                prop="employeeName"
-                                                label="设计师"
-                                                width="370">
-                                        </el-table-column>
-                                        <el-table-column
-                                                prop="action"
-                                                label="员工事项"
-                                                width="370">
-                                        </el-table-column>
-                                        <el-table-column
-                                                fixed="right"
-                                                label="操作"
-                                                width="60">`
-                                            <template slot-scope="scope">
-                                                <el-button
-                                                        @click.native.prevent="deleteRow(scope.$index, orderWorkActions)"
-                                                        type="text"
-                                                        size="small">
-                                                    取消
-                                                </el-button>
-                                            </template>
-                                        </el-table-column>
-                                    </el-table>
-                                </template>
-                                <!--<el-col :span="11">
-                                    <el-button type="success" @click="addSuccessHydropower" icon="el-icon-circle-plus-outline">添加水电设计师</el-button>
-                                </el-col>-->
-                            </el-row>
-                            <el-row>
-                                <el-col :span="11">
-                                    <el-form-item label="助理设计师">
-                                        <order-selectemployee role-id="41" v-model="wholeRoomDrawing.assistantDesigner"></order-selectemployee>
-                                    </el-form-item>
-                                </el-col>
-                                <el-col :span="11">
-                                    <el-button type="info" @click="addSuccessEmployeeName" icon="el-icon-circle-plus-outline">添加助理设计师</el-button>
                                 </el-col>
                             </el-row>
 
                             <el-divider>审核信息</el-divider>
 
                             <el-row>
-                                <el-col :span="22">
-                                    <el-form-item label="审核意见">
-                                        <el-input v-model="wholeRoomDrawing.reviewedComments" placeholder="审核意见"></el-input>
-                                    </el-form-item>
-                                </el-col>
-                                <el-col v-if="true" :span="22">
-                                    <el-form-item label="请选图纸审核人员" required="true" >
-                                        <order-search-employee :employee-id.sync="wholeRoomDrawing.drawingAuditor" :employee-name.sync="wholeRoomDrawing.drawingAuditorName"></order-search-employee>
+                                <el-col :span="24">
+                                    <el-form-item label="图纸审核员" prop="drawingAuditor">
+                                        <order-selectemployee role-id="44" v-model="wholeRoomDrawing.drawingAuditor"></order-selectemployee>
                                     </el-form-item>
                                 </el-col>
                             </el-row>
@@ -163,11 +109,8 @@
                                 <el-col>
                                     <el-form-item >
                                         <el-row>
-                                            <el-col :span="10">
-                                                <order-file-upload ref="upload" button-name="上传全房图" accept=".dwg" limit="1" :order-id="wholeRoomDrawing.orderId" stage="456"></order-file-upload>
-                                            </el-col>
-                                            <el-col :span="14">
-                                                <el-button><el-link type="primary" :href="downloadFileUrl">下载全房图</el-link></el-button>
+                                            <el-col :span="12">
+                                                <order-file-upload ref="upload" button-name="上传全房图" accept=".dwg" limit="1" :order-id="wholeRoomDrawing.orderId" stage="567"></order-file-upload>
                                             </el-col>
                                         </el-row>
                                     </el-form-item>
@@ -221,7 +164,10 @@
     .el-card__header {
         padding:10px;
     }
+    [v-cloak] {
+        display: none;
+    }
 </style>
-<script src="static/js/modules/bss/order/order.wholeroom.js" th:src="@{static/js/modules/bss/order/order.wholeroom.js(v=${version})}"></script>
+<script src="static/js/modules/bss/order/order.whole.room.js" th:src="@{static/js/modules/bss/order/order.whole.room.js(v=${version})}"></script>
 </body>
 </html>

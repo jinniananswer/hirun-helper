@@ -11,7 +11,7 @@
             th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
 </head>
 <body>
-<div id="customer_ruling" style="display:none" :style="display?display:''">
+<div id="customer_ruling" v-cloak>
     <el-container>
         <el-main>
             <template>
@@ -139,6 +139,9 @@
 
     .box-card {
         margin-bottom: 18px;
+    }
+    [v-cloak] {
+        display: none;
     }
 </style>
 <script src="../../../static/js/modules/bss/cust/cust.ruling.js"

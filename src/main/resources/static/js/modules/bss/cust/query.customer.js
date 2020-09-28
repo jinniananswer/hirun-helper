@@ -1,4 +1,5 @@
-require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'order-selectemployee', 'vue-router','house-select'], function (Vue, element, axios, ajax, vueselect, util, orderSelectEmployee, vueRouter,houseSelect) {
+require(['vue', 'ELEMENT', 'ajax','vxe-table', 'vueselect', 'util', 'order-selectemployee','house-select'], function (Vue, element, ajax,table,vueselect, util, orderSelectEmployee) {
+    Vue.use(table);
     let vm = new Vue({
         el: '#app',
         data: function () {
@@ -16,6 +17,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'order-selectem
                     houseMode: '',
                     orderStatus:'',
                     houseId:'',
+                    agentEmployeeId:'',
                     page:1,
                     size:10,
                     total:0

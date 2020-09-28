@@ -21,8 +21,10 @@ public class SalaryException extends BaseException {
         DESIGN_FEE_STANDARD_NOT_FOUND,
 
         @Error(code = ErrorKind.NOT_FOUND, message = "未找到该笔订单对应阶段【%s】的费用信息")
-        ORDER_FEE_NOT_FOUND
+        ORDER_FEE_NOT_FOUND,
 
+        @Error(code = ErrorKind.NOT_FOUND, message = "【%s】员工的【%s】月工资已发放，不能再更新，请确认工资月份是否正确")
+        CANNOT_UPDATE_MONTHLY,
 
     }
 

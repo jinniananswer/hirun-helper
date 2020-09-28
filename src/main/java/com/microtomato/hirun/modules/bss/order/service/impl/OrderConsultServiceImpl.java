@@ -3,6 +3,7 @@ package com.microtomato.hirun.modules.bss.order.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.CustConsultDTO;
 import com.microtomato.hirun.modules.bss.customer.entity.po.CustBase;
 import com.microtomato.hirun.modules.bss.customer.service.ICustBaseService;
@@ -14,6 +15,10 @@ import com.microtomato.hirun.modules.bss.order.entity.po.OrderWorker;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderConsultMapper;
 import com.microtomato.hirun.modules.bss.order.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
+import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
+import com.microtomato.hirun.modules.organization.entity.po.Org;
+import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +56,9 @@ public class OrderConsultServiceImpl extends ServiceImpl<OrderConsultMapper, Ord
     @Autowired
     private IOrderWorkerActionService workerActionService;
 
+    @Autowired
+    private IEmployeeJobRoleService employeeJobRoleService;
+
     @Override
     public OrderConsult queryOrderConsult(Long orderId) {
         OrderConsult orderConsult = null;
@@ -87,10 +95,18 @@ public class OrderConsultServiceImpl extends ServiceImpl<OrderConsultMapper, Ord
         } else {
             this.baseMapper.updateById(orderConsult);
         }
-        workerService.updateOrderWorker(dto.getOrderId(), 15L, dto.getCustServiceEmployeeId());
-        workerService.updateOrderWorker(dto.getOrderId(), 45L, dto.getDesignCupboardEmployeeId());
-        workerService.updateOrderWorker(dto.getOrderId(), 46L, dto.getMainMaterialKeeperEmployeeId());
-        workerService.updateOrderWorker(dto.getOrderId(), 47L, dto.getCupboardKeeperEmployeeId());
+        if(dto.getCustServiceEmployeeId()!=null){
+            workerService.updateOrderWorker(dto.getOrderId(), 15L, dto.getCustServiceEmployeeId());
+        }
+        if (dto.getDesignCupboardEmployeeId() != null) {
+            workerService.updateOrderWorker(dto.getOrderId(), 45L, dto.getDesignCupboardEmployeeId());
+        }
+        if(dto.getMainMaterialKeeperEmployeeId()!=null){
+            workerService.updateOrderWorker(dto.getOrderId(), 46L, dto.getMainMaterialKeeperEmployeeId());
+        }
+        if (dto.getCupboardKeeperEmployeeId() != null) {
+            workerService.updateOrderWorker(dto.getOrderId(), 47L, dto.getCupboardKeeperEmployeeId());
+        }
         if (dto.getDesignEmployeeId() != null) {
             workerService.updateOrderWorker(dto.getOrderId(), 30L, dto.getDesignEmployeeId());
         }
@@ -105,11 +121,27 @@ public class OrderConsultServiceImpl extends ServiceImpl<OrderConsultMapper, Ord
         this.saveCustomerConsultInfo(dto);
         orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_NEXT_STEP);
         //插入workerAction,用于工资计算
-        List<OrderWorker> workers=workerService.queryValidByOrderId(dto.getOrderId());
-        if(ArrayUtils.isNotEmpty(workers)){
-            for(OrderWorker orderWorker:workers){
-                if(orderWorker.getRoleId().equals(15L)){
-                    workerActionService.createOrderWorkerAction(dto.getOrderId(),orderWorker.getEmployeeId(),orderWorker.getId(),"2","consult");
+        List<OrderWorker> workers = workerService.queryValidByOrderId(dto.getOrderId());
+        if (ArrayUtils.isNotEmpty(workers)) {
+            for (OrderWorker orderWorker : workers) {
+                if (orderWorker.getRoleId().equals(15L)) {
+                    workerActionService.createOrderWorkerAction(dto.getOrderId(), orderWorker.getEmployeeId(), orderWorker.getId(), "2", "consult");
+                }
+            }
+        }
+        //新增归属门店处理
+        if(dto.getDesignEmployeeId()!=null){
+            EmployeeJobRole employeeJobRole=this.employeeJobRoleService.queryLast(dto.getDesignEmployeeId());
+            Long orgId = employeeJobRole.getOrgId();
+            if(orgId!=null){
+                OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+                Org shop = orgDO.getBelongShop();
+                if (shop != null) {
+                    //以收设计费的店铺为准
+                    OrderBase orderBase = this.orderBaseService.queryByOrderId(dto.getOrderId());
+                    orderBase.setShopId(shop.getOrgId());
+                    orderBase.setCreateShopId(shop.getOrgId());
+                    this.orderBaseService.updateById(orderBase);
                 }
             }
         }
@@ -131,10 +163,10 @@ public class OrderConsultServiceImpl extends ServiceImpl<OrderConsultMapper, Ord
 
     @Override
     public CustConsultDTO queryOrderConsultForTrans(Long orderId) {
-        OrderConsult orderConsult=this.queryOrderConsult(orderId);
-        CustConsultDTO dto=new CustConsultDTO();
-        BeanUtils.copyProperties(orderConsult,dto);
-        OrderBase orderBase=this.orderBaseService.getById(orderId);
+        OrderConsult orderConsult = this.queryOrderConsult(orderId);
+        CustConsultDTO dto = new CustConsultDTO();
+        BeanUtils.copyProperties(orderConsult, dto);
+        OrderBase orderBase = this.orderBaseService.getById(orderId);
         dto.setCustId(orderBase.getCustId());
         return dto;
     }

@@ -356,7 +356,7 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
     public Map<String, String> getCustomerNoAndSec() {
         Map<String, String> map = new HashMap<>();
         //todo 未定义权限编码
-        map.put("isContinueAuth", SecurityUtils.hasFuncId("") + "");
+        map.put("isContinueAuth", SecurityUtils.hasFuncId("isContinueAuth") + "");
         Long seq = dualService.nextval(CustNoMaxCycleSeq.class);
         map.put("custNo", "KH" + seq);
         return map;
@@ -390,12 +390,13 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
         queryWrapper.apply(" a.cust_id=d.cust_id");
         queryWrapper.apply(" a.cust_id=b.cust_id");
         queryWrapper.orderByDesc("b.create_time");
-        queryWrapper.eq(condDTO.getReportEmployeeId() != null, "b.prepare_employee_id", condDTO.getHouseMode());
+        queryWrapper.eq(condDTO.getReportEmployeeId() != null, "b.prepare_employee_id", condDTO.getReportEmployeeId());
         queryWrapper.eq(condDTO.getHouseId() != null, "c.house_id", condDTO.getHouseId());
         queryWrapper.eq(StringUtils.isNotEmpty(condDTO.getHouseMode()), "c.house_mode", condDTO.getHouseMode());
         queryWrapper.eq(StringUtils.isNotEmpty(condDTO.getPrepareStatus()), "b.status", condDTO.getPrepareStatus());
-        //queryWrapper.apply(condDTO.getStartTime()!=null,"b.prepare_time > "+condDTO.getStartTime());
-        //queryWrapper.apply(condDTO.getEndTime()!=null,"b.prepare_time < "+condDTO.getEndTime().plusDays(1L));
+        queryWrapper.gt(condDTO.getStartTime()!=null,"b.prepare_time", condDTO.getStartTime());
+        queryWrapper.lt(condDTO.getEndTime()!=null,"b.prepare_time",condDTO.getEndTime());
+        queryWrapper.like(condDTO.getCustName()!=null,"a.cust_name",condDTO.getCustName());
 
         IPage<CustInfoDTO> iPage = this.baseMapper.queryPreparationInfo(page, queryWrapper);
 

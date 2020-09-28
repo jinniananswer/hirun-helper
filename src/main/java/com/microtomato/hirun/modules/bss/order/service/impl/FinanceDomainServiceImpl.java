@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.mybatis.sequence.impl.FeeNoCycleSeq;
 import com.microtomato.hirun.framework.mybatis.sequence.impl.PayNoCycleSeq;
 import com.microtomato.hirun.framework.mybatis.service.IDualService;
-import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
@@ -375,21 +374,21 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
                 } else {
                     type = key;
                 }
-
-                if (StringUtils.equals("1", type)) {
-                    //收设计费，更新店面信息
-                    UserContext userContext = WebContextUtils.getUserContext();
-                    Long orgId = userContext.getOrgId();
-                    if (orgId != null) {
-                        OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
-                        Org shop = orgDO.getBelongShop();
-                        if (shop != null) {
-                            //以收设计费的店铺为准
-                            orderBase.setShopId(shop.getOrgId());
-                        }
-                    }
-                    return;
-                }
+                //以设计师的部门为准
+//                if (StringUtils.equals("1", type)) {
+//                    //收设计费，更新店面信息
+//                    UserContext userContext = WebContextUtils.getUserContext();
+//                    Long orgId = userContext.getOrgId();
+//                    if (orgId != null) {
+//                        OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+//                        Org shop = orgDO.getBelongShop();
+//                        if (shop != null) {
+//                            //以收设计费的店铺为准
+//                            orderBase.setShopId(shop.getOrgId());
+//                        }
+//                    }
+//                    return;
+//                }
             });
 
             this.updatePayed(orderBase);
@@ -888,6 +887,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
             componentData.setPayments(payments);
         }
         componentData.setNeedPay(new Double(0));
+        componentData.setAuditStatus("");
 
         List<CollectionItemCfg> collectionItemCfgs = this.collectionItemCfgService.queryPlusCollectionyItems();
         List<CascadeDTO<CollectionItemCfg>> collectionItems = this.buildPayItemCollectionCascade(collectionItemCfgs);
@@ -976,7 +976,6 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
             }
 
         }
-
 
         return componentData;
     }

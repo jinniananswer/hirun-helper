@@ -2,6 +2,8 @@ package com.microtomato.hirun.modules.bss.order.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.framework.mybatis.DataSourceKey;
+import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,6 +32,7 @@ import java.util.List;
  */
 @Service
 @Slf4j
+@DataSource(DataSourceKey.INS)
 public class OrderWorkerActionServiceImpl extends ServiceImpl<OrderWorkerActionMapper, OrderWorkerAction> implements IOrderWorkerActionService {
 
     @Autowired
@@ -90,18 +94,34 @@ public class OrderWorkerActionServiceImpl extends ServiceImpl<OrderWorkerActionM
      */
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @Override
-    public void deleteOrderWorkerAction(Long orderId,String action) {
+    public List<Long> deleteOrderWorkerAction(Long orderId,String action) {
         //先终止原来的数据
         LocalDateTime now = RequestTimeHolder.getRequestTime();
-        //List<OrderWorkerAction> oldActions = this.queryByOrderIdEmployeeIdAction(orderId,employeeId,action);
         List<OrderWorkerAction> oldActions = this.queryByOrderIdAction(orderId,action);
+        List<Long> workerIds = new ArrayList<Long>();
         if (ArrayUtils.isNotEmpty(oldActions)) {
             oldActions.forEach(oldAction -> {
                 oldAction.setEndDate(now);
-                this.updateById(oldAction);
+                workerIds.add(oldAction.getWorkerId());
             });
-            //this.updateBatchById(oldActions);
+            this.updateBatchById(oldActions);
         }
+        return workerIds;
+    }
+
+    /**
+     * 查看是否还有其它动作
+     * @param workerIds
+     * @param action
+     * @return
+     */
+    @Override
+    public List<OrderWorkerAction> hasOtherAction(List<Long> workerIds, String action) {
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+        return this.list(Wrappers.<OrderWorkerAction>lambdaQuery()
+                .in(OrderWorkerAction::getWorkerId, workerIds)
+                .ne(OrderWorkerAction::getAction, action)
+                .ge(OrderWorkerAction::getEndDate, now));
     }
 
     /**
@@ -140,18 +160,5 @@ public class OrderWorkerActionServiceImpl extends ServiceImpl<OrderWorkerActionM
         workerAction.setOrderStatus(currentOrderStatus);
 
         this.save(workerAction);
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
-    public void deleteOrderWorkerByEmployeeIdAction(Long orderId, Long employeeId, String action) {
-        LocalDateTime now = RequestTimeHolder.getRequestTime();
-        List<OrderWorkerAction> oldActions = this.queryByOrderIdEmployeeIdAction(orderId,employeeId,action);
-        if (ArrayUtils.isNotEmpty(oldActions)) {
-            oldActions.forEach(oldAction -> {
-                oldAction.setEndDate(now);
-                this.updateById(oldAction);
-            });
-        }
     }
 }

@@ -3,14 +3,15 @@ package com.microtomato.hirun.modules.bss.order.controller;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderPlaneSketchDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPlaneSketch;
-import com.microtomato.hirun.modules.bss.order.entity.po.OrderWorker;
-import com.microtomato.hirun.modules.bss.order.service.*;
+import com.microtomato.hirun.modules.bss.order.service.IFeeDomainService;
+import com.microtomato.hirun.modules.bss.order.service.IOrderBaseService;
+import com.microtomato.hirun.modules.bss.order.service.IOrderPlaneSketchService;
+import com.microtomato.hirun.modules.bss.order.service.IOrderWorkerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * @author ：mmzs
@@ -37,33 +38,25 @@ public class OrderPlaneSketchController {
     private IOrderPlaneSketchService orderPlaneSketchServiceImpl;
 
     @PostMapping("/submitPlaneSketch")
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @RestResult
     public void save(@RequestBody OrderPlaneSketchDTO dto) {
         this.orderPlaneSketchServiceImpl.submitPlaneSketch(dto);
-        orderWorkerService.updateOrderWorker(dto.getOrderId(),30L,dto.getDesigner());
-        if (dto.getFinanceEmployeeId()!=null) {
-            orderWorkerService.updateOrderWorker(dto.getOrderId(),34L,dto.getFinanceEmployeeId());
-        }
-        if (dto.getProjectAssistant()!=null) {
-            orderWorkerService.updateOrderWorker(dto.getOrderId(),37L,dto.getProjectAssistant());
-        }
+
     }
 
     @PostMapping("/submitToConfirmFlow")
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @RestResult
     public void submitToConfirmFlow(@RequestBody OrderPlaneSketch orderPlaneSketch) {
         this.orderPlaneSketchServiceImpl.submitToConfirmFlow(orderPlaneSketch);
     }
 
     @PostMapping("/submitToSignContractFlow")
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @RestResult
     public void submitToSignContractFlow(@RequestBody OrderPlaneSketchDTO dto) {
-        //orderPlaneSketchServiceImpl.submitPlaneSketch(dto);
-        //orderWorkerService.updateOrderWorker(dto.getOrderId(),34L,dto.getFinanceEmployeeId());
-        //orderWorkerService.updateOrderWorker(dto.getOrderId(),30L,dto.getDesigner());
+        this.save(dto);
         orderPlaneSketchServiceImpl.submitToSignContractFlow(dto);
     }
 
@@ -75,14 +68,14 @@ public class OrderPlaneSketchController {
     }
 
     @PostMapping("/submitToDelayTimeFlow")
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @RestResult
     public void submitToDelayTimeFlow(@RequestBody OrderPlaneSketch orderPlaneSketch) {
         orderPlaneSketchServiceImpl.submitToDelayTimeFlow(orderPlaneSketch.getOrderId());
     }
 
     @PostMapping("/submitToBackToDesignerFlow")
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @RestResult
     public void submitToBackToDesignerFlow(@RequestBody OrderPlaneSketch orderPlaneSketch) {
         orderPlaneSketchServiceImpl.submitToBackToDesignerFlow(orderPlaneSketch.getOrderId());

@@ -2,7 +2,6 @@ package com.microtomato.hirun.modules.bss.config.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.microtomato.hirun.modules.bss.config.entity.po.SalaryRoyaltyStrategy;
-import org.springframework.cache.annotation.Cacheable;
 
 import java.util.List;
 
@@ -19,6 +18,5 @@ public interface ISalaryRoyaltyStrategyService extends IService<SalaryRoyaltyStr
 
     boolean isNeedCompute(String orderStatus);
 
-    @Cacheable("strategy-by-id")
     SalaryRoyaltyStrategy getByStrategyId(Long strategyId);
 }
