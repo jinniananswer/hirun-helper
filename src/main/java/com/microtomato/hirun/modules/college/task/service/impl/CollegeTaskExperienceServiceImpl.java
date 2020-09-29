@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.modules.college.task.entity.dto.CollegeTaskExperienceImgResponseDTO;
-import com.microtomato.hirun.modules.college.task.entity.dto.CollegeTaskExperienceRequetDTO;
+import com.microtomato.hirun.modules.college.task.entity.dto.CollegeTaskExperienceScoreResponseDTO;
 import com.microtomato.hirun.modules.college.task.entity.po.CollegeTaskExperience;
 import com.microtomato.hirun.modules.college.task.mapper.CollegeTaskExperienceMapper;
 import com.microtomato.hirun.modules.college.task.service.ICollegeTaskExperienceService;
@@ -35,8 +35,8 @@ public class CollegeTaskExperienceServiceImpl extends ServiceImpl<CollegeTaskExp
 
 
     @Override
-    public CollegeTaskExperienceRequetDTO queryByTaskId(String taskId) {
-        CollegeTaskExperienceRequetDTO requetDTO = new CollegeTaskExperienceRequetDTO();
+    public CollegeTaskExperienceScoreResponseDTO queryByTaskId(String taskId) {
+        CollegeTaskExperienceScoreResponseDTO requetDTO = new CollegeTaskExperienceScoreResponseDTO();
         List<CollegeTaskExperience> list = this.list(Wrappers.<CollegeTaskExperience>lambdaQuery().eq(CollegeTaskExperience::getTaskId, taskId)
                 .eq(CollegeTaskExperience::getStatus, "0"));
         if (ArrayUtils.isNotEmpty(list)){

@@ -41,6 +41,8 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 exercisesScore: null,
                 examScore: null,
                 studyScore: null,
+                experienceScore: null,
+                imgScore: null,
                 taskInfo: {},
                 argTaskScore: null,
                 writtenExperience: '',
@@ -135,6 +137,10 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     })
                     that.evaluateTaskDialogVisible = true;
                     that.taskInfo = row;
+                    that.taskScore = responseData.taskScore;
+                    that.experienceScore = responseData.experienceScore;
+                    that.imgScore = responseData.imgScore;
+                    that.queryEmployeePracticeTaskInfo();
                 });
             },
             submitScore: function(){
@@ -147,29 +153,20 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     });
                     return;
                 }
-                if (null == this.studyScore || undefined == this.studyScore || 0 == this.studyScore){
+                if (null == this.experienceScore || undefined == this.experienceScore || 0 == this.experienceScore){
                     this.$message({
                         showClose: true,
                         duration: 3000,
-                        message: '请对该任务学习情况进行评分！最低一颗星，最高五颗星',
+                        message: '请对该任务心得进行评分！最低一颗星，最高五颗星',
                         center: true
                     });
                     return;
                 }
-                if (null == this.examScore || undefined == this.examScore || 0 == this.examScore){
+                if (null == this.imgScore || undefined == this.imgScore || 0 == this.imgScore){
                     this.$message({
                         showClose: true,
                         duration: 3000,
-                        message: '请对该任务考试情况进行评分！最低一颗星，最高五颗星',
-                        center: true
-                    });
-                    return;
-                }
-                if (null == this.exercisesScore || undefined == this.exercisesScore || 0 == this.exercisesScore){
-                    this.$message({
-                        showClose: true,
-                        duration: 3000,
-                        message: '请对该任务练习情况进行评分！最低一颗星，最高五颗星',
+                        message: '请对该任务完成照片进行评分！最低一颗星，最高五颗星',
                         center: true
                     });
                     return;
@@ -177,9 +174,8 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 let scoreInfo = {}
                 scoreInfo.taskId = this.taskInfo.taskId;
                 scoreInfo.taskScore = this.taskScore;
-                scoreInfo.studyScore = this.studyScore;
-                scoreInfo.exercisesScore = this.exercisesScore;
-                scoreInfo.examScore = this.examScore;
+                scoreInfo.experienceScore = this.experienceScore;
+                scoreInfo.imgScore = this.imgScore;
                 let that = this
                 ajax.post('api/CollegeEmployeeTaskScore/evaluateTask', scoreInfo, function(responseData){
                     that.$message({
@@ -187,9 +183,8 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                         type: 'success'
                     });
                     that.taskScore = null;
-                    that.studyScore = null;
-                    that.exercisesScore = null;
-                    that.examScore = null;
+                    that.experienceScore = null;
+                    that.imgScore = null;
                     that.taskInfo = {};
                     that.evaluateTaskDialogVisible = false;
                 },null, true);

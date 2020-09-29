@@ -15,4 +15,8 @@ public class CollegeEmployeeTaskScoreRequestDTO {
     private Integer exercisesScore;
 
     private Integer examScore;
+
+    private Integer experienceScore;
+
+    private Integer imgScore;
 }

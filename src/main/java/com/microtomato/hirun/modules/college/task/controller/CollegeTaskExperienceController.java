@@ -5,9 +5,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
-import com.microtomato.hirun.modules.college.task.entity.dto.CollegeTaskExperienceRequetDTO;
+import com.microtomato.hirun.modules.college.task.entity.dto.CollegeTaskExperienceScoreResponseDTO;
+import com.microtomato.hirun.modules.college.task.entity.po.CollegeEmployeeTask;
+import com.microtomato.hirun.modules.college.task.entity.po.CollegeEmployeeTaskScore;
 import com.microtomato.hirun.modules.college.task.entity.po.CollegeTaskExperience;
+import com.microtomato.hirun.modules.college.task.service.ICollegeEmployeeTaskScoreService;
+import com.microtomato.hirun.modules.college.task.service.ICollegeEmployeeTaskService;
 import com.microtomato.hirun.modules.college.task.service.ICollegeTaskExperienceService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,6 +35,12 @@ public class CollegeTaskExperienceController {
      */
     @Autowired
     private ICollegeTaskExperienceService collegeTaskExperienceService;
+
+    @Autowired
+    private ICollegeEmployeeTaskScoreService collegeEmployeeTaskScoreServiceImpl;
+
+    @Autowired
+    private ICollegeEmployeeTaskService collegeEmployeeTaskServiceImpl;
 
     /**
      * 分页查询所有数据
@@ -91,7 +102,18 @@ public class CollegeTaskExperienceController {
 
     @GetMapping("queryByTaskId")
     @RestResult
-    public CollegeTaskExperienceRequetDTO queryByTaskId(String taskId){
-        return this.collegeTaskExperienceService.queryByTaskId(taskId);
+    public CollegeTaskExperienceScoreResponseDTO queryByTaskId(String taskId){
+        CollegeTaskExperienceScoreResponseDTO collegeTaskExperienceScoreResponseDTO = this.collegeTaskExperienceService.queryByTaskId(taskId);
+        CollegeEmployeeTaskScore collegeEmployeeTaskScore = collegeEmployeeTaskScoreServiceImpl.getByTaskId(taskId);
+        if (null != collegeEmployeeTaskScore){
+            collegeTaskExperienceScoreResponseDTO.setExperienceScore(collegeEmployeeTaskScore.getExperienceScore());
+            collegeTaskExperienceScoreResponseDTO.setImgScore(collegeEmployeeTaskScore.getImgScore());
+        }
+
+        CollegeEmployeeTask collegeEmployeeTask = collegeEmployeeTaskServiceImpl.getById(Long.valueOf(taskId));
+        if (null != collegeEmployeeTask){
+            collegeTaskExperienceScoreResponseDTO.setTaskScore(collegeEmployeeTask.getScore());
+        }
+        return collegeTaskExperienceScoreResponseDTO;
     }
 }

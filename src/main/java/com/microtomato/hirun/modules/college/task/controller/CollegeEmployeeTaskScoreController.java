@@ -113,15 +113,20 @@ public class CollegeEmployeeTaskScoreController {
             collegeEmployeeTask.setScore(taskScore);
             collegeEmployeeTaskServiceImpl.updateById(collegeEmployeeTask);
         }
-        Integer studyScore = collegeEmployeeTaskScoreRequestDTO.getStudyScore();
-        Integer exercisesScore = collegeEmployeeTaskScoreRequestDTO.getExercisesScore();
-        Integer examScore = collegeEmployeeTaskScoreRequestDTO.getExamScore();
-        CollegeEmployeeTaskScore studyScoreEntity = new CollegeEmployeeTaskScore();
+        CollegeEmployeeTaskScore studyScoreEntity = collegeEmployeeTaskScoreService.getByTaskId(taskId);
+        boolean isSave = false;
+        if (null == studyScoreEntity){
+            studyScoreEntity = new CollegeEmployeeTaskScore();
+            isSave = true;
+        }
         studyScoreEntity.setTaskId(taskId);
-        studyScoreEntity.setStudyScore(studyScore);
-        studyScoreEntity.setExercisesScore(exercisesScore);
-        studyScoreEntity.setExamScore(examScore);
-        collegeEmployeeTaskScoreService.save(studyScoreEntity);
+        studyScoreEntity.setImgScore(collegeEmployeeTaskScoreRequestDTO.getImgScore());
+        studyScoreEntity.setExperienceScore(collegeEmployeeTaskScoreRequestDTO.getExperienceScore());
+        if (isSave){
+            collegeEmployeeTaskScoreService.save(studyScoreEntity);
+        }else {
+            collegeEmployeeTaskScoreService.updateById(studyScoreEntity);
+        }
     }
 
     @GetMapping("isEvaluateTaskByTaskId")

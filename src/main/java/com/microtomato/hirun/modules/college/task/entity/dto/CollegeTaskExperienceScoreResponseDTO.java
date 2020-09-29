@@ -8,9 +8,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-public class CollegeTaskExperienceRequetDTO {
+public class CollegeTaskExperienceScoreResponseDTO {
 
     private String writtenExperience;
 
     private List<CollegeTaskExperienceImgResponseDTO> imgExperienceList;
+
+    private Integer taskScore;
+
+    private Integer experienceScore;
+
+    private Integer imgScore;
 }

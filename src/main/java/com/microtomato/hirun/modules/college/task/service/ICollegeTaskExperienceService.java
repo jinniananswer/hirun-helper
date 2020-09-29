@@ -1,7 +1,7 @@
 package com.microtomato.hirun.modules.college.task.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.microtomato.hirun.modules.college.task.entity.dto.CollegeTaskExperienceRequetDTO;
+import com.microtomato.hirun.modules.college.task.entity.dto.CollegeTaskExperienceScoreResponseDTO;
 import com.microtomato.hirun.modules.college.task.entity.po.CollegeTaskExperience;
 
 /**
@@ -13,5 +13,5 @@ import com.microtomato.hirun.modules.college.task.entity.po.CollegeTaskExperienc
  */
 public interface ICollegeTaskExperienceService extends IService<CollegeTaskExperience> {
 
-    public CollegeTaskExperienceRequetDTO queryByTaskId(String taskId);
+    public CollegeTaskExperienceScoreResponseDTO queryByTaskId(String taskId);
 }

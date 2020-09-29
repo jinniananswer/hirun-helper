@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
  *
  * @author makejava
  * @version 1.0.0
- * @date 2020-09-18 23:44:38
+ * @date 2020-09-30 01:44:47
  */
 @Data
 @Builder
@@ -52,5 +52,17 @@ public class CollegeEmployeeTaskScore extends BaseEntity {
      */
     @TableField(value = "exam_score")
     private Integer examScore;
+
+    /**
+     * 心得评分
+     */
+    @TableField(value = "experience_score")
+    private Integer experienceScore;
+
+    /**
+     * 照片评分
+     */
+    @TableField(value = "img_score")
+    private Integer imgScore;
 
 }
