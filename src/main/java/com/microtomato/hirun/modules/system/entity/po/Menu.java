@@ -64,6 +64,12 @@ public class Menu extends BaseEntity {
     private Integer domainId;
 
     /**
+     * 优先级，值越小，优先级越高
+     */
+    @TableField("priority")
+    private Integer priority;
+
+    /**
      * 菜单层级
      */
     @TableField("menu_level")
