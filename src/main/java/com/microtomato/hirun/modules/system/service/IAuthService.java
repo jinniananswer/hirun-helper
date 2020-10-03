@@ -3,6 +3,7 @@ package com.microtomato.hirun.modules.system.service;
 
 import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.modules.system.entity.po.Func;
+import com.microtomato.hirun.modules.user.entity.po.User;
 import com.microtomato.hirun.modules.user.entity.po.UserRole;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.InitializingBean;
@@ -14,7 +15,7 @@ import java.util.List;
  * @author Steven
  * @date 2020-03-02
  */
-public interface IJwtService extends InitializingBean {
+public interface IAuthService extends InitializingBean {
 
     /**
      * 由字符串生产加密 Key
@@ -63,4 +64,8 @@ public interface IJwtService extends InitializingBean {
     void setUserContext(String jsonWebToken);
 
     List<Func> queryFuncSet(Long userId, List<UserRole> userRoles);
+
+    List<UserRole> queryUserRoles(UserContext userContext, User user);
+
+    User checkPassword(String username, String password);
 }

@@ -1,6 +1,7 @@
 package com.microtomato.hirun.framework.util;
 
 import com.microtomato.hirun.framework.security.UserContext;
+import com.microtomato.hirun.framework.threadlocal.UserContextHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -35,7 +36,13 @@ public class WebContextUtils {
      */
     public static final UserContext getUserContext() {
 
-        UserContext userContext = null;
+        // 从当前线程上下文中找用户上下文，适配 Jwt 过来的
+        UserContext userContext = UserContextHolder.getUserContext();
+        if (null != userContext) {
+            return userContext;
+        }
+
+        // 从 Session 中找用户上下文
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (principal instanceof UserContext) {

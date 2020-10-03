@@ -1,12 +1,10 @@
 package com.microtomato.hirun.framework.security;
 
-import com.microtomato.hirun.framework.util.Constants;
 import com.microtomato.hirun.modules.system.entity.po.Func;
-import com.microtomato.hirun.modules.system.service.IJwtService;
+import com.microtomato.hirun.modules.system.service.IAuthService;
 import com.microtomato.hirun.modules.user.entity.dto.UserDTO;
 import com.microtomato.hirun.modules.user.entity.po.User;
 import com.microtomato.hirun.modules.user.entity.po.UserRole;
-import com.microtomato.hirun.modules.user.service.IUserRoleService;
 import com.microtomato.hirun.modules.user.service.IUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -37,19 +35,7 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
     private IUserService userServiceImpl;
 
     @Autowired
-    private IUserRoleService userRoleServiceImpl;
-
-    @Autowired
-    private IJwtService jwtService;
-
-    private void setMainRoleId(UserContext userContext, List<UserRole> userRoles) {
-        for (UserRole userRole : userRoles) {
-            if (userRole.getIsMainRole()) {
-                userContext.setMainRoleId(userRole.getRoleId());
-                return;
-            }
-        }
-    }
+    private IAuthService authService;
 
     /**
      * 在 Security 中，角色和权限共用 GrantedAuthority 接口，唯一的不同角色就是多了个前缀 "ROLE_"
@@ -71,12 +57,10 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
         }
 
         // 查用户角色
-        List<UserRole> userRoles = userRoleServiceImpl.queryUserRole(user);
-        userRoles.add(UserRole.builder().roleId(Constants.DEFAULT_ROLE_ID).isMainRole(Boolean.FALSE).build());
-        setMainRoleId(userContext, userRoles);
+        List<UserRole> userRoles = authService.queryUserRoles(userContext, user);
         
         // 根据角色查操作权限
-        List<Func> funcList = jwtService.queryFuncSet(user.getUserId(), userRoles);
+        List<Func> funcList = authService.queryFuncSet(user.getUserId(), userRoles);
 
         // 加载操作权限
         Collection<GrantedAuthority> grantedAuthorities = new HashSet<>();

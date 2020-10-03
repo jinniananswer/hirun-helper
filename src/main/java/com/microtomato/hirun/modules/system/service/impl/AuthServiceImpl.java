@@ -3,19 +3,23 @@ package com.microtomato.hirun.modules.system.service.impl;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microtomato.hirun.framework.jwt.JwtConstants;
+import com.microtomato.hirun.framework.security.CustomPasswordEncoder;
 import com.microtomato.hirun.framework.security.UserContext;
+import com.microtomato.hirun.framework.threadlocal.UserContextHolder;
 import com.microtomato.hirun.framework.util.Constants;
 import com.microtomato.hirun.modules.system.entity.po.Func;
 import com.microtomato.hirun.modules.system.service.IFuncService;
-import com.microtomato.hirun.modules.system.service.IJwtService;
+import com.microtomato.hirun.modules.system.service.IAuthService;
 import com.microtomato.hirun.modules.user.entity.po.FuncRole;
 import com.microtomato.hirun.modules.user.entity.po.FuncTemp;
+import com.microtomato.hirun.modules.user.entity.po.User;
 import com.microtomato.hirun.modules.user.entity.po.UserRole;
 import com.microtomato.hirun.modules.user.service.IFuncRoleService;
 import com.microtomato.hirun.modules.user.service.IFuncTempService;
 import com.microtomato.hirun.modules.user.service.IUserRoleService;
 import com.microtomato.hirun.modules.user.service.IUserService;
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.lang.Assert;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -25,6 +29,9 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 
 /**
@@ -60,7 +67,7 @@ import java.util.*;
  */
 @Slf4j
 @Service
-public class JwtServiceImpl implements IJwtService {
+public class AuthServiceImpl implements IAuthService {
 
     /**
      * 表示令牌的类型，JWT 令牌统一写成 "JWT"
@@ -83,34 +90,33 @@ public class JwtServiceImpl implements IJwtService {
      * 密钥，默认值为开发使用。
      */
     @Setter
-    @Value("${jwt.secret:secret-for-dev}")
+    @Value("${jwt.secret:hirun@2019}")
     public String jwtSecret;
 
     /**
-     * 超时时间，默认 500 分钟
+     * 超时时间，默认 24 小时
      */
     @Setter
-    @Value("${jwt.expiration:30000000}")
+    @Value("${jwt.expiration:86400000}")
     public long jwtExpiration;
 
-    @Value("${bizenv.province.code:QHAI}")
-    public String provinceCode;
-
+    @Autowired
+    private IUserService userService;
 
     @Autowired
-    private IUserService userServiceImpl;
+    private IFuncService funcService;
 
     @Autowired
-    private IFuncService funcServiceImpl;
+    private IFuncTempService funcTempService;
 
     @Autowired
-    private IFuncTempService funcTempServiceImpl;
+    private IUserRoleService userRoleService;
 
     @Autowired
-    private IUserRoleService userRoleServiceImpl;
+    private IFuncRoleService funcRoleService;
 
     @Autowired
-    private IFuncRoleService funcRoleServiceImpl;
+    private CustomPasswordEncoder customPasswordEncoder;
 
     /**
      * 由字符串生产加密 Key
@@ -149,6 +155,11 @@ public class JwtServiceImpl implements IJwtService {
         Date expiration = new Date(nowMillis + jwtExpiration);
 
         Map<String, Object> claims = objectMapper.convertValue(userContext, Map.class);
+        LocalDateTime loginTime = userContext.getLoginTime();
+        if (null != loginTime) {
+            claims.remove("loginTime");
+            claims.put("loginTime", loginTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
+        }
         log.debug("claims: {}", claims);
 
         // 添加构成 JWT 的参数
@@ -241,10 +252,33 @@ public class JwtServiceImpl implements IJwtService {
             Claims claims = this.parseJwt(jsonWebToken);
             log.debug("claims: {}", claims);
 
+            Long userId = claims.get("userId", Long.class);
+            String username = claims.get("username", String.class);
+            List roles = claims.get("roles", List.class);
+            Boolean admin = claims.get("admin", Boolean.class);
+            String mobileNo = claims.get("mobileNo", String.class);
+            String status = claims.get("status", String.class);
+            Long orgId = claims.get("orgId", Long.class);
+            Long employeeId = claims.get("employeeId", Long.class);
+            String name = claims.get("name", String.class);
+            Long mainRoleId = claims.get("mainRoleId", Long.class);
+            Long loginTime = claims.get("loginTime", Long.class);
+
             UserContext userContext = UserContext.builder()
-                .userId(1L)
+                .userId(userId)
+                .username(username)
+                .roles(roles)
+                .admin(admin)
+                .mobileNo(mobileNo)
+                .status(status)
+                .orgId(orgId)
+                .employeeId(employeeId)
+                .name(name)
+                .mainRoleId(mainRoleId)
+                .loginTime(LocalDateTime.ofInstant(Instant.ofEpochMilli(loginTime), ZoneId.systemDefault()))
                 .build();
-            //UserContextHolder.setUserContext(userContext);
+
+            UserContextHolder.setUserContext(userContext);
 
         } catch (ExpiredJwtException e) {
             Claims claims = e.getClaims();
@@ -282,7 +316,7 @@ public class JwtServiceImpl implements IJwtService {
 
         if (isAdmin) {
             // 超级工号，有所有的权限
-            List<Func> list = funcServiceImpl.list(
+            List<Func> list = funcService.list(
                 Wrappers.<Func>lambdaQuery()
                     .select(Func::getFuncId)
                     .eq(Func::getType, 1)
@@ -292,14 +326,14 @@ public class JwtServiceImpl implements IJwtService {
         } else {
             // 普通用户
             // 查用户临时操作权限
-            List<FuncTemp> funcTempList = funcTempServiceImpl.queryFuncTemp(userId);
+            List<FuncTemp> funcTempList = funcTempService.queryFuncTemp(userId);
             funcTempList.forEach(funcTemp -> funcIdSet.add(funcTemp.getFuncId()));
 
             // 查用户角色对应的操作权限
             List<Long> roleIdList = new ArrayList<>();
             roleIdList.add(Constants.DEFAULT_ROLE_ID);
             userRoles.forEach(userRole -> roleIdList.add(userRole.getRoleId()));
-            List<FuncRole> funcRoleList = funcRoleServiceImpl.list(
+            List<FuncRole> funcRoleList = funcRoleService.list(
                 Wrappers.<FuncRole>lambdaQuery()
                     .select(FuncRole::getFuncId)
                     .in(FuncRole::getRoleId, roleIdList)
@@ -309,7 +343,7 @@ public class JwtServiceImpl implements IJwtService {
 
         // 根据 func_id 找对应的 func_code
         if (funcIdSet.size() > 0) {
-            List<Func> funcList = funcServiceImpl.list(
+            List<Func> funcList = funcService.list(
                 Wrappers.<Func>lambdaQuery()
                     .select(Func::getFuncCode)
                     .eq(Func::getType, "1")
@@ -323,4 +357,41 @@ public class JwtServiceImpl implements IJwtService {
 
     }
 
+    /**
+     * 查询用户角色
+     *
+     * @param userContext
+     * @param user
+     * @return
+     */
+    @Override
+    public List<UserRole> queryUserRoles(UserContext userContext, User user) {
+        List<UserRole> userRoles = userRoleService.queryUserRole(user);
+        userRoles.add(UserRole.builder().roleId(Constants.DEFAULT_ROLE_ID).isMainRole(Boolean.FALSE).build());
+        setMainRoleId(userContext, userRoles);
+        return userRoles;
+    }
+
+    @Override
+    public User checkPassword(String username, String password) {
+        User user = userService.queryUser(username);
+        Assert.notNull(user, "用户名不存在: " + username);
+        Assert.isTrue(customPasswordEncoder.matches(password, user.getPassword()), "密码验证失败!");
+        return user;
+    }
+
+    /**
+     * 设置主角色
+     *
+     * @param userContext
+     * @param userRoles
+     */
+    public void setMainRoleId(UserContext userContext, List<UserRole> userRoles) {
+        for (UserRole userRole : userRoles) {
+            if (userRole.getIsMainRole()) {
+                userContext.setMainRoleId(userRole.getRoleId());
+                return;
+            }
+        }
+    }
 }
