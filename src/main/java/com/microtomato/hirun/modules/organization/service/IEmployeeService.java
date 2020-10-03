@@ -137,21 +137,5 @@ public interface IEmployeeService extends IService<Employee> {
      */
     List<SimpleEmployeeDTO> queryEmployeeByRoleAndOrg(Long orgId,String roleType);
 
-    IPage<Employee> queryNewEmployeeByPage(EmployeeQueryDTO employeeQueryDTO, Page<EmployeeQueryDTO> page);
-
-    List<Employee> queryByorgIdAndEmployeeIdAndLikeName(String orgId, Long employeeId, String name);
-
-    Employee getEEmployeeByEmployeeId(Long employeeId);
-
-    /**
-     * 获取所有未转正新员工
-     * @return
-     */
-    List<Employee> queryNewEffectiveEmployee();
-
-    List<Employee> queryAllEffectiveEmployee();
-
-    List<Employee> queryEffectiveByJobRoleList(List<String> jobRoleList);
-
-    List<Employee> queryNewEffectiveByJobRoleList(List<String> jobRoleList);
+    SimpleEmployeeDTO getLoginEmployeeInfo();
 }
