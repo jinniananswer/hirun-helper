@@ -7,17 +7,19 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
+import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
+import com.microtomato.hirun.framework.util.UserContextUtils;
+import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeStudyTaskCfg;
 import com.microtomato.hirun.modules.college.config.service.ICollegeCourseChaptersCfgService;
 import com.microtomato.hirun.modules.college.config.service.ICollegeStudyTaskCfgService;
-import com.microtomato.hirun.modules.college.task.entity.dto.CollegeEmployeeTaskDetailRequestDTO;
-import com.microtomato.hirun.modules.college.task.entity.dto.CollegeEmployeeTaskDetailResponseDTO;
-import com.microtomato.hirun.modules.college.task.entity.dto.CollegeEmployeeTaskQueryRequestDTO;
-import com.microtomato.hirun.modules.college.task.entity.dto.CollegeEmployeeTaskQueryResponseDTO;
+import com.microtomato.hirun.modules.college.task.entity.dto.*;
 import com.microtomato.hirun.modules.college.task.entity.po.CollegeEmployeeTask;
+import com.microtomato.hirun.modules.college.task.entity.po.CollegeEmployeeTaskScore;
 import com.microtomato.hirun.modules.college.task.mapper.CollegeEmployeeTaskMapper;
+import com.microtomato.hirun.modules.college.task.service.ICollegeEmployeeTaskScoreService;
 import com.microtomato.hirun.modules.college.task.service.ICollegeEmployeeTaskService;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
@@ -77,6 +79,9 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
 
     @Autowired
     private IEmployeeJobRoleService employeeJobRoleServiceImpl;
+
+    @Autowired
+    private ICollegeEmployeeTaskScoreService collegeEmployeeTaskScoreServiceImpl;
 
     @Autowired
     private IOrgService orgServiceImpl;
@@ -333,6 +338,69 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
         return this.list(Wrappers.<CollegeEmployeeTask>lambdaQuery().in(CollegeEmployeeTask::getEmployeeId, employeeIdList)
                 .eq(CollegeEmployeeTask::getStatus, "0")
                 .orderByDesc(CollegeEmployeeTask::getStudyEndDate));
+    }
+
+    @Override
+    public CollegeLoginTaskInfoResponseDTO queryLoginEmployeeTaskInfo() {
+        LocalDateTime nowTime = TimeUtils.getCurrentLocalDateTime();
+        CollegeLoginTaskInfoResponseDTO result = new CollegeLoginTaskInfoResponseDTO();
+        UserContext userContext = WebContextUtils.getUserContext();
+        if (userContext == null) {
+            userContext = UserContextUtils.getUserContext();
+        }
+        Long employeeId = userContext.getEmployeeId();
+        //查询已完成的任务，目前任务有评分的为已完成的
+        List<CollegeEmployeeTask> collegeEmployeeTaskList = this.queryAllEffective();
+
+        if (ArrayUtils.isNotEmpty(collegeEmployeeTaskList)){
+            List<CollegeEmployeeTaskDetailResponseDTO> todayTaskList = new ArrayList<>();
+
+            List<CollegeEmployeeTaskDetailResponseDTO> tomorrowTaskList = new ArrayList<>();
+
+            List<CollegeEmployeeTaskDetailResponseDTO> finishTaskList = new ArrayList<>();
+            for (CollegeEmployeeTask collegeEmployeeTask : collegeEmployeeTaskList){
+                Long taskId = collegeEmployeeTask.getTaskId();
+                CollegeEmployeeTaskScore collegeEmployeeTaskScore = collegeEmployeeTaskScoreServiceImpl.getByTaskId(String.valueOf(taskId));
+                if (null != collegeEmployeeTaskScore){
+                    CollegeEmployeeTaskDetailResponseDTO collegeEmployeeTaskDetailResponseDTO = new CollegeEmployeeTaskDetailResponseDTO();
+                    BeanUtils.copyProperties(collegeEmployeeTask, collegeEmployeeTaskDetailResponseDTO);
+                    String studyTaskId = collegeEmployeeTaskDetailResponseDTO.getStudyTaskId();
+                    CollegeStudyTaskCfg collegeStudyTaskCfg = collegeStudyTaskCfgServiceImpl.getAllByStudyTaskId(Long.valueOf(studyTaskId));
+                    String taskName = "";
+                    if (null != collegeStudyTaskCfg){
+                        taskName = collegeStudyTaskCfg.getTaskName();
+                        collegeEmployeeTaskDetailResponseDTO.setTaskDesc(collegeStudyTaskCfg.getTaskDesc());
+                    }
+                    if (StringUtils.isEmpty(taskName)){
+                        taskName = studyTaskId;
+                    }
+                    collegeEmployeeTaskDetailResponseDTO.setTaskName(taskName);
+                    finishTaskList.add(collegeEmployeeTaskDetailResponseDTO);
+                }else {
+                    LocalDateTime studyStartDate = collegeEmployeeTask.getStudyStartDate();
+                    LocalDateTime studyEndDate = collegeEmployeeTask.getStudyEndDate();
+                    LocalDateTime todayFirstTime = TimeUtils.getFirstSecondDay(nowTime, 0);
+                    if (TimeUtils.compareTwoTime(studyStartDate, todayFirstTime) <= 0 && TimeUtils.compareTwoTime(studyEndDate, todayFirstTime) >= 0){
+                        CollegeEmployeeTaskDetailResponseDTO collegeEmployeeTaskDetailResponseDTO = new CollegeEmployeeTaskDetailResponseDTO();
+                        BeanUtils.copyProperties(collegeEmployeeTask, collegeEmployeeTaskDetailResponseDTO);
+                        todayTaskList.add(collegeEmployeeTaskDetailResponseDTO);
+                        continue;
+                    }
+
+                    LocalDateTime tomorrowFirstTime = TimeUtils.getFirstSecondDay(todayFirstTime, 1);
+                    if (TimeUtils.compareTwoTime(studyStartDate, tomorrowFirstTime) <= 0 && TimeUtils.compareTwoTime(studyEndDate, tomorrowFirstTime) >= 0){
+                        CollegeEmployeeTaskDetailResponseDTO collegeEmployeeTaskDetailResponseDTO = new CollegeEmployeeTaskDetailResponseDTO();
+                        BeanUtils.copyProperties(collegeEmployeeTask, collegeEmployeeTaskDetailResponseDTO);
+                        tomorrowTaskList.add(collegeEmployeeTaskDetailResponseDTO);
+                        continue;
+                    }
+                }
+            }
+            result.setFinishTaskList(finishTaskList);
+            result.setTodayTaskList(todayTaskList);
+            result.setTomorrowTaskList(tomorrowTaskList);
+        }
+        return result;
     }
 
 }

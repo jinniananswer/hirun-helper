@@ -3,10 +3,7 @@ package com.microtomato.hirun.modules.college.task.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.microtomato.hirun.modules.college.task.entity.dto.CollegeEmployeeTaskDetailRequestDTO;
-import com.microtomato.hirun.modules.college.task.entity.dto.CollegeEmployeeTaskDetailResponseDTO;
-import com.microtomato.hirun.modules.college.task.entity.dto.CollegeEmployeeTaskQueryRequestDTO;
-import com.microtomato.hirun.modules.college.task.entity.dto.CollegeEmployeeTaskQueryResponseDTO;
+import com.microtomato.hirun.modules.college.task.entity.dto.*;
 import com.microtomato.hirun.modules.college.task.entity.po.CollegeEmployeeTask;
 
 import java.util.List;
@@ -41,4 +38,6 @@ public interface ICollegeEmployeeTaskService extends IService<CollegeEmployeeTas
     List<CollegeEmployeeTask> queryAllEffective();
 
     List<CollegeEmployeeTask> queryEffectiveByEmployeeIdList(List<String> employeeIdList);
+
+    CollegeLoginTaskInfoResponseDTO queryLoginEmployeeTaskInfo();
 }

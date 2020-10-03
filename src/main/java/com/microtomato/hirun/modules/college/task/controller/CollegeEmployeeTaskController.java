@@ -476,4 +476,11 @@ public class CollegeEmployeeTaskController {
     public void taskReleaseByTaskList(@RequestBody List<Long> studyTaskIdList){
         this.taskDomainOpenServiceImpl.taskReleaseByTaskList(studyTaskIdList);
     }
+
+    @GetMapping("queryLoginEmployeeTaskInfo")
+    @Transactional(rollbackFor = Exception.class)
+    @RestResult
+    public CollegeLoginTaskInfoResponseDTO queryLoginEmployeeTaskInfo() {
+        return this.collegeEmployeeTaskService.queryLoginEmployeeTaskInfo();
+    }
 }
