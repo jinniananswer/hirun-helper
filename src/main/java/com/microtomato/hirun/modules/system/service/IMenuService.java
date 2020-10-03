@@ -2,9 +2,7 @@ package com.microtomato.hirun.modules.system.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.microtomato.hirun.framework.security.Role;
-import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.modules.system.entity.po.Menu;
-import org.springframework.cache.annotation.Cacheable;
 
 import java.util.List;
 import java.util.Map;
@@ -59,4 +57,8 @@ public interface IMenuService extends IService<Menu> {
      */
     //@Cacheable(value = "menu-url-to-id", key = "#menuUrl")
     Long getMenuId(String menuUrl);
+
+    Set<Long> listPhoneMenusForAdmin();
+
+    Map<Long, Menu> listAllPhoneMenus();
 }
