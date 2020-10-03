@@ -1,9 +1,13 @@
 package com.microtomato.hirun.modules.bss.service.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.microtomato.hirun.modules.bss.service.entity.dto.QueryRepairCondDTO;
+import com.microtomato.hirun.modules.bss.service.entity.dto.RepairOrderDTO;
 import com.microtomato.hirun.modules.bss.service.entity.dto.RepairOrderInfoDTO;
 import com.microtomato.hirun.modules.bss.service.entity.dto.RepairOrderRecordDTO;
 import com.microtomato.hirun.modules.bss.service.entity.po.ServiceRepairOrder;
+
+import java.util.List;
 
 /**
  * (ServiceRepairOrder)表服务接口
@@ -23,4 +27,9 @@ public interface IServiceRepairOrderService extends IService<ServiceRepairOrder>
      * @return
      */
     RepairOrderRecordDTO queryRepairRecordInfo(Long orderId,Long customerId,String repairNo);
+
+    void nextStep(RepairOrderInfoDTO infoDTO);
+
+    List<RepairOrderDTO> queryRepairAllRecord(QueryRepairCondDTO condDTO);
+
 }

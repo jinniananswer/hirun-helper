@@ -15,6 +15,8 @@ public class SimpleEmployeeDTO {
 
     private String name;
 
+    private String sex;
+
     private Long orgId;
 
     private String jobRole;

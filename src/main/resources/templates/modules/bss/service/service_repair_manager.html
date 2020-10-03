@@ -9,7 +9,7 @@
     <script src="static/js/framework/requirejs/require.config.js" th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
 </head>
 <body>
-<div id="app">
+<div id="app" v-cloak>
     <el-container>
         <el-main>
             <el-row>
@@ -196,8 +196,8 @@
                                         </vxe-table-column>
                                     </vxe-table>
                                     <el-row :style="show">
-                                        <el-button type="danger" :style="showBeginRepair" @click="">开始执行维修任务</el-button>
-                                        <el-button type="danger" :style="showCheckData" @click="">发给专干补录、核实数据</el-button>
+                                        <el-button type="danger" :style="showBeginRepair" @click="nextStep">开始执行维修任务</el-button>
+                                        <el-button type="danger" :style="showCheckData" @click="nextStep">发给专干补录、核实数据</el-button>
                                     </el-row>
                                 </el-tab-pane>
                                 <el-tab-pane label="历史维修记录" name="repairHistoryActiveTable">
@@ -303,6 +303,9 @@
 
     .delete_row {
         text-decoration:line-through;
+    }
+    [v-cloak] {
+        display: none;
     }
 </style>
 <script src="static/js/modules/bss/service/service.repair.manager.js" th:src="@{static/js/modules/bss/service/service.repair.manager.js(v=${version})}"></script>

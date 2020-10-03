@@ -55,4 +55,14 @@ public class UsualOrderWorkerDTO {
      * 项目经理
      */
     private String projectManagerName;
+
+    /**
+     * 工程主管
+     */
+    private String projectChargerName;
+
+    /**
+     * 工厂订单管理员
+     */
+    private String factoryOrderManagerName;
 }

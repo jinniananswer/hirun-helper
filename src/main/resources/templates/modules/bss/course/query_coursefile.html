@@ -11,7 +11,7 @@
             th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
 </head>
 <body>
-<div id="app" style="display:none" :style="display?display:''">
+<div id="app" v-cloak>
     <el-container>
         <el-main>
             <el-card class="box-card">
@@ -153,6 +153,9 @@
 
     .box-card {
         margin-bottom: 18px;
+    }
+    [v-cloak] {
+        display: none;
     }
 </style>
 <script src="../../../static/js/modules/bss/course/query.coursefile.js"

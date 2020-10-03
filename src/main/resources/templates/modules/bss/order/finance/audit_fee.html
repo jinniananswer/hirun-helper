@@ -9,7 +9,7 @@
     <script src="static/js/framework/requirejs/require.config.js" th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
 </head>
 <body>
-<div id="app">
+<div id="app" v-cloak>
     <el-container>
         <el-main>
             <el-row>
@@ -107,6 +107,9 @@
 
     .el-card__header {
         padding:10px;
+    }
+    [v-cloak] {
+        display: none;
     }
 </style>
 

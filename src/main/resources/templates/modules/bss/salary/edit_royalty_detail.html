@@ -9,7 +9,7 @@
     <script src="static/js/framework/requirejs/require.config.js" th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
 </head>
 <body>
-<div id="app">
+<div id="app" v-cloak>
     <el-container>
         <el-main>
             <el-row>
@@ -460,6 +460,9 @@
 
     .delete_row {
         text-decoration:line-through;
+    }
+    [v-cloak] {
+        display: none;
     }
 </style>
 <script src="static/js/modules/bss/salary/edit.royalty.detail.js" th:src="@{static/js/modules/bss/salary/edit.royalty.detail.js(v=${version})}"></script>

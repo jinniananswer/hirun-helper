@@ -86,4 +86,18 @@ public class RepairOrderDTO {
 
     private String status;
 
+    private String statusName;
+
+    private String custName;
+
+    private String mobileNo;
+
+    private Long houseId;
+
+    private String houseName;
+
+    private String custNo;
+
+    private String agentName;
+
 }

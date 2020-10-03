@@ -7,8 +7,6 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'util'
                 queryCond: {
                     startTime: util.getNowDate(),
                     endTime: util.getNowDate(),
-                    page : 1,
-                    limit : -1
                 },
                 serviceRepairHistoryRecordList: []
             }
@@ -17,29 +15,12 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'util'
         methods: {
             query: function() {
                 let that = this;
-                ajax.get('api/bss.plan/plan-agent-month/queryAgentPlan', this.queryCond, function(data){
+                ajax.get('api/bss.service/service-repair-order/queryRepairAllRecord', this.queryCond, function(data){
                     that.serviceRepairHistoryRecordList = data;
                 });
             },
 
-            submit : function() {
-                ajax.post('api/bss.plan/plan-agent-month/saveAgentPlan', this.employees,null,null,true);
-            },
 
-
-            isModify: function(obj) {
-                if (obj.row.isModified == '1') {
-                    return "modify_row";
-                }
-            },
-
-            activeRowMethod ({ row, rowIndex }) {
-                if (row.auditStatus ==  '1' || row.auditStatus == '2' || row.auditStatus == '4') {
-                    return false;
-                }
-
-                return true;
-            }
         },
 
         mounted () {

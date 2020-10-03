@@ -9,7 +9,7 @@
     <script src="static/js/framework/requirejs/require.config.js" th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
 </head>
 <body>
-<div id="app">
+<div id="app" v-cloak>
     <el-container>
         <el-main>
             <el-card class="box-card" shadow="hover">
@@ -137,6 +137,9 @@
 
     .modify_row {
         color: #ff4835;
+    }
+    [v-cloak] {
+        display: none;
     }
 </style>
 <script src="static/js/modules/bss/salary/audit.salary.fix.js" th:src="@{static/js/modules/bss/salary/audit.salary.fix.js(v=${version})}"></script>

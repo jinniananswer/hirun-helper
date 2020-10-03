@@ -558,6 +558,10 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
                 usualWorker.setReportName(name);
             } else if (roleId.equals(33L)) {
                 usualWorker.setProjectManagerName(name);
+            } else if (roleId.equals(48L)) {
+                usualWorker.setProjectChargerName(name);
+            } else if (roleId.equals(59L)) {
+                usualWorker.setFactoryOrderManagerName(name);
             }
         });
 
