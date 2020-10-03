@@ -18,8 +18,10 @@ import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
 import com.microtomato.hirun.modules.organization.entity.po.Org;
 import com.microtomato.hirun.modules.organization.mapper.EmployeeMapper;
+import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import com.microtomato.hirun.modules.organization.service.IOrgService;
+import com.microtomato.hirun.modules.system.UserContextUtils;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -53,6 +55,9 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
 
     @Autowired
     private IOrgService orgService;
+
+    @Autowired
+    private IEmployeeJobRoleService employeeJobRoleService;
 
     @Autowired
     private IStaticDataService staticDataService;
@@ -478,5 +483,29 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
                 "  and e.end_date > now() and a.status='0' and e.role_id in ( " +
                 roleType+") and b.org_id in ("+orgLine+")");
         return this.employeeMapper.queryEmployeeByRoleAndOrg(wrapper);
+    }
+
+    @Override
+    public SimpleEmployeeDTO getLoginEmployeeInfo() {
+        UserContext userContext = WebContextUtils.getUserContext();
+        if (userContext == null) {
+            userContext = UserContextUtils.getUserContext();
+        }
+
+        Long employeeId = userContext.getEmployeeId();
+        SimpleEmployeeDTO result = new SimpleEmployeeDTO();
+        Employee employee = this.getById(employeeId);
+        result.setEmployeeId(employee.getEmployeeId());
+        result.setName(employee.getName());
+        result.setSex(employee.getSex());
+
+        EmployeeJobRole employeeJobRole = this.employeeJobRoleService.queryLast(employeeId);
+        result.setJobRole(employeeJobRole.getJobRole());
+        result.setJobRoleName(this.staticDataService.getCodeName("JOB_ROLE", result.getJobRole()));
+
+        OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, userContext.getOrgId());
+        result.setOrgId(userContext.getOrgId());
+        result.setOrgName(orgDO.getOrg().getName());
+        return result;
     }
 }
