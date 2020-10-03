@@ -23,6 +23,11 @@ public class TreeNode<T> implements Serializable {
 
     private String parentId;
 
+    /**
+     * 优先级，值越小，越优先
+     */
+    private Integer priority = 99;
+
     T node;
 
     private boolean spread;

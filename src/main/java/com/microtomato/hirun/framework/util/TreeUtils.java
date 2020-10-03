@@ -4,9 +4,7 @@ import com.microtomato.hirun.framework.data.TreeNode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 构造树的工具
@@ -30,6 +28,9 @@ public class TreeUtils {
         if (ArrayUtils.isEmpty(roots)) {
             return null;
         }
+
+        // 排序
+        Collections.sort(roots, Comparator.comparing(TreeNode::getPriority));
 
         for (TreeNode root : roots) {
             root.setPath(root.getTitle());
@@ -64,6 +65,9 @@ public class TreeUtils {
         if (ArrayUtils.isNotEmpty(children)) {
             node.setChildren(children);
         }
+
+        // 排序
+        Collections.sort(children, Comparator.comparing(TreeNode::getPriority));
     }
 
     /**

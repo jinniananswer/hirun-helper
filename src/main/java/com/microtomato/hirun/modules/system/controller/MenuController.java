@@ -182,6 +182,7 @@ public class MenuController {
                 node.setParentId(menu.getParentMenuId() + "");
             }
             node.setNode(menu);
+            node.setPriority(menu.getPriority());
             nodes.add(node);
         }
 
@@ -218,6 +219,7 @@ public class MenuController {
         for (Menu menu : map.values()) {
             TreeNode node = new TreeNode();
             node.setId(menu.getMenuId() + "");
+            node.setPriority(menu.getPriority());
             if (null != menu.getParentMenuId()) {
                 node.setParentId(menu.getParentMenuId() + "");
             }
