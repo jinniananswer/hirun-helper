@@ -146,4 +146,36 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 		return one.getMenuId();
 	}
 
+	@Override
+	public Set<Long> listPhoneMenusForAdmin() {
+		Set<Long> rtn = new HashSet<>();
+		List<Menu> menuList = menuServiceImpl.list(
+				Wrappers.<Menu>lambdaQuery()
+						.select(Menu::getMenuId)
+						.ne(Menu::getDisabled, true)
+						.in(Menu::getType, "M", "H")
+						.orderByAsc(Menu::getMenuId)
+
+		);
+		menuList.forEach(menu -> rtn.add(menu.getMenuId()));
+		return rtn;
+	}
+
+	@Override
+	public Map<Long, Menu> listAllPhoneMenus() {
+
+		List<Menu> menuList = this.list(
+				Wrappers.<Menu>lambdaQuery()
+						.ne(Menu::getDisabled, true)
+						.in(Menu::getType, "M", "H")
+						.orderByAsc(Menu::getMenuId)
+		);
+
+		// 转换成 menuid 为 key 的 Map
+		Map<Long, Menu> menuMap = new HashMap<>(menuList.size());
+		menuList.forEach(
+				menu -> menuMap.put(menu.getMenuId(), menu)
+		);
+		return menuMap;
+	}
 }

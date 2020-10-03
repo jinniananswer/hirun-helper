@@ -5,6 +5,7 @@ import com.microtomato.hirun.framework.data.TreeNode;
 import com.microtomato.hirun.framework.security.AssetSession;
 import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.*;
+import com.microtomato.hirun.framework.util.UserContextUtils;
 import com.microtomato.hirun.modules.system.entity.dto.MenuNode;
 import com.microtomato.hirun.modules.system.entity.po.Menu;
 import com.microtomato.hirun.modules.system.entity.po.Page;
@@ -128,7 +129,9 @@ public class MenuController {
     public List<TreeNode> getMenuTree() {
 
         UserContext userContext = WebContextUtils.getUserContext();
-
+        if (userContext == null) {
+            userContext = UserContextUtils.getUserContext();
+        }
         Set<Long> menuidSet;
         if (userContext.isAdmin()) {
             // 查超级管理员能看到的菜单
@@ -282,6 +285,87 @@ public class MenuController {
         }
 
         return rtn;
+    }
+
+    @GetMapping("/listPhone")
+    @RestResult
+    public List<TreeNode> getPhoneMenuTree() {
+
+        UserContext userContext = WebContextUtils.getUserContext();
+        if (userContext == null) {
+            userContext = UserContextUtils.getUserContext();
+        }
+        Set<Long> menuidSet;
+        if (userContext.isAdmin()) {
+            // 查超级管理员能看到的菜单
+            menuidSet = listPhoneMenusForAdmin();
+        } else {
+            // 查普通用户能看到的菜单ID
+            menuidSet = listMenusForNormal();
+        }
+
+        // 查询所有菜单集合
+        Map<Long, Menu> menuMap = convert(menuServiceImpl.listAllPhoneMenus());
+
+        // 根据权限进行过滤
+        Set<String> menuUrls = new HashSet<>();
+        Map<Long, Menu> filteredMenuMap = new HashMap<>(20);
+        for (Menu currMenu : menuMap.values()) {
+
+            // 如果有该菜单权限
+            if (menuidSet.contains(currMenu.getMenuId())) {
+                filteredMenuMap.put(currMenu.getMenuId(), currMenu);
+                menuUrls.add(currMenu.getMenuUrl());
+
+                // 递归增加父菜单
+                addParentMenus(currMenu, filteredMenuMap, menuMap);
+            }
+        }
+
+        // 查询所有页面
+        Map<Long, Page> pageMap = pageServiceImpl.listAllPages();
+        for (Page page : pageMap.values()) {
+            // 如果页面的归属菜单有权限，那么将此页面 url 加入可信集合。
+            if (menuidSet.contains(page.getMenuId())) {
+                menuUrls.add(page.getUrl());
+            }
+        }
+
+        // 将有权访问的菜单 URL 设置到上下文中
+        assetSession.setMenuUrls(menuUrls);
+
+        List<Menu> menus = new ArrayList(filteredMenuMap.values());
+        if (ArrayUtils.isEmpty(menus)) {
+            return null;
+        }
+
+        // 把有权限的节点的所有上游节点都带着
+        List<TreeNode> nodes = new ArrayList<>();
+        for (Menu menu : menus) {
+            TreeNode node = new TreeNode();
+            node.setId(menu.getMenuId() + "");
+            if (null != menu.getParentMenuId()) {
+                node.setParentId(menu.getParentMenuId() + "");
+            }
+            node.setNode(menu);
+            nodes.add(node);
+        }
+
+        // 剔除没有叶子节点的分支
+        List<TreeNode> treeNodeList = removeBranchNodeWithoutLeafNode(nodes, menuMap);
+
+        // 构建菜单树
+        List<TreeNode> tree = TreeUtils.build(treeNodeList);
+        return tree;
+    }
+
+    /**
+     * 查超级管理员能看到的菜单ID
+     *
+     * @return 菜单 Id 集合
+     */
+    private Set<Long> listPhoneMenusForAdmin() {
+        return menuServiceImpl.listPhoneMenusForAdmin();
     }
 
 }
