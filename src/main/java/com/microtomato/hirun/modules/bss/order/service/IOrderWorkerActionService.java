@@ -29,4 +29,5 @@ public interface IOrderWorkerActionService extends IService<OrderWorkerAction> {
 
     List<Long> deleteOrderWorkerAction(Long orderId,String action);
 
+    List<OrderWorkerAction> queryByWorkerId(Long workerId);
 }

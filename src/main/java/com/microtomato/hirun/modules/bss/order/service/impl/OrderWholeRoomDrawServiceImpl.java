@@ -91,6 +91,7 @@ public class OrderWholeRoomDrawServiceImpl extends ServiceImpl<OrderWholeRoomDra
 
     @Override
     public void submitToCustomerLeaderFlow(Long orderId) {
+        this.mergeAssistantWorkerAction(orderId);
         orderDomainService.orderStatusTrans(orderId, OrderConst.OPER_NEXT_STEP);
     }
 
@@ -138,6 +139,8 @@ public class OrderWholeRoomDrawServiceImpl extends ServiceImpl<OrderWholeRoomDra
                     orderWholeRoomDrawDTO.setProductionLeader(orderWorker.getEmployeeId());
                 } else if (orderWorker.getRoleId().equals(40L)) {
                     orderWholeRoomDrawDTO.setAdminAssistant(orderWorker.getEmployeeId());
+                } else if (orderWorker.getRoleId().equals(58L)) {
+                    orderWholeRoomDrawDTO.setCustomerLeader(orderWorker.getEmployeeId());
                 }
             }
         }
@@ -172,12 +175,9 @@ public class OrderWholeRoomDrawServiceImpl extends ServiceImpl<OrderWholeRoomDra
         BeanUtils.copyProperties(dto,orderWholeRoomDrawNew);
         orderWholeRoomDrawNew.setEndDate(forever);
         orderWholeRoomDrawNew.setStartDate(now);
+        orderWholeRoomDrawNew.setId(null);
+        this.save(orderWholeRoomDrawNew);
 
-        if (orderWholeRoomDrawNew.getId()==null) {
-            this.save(orderWholeRoomDrawNew);
-        } else {
-            this.updateById(orderWholeRoomDrawNew);
-        }
         if (orderWholeRoomDrawNew.getHydropowerDesigner() != null) {
             this.orderWorkerService.updateOrderWorkerByEmployeeId(orderId,38L,orderWholeRoomDrawNew.getHydropowerDesigner());
         }
@@ -199,7 +199,7 @@ public class OrderWholeRoomDrawServiceImpl extends ServiceImpl<OrderWholeRoomDra
         if (ArrayUtils.isNotEmpty(workerIds)) {
             //检查是否有其它动作
             List<OrderWorkerAction> otherActions = this.orderWorkerActionService.hasOtherAction(workerIds, DesignerConst.OPER_DRAW_CONSTRUCT);
-            List<Long> onlyDrawPlanWorkerIds = new ArrayList<>();
+            List<Long> onlyDrawContracts = new ArrayList<>();
 
             for (Long workerId : workerIds) {
 
@@ -212,11 +212,11 @@ public class OrderWholeRoomDrawServiceImpl extends ServiceImpl<OrderWholeRoomDra
                 }
 
                 if (!isFind) {
-                    onlyDrawPlanWorkerIds.add(workerId);
+                    onlyDrawContracts.add(workerId);
                 }
             }
 
-            if (ArrayUtils.isNotEmpty(onlyDrawPlanWorkerIds)) {
+            if (ArrayUtils.isNotEmpty(onlyDrawContracts)) {
                 this.orderWorkerService.deleteOrderWorker(workerIds);
             }
         }
@@ -245,4 +245,82 @@ public class OrderWholeRoomDrawServiceImpl extends ServiceImpl<OrderWholeRoomDra
             throw new OrderException(OrderException.OrderExceptionEnum.FILE_WHOLEROOM_DRAWING_NOT_FOUND);
         }
     }
+
+    /**
+     * 图纸审核通过后看是否助理设计师要合并动作
+     * @param orderId
+     */
+    public void mergeAssistantWorkerAction(Long orderId) {
+        //先查助理设计师是不是有多人，如果有多人，则不需要合并
+        List<OrderWorker> assistants = this.orderWorkerService.queryByOrderIdRoleId(orderId, 41L);
+        if (ArrayUtils.isEmpty(assistants) || assistants.size() > 1) {
+            return;
+        }
+
+        OrderWorker assistant = assistants.get(0);
+        Long id = assistant.getId();
+
+        List<OrderWorkerAction> workerActions = this.orderWorkerActionService.queryByWorkerId(id);
+
+        if (ArrayUtils.isEmpty(workerActions) || workerActions.size() < 3) {
+            return;
+        }
+
+        /**
+         * 如果同一个人做完量房，平面图，全房图，那么将三个动作合并为全程参与一个动作
+         * */
+
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+        workerActions.forEach(workerAction -> {
+            workerAction.setEndDate(now);
+        });
+
+        this.orderWorkerActionService.updateBatchById(workerActions);
+
+        OrderBase orderBase = this.orderBaseService.getById(orderId);
+        this.orderWorkerActionService.createOrderWorkerAction(orderId, assistant.getEmployeeId(), assistant.getId(),orderBase.getStatus(), DesignerConst.OPER_WALL_IN_DESIGN);
+    }
+
+    /**
+     * 保存全房图审图信息
+     * @param dto
+     */
+    @Override
+    public void saveAuditWholeRoom(OrderWholeRoomDrawDTO dto) {
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+        Long orderId = dto.getOrderId();
+        OrderWholeRoomDraw orderWholeRoomDraw = this.getOne(
+                Wrappers.<OrderWholeRoomDraw>lambdaQuery()
+                        .eq(OrderWholeRoomDraw::getOrderId, orderId)
+                        .ge(OrderWholeRoomDraw::getEndDate, now)
+        );
+        if ( orderWholeRoomDraw != null) {
+            orderWholeRoomDraw.setReviewedComments(dto.getReviewedComments());
+            this.updateById(orderWholeRoomDraw);
+
+            if (dto.getCustomerLeader() != null) {
+                this.orderWorkerService.updateOrderWorker(orderId, 58L, dto.getCustomerLeader());
+            }
+        }
+    }
+
+    /**
+     * 保存全房图审图信息
+     * @param dto
+     */
+    @Override
+    public void saveAuditOrder(OrderWholeRoomDrawDTO dto) {
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+        Long orderId = dto.getOrderId();
+        OrderWholeRoomDraw orderWholeRoomDraw = this.getOne(
+                Wrappers.<OrderWholeRoomDraw>lambdaQuery()
+                        .eq(OrderWholeRoomDraw::getOrderId, orderId)
+                        .ge(OrderWholeRoomDraw::getEndDate, now)
+        );
+        if ( orderWholeRoomDraw != null) {
+            orderWholeRoomDraw.setOrderComments(dto.getOrderComments());
+            this.updateById(orderWholeRoomDraw);
+        }
+    }
+
 }

@@ -74,6 +74,11 @@ public class OrderWholeRoomDrawDTO {
     private String reviewedComments;
 
     /**
+     * 下单审核意见
+     */
+    private String orderComments;
+
+    /**
      * 设计师
      */
     private Long designer;

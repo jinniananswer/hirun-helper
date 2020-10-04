@@ -241,4 +241,19 @@ public class OrderWorkerServiceImpl extends ServiceImpl<OrderWorkerMapper, Order
 
         this.updateBatchById(orderWorkers);
     }
+
+    /**
+     * 根据订单ID和角色ID查询工作人员
+     * @param orderId
+     * @param roleId
+     * @return
+     */
+    @Override
+    public List<OrderWorker> queryByOrderIdRoleId(Long orderId, Long roleId) {
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+        return this.list(Wrappers.<OrderWorker>lambdaQuery()
+                .eq(OrderWorker::getOrderId, orderId)
+                .eq(OrderWorker::getRoleId, roleId)
+                .ge(OrderWorker::getEndDate, now));
+    }
 }

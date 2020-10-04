@@ -75,7 +75,7 @@ public class OrderWholeRoomDrawController {
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @RestResult
     public void submitToCustomerLeaderFlow(@RequestBody OrderWholeRoomDrawDTO dto) {
-        this.save(dto);
+        iOrderWholeRoomDrawService.saveAuditWholeRoom(dto);
         iOrderWholeRoomDrawService.submitToCustomerLeaderFlow(dto.getOrderId());
     }
 
@@ -101,6 +101,13 @@ public class OrderWholeRoomDrawController {
     @RestResult
     public void submitToBackToDesignerFlow(@RequestBody OrderWholeRoomDraw orderWholeRoomDraw) {
         iOrderWholeRoomDrawService.submitToBackToDesignerFlow(orderWholeRoomDraw.getOrderId());
+    }
+
+    @PostMapping("/saveAuditOrder")
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    @RestResult
+    public void saveAuditOrder(@RequestBody OrderWholeRoomDrawDTO orderWholeRoomDraw) {
+        iOrderWholeRoomDrawService.saveAuditOrder(orderWholeRoomDraw);
     }
 
 }
