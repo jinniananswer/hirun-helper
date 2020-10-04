@@ -21,41 +21,68 @@
                         </div>
                         <el-form :inline="false" :model="wholeRoomDrawing" label-position="right" label-width="140px">
                             <el-row>
-                                <el-col :span="11">
-                                    <el-form-item label="设计师" required="true">
+                                <el-col :span="8">
+                                    <el-form-item label="设计师" required="true" prop="designer">
                                         <order-selectemployee role-id="30" v-model="wholeRoomDrawing.designer" :disabled="true"></order-selectemployee>
                                     </el-form-item>
                                 </el-col>
-                                <el-col :span="11">
-                                    <el-form-item label="开始时间">
+                                <el-col :span="8">
+                                    <el-form-item label="全房图助理" prop="assistantDesigner">
+                                        <order-selectemployee role-id="41" v-model="wholeRoomDrawing.assistantDesigner" :disabled="true"></order-selectemployee>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="制作组长">
+                                        <order-selectemployee role-id="42" v-model="wholeRoomDrawing.productionLeader" :disabled="true"></order-selectemployee>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="8">
+                                    <el-form-item label="行政助理">
+                                        <order-selectemployee role-id="40" v-model="wholeRoomDrawing.adminAssistant" :disabled="true"></order-selectemployee>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="水电设计师">
+                                        <order-selectemployee role-id="38" v-model="wholeRoomDrawing.hydropowerDesigner" :disabled="true"></order-selectemployee>
+                                        <!--<order-selectemployee role-id="38" v-model="wholeRoomDrawing.hydropowerDesigner"></order-selectemployee>-->
+                                    </el-form-item>
+                                </el-col>
+
+                            </el-row>
+                            <el-row>
+                                <el-col :span="8">
+                                    <el-form-item label="开始日期">
                                         <el-date-picker
                                                 v-model="wholeRoomDrawing.drawStartDate"
                                                 type="date"
                                                 value-format="yyyy-MM-dd"
                                                 style="width:100%"
+                                                :disabled="true"
                                                 placeholder="选择日期">
                                         </el-date-picker>
                                     </el-form-item>
                                 </el-col>
-                            </el-row>
-                            <el-row>
-                                <el-col :span="11">
-                                    <el-form-item label="结束时间">
+                                <el-col :span="8">
+                                    <el-form-item label="结束日期">
                                         <el-date-picker
                                                 v-model="wholeRoomDrawing.drawEndDate"
                                                 type="date"
                                                 value-format="yyyy-MM-dd"
                                                 style="width:100%"
+                                                :disabled="true"
                                                 placeholder="选择日期">
                                         </el-date-picker>
                                     </el-form-item>
                                 </el-col>
-                                <el-col :span="11">
-                                    <el-form-item label="预约看图时间">
+                                <el-col :span="8">
+                                    <el-form-item label="预约看图日期">
                                         <el-date-picker
                                                 v-model="wholeRoomDrawing.preTime"
                                                 type="date"
                                                 value-format="yyyy-MM-dd"
+                                                :disabled="true"
                                                 style="width:100%"
                                                 placeholder="选择日期">
                                         </el-date-picker>
@@ -63,56 +90,24 @@
                                 </el-col>
                             </el-row>
                             <el-row>
-                                <el-col :span="11">
-                                    <el-form-item label="制作组长" required="true">
-                                        <order-selectemployee role-id="42" v-model="wholeRoomDrawing.productionLeader"></order-selectemployee>
-                                    </el-form-item>
-                                </el-col>
-                                <el-col :span="11">
-                                    <el-form-item label="助理设计师">
-                                        <order-selectemployee role-id="41" v-model="wholeRoomDrawing.assistantDesigner"></order-selectemployee>
-                                    </el-form-item>
-                                </el-col>
-                            </el-row>
-                            <el-row>
-                                <el-col :span="11">
-                                    <el-form-item label="水电设计师">
-                                        <order-selectemployee role-id="38" v-model="wholeRoomDrawing.hydropowerDesigner"></order-selectemployee>
-                                    </el-form-item>
-                                </el-col>
-                                <el-col :span="11">
-                                    <el-form-item label="绘图助理">
-                                        <order-selectemployee role-id="39" v-model="wholeRoomDrawing.drawingAssistant"></order-selectemployee>
-                                    </el-form-item>
-                                </el-col>
-                            </el-row>
-                            <el-row>
-                                <el-col :span="11">
-                                    <el-form-item label="行政助理">
-                                        <order-selectemployee role-id="40" v-model="wholeRoomDrawing.adminAssistant"></order-selectemployee>
-                                    </el-form-item>
-                                </el-col>
-                                <el-col :span="11">
+                                <el-col :span="24">
                                     <el-form-item label="设计师备注">
-                                        <el-input v-model="wholeRoomDrawing.designerRemarks" placeholder="设计师备注"></el-input>
+                                        <el-input v-model="wholeRoomDrawing.designerRemarks" :disabled="true" placeholder="设计师备注"></el-input>
                                     </el-form-item>
                                 </el-col>
                             </el-row>
                             <el-row>
-                                <el-col :span="22">
+                                <el-col :span="24">
                                     <el-form-item label="审核意见">
                                         <el-input v-model="wholeRoomDrawing.reviewedComments" placeholder="审核意见"></el-input>
                                     </el-form-item>
                                 </el-col>
-                                <el-col v-if="true" :span="22">
+                                <el-col v-if="true" :span="24">
                                     <el-form-item label="请选择下单审核员" required="true">
                                         <order-selectemployee role-id="58" v-model="wholeRoomDrawing.customerLeader"></order-selectemployee>
                                     </el-form-item>
                                 </el-col>
                             </el-row>
-
-
-                            <el-divider></el-divider>
                             <el-form-item>
                                 <el-button type="primary" @click="save">保存</el-button>
                                 <el-dropdown  @command="handleCommand">
@@ -156,6 +151,6 @@
         display: none;
     }
 </style>
-<script src="static/js/modules/bss/order/cust.drawingaudit.js" th:src="@{static/js/modules/bss/order/cust.drawingaudit.js(v=${version})}"></script>
+<script src="static/js/modules/bss/order/cust.drawing.audit.js" th:src="@{static/js/modules/bss/order/cust.drawing.audit.js(v=${version})}"></script>
 </body>
 </html>
