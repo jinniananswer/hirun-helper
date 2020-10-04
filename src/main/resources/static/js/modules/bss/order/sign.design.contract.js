@@ -34,15 +34,18 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
             employeeName:'',
             downloadFileUrl : '',
             planSketchRules : {
-                assistantDesigner: [
-                    { required: true, message: '请选择平面助理！', trigger: 'change' }
+                designFeeStandard: [
+                    { required: true, message: '请选择设计费标准！', trigger: 'change' }
                 ],
                 indoorArea: [
                     { required: true, message: '请填套内面积！', trigger: 'change' }
                 ],
-                designTheme : [
-                    { required: true, message: '请选择设计主题！', trigger: 'blur' }
-                ]
+                contractDesignFee : [
+                    { required: true, message: '请输入合同设计费！', trigger: 'blur' }
+                ],
+                financeEmployeeId : [
+                    { required: true, message: '请选择收银员！', trigger: 'blur' }
+                ],
             },
         },
 
@@ -62,15 +65,19 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 }
             },
 
+            changeDesignFeeStandard: function(newVal) {
+                this.planFigureInfos.designFeeStandard = newVal;
+                this.planFigureInfos.contractDesignFee = this.planFigureInfos.designFeeStandard * this.planFigureInfos.indoorArea;
+            },
+
+            handleChangeInJacketAreaNum : function(value) {
+                this.planFigureInfos.indoorArea=value;
+                this.planFigureInfos.contractDesignFee = this.planFigureInfos.designFeeStandard * this.planFigureInfos.indoorArea;
+            },
+
             handleCommand : function(command) {
                 if ( command == 'submitToSignContractFlow') {
                     this.submitToSignContractFlow();
-                } else if (command == 'submitToConfirmFlow') {
-                    this.submitToConfirmFlow();
-                } else if (command == 'submitToDelayTimeFlow') {
-                    this.submitToDelayTimeFlow();
-                } else if (command =='submitToBackToDesignerFlow') {
-                    this.submitToBackToDesignerFlow();
                 } else if (command == 'submitToSneakFlow') {
                     this.submitToSneakFlow();
                 }
@@ -78,38 +85,24 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
             save : function () {
                 this.$refs["planFigureInfos"].validate((valid) => {
                     if (valid) {
-                        ajax.post('api/bss.order/order-planSketch/submitPlaneSketch', this.planFigureInfos,null,null,true);
+                        ajax.post('api/bss.order/order-planSketch/saveSignDesignContract', this.planFigureInfos,null,null,true);
                     } else {
                         this.$message.error('填写信息不完整，请亲仔细检查哦~~~~~~~！');
                         return;
                     }
                 });
-            },
-
-            //延迟平面图时间
-            submitToDelayTimeFlow : function() {
-                ajax.post('api/bss.order/order-planSketch/submitToDelayTimeFlow', this.planFigureInfos);
-            },
-
-            //等待客户确认平面图
-            submitToConfirmFlow : function() {
-                ajax.post('api/bss.order/order-planSketch/submitToConfirmFlow', this.planFigureInfos);
             },
 
             //签订设计合同
             submitToSignContractFlow : function () {
                 this.$refs["planFigureInfos"].validate((valid) => {
                     if (valid) {
-                        ajax.post('api/bss.order/order-planSketch/submitToSignContractFlow', this.planFigureInfos,null);
+                        ajax.post('api/bss.order/order-planSketch/submitToAuditDesignFee', this.planFigureInfos,null);
                     } else {
                         this.$message.error('填写信息不完整，请亲仔细检查哦~~~~~~~！');
                         return;
                     }
                 });
-            },
-
-            submitToBackToDesignerFlow : function () {
-                ajax.post('api/bss.order/order-planSketch/submitToBackToDesignerFlow', this.planFigureInfos);
             },
 
             submitToSneakFlow : function () {
