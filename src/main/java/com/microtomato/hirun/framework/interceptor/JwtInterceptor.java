@@ -61,6 +61,8 @@ public class JwtInterceptor implements HandlerInterceptor {
             return true;
         }
 
+        // 重定向到登录页面
+        response.sendRedirect("/hirun");
         return false;
 
     }
