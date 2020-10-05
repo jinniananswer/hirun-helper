@@ -8,8 +8,8 @@ import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.threadlocal.UserContextHolder;
 import com.microtomato.hirun.framework.util.Constants;
 import com.microtomato.hirun.modules.system.entity.po.Func;
-import com.microtomato.hirun.modules.system.service.IFuncService;
 import com.microtomato.hirun.modules.system.service.IAuthService;
+import com.microtomato.hirun.modules.system.service.IFuncService;
 import com.microtomato.hirun.modules.user.entity.po.FuncRole;
 import com.microtomato.hirun.modules.user.entity.po.FuncTemp;
 import com.microtomato.hirun.modules.user.entity.po.User;
@@ -74,12 +74,6 @@ public class AuthServiceImpl implements IAuthService {
      */
     public static final String KEY_TYPE = "typ";
     public static final String VAL_TYPE = "JWT";
-
-    /**
-     * 指定签名算法，默认是 HMAC HS256（写成 "HS256"）
-     */
-    public static final String KEY_ALG = "alg";
-    public static final String VAL_ALG = "HS256";
 
     /**
      * 线程安全
@@ -245,13 +239,9 @@ public class AuthServiceImpl implements IAuthService {
         }
 
         jsonWebToken = StringUtils.removeStart(jsonWebToken, JwtConstants.HEAD_AUTHORIZATION_BEARER);
-        log.debug("jsonWebToken: {}", jsonWebToken);
 
         try {
-
             Claims claims = this.parseJwt(jsonWebToken);
-            log.debug("claims: {}", claims);
-
             Long userId = claims.get("userId", Long.class);
             String username = claims.get("username", String.class);
             List roles = claims.get("roles", List.class);

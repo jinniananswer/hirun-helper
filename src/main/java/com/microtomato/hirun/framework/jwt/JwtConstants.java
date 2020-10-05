@@ -6,9 +6,9 @@ package com.microtomato.hirun.framework.jwt;
  */
 public final class JwtConstants {
 
-    public static final String jwtSecretKey = "hirun@tomato.com";
-    public static final String KeyAuthorization = "Authorization";
+    public static final String JWT_SECRET_KEY = "hirun@tomato.com";
+    public static final String HEAD_AUTHORIZATION = "Authorization";
     public static final String HEAD_AUTHORIZATION_BEARER = "Bearer ";
-    public static final long expiration = 1000 * 60 * 60 * 24;
+    public static final long EXPIRATION_ONE_DAY = 1000 * 60 * 60 * 24;
 
 }

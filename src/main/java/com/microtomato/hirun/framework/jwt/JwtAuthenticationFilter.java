@@ -33,7 +33,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-        String header = request.getHeader(JwtConstants.KeyAuthorization);
+        String header = request.getHeader(JwtConstants.HEAD_AUTHORIZATION);
 
         if (null == header || !header.startsWith(JwtConstants.HEAD_AUTHORIZATION_BEARER)) {
             chain.doFilter(request, response);
@@ -52,7 +52,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
         if (null != token) {
             // parse the token.
             String user = Jwts.parser()
-                .setSigningKey(JwtConstants.jwtSecretKey)
+                .setSigningKey(JwtConstants.JWT_SECRET_KEY)
                 .parseClaimsJws(token.replace(JwtConstants.HEAD_AUTHORIZATION_BEARER, ""))
                 .getBody()
                 .getSubject();
