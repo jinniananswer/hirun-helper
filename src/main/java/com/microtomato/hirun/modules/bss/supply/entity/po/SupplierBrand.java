@@ -56,6 +56,8 @@ public class SupplierBrand extends BaseEntity {
     @TableField(value = "remark")
     private String remark;
 
+    @TableField(value = "pay_item_id")
+    private Long payItemId;
 
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)
     private Long createUserId;
