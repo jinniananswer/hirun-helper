@@ -185,10 +185,12 @@ public class OrderPlaneSketchServiceImpl extends ServiceImpl<OrderPlaneSketchMap
             for (Long workerId : workerIds) {
 
                 boolean isFind = false;
-                for (OrderWorkerAction otherAction : otherActions) {
-                    if (otherAction.getWorkerId().equals(workerId)) {
-                        isFind = true;
-                        break;
+                if (ArrayUtils.isNotEmpty(otherActions)) {
+                    for (OrderWorkerAction otherAction : otherActions) {
+                        if (otherAction.getWorkerId().equals(workerId)) {
+                            isFind = true;
+                            break;
+                        }
                     }
                 }
 
@@ -198,7 +200,7 @@ public class OrderPlaneSketchServiceImpl extends ServiceImpl<OrderPlaneSketchMap
             }
 
             if (ArrayUtils.isNotEmpty(onlyDrawPlanWorkerIds)) {
-                this.orderWorkerService.deleteOrderWorker(workerIds);
+                this.orderWorkerService.deleteOrderWorker(onlyDrawPlanWorkerIds);
             }
         }
 

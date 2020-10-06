@@ -203,7 +203,7 @@ public class OrderWholeRoomDrawServiceImpl extends ServiceImpl<OrderWholeRoomDra
         if (ArrayUtils.isNotEmpty(workerIds)) {
             //检查是否有其它动作
             List<OrderWorkerAction> otherActions = this.orderWorkerActionService.hasOtherAction(workerIds, DesignerConst.OPER_DRAW_CONSTRUCT);
-            List<Long> onlyDrawContracts = new ArrayList<>();
+            List<Long> onlyDrawConstruct = new ArrayList<>();
 
             for (Long workerId : workerIds) {
 
@@ -216,12 +216,12 @@ public class OrderWholeRoomDrawServiceImpl extends ServiceImpl<OrderWholeRoomDra
                 }
 
                 if (!isFind) {
-                    onlyDrawContracts.add(workerId);
+                    onlyDrawConstruct.add(workerId);
                 }
             }
 
-            if (ArrayUtils.isNotEmpty(onlyDrawContracts)) {
-                this.orderWorkerService.deleteOrderWorker(workerIds);
+            if (ArrayUtils.isNotEmpty(onlyDrawConstruct)) {
+                this.orderWorkerService.deleteOrderWorker(onlyDrawConstruct);
             }
         }
         List<Long> assistantDesignerIds = dto.getAssistantDesigner();
