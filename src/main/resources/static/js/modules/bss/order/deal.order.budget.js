@@ -46,12 +46,12 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
         },
         mounted: function() {
             this.budget.orderId = this.orderId;
-            if(this.orderStatus == '43') {
+            if(this.orderStatus == '15') {
                 this.checkedFail = true;
                 let data = {
                     orderId : this.orderId
                 }
-                ajax.post('api/bss.order/order-budget/getBudgetByOrderId', data, (responseData)=>{
+                ajax.get('api/bss.order/order-budget/getBudgetByOrderId', data, (responseData)=>{
                     Object.assign(this.budget, responseData);
                     this.budget.fee = this.budget.fee/100;
                 });

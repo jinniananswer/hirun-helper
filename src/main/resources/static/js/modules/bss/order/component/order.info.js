@@ -69,9 +69,9 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
 
                         </el-row >
                     </el-tab-pane>
-                    <el-tab-pane label="订单费用" name="fee">
+                    <el-tab-pane label="订单款项" name="fee">
                         <el-tabs v-model="subActiveTab" type="border-card">
-                            <el-tab-pane label="费用信息" name="feeInfo">
+                            <el-tab-pane label="应收款项" name="feeInfo">
                                 <el-table
                                     :data="order.orderFees"
                                     stripe="true"
@@ -80,7 +80,7 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
                                     :tree-props="{children:'children', hasChildren: 'hasChildren'}"
                                     style="width: 100%">
                                     <el-table-column
-                                            label="费用项"
+                                            label="应收项"
                                             prop="typeName"
                                             fixed>
                                     </el-table-column>
@@ -97,7 +97,7 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
                                     </el-table-column>
                                 </el-table>
                             </el-tab-pane>
-                            <el-tab-pane label="付款信息" name="payInfo">
+                            <el-tab-pane label="实收款项" name="payInfo">
                                 <el-table
                                     :data="order.orderPays"
                                     stripe="true"
