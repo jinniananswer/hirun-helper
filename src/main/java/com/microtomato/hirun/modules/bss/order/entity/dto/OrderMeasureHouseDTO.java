@@ -24,7 +24,7 @@ public class OrderMeasureHouseDTO  {
 
     private String customerComments;
 
-    private Long assistantDesigner;
+    private List<Long> assistantDesigner;
     
     private Long designer;
 

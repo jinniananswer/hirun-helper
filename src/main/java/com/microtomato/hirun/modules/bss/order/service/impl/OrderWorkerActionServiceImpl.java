@@ -64,7 +64,7 @@ public class OrderWorkerActionServiceImpl extends ServiceImpl<OrderWorkerActionM
                 .eq(OrderWorkerAction::getOrderId, orderId)
                 .eq(OrderWorkerAction::getAction, action)
                 .eq(OrderWorkerAction::getEmployeeId, employeeId)
-                .ge(OrderWorkerAction::getEndDate, now));
+                .gt(OrderWorkerAction::getEndDate, now));
     }
 
     /**
@@ -84,7 +84,7 @@ public class OrderWorkerActionServiceImpl extends ServiceImpl<OrderWorkerActionM
         return this.list(Wrappers.<OrderWorkerAction>lambdaQuery()
                 .eq(OrderWorkerAction::getOrderId, orderId)
                 .eq(OrderWorkerAction::getAction, action)
-                .ge(OrderWorkerAction::getEndDate, now));
+                .gt(OrderWorkerAction::getEndDate, now));
     }
 
     /**
@@ -101,7 +101,7 @@ public class OrderWorkerActionServiceImpl extends ServiceImpl<OrderWorkerActionM
         List<Long> workerIds = new ArrayList<Long>();
         if (ArrayUtils.isNotEmpty(oldActions)) {
             oldActions.forEach(oldAction -> {
-                oldAction.setEndDate(now);
+                oldAction.setEndDate(now.plusSeconds(-1));
                 workerIds.add(oldAction.getWorkerId());
             });
             this.updateBatchById(oldActions);
@@ -121,7 +121,7 @@ public class OrderWorkerActionServiceImpl extends ServiceImpl<OrderWorkerActionM
         return this.list(Wrappers.<OrderWorkerAction>lambdaQuery()
                 .in(OrderWorkerAction::getWorkerId, workerIds)
                 .ne(OrderWorkerAction::getAction, action)
-                .ge(OrderWorkerAction::getEndDate, now));
+                .gt(OrderWorkerAction::getEndDate, now));
     }
 
     /**
@@ -172,6 +172,6 @@ public class OrderWorkerActionServiceImpl extends ServiceImpl<OrderWorkerActionM
         LocalDateTime now = RequestTimeHolder.getRequestTime();
         return this.list(Wrappers.<OrderWorkerAction>lambdaQuery()
                 .eq(OrderWorkerAction::getWorkerId, workerId)
-                .ge(OrderWorkerAction::getEndDate, now));
+                .gt(OrderWorkerAction::getEndDate, now));
     }
 }

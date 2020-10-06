@@ -67,7 +67,7 @@ public class OrderWorkerServiceImpl extends ServiceImpl<OrderWorkerMapper, Order
         List<OrderWorker> orderWorkers = this.list(Wrappers.<OrderWorker>lambdaQuery()
                 .eq(OrderWorker::getOrderId, orderId)
                 .le(OrderWorker::getStartDate, now)
-                .ge(OrderWorker::getEndDate, now));
+                .gt(OrderWorker::getEndDate, now));
         return orderWorkers;
     }
 
@@ -89,7 +89,7 @@ public class OrderWorkerServiceImpl extends ServiceImpl<OrderWorkerMapper, Order
                 if (orderWorker.getEmployeeId().equals(employeeId)) {
                     return orderWorker.getId();
                 }
-                orderWorker.setEndDate(LocalDateTime.now());
+                orderWorker.setEndDate(RequestTimeHolder.getRequestTime());
                 this.orderWorkerMapper.updateById(orderWorker);
             }
         } else {
@@ -235,7 +235,7 @@ public class OrderWorkerServiceImpl extends ServiceImpl<OrderWorkerMapper, Order
         ids.forEach(id -> {
             OrderWorker orderWorker = new OrderWorker();
             orderWorker.setId(id);
-            orderWorker.setEndDate(now);
+            orderWorker.setEndDate(now.plusSeconds(-1));
             orderWorkers.add(orderWorker);
         });
 

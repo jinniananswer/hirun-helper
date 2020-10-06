@@ -3,6 +3,7 @@ package com.microtomato.hirun.modules.bss.order.entity.dto;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * @author ：xiaocl
@@ -41,7 +42,7 @@ public class OrderWholeRoomDrawDTO {
     /**
      * 助理设计师
      */
-    private Long assistantDesigner;
+    private List<Long> assistantDesigner;
 
     /**
      * 制作组长
