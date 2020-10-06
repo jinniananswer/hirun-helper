@@ -237,7 +237,7 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
                                                         border
                                                         style="width: 100%">
                                                         <el-table-column
-                                                                label="收款项"
+                                                                label="实收项"
                                                                 prop="payItemName"
                                                                 fixed>
                                                         </el-table-column>
