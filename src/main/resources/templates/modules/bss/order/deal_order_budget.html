@@ -62,12 +62,23 @@
                                         <order-selectemployee v-model="budget.checkEmployeeId" :role-id="43" :disabled="checkedFail"></order-selectemployee>
                                     </el-form-item>
                                 </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="vr渲染人员" >
+                                        <order-selectemployee v-model="budget.vrEmployeeId" :role-id="41"></order-selectemployee>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="12">
+                                    <el-form-item label="建白模人员" >
+                                        <order-selectemployee v-model="budget.suEmployeeId" :role-id="41"></order-selectemployee>
+                                    </el-form-item>
+                                </el-col>
                                 <el-col :span="24">
                                     <el-form-item label="客户意见">
                                         <el-input type="textarea" :rows="2" v-model="budget.custIdea"></el-input>
                                     </el-form-item>
                                 </el-col>
                             </el-row>
+
                             <el-row>
                                 <div style="text-align: center">
                                     <el-button type="primary" @click="submit">{{submitButtonName}}</el-button>
