@@ -164,7 +164,7 @@
                 </vxe-table>
             </template>
         </el-main>
-        <vxe-modal v-model="showDetails" title="收款流水账" width="800" height="1000" :mask="false" :lock-view="false" resize>
+        <vxe-modal v-model="showDetails" title="收款流水账" width="1200" min-width="600" height="600"  resize destroy-on-close>
             <template v-slot>
                 <vxe-table
                         border="inner"
@@ -172,7 +172,6 @@
                         show-overflow
                         highlight-hover-row
                         height="auto"
-                        :show-header="false"
                         :sync-resize="showDetails"
                         :data="detailData">
                     <vxe-table-column align="center" width="150" fixed="left" field="payTime" title="收款时间"></vxe-table-column>

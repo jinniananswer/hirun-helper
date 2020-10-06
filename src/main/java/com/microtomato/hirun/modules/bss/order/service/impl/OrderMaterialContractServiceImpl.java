@@ -99,7 +99,7 @@ public class OrderMaterialContractServiceImpl extends ServiceImpl<OrderMaterialC
             dto.setProjectManageName(orderDomainService.getUsualOrderWorker(dto.getOrderId()).getProjectManagerName());
             dto.setMainMaterialName(orderDomainService.getUsualOrderWorker(dto.getOrderId()).getMaterialName());
             dto.setCabinetDesignerName(orderDomainService.getUsualOrderWorker(dto.getOrderId()).getCabinetDesignerName());
-            dto.setHouseName(housesService.queryHouseName(dto.getHouseId()));
+            dto.setHouseName(housesService.queryHouseName(dto.getHousesId()));
             dto.setShopName(orgService.queryByOrgId(dto.getShopId()).getName());
             dto.setKindName(staticDataService.getCodeName("BRAND_TYPE",dto.getKindId()));
             String brandCode=dto.getBrandCode();

@@ -53,7 +53,7 @@ public class OrderMaterialContractDTO {
 
     private String cabinetDesignerName;
 
-    private Long houseId;
+    private Long housesId;
 
     private String houseName;
 
