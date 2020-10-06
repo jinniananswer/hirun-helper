@@ -30,5 +30,5 @@ public interface IOrderMaterialContractService extends IService<OrderMaterialCon
      */
     void updateContractInfoByPay(Long payNo);
 
-    List<OrderMaterialFeeDetailDTO> getDetail(Long orderId);
+    List<OrderMaterialFeeDetailDTO> getDetail(Long orderId,String type);
 }

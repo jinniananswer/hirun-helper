@@ -107,7 +107,7 @@ public class OrderMaterialContractController {
 
     @GetMapping("/getDetail")
     @RestResult
-    public List<OrderMaterialFeeDetailDTO> getDetail(Long orderId){
-        return orderMaterialContractService.getDetail(orderId);
+    public List<OrderMaterialFeeDetailDTO> getDetail(Long orderId,String type){
+        return orderMaterialContractService.getDetail(orderId,type);
     }
 }
