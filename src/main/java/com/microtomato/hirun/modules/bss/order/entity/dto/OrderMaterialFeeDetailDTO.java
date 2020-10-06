@@ -12,26 +12,13 @@ import java.time.LocalDateTime;
  * @create: 2020-08-15 22:17
  **/
 @Data
-public class OrderMaterialContractDTO {
+public class OrderMaterialFeeDetailDTO {
 
     private Long id;
 
     private Long orderId;
 
-    /** 材料类型 */
-    private String materialType;
-
-    /** 合同金额 */
-    private Long contractFee;
-
-    /** 优惠金额 */
-    private Long discountFee;
-
-    private Long actualFee;
-
-    private LocalDateTime startDate;
-
-    private LocalDateTime endDate;
+    private Long fee;
 
     private LocalDateTime payTime;
 
@@ -57,15 +44,13 @@ public class OrderMaterialContractDTO {
 
     private String houseName;
 
-    private Long shopId;
-
-    private String shopName;
-
     private String brandCodeName;
 
-    private String kindId;
-
-    private String kindName;
-
     private String feeTypeName;
+
+    private String parentItemId;
+
+    private String parentItemName;
+
+    private String periodsName;
 }

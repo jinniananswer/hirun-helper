@@ -7,7 +7,9 @@ import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderMaterialContractDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.OrderMaterialFeeDetailDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderMaterialContract;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeInfoDTO;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
@@ -28,10 +30,12 @@ public interface OrderMaterialContractMapper extends BaseMapper<OrderMaterialCon
      * @param wrapper
      * @return
      */
-    @Select("select a.cust_no,b.houses_id,c.id,c.material_type,c.contract_fee,c.discount_fee, " +
-            " c.actual_fee,c.brand_code,c.remark,c.order_id " +
+    @Select("select a.cust_no,b.houses_id,c.id,c.material_type,c.contract_fee,c.discount_fee,a.cust_name, " +
+            " c.actual_fee,c.brand_code,c.remark,c.order_id,b.shop_id,c.kind_id " +
             " from cust_base a,order_base b,order_material_contract c " +
             " ${ew.customSqlSegment}"
     )
     List<OrderMaterialContractDTO> queryMaterialContracts(@Param(Constants.WRAPPER) Wrapper wrapper);
+
+
 }
