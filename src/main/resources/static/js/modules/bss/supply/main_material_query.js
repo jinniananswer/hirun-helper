@@ -64,6 +64,7 @@ require(['vue', 'ELEMENT', 'vxe-table','house-select','order-selectemployee','aj
 
             query: function() {
                 let that = this;
+                that.queryCond.type='9';
                 ajax.get('api/bss.order/order-material-contract/queryMaterialContract', this.queryCond, function(data){
                     that.tableData = data;
                 });
@@ -72,7 +73,7 @@ require(['vue', 'ELEMENT', 'vxe-table','house-select','order-selectemployee','aj
 
             getDetail (row) {
                 let that = this;
-                ajax.get('api/bss.order/order-material-contract/getDetail', {orderId:row.orderId}, function(data){
+                ajax.get('api/bss.order/order-material-contract/getDetail', {orderId:row.orderId,type:'9'}, function(data){
                     that.detailData = data;
                 });
                 this.showDetails = true

@@ -70,8 +70,8 @@ public class OrderMaterialContractServiceImpl extends ServiceImpl<OrderMaterialC
         queryWrapper.like(StringUtils.isNotBlank(condDTO.getCustName()), "a.cust_name", condDTO.getCustName());
         queryWrapper.eq(condDTO.getHouseId() != null, "b.houses_id", condDTO.getHouseId());
         queryWrapper.eq(condDTO.getBrandCode() != null, "c.brand_code", condDTO.getBrandCode());
-
-        queryWrapper.apply("a.cust_id=b.cust_id and b.order_id=c.order_id and c.material_type='9' ");
+        queryWrapper.eq(StringUtils.isNotBlank(condDTO.getType()),"c.material_type",condDTO.getType());
+        queryWrapper.apply("a.cust_id=b.cust_id and b.order_id=c.order_id ");
 
         queryWrapper.apply(condDTO.getAgentEmployeeId() != null,
                 " EXISTS (select 1 from order_worker d where d.order_id=b.order_id and end_date > now() " +
@@ -99,7 +99,7 @@ public class OrderMaterialContractServiceImpl extends ServiceImpl<OrderMaterialC
             dto.setProjectManageName(orderDomainService.getUsualOrderWorker(dto.getOrderId()).getProjectManagerName());
             dto.setMainMaterialName(orderDomainService.getUsualOrderWorker(dto.getOrderId()).getMaterialName());
             dto.setCabinetDesignerName(orderDomainService.getUsualOrderWorker(dto.getOrderId()).getCabinetDesignerName());
-            dto.setHouseName(housesService.queryHouseName(dto.getHouseId()));
+            dto.setHouseName(housesService.queryHouseName(dto.getHousesId()));
             dto.setShopName(orgService.queryByOrgId(dto.getShopId()).getName());
             dto.setKindName(staticDataService.getCodeName("BRAND_TYPE",dto.getKindId()));
             String brandCode=dto.getBrandCode();
@@ -131,12 +131,12 @@ public class OrderMaterialContractServiceImpl extends ServiceImpl<OrderMaterialC
                 if (payItemCfg == null) {
                     continue;
                 }
-                //不是主材款跳出本次循环
-                if (!payItemCfg.getParentPayItemId().equals(9L)) {
+                //不是主材款或者橱柜款跳出本次循环
+                if (!payItemCfg.getParentPayItemId().equals(9L)&&!payItemCfg.getParentPayItemId().equals(8L)) {
                     continue;
                 }
                 //查看是否曾经有过相同品牌的数据
-                OrderMaterialContract historyContract = this.queryInfoByOrderIdAndBrand(payItem.getOrderId(), "9", payItemCfg.getId() + "");
+                OrderMaterialContract historyContract = this.queryInfoByOrderIdAndBrand(payItem.getOrderId(), payItemCfg.getParentPayItemId()+"", payItemCfg.getId() + "");
                 SupplierBrand supplierBrand=supplierBrandService.queryByPayItem(payItemId);
 
                 if (historyContract == null) {
@@ -165,7 +165,7 @@ public class OrderMaterialContractServiceImpl extends ServiceImpl<OrderMaterialC
     }
 
     @Override
-    public List<OrderMaterialFeeDetailDTO> getDetail(Long orderId) {
+    public List<OrderMaterialFeeDetailDTO> getDetail(Long orderId,String type) {
         List<OrderPayItem> orderPayItems=orderPayItemService.queryByOrderId(orderId);
 
         List<OrderMaterialFeeDetailDTO> result=new ArrayList<>();
@@ -174,7 +174,7 @@ public class OrderMaterialContractServiceImpl extends ServiceImpl<OrderMaterialC
         }
         for(OrderPayItem payItem:orderPayItems){
 
-            if(!payItem.getParentPayItemId().equals(9L)){
+            if(!StringUtils.equals(payItem.getParentPayItemId()+"",type)){
                 continue;
             }
             OrderMaterialFeeDetailDTO dto=new OrderMaterialFeeDetailDTO();
