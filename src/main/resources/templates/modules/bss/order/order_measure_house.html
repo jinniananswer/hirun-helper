@@ -28,7 +28,7 @@
                                 </el-col>
                                 <el-col :span="12">
                                     <el-form-item label="量房人员" prop="assistantDesigner">
-                                        <order-selectemployee role-id="41" v-model="quantityRoomInfos.assistantDesigner"></order-selectemployee>
+                                        <order-selectemployee role-id="41" :multiple="true" v-model="quantityRoomInfos.assistantDesigner"></order-selectemployee>
                                     </el-form-item>
                                 </el-col>
                             </el-row>
