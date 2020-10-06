@@ -123,7 +123,11 @@ public class OrderWholeRoomDrawServiceImpl extends ServiceImpl<OrderWholeRoomDra
 
         List<OrderWorkerActionDTO> orderWorkerActionDTOS = orderWorkerActionService.queryByOrderIdActionDto(orderId, DesignerConst.OPER_DRAW_CONSTRUCT);
         if (ArrayUtils.isNotEmpty(orderWorkerActionDTOS)) {
-            orderWholeRoomDrawDTO.setAssistantDesigner(orderWorkerActionDTOS.get(0).getEmployeeId());
+            List<Long> assistants = new ArrayList<>();
+            orderWorkerActionDTOS.forEach(action -> {
+                assistants.add(action.getEmployeeId());
+            });
+            orderWholeRoomDrawDTO.setAssistantDesigner(assistants);
         }
 
         List<OrderWorker> orderWorkers = this.orderWorkerService.queryValidByOrderId(orderId);
@@ -220,10 +224,12 @@ public class OrderWholeRoomDrawServiceImpl extends ServiceImpl<OrderWholeRoomDra
                 this.orderWorkerService.deleteOrderWorker(workerIds);
             }
         }
-        Long assistantDesignerId = dto.getAssistantDesigner();
-        if (assistantDesignerId != null) {
-            Long workerId = this.orderWorkerService.updateOrderWorker(orderId,41L,dto.getAssistantDesigner());
-            this.orderWorkerActionService.createOrderWorkerAction(orderId, assistantDesignerId, workerId, orderBase.getStatus(), DesignerConst.OPER_DRAW_CONSTRUCT);
+        List<Long> assistantDesignerIds = dto.getAssistantDesigner();
+        if (ArrayUtils.isNotEmpty(assistantDesignerIds)) {
+            assistantDesignerIds.forEach(assistantDesignerId -> {
+                Long workerId = this.orderWorkerService.updateOrderWorker(orderId,41L, assistantDesignerId);
+                this.orderWorkerActionService.createOrderWorkerAction(orderId, assistantDesignerId, workerId, orderBase.getStatus(), DesignerConst.OPER_DRAW_CONSTRUCT);
+            });
         }
     }
 

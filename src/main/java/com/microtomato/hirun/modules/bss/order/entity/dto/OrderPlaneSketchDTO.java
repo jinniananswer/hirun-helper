@@ -1,10 +1,10 @@
 package com.microtomato.hirun.modules.bss.order.entity.dto;
 
 
-
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * @author ：mmzs
@@ -85,5 +85,5 @@ public class OrderPlaneSketchDTO {
 
     private String employeeName;
 
-    private Long assistantDesigner ;
+    private List<Long> assistantDesigner ;
 }

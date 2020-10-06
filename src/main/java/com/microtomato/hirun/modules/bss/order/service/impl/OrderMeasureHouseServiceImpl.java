@@ -9,6 +9,7 @@ import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.bss.order.entity.consts.DesignerConst;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderMeasureHouseDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerActionDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderBase;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderMeasureHouse;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderWorker;
@@ -22,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -88,6 +90,15 @@ public class OrderMeasureHouseServiceImpl extends ServiceImpl<OrderMeasureHouseM
         }
         orderMeasureHouseDTO.setDesigner(orderWorker.getEmployeeId());
         orderMeasureHouseDTO.setOrderId(orderWorker.getOrderId());
+
+        List<OrderWorkerActionDTO> assistants = orderWorkerActionService.queryByOrderIdActionDto(orderId, DesignerConst.OPER_MEASURE);
+        if (ArrayUtils.isNotEmpty(assistants)) {
+            List<Long> assistantEmployeeIds = new ArrayList<>();
+            assistants.forEach(assistant -> {
+                assistantEmployeeIds.add(assistant.getEmployeeId());
+            });
+            orderMeasureHouseDTO.setAssistantDesigner(assistantEmployeeIds);
+        }
         return orderMeasureHouseDTO;
     }
 
@@ -127,13 +138,14 @@ public class OrderMeasureHouseServiceImpl extends ServiceImpl<OrderMeasureHouseM
         List<Long> workerIds = this.orderWorkerActionService.deleteOrderWorkerAction(orderId, DesignerConst.OPER_MEASURE);
         if (ArrayUtils.isNotEmpty(workerIds)) {
             this.orderWorkerService.deleteOrderWorker(workerIds);
-
         }
 
-        Long assistantDesignerId = dto.getAssistantDesigner();
-        if (assistantDesignerId != null) {
-            Long workerId = this.orderWorkerService.updateOrderWorker(orderId, 41L, assistantDesignerId);
-            this.orderWorkerActionService.createOrderWorkerAction(orderId, assistantDesignerId, workerId, orderBase.getStatus(), DesignerConst.OPER_MEASURE);
+        List<Long> assistantDesignerIds = dto.getAssistantDesigner();
+        if (ArrayUtils.isNotEmpty(assistantDesignerIds)) {
+            assistantDesignerIds.forEach(assistantDesignerId -> {
+                Long workerId = this.orderWorkerService.updateOrderWorker(orderId, 41L, assistantDesignerId);
+                this.orderWorkerActionService.createOrderWorkerAction(orderId, assistantDesignerId, workerId, orderBase.getStatus(), DesignerConst.OPER_MEASURE);
+            });
         }
 
         orderBase.setIndoorArea(dto.getMeasureArea());

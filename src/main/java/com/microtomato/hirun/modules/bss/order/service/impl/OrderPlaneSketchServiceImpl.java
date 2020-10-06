@@ -99,8 +99,12 @@ public class OrderPlaneSketchServiceImpl extends ServiceImpl<OrderPlaneSketchMap
         List<OrderWorkerActionDTO> orderWorkerActionDTOS = orderWorkerActionService.queryByOrderIdActionDto(orderId, DesignerConst.OPER_DRAW_PLAN);
 
         if (ArrayUtils.isNotEmpty(orderWorkerActionDTOS)) {
-            Long id = orderWorkerActionDTOS.get(0).getEmployeeId();
-            orderPlaneSketchDTO.setAssistantDesigner(id);
+            List<Long> assistants = new ArrayList<>();
+            orderWorkerActionDTOS.forEach(action -> {
+                Long id = action.getEmployeeId();
+                assistants.add(id);
+            });
+            orderPlaneSketchDTO.setAssistantDesigner(assistants);
         }
 
         OrderWorker financer = this.orderWorkerService.getOneOrderWorkerByOrderIdRoleId(orderId, 34L);
@@ -198,10 +202,12 @@ public class OrderPlaneSketchServiceImpl extends ServiceImpl<OrderPlaneSketchMap
             }
         }
 
-        Long assistantDesignerId = dto.getAssistantDesigner();
-        if (assistantDesignerId != null) {
-            Long workerId = this.orderWorkerService.updateOrderWorker(orderId,41L,dto.getAssistantDesigner());
-            this.orderWorkerActionService.createOrderWorkerAction(orderId, assistantDesignerId, workerId, orderBase.getStatus(), DesignerConst.OPER_DRAW_PLAN);
+        List<Long> assistantDesignerIds = dto.getAssistantDesigner();
+        if (ArrayUtils.isNotEmpty(assistantDesignerIds)) {
+            assistantDesignerIds.forEach(assistantDesignerId -> {
+                Long workerId = this.orderWorkerService.updateOrderWorker(orderId,41L, assistantDesignerId);
+                this.orderWorkerActionService.createOrderWorkerAction(orderId, assistantDesignerId, workerId, orderBase.getStatus(), DesignerConst.OPER_DRAW_PLAN);
+            });
         }
     }
 
@@ -222,6 +228,8 @@ public class OrderPlaneSketchServiceImpl extends ServiceImpl<OrderPlaneSketchMap
 
         if ( orderPlaneSketch != null) {
             orderPlaneSketch.setIndoorArea(dto.getIndoorArea());
+            orderPlaneSketch.setDesignFeeStandard(dto.getDesignFeeStandard());
+            orderPlaneSketch.setContractDesignFee(dto.getContractDesignFee());
             this.updateById(orderPlaneSketch);
         }
 
