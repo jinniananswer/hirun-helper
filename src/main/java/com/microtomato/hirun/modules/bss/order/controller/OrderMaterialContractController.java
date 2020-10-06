@@ -7,7 +7,9 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderInspectDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderMaterialContractDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.OrderMaterialFeeDetailDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.QueryMaterialCondDTO;
+import com.microtomato.hirun.modules.bss.service.entity.dto.ComplainOrderInfoDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,6 +82,7 @@ public class OrderMaterialContractController {
      * @return 修改结果
      */
     @PostMapping("update")
+    @RestResult
     public boolean update(@RequestBody OrderMaterialContract orderMaterialContract) {
         return this.orderMaterialContractService.updateById(orderMaterialContract);
     }
@@ -100,5 +103,11 @@ public class OrderMaterialContractController {
     public List<OrderMaterialContractDTO> queryMaterialContracts(QueryMaterialCondDTO queryCond){
         log.debug(queryCond.toString());
         return orderMaterialContractService.queryMaterialContracts(queryCond);
+    }
+
+    @GetMapping("/getDetail")
+    @RestResult
+    public List<OrderMaterialFeeDetailDTO> getDetail(Long orderId){
+        return orderMaterialContractService.getDetail(orderId);
     }
 }

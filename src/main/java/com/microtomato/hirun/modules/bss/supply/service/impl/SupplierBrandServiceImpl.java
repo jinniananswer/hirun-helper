@@ -42,4 +42,11 @@ public class SupplierBrandServiceImpl extends ServiceImpl<SupplierBrandMapper, S
         SupplierBrand supplierBrand = this.getById(supplierId);
         return supplierBrand;
     }
+
+    @Override
+    public SupplierBrand queryByPayItem(Long payItemId) {
+        return this.getOne(new QueryWrapper<SupplierBrand>().lambda()
+                .eq(SupplierBrand::getPayItemId, payItemId)
+                .eq(SupplierBrand::getStatus, "0"));
+    }
 }

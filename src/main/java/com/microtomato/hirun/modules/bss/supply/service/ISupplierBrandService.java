@@ -17,4 +17,6 @@ public interface ISupplierBrandService extends IService<SupplierBrand> {
     List<SupplierBrand> queryAllInfo();
 
     SupplierBrand getSupplierBrand(Long supplierId);
+
+    SupplierBrand queryByPayItem(Long payItemId);
 }
