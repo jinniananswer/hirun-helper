@@ -18,18 +18,25 @@ import com.microtomato.hirun.modules.college.config.service.ICollegeStudyTaskCfg
 import com.microtomato.hirun.modules.college.task.entity.dto.*;
 import com.microtomato.hirun.modules.college.task.entity.po.CollegeEmployeeTask;
 import com.microtomato.hirun.modules.college.task.entity.po.CollegeEmployeeTaskScore;
+import com.microtomato.hirun.modules.college.task.entity.po.CollegeEmployeeTaskTutor;
 import com.microtomato.hirun.modules.college.task.mapper.CollegeEmployeeTaskMapper;
 import com.microtomato.hirun.modules.college.task.service.ICollegeEmployeeTaskScoreService;
 import com.microtomato.hirun.modules.college.task.service.ICollegeEmployeeTaskService;
+import com.microtomato.hirun.modules.college.task.service.ICollegeEmployeeTaskTutorService;
+import com.microtomato.hirun.modules.organization.entity.dto.SimpleEmployeeDTO;
+import com.microtomato.hirun.modules.organization.entity.po.CourseFile;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
 import com.microtomato.hirun.modules.organization.entity.po.Org;
+import com.microtomato.hirun.modules.organization.service.ICourseFileService;
 import com.microtomato.hirun.modules.organization.service.ICourseService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
 import com.microtomato.hirun.modules.organization.service.IOrgService;
 import com.microtomato.hirun.modules.organization.service.impl.EmployeeServiceImpl;
+import com.microtomato.hirun.modules.system.entity.po.UploadFile;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import com.microtomato.hirun.modules.system.service.IUploadFileService;
+import net.sf.cglib.core.Local;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +45,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -85,6 +93,12 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
 
     @Autowired
     private IOrgService orgServiceImpl;
+
+    @Autowired
+    private ICollegeEmployeeTaskTutorService collegeEmployeeTaskTutorServiceImpl;
+
+    @Autowired
+    private ICourseFileService courseFileServiceImpl;
 
     @Override
     public List<CollegeEmployeeTask> queryByEmployeeIdAndTaskType(String employeeId, String taskType) {
@@ -349,8 +363,9 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
             userContext = UserContextUtils.getUserContext();
         }
         Long employeeId = userContext.getEmployeeId();
+        result.setEmployeeId(String.valueOf(employeeId));
         //查询已完成的任务，目前任务有评分的为已完成的
-        List<CollegeEmployeeTask> collegeEmployeeTaskList = this.queryAllEffective();
+        List<CollegeEmployeeTask> collegeEmployeeTaskList = this.queryEffectiveByEmployeeId(String.valueOf(employeeId));
 
         if (ArrayUtils.isNotEmpty(collegeEmployeeTaskList)){
             List<CollegeEmployeeTaskDetailResponseDTO> todayTaskList = new ArrayList<>();
@@ -361,45 +376,212 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
             for (CollegeEmployeeTask collegeEmployeeTask : collegeEmployeeTaskList){
                 Long taskId = collegeEmployeeTask.getTaskId();
                 CollegeEmployeeTaskScore collegeEmployeeTaskScore = collegeEmployeeTaskScoreServiceImpl.getByTaskId(String.valueOf(taskId));
-                if (null != collegeEmployeeTaskScore){
-                    CollegeEmployeeTaskDetailResponseDTO collegeEmployeeTaskDetailResponseDTO = new CollegeEmployeeTaskDetailResponseDTO();
-                    BeanUtils.copyProperties(collegeEmployeeTask, collegeEmployeeTaskDetailResponseDTO);
-                    String studyTaskId = collegeEmployeeTaskDetailResponseDTO.getStudyTaskId();
-                    CollegeStudyTaskCfg collegeStudyTaskCfg = collegeStudyTaskCfgServiceImpl.getAllByStudyTaskId(Long.valueOf(studyTaskId));
-                    String taskName = "";
-                    if (null != collegeStudyTaskCfg){
-                        taskName = collegeStudyTaskCfg.getTaskName();
-                        collegeEmployeeTaskDetailResponseDTO.setTaskDesc(collegeStudyTaskCfg.getTaskDesc());
-                    }
+                CollegeEmployeeTaskDetailResponseDTO collegeEmployeeTaskDetailResponseDTO = new CollegeEmployeeTaskDetailResponseDTO();
+                BeanUtils.copyProperties(collegeEmployeeTask, collegeEmployeeTaskDetailResponseDTO);
+                String studyTaskId = collegeEmployeeTaskDetailResponseDTO.getStudyTaskId();
+                CollegeStudyTaskCfg collegeStudyTaskCfg = collegeStudyTaskCfgServiceImpl.getAllByStudyTaskId(Long.valueOf(studyTaskId));
+                if (null != collegeStudyTaskCfg){
+                    collegeEmployeeTaskDetailResponseDTO.setTaskDesc(collegeStudyTaskCfg.getTaskDesc());
+                    collegeEmployeeTaskDetailResponseDTO.setStudyType(collegeStudyTaskCfg.getStudyType());
+                    String taskName = collegeStudyTaskCfg.getTaskName();
                     if (StringUtils.isEmpty(taskName)){
                         taskName = studyTaskId;
                     }
                     collegeEmployeeTaskDetailResponseDTO.setTaskName(taskName);
+                }
+                if (null != collegeEmployeeTaskScore){
                     finishTaskList.add(collegeEmployeeTaskDetailResponseDTO);
                 }else {
                     LocalDateTime studyStartDate = collegeEmployeeTask.getStudyStartDate();
                     LocalDateTime studyEndDate = collegeEmployeeTask.getStudyEndDate();
                     LocalDateTime todayFirstTime = TimeUtils.getFirstSecondDay(nowTime, 0);
-                    if (TimeUtils.compareTwoTime(studyStartDate, todayFirstTime) <= 0 && TimeUtils.compareTwoTime(studyEndDate, todayFirstTime) >= 0){
-                        CollegeEmployeeTaskDetailResponseDTO collegeEmployeeTaskDetailResponseDTO = new CollegeEmployeeTaskDetailResponseDTO();
-                        BeanUtils.copyProperties(collegeEmployeeTask, collegeEmployeeTaskDetailResponseDTO);
+                    LocalDateTime todayLastTime = TimeUtils.addSeconds(TimeUtils.getFirstSecondDay(todayFirstTime, 1), -1);
+                    if (TimeUtils.compareTwoTime(studyStartDate, todayLastTime) <= 0 && TimeUtils.compareTwoTime(studyEndDate, todayFirstTime) >= 0 && TimeUtils.compareTwoTime(studyEndDate, studyStartDate) > 0){
                         todayTaskList.add(collegeEmployeeTaskDetailResponseDTO);
-                        continue;
                     }
 
                     LocalDateTime tomorrowFirstTime = TimeUtils.getFirstSecondDay(todayFirstTime, 1);
-                    if (TimeUtils.compareTwoTime(studyStartDate, tomorrowFirstTime) <= 0 && TimeUtils.compareTwoTime(studyEndDate, tomorrowFirstTime) >= 0){
-                        CollegeEmployeeTaskDetailResponseDTO collegeEmployeeTaskDetailResponseDTO = new CollegeEmployeeTaskDetailResponseDTO();
-                        BeanUtils.copyProperties(collegeEmployeeTask, collegeEmployeeTaskDetailResponseDTO);
+                    LocalDateTime tomorrowLastTime = TimeUtils.addSeconds(TimeUtils.getFirstSecondDay(tomorrowFirstTime, 1), -1);
+                    if (TimeUtils.compareTwoTime(studyStartDate, tomorrowLastTime) <= 0 && TimeUtils.compareTwoTime(studyEndDate, tomorrowFirstTime) >= 0 && TimeUtils.compareTwoTime(studyEndDate, studyStartDate) > 0){
                         tomorrowTaskList.add(collegeEmployeeTaskDetailResponseDTO);
-                        continue;
                     }
                 }
             }
-            result.setFinishTaskList(finishTaskList);
-            result.setTodayTaskList(todayTaskList);
-            result.setTomorrowTaskList(tomorrowTaskList);
+            CollegeEmployeeTaskTypeFinishDetailsRequestDTO finishTask = taskClassification(finishTaskList);
+            result.setFinishTask(finishTask);
+            CollegeEmployeeTaskTypeFinishDetailsRequestDTO todayTask = taskClassification(todayTaskList);
+            result.setTodayTask(todayTask);
+            CollegeEmployeeTaskTypeFinishDetailsRequestDTO tomorrowTask = taskClassification(tomorrowTaskList);
+            result.setTomorrowTask(tomorrowTask);
         }
+        return result;
+    }
+
+    @Override
+    public CollegeEmployTaskInfoResponseDTO queryEmployTaskInfoByTaskId(Long taskId) {
+        LocalDateTime nowTime = TimeUtils.getCurrentLocalDateTime();
+        CollegeEmployTaskInfoResponseDTO result = new CollegeEmployTaskInfoResponseDTO();
+        CollegeEmployeeTask collegeEmployeeTask = this.getById(taskId);
+        BeanUtils.copyProperties(collegeEmployeeTask, result);
+        String studyTaskId = result.getStudyTaskId();
+        CollegeStudyTaskCfg collegeStudyTaskCfg = this.collegeStudyTaskCfgServiceImpl.getAllByStudyTaskId(Long.valueOf(studyTaskId));
+        Boolean isExerciseFlag = false;
+        Boolean isExamFlag = false;
+        Boolean isDelayFlag = false;
+        Boolean isSelectTutorFlag = true;
+        Double taskProgress = 0.0;
+        Double taskTimeProgress = 0.0;
+        List<CollegeTaskStudyContentResponseDTO> taskStudyContentList = new ArrayList<>();
+        if (null != collegeStudyTaskCfg){
+            result.setTaskName(collegeStudyTaskCfg.getTaskName());
+            result.setTaskDesc(collegeStudyTaskCfg.getTaskDesc());
+            LocalDateTime studyEndDate = result.getStudyEndDate();
+            if (TimeUtils.compareTwoTime(studyEndDate, nowTime) < 0){
+                isDelayFlag = true;
+            }
+            String studyType = collegeStudyTaskCfg.getStudyType();
+            result.setStudyType(studyType);
+            if (!StringUtils.equals("2", studyType)){
+                Integer studyLength = collegeStudyTaskCfg.getStudyLength();
+                Integer studyDateLength = collegeEmployeeTask.getStudyDateLength();
+                if (null != studyDateLength && null != studyLength && studyDateLength >= studyLength){
+                    isExerciseFlag = true;
+                    Integer exercisesNumber = collegeStudyTaskCfg.getExercisesNumber();
+                    Integer exercisesCompletedNumber = collegeEmployeeTask.getExercisesCompletedNumber();
+                    if (null != exercisesCompletedNumber && null != exercisesNumber && exercisesNumber <= exercisesCompletedNumber){
+                        isExamFlag = true;
+                    }
+                }
+
+                //任务学习进度
+                if (null != studyDateLength && null != studyLength){
+                    if (studyDateLength > studyLength){
+                        studyDateLength = studyLength;
+                    }
+                    taskProgress = new BigDecimal((float)studyDateLength * 100/studyLength).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
+                }
+            }
+
+            //任务时间进度
+
+            long taskStudySecond = result.getStudyEndDate().toEpochSecond(ZoneOffset.UTC) - result.getStudyStartDate().toEpochSecond(ZoneOffset.UTC);
+            long taskSpendSecond = nowTime.toEpochSecond(ZoneOffset.UTC) - result.getStudyStartDate().toEpochSecond(ZoneOffset.UTC);
+            if (taskSpendSecond < 0){
+                taskSpendSecond = taskStudySecond;
+            }
+            if (taskSpendSecond > taskStudySecond){
+                taskSpendSecond = taskStudySecond;
+            }
+            taskTimeProgress = new BigDecimal((float)taskSpendSecond * 100/taskStudySecond).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
+
+            String studyId = collegeStudyTaskCfg.getStudyId();
+            if (StringUtils.equals("0", studyType)){
+                List<CourseFile> courseFileList = this.courseFileServiceImpl.queryEffectiveByCourseId(Long.valueOf(studyId));
+                if (ArrayUtils.isNotEmpty(courseFileList)){
+                    for (CourseFile courseFile : courseFileList) {
+                        CollegeTaskStudyContentResponseDTO collegeTaskStudyContentResponseDTO = new CollegeTaskStudyContentResponseDTO();
+                        collegeTaskStudyContentResponseDTO.setFileId(String.valueOf(courseFile.getFileId()));
+                        collegeTaskStudyContentResponseDTO.setFileName(courseFile.getName());
+                        collegeTaskStudyContentResponseDTO.setFileUrl(courseFile.getStoragePath());
+                        taskStudyContentList.add(collegeTaskStudyContentResponseDTO);
+                    }
+                }
+            }else if (StringUtils.equals("1", studyType)){
+                UploadFile file = this.uploadFileServiceImpl.getByFileId(studyId);
+                CollegeTaskStudyContentResponseDTO collegeTaskStudyContentResponseDTO = new CollegeTaskStudyContentResponseDTO();
+                collegeTaskStudyContentResponseDTO.setFileId(file.getId());
+                collegeTaskStudyContentResponseDTO.setFileName(file.getFileName());
+                collegeTaskStudyContentResponseDTO.setFileUrl(file.getFilePath());
+                taskStudyContentList.add(collegeTaskStudyContentResponseDTO);
+            }
+        }
+        result.setIsDelayFlag(isDelayFlag);
+        result.setIsExerciseFlag(isExerciseFlag);
+        result.setIsExamFlag(isExamFlag);
+        result.setTaskProgress(taskProgress);
+        result.setTaskTimeProgress(taskTimeProgress);
+        result.setTaskStudyContentList(taskStudyContentList);
+        result.setSysdate(nowTime);
+
+        List<CollegeEmployeeTaskTutor> collegeEmployeeTaskTutorList = collegeEmployeeTaskTutorServiceImpl.queryEffectiveByTaskId(String.valueOf(taskId));
+        if (ArrayUtils.isNotEmpty(collegeEmployeeTaskTutorList)){
+            isSelectTutorFlag = false;
+            CollegeEmployeeTaskTutor collegeEmployeeTaskTutor = collegeEmployeeTaskTutorList.get(0);
+            String tutorId = collegeEmployeeTaskTutor.getTutorId();
+            String employeeName = employeeServiceImpl.getEmployeeNameEmployeeId(Long.valueOf(tutorId));
+            result.setSelectTutor("[" + tutorId + "]" + employeeName);
+        }
+        result.setIsSelectTutorFlag(isSelectTutorFlag);
+        return result;
+    }
+
+    @Override
+    public List<CollegeEmployeeTaskTutorOptionsDTO> queryLoginEmployeeSelectTutor() {
+        List<CollegeEmployeeTaskTutorOptionsDTO> result = new ArrayList<>();
+        LocalDateTime nowDate = TimeUtils.getCurrentLocalDateTime();
+        UserContext userContext = WebContextUtils.getUserContext();
+        if (userContext == null) {
+            userContext = UserContextUtils.getUserContext();
+        }
+        Long employeeId = userContext.getEmployeeId();
+        EmployeeJobRole employeeJobRole = employeeJobRoleServiceImpl.queryValidMain(employeeId);
+        if (null != employeeJobRole){
+            Long orgId = employeeJobRole.getOrgId();
+            List<SimpleEmployeeDTO> simpleEmployeeDTOList = employeeServiceImpl.queryEmployeeByOrgId(orgId);
+            if (ArrayUtils.isNotEmpty(simpleEmployeeDTOList)){
+                for (SimpleEmployeeDTO simpleEmployeeDTO : simpleEmployeeDTOList){
+                    Long orgEmployeeId = simpleEmployeeDTO.getEmployeeId();
+                    if (StringUtils.equals(String.valueOf(employeeId), String.valueOf(simpleEmployeeDTO.getEmployeeId()))){
+                        continue;
+                    }
+                    Employee employee = employeeServiceImpl.getEmployeeByEmployeeId(orgEmployeeId);
+                    if (null != employee){
+                        LocalDateTime destroyDate = employee.getDestroyDate();
+                        if (null != destroyDate){
+                            continue;
+                        }
+
+                        LocalDateTime inDate = employee.getInDate();
+                        //只能入职一年后才能当导师
+                        if (TimeUtils.compareTwoTime(nowDate, TimeUtils.addTime(inDate, ChronoUnit.YEARS,1)) < 0){
+                            continue;
+                        }
+                    }else {
+                        continue;
+                    }
+                    CollegeEmployeeTaskTutorOptionsDTO collegeEmployeeTaskTutorOptionsDTO = new CollegeEmployeeTaskTutorOptionsDTO();
+                    collegeEmployeeTaskTutorOptionsDTO.setName(simpleEmployeeDTO.getName());
+                    collegeEmployeeTaskTutorOptionsDTO.setValue(String.valueOf(simpleEmployeeDTO.getEmployeeId()));
+                    result.add(collegeEmployeeTaskTutorOptionsDTO);
+                }
+            }
+        }
+        return result;
+    }
+
+    private CollegeEmployeeTaskTypeFinishDetailsRequestDTO taskClassification(List<CollegeEmployeeTaskDetailResponseDTO> taskList){
+        CollegeEmployeeTaskTypeFinishDetailsRequestDTO result = new CollegeEmployeeTaskTypeFinishDetailsRequestDTO();
+
+        List<CollegeEmployeeTaskDetailResponseDTO> courseTaskList = new ArrayList<>();
+
+        List<CollegeEmployeeTaskDetailResponseDTO> coursewareTaskList = new ArrayList<>();
+
+        List<CollegeEmployeeTaskDetailResponseDTO> practiceTaskList = new ArrayList<>();
+        if (ArrayUtils.isNotEmpty(taskList)){
+            for (CollegeEmployeeTaskDetailResponseDTO task : taskList){
+                String studyType = task.getStudyType();
+                if (StringUtils.equals("0", studyType)){
+                    courseTaskList.add(task);
+                }else if (StringUtils.equals("1", studyType)){
+                    coursewareTaskList.add(task);
+                }else if (StringUtils.equals("2", studyType)){
+                    practiceTaskList.add(task);
+                }
+            }
+        }
+        result.setCourseTaskList(courseTaskList);
+        result.setCoursewareTaskList(coursewareTaskList);
+        result.setPracticeTaskList(practiceTaskList);
         return result;
     }
 

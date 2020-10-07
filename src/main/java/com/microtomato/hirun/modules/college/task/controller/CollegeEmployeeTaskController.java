@@ -14,6 +14,7 @@ import com.microtomato.hirun.modules.college.task.entity.po.CollegeEmployeeTaskS
 import com.microtomato.hirun.modules.college.task.service.ICollegeEmployeeTaskScoreService;
 import com.microtomato.hirun.modules.college.task.service.ICollegeEmployeeTaskService;
 import com.microtomato.hirun.modules.college.task.service.ITaskDomainOpenService;
+import com.microtomato.hirun.modules.organization.entity.dto.SimpleEmployeeDTO;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
 import com.microtomato.hirun.modules.organization.entity.po.Org;
@@ -145,7 +146,7 @@ public class CollegeEmployeeTaskController {
     @RestResult
     public Employee getEmployeeByEmployeeId(@RequestParam("employeeId") String employeeId){
         if (StringUtils.isNotEmpty(employeeId)){
-            return employeeServiceImpl.getEEmployeeByEmployeeId(Long.valueOf(employeeId));
+            return employeeServiceImpl.getEmployeeByEmployeeId(Long.valueOf(employeeId));
         }
         return new Employee();
     }
@@ -482,5 +483,18 @@ public class CollegeEmployeeTaskController {
     @RestResult
     public CollegeLoginTaskInfoResponseDTO queryLoginEmployeeTaskInfo() {
         return this.collegeEmployeeTaskService.queryLoginEmployeeTaskInfo();
+    }
+
+    @GetMapping("queryEmployTaskInfoByTaskId")
+    @RestResult
+    public CollegeEmployTaskInfoResponseDTO queryEmployTaskInfoByTaskId(@RequestParam("taskId") Long taskId){
+        return this.collegeEmployeeTaskService.queryEmployTaskInfoByTaskId(taskId);
+    }
+
+    @GetMapping("queryLoginEmployeeSelectTutor")
+    @Transactional(rollbackFor = Exception.class)
+    @RestResult
+    public List<CollegeEmployeeTaskTutorOptionsDTO> queryLoginEmployeeSelectTutor(){
+        return this.collegeEmployeeTaskService.queryLoginEmployeeSelectTutor();
     }
 }

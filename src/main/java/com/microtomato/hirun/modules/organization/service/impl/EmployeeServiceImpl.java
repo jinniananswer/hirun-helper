@@ -553,7 +553,7 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
     }
 
     @Override
-    public Employee getEEmployeeByEmployeeId(Long employeeId) {
+    public Employee getEmployeeByEmployeeId(Long employeeId) {
         return this.getOne(Wrappers.<Employee>lambdaQuery().eq(null != employeeId, Employee::getEmployeeId, employeeId), false);
     }
 

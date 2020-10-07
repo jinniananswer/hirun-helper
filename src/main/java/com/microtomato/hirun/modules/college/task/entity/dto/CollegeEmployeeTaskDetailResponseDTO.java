@@ -14,7 +14,7 @@ public class CollegeEmployeeTaskDetailResponseDTO {
 
     private String taskName;
 
-    private String taskId;
+    private Long taskId;
 
     private String studyId;
 

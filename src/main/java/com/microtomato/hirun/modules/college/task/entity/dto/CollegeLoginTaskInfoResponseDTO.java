@@ -11,9 +11,9 @@ public class CollegeLoginTaskInfoResponseDTO {
 
     private String employeeId;
 
-    private List<CollegeEmployeeTaskDetailResponseDTO> todayTaskList;
+    private CollegeEmployeeTaskTypeFinishDetailsRequestDTO todayTask;
 
-    private List<CollegeEmployeeTaskDetailResponseDTO> tomorrowTaskList;
+    private CollegeEmployeeTaskTypeFinishDetailsRequestDTO tomorrowTask;
 
-    private List<CollegeEmployeeTaskDetailResponseDTO> finishTaskList;
+    private CollegeEmployeeTaskTypeFinishDetailsRequestDTO finishTask;
 }

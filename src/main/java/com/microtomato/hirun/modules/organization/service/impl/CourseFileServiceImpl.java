@@ -59,4 +59,10 @@ public class CourseFileServiceImpl extends ServiceImpl<CourseFileMapper, CourseF
     public boolean deleteCourseFileByIds(List<CourseFile> courseFileList){
         return super.updateBatchById(courseFileList);
     }
+
+    @Override
+    public List<CourseFile> queryEffectiveByCourseId(Long courseId) {
+        return this.list(Wrappers.<CourseFile>lambdaQuery()
+                .eq(CourseFile::getCourseId, courseId).eq(CourseFile::getStatus, "0"));
+    }
 }
