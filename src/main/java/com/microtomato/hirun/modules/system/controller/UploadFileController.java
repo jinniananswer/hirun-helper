@@ -55,6 +55,7 @@ public class UploadFileController {
         put(".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         put(".ppt", "application/vnd.ms-powerpoint");
         put(".pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation");
+        put(".png", "image/png");
     }};
 
 
