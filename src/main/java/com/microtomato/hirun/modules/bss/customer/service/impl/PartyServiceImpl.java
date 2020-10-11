@@ -122,10 +122,10 @@ public class PartyServiceImpl extends ServiceImpl<PartyMapper, Party> implements
                 String houseAddress="";
                 houseAddress=housesService.queryHouseName(dto.getHouseId());
                 if(StringUtils.isNotBlank(dto.getHouseBuilding())){
-                    houseAddress=houseAddress+":"+dto.getHouseBuilding();
+                    houseAddress=houseAddress+"|"+dto.getHouseBuilding();
                 }
                 if(StringUtils.isNotBlank(dto.getHouseRoomNo())){
-                    houseAddress=houseAddress+""+dto.getHouseRoomNo();
+                    houseAddress=houseAddress+"|"+dto.getHouseRoomNo();
                 }
                 dto.setHouseAddress(houseAddress);
             }
