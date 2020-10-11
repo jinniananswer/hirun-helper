@@ -2,13 +2,18 @@ package com.microtomato.hirun.modules.finance.controller;
 
 
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.bss.order.entity.dto.DecoratorInfoDTO;
+import com.microtomato.hirun.modules.bss.service.entity.dto.ComplainOrderDTO;
+import com.microtomato.hirun.modules.bss.service.entity.dto.QueryComplainCondDTO;
 import com.microtomato.hirun.modules.bss.supply.entity.dto.QuerySupplyOrderDTO;
 import com.microtomato.hirun.modules.bss.supply.entity.dto.SupplyMaterialDTO;
+import com.microtomato.hirun.modules.bss.supply.entity.dto.SupplyOrderDTO;
 import com.microtomato.hirun.modules.finance.entity.dto.FinanceVoucherDTO;
+import com.microtomato.hirun.modules.finance.entity.dto.QueryVoucherAuditDTO;
 import com.microtomato.hirun.modules.finance.service.IFinanceVoucherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -47,16 +52,31 @@ public class FinanceVoucherController {
     @PostMapping("/voucherPreparationForOther")
     @RestResult
     public void voucherPreparationForOther(@RequestBody List<FinanceVoucherDTO> financeVoucherDetails) {
-        System.out.println("financeVoucherDetails=========="+financeVoucherDetails);
         this.financeVoucherService.voucherPreparationForOther(financeVoucherDetails);
     }
-
-
 
     @GetMapping("/selectDecorator")
     @RestResult
     public List<DecoratorInfoDTO> selectDecorator(DecoratorInfoDTO decoratorInfoDTO) {
         return this.financeVoucherService.selectDecorator(decoratorInfoDTO);
+    }
+
+    @GetMapping("/queryVoucherSupplyInfo")
+    @RestResult
+    public IPage<FinanceVoucherDTO> queryVoucherSupplyInfo(QueryVoucherAuditDTO querySupplyDTO) {
+        return this.financeVoucherService.queryVoucherSupplyInfo(querySupplyDTO);
+    }
+
+    @PostMapping("/auditForSupplyPass")
+    @RestResult
+    public void auditForSupplyPass(@RequestBody List<FinanceVoucherDTO> financeVoucherDTO) {
+        this.financeVoucherService.auditForSupplyPass(financeVoucherDTO);
+    }
+
+    @PostMapping("/auditForSupplyReject")
+    @RestResult
+    public void auditForSupplyReject(@RequestBody List<FinanceVoucherDTO> financeVoucherDTO) {
+        this.financeVoucherService.auditForSupplyReject(financeVoucherDTO);
     }
 
 }

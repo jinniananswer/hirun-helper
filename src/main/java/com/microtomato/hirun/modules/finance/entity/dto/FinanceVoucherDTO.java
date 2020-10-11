@@ -16,6 +16,10 @@ public class FinanceVoucherDTO {
 
     private Long supplierId;
 
+    private String supplierName;
+
+    private String projectName;
+
     /** 供应链id 针对材料付款使用 */
     @TableField(value = "supply_id")
     private Long supplyId;
@@ -32,8 +36,9 @@ public class FinanceVoucherDTO {
 
     private String remark;
 
+    /** 前台传递参数，同parentVoucherItemId*/
     private String financeItemId;
-
+    /** 前台传递参数，voucherItemId*/
     private String childFinanceItemId;
 
     private Long voucherId;
