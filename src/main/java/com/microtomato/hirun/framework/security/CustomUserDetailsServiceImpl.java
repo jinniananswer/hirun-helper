@@ -1,17 +1,10 @@
 package com.microtomato.hirun.framework.security;
 
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.microtomato.hirun.framework.util.Constants;
 import com.microtomato.hirun.modules.system.entity.po.Func;
-import com.microtomato.hirun.modules.system.service.IFuncService;
+import com.microtomato.hirun.modules.system.service.IAuthService;
 import com.microtomato.hirun.modules.user.entity.dto.UserDTO;
-import com.microtomato.hirun.modules.user.entity.po.FuncRole;
-import com.microtomato.hirun.modules.user.entity.po.FuncTemp;
 import com.microtomato.hirun.modules.user.entity.po.User;
 import com.microtomato.hirun.modules.user.entity.po.UserRole;
-import com.microtomato.hirun.modules.user.service.IFuncRoleService;
-import com.microtomato.hirun.modules.user.service.IFuncTempService;
-import com.microtomato.hirun.modules.user.service.IUserRoleService;
 import com.microtomato.hirun.modules.user.service.IUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -23,7 +16,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * 自定义用户加载服务
@@ -39,25 +35,7 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
     private IUserService userServiceImpl;
 
     @Autowired
-    private IFuncService funcServiceImpl;
-
-    @Autowired
-    private IFuncTempService funcTempServiceImpl;
-
-    @Autowired
-    private IUserRoleService userRoleServiceImpl;
-
-    @Autowired
-    private IFuncRoleService funcRoleServiceImpl;
-
-    private void setMainRoleId(UserContext userContext, List<UserRole> userRoles) {
-        for (UserRole userRole : userRoles) {
-            if (userRole.getIsMainRole()) {
-                userContext.setMainRoleId(userRole.getRoleId());
-                return;
-            }
-        }
-    }
+    private IAuthService authService;
 
     /**
      * 在 Security 中，角色和权限共用 GrantedAuthority 接口，唯一的不同角色就是多了个前缀 "ROLE_"
@@ -79,12 +57,10 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
         }
 
         // 查用户角色
-        List<UserRole> userRoles = userRoleServiceImpl.queryUserRole(user);
-        userRoles.add(UserRole.builder().roleId(Constants.DEFAULT_ROLE_ID).isMainRole(Boolean.FALSE).build());
-        setMainRoleId(userContext, userRoles);
+        List<UserRole> userRoles = authService.queryUserRoles(userContext, user);
         
         // 根据角色查操作权限
-        List<Func> funcList = queryFuncSet(user.getUserId(), userRoles);
+        List<Func> funcList = authService.queryFuncSet(user.getUserId(), userRoles);
 
         // 加载操作权限
         Collection<GrantedAuthority> grantedAuthorities = new HashSet<>();
@@ -113,68 +89,6 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
         BeanUtils.copyProperties(user, userContext);
 
         return userContext;
-    }
-
-    /**
-     * 查询操作权限
-     *
-     * @param userId
-     * @param userRoles
-     * @return
-     */
-    private List<Func> queryFuncSet(Long userId, List<UserRole> userRoles) {
-
-        Set<Long> funcIdSet = new HashSet<>();
-
-        // 判断是否有超级权限
-        boolean isAdmin = false;
-        for (UserRole userRole : userRoles) {
-            if (userRole.getRoleId().equals(Constants.SUPER_ROLE_ID)) {
-                isAdmin = true;
-            }
-        }
-
-        if (isAdmin) {
-            // 超级工号，有所有的权限
-            List<Func> list = funcServiceImpl.list(
-                Wrappers.<Func>lambdaQuery()
-                    .select(Func::getFuncId)
-                    .eq(Func::getType, 1)
-                    .eq(Func::getStatus, 0)
-            );
-            list.forEach(func -> funcIdSet.add(func.getFuncId()));
-        } else {
-            // 普通用户
-            // 查用户临时操作权限
-            List<FuncTemp> funcTempList = funcTempServiceImpl.queryFuncTemp(userId);
-            funcTempList.forEach(funcTemp -> funcIdSet.add(funcTemp.getFuncId()));
-
-            // 查用户角色对应的操作权限
-            List<Long> roleIdList = new ArrayList<>();
-            roleIdList.add(Constants.DEFAULT_ROLE_ID);
-            userRoles.forEach(userRole -> roleIdList.add(userRole.getRoleId()));
-            List<FuncRole> funcRoleList = funcRoleServiceImpl.list(
-                Wrappers.<FuncRole>lambdaQuery()
-                    .select(FuncRole::getFuncId)
-                    .in(FuncRole::getRoleId, roleIdList)
-            );
-            funcRoleList.forEach(funcRole -> funcIdSet.add(funcRole.getFuncId()));
-        }
-
-        // 根据 func_id 找对应的 func_code
-        if (funcIdSet.size() > 0) {
-            List<Func> funcList = funcServiceImpl.list(
-                Wrappers.<Func>lambdaQuery()
-                    .select(Func::getFuncCode)
-                    .eq(Func::getType, "1")
-                    .eq(Func::getStatus, "0")
-                    .in(Func::getFuncId, funcIdSet)
-            );
-            return funcList;
-        }
-
-        return new ArrayList<Func>();
-
     }
 
 }

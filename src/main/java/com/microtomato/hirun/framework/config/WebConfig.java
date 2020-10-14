@@ -1,6 +1,8 @@
 package com.microtomato.hirun.framework.config;
 
+import com.microtomato.hirun.framework.interceptor.JwtInterceptor;
 import com.microtomato.hirun.framework.interceptor.WebPerformanceInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -14,6 +16,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
+    @Autowired
+    private JwtInterceptor jwtInterceptor;
+
     /**
      * 添加拦截器
      */
@@ -22,6 +27,9 @@ public class WebConfig implements WebMvcConfigurer {
 
         // 请求级时间一致性拦截器
         registry.addInterceptor(new WebPerformanceInterceptor()).addPathPatterns("/**").excludePathPatterns("/static/**", "/druid/**", "/favicon.ico");
+        registry.addInterceptor(jwtInterceptor)
+            .addPathPatterns("/api/**")
+            .excludePathPatterns("/api/system/auth/login");
     }
 
 }
