@@ -119,7 +119,15 @@ public class PartyServiceImpl extends ServiceImpl<PartyMapper, Party> implements
                 dto.setCustomerName(dto.getPartyName());
             }
             if(StringUtils.isBlank(dto.getHouseAddress())||StringUtils.equals(dto.getHouseAddress(),"null")){
-                dto.setHouseAddress(housesService.queryHouseName(dto.getHouseId())+":"+dto.getHouseBuilding()+":"+dto.getHouseRoomNo());
+                String houseAddress="";
+                houseAddress=housesService.queryHouseName(dto.getHouseId());
+                if(StringUtils.isNotBlank(dto.getHouseBuilding())){
+                    houseAddress=houseAddress+"|"+dto.getHouseBuilding();
+                }
+                if(StringUtils.isNotBlank(dto.getHouseRoomNo())){
+                    houseAddress=houseAddress+"|"+dto.getHouseRoomNo();
+                }
+                dto.setHouseAddress(houseAddress);
             }
             if(StringUtils.isBlank(dto.getMobileNo())){
                 dto.setMobileNo(dto.getCounselorMobileNo());

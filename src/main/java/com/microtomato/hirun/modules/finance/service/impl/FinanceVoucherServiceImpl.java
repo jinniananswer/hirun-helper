@@ -1,6 +1,13 @@
 package com.microtomato.hirun.modules.finance.service.impl;
 
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.microtomato.hirun.framework.security.UserContext;
+import com.microtomato.hirun.modules.bss.supply.entity.dto.QuerySupplyOrderDTO;
+import com.microtomato.hirun.modules.bss.supply.entity.dto.SupplyOrderDTO;
+import com.microtomato.hirun.modules.finance.entity.dto.QueryVoucherAuditDTO;
+import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
@@ -69,6 +76,13 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
 
     @Autowired
     private IStaticDataService staticDataService;
+
+    @Autowired
+    private ISupplierService supplierService;
+
+    @Autowired
+    private IEmployeeService employeeService;
+
 
 
     /**
@@ -309,4 +323,76 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
         return decoratorInfoDTOArrayList;
     }
 
+    /**
+     * 供应订单查询
+     *
+     * @param condition
+     * @return
+     */
+    @Override
+    public IPage<FinanceVoucherDTO> queryVoucherSupplyInfo(QueryVoucherAuditDTO condition) {
+
+        UserContext userContext = WebContextUtils.getUserContext();
+        Long employeeId = userContext.getEmployeeId();
+        IPage<QueryVoucherAuditDTO> page = new Page<>(condition.getPage(), condition.getLimit());
+        IPage<FinanceVoucherDTO> pageVoucherSupplys = this.financeVoucherMapper.queryVoucherInfo(page, "1", "0");
+
+        List<FinanceVoucherDTO> voucherSupplys  = pageVoucherSupplys.getRecords();
+        voucherSupplys.forEach(voucherSupply -> {
+            String supplierName = this.supplierService.querySupplierById(voucherSupply.getSupplierId()).getName();
+            voucherSupply.setSupplierName(supplierName);
+            voucherSupply.setVoucherId(voucherSupply.getId());
+//            String createUserName = this.employeeService.queryByUserId(voucherSupply.getCreateUserId()).getName();
+//            voucherSupply.setCreateUserName(createUserName);
+//            voucherSupply.setSupplyOrderName(this.staticDataService.getCodeName("SUPPLY_ORDER_TYPE", supplyOrder.getSupplyOrderType()));
+        });
+
+
+        return pageVoucherSupplys;
+    }
+
+    /**
+     * 审核通过
+     *
+     * @param financeVoucherDTOs
+     */
+    @Override
+    public void auditForSupplyPass(List<FinanceVoucherDTO> financeVoucherDTOs) {
+        if (ArrayUtils.isEmpty(financeVoucherDTOs)) {
+            return;
+        }
+        financeVoucherDTOs.forEach(financeVoucherDTO -> {
+            //拼supplyOrder表数据
+            FinanceVoucher financeVoucher = new FinanceVoucher();
+            financeVoucher.setId(financeVoucherDTO.getVoucherId());
+            financeVoucher.setAuditStatus("1");//审核通过
+            financeVoucher.setAuditEmployeeId(WebContextUtils.getUserContext().getEmployeeId());
+            financeVoucher.setAuditComment(financeVoucherDTO.getRemark());
+            financeVoucherService.updateById(financeVoucher);
+        });
+
+
+    }
+    /**
+     * 审核不通过
+     *
+     * @param financeVoucherDTOs
+     */
+    @Override
+    public void auditForSupplyReject(List<FinanceVoucherDTO> financeVoucherDTOs) {
+        if (ArrayUtils.isEmpty(financeVoucherDTOs)) {
+            return;
+        }
+        financeVoucherDTOs.forEach(financeVoucherDTO -> {
+            //拼supplyOrder表数据
+            FinanceVoucher financeVoucher = new FinanceVoucher();
+            financeVoucher.setId(financeVoucherDTO.getVoucherId());
+            financeVoucher.setAuditStatus("2");//审核不通过
+            financeVoucher.setAuditEmployeeId(WebContextUtils.getUserContext().getEmployeeId());
+            financeVoucher.setAuditComment(financeVoucherDTO.getRemark());
+            financeVoucherService.updateById(financeVoucher);
+        });
+
+
+    }
 }
