@@ -1,6 +1,6 @@
 define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
     Vue.component('org-orgtree', {
-        props: ['org-id','org-name', 'mode'],
+        props: ['org-id','org-name', 'mode', 'org-type'],
 
         data : function(){
             return {
@@ -44,7 +44,13 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
         methods: {
             init() {
                 let that = this;
-                ajax.get('api/organization/org/listWithTree', null, function(data) {
+                let url = 'api/organization/org/listWithTree';
+                let data = null;
+                if (this.orgType != null && typeof(this.orgType) != 'undefined') {
+                    url = 'api/organization/org/listAssignType';
+                    data = {type : this.orgType};
+                }
+                ajax.get(url, data, function(data) {
                     that.datas = data;
                     if (data) {
                         data.forEach(temp=>{
