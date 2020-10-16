@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../../../../static/js/framework/requirejs/require.min.js"
+            th:src="@{static/js/framework/requirejs/require.min.js}"></script>
+    <script src="../../../../static/js/framework/requirejs/require.config.js"
+            th:src="@{static/js/framework/requirejs/require.config.js}"></script>
+</head>
+<body>
+<div id="app" v-cloak>
+    <el-container>
+        <el-main>
+            <el-card class="box-card" shadow="hover">
+                <div slot="header" class="clearfix">
+                    <span>查询区域</span>
+                </div>
+                <el-form :inline="false" :model="queryCond" label-position="right" label-width="80px" ref="queryCond">
+                    <el-row>
+                        <el-col :span="8">
+                            <el-form-item label="部门">
+                                <org-orgtree :org-id.sync="queryCond.orgIds" :org-name.sync="queryCond.orgName" org-type="2,4" mode="multi"></org-orgtree>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item label="查询日期">
+                                <el-date-picker
+                                        v-model="queryCond.queryMonth"
+                                        type="daterange"
+                                        format="yyyy-MM"
+                                        value-format="yyyy-MM"
+                                        align="right"
+                                        unlink-panels
+                                        range-separator="至"
+                                        start-placeholder="开始日期"
+                                        end-placeholder="结束日期"
+                                        style="width:100%"
+                                        :picker-options="pickerOptions">
+                                </el-date-picker>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item>
+                                <el-button type="primary" @click="query">查询</el-button>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </el-card>
+            <br>
+            <el-card shadow="hover">
+                <div id="echarts_box" style="width:100%;height:400px" align="center"></div>
+            </el-card>
+        </el-main>
+    </el-container>
+
+</div>
+<style>
+    [v-cloak] {
+        display: none;
+    }
+</style>
+<script src="static/js/modules/bss/order/statistic/order.pay.chart" th:src="@{static/js/modules/bss/order/statistic/order.pay.chart.js(v=${version})}"></script>
+</body>
+</html>

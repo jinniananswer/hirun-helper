@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>财务主营业务控制台</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script src="static/js/framework/requirejs/require.min.js" th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js" th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+</head>
+<body>
+<div id="app" v-cloak>
+    <el-container>
+        <el-main>
+            <el-row>
+                <el-card class="box-card" shadow="hover">
+                    <div slot="header" class="clearfix">
+                        <span>查询条件区</span>
+                    </div>
+                    <el-form :inline="false" :model="queryCond" label-position="right" label-width="80px">
+                        <el-row>
+                            <el-col :span="8">
+                                <el-form-item label="部门">
+                                    <org-orgtree :org-id.sync="queryCond.orgIds" :org-name.sync="queryCond.orgName" org-type="2,4" mode="multi"></org-orgtree>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="查询日期">
+                                    <el-date-picker
+                                            v-model="queryCond.queryDate"
+                                            type="daterange"
+                                            format="yyyy-MM-dd"
+                                            value-format="yyyy-MM-dd"
+                                            align="right"
+                                            unlink-panels
+                                            range-separator="至"
+                                            start-placeholder="开始日期"
+                                            end-placeholder="结束日期"
+                                            style="width:100%"
+                                            :picker-options="pickerOptions">
+                                    </el-date-picker>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item>
+                                    <el-button type="primary" @click="query">查询</el-button>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                    </el-form>
+                </el-card>
+            </el-row>
+            <el-row>
+                <el-card class="box-card" shadow="hover">
+                    <vxe-table
+                            border
+                            resizable
+                            ref="pays"
+                            show-overflow
+                            highlight-hover-row
+                            highlight-cell
+                            keep-source
+                            show-footer
+                            max-height="800px"
+                            :footer-method="footerMethod"
+                            :footer-cell-class-name="footerCellClassName"
+                            :auto-resize="true"
+                            :data="pays">
+                        <vxe-table-column field="orgName" title="部门名称" sortable width="200"></vxe-table-column>
+                        <vxe-table-column field="queryDate" title="查询日期" sortable width="200"></vxe-table-column>
+                        <vxe-table-column field="money" title="收款金额(元）" sortable ></vxe-table-column>
+                    </vxe-table>
+
+                </el-card>
+            </el-row>
+
+        </el-main>
+    </el-container>
+</div>
+<style>
+    .text {
+        font-size: 14px;
+    }
+
+    .box-card {
+        margin-bottom: 12px;
+    }
+
+    .item {
+        margin-bottom: 18px;
+    }
+
+    .el-card__header {
+        padding:10px;
+    }
+
+    .modify_row {
+        color: #ff4835;
+    }
+
+    .new_row {
+        color: #4DAF29;
+    }
+
+    .delete_row {
+        text-decoration:line-through;
+    }
+
+    .footer {
+        background-color: #cccccc;
+    }
+
+    [v-cloak] {
+        display: none;
+    }
+</style>
+<script src="static/js/modules/bss/order/fee/query.pay.gather.js" th:src="@{static/js/modules/bss/order/fee/query.pay.gather.js(v=${version})}"></script>
+</body>
+</html>
