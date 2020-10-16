@@ -295,6 +295,39 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
         return tree;
     }
 
+    /**
+     * 按指定类型构建部门树
+     * @param type
+     * @return
+     */
+    @Override
+    public List<TreeNode> listAssignType(String type) {
+        List<Org> orgs = this.listOrgsSecurity();
+        if (ArrayUtils.isEmpty(orgs)) {
+            return null;
+        }
+
+        List<TreeNode> nodes = new ArrayList<>();
+        for (Org org : orgs) {
+            if (StringUtils.indexOf("," + type + ",", org.getType()) < 0 ) {
+                continue;
+            }
+            TreeNode node = new TreeNode();
+            node.setId(org.getOrgId() + "");
+            node.setTitle(org.getName());
+
+            if (org.getParentOrgId() != null) {
+                node.setParentId(org.getParentOrgId() + "");
+            } else {
+                node.setSpread(true);
+            }
+            node.setNode(org);
+            nodes.add(node);
+        }
+        List<TreeNode> tree = TreeUtils.build(nodes);
+        return tree;
+    }
+
     @Override
     public void buildMap(List<TreeNode> nodeList, Map<String, TreeNode> nodeMap) {
         for (TreeNode treeNode : nodeList) {

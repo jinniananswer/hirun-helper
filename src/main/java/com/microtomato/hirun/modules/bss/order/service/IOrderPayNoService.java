@@ -1,6 +1,10 @@
 package com.microtomato.hirun.modules.bss.order.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.microtomato.hirun.modules.bss.order.entity.dto.fee.LineChartDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.fee.PayGatherDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.fee.QueryPayGatherDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.fee.QueryPayTrendDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayNo;
 
 import java.util.List;
@@ -17,4 +21,8 @@ public interface IOrderPayNoService extends IService<OrderPayNo> {
     OrderPayNo getByOrderIdAndPayNo(Long orderId, Long orderPayNo);
 
     List<OrderPayNo> queryByOrderId(Long orderId);
+
+    List<PayGatherDTO> queryPayGather(QueryPayGatherDTO condition);
+
+    LineChartDTO queryPayTrend(QueryPayTrendDTO condition);
 }

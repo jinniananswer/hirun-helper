@@ -43,6 +43,8 @@ public interface IOrgService extends IService<Org> {
 
     List<Org> listByType(String type);
 
+    List<TreeNode> listAssignType(String type);
+
     void buildMap(List<TreeNode> nodeList, Map<String, TreeNode> nodeMap);
 
     /**
