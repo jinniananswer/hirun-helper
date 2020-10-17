@@ -15,7 +15,7 @@ public class PayItemDTO {
 
     private String payItemName;
 
-    private Integer period;
+    private String period;
 
     private String periodName;
 

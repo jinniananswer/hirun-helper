@@ -175,7 +175,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
                     String payItemName = this.payItemCfgService.getPath(payItem.getPayItemId());
                     Integer payPeriod = payItem.getPeriods();
                     if (payPeriod != null) {
-                        payItemDTO.setPeriod(payPeriod);
+                        payItemDTO.setPeriod("period_" + payPeriod);
                         String payPeriodName = this.staticDataService.getCodeName("PAY_PERIODS", payPeriod + "");
                         payItemDTO.setPeriodName(payPeriodName);
                         payItemName += '-' + payPeriodName;
@@ -287,7 +287,9 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
                 orderPayItem.setOrderId(orderId);
                 orderPayItem.setPayItemId(payItemId);
                 orderPayItem.setParentPayItemId(payItemCfg.getParentPayItemId());
-                orderPayItem.setPeriods(payItem.getPeriod());
+                if (StringUtils.isNotBlank(payItem.getPeriod())) {
+                    orderPayItem.setPeriods(Integer.parseInt(payItem.getPeriod()));
+                }
                 orderPayItem.setFee(fee);
                 orderPayItem.setPayNo(payNo);
                 orderPayItem.setStartDate(now);
