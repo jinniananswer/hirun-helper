@@ -255,6 +255,11 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
                                                         border
                                                         style="width: 100%">
                                                         <el-table-column
+                                                                label="付款类型"
+                                                                prop="paymentTypeName"
+                                                                fixed>
+                                                        </el-table-column>
+                                                        <el-table-column
                                                                 label="付款方式"
                                                                 prop="paymentName"
                                                                 fixed>
