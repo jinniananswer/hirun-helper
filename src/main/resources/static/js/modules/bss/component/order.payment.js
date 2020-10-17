@@ -16,6 +16,7 @@ define(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'util'], function(Vue,
                 dialogVisible: false,
                 validRules: {
                     money: [
+                        { required: true, message: '金额不能为空' },
                         {type:'number', message: '金额必须为数字'},
                         {pattern:/^[0-9]+(\.\d+)?$/, message: '金额必须为正数'}
                     ]
@@ -107,7 +108,7 @@ define(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'util'], function(Vue,
                     :edit-config="{trigger: 'click', mode: 'cell'}">
                     <vxe-table-column field="payItemName" title="款项"></vxe-table-column>
                     <vxe-table-column field="periodName" title="期数" width="100"></vxe-table-column>
-                    <vxe-table-column field="money" title="应收金额（单位：元）" width="180" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+                    <vxe-table-column field="money" title="应收金额（单位：元）" width="260" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
                     <vxe-table-column field="remark" title="备注" width="300" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
                     <vxe-table-column title="操作" width="100" show-overflow>
                         <template v-slot="{ row }">
@@ -218,7 +219,9 @@ define(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'util'], function(Vue,
                         if (['money'].includes(column.property)) {
                             let total = 0;
                             data.forEach(function(v, k) {
-                                total += parseFloat(v.money);
+                                if (v.money) {
+                                    total += parseFloat(v.money);
+                                }
                             })
                             return "合计: " + total.toFixed(2) + "元"
                         }
@@ -239,7 +242,7 @@ define(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'util'], function(Vue,
                 if (this.payItem.selectedPayItem == null || this.payItem.selectedPayItem.length === 0) {
                     return;
                 }
-
+                alert(JSON.stringify(this.payItem.selectedPayItem));
                 for (let items of this.payItem.selectedPayItem) {
                     let payItemName = this.findPayItemName(items, this.payItemOptions, '', 0);
 
@@ -272,7 +275,7 @@ define(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'util'], function(Vue,
                     let isFind = false;
                     if (this.payItems.length > 0) {
                         for (let payItem of this.payItems) {
-                            if (payItem.payItemId == payItemValue) {
+                            if (payItem.payItemId == payItemValue && (periodValue == null || (payItem.period != null && payItem.period == periodValue))) {
                                 isFind = true;
                                 break;
                             }
