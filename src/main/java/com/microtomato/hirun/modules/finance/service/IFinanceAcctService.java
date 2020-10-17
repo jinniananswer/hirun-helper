@@ -19,4 +19,6 @@ public interface IFinanceAcctService extends IService<FinanceAcct> {
     List<FinanceAcct> queryByType(String type);
 
     List<FinanceAcct> queryAll();
+
+    List<FinanceAcct> queryByLoginEmployeeId();
 }

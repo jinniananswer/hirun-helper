@@ -12,9 +12,19 @@ import lombok.Data;
 public class PaymentDTO {
 
     /**
-     * 支付方式
+     * 支付方式 细项ID
+     */
+    private Long paymentId;
+
+    /**
+     * 支付类型
      */
     private String paymentType;
+
+    /**
+     * 支付类型名称
+     */
+    private String paymentTypeName;
 
     /**
      * 支付方式名称

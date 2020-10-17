@@ -26,6 +26,8 @@ import com.microtomato.hirun.modules.bss.order.mapper.OrderBaseMapper;
 import com.microtomato.hirun.modules.bss.order.service.*;
 import com.microtomato.hirun.modules.bss.supply.entity.po.SupplierBrand;
 import com.microtomato.hirun.modules.bss.supply.service.ISupplierBrandService;
+import com.microtomato.hirun.modules.finance.entity.po.FinanceAcct;
+import com.microtomato.hirun.modules.finance.service.IFinanceAcctService;
 import com.microtomato.hirun.modules.organization.entity.domain.EmployeeDO;
 import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
@@ -123,6 +125,9 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
 
     @Autowired
     private IOrderBaseService orderBaseService;
+
+    @Autowired
+    private IFinanceAcctService financeAcctService;
     /**
      * 初始化支付组件
      *
@@ -133,12 +138,14 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
         PayComponentDTO componentData = new PayComponentDTO();
         List<PaymentDTO> payments = new ArrayList<>();
 
-        List<StaticData> configs = this.staticDataService.getStaticDatas("PAYMENT_TYPE");
-        if (ArrayUtils.isNotEmpty(configs)) {
-            for (StaticData config : configs) {
+        List<FinanceAcct> financeAccts = this.financeAcctService.queryByLoginEmployeeId();
+        if (ArrayUtils.isNotEmpty(financeAccts)) {
+            for (FinanceAcct financeAcct : financeAccts) {
                 PaymentDTO payment = new PaymentDTO();
-                payment.setPaymentType(config.getCodeValue());
-                payment.setPaymentName(config.getCodeName());
+                payment.setPaymentId(financeAcct.getId());
+                payment.setPaymentName(financeAcct.getName());
+                payment.setPaymentType(financeAcct.getType());
+                payment.setPaymentTypeName(this.staticDataService.getCodeName("FINANCE_ACCT_TYPE", financeAcct.getType()));
                 payments.add(payment);
             }
             componentData.setPayments(payments);
@@ -174,7 +181,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
                         payItemName += '-' + payPeriodName;
                     }
                     payItemDTO.setPayItemName(payItemName);
-
+                    payItemDTO.setRemark(payItem.getRemark());
                     payItemDTOs.add(payItemDTO);
                 }
                 componentData.setPayItems(payItemDTOs);
@@ -184,7 +191,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
             if (ArrayUtils.isNotEmpty(payMonies)) {
                 for (OrderPayMoney payMoney : payMonies) {
                     for (PaymentDTO payment : payments) {
-                        if (StringUtils.equals(payment.getPaymentType(), payMoney.getPaymentType())) {
+                        if (payment.getPaymentId().equals(payMoney.getPaymentId())) {
                             payment.setMoney(payMoney.getMoney().doubleValue() / 100);
                             break;
                         }
@@ -285,6 +292,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
                 orderPayItem.setPayNo(payNo);
                 orderPayItem.setStartDate(now);
                 orderPayItem.setEndDate(forever);
+                orderPayItem.setRemark(payItem.getRemark());
                 orderPayItems.add(orderPayItem);
                 payItemTotal += fee;
 
@@ -322,6 +330,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
                 OrderPayMoney payMoney = new OrderPayMoney();
                 payMoney.setOrderId(orderId);
                 payMoney.setPaymentType(payment.getPaymentType());
+                payMoney.setPaymentId(payment.getPaymentId());
 
                 Double money = payment.getMoney();
                 if (money == null || money <= 0.001) {

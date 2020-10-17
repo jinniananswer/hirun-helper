@@ -20,4 +20,6 @@ public class PayItemDTO {
     private String periodName;
 
     private Double money;
+
+    private String remark;
 }
