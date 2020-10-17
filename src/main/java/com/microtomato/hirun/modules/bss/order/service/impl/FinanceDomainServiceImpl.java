@@ -865,6 +865,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
                     } else {
                         orderPayMoneyInfo.setMoney(0d);
                     }
+                    orderPayMoneyInfo.setPaymentTypeName(this.staticDataService.getCodeName("FINANCE_ACCT_TYPE", orderPayMoney.getPaymentType()));
                     orderPayMoneyInfos.add(orderPayMoneyInfo);
                 }
                 orderPayInfo.setPayMonies(orderPayMoneyInfos);
