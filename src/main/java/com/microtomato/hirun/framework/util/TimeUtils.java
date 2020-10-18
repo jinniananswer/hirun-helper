@@ -1,5 +1,7 @@
 package com.microtomato.hirun.framework.util;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.sql.Timestamp;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -689,39 +691,21 @@ public class TimeUtils {
     }
 
     /**
-     * 获取传入时间偏移后所在天的第一秒
-     * @param time
+     * 将日期字符串转换成LocalDate类型
+     * @param date
+     * @param format
      * @return
      */
-    public static LocalDateTime getFirstSecondDay(LocalDateTime time, int offset) {
-        return LocalDateTime.of(addDays(time, offset).toLocalDate(), LocalTime.MIN);
-    }
-
-    /**
-     * 根据传入的时间，偏移N天
-     * @param time
-     * @param offset
-     * @return
-     */
-    public static LocalDateTime addDays(LocalDateTime time, int offset) {
-        return time.plusDays((long)offset);
+    public static LocalDate stringToDate(String date, String format) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+        return LocalDate.parse(date, formatter);
     }
 
     public static LocalDateTime getForeverTime() {
         return stringToLocalDateTime(FOREVER_TIME, TIME_PATTERN);
     }
 
-    /**
-     * 传入的时间加上N秒
-     * @param time
-     * @param seconds
-     * @return
-     */
-    public static LocalDateTime addSeconds(LocalDateTime time, long seconds) {
-        return time.plusSeconds(seconds);
-    }
-
     public static void main(String[] args) {
-        System.out.println(TimeUtils.getAbsTimeDiffYear(TimeUtils.stringToLocalDateTime("1982-03-11 00:00:00", TimeUtils.TIME_PATTERN), TimeUtils.getCurrentLocalDateTime()));
+        System.out.println(StringUtils.split(","));
     }
 }

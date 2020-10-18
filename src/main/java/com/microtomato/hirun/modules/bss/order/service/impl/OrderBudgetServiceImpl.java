@@ -1,22 +1,25 @@
 package com.microtomato.hirun.modules.bss.order.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.exception.cases.NotFoundException;
+import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderBudgetCheckedDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderBudgetDTO;
+import com.microtomato.hirun.modules.bss.order.entity.po.OrderBase;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderBudget;
+import com.microtomato.hirun.modules.bss.order.entity.po.OrderWorkerAction;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderBudgetMapper;
-import com.microtomato.hirun.modules.bss.order.service.IOrderBudgetService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.microtomato.hirun.modules.bss.order.service.IOrderDomainService;
-import com.microtomato.hirun.modules.bss.order.service.IOrderFileService;
-import com.microtomato.hirun.modules.bss.order.service.IOrderWorkerService;
+import com.microtomato.hirun.modules.bss.order.service.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>
@@ -37,6 +40,12 @@ public class OrderBudgetServiceImpl extends ServiceImpl<OrderBudgetMapper, Order
     private IOrderWorkerService orderWorkerService;
 
     @Autowired
+    private IOrderWorkerActionService orderWorkerActionService;
+
+    @Autowired
+    private IOrderBaseService orderBaseService;
+
+    @Autowired
     private IOrderFileService orderFileService;
 
     @Transactional(rollbackFor = Exception.class)
@@ -50,13 +59,81 @@ public class OrderBudgetServiceImpl extends ServiceImpl<OrderBudgetMapper, Order
         OrderBudget orderBudget = null;
         if(dto.getId() == null) {
             orderBudget = new OrderBudget();
-            orderWorkerService.updateOrderWorker(dto.getOrderId(), 43L, dto.getCheckEmployeeId());
         } else {
             orderBudget = this.getById(dto.getId());
         }
         BeanUtils.copyProperties(dto, orderBudget);
         this.saveOrUpdate(orderBudget);
 
+        if (dto.getCheckEmployeeId() != null) {
+            orderWorkerService.updateOrderWorker(dto.getOrderId(), 43L, dto.getCheckEmployeeId());
+        }
+
+        List<Long> vrWorkerIds = this.orderWorkerActionService.deleteOrderWorkerAction(dto.getOrderId(), "vr_360");
+        List<Long> suWorkerIds = this.orderWorkerActionService.deleteOrderWorkerAction(dto.getOrderId(), "su_white_model");
+
+        if (ArrayUtils.isNotEmpty(vrWorkerIds)) {
+            //检查是否有其它动作
+            List<OrderWorkerAction> vrOtherActions = this.orderWorkerActionService.hasOtherAction(vrWorkerIds, "vr_360");
+            List<Long> onlyVR360 = new ArrayList<>();
+
+            for (Long workerId : vrWorkerIds) {
+
+                boolean isFind = false;
+                if (ArrayUtils.isNotEmpty(vrOtherActions)) {
+                    for (OrderWorkerAction otherAction : vrOtherActions) {
+                        if (otherAction.getWorkerId().equals(workerId)) {
+                            isFind = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (!isFind) {
+                    onlyVR360.add(workerId);
+                }
+            }
+
+            if (ArrayUtils.isNotEmpty(onlyVR360)) {
+                this.orderWorkerService.deleteOrderWorker(onlyVR360);
+            }
+        }
+
+        if (ArrayUtils.isNotEmpty(suWorkerIds)) {
+            List<OrderWorkerAction> suOtherActions = this.orderWorkerActionService.hasOtherAction(vrWorkerIds, "su_white_model");
+            List<Long> onlySU = new ArrayList<>();
+
+            for (Long workerId : suWorkerIds) {
+
+                boolean isFind = false;
+                if (ArrayUtils.isNotEmpty(suOtherActions)) {
+                    for (OrderWorkerAction otherAction : suOtherActions) {
+                        if (otherAction.getWorkerId().equals(workerId)) {
+                            isFind = true;
+                            break;
+                        }
+                    }
+                }
+                if (!isFind) {
+                    onlySU.add(workerId);
+                }
+            }
+
+            if (ArrayUtils.isNotEmpty(onlySU)) {
+                this.orderWorkerService.deleteOrderWorker(onlySU);
+            }
+        }
+
+        OrderBase orderBase = this.orderBaseService.queryByOrderId(dto.getOrderId());
+        if (dto.getVrEmployeeId() != null) {
+            Long workerId = this.orderWorkerService.updateOrderWorker(dto.getOrderId(),41L, dto.getVrEmployeeId());
+            this.orderWorkerActionService.createOrderWorkerAction(dto.getOrderId(), dto.getVrEmployeeId(), workerId, orderBase.getStatus(), "vr_360");
+        }
+
+        if (dto.getSuEmployeeId() != null) {
+            Long workerId = this.orderWorkerService.updateOrderWorker(dto.getOrderId(),41L, dto.getSuEmployeeId());
+            this.orderWorkerActionService.createOrderWorkerAction(dto.getOrderId(), dto.getSuEmployeeId(), workerId, orderBase.getStatus(), "su_white_model");
+        }
         orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_NEXT_STEP);
     }
 

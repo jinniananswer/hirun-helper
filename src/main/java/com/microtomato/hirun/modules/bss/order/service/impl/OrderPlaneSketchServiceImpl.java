@@ -17,6 +17,7 @@ import com.microtomato.hirun.modules.bss.order.mapper.OrderWorkerMapper;
 import com.microtomato.hirun.modules.bss.order.service.*;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -62,10 +63,6 @@ public class OrderPlaneSketchServiceImpl extends ServiceImpl<OrderPlaneSketchMap
     @Autowired
     private IOrderFileService orderFileService;
 
-    public void submitToSignContractFlow(Long orderId) {
-        orderDomainService.orderStatusTrans(orderId, OrderConst.OPER_NEXT_STEP);
-    }
-
     @Override
     public void submitToBackToDesignerFlow(Long orderId) {
         orderDomainService.orderStatusTrans(orderId, OrderConst.OPER_NEXT_STEP);
@@ -102,8 +99,12 @@ public class OrderPlaneSketchServiceImpl extends ServiceImpl<OrderPlaneSketchMap
         List<OrderWorkerActionDTO> orderWorkerActionDTOS = orderWorkerActionService.queryByOrderIdActionDto(orderId, DesignerConst.OPER_DRAW_PLAN);
 
         if (ArrayUtils.isNotEmpty(orderWorkerActionDTOS)) {
-            Long id = orderWorkerActionDTOS.get(0).getEmployeeId();
-            orderPlaneSketchDTO.setAssistantDesigner(id);
+            List<Long> assistants = new ArrayList<>();
+            orderWorkerActionDTOS.forEach(action -> {
+                Long id = action.getEmployeeId();
+                assistants.add(id);
+            });
+            orderPlaneSketchDTO.setAssistantDesigner(assistants);
         }
 
         OrderWorker financer = this.orderWorkerService.getOneOrderWorkerByOrderIdRoleId(orderId, 34L);
@@ -166,22 +167,14 @@ public class OrderPlaneSketchServiceImpl extends ServiceImpl<OrderPlaneSketchMap
         BeanUtils.copyProperties(dto,orderPlaneSketchNew);
         orderPlaneSketchNew.setEndDate(forever);
         orderPlaneSketchNew.setStartDate(now);
-
-        if (orderPlaneSketchNew.getId()==null) {
-            this.save(orderPlaneSketchNew);
-        } else {
-            this.updateById(orderPlaneSketchNew);
-        }
-        /**
-         *订单动作,设置收银员
-         */
-        if (dto.getFinanceEmployeeId() != null) {
-            orderWorkerService.updateOrderWorker(dto.getOrderId(),34L,dto.getFinanceEmployeeId());
-        }
+        orderPlaneSketchNew.setId(null);
+        this.save(orderPlaneSketchNew);
 
         OrderBase orderBase = this.orderBaseService.queryByOrderId(orderId);
-        orderBase.setIndoorArea(orderPlaneSketchNew.getIndoorArea());
-        this.orderBaseService.updateById(orderBase);
+        if (!StringUtils.equals(orderBase.getIndoorArea(), dto.getIndoorArea())) {
+            orderBase.setIndoorArea(orderPlaneSketchNew.getIndoorArea());
+            this.orderBaseService.updateById(orderBase);
+        }
 
         List<Long> workerIds = this.orderWorkerActionService.deleteOrderWorkerAction(orderId, DesignerConst.OPER_DRAW_PLAN);
         if (ArrayUtils.isNotEmpty(workerIds)) {
@@ -192,10 +185,12 @@ public class OrderPlaneSketchServiceImpl extends ServiceImpl<OrderPlaneSketchMap
             for (Long workerId : workerIds) {
 
                 boolean isFind = false;
-                for (OrderWorkerAction otherAction : otherActions) {
-                    if (otherAction.getWorkerId().equals(workerId)) {
-                        isFind = true;
-                        break;
+                if (ArrayUtils.isNotEmpty(otherActions)) {
+                    for (OrderWorkerAction otherAction : otherActions) {
+                        if (otherAction.getWorkerId().equals(workerId)) {
+                            isFind = true;
+                            break;
+                        }
                     }
                 }
 
@@ -205,16 +200,54 @@ public class OrderPlaneSketchServiceImpl extends ServiceImpl<OrderPlaneSketchMap
             }
 
             if (ArrayUtils.isNotEmpty(onlyDrawPlanWorkerIds)) {
-                this.orderWorkerService.deleteOrderWorker(workerIds);
+                this.orderWorkerService.deleteOrderWorker(onlyDrawPlanWorkerIds);
             }
         }
 
-        Long assistantDesignerId = dto.getAssistantDesigner();
-        if (assistantDesignerId != null) {
-            Long workerId = this.orderWorkerService.updateOrderWorker(orderId,41L,dto.getAssistantDesigner());
-            this.orderWorkerActionService.createOrderWorkerAction(orderId, assistantDesignerId, workerId, orderBase.getStatus(), DesignerConst.OPER_DRAW_PLAN);
+        List<Long> assistantDesignerIds = dto.getAssistantDesigner();
+        if (ArrayUtils.isNotEmpty(assistantDesignerIds)) {
+            assistantDesignerIds.forEach(assistantDesignerId -> {
+                Long workerId = this.orderWorkerService.updateOrderWorker(orderId,41L, assistantDesignerId);
+                this.orderWorkerActionService.createOrderWorkerAction(orderId, assistantDesignerId, workerId, orderBase.getStatus(), DesignerConst.OPER_DRAW_PLAN);
+            });
+        }
+    }
+
+    /**
+     * 保存签订设计合同数据
+     * @param dto
+     */
+    @Override
+    public void saveSignDesignContract(OrderPlaneSketchDTO dto) {
+        Long orderId = dto.getOrderId();
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+
+        OrderPlaneSketch orderPlaneSketch = this.getOne(
+                Wrappers.<OrderPlaneSketch>lambdaQuery()
+                        .eq(OrderPlaneSketch::getOrderId, orderId)
+                        .ge(OrderPlaneSketch::getEndDate, now)
+        );
+
+        if ( orderPlaneSketch != null) {
+            orderPlaneSketch.setIndoorArea(dto.getIndoorArea());
+            orderPlaneSketch.setDesignFeeStandard(dto.getDesignFeeStandard());
+            orderPlaneSketch.setContractDesignFee(dto.getContractDesignFee());
+            this.updateById(orderPlaneSketch);
         }
 
+        /**
+         *订单动作,设置收银员
+         */
+        if (dto.getFinanceEmployeeId() != null) {
+            orderWorkerService.updateOrderWorker(dto.getOrderId(),34L,dto.getFinanceEmployeeId());
+        }
+
+        OrderBase orderBase = this.orderBaseService.queryByOrderId(orderId);
+
+        if (!StringUtils.equals(orderBase.getIndoorArea(), dto.getIndoorArea())) {
+            orderBase.setIndoorArea(dto.getIndoorArea());
+            this.orderBaseService.updateById(orderBase);
+        }
     }
 
     @Override
@@ -223,8 +256,16 @@ public class OrderPlaneSketchServiceImpl extends ServiceImpl<OrderPlaneSketchMap
     }
 
     @Override
-    public void submitToSignContractFlow(@RequestBody OrderPlaneSketchDTO dto) {
-        //this.existsFile(dto.getOrderId());
+    public void submitToSignContractFlow(OrderPlaneSketchDTO dto) {
+        this.existsFile(dto.getOrderId());
+        /**
+         * 状态扭转
+         * */
+        orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_NEXT_STEP);
+    }
+
+    @Override
+    public void submitToAuditDesignFee(OrderPlaneSketchDTO dto) {
         /**
          * 回写费用
          * */
@@ -237,7 +278,7 @@ public class OrderPlaneSketchServiceImpl extends ServiceImpl<OrderPlaneSketchMap
         /**
          * 状态扭转
          * */
-        this.submitToSignContractFlow(dto.getOrderId());
+        orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.OPER_NEXT_STEP);
     }
 
     public void existsFile(Long OrderId) {

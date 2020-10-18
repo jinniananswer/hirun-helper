@@ -123,10 +123,10 @@
                     </el-card>
                     <el-card class="box-card" shadow="hover">
                         <div slot="header">
-                            <span>费用信息</span>
+                            <span>订单款项</span>
                         </div>
                         <el-tabs v-model="feeActiveTab" type="border-card">
-                            <el-tab-pane label="费用信息" name="feeInfo">
+                            <el-tab-pane label="应收款项" name="feeInfo">
                                 <el-table
                                         :data="order.orderFees"
                                         stripe="true"
@@ -135,7 +135,7 @@
                                         :tree-props="{children:'children', hasChildren: 'hasChildren'}"
                                         style="width: 100%">
                                     <el-table-column
-                                            label="费用项"
+                                            label="应收项"
                                             prop="typeName"
                                             fixed>
                                     </el-table-column>
@@ -152,7 +152,7 @@
                                     </el-table-column>
                                 </el-table>
                             </el-tab-pane>
-                            <el-tab-pane label="付款信息" name="payInfo">
+                            <el-tab-pane label="实收款项" name="payInfo">
                                 <el-table
                                         :data="order.orderPays"
                                         stripe="true"
@@ -166,7 +166,7 @@
                                                     border
                                                     style="width: 100%">
                                                 <el-table-column
-                                                        label="收款项"
+                                                        label="实收项"
                                                         prop="payItemName"
                                                         fixed>
                                                 </el-table-column>

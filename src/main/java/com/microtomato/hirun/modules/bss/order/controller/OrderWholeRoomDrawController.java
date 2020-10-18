@@ -10,7 +10,6 @@ package com.microtomato.hirun.modules.bss.order.controller;
 
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWholeRoomDrawDTO;
-import com.microtomato.hirun.modules.bss.order.entity.po.OrderWholeRoomDraw;
 import com.microtomato.hirun.modules.bss.order.service.IOrderWholeRoomDrawService;
 import com.microtomato.hirun.modules.bss.order.service.IOrderWorkerService;
 import lombok.extern.slf4j.Slf4j;
@@ -53,21 +52,21 @@ public class OrderWholeRoomDrawController {
     @PostMapping("/submitToConfirmFlow")
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @RestResult
-    public void submitToConfirmFlow(@RequestBody OrderWholeRoomDraw orderWholeRoomDraw) {
+    public void submitToConfirmFlow(@RequestBody OrderWholeRoomDrawDTO orderWholeRoomDraw) {
         iOrderWholeRoomDrawService.submitToConfirmFlow(orderWholeRoomDraw.getOrderId());
     }
 
     @PostMapping("/submitCancelDesignExpensesFlow")
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @RestResult
-    public void submitCancelDesignExpensesFlow(@RequestBody OrderWholeRoomDraw orderWholeRoomDraw) {
+    public void submitCancelDesignExpensesFlow(@RequestBody OrderWholeRoomDrawDTO orderWholeRoomDraw) {
         iOrderWholeRoomDrawService.submitCancelDesignExpensesFlow(orderWholeRoomDraw.getOrderId());
     }
 
     @PostMapping("/submitToWholeRoomDelayTimeFlow")
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @RestResult
-    public void submitToWholeRoomDelayTimeFlow(@RequestBody OrderWholeRoomDraw orderWholeRoomDraw) {
+    public void submitToWholeRoomDelayTimeFlow(@RequestBody OrderWholeRoomDrawDTO orderWholeRoomDraw) {
         iOrderWholeRoomDrawService.submitToWholeRoomDelayTimeFlow(orderWholeRoomDraw.getOrderId());
     }
 
@@ -75,21 +74,21 @@ public class OrderWholeRoomDrawController {
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @RestResult
     public void submitToCustomerLeaderFlow(@RequestBody OrderWholeRoomDrawDTO dto) {
-        this.save(dto);
+        iOrderWholeRoomDrawService.saveAuditWholeRoom(dto);
         iOrderWholeRoomDrawService.submitToCustomerLeaderFlow(dto.getOrderId());
     }
 
     @PostMapping("/submitToBackWholeRoomFlow")
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @RestResult
-    public void submitToBackWholeRoomFlow(@RequestBody OrderWholeRoomDraw orderWholeRoomDraw) {
+    public void submitToBackWholeRoomFlow(@RequestBody OrderWholeRoomDrawDTO orderWholeRoomDraw) {
         iOrderWholeRoomDrawService.submitToBackWholeRoomFlow(orderWholeRoomDraw.getOrderId());
     }
 
     @PostMapping("/submitToTwoLevelActuarialCalculationFlow")
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @RestResult
-    public void submitToTwoLevelActuarialCalculationFlow(@RequestBody OrderWholeRoomDraw orderWholeRoomDraw) {
+    public void submitToTwoLevelActuarialCalculationFlow(@RequestBody OrderWholeRoomDrawDTO orderWholeRoomDraw) {
         iOrderWholeRoomDrawService.submitToTwoLevelActuarialCalculationFlow(orderWholeRoomDraw.getOrderId());
         /**
          * 需要提交二级精算角色？
@@ -99,8 +98,15 @@ public class OrderWholeRoomDrawController {
     @PostMapping("/submitToBackToDesignerFlow")
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     @RestResult
-    public void submitToBackToDesignerFlow(@RequestBody OrderWholeRoomDraw orderWholeRoomDraw) {
+    public void submitToBackToDesignerFlow(@RequestBody OrderWholeRoomDrawDTO orderWholeRoomDraw) {
         iOrderWholeRoomDrawService.submitToBackToDesignerFlow(orderWholeRoomDraw.getOrderId());
+    }
+
+    @PostMapping("/saveAuditOrder")
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    @RestResult
+    public void saveAuditOrder(@RequestBody OrderWholeRoomDrawDTO orderWholeRoomDraw) {
+        iOrderWholeRoomDrawService.saveAuditOrder(orderWholeRoomDraw);
     }
 
 }

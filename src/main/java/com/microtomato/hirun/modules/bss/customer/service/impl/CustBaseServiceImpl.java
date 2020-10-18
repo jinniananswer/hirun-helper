@@ -133,12 +133,12 @@ public class CustBaseServiceImpl extends ServiceImpl<CustBaseMapper, CustBase> i
                 houseAddress=housesService.queryHouseName(dto.getHouseId());
             }
             if(StringUtils.isNotEmpty(dto.getHouseBuilding())){
-                houseAddress=houseAddress+":"+dto.getHouseBuilding();
+                houseAddress=houseAddress+"|"+dto.getHouseBuilding();
             }
             if(StringUtils.isNotEmpty(dto.getHouseRoomNo())){
-                houseAddress=houseAddress+":"+dto.getHouseRoomNo();
+                houseAddress=houseAddress+"|"+dto.getHouseRoomNo();
             }
-            dto.setHouseAddress(housesService.queryHouseName(dto.getHouseId()) + " |" + dto.getHouseBuilding() + " |" + dto.getHouseRoomNo());
+            dto.setHouseAddress(houseAddress);
             dto.setRulingEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getRulingEmployeeId()));
             dto.setPrepareStatusName(staticDataService.getCodeName("PREPARATION_STATUS", dto.getPrepareStatus() + ""));
             dto.setCustTypeName(staticDataService.getCodeName("CUSTOMER_TYPE",dto.getCustType()));

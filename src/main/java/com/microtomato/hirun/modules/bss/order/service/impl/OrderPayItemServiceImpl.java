@@ -81,4 +81,11 @@ public class OrderPayItemServiceImpl extends ServiceImpl<OrderPayItemMapper, Ord
             .ge(OrderPayItem::getEndDate, RequestTimeHolder.getRequestTime());
         return this.list(queryWrapper);
     }
+
+    @Override
+    public List<OrderPayItem> queryByPayNo(Long payNo) {
+        return this.list(new QueryWrapper<OrderPayItem>().lambda()
+                .eq(OrderPayItem::getPayNo, payNo)
+                .gt(OrderPayItem::getEndDate, RequestTimeHolder.getRequestTime()));
+    }
 }

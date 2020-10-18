@@ -34,27 +34,15 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
             employeeName:'',
             downloadFileUrl : '',
             planSketchRules : {
-                designFeeStandard: [
-                    { required: true, message: '请选择设计费标准！', trigger: 'change' }
-                ],
                 assistantDesigner: [
                     { required: true, message: '请选择平面助理！', trigger: 'change' }
                 ],
                 indoorArea: [
                     { required: true, message: '请填套内面积！', trigger: 'change' }
                 ],
-                contractDesignFee : [
-                    { required: true, message: '请输入合同设计费！', trigger: 'blur' }
-                ],
                 designTheme : [
                     { required: true, message: '请选择设计主题！', trigger: 'blur' }
-                ],
-                designTheme : [
-                    { required: true, message: '请选择设计主题！', trigger: 'blur' }
-                ],
-                financeEmployeeId : [
-                    { required: true, message: '请选择收银员！', trigger: 'blur' }
-                ],
+                ]
             },
         },
 
@@ -72,20 +60,6 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 if (this.orderStatus=='34') {
                     this.isConfirm = true;
                 }
-            },
-
-            changeDesignFeeStandard: function(newVal) {
-                this.planFigureInfos.designFeeStandard = newVal;
-                this.planFigureInfos.contractDesignFee = this.planFigureInfos.designFeeStandard * this.planFigureInfos.indoorArea;
-            },
-
-            handleChangePlanNum : function(value) {
-                this.planFigureInfos.designerPlanNum = value;
-            },
-
-            handleChangeInJacketAreaNum : function(value) {
-                this.planFigureInfos.indoorArea=value;
-                this.planFigureInfos.contractDesignFee = this.planFigureInfos.designFeeStandard * this.planFigureInfos.indoorArea;
             },
 
             handleCommand : function(command) {
@@ -131,13 +105,6 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                         this.$message.error('填写信息不完整，请亲仔细检查哦~~~~~~~！');
                         return;
                     }
-                });
-            },
-
-            toSignContractFlow : function () {
-                this.planFigureInfos.employeeId = this.eid;
-                ajax.post('api/bss.order/order-planSketch/submitToSignContractFlow', this.planFigureInfos,(responseData)=>{
-
                 });
             },
 

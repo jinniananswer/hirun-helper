@@ -46,5 +46,8 @@ public class QueryMaterialCondDTO {
     private Long houseId;
 
     private Long agentEmployeeId;
-
+    /**
+     * 区分主材与橱柜类型
+     */
+    private String type;
 }

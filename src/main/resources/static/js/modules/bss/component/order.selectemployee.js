@@ -1,6 +1,6 @@
 define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
     Vue.component('order-selectemployee', {
-        props: ['role-id', 'value', 'disabled','self'],
+        props: ['role-id', 'value', 'disabled','self', 'multiple'],
 
         data : function(){
             return {
@@ -10,7 +10,7 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
         },
 
         template: `
-            <el-select v-model="sValue" filterable :disabled="this.disabled===true?true:false" placeholder="请选择" style="width:100%" @change="handle">
+            <el-select v-model="sValue" filterable :disabled="this.disabled===true?true:false" :multiple="this.multiple===true?true:false" placeholder="请选择" style="width:100%" @change="handle">
                 <el-option
                     v-for="item in options"
                     :key="item.employeeId"

@@ -15,6 +15,8 @@ import java.util.List;
  */
 public interface IOrderPlaneSketchService extends IService<OrderPlaneSketch> {
 
+    void saveSignDesignContract(OrderPlaneSketchDTO dto);
+
     void submitToDelayTimeFlow(Long orderId);
 
     //void updateOrderWork(Long orderId,Long roleId,Long employeeId);
@@ -32,4 +34,6 @@ public interface IOrderPlaneSketchService extends IService<OrderPlaneSketch> {
     void submitToConfirmFlow(OrderPlaneSketch orderPlaneSketch);
 
     void submitToSignContractFlow(OrderPlaneSketchDTO dto);
+
+    void submitToAuditDesignFee(OrderPlaneSketchDTO dto);
 }

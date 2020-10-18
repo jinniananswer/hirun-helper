@@ -25,7 +25,16 @@ require(['vue', 'ELEMENT','ajax', 'vueselect', 'util','cust-info', 'order-info',
                     url += '?orderId=' + this.auditData.orderId + '&payNo=' + this.auditData.payNo;
                 }
                 ajax.get(url, null, function(data) {
-                    that.payments = data.payments;
+                    if (data.payments && data.payments.length > 0) {
+                        let tempPayments = [];
+                        for (let i=0;i<data.payments.length;i++) {
+                            let payment = data.payments[i];
+                            if (payment.money != 0) {
+                                tempPayments.push(payment);
+                            }
+                        }
+                        that.payments = tempPayments;
+                    }
                     if (data.payItems) {
                         that.payItems = data.payItems;
                     }

@@ -19,7 +19,7 @@ public class OrderMaterialContractDTO {
     private Long orderId;
 
     /** 材料类型 */
-    private LocalDate materialType;
+    private String materialType;
 
     /** 合同金额 */
     private Long contractFee;
@@ -44,4 +44,28 @@ public class OrderMaterialContractDTO {
     private String agentName;
 
     private String designName;
+
+    private String custName;
+
+    private String projectManageName;
+
+    private String mainMaterialName;
+
+    private String cabinetDesignerName;
+
+    private Long housesId;
+
+    private String houseName;
+
+    private Long shopId;
+
+    private String shopName;
+
+    private String brandCodeName;
+
+    private String kindId;
+
+    private String kindName;
+
+    private String feeTypeName;
 }

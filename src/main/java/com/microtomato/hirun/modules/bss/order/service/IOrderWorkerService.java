@@ -38,4 +38,6 @@ public interface IOrderWorkerService extends IService<OrderWorker> {
     OrderWorker getOneOrderWorkerByOrderIdRoleId(Long orderId, Long roleId);
 
     void deleteOrderWorker(List<Long> ids);
+
+    List<OrderWorker> queryByOrderIdRoleId(Long orderId, Long roleId);
 }

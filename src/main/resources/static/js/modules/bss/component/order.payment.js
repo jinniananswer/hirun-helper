@@ -16,6 +16,7 @@ define(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'util'], function(Vue,
                 dialogVisible: false,
                 validRules: {
                     money: [
+                        { required: true, message: '金额不能为空' },
                         {type:'number', message: '金额必须为数字'},
                         {pattern:/^[0-9]+(\.\d+)?$/, message: '金额必须为正数'}
                     ]
@@ -66,7 +67,7 @@ define(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'util'], function(Vue,
                     </el-col>
                 </el-row>
                 </el-form>
-                <el-divider><i class="el-icon-money"></i>付款项目</el-divider>
+                <el-divider><i class="el-icon-money"></i>收款项目</el-divider>
                 <el-row style="margin-bottom: 18px;">
                     <el-button type="primary" @click="popupDialog">新增收款项</el-button>
                     <el-dialog title="新增收款项" :visible.sync="dialogVisible">
@@ -107,7 +108,8 @@ define(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'util'], function(Vue,
                     :edit-config="{trigger: 'click', mode: 'cell'}">
                     <vxe-table-column field="payItemName" title="款项"></vxe-table-column>
                     <vxe-table-column field="periodName" title="期数" width="100"></vxe-table-column>
-                    <vxe-table-column field="money" title="应付金额（单位：元）" width="180" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+                    <vxe-table-column field="money" title="应收金额（单位：元）" width="260" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+                    <vxe-table-column field="remark" title="备注" width="300" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
                     <vxe-table-column title="操作" width="100" show-overflow>
                         <template v-slot="{ row }">
                             <el-button
@@ -118,7 +120,7 @@ define(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'util'], function(Vue,
                         </template>
                     </vxe-table-column>
                 </vxe-table>
-                <el-divider><i class="el-icon-money"></i>付款方式</el-divider>
+                <el-divider><i class="el-icon-money"></i>收款方式</el-divider>
                 <vxe-table
                     border
                     resizable
@@ -131,8 +133,9 @@ define(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'util'], function(Vue,
                     :edit-rules="validRules"
                     :footer-method="footerMethod"
                     :edit-config="{trigger: 'click', mode: 'cell'}">
-                    <vxe-table-column field="paymentName" title="付款方式"></vxe-table-column>
-                    <vxe-table-column field="money" title="付款金额（单位：元）" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+                    <vxe-table-column field="paymentTypeName" width="200" title="收款类型"></vxe-table-column>
+                    <vxe-table-column field="paymentName" width="200" title="收款方式"></vxe-table-column>
+                    <vxe-table-column field="money" title="收款金额（单位：元）" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
                 </vxe-table>
                 <br/>
             </div>
@@ -216,7 +219,9 @@ define(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'util'], function(Vue,
                         if (['money'].includes(column.property)) {
                             let total = 0;
                             data.forEach(function(v, k) {
-                                total += parseFloat(v.money);
+                                if (v.money) {
+                                    total += parseFloat(v.money);
+                                }
                             })
                             return "合计: " + total.toFixed(2) + "元"
                         }
@@ -237,7 +242,7 @@ define(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'util'], function(Vue,
                 if (this.payItem.selectedPayItem == null || this.payItem.selectedPayItem.length === 0) {
                     return;
                 }
-
+                alert(JSON.stringify(this.payItem.selectedPayItem));
                 for (let items of this.payItem.selectedPayItem) {
                     let payItemName = this.findPayItemName(items, this.payItemOptions, '', 0);
 
@@ -263,13 +268,14 @@ define(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'util'], function(Vue,
                         periodName : periodName,
                         payItemId: payItemValue,
                         period: periodValue,
-                        money:0
+                        money:0,
+                        remark: ''
                     };
 
                     let isFind = false;
                     if (this.payItems.length > 0) {
                         for (let payItem of this.payItems) {
-                            if (payItem.payItemId == payItemValue) {
+                            if (payItem.payItemId == payItemValue && (periodValue == null || (payItem.period != null && payItem.period == periodValue))) {
                                 isFind = true;
                                 break;
                             }
@@ -333,11 +339,13 @@ define(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'util'], function(Vue,
                     if (this.payItems[i].period) {
                         payItem.period = this.payItems[i].period.split("_")[1];
                     }
+                    payItem.remark = this.payItems[i].remark;
                     data.payItems.push(payItem);
                 }
 
                 for (let i=0;i<this.payments.length;i++) {
                     let payment = {};
+                    payment.paymentId = this.payments[i].paymentId;
                     payment.paymentType = this.payments[i].paymentType;
                     payment.money = this.payments[i].money;
                     data.payments.push(payment);

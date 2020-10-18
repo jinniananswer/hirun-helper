@@ -42,6 +42,13 @@ public class OrderPlaneSketchController {
     @RestResult
     public void save(@RequestBody OrderPlaneSketchDTO dto) {
         this.orderPlaneSketchServiceImpl.submitPlaneSketch(dto);
+    }
+
+    @PostMapping("/saveSignDesignContract")
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    @RestResult
+    public void saveSignDesignContract(@RequestBody OrderPlaneSketchDTO dto) {
+        this.orderPlaneSketchServiceImpl.saveSignDesignContract(dto);
 
     }
 
@@ -58,6 +65,14 @@ public class OrderPlaneSketchController {
     public void submitToSignContractFlow(@RequestBody OrderPlaneSketchDTO dto) {
         this.save(dto);
         orderPlaneSketchServiceImpl.submitToSignContractFlow(dto);
+    }
+
+    @PostMapping("/submitToAuditDesignFee")
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    @RestResult
+    public void submitToAuditDesignFee(@RequestBody OrderPlaneSketchDTO dto) {
+        this.saveSignDesignContract(dto);
+        orderPlaneSketchServiceImpl.submitToAuditDesignFee(dto);
     }
 
     @GetMapping("/getPlaneSketch")

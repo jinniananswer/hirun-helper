@@ -38,6 +38,12 @@ public class OrgController {
         return orgServiceImpl.listOrgTree();
     }
 
+    @GetMapping("/listAssignType")
+    @RestResult
+    public List<TreeNode> listAssignType(String type) {
+        return orgServiceImpl.listAssignType(type);
+    }
+
     /**
      * 如果所有的子孙节点都在，并且是分支节点，那么仅保留该分支节点，同时剔除掉子孙节点，子孙节点不再纳入计算。
      *

@@ -2,6 +2,8 @@ package com.microtomato.hirun.modules.demo.controller;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.microtomato.hirun.framework.annotation.RestResult;
+import com.microtomato.hirun.framework.security.UserContext;
+import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.demo.entity.po.Steven;
 import com.microtomato.hirun.modules.demo.entity.po.Zhoulin;
 import com.microtomato.hirun.modules.demo.mapper.ZhoulinMapper;
@@ -51,6 +53,14 @@ public class DemoController {
 
     @Autowired
     private ZhoulinMapper zhoulinMapper;
+
+    @GetMapping("display")
+    public void display() {
+        UserContext userContext = WebContextUtils.getUserContext();
+        log.info("========================");
+        log.info("userContext: {}", userContext);
+        log.info("========================");
+    }
 
     @GetMapping("updateEmployee/{birthday}")
     public void updateEmployee(@PathVariable("birthday") String birthday) {

@@ -27,7 +27,7 @@ import org.apache.ibatis.annotations.Select;
 @DataSource(DataSourceKey.INS)
 public interface PartyMapper extends BaseMapper<Party> {
     @Select("select a.party_name,a.mobile_no,c.link_employee_id,a.consult_time as consult_time, a.party_id,a.wx_nick,a.open_id, " +
-            " b.house_mode,b.house_area,b.house_address," +
+            " b.house_mode,b.house_area,b.house_address,b.house_building,b.house_room_no , " +
             " b.house_id,d.house_counselor_id,d.cust_name as customer_name ,d.cust_id,d.house_mode as counselor_house_mode,d.house_detail,d.mobile_no as counselor_mobile_no " +
             " from ins_project b ,ins_project_linkman c ,ins_party a left join ins_customer d on (a.open_id= d.identify_code)" +
             " ${ew.customSqlSegment}"

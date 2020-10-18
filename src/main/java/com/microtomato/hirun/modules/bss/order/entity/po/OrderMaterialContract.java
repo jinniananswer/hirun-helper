@@ -44,6 +44,10 @@ public class OrderMaterialContract extends BaseEntity {
     @TableField(value = "material_type")
     private String materialType;
 
+    /** 类别 */
+    @TableField(value = "kind_id")
+    private String kindId;
+
     /** 品牌类型 */
     @TableField(value = "brand_code")
     private String brandCode;

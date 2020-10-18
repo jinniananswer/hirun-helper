@@ -25,9 +25,9 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                     designEmployeeId: [
                         {required: true, message: '请选择设计师', trigger: 'change'}
                     ],
-/*                    designCupboardEmployeeId: [
+                    designCupboardEmployeeId: [
                         {required: true, message: '请选择橱柜设计师', trigger: 'change'}
-                    ],*/
+                    ],
                     mainMaterialKeeperEmployeeId: [
                         {required: true, message: '请选择主材管家', trigger: 'change'}
                     ],
@@ -71,6 +71,18 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                 })
             },
 
+            handleCommand : function(command) {
+                if ( command == 'submitSneak') {
+                    this.submitSneak()
+                } else if (command == 'submitMeasure') {
+                    this.submitMeasure();
+                } else if (command == 'submitPlaneSketch') {
+                    this.submitPlaneSketch();
+                } else if (command == 'submitOrderBudget') {
+                    this.submitOrderBudget();
+                }
+            },
+
             submitSneak(customerConsult) {
                 this.$refs.customerConsult.validate((valid) => {
                     if (valid) {
@@ -94,6 +106,34 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                             type: 'warning'
                         }).then(() => {
                             ajax.post('api/order/order-consult/submitMeasure', this.customerConsult);
+                        })
+                    }
+                })
+            },
+
+            submitPlaneSketch(customerConsult) {
+                this.$refs.customerConsult.validate((valid) => {
+                    if (valid) {
+                        this.$confirm('执行操作【出平面图】, 是否继续?', '提示', {
+                            confirmButtonText: '确定',
+                            cancelButtonText: '取消',
+                            type: 'warning'
+                        }).then(() => {
+                            ajax.post('api/order/order-consult/submitPlaneSketch', this.customerConsult);
+                        })
+                    }
+                })
+            },
+
+            submitOrderBudget(customerConsult) {
+                this.$refs.customerConsult.validate((valid) => {
+                    if (valid) {
+                        this.$confirm('执行操作【二级精算】, 是否继续?', '提示', {
+                            confirmButtonText: '确定',
+                            cancelButtonText: '取消',
+                            type: 'warning'
+                        }).then(() => {
+                            ajax.post('api/order/order-consult/submitOrderBudget', this.customerConsult);
                         })
                     }
                 })

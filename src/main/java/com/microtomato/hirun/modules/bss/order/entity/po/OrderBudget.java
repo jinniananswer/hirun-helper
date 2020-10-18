@@ -1,18 +1,15 @@
 package com.microtomato.hirun.modules.bss.order.entity.po;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import java.time.LocalDate;
-import com.baomidou.mybatisplus.annotation.TableId;
-import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.microtomato.hirun.framework.data.BaseEntity;
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
-import lombok.Data;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.microtomato.hirun.framework.data.BaseEntity;
+import lombok.*;
 import lombok.experimental.Accessors;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -150,6 +147,16 @@ public class OrderBudget extends BaseEntity {
      */
     @TableField("check_employee_id")
     private Long checkEmployeeId;
+
+    /*** 渲染人员
+     */
+    @TableField("vr_employee_id")
+    private Long vrEmployeeId;
+
+    /*** 建白模人员
+     */
+    @TableField("su_employee_id")
+    private Long suEmployeeId;
 
     /**
      * 备注

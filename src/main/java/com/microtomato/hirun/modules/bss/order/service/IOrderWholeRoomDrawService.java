@@ -33,4 +33,7 @@ public interface IOrderWholeRoomDrawService extends IService<OrderWholeRoomDraw>
 
     void submitWholeRoomDrawing(OrderWholeRoomDrawDTO dto);
 
+    void saveAuditWholeRoom(OrderWholeRoomDrawDTO dto);
+
+    void saveAuditOrder(OrderWholeRoomDrawDTO dto);
 }

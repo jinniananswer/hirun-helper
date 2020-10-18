@@ -114,6 +114,12 @@ public class OrderWholeRoomDraw extends BaseEntity {
     private String reviewedComments;
 
     /**
+     * 下单审核意见
+     */
+    @TableField(value = "order_comments")
+    private String orderComments;
+
+    /**
      * 创建时间
      */
     @JsonSerialize(using = JsonLocalDateTimeSerializer.class)

@@ -34,6 +34,6 @@ public class OrderDrawingauditController {
     @Transactional(rollbackFor = Exception.class)
     @RestResult
     public void save(@RequestBody OrderWholeRoomDrawDTO dto) {
-        iOrderWholeRoomDrawService.submitWholeRoomDrawing(dto);
+        iOrderWholeRoomDrawService.saveAuditWholeRoom(dto);
     }
 }

@@ -170,4 +170,18 @@ public class OrderConsultServiceImpl extends ServiceImpl<OrderConsultMapper, Ord
         dto.setCustId(orderBase.getCustId());
         return dto;
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    public void submitPlaneSketch(CustConsultDTO dto) {
+        this.saveCustomerConsultInfo(dto);
+        orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.CONSULT_2_PLANE);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    public void submitOrderBudget(CustConsultDTO dto) {
+        this.saveCustomerConsultInfo(dto);
+        orderDomainService.orderStatusTrans(dto.getOrderId(), OrderConst.CONSULT_2_BUDGET);
+    }
 }

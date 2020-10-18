@@ -91,6 +91,9 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
     @Autowired
     private IOrgService orgService;
 
+    @Autowired
+    private IOrderMaterialContractService orderMaterialContractService;
+
     @Override
     public OrderFee queryOrderCollectFee(Long orderId) {
         OrderFee orderFee = null;
@@ -211,6 +214,9 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
     public void costReview(OrderPayNo orderPayNo) {
         Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
         OrderPayNoService.update(new UpdateWrapper<OrderPayNo>().lambda().eq(OrderPayNo::getPayNo, orderPayNo.getPayNo()).eq(OrderPayNo::getOrderId, orderPayNo.getOrderId()).gt(OrderPayNo::getEndDate, LocalDateTime.now()).set(OrderPayNo::getAuditStatus, orderPayNo.getAuditStatus()).set(OrderPayNo::getAuditEmployeeId, employeeId).set(OrderPayNo::getUpdateTime, LocalDateTime.now()).set(OrderPayNo::getRemark, orderPayNo.getRemark()));
+        if(StringUtils.equals(orderPayNo.getAuditStatus(),"1")){
+            orderMaterialContractService.updateContractInfoByPay(orderPayNo.getPayNo());
+        }
     }
 
     /**
@@ -233,7 +239,7 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
                     String payItemName = payItemCfgService.getPath(payItem.getPayItemId());
                     Integer payPeriod = payItem.getPeriods();
                     if (payPeriod != null) {
-                        payItemDTO.setPeriod(payPeriod);
+                        payItemDTO.setPeriod(payPeriod + "");
                         String payPeriodName = staticDataService.getCodeName("PAY_PERIODS", payPeriod + "");
                         payItemDTO.setPeriodName(payPeriodName);
                         payItemName += '-' + payPeriodName;

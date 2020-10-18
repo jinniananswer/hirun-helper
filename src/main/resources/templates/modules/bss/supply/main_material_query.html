@@ -17,14 +17,8 @@
             <el-card class="box-card">
                 <el-collapse value="1" accordion>
                     <el-collapse-item title="查询条件" name="1">
-
-                        <el-form ref="form" inline="false" label-width="80px" label-position="right" :model="queryCond">
+                        <el-form inline="false" label-width="80px" label-position="right" :model="queryCond">
                             <el-row>
-<!--                                <el-col :span="8">
-                                    <el-form-item label="合同编号">
-                                        <el-input v-model="queryCond.contractNo" placeholder="请输入合同编码"></el-input>
-                                    </el-form-item>
-                                </el-col>-->
                                 <el-col :span="8">
                                     <el-form-item label="客户姓名">
                                         <el-input v-model="queryCond.custName" placeholder="请输入客户姓名"></el-input>
@@ -43,10 +37,9 @@
                                 </el-col>
                             </el-row>
                             <el-row>
-
                                 <el-col :span="8">
                                     <el-form-item label="设计师">
-                                        <order-selectemployee role-id="19"
+                                        <order-selectemployee role-id="30"
                                                               v-model="queryCond.designEmployeeId"></order-selectemployee>
                                     </el-form-item>
                                 </el-col>
@@ -72,7 +65,7 @@
                                         </el-select>
                                     </el-form-item>
                                 </el-col>
-                                <el-col :span="8">
+                                <!--<el-col :span="8">
                                     <el-form-item label="开始时间">
                                         <el-date-picker
                                                 v-model="queryCond.startTime"
@@ -93,12 +86,15 @@
                                                 style="width:100%">
                                         </el-date-picker>
                                     </el-form-item>
-                                </el-col>
-                            </el-row>
-                            <el-row>
+                                </el-col>-->
                                 <el-col :span="8">
                                     <el-button type="primary" icon="el-icon-search" @click="query">查 询</el-button>
                                 </el-col>
+                            </el-row>
+                            <el-row>
+<!--                                <el-col :span="8">
+                                    <el-button type="primary" icon="el-icon-search" @click="query">查 询</el-button>
+                                </el-col>-->
                             </el-row>
                         </el-form>
                     </el-collapse-item>
@@ -115,65 +111,84 @@
                         border
                         resizable
                         show-overflow
-                        height="340"
-                        show-footer
-                        :footer-method="footerMethod"
+                        height="500"
                         :data="tableData"
                         :edit-rules="validRules"
                         :edit-config="{trigger: 'dblclick', mode: 'row'}"
                         ref="xTable">
                     <vxe-table-column align="center" width="150" fixed="left" field="custNo" title="客户编号"></vxe-table-column>
-                    <!--
-                                    <vxe-table-column align="center" width="120" fixed="left" field="contactNo" title="合同编号" :edit-render="{name: 'select', options: sexList, events: {change: changeEvent}}"></vxe-table-column>
-                    -->
-                    <!--
-                                    <vxe-table-column align="center" width="120" fixed="left" field="custName" title="客户姓名" :edit-render="{name: 'select', options: statusList}"></vxe-table-column>
-                    -->
-                    <vxe-table-column align="center" width="120" fixed="left" field="brandCode" title="品牌"></vxe-table-column>
-                    <vxe-table-column align="right" width="120" field="contractFee" title="合同金额"></vxe-table-column>
-                    <vxe-table-column align="right" width="120" field="discountFee" title="优惠金额" :formatter="['toFixedString', 2]"></vxe-table-column>
-                    <vxe-table-column align="right" width="120" field="totalReceivable" title="应收合计"></vxe-table-column>
-                    <vxe-table-column align="right" width="120" field="actualFee" title="实收款"></vxe-table-column>
-                    <vxe-table-column align="right" width="120" field="difference" title="差额"></vxe-table-column>
-                    <vxe-table-column align="left" width="120" field="remark" title="备注"></vxe-table-column>
-                    <!--<vxe-table-column align="center" width="120" field="accountTime" title="算户时间"
-                                      :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                    <vxe-table-column align="center" width="120" field="accountYear" title="算户年份"
-                                      :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>-->
-                    <vxe-table-column align="left" width="120" field="shopName" title="店名"></vxe-table-column>
-                    <vxe-table-column align="left" width="120" field="buildingAddress" title="楼盘地址"></vxe-table-column>
+                    <vxe-table-column align="center" width="150" fixed="left" field="custName" title="客户姓名"></vxe-table-column>
+                    <vxe-table-column align="center" width="120" fixed="left" field="brandCodeName" title="品牌"></vxe-table-column>
+                    <vxe-table-column align="center" width="120" field="contractFee" title="合同金额" :edit-render="{name: '$input',immediate: true, props: {type: 'number'}}" :formatter="['toFixedString', 2]"></vxe-table-column>
+                    <vxe-table-column align="center" width="120" field="discountFee" title="优惠金额" :edit-render="{name: '$input',immediate: true, props: {type: 'number'}}" :formatter="['toFixedString', 2]"></vxe-table-column>
+                    <vxe-table-column align="center" width="120" field="remark" title="优惠备注" :edit-render="{name: 'textarea'}"></vxe-table-column>
+                    <vxe-table-column align="center" width="120" field="totalReceivable" title="应收合计" :formatter="['toFixedString', 2]">
+                        <template v-slot="{ row }">
+                            <span>{{ countContractFee(row) }}</span>
+                        </template>
+                    </vxe-table-column>
+                    <vxe-table-column align="center" width="120" field="actualFee" title="实收款" :formatter="['toFixedString', 2]"></vxe-table-column>
+                    <vxe-table-column align="center" width="120" field="difference" title="差额" :formatter="['toFixedString', 2]">
+                        <template v-slot="{ row }">
+                            <span>{{ countDifference(row) }}</span>
+                        </template>
+                    </vxe-table-column>
+                    <vxe-table-column align="center" width="120" field="shopName" title="店名"></vxe-table-column>
+                    <vxe-table-column align="center" width="120" field="houseName" title="楼盘地址"></vxe-table-column>
                     <vxe-table-column align="center" width="120" field="designName" title="设计师"></vxe-table-column>
                     <vxe-table-column align="center" width="120" field="agentName" title="客户代表"></vxe-table-column>
-                    <vxe-table-column align="center" width="120" field="projectManager" title="项目经理"></vxe-table-column>
-                    <vxe-table-column align="center" width="120" field="homeImprovementConsultant" title="家装顾问"></vxe-table-column>
-                    <vxe-table-column align="center" width="120" field="funds" title="款项"></vxe-table-column>
-                    <vxe-table-column align="center" width="120" field="type" title="类别"></vxe-table-column>
-                    <vxe-table-column align="center" width="120" field="cabinetDesigner" title="橱柜设计师"></vxe-table-column>
-                    <vxe-table-column align="center" width="120" field="mainMaterialButler" title="主材管家"></vxe-table-column>
+                    <vxe-table-column align="center" width="120" field="projectManageName" title="项目经理"></vxe-table-column>
+                    <vxe-table-column align="center" width="120" field="feeTypeName" title="款项"></vxe-table-column>
+                    <vxe-table-column align="center" width="120" field="kindName" title="类别"></vxe-table-column>
+                    <vxe-table-column align="center" width="120" field="cabinetDesignerName" title="橱柜设计师"></vxe-table-column>
+                    <vxe-table-column align="center" width="120" field="mainMaterialName" title="主材管家"></vxe-table-column>
                     <vxe-table-column align="center" width="120" field="bookTime" title="下预订单时间"></vxe-table-column>
                     <vxe-table-column align="center" width="120" field="orderTime" title="下订单时间"></vxe-table-column>
                     <vxe-table-column align="center" width="120" field="deliveryTime" title="送货时间"></vxe-table-column>
                     <vxe-table-column align="center" width="120" field="installationTime" title="安装时间"></vxe-table-column>
                     <vxe-table-column align="center" width="120" field="followBillTime" title="跟单时间"></vxe-table-column>
                     <vxe-table-column align="center" width="120" field="deductTime" title="提成时间"></vxe-table-column>
-                    <vxe-table-column align="left" width="120" field="followBillDesc" title="跟单情况"></vxe-table-column>
+                    <vxe-table-column align="center" width="120" field="followBillDesc" title="跟单情况"></vxe-table-column>
+                    <vxe-table-column align="center" title="操作" width="160" fixed="right">
+                        <template v-slot="{ row }">
+                            <template v-if="$refs.xTable.isActiveByRow(row)">
+                                <vxe-button @click="saveRowEvent(row)">保存</vxe-button>
+                                <vxe-button @click="cancelRowEvent(row)">取消</vxe-button>
+                            </template>
+                            <template v-else>
+                                <vxe-button @click="editRowEvent(row)">编辑</vxe-button>
+                                <vxe-button @click="getDetail(row)">详情</vxe-button>
+                            </template>
+                        </template>
+                    </vxe-table-column>
                 </vxe-table>
             </template>
         </el-main>
+        <vxe-modal v-model="showDetails" title="收款流水账" width="1200" min-width="600" height="600"  resize destroy-on-close>
+            <template v-slot>
+                <vxe-table
+                        border="inner"
+                        auto-resize
+                        show-overflow
+                        highlight-hover-row
+                        height="auto"
+                        :sync-resize="showDetails"
+                        :data="detailData">
+                    <vxe-table-column align="center" width="150" fixed="left" field="payTime" title="收款时间"></vxe-table-column>
+                    <vxe-table-column align="center" width="150" fixed="left" field="periodsName" title="期数"></vxe-table-column>
+                    <vxe-table-column align="center" width="150" fixed="left" field="feeTypeName" title="款项"></vxe-table-column>
+                    <vxe-table-column align="center" width="150" fixed="left" field="brandCodeName" title="品牌"></vxe-table-column>
+                    <vxe-table-column align="center" width="150" fixed="left" field="fee" title="金额" :formatter="['toFixedString', 2]"></vxe-table-column>
+                    <vxe-table-column align="center" width="150" fixed="left" field="agentName" title="客户代表"></vxe-table-column>
+                    <vxe-table-column align="center" width="150" fixed="left" field="designName" title="设计师"></vxe-table-column>
+                    <vxe-table-column align="center" width="150" fixed="left" field="cabinetDesignerName" title="橱柜设计师"></vxe-table-column>
+                    <vxe-table-column align="center" width="150" fixed="left" field="remark" title="备注"></vxe-table-column>
+                </vxe-table>
+            </template>
+        </vxe-modal>
     </el-container>
 </div>
 <style>
-    .text {
-        font-size: 14px;
-    }
-
-    .item {
-        margin-bottom: 18px;
-    }
-
-    .box-card {
-        margin-bottom: 18px;
-    }
     [v-cloak] {
         display: none;
     }

@@ -72,6 +72,21 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
             }
             ajax.get('api/bss.order/order-budget/getBudgetByOrderId', data, (responseData)=>{
                 Object.assign(this.budget, responseData);
+                console.log(responseData);
+                if(responseData==null){
+                    this.budget.totalFeeCheckResult='一致';
+                    this.budget.locationRemarkCheckResult='一致';
+                    this.budget.contentExpressionCheckResult='一致';
+                    this.budget.unitPriceCheckResult='一致';
+                    this.budget.logoCheckResult='一致';
+                    this.budget.unitPriceConsistenceCheckResult='一致';
+                    this.budget.materialRemarkCheckResult='一致';
+                    this.budget.serialNumberCheckResult='一致';
+                    this.budget.materialRemarkConsistenceCheckResult='一致';
+                    this.budget.fontSizeCheckResult='一致';
+                    this.budget.selfPurchaseRemarkCheckResult='一致';
+                    this.budget.numberConsistenceCheckResult='一致';
+                }
             });
             this.budget.checkDate = util.getNowDate();
             this.downloadFileUrl = 'api/bss.order/order-file/download/' + util.getRequest("orderId") + "/13";

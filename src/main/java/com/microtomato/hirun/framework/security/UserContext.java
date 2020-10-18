@@ -1,7 +1,14 @@
 package com.microtomato.hirun.framework.security;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -16,6 +23,9 @@ import java.util.List;
  * @date 2019-09-10
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserContext implements UserDetails {
 
     private static final long serialVersionUID = 1L;

@@ -11,6 +11,8 @@ import lombok.Data;
 @Data
 public class OrderPayMoneyInfoDTO {
 
+    private String paymentTypeName;
+
     private String paymentName;
 
     private Double money;

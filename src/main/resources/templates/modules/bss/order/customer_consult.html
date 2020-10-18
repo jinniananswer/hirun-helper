@@ -43,7 +43,7 @@
                             </el-row>
                             <el-row>
                                 <el-col :span="8">
-                                    <el-form-item label="橱柜设计师"  label-width="100px">
+                                    <el-form-item label="橱柜设计师" prop="designCupboardEmployeeId"  label-width="100px">
                                         <order-selectemployee role-id="45" v-model="customerConsult.designCupboardEmployeeId" ></order-selectemployee>
                                     </el-form-item>
                                 </el-col>
@@ -52,11 +52,11 @@
                                         <order-selectemployee role-id="46" v-model="customerConsult.mainMaterialKeeperEmployeeId"></order-selectemployee>
                                     </el-form-item>
                                 </el-col>
-                                <el-col :span="8">
+<!--                                <el-col :span="8">
                                     <el-form-item label="橱柜管家"  label-width="100px">
                                         <order-selectemployee role-id="47" v-model="customerConsult.cupboardKeeperEmployeeId"></order-selectemployee>
                                     </el-form-item>
-                                </el-col>
+                                </el-col>-->
                             </el-row>
                             <el-row>
                                 <el-col :span="24">
@@ -67,8 +67,19 @@
                             </el-row>
                             <el-form-item style="text-align: center ">
                                 <el-button type="primary" @click="save">保存</el-button>
-                                <el-button type="primary" @click="submitMeasure">提交量房</el-button>
-                                <el-button type="primary" @click="submitSneak">咨询跑单</el-button>
+                                <el-dropdown  @command="handleCommand">
+                                    <el-button  type="primary">
+                                        流程操作<i class="el-icon-arrow-down el-icon--right"></i>
+                                    </el-button>
+                                    <el-dropdown-menu slot="dropdown">
+                                        <el-dropdown-item command="submitMeasure">提交量房</el-dropdown-item>
+                                        <el-dropdown-item command="submitPlaneSketch">出平面图</el-dropdown-item>
+                                        <el-dropdown-item command="submitOrderBudget">二级精算</el-dropdown-item>
+                                        <el-dropdown-item command="submitSneak">咨询跑单</el-dropdown-item>
+                                    </el-dropdown-menu>
+                                </el-dropdown>
+<!--                                <el-button type="primary" @click="submitMeasure">提交量房</el-button>
+                                <el-button type="primary" @click="submitSneak">咨询跑单</el-button>-->
                             </el-form-item>
                         </el-form>
                     </el-card>
