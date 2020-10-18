@@ -36,6 +36,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -131,7 +132,7 @@ public class MyBatisPlusConfig {
 
             sqlSessionFactory.setConfiguration(rc2);
             sqlSessionFactory.setDataSource(dataSource);
-            sqlSessionFactory.setMapperLocations(null);
+            sqlSessionFactory.setMapperLocations(new Resource[0]);
         }
 
         // 重写了 GlobalConfig 的 MyGlobalConfig 注入到 sqlSessionFactory 使其生效
