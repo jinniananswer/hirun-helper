@@ -29,6 +29,8 @@ public interface IOrderDomainService {
 
     IPage<CustOrderInfoDTO> queryCustOrderInfos(CustOrderQueryDTO queryCondition, Page<CustOrderQueryDTO> page);
 
+    IPage<CustOrderInfoDTO> queryMyOrder(CustOrderQueryDTO queryCondition, Page<CustOrderQueryDTO> page);
+
     List<OrderTaskDTO> queryOrderTasks(OrderTaskQueryDTO condition);
 
     UsualOrderWorkerDTO getUsualOrderWorker(Long orderId);

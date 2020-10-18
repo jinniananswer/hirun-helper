@@ -22,6 +22,10 @@ public interface IUploadFileService extends IService<UploadFile> {
 
     InputStream getInputStream(UploadFile uploadFile);
 
+    String getDisplayPath(String id);
+
+    String getDisplayPath(String id, Integer expiresSeconds);
+
     /**
      * 上传单个文件
      *
