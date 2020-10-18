@@ -33,7 +33,6 @@ import com.microtomato.hirun.modules.bss.house.entity.po.HousesPlan;
 import com.microtomato.hirun.modules.bss.house.service.IHousesPlanService;
 import com.microtomato.hirun.modules.bss.house.service.IHousesService;
 import com.microtomato.hirun.modules.bss.order.entity.dto.NewOrderDTO;
-import com.microtomato.hirun.modules.bss.order.entity.po.OrderBase;
 import com.microtomato.hirun.modules.bss.order.service.IOrderDomainService;
 import com.microtomato.hirun.modules.bss.order.service.IOrderWorkerActionService;
 import com.microtomato.hirun.modules.bss.order.service.IOrderWorkerService;
@@ -356,7 +355,7 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
     public Map<String, String> getCustomerNoAndSec() {
         Map<String, String> map = new HashMap<>();
         //todo 未定义权限编码
-        map.put("isContinueAuth", SecurityUtils.hasFuncId("isContinueAuth") + "");
+        map.put("isContinueAuth", SecurityUtils.hasFuncId("saveMorePreparationInfo") + "");
         Long seq = dualService.nextval(CustNoMaxCycleSeq.class);
         map.put("custNo", "KH" + seq);
         return map;
