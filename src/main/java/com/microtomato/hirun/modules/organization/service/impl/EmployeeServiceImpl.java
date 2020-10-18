@@ -30,6 +30,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -61,6 +62,12 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
 
     @Autowired
     private IStaticDataService staticDataService;
+
+    @Autowired
+    private IEmployeeJobRoleService employeeJobRoleServiceImpl;
+
+    @Autowired
+    private IOrgService orgServiceImpl;
 
     @Override
     public Employee queryByIdentityNo(String identityNo) {
@@ -508,4 +515,80 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         result.setOrgName(orgDO.getOrg().getName());
         return result;
     }
+
+    @Override
+    public IPage<Employee> queryNewEmployeeByPage(EmployeeQueryDTO employeeQueryDTO, Page<EmployeeQueryDTO> page) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq(null != employeeQueryDTO.getEmployeeId(), "employee_id", employeeQueryDTO.getEmployeeId());
+        queryWrapper.like(StringUtils.isNotEmpty(employeeQueryDTO.getName()), "name", employeeQueryDTO.getName());
+        queryWrapper.eq(StringUtils.isNotEmpty(employeeQueryDTO.getSex()), "sex", employeeQueryDTO.getSex());
+        queryWrapper.eq("status", "0");
+        queryWrapper.gt("regular_date", LocalDateTime.now());
+        return this.employeeMapper.queryNewEmployeeByPage(page, queryWrapper);
+    }
+
+    @Override
+    public List<Employee> queryByorgIdAndEmployeeIdAndLikeName(String orgId, Long employeeId, String name) {
+        List<Long> orgIdList = new ArrayList<>();
+        if (StringUtils.isNotEmpty(orgId)){
+            Org org = orgServiceImpl.queryByOrgId(Long.valueOf(orgId));
+            if (null != org){
+                orgIdList.add(org.getOrgId());
+                List<Org> children = orgServiceImpl.findChildren(org);
+                if (ArrayUtils.isNotEmpty(children)){
+                    for (Org childrenOrg : children){
+                        orgIdList.add(childrenOrg.getOrgId());
+                    }
+                }
+            }
+        }
+        List<Long> employeeIdList = new ArrayList<>();
+        if (ArrayUtils.isNotEmpty(orgIdList)){
+            List<EmployeeJobRole> employeeJobRoleList = employeeJobRoleServiceImpl.queryEffectiveByOrgIdList(orgIdList);
+            if(ArrayUtils.isNotEmpty(employeeJobRoleList)){
+                for (EmployeeJobRole employeeJobRole : employeeJobRoleList){
+                    employeeIdList.add(employeeJobRole.getEmployeeId());
+                }
+            }
+        }
+        return this.list(Wrappers.<Employee>lambdaQuery().eq(null != employeeId, Employee::getEmployeeId, employeeId)
+                .in(ArrayUtils.isNotEmpty(employeeIdList), Employee::getEmployeeId, employeeIdList)
+                .like(StringUtils.isNotEmpty(name), Employee::getName, name));
+    }
+
+    @Override
+    public Employee getEmployeeByEmployeeId(Long employeeId) {
+        return this.getOne(Wrappers.<Employee>lambdaQuery().eq(null != employeeId, Employee::getEmployeeId, employeeId), false);
+    }
+
+    @Override
+    public List<Employee> queryNewEffectiveEmployee() {
+        return this.list(Wrappers.<Employee>lambdaQuery().eq(Employee::getStatus, "0")
+                .gt(Employee::getRegularDate, LocalDateTime.now()));
+    }
+
+    @Override
+    public List<Employee> queryAllEffectiveEmployee() {
+        return this.list(Wrappers.<Employee>lambdaQuery().eq(Employee::getStatus, "0"));
+    }
+
+    @Override
+    public List<Employee> queryEffectiveByJobRoleList(List<String> jobRoleList) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.in("job_role", jobRoleList);
+        queryWrapper.apply(" a.employee_id=b.employee_id " +
+                " and a.status='0' and (now() between b.start_date and b.end_date) and is_main='1'");
+        return this.employeeMapper.queryEffectiveByJobRoleList(queryWrapper);
+    }
+
+    @Override
+    public List<Employee> queryNewEffectiveByJobRoleList(List<String> jobRoleList) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.in("job_role", jobRoleList);
+        queryWrapper.gt("regular_date", LocalDateTime.now());
+        queryWrapper.apply(" a.employee_id=b.employee_id " +
+                " and a.status='0' and (now() between b.start_date and b.end_date) and is_main='1'");
+        return this.employeeMapper.queryEffectiveByJobRoleList(queryWrapper);
+    }
+
 }

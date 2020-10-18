@@ -212,4 +212,11 @@ public class EmployeeController extends AbstractExcelHarbour  {
     public SimpleEmployeeDTO getLoginEmployee() {
         return this.employeeServiceImpl.getLoginEmployeeInfo();
     }
+
+    @RequestMapping("/queryNewEmployeeByPage")
+    @RestResult
+    public IPage<Employee> queryNewEmployeeByPage(EmployeeQueryDTO employeeQueryDTO){
+        Page<EmployeeQueryDTO> page = new Page<>(employeeQueryDTO.getPage(), employeeQueryDTO.getLimit());
+        return this.employeeServiceImpl.queryNewEmployeeByPage(employeeQueryDTO, page);
+    }
 }
