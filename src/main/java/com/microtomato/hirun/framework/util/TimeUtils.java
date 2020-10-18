@@ -1,5 +1,7 @@
 package com.microtomato.hirun.framework.util;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.sql.Timestamp;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -688,11 +690,22 @@ public class TimeUtils {
         return ldtStart.toEpochSecond(ZoneOffset.of("+8"));
     }
 
+    /**
+     * 将日期字符串转换成LocalDate类型
+     * @param date
+     * @param format
+     * @return
+     */
+    public static LocalDate stringToDate(String date, String format) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+        return LocalDate.parse(date, formatter);
+    }
+
     public static LocalDateTime getForeverTime() {
         return stringToLocalDateTime(FOREVER_TIME, TIME_PATTERN);
     }
 
     public static void main(String[] args) {
-        System.out.println(TimeUtils.getAbsTimeDiffYear(TimeUtils.stringToLocalDateTime("1982-03-11 00:00:00", TimeUtils.TIME_PATTERN), TimeUtils.getCurrentLocalDateTime()));
+        System.out.println(StringUtils.split(","));
     }
 }
