@@ -9,6 +9,7 @@ import com.microtomato.hirun.framework.exception.cases.AlreadyExistException;
 import com.microtomato.hirun.framework.exception.cases.NotFoundException;
 import com.microtomato.hirun.framework.mybatis.sequence.impl.CustNoMaxCycleSeq;
 import com.microtomato.hirun.framework.mybatis.service.IDualService;
+import com.microtomato.hirun.framework.security.Role;
 import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.SecurityUtils;
@@ -449,6 +450,27 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
             }
         }
         return iPage;
+    }
+
+    @Override
+    public boolean checkRulingRight() {
+        Boolean flag=false;
+        UserContext userContext=WebContextUtils.getUserContext();
+        List<Role> roles=userContext.getRoles();
+        if(ArrayUtils.isEmpty(roles)){
+            flag=false;
+        }
+        for(Role role:roles){
+            //只有店经理才有裁定权限
+            if(role.getId().equals(7L)){
+                flag=true;
+                break;
+            }
+        }
+/*        if(!flag){
+            throw new AlreadyExistException("您无操作裁定的权限，不允许操作。", ErrorKind.ALREADY_EXIST.getCode());
+        }*/
+        return flag;
     }
 
     private String getOrgLine() {
