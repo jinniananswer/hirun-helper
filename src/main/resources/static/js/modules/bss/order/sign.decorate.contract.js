@@ -90,7 +90,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                         + parseFloat(this.decorateContract.furnitureFee)
                         - parseFloat(this.decorateContract.returnDesignFee)
                         + parseFloat(this.decorateContract.taxFee);
-                    this.decorateContract.contractFee = Math.round(contractFee*100) / 100;
+                    this.decorateContract.contractFee = Math.floor(contractFee*100) / 100;
                     return this.decorateContract.contractFee;
                 }
             },
@@ -101,7 +101,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                         + parseFloat(this.decorateContract.furnitureFee) * 0.95
                         - parseFloat(this.decorateContract.returnDesignFee)
                         + parseFloat(this.decorateContract.taxFee) * 0.95;
-                    this.decorateContract.firstContractFee = Math.round(firstContractFee*100) / 100;
+                    this.decorateContract.firstContractFee = Math.floor(firstContractFee*100) / 100;
                     return this.decorateContract.firstContractFee;
                 }
             }
@@ -176,14 +176,14 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 data.firstContractFee = data.firstContractFee / 100;
             },
             yuanTransToFen : function(data) {
-                data.contractFee = Math.round(data.contractFee * 100);
-                data.baseDecorationFee = Math.round(data.baseDecorationFee * 100);
-                data.doorFee = Math.round(data.doorFee * 100);
-                data.furnitureFee = Math.round(data.furnitureFee * 100);
-                data.returnDesignFee = Math.round(data.returnDesignFee * 100);
-                data.taxFee = Math.round(data.taxFee * 100);
-                data.cashDiscount = Math.round(data.cashDiscount * 100);
-                data.firstContractFee = Math.round(data.firstContractFee * 100);
+                data.contractFee = Math.floor(data.contractFee * 100);
+                data.baseDecorationFee = Math.floor(data.baseDecorationFee * 100);
+                data.doorFee = Math.floor(data.doorFee * 100);
+                data.furnitureFee = Math.floor(data.furnitureFee * 100);
+                data.returnDesignFee = Math.floor(data.returnDesignFee * 100);
+                data.taxFee = Math.floor(data.taxFee * 100);
+                data.cashDiscount = Math.floor(data.cashDiscount * 100);
+                data.firstContractFee = Math.floor(data.firstContractFee * 100);
             },
             saveDiscountItemList : function () {
                 let updateRecords = vm.$refs.discountItemTable.getUpdateRecords();
