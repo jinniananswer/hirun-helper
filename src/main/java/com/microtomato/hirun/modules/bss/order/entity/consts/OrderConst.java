@@ -49,6 +49,17 @@ public class OrderConst {
     public static final String OPER_CONFIRM = "CONFIRM";
 
     /**
+     * 订单确认操作 咨询到平面
+     */
+    public static final String CONSULT_2_PLANE = "CONSULT_2_PLANE";
+
+
+    /**
+     * 订单确认操作 咨询到二级精算
+     */
+    public static final String CONSULT_2_BUDGET = "CONSULT_2_BUDGET";
+
+    /**
      * 日志类型-创建订单
      */
     public static final String LOG_TYPE_CREATE = "1";

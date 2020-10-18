@@ -61,4 +61,16 @@ public class OrderConsultController {
     public void transOrder(@RequestBody CustConsultDTO dto) {
         orderConsultServiceImpl.submitMeasure(dto);
     }
+
+    @PostMapping("/submitPlaneSketch")
+    @RestResult
+    public void submitPlaneSketch(@RequestBody CustConsultDTO dto) {
+        orderConsultServiceImpl.submitPlaneSketch(dto);
+    }
+
+    @PostMapping("/submitOrderBudget")
+    @RestResult
+    public void submitOrderBudget(@RequestBody CustConsultDTO dto) {
+        orderConsultServiceImpl.submitOrderBudget(dto);
+    }
 }
