@@ -56,30 +56,6 @@ public class UploadFileServiceImpl extends ServiceImpl<UploadFileMapper, UploadF
         return absolutePath;
     }
 
-    private UploadFile prepare_bak(File destDir, MultipartFile multipartFile) throws IOException {
-
-        long fileSize = multipartFile.getSize();
-        String fileName = multipartFile.getOriginalFilename();
-        String uniqueId = UUID.randomUUID().toString();
-
-        String newFileName = uniqueId + '.' + FilenameUtils.getExtension(fileName);
-        File destFile = new File(destDir, newFileName);
-        multipartFile.transferTo(destFile);
-
-        String filePath = "upload" + StringUtils.substringAfterLast(destFile.getAbsolutePath(), "upload");
-        log.debug("文件路径: {}", filePath);
-
-        UploadFile uploadFile = UploadFile.builder()
-            .id(uniqueId)
-            .fileName(fileName)
-            .filePath(filePath)
-            .fileSize(fileSize)
-            .enabled(false)
-            .createEmployeeId(WebContextUtils.getUserContext().getEmployeeId())
-            .build();
-        return uploadFile;
-    }
-
     private UploadFile prepare(File destDir, MultipartFile multipartFile) throws IOException {
 
         long fileSize = multipartFile.getSize();
@@ -146,7 +122,7 @@ public class UploadFileServiceImpl extends ServiceImpl<UploadFileMapper, UploadF
         UploadFile uploadFile = this.getOne(Wrappers.<UploadFile>lambdaQuery().eq(UploadFile::getId, id));
         Assert.notNull(uploadFile, "展示失败,无法找到对应的文件,Id:" + id);
         String diaplyUrl = minioClient.presignedGetObject(bucketName, uploadFile.getFilePath(), expiresSeconds);
-        log.info("displayUrl: {}", diaplyUrl);
+        log.debug("displayUrl: {}", diaplyUrl);
         return diaplyUrl;
     }
 

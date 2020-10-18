@@ -83,11 +83,13 @@ public class UserContext implements UserDetails {
     /**
      * 主角色，每个用户最多有一个主角色
      */
+    @Builder.Default
     private Long mainRoleId = -1L;
 
     /**
      * 登录时间
      */
+    @Builder.Default
     private LocalDateTime loginTime = LocalDateTime.now();
 
     /**

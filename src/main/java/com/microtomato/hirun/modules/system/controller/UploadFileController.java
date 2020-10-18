@@ -2,13 +2,11 @@ package com.microtomato.hirun.modules.system.controller;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.microtomato.hirun.framework.annotation.RestResult;
+import com.microtomato.hirun.modules.system.entity.dto.DisplayDTO;
 import com.microtomato.hirun.modules.system.entity.po.UploadFile;
 import com.microtomato.hirun.modules.system.service.IUploadFileService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.Assert;
@@ -17,8 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -99,98 +95,17 @@ public class UploadFileController {
     }
 
     /**
-     * 通过浏览器显示文件
-     *
-     * @param id
-     * @param response
-     * @throws IOException
-     */
-    //@GetMapping("/display/{id}")
-    public void display_bak(@PathVariable("id") String id, HttpServletResponse response) throws IOException {
-
-        UploadFile uploadFile = uploadFileService.getOne(Wrappers.<UploadFile>lambdaQuery().eq(UploadFile::getId, id));
-        Assert.notNull(uploadFile, "展示失败,无法找到对应的文件,Id:" + id);
-
-        String filePath = StringUtils.removeStart(uploadFile.getFilePath(), "/");
-        String realPath = FilenameUtils.concat(dataPath, filePath);
-
-        FileInputStream fileInputStream = FileUtils.openInputStream(new File(realPath));
-        String extension = "." + FilenameUtils.getExtension(filePath);
-        String contentType = mimeMap.get(extension);
-
-        Assert.notNull(contentType, "根据文件后缀: " + extension + "，无法识别正确的 mime 类型");
-
-        response.setHeader("Content-Type", contentType);
-        ServletOutputStream outputStream = response.getOutputStream();
-        IOUtils.copy(fileInputStream, outputStream);
-        outputStream.flush();
-
-    }
-
-//    /**
-//     * 通过浏览器显示文件
-//     *
-//     * @param id
-//     * @param response
-//     * @throws IOException
-//     */
-//    @GetMapping("/display/{id}")
-//    public void display(@PathVariable("id") String id, HttpServletResponse response) throws IOException {
-//
-//
-//        UploadFile uploadFile = uploadFileService.getOne(Wrappers.<UploadFile>lambdaQuery().eq(UploadFile::getId, id));
-//        Assert.notNull(uploadFile, "展示失败,无法找到对应的文件,Id:" + id);
-//
-//        InputStream inputStream = uploadFileService.getInputStream(uploadFile);
-//        String extension = "." + FilenameUtils.getExtension(uploadFile.getFilePath());
-//        String contentType = mimeMap.get(extension);
-//        Assert.notNull(contentType, "根据文件后缀: " + extension + "，无法识别正确的 mime 类型");
-//
-//        response.setHeader("Content-Type", contentType);
-//        ServletOutputStream outputStream = response.getOutputStream();
-//        IOUtils.copy(inputStream, outputStream);
-//        outputStream.flush();
-//
-//    }
-
-    /**
      * 获取展示文件的 URL 路径
      *
      * @param id
      * @return
      */
+    @RestResult
     @GetMapping("/display/{id}")
-    public String display(@PathVariable("id") String id) {
-        return uploadFileService.getDisplayPath(id);
-    }
-
-    /**
-     * 下载文件
-     *
-     * @param id
-     * @param response
-     * @throws IOException
-     */
-    //@GetMapping("/download/{id}")
-    public void download_bak(@PathVariable("id") String id, HttpServletResponse response) throws IOException {
-
-        UploadFile uploadFile = uploadFileService.getOne(Wrappers.<UploadFile>lambdaQuery().eq(UploadFile::getId, id));
-        Assert.notNull(uploadFile, "下载失败,无法找到对应的文件,Id:" + id);
-
-        String filePath = StringUtils.removeStart(uploadFile.getFilePath(), "/");
-        String realPath = FilenameUtils.concat(dataPath, filePath);
-
-        FileInputStream fileInputStream = FileUtils.openInputStream(new File(realPath));
-
-        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-        response.setHeader("Content-Type", "application/octet-stream");
-        response.setHeader("Pragma", "no-cache");
-        response.setHeader("Expires", "0");
-        response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", uploadFile.getFileName()));
-        ServletOutputStream outputStream = response.getOutputStream();
-        IOUtils.copy(fileInputStream, outputStream);
-        outputStream.flush();
-
+    public DisplayDTO display(@PathVariable("id") String id) {
+        String displayPath = uploadFileService.getDisplayPath(id);
+        DisplayDTO displayDTO = DisplayDTO.builder().displayPath(displayPath).build();
+        return displayDTO;
     }
 
     /**
