@@ -5,18 +5,18 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 budget: {
                     id : '',
                     orderId : '',
-                    totalFeeCheckResult : '一致',
-                    locationRemarkCheckResult : '一致',
-                    contentExpressionCheckResult : '一致',
-                    unitPriceCheckResult : '一致',
-                    logoCheckResult : '一致',
-                    unitPriceConsistenceCheckResult : '一致',
-                    materialRemarkCheckResult : '一致',
-                    serialNumberCheckResult : '一致',
-                    materialRemarkConsistenceCheckResult : '一致',
-                    fontSizeCheckResult : '一致',
-                    selfPurchaseRemarkCheckResult : '一致',
-                    numberConsistenceCheckResult : '一致',
+                    totalFeeCheckResult : '',
+                    locationRemarkCheckResult : '',
+                    contentExpressionCheckResult : '',
+                    unitPriceCheckResult : '',
+                    logoCheckResult : '',
+                    unitPriceConsistenceCheckResult : '',
+                    materialRemarkCheckResult : '',
+                    serialNumberCheckResult : '',
+                    materialRemarkConsistenceCheckResult : '',
+                    fontSizeCheckResult : '',
+                    selfPurchaseRemarkCheckResult : '',
+                    numberConsistenceCheckResult : '',
                     checkDate : '',
                 },
                 orderId:util.getRequest("orderId"),
@@ -72,6 +72,21 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
             }
             ajax.get('api/bss.order/order-budget/getBudgetByOrderId', data, (responseData)=>{
                 Object.assign(this.budget, responseData);
+                console.log(responseData);
+                if(responseData==null){
+                    this.budget.totalFeeCheckResult='一致';
+                    this.budget.locationRemarkCheckResult='一致';
+                    this.budget.contentExpressionCheckResult='一致';
+                    this.budget.unitPriceCheckResult='一致';
+                    this.budget.logoCheckResult='一致';
+                    this.budget.unitPriceConsistenceCheckResult='一致';
+                    this.budget.materialRemarkCheckResult='一致';
+                    this.budget.serialNumberCheckResult='一致';
+                    this.budget.materialRemarkConsistenceCheckResult='一致';
+                    this.budget.fontSizeCheckResult='一致';
+                    this.budget.selfPurchaseRemarkCheckResult='一致';
+                    this.budget.numberConsistenceCheckResult='一致';
+                }
             });
             this.budget.checkDate = util.getNowDate();
             this.downloadFileUrl = 'api/bss.order/order-file/download/' + util.getRequest("orderId") + "/13";
