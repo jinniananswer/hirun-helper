@@ -695,6 +695,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
      */
     @Override
     public IPage<CustOrderInfoDTO> queryCustOrderInfos(CustOrderQueryDTO queryCondition, Page<CustOrderQueryDTO> page) {
+        Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
         QueryWrapper<CustOrderQueryDTO> queryWrapper = new QueryWrapper<>();
         queryWrapper.apply(" b.cust_id = a.cust_id ");
         queryWrapper.like(StringUtils.isNotEmpty(queryCondition.getCustName()), "b.cust_name", queryCondition.getCustName());
@@ -705,6 +706,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
         queryWrapper.eq(queryCondition.getCustNo() != null, "b.cust_no", queryCondition.getCustNo());
         //排除售后，订单关闭的状态
         queryWrapper.notIn("a.status", "32", "33", "100");
+        queryWrapper.exists("select 1 from order_worker w where w.order_id = a.order_id and employee_id = " + employeeId);
         IPage<CustOrderInfoDTO> result = this.orderBaseMapper.queryCustOrderInfo(page, queryWrapper);
 
         List<CustOrderInfoDTO> custOrders = result.getRecords();

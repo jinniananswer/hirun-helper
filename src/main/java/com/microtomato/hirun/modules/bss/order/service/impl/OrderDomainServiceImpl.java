@@ -419,6 +419,67 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
         List<CustOrderInfoDTO> custOrders = result.getRecords();
         if (ArrayUtils.isNotEmpty(custOrders)) {
             for (CustOrderInfoDTO custOrder : custOrders) {
+                OrderStatusCfg statusCfg = this.orderStatusCfgService.getCfgByTypeStatus(custOrder.getType(), custOrder.getStatus());
+                RoleAttentionStatusCfg roleAttentionStatusCfg = this.roleAttentionStatusCfgService.getByStatusId(statusCfg.getId());
+                Long roleId = roleAttentionStatusCfg.getRoleId();
+                OrderWorker orderWorker = this.orderWorkerService.getOneOrderWorkerByOrderIdRoleId(custOrder.getOrderId(), roleId);
+                if (orderWorker != null) {
+                    Long currentEmployeeId = orderWorker.getEmployeeId();
+                    String currentEmployeeName = this.employeeService.getEmployeeNameEmployeeId(currentEmployeeId);
+                    custOrder.setCurrentEmployeeId(currentEmployeeId);
+                    custOrder.setCurrentEmployeeName(currentEmployeeName);
+                }
+
+                UsualFeeDTO usualFee = this.getUsualOrderFee(custOrder.getOrderId(), custOrder.getType());
+                custOrder.setUsualFee(usualFee);
+                custOrder.setStageName(this.staticDataService.getCodeName("ORDER_STAGE", custOrder.getStage()));
+                custOrder.setSexName(this.staticDataService.getCodeName("SEX", custOrder.getSex()));
+                custOrder.setStatusName(this.staticDataService.getCodeName("ORDER_STATUS", custOrder.getStatus()));
+                custOrder.setTypeName(this.staticDataService.getCodeName("ORDER_TYPE", custOrder.getType()));
+                custOrder.setHouseLayoutName(this.staticDataService.getCodeName("HOUSE_MODE", custOrder.getHouseLayout()));
+                Long housesId = custOrder.getHousesId();
+                if (housesId != null) {
+                    custOrder.setHousesName(this.housesService.queryHouseName(housesId));
+
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 查询与自己有关的订单
+     * @param queryCondition
+     * @param page
+     * @return
+     */
+    @Override
+    public IPage<CustOrderInfoDTO> queryMyOrder(CustOrderQueryDTO queryCondition, Page<CustOrderQueryDTO> page) {
+        QueryWrapper<CustOrderQueryDTO> queryWrapper = new QueryWrapper<>();
+        Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
+        queryWrapper.apply(" b.cust_id = a.cust_id ");
+        queryWrapper.like(StringUtils.isNotEmpty(queryCondition.getCustName()), "b.cust_name", queryCondition.getCustName());
+        queryWrapper.eq(StringUtils.isNotEmpty(queryCondition.getSex()), "b.sex", queryCondition.getSex());
+        queryWrapper.likeRight(StringUtils.isNotEmpty(queryCondition.getMobileNo()), "b.mobile_no", queryCondition.getMobileNo());
+        queryWrapper.eq(StringUtils.isNotEmpty(queryCondition.getOrderStatus()), "a.status", queryCondition.getOrderStatus());
+        queryWrapper.eq(queryCondition.getHousesId() != null, "a.housesId", queryCondition.getHousesId());
+        queryWrapper.exists("select 1 from order_worker w where w.order_id = a.order_id and w.employee_id = " + employeeId);
+        IPage<CustOrderInfoDTO> result = this.orderBaseMapper.queryCustOrderInfo(page, queryWrapper);
+
+        List<CustOrderInfoDTO> custOrders = result.getRecords();
+        if (ArrayUtils.isNotEmpty(custOrders)) {
+            for (CustOrderInfoDTO custOrder : custOrders) {
+                OrderStatusCfg statusCfg = this.orderStatusCfgService.getCfgByTypeStatus(custOrder.getType(), custOrder.getStatus());
+                RoleAttentionStatusCfg roleAttentionStatusCfg = this.roleAttentionStatusCfgService.getByStatusId(statusCfg.getId());
+                Long roleId = roleAttentionStatusCfg.getRoleId();
+                OrderWorker orderWorker = this.orderWorkerService.getOneOrderWorkerByOrderIdRoleId(custOrder.getOrderId(), roleId);
+                if (orderWorker != null) {
+                    Long currentEmployeeId = orderWorker.getEmployeeId();
+                    String currentEmployeeName = this.employeeService.getEmployeeNameEmployeeId(currentEmployeeId);
+                    custOrder.setCurrentEmployeeId(currentEmployeeId);
+                    custOrder.setCurrentEmployeeName(currentEmployeeName);
+                }
+
                 UsualFeeDTO usualFee = this.getUsualOrderFee(custOrder.getOrderId(), custOrder.getType());
                 custOrder.setUsualFee(usualFee);
                 custOrder.setStageName(this.staticDataService.getCodeName("ORDER_STAGE", custOrder.getStage()));

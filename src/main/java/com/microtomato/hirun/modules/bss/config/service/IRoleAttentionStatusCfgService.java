@@ -2,6 +2,7 @@ package com.microtomato.hirun.modules.bss.config.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.microtomato.hirun.modules.bss.config.entity.po.RoleAttentionStatusCfg;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.util.List;
 
@@ -18,4 +19,7 @@ public interface IRoleAttentionStatusCfgService extends IService<RoleAttentionSt
     List<RoleAttentionStatusCfg> queryByRoleId(Long roleId);
 
     List<RoleAttentionStatusCfg> queryInRoleIds(List<Long> roleIds);
+
+    @Cacheable(value = "roleattention-cfg-statusid")
+    RoleAttentionStatusCfg getByStatusId(Long statusId);
 }

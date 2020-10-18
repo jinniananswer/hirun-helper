@@ -65,4 +65,11 @@ public class OrderDomainController {
         queryCond.setOrderCreateEndDate(TimeUtils.addTime(queryCond.getOrderCreateEndDate(), ChronoUnit.SECONDS, 86399));
         return this.domainService.queryEmployeeResults(queryCond);
     }
+
+    @GetMapping("/queryMyOrder")
+    @RestResult
+    public IPage<CustOrderInfoDTO> queryMyOrder(CustOrderQueryDTO queryCond) {
+        Page<CustOrderQueryDTO> page = new Page<>(queryCond.getPage(), queryCond.getLimit());
+        return this.domainService.queryMyOrder(queryCond, page);
+    }
 }
