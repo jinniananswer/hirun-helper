@@ -491,7 +491,8 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
                 CollegeTaskStudyContentResponseDTO collegeTaskStudyContentResponseDTO = new CollegeTaskStudyContentResponseDTO();
                 collegeTaskStudyContentResponseDTO.setFileId(file.getId());
                 collegeTaskStudyContentResponseDTO.setFileName(file.getFileName());
-                collegeTaskStudyContentResponseDTO.setFileUrl(file.getFilePath());
+                String fileUrl = "/api/system/file/display/" + file.getId();
+                collegeTaskStudyContentResponseDTO.setFileUrl(fileUrl);
                 taskStudyContentList.add(collegeTaskStudyContentResponseDTO);
             }
         }

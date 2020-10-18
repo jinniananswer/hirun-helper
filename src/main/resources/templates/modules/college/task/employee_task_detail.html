@@ -453,10 +453,8 @@
                             </el-tab-pane>
                             <el-tab-pane label="任务图片" name="imgInfo">
                                 <el-container>
-                                    <el-header style="height: 400px; text-align: right; font-size: 12px; overflow: auto">
-                                        <div class="demo-image__lazy">
-                                            <el-image v-for="url in urls" :key="url" :src="url"></el-image>
-                                        </div>
+                                    <el-header style="height: 400px; text-align: center; font-size: 12px; overflow: auto">
+                                        <el-image v-for="url in imgExperienceList" :key="url" :src="url" fit="fill"></el-image>
                                     </el-header>
                                 </el-container>
                             </el-tab-pane>

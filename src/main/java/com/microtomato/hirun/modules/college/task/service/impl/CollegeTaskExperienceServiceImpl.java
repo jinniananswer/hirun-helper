@@ -51,7 +51,8 @@ public class CollegeTaskExperienceServiceImpl extends ServiceImpl<CollegeTaskExp
                     if (null != uploadFile){
                         CollegeTaskExperienceImgResponseDTO collegeTaskExperienceImgResponseDTO = new CollegeTaskExperienceImgResponseDTO();
                         collegeTaskExperienceImgResponseDTO.setFileId(fileId);
-                        collegeTaskExperienceImgResponseDTO.setFileUrl(uploadFile.getFilePath());
+                        String fileUrl = "/api/system/file/display/" + fileId;
+                        collegeTaskExperienceImgResponseDTO.setFileUrl(fileUrl);
                         imgExperienceList.add(collegeTaskExperienceImgResponseDTO);
                     }
                 }

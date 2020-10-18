@@ -132,15 +132,16 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 ajax.get('api/CollegeTaskExperience/queryByTaskId', {taskId:taskId}, function(responseData){
                     that.writtenExperience = responseData.writtenExperience
                     that.imgExperienceList = [];
-                    responseData.imgExperienceList.forEach((imgExperience) => {
-                        that.imgExperienceList.push(imgExperience.fileUrl);
-                    })
+                    if (undefined != responseData.imgExperienceList && null != responseData.imgExperienceList && responseData.imgExperienceList != [] && responseData.imgExperienceList.length > 0){
+                        responseData.imgExperienceList.forEach((imgExperience) => {
+                            that.imgExperienceList.push(imgExperience.fileUrl);
+                        })
+                    }
                     that.evaluateTaskDialogVisible = true;
                     that.taskInfo = row;
                     that.taskScore = responseData.taskScore;
                     that.experienceScore = responseData.experienceScore;
                     that.imgScore = responseData.imgScore;
-                    that.queryEmployeePracticeTaskInfo();
                 });
             },
             submitScore: function(){
@@ -187,6 +188,7 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     that.imgScore = null;
                     that.taskInfo = {};
                     that.evaluateTaskDialogVisible = false;
+                    that.queryEmployeePracticeTaskInfo();
                 },null, true);
             },
             cancel: function () {
