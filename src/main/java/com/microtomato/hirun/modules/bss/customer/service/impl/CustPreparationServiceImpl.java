@@ -462,7 +462,7 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
         }
         for(Role role:roles){
             //只有店经理才有裁定权限
-            if(role.getId().equals(7L)){
+            if(role.getId().equals(7L)||role.getId().equals(1L)){
                 flag=true;
                 break;
             }
