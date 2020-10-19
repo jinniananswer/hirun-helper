@@ -9,6 +9,7 @@ import com.microtomato.hirun.framework.exception.cases.AlreadyExistException;
 import com.microtomato.hirun.framework.exception.cases.NotFoundException;
 import com.microtomato.hirun.framework.mybatis.sequence.impl.CustNoMaxCycleSeq;
 import com.microtomato.hirun.framework.mybatis.service.IDualService;
+import com.microtomato.hirun.framework.security.Role;
 import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.SecurityUtils;
@@ -36,9 +37,12 @@ import com.microtomato.hirun.modules.bss.order.entity.dto.NewOrderDTO;
 import com.microtomato.hirun.modules.bss.order.service.IOrderDomainService;
 import com.microtomato.hirun.modules.bss.order.service.IOrderWorkerActionService;
 import com.microtomato.hirun.modules.bss.order.service.IOrderWorkerService;
+import com.microtomato.hirun.modules.organization.entity.consts.OrgConst;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeInfoDTO;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
 import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
+import com.microtomato.hirun.modules.organization.service.IOrgService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -108,6 +112,9 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
     @Autowired
     private IOrderWorkerActionService workerActionService;
 
+    @Autowired
+    private IOrgService orgService;
+
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void addCustomerPreparation(CustPreparationDTO dto) {
@@ -173,9 +180,9 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
                 decorateAddress = decorateAddress + dto.getHouseRoomNo();
             }
             orderBase.setDecorateAddress(decorateAddress);
-            Long orderId=domainService.createNewOrder(orderBase);
+            Long orderId = domainService.createNewOrder(orderBase);
             //报备角色为一个通用的虚拟角色
-            Long reportWorkerId=workerService.updateOrderWorker(orderId,555L,dto.getPrepareEmployeeId());
+            Long reportWorkerId = workerService.updateOrderWorker(orderId, 555L, dto.getPrepareEmployeeId());
             //只有在报备成功的时候才入这个表
             //workerActionService.createOrderWorkerAction(orderId,dto.getPrepareEmployeeId(),reportWorkerId,"","report");
         }
@@ -385,6 +392,8 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
     public IPage<CustInfoDTO> queryPreparationInfo(CustQueryCondDTO condDTO) {
         QueryWrapper<CustQueryCondDTO> queryWrapper = new QueryWrapper<>();
         Page<CustQueryCondDTO> page = new Page<>(condDTO.getPage(), condDTO.getSize());
+        String orgLine = this.getOrgLine();
+        String employeeIds=this.getEmployeeIds();
         queryWrapper.apply(" a.cust_id=c.party_id");
         queryWrapper.apply(" a.cust_id=d.cust_id");
         queryWrapper.apply(" a.cust_id=b.cust_id");
@@ -393,9 +402,14 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
         queryWrapper.eq(condDTO.getHouseId() != null, "c.house_id", condDTO.getHouseId());
         queryWrapper.eq(StringUtils.isNotEmpty(condDTO.getHouseMode()), "c.house_mode", condDTO.getHouseMode());
         queryWrapper.eq(StringUtils.isNotEmpty(condDTO.getPrepareStatus()), "b.status", condDTO.getPrepareStatus());
-        queryWrapper.gt(condDTO.getStartTime()!=null,"b.prepare_time", condDTO.getStartTime());
-        queryWrapper.lt(condDTO.getEndTime()!=null,"b.prepare_time",condDTO.getEndTime());
-        queryWrapper.like(condDTO.getCustName()!=null,"a.cust_name",condDTO.getCustName());
+        queryWrapper.gt(condDTO.getStartTime() != null, "b.prepare_time", condDTO.getStartTime());
+        queryWrapper.lt(condDTO.getEndTime() != null, "b.prepare_time", condDTO.getEndTime());
+        queryWrapper.like(condDTO.getCustName() != null, "a.cust_name", condDTO.getCustName());
+
+        queryWrapper.apply(StringUtils.isNotEmpty(orgLine), "b.prepare_org_id in (" + orgLine + ")");
+        queryWrapper.apply(StringUtils.isNotEmpty(employeeIds), "b.prepare_employee_id in (" + employeeIds + ")");
+
+
 
         IPage<CustInfoDTO> iPage = this.baseMapper.queryPreparationInfo(page, queryWrapper);
 
@@ -419,6 +433,14 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
             dto.setDesignEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getDesignEmployeeId()));
             dto.setEnterEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getEnterEmployeeId()));
 
+            UserContext userContext = WebContextUtils.getUserContext();
+            Long employeeId = userContext.getEmployeeId();
+            //模糊化姓名和电话
+            if (!dto.getPrepareEmployeeId().equals(employeeId)) {
+                dto.setCustName(this.nameDesensitization(dto.getCustName()));
+                dto.setMobileNo("***********");
+            }
+
             if (dto.getPreparationExpireTime() == null) {
                 dto.setPrepareExpireStatus("报备已过期");
             } else if (TimeUtils.compareTwoTime(dto.getPreparationExpireTime(), LocalDateTime.now()) == 1) {
@@ -430,5 +452,80 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
         return iPage;
     }
 
+    @Override
+    public boolean checkRulingRight() {
+        Boolean flag=false;
+        UserContext userContext=WebContextUtils.getUserContext();
+        List<Role> roles=userContext.getRoles();
+        if(ArrayUtils.isEmpty(roles)){
+            flag=false;
+        }
+        for(Role role:roles){
+            //只有店经理才有裁定权限
+            if(role.getId().equals(7L)||role.getId().equals(1L)){
+                flag=true;
+                break;
+            }
+        }
+/*        if(!flag){
+            throw new AlreadyExistException("您无操作裁定的权限，不允许操作。", ErrorKind.ALREADY_EXIST.getCode());
+        }*/
+        return flag;
+    }
+
+    private String getOrgLine() {
+        String orgLine = "";
+        orgLine = orgService.listOrgSecurityLine();
+        return orgLine;
+    }
+
+    private String getEmployeeIds() {
+        String employeeIds = "";
+        UserContext userContext = WebContextUtils.getUserContext();
+        Long employeeId = userContext.getEmployeeId();
+        if (!SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_ORG)
+                && !SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_BU)
+                && !SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_SUB_COMPANY)
+                && !SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_SHOP)
+                && !SecurityUtils.hasFuncId(OrgConst.SECURITY_SELF_SHOP)
+                && !SecurityUtils.hasFuncId(OrgConst.SECURITY_SELF_BU)
+                && !SecurityUtils.hasFuncId(OrgConst.SECURITY_SELF_SUB_COMPANY)
+                && !SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_COMANY_SHOP)) {
+
+            List<EmployeeInfoDTO> employeeList = employeeService.recursiveAllSubordinates(employeeId + "");
+            if (ArrayUtils.isEmpty(employeeList)) {
+                return employeeId + "";
+            }
+            for (EmployeeInfoDTO employee : employeeList) {
+                employeeIds += employee.getEmployeeId() + ",";
+            }
+        }
+        return employeeIds+employeeId;
+
+    }
+
+    /**
+     * 模糊化客户姓名
+     *
+     * @param name
+     * @return
+     */
+    private String nameDesensitization(String name) {
+        String newName = "";
+        String regEx = "[\n`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。， 、？]";
+        name = name.replaceAll(regEx, "");
+        if (StringUtils.isBlank(name)) {
+            return "";
+        }
+        char[] chars = name.toCharArray();
+        if (chars.length == 1) {
+            newName = name;
+        } else if (chars.length == 2) {
+            newName = name.replaceFirst(name.substring(1), "*");
+        } else {
+            newName = name.replaceAll(name.substring(1, chars.length - 1), "*");
+        }
+        return newName;
+    }
 
 }

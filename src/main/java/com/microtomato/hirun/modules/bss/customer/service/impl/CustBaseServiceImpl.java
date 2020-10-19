@@ -15,6 +15,7 @@ import com.microtomato.hirun.modules.bss.customer.service.ICustPreparationServic
 import com.microtomato.hirun.modules.bss.house.service.IHousesService;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderBase;
 import com.microtomato.hirun.modules.bss.order.service.IOrderBaseService;
+import com.microtomato.hirun.modules.bss.order.service.IOrderWorkerService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
@@ -54,6 +55,9 @@ public class CustBaseServiceImpl extends ServiceImpl<CustBaseMapper, CustBase> i
 
     @Autowired
     private ICustPreparationService preparationService;
+
+    @Autowired
+    private IOrderWorkerService workerService;
 
     @Override
     public CustBase queryByCustId(Long custId) {
@@ -119,6 +123,10 @@ public class CustBaseServiceImpl extends ServiceImpl<CustBaseMapper, CustBase> i
             return iPage;
         }
         List<CustInfoDTO> custInfoDTOList = iPage.getRecords();
+
+        UserContext userContext = WebContextUtils.getUserContext();
+        Long employeeId = userContext.getEmployeeId();
+
         for (CustInfoDTO dto : custInfoDTOList) {
             if (StringUtils.equals(dto.getCustProperty(), "6")) {
                 dto.setCustPropertyName("主管补备");
@@ -148,6 +156,10 @@ public class CustBaseServiceImpl extends ServiceImpl<CustBaseMapper, CustBase> i
             dto.setOrderStatusName(staticDataService.getCodeName("ORDER_STATUS",dto.getOrderStatus()));
             dto.setCustomerServiceName(employeeService.getEmployeeNameEmployeeId(dto.getCustServiceEmployeeId()));
             dto.setDesignEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getDesignEmployeeId()));
+            if(!workerService.checkIncludeEmployeeId(dto.getOrderId(),employeeId)){
+                dto.setCustName(this.nameDesensitization(dto.getCustName()));
+                dto.setMobileNo("***********");
+            }
         }
         return iPage;
     }
@@ -200,5 +212,30 @@ public class CustBaseServiceImpl extends ServiceImpl<CustBaseMapper, CustBase> i
         }
 
         return dto;
+    }
+
+
+    /**
+     * 模糊化客户姓名
+     *
+     * @param name
+     * @return
+     */
+    private String nameDesensitization(String name) {
+        String newName = "";
+        String regEx = "[\n`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。， 、？]";
+        name = name.replaceAll(regEx, "");
+        if (StringUtils.isBlank(name)) {
+            return "";
+        }
+        char[] chars = name.toCharArray();
+        if (chars.length == 1) {
+            newName = name;
+        } else if (chars.length == 2) {
+            newName = name.replaceFirst(name.substring(1), "*");
+        } else {
+            newName = name.replaceAll(name.substring(1, chars.length - 1), "*");
+        }
+        return newName;
     }
 }

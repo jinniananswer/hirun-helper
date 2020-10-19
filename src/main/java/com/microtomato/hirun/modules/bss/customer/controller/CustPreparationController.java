@@ -44,6 +44,12 @@ public class CustPreparationController {
         return custPreparationServiceImpl.loadPreparationHistory(mobileNo);
     }
 
+    @GetMapping("/checkRulingRight")
+    @RestResult
+    public boolean checkRulingRight() {
+        return custPreparationServiceImpl.checkRulingRight();
+    }
+
     @PostMapping("/customerRuling")
     @RestResult
     public void customerRuling(@RequestBody CustPreparationDTO custPreparation) {
