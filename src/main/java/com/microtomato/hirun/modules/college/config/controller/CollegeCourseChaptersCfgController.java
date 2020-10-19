@@ -10,8 +10,8 @@ import com.microtomato.hirun.modules.college.config.entity.po.CollegeCourseChapt
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeStudyTaskCfg;
 import com.microtomato.hirun.modules.college.config.service.ICollegeCourseChaptersCfgService;
 import com.microtomato.hirun.modules.college.config.service.ICollegeStudyTaskCfgService;
-import com.microtomato.hirun.modules.college.task.entity.po.CollegeStudyTopicCfg;
-import com.microtomato.hirun.modules.college.task.service.ICollegeStudyTopicCfgService;
+import com.microtomato.hirun.modules.college.task.entity.po.CollegeStudyTopicRel;
+import com.microtomato.hirun.modules.college.task.service.ICollegeStudyTopicRelService;
 import com.microtomato.hirun.modules.organization.service.ICourseService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import com.microtomato.hirun.modules.system.service.IUploadFileService;
@@ -42,7 +42,7 @@ public class CollegeCourseChaptersCfgController {
     private ICollegeCourseChaptersCfgService collegeCourseChaptersCfgService;
 
     @Autowired
-    private ICollegeStudyTopicCfgService collegeStudyTopicCfgServiceImpl;
+    private ICollegeStudyTopicRelService collegeStudyTopicRelServiceImpl;
 
     @Autowired
     private IStaticDataService staticDataServiceImpl;
@@ -120,13 +120,13 @@ public class CollegeCourseChaptersCfgController {
     public CollegeCourseChaptersTaskResponseDTO addChapters(@RequestBody CollegeCourseChaptersCfg collegeCourseChaptersCfg){
         collegeCourseChaptersCfg.setStatus("0");
         this.collegeCourseChaptersCfgService.save(collegeCourseChaptersCfg);
-        CollegeStudyTopicCfg collegeStudyTopicCfg = new CollegeStudyTopicCfg();
+        CollegeStudyTopicRel collegeStudyTopicCfg = new CollegeStudyTopicRel();
         collegeStudyTopicCfg.setStatus("0");
         collegeStudyTopicCfg.setChaptersId(String.valueOf(collegeCourseChaptersCfg.getChaptersId()));
         collegeStudyTopicCfg.setStudyId(collegeCourseChaptersCfg.getStudyId());
         collegeStudyTopicCfg.setStudyTopicDesc(collegeCourseChaptersCfg.getChaptersName() + "课件与习题范围关系");
         collegeStudyTopicCfg.setStudyTopicName(collegeCourseChaptersCfg.getChaptersName() + "习题");
-        collegeStudyTopicCfgServiceImpl.save(collegeStudyTopicCfg);
+        collegeStudyTopicRelServiceImpl.save(collegeStudyTopicCfg);
         CollegeCourseChaptersTaskResponseDTO result = new CollegeCourseChaptersTaskResponseDTO();
         BeanUtils.copyProperties(collegeCourseChaptersCfg, result);
         String chaptersType = result.getChaptersType();

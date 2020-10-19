@@ -1,25 +1,19 @@
 package com.microtomato.hirun.modules.college.task.entity.po;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.microtomato.hirun.framework.data.BaseEntity;
-import com.baomidou.mybatisplus.annotation.TableField;
-
-import lombok.Data;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import lombok.experimental.Accessors;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
 /**
- * (CollegeStudyTopicCfg)表实体类
+ * (CollegeStudyTopicRel)表实体类
  *
- * @author huanghua@asiainfo.com
+ * @author makejava
  * @version 1.0.0
- * @date 2020-09-16 01:59:25
+ * @date 2020-10-20 02:30:42
  */
 @Data
 @Builder
@@ -27,31 +21,47 @@ import lombok.NoArgsConstructor;
 @Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("college_study_topic_cfg")
-public class CollegeStudyTopicCfg extends BaseEntity {
+@TableName("college_study_topic_rel")
+public class CollegeStudyTopicRel extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
-    
-    @TableId(value = "study_topic_id", type = IdType.AUTO)
-    private Long studyTopicId;
 
-    /** 学习内容与题目关系名称 */
+    @TableId(value = "study_topic_rel_id", type = IdType.AUTO)
+    private Long studyTopicRelId;
+
+    /**
+     * 学习内容与题目关系名称
+     */
     @TableField(value = "study_topic_name")
     private String studyTopicName;
 
-    /** 学习标识 */
+    /**
+     * 标签标识
+     */
+    @TableField(value = "label_id")
+    private Long labelId;
+
+    /**
+     * 学习标识
+     */
     @TableField(value = "study_id")
     private String studyId;
 
-    /** 章节ID */
+    /**
+     * 章节ID
+     */
     @TableField(value = "chapters_id")
     private String chaptersId;
 
-    /** 状态 */
+    /**
+     * 状态
+     */
     @TableField(value = "status")
     private String status;
 
-    /** 学习与题目关系描述 */
+    /**
+     * 学习与题目关系描述
+     */
     @TableField(value = "study_topic_desc")
     private String studyTopicDesc;
 
