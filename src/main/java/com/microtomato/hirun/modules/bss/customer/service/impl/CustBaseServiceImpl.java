@@ -114,7 +114,7 @@ public class CustBaseServiceImpl extends ServiceImpl<CustBaseMapper, CustBase> i
         queryWrapper.eq(condDTO.getDesignEmployeeId()!=null,"f.design_employee_id",condDTO.getDesignEmployeeId());
         queryWrapper.eq(condDTO.getAgentEmployeeId()!=null,"f.cust_service_employee_id",condDTO.getAgentEmployeeId());
 
-        queryWrapper.apply(" a.cust_id=c.party_id");
+        queryWrapper.apply(" a.party_id=c.party_id");
         queryWrapper.apply(" a.cust_id=d.cust_id");
         queryWrapper.orderByDesc("a.create_time");
 
