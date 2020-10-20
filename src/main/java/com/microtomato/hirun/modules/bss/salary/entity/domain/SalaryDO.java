@@ -117,7 +117,7 @@ public class SalaryDO {
         OrderPlaneSketch planeSketch = this.orderPlaneSketchService.getByOrderId(orderId);
         Integer designFeeStandard = 0;
         if (planeSketch != null) {
-            designFeeStandard = planeSketch.getDesignFeeStandard() / 100;
+            designFeeStandard = planeSketch.getDesignFeeStandard();
         } else {
             throw new SalaryException(SalaryException.SalaryExceptionEnum.DESIGN_FEE_STANDARD_NOT_FOUND, String.valueOf(orderId));
         }
