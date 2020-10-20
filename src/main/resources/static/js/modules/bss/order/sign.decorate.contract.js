@@ -99,7 +99,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     let firstContractFee = parseFloat(this.decorateContract.baseDecorationFee) * 0.65
                         + parseFloat(this.decorateContract.doorFee) * 0.95
                         + parseFloat(this.decorateContract.furnitureFee) * 0.95
-                        - parseFloat(this.decorateContract.returnDesignFee)
+                        - parseFloat(this.decorateContract.returnDesignFee) * 0.65
                         + parseFloat(this.decorateContract.taxFee) * 0.95;
                     this.decorateContract.firstContractFee = Math.floor(firstContractFee*100) / 100;
                     return this.decorateContract.firstContractFee;
