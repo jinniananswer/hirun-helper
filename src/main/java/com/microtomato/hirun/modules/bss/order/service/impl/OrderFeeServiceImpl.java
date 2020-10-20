@@ -239,7 +239,7 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
                     String payItemName = payItemCfgService.getPath(payItem.getPayItemId());
                     Integer payPeriod = payItem.getPeriods();
                     if (payPeriod != null) {
-                        payItemDTO.setPeriod(payPeriod);
+                        payItemDTO.setPeriod(payPeriod + "");
                         String payPeriodName = staticDataService.getCodeName("PAY_PERIODS", payPeriod + "");
                         payItemDTO.setPeriodName(payPeriodName);
                         payItemName += '-' + payPeriodName;

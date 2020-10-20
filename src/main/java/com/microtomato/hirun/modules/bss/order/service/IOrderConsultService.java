@@ -29,4 +29,17 @@ public interface IOrderConsultService extends IService<OrderConsult> {
     void transOrder(CustConsultDTO dto);
 
     CustConsultDTO queryOrderConsultForTrans(Long orderId);
+
+    /**
+     * 咨询直接出平面图
+     * @param dto
+     */
+    void submitPlaneSketch(CustConsultDTO dto);
+
+    /**
+     * 咨询到二级精算
+     * @param dto
+     */
+    void submitOrderBudget(CustConsultDTO dto);
+
 }

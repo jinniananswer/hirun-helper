@@ -58,4 +58,8 @@ public class CustOrderInfoDTO {
     private Double secondContractPay;
 
     private Double settlementPay;
+
+    private Long currentEmployeeId;
+
+    private String currentEmployeeName;
 }

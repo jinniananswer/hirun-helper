@@ -3,6 +3,8 @@ package com.microtomato.hirun.modules.bss.house.service;
 import com.microtomato.hirun.modules.bss.house.entity.po.Houses;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 /**
  * <p>
  *  服务类
@@ -15,4 +17,6 @@ public interface IHousesService extends IService<Houses> {
     String queryHouseName(Long houseId);
 
     Houses getHouse(Long houseId);
+
+    List<Houses> queryAll();
 }

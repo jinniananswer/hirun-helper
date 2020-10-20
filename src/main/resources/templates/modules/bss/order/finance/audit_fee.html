@@ -17,7 +17,7 @@
                     <order-info :order-id="auditData.orderId"></order-info>
                     <el-card class="box-card">
                         <div slot="header">
-                            <span>费用展示区</span>
+                            <span>主营收款</span>
                         </div>
                         <template>
                             <el-table
@@ -39,7 +39,13 @@
                                 </el-table-column>
                                 <el-table-column
                                         prop="money"
-                                        label="应付金额（单位：元）"
+                                        label="应收金额（单位：元）"
+                                        fixed
+                                        min-width>
+                                </el-table-column>
+                                <el-table-column
+                                        prop="remark"
+                                        label="收款备注"
                                         fixed
                                         min-width>
                                 </el-table-column>
@@ -53,14 +59,20 @@
                                     border
                                     style="width: 100%">
                                 <el-table-column
+                                        prop="paymentTypeName"
+                                        label="收款类型"
+                                        fixed
+                                        min-width>
+                                </el-table-column>
+                                <el-table-column
                                         prop="paymentName"
-                                        label="付款方式"
+                                        label="收款方式"
                                         fixed
                                         min-width>
                                 </el-table-column>
                                 <el-table-column
                                         prop="money"
-                                        label="应付金额（单位：元）"
+                                        label="应收金额（单位：元）"
                                         fixed
                                         min-width>
                                 </el-table-column>

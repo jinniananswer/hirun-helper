@@ -8,7 +8,7 @@ import com.microtomato.hirun.modules.system.mapper.UploadFileMapper;
 import com.microtomato.hirun.modules.system.service.IUploadFileService;
 import io.minio.MinioClient;
 import io.minio.PutObjectOptions;
-import io.minio.errors.*;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -17,13 +17,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -55,30 +54,6 @@ public class UploadFileServiceImpl extends ServiceImpl<UploadFileMapper, UploadF
         relativePath = StringUtils.removeStart(relativePath, "/");
         String absolutePath = FilenameUtils.concat(dataPath, relativePath);
         return absolutePath;
-    }
-
-    private UploadFile prepare_bak(File destDir, MultipartFile multipartFile) throws IOException {
-
-        long fileSize = multipartFile.getSize();
-        String fileName = multipartFile.getOriginalFilename();
-        String uniqueId = UUID.randomUUID().toString();
-
-        String newFileName = uniqueId + '.' + FilenameUtils.getExtension(fileName);
-        File destFile = new File(destDir, newFileName);
-        multipartFile.transferTo(destFile);
-
-        String filePath = "upload" + StringUtils.substringAfterLast(destFile.getAbsolutePath(), "upload");
-        log.debug("文件路径: {}", filePath);
-
-        UploadFile uploadFile = UploadFile.builder()
-            .id(uniqueId)
-            .fileName(fileName)
-            .filePath(filePath)
-            .fileSize(fileSize)
-            .enabled(false)
-            .createEmployeeId(WebContextUtils.getUserContext().getEmployeeId())
-            .build();
-        return uploadFile;
     }
 
     private UploadFile prepare(File destDir, MultipartFile multipartFile) throws IOException {
@@ -121,6 +96,34 @@ public class UploadFileServiceImpl extends ServiceImpl<UploadFileMapper, UploadF
             e.printStackTrace();
         }
         return is;
+    }
+
+    /**
+     * 获取可直接显示的全路径
+     *
+     * @param id 文件Id
+     * @return
+     */
+    @Override
+    public String getDisplayPath(String id) {
+        return getDisplayPath(id, 7200);
+    }
+
+    /**
+     * 获取可直接显示的全路径
+     *
+     * @param id 文件Id
+     * @param expiresSeconds 分享超时时间（单位：秒）
+     * @return
+     */
+    @SneakyThrows
+    @Override
+    public String getDisplayPath(String id, Integer expiresSeconds) {
+        UploadFile uploadFile = this.getOne(Wrappers.<UploadFile>lambdaQuery().eq(UploadFile::getId, id));
+        Assert.notNull(uploadFile, "展示失败,无法找到对应的文件,Id:" + id);
+        String diaplyUrl = minioClient.presignedGetObject(bucketName, uploadFile.getFilePath(), expiresSeconds);
+        log.debug("displayUrl: {}", diaplyUrl);
+        return diaplyUrl;
     }
 
     private void makesureBucketExist(String bucketName) throws Exception {

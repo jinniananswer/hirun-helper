@@ -13,6 +13,8 @@ import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.bss.config.entity.po.*;
 import com.microtomato.hirun.modules.bss.config.service.*;
+import com.microtomato.hirun.modules.bss.customer.entity.po.CustBase;
+import com.microtomato.hirun.modules.bss.customer.service.ICustBaseService;
 import com.microtomato.hirun.modules.bss.house.entity.po.Houses;
 import com.microtomato.hirun.modules.bss.house.service.IHousesService;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
@@ -26,6 +28,8 @@ import com.microtomato.hirun.modules.bss.order.mapper.OrderBaseMapper;
 import com.microtomato.hirun.modules.bss.order.service.*;
 import com.microtomato.hirun.modules.bss.supply.entity.po.SupplierBrand;
 import com.microtomato.hirun.modules.bss.supply.service.ISupplierBrandService;
+import com.microtomato.hirun.modules.finance.entity.po.FinanceAcct;
+import com.microtomato.hirun.modules.finance.service.IFinanceAcctService;
 import com.microtomato.hirun.modules.organization.entity.domain.EmployeeDO;
 import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
@@ -123,6 +127,12 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
 
     @Autowired
     private IOrderBaseService orderBaseService;
+
+    @Autowired
+    private IFinanceAcctService financeAcctService;
+
+    @Autowired
+    private ICustBaseService custBaseService;
     /**
      * 初始化支付组件
      *
@@ -133,12 +143,14 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
         PayComponentDTO componentData = new PayComponentDTO();
         List<PaymentDTO> payments = new ArrayList<>();
 
-        List<StaticData> configs = this.staticDataService.getStaticDatas("PAYMENT_TYPE");
-        if (ArrayUtils.isNotEmpty(configs)) {
-            for (StaticData config : configs) {
+        List<FinanceAcct> financeAccts = this.financeAcctService.queryByLoginEmployeeId();
+        if (ArrayUtils.isNotEmpty(financeAccts)) {
+            for (FinanceAcct financeAcct : financeAccts) {
                 PaymentDTO payment = new PaymentDTO();
-                payment.setPaymentType(config.getCodeValue());
-                payment.setPaymentName(config.getCodeName());
+                payment.setPaymentId(financeAcct.getId());
+                payment.setPaymentName(financeAcct.getName());
+                payment.setPaymentType(financeAcct.getType());
+                payment.setPaymentTypeName(this.staticDataService.getCodeName("FINANCE_ACCT_TYPE", financeAcct.getType()));
                 payments.add(payment);
             }
             componentData.setPayments(payments);
@@ -168,13 +180,13 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
                     String payItemName = this.payItemCfgService.getPath(payItem.getPayItemId());
                     Integer payPeriod = payItem.getPeriods();
                     if (payPeriod != null) {
-                        payItemDTO.setPeriod(payPeriod);
+                        payItemDTO.setPeriod("period_" + payPeriod);
                         String payPeriodName = this.staticDataService.getCodeName("PAY_PERIODS", payPeriod + "");
                         payItemDTO.setPeriodName(payPeriodName);
                         payItemName += '-' + payPeriodName;
                     }
                     payItemDTO.setPayItemName(payItemName);
-
+                    payItemDTO.setRemark(payItem.getRemark());
                     payItemDTOs.add(payItemDTO);
                 }
                 componentData.setPayItems(payItemDTOs);
@@ -184,7 +196,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
             if (ArrayUtils.isNotEmpty(payMonies)) {
                 for (OrderPayMoney payMoney : payMonies) {
                     for (PaymentDTO payment : payments) {
-                        if (StringUtils.equals(payment.getPaymentType(), payMoney.getPaymentType())) {
+                        if (payment.getPaymentId().equals(payMoney.getPaymentId())) {
                             payment.setMoney(payMoney.getMoney().doubleValue() / 100);
                             break;
                         }
@@ -280,11 +292,14 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
                 orderPayItem.setOrderId(orderId);
                 orderPayItem.setPayItemId(payItemId);
                 orderPayItem.setParentPayItemId(payItemCfg.getParentPayItemId());
-                orderPayItem.setPeriods(payItem.getPeriod());
+                if (StringUtils.isNotBlank(payItem.getPeriod())) {
+                    orderPayItem.setPeriods(Integer.parseInt(payItem.getPeriod()));
+                }
                 orderPayItem.setFee(fee);
                 orderPayItem.setPayNo(payNo);
                 orderPayItem.setStartDate(now);
                 orderPayItem.setEndDate(forever);
+                orderPayItem.setRemark(payItem.getRemark());
                 orderPayItems.add(orderPayItem);
                 payItemTotal += fee;
 
@@ -322,6 +337,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
                 OrderPayMoney payMoney = new OrderPayMoney();
                 payMoney.setOrderId(orderId);
                 payMoney.setPaymentType(payment.getPaymentType());
+                payMoney.setPaymentId(payment.getPaymentId());
 
                 Double money = payment.getMoney();
                 if (money == null || money <= 0.001) {
@@ -353,6 +369,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
         orderPayNo.setEndDate(forever);
         orderPayNo.setTotalMoney(needPay);
         orderPayNo.setPayEmployeeId(employeeId);
+        orderPayNo.setRemark(feeData.getRemark());
         orderPayNo.setOrgId(WebContextUtils.getUserContext().getOrgId());
         this.orderPayNoService.save(orderPayNo);
 
@@ -363,35 +380,16 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
             this.orderPayMoneyService.saveBatch(payMonies);
         }
 
-        //更新店面信息
-        if (feeType.size() > 0) {
-            OrderBase orderBase = this.orderBaseService.queryByOrderId(orderId);
-            feeType.forEach((key, value) -> {
-                String type = null;
-                if (StringUtils.indexOf(key, ",") > 0) {
-                    //有分期信息，肯定不是设计费
-                    return;
-                } else {
-                    type = key;
-                }
-                //以设计师的部门为准
-//                if (StringUtils.equals("1", type)) {
-//                    //收设计费，更新店面信息
-//                    UserContext userContext = WebContextUtils.getUserContext();
-//                    Long orgId = userContext.getOrgId();
-//                    if (orgId != null) {
-//                        OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
-//                        Org shop = orgDO.getBelongShop();
-//                        if (shop != null) {
-//                            //以收设计费的店铺为准
-//                            orderBase.setShopId(shop.getOrgId());
-//                        }
-//                    }
-//                    return;
-//                }
-            });
+        OrderBase orderBase = this.orderBaseService.queryByOrderId(orderId);
+        orderBase.setHousesId(feeData.getHousesId());
+        orderBase.setDecorateAddress(feeData.getAddress());
 
-            this.updatePayed(orderBase);
+        this.updatePayed(orderBase);
+
+        CustBase custBase = this.custBaseService.queryByCustId(orderBase.getCustId());
+        if (StringUtils.isNotBlank(feeData.getCustName())) {
+            custBase.setCustName(feeData.getCustName());
+            this.custBaseService.updateById(custBase);
         }
     }
 
@@ -684,6 +682,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
      */
     @Override
     public IPage<CustOrderInfoDTO> queryCustOrderInfos(CustOrderQueryDTO queryCondition, Page<CustOrderQueryDTO> page) {
+        Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
         QueryWrapper<CustOrderQueryDTO> queryWrapper = new QueryWrapper<>();
         queryWrapper.apply(" b.cust_id = a.cust_id ");
         queryWrapper.like(StringUtils.isNotEmpty(queryCondition.getCustName()), "b.cust_name", queryCondition.getCustName());
@@ -694,6 +693,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
         queryWrapper.eq(queryCondition.getCustNo() != null, "b.cust_no", queryCondition.getCustNo());
         //排除售后，订单关闭的状态
         queryWrapper.notIn("a.status", "32", "33", "100");
+        queryWrapper.exists("select 1 from order_worker w where w.order_id = a.order_id and w.end_date > now() and employee_id = " + employeeId);
         IPage<CustOrderInfoDTO> result = this.orderBaseMapper.queryCustOrderInfo(page, queryWrapper);
 
         List<CustOrderInfoDTO> custOrders = result.getRecords();
@@ -727,7 +727,6 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
             return null;
         }
 
-        ArrayList<FinancePendingTaskDTO> financeTasks = new ArrayList<>();
         Map<String, FinancePendingTaskDTO> temp = new HashMap<>();
         for (FinancePendingOrderDTO financeOrder : financeOrders) {
             String auditStatus = financeOrder.getAuditStatus();
@@ -856,6 +855,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
                     } else {
                         orderPayMoneyInfo.setMoney(0d);
                     }
+                    orderPayMoneyInfo.setPaymentTypeName(this.staticDataService.getCodeName("FINANCE_ACCT_TYPE", orderPayMoney.getPaymentType()));
                     orderPayMoneyInfos.add(orderPayMoneyInfo);
                 }
                 orderPayInfo.setPayMonies(orderPayMoneyInfos);
@@ -1357,6 +1357,9 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
         wrapper.eq(StringUtils.isNotBlank(condition.getAuditStatus()), "c.audit_status", condition.getAuditStatus());
         wrapper.eq(condition.getHousesId() != null, "a.houses_id", condition.getHousesId());
         wrapper.eq(StringUtils.isNotBlank(condition.getMobileNo()), "b.mobile_no", condition.getMobileNo());
+
+        Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
+        wrapper.exists("select 1 from order_worker w where w.order_id = a.order_id and w.end_date > now() and employee_id = " + employeeId);
         wrapper.orderByAsc("a.status", "a.create_time");
 
         IPage<FinanceOrderTaskQueryDTO> page = new Page<>(condition.getPage(), condition.getLimit());

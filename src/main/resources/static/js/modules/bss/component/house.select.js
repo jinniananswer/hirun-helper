@@ -16,6 +16,8 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
                     :key="item.housesId"
                     :label="item.name"
                     :value="item.housesId">
+                    <span style="float: left">{{ item.name }}</span>
+                    <span style="float: right; color: #8492a6; font-size: 13px">{{ item.remark }}</span>
                 </el-option>
             </el-select>
             `,

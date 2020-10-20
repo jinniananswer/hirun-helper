@@ -127,7 +127,7 @@ public class OrderWorkerServiceImpl extends ServiceImpl<OrderWorkerMapper, Order
             throw new NotFoundException("参数缺失", ErrorKind.NOT_FOUND.getCode());
         }
         OrderWorker orderWorker = this.orderWorkerMapper.selectOne(new QueryWrapper<OrderWorker>().lambda()
-                .eq(OrderWorker::getOrderId, orderId).eq(OrderWorker::getRoleId, roleId).eq(OrderWorker::getEmployeeId,employeeId)
+                .eq(OrderWorker::getOrderId, orderId).eq(OrderWorker::getRoleId, roleId).eq(OrderWorker::getEmployeeId, employeeId)
                 .gt(OrderWorker::getEndDate, RequestTimeHolder.getRequestTime()));
 
         if (orderWorker != null) {
@@ -150,6 +150,7 @@ public class OrderWorkerServiceImpl extends ServiceImpl<OrderWorkerMapper, Order
 
     /**
      * 根据订单ID列表及角色列表查询订单参与人相关信息
+     *
      * @param orderIds
      * @param roleIds
      * @return
@@ -180,6 +181,7 @@ public class OrderWorkerServiceImpl extends ServiceImpl<OrderWorkerMapper, Order
 
     /**
      * 订单详情获取时展示工作人员信息
+     *
      * @param orderId
      * @return
      */
@@ -206,6 +208,7 @@ public class OrderWorkerServiceImpl extends ServiceImpl<OrderWorkerMapper, Order
 
     /**
      * 根据订单ID与角色ID查找有效的一条记录
+     *
      * @param orderId
      * @param roleId
      * @return
@@ -223,6 +226,7 @@ public class OrderWorkerServiceImpl extends ServiceImpl<OrderWorkerMapper, Order
 
     /**
      * 根据主键终止工作人员记录
+     *
      * @param ids
      */
     @Override
@@ -244,6 +248,7 @@ public class OrderWorkerServiceImpl extends ServiceImpl<OrderWorkerMapper, Order
 
     /**
      * 根据订单ID和角色ID查询工作人员
+     *
      * @param orderId
      * @param roleId
      * @return
@@ -255,5 +260,26 @@ public class OrderWorkerServiceImpl extends ServiceImpl<OrderWorkerMapper, Order
                 .eq(OrderWorker::getOrderId, orderId)
                 .eq(OrderWorker::getRoleId, roleId)
                 .ge(OrderWorker::getEndDate, now));
+    }
+
+    @Override
+    public boolean checkIncludeEmployeeId(Long orderId, Long employeeId) {
+        if(orderId==null){
+            return false;
+        }
+
+        List<OrderWorker> list = this.queryValidByOrderId(orderId);
+
+        if (ArrayUtils.isEmpty(list)) {
+            return false;
+        }
+        String employeeIds = "";
+        for (OrderWorker orderWorker : list) {
+            employeeIds += orderWorker.getEmployeeId() + ",";
+        }
+        if (("," + employeeIds).indexOf("," + employeeId + ",") >= 0) {
+            return true;
+        }
+        return false;
     }
 }

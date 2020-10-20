@@ -55,7 +55,7 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
                             客户编码：<template v-if="customer.custNo != null && customer.custNo != ''"><el-tag>{{customer.custNo}}</el-tag></template><template v-else>未录入</template>
                         </div>
                         <div class="text item">
-                            性别：<template v-if="customer.sexName != null && customer.sexName != ''"><el-tag>{{customer.sexName}}</el-tag></template><template v-else>未录入</template>
+                            楼盘：<template v-if="order.housesName != null && order.housesName != ''"><el-tag>{{order.housesName}}</el-tag></template><template v-else>未录入</template>
                         </div>
                         <div class="text item">
                             电话：<template v-if="customer.mobileNo != null && customer.mobileNo != ''"><el-tag>{{customer.mobileNo}}</el-tag></template><template v-else>未录入</template>
@@ -254,6 +254,11 @@ define(['vue','ELEMENT','ajax'], function(Vue,element,ajax){
                                                         stripe="true"
                                                         border
                                                         style="width: 100%">
+                                                        <el-table-column
+                                                                label="付款类型"
+                                                                prop="paymentTypeName"
+                                                                fixed>
+                                                        </el-table-column>
                                                         <el-table-column
                                                                 label="付款方式"
                                                                 prop="paymentName"

@@ -30,9 +30,9 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'cust-info', 'o
                     designEmployeeId: [
                         {required: true, message: '请选择设计师', trigger: 'change'}
                     ],
-/*                    designCupboardEmployeeId: [
+                    designCupboardEmployeeId: [
                         {required: true, message: '请选择橱柜设计师', trigger: 'change'}
-                    ],*/
+                    ],
                     mainMaterialKeeperEmployeeId: [
                         {required: true, message: '请选择主材管家', trigger: 'change'}
                     ],

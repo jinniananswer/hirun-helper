@@ -1,19 +1,11 @@
 package com.microtomato.hirun.modules.bss.order.entity.po;
 
-import java.time.LocalDateTime;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.*;
 import com.microtomato.hirun.framework.data.BaseEntity;
-import com.baomidou.mybatisplus.annotation.TableField;
-
-import lombok.Data;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import lombok.experimental.Accessors;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 /**
  * 付款类型明细表(OrderPayMoney)表实体类
@@ -44,9 +36,13 @@ public class OrderPayMoney extends BaseEntity {
     @TableField(value = "pay_no")
     private Long payNo;
 
-    /** 付费方式，见参数 */
+    /** 付费类型，见参数 */
     @TableField(value = "payment_type")
     private String paymentType;
+
+    /** 付费方式，见finance_acct */
+    @TableField(value = "payment_id")
+    private Long paymentId;
 
     /** 费用 */
     @TableField(value = "money")

@@ -2,6 +2,7 @@ package com.microtomato.hirun.modules.bss.config.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.modules.bss.config.entity.po.RoleAttentionStatusCfg;
 import com.microtomato.hirun.modules.bss.config.mapper.RoleAttentionStatusCfgMapper;
@@ -36,5 +37,12 @@ public class RoleAttentionStatusCfgServiceImpl extends ServiceImpl<RoleAttention
         LambdaQueryWrapper<RoleAttentionStatusCfg> wrapper = new QueryWrapper<RoleAttentionStatusCfg>().lambda();
         wrapper.in(RoleAttentionStatusCfg::getRoleId, roleIds);
         return this.list(wrapper);
+    }
+
+    @Override
+    @Cacheable(value = "roleattention-cfg-statusid")
+    public RoleAttentionStatusCfg getByStatusId(Long statusId) {
+        return this.getOne(Wrappers.<RoleAttentionStatusCfg>lambdaQuery()
+                .eq(RoleAttentionStatusCfg::getAttentionStatusId, statusId));
     }
 }
