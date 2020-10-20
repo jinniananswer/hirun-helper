@@ -35,6 +35,7 @@ import com.microtomato.hirun.modules.organization.entity.dto.SimpleEmployeeDTO;
 import com.microtomato.hirun.modules.organization.entity.po.Org;
 import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
+import com.microtomato.hirun.modules.organization.service.IOrgService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -124,6 +125,9 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
 
     @Autowired
     private IEmployeeService employeeService;
+
+    @Autowired
+    private IOrgService orgService;
 
     /**
      * 查询订单综合信息
@@ -414,6 +418,15 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
         queryWrapper.likeRight(StringUtils.isNotEmpty(queryCondition.getMobileNo()), "b.mobile_no", queryCondition.getMobileNo());
         queryWrapper.eq(StringUtils.isNotEmpty(queryCondition.getOrderStatus()), "a.status", queryCondition.getOrderStatus());
         queryWrapper.eq(queryCondition.getHousesId() != null, "a.housesId", queryCondition.getHousesId());
+
+        List<Org> orgs = this.orgService.listOrgsSecurity();
+        if (ArrayUtils.isNotEmpty(orgs)) {
+            List<Long> orgIds = new ArrayList<>();
+            orgs.forEach(org -> {
+                orgIds.add(org.getOrgId());
+            });
+            queryWrapper.in(ArrayUtils.isNotEmpty(orgIds), "a.shop_id", orgIds);
+        }
         IPage<CustOrderInfoDTO> result = this.orderBaseMapper.queryCustOrderInfo(page, queryWrapper);
 
         List<CustOrderInfoDTO> custOrders = result.getRecords();
