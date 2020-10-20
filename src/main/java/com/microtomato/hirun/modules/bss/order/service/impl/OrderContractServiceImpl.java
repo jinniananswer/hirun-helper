@@ -93,7 +93,7 @@ public class OrderContractServiceImpl extends ServiceImpl<OrderContractMapper, O
         List<OrderWorkerDTO> orderWorkersDTO = orderWorkerService.queryByOrderId(orderId);
         if(orderWorkersDTO != null) {
             for(OrderWorkerDTO orderWorkerDTO : orderWorkersDTO) {
-                if(orderWorkerDTO.getRoleId() == 35L) {
+                if(orderWorkerDTO.getRoleId() == 34L) {
                     decorateContractDTO.setFinanceEmployeeId(orderWorkerDTO.getEmployeeId());
                     decorateContractDTO.setFinanceEmployeeName(orderWorkerDTO.getName());
                 }
