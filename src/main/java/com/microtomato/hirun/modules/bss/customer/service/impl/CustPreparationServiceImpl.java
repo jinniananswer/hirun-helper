@@ -152,11 +152,11 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
             custBase.setCustStatus(2);
             custBase.setCustType("4");
             baseService.save(custBase);
-/*            //保存project信息
+            //保存project信息
             project.setPartyId(custBase.getCustId());
             projectService.save(project);
             //保存客户意向
-            projectIntention.setProjectId(project.getProjectId());
+/*            projectIntention.setProjectId(project.getProjectId());
             intentionService.save(projectIntention);
             */
             //保存报备信息
