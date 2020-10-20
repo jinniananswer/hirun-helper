@@ -13,6 +13,8 @@ import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.bss.config.entity.po.*;
 import com.microtomato.hirun.modules.bss.config.service.*;
+import com.microtomato.hirun.modules.bss.customer.entity.po.CustBase;
+import com.microtomato.hirun.modules.bss.customer.service.ICustBaseService;
 import com.microtomato.hirun.modules.bss.house.entity.po.Houses;
 import com.microtomato.hirun.modules.bss.house.service.IHousesService;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
@@ -128,6 +130,9 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
 
     @Autowired
     private IFinanceAcctService financeAcctService;
+
+    @Autowired
+    private ICustBaseService custBaseService;
     /**
      * 初始化支付组件
      *
@@ -364,6 +369,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
         orderPayNo.setEndDate(forever);
         orderPayNo.setTotalMoney(needPay);
         orderPayNo.setPayEmployeeId(employeeId);
+        orderPayNo.setRemark(feeData.getRemark());
         orderPayNo.setOrgId(WebContextUtils.getUserContext().getOrgId());
         this.orderPayNoService.save(orderPayNo);
 
@@ -374,35 +380,16 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
             this.orderPayMoneyService.saveBatch(payMonies);
         }
 
-        //更新店面信息
-        if (feeType.size() > 0) {
-            OrderBase orderBase = this.orderBaseService.queryByOrderId(orderId);
-            feeType.forEach((key, value) -> {
-                String type = null;
-                if (StringUtils.indexOf(key, ",") > 0) {
-                    //有分期信息，肯定不是设计费
-                    return;
-                } else {
-                    type = key;
-                }
-                //以设计师的部门为准
-//                if (StringUtils.equals("1", type)) {
-//                    //收设计费，更新店面信息
-//                    UserContext userContext = WebContextUtils.getUserContext();
-//                    Long orgId = userContext.getOrgId();
-//                    if (orgId != null) {
-//                        OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
-//                        Org shop = orgDO.getBelongShop();
-//                        if (shop != null) {
-//                            //以收设计费的店铺为准
-//                            orderBase.setShopId(shop.getOrgId());
-//                        }
-//                    }
-//                    return;
-//                }
-            });
+        OrderBase orderBase = this.orderBaseService.queryByOrderId(orderId);
+        orderBase.setHousesId(feeData.getHousesId());
+        orderBase.setDecorateAddress(feeData.getAddress());
 
-            this.updatePayed(orderBase);
+        this.updatePayed(orderBase);
+
+        CustBase custBase = this.custBaseService.queryByCustId(orderBase.getCustId());
+        if (StringUtils.isNotBlank(feeData.getCustName())) {
+            custBase.setCustName(feeData.getCustName());
+            this.custBaseService.updateById(custBase);
         }
     }
 

@@ -242,7 +242,7 @@ define(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'util'], function(Vue,
                 if (this.payItem.selectedPayItem == null || this.payItem.selectedPayItem.length === 0) {
                     return;
                 }
-                alert(JSON.stringify(this.payItem.selectedPayItem));
+
                 for (let items of this.payItem.selectedPayItem) {
                     let payItemName = this.findPayItemName(items, this.payItemOptions, '', 0);
 

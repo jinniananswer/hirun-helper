@@ -35,6 +35,26 @@ public class CollectFeeDTO {
     private Long orderId;
 
     /**
+     * 收款备注
+     */
+    private String remark;
+
+    /**
+     * 楼盘ID
+     */
+    private Long housesId;
+
+    /**
+     * 地址
+     */
+    private String address;
+
+    /**
+     * 客户姓名
+     */
+    private String custName;
+
+    /**
      * 付款项
      */
     private List<PayItemDTO> payItems;
