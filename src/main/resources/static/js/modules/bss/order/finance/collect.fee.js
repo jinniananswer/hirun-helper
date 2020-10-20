@@ -6,6 +6,12 @@ require(['vue', 'ELEMENT','ajax', 'vueselect', 'util','cust-info', 'order-info',
                 custId: util.getRequest('custId'),
                 orderId: util.getRequest('orderId'),
                 payNo: util.getRequest('payNo'),
+                remark: '',
+                cust: {
+                    custName: '',
+                    housesId: null,
+                    address: ''
+                },
 
                 dialogVisible: false,
 
@@ -44,15 +50,18 @@ require(['vue', 'ELEMENT','ajax', 'vueselect', 'util','cust-info', 'order-info',
                 this.dialogVisible = true;
             },
 
-            selectCustOrder: function(orderId, custId) {
+            selectCustOrder: function(orderId, custId, custName, housesId, address) {
                 this.custId = custId;
                 this.orderId = orderId;
+                this.cust.custName = custName;
+                this.cust.housesId = housesId;
+                this.cust.address = address;
                 this.dialogVisible = false;
                 this.show = 'display:block';
             },
 
             selectCustOrderRow: function(row) {
-                this.selectCustOrder(row.orderId, row.custId);
+                this.selectCustOrder(row.orderId, row.custId, row.custName, row.housesId, row.decorateAddress);
             },
 
             query: function() {
@@ -71,6 +80,10 @@ require(['vue', 'ELEMENT','ajax', 'vueselect', 'util','cust-info', 'order-info',
                     let data = this.$refs.pay.getSubmitData();
                     data['orderId'] = this.orderId;
                     data['payNo'] = this.payNo;
+                    data['remark'] = this.remark;
+                    data['custName'] = this.cust.custName;
+                    data['housesId'] = this.cust.housesId;
+                    data['address'] = this.cust.address;
                     ajax.post('api/bss.order/finance/collectFee', data);
                 }
             }
