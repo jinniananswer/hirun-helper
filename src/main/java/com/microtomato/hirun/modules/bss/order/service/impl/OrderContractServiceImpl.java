@@ -67,6 +67,16 @@ public class OrderContractServiceImpl extends ServiceImpl<OrderContractMapper, O
         DecorateContractDTO decorateContractDTO = new DecorateContractDTO();
         decorateContractDTO.setOrderId(orderId);
 
+        List<OrderWorkerDTO> orderWorkersDTO = orderWorkerService.queryByOrderId(orderId);
+        if(orderWorkersDTO != null) {
+            for(OrderWorkerDTO orderWorkerDTO : orderWorkersDTO) {
+                if(orderWorkerDTO.getRoleId() == 34L) {
+                    decorateContractDTO.setFinanceEmployeeId(orderWorkerDTO.getEmployeeId());
+                    decorateContractDTO.setFinanceEmployeeName(orderWorkerDTO.getName());
+                }
+            }
+        }
+
         OrderContract orderContract = this.baseMapper.selectOne(new QueryWrapper<OrderContract>().lambda()
                 .eq(OrderContract::getOrderId, orderId).eq(OrderContract::getContractType, "1"));
         if(orderContract == null) {
@@ -86,17 +96,6 @@ public class OrderContractServiceImpl extends ServiceImpl<OrderContractMapper, O
                 decorateContractDTO.setReturnDesignFee(orderFeeItem.getFee().intValue());
             } else if(orderFeeItem.getFeeItemId() == 15L) {
                 decorateContractDTO.setTaxFee(orderFeeItem.getFee().intValue());
-            }
-        }
-
-        //财务审核人员
-        List<OrderWorkerDTO> orderWorkersDTO = orderWorkerService.queryByOrderId(orderId);
-        if(orderWorkersDTO != null) {
-            for(OrderWorkerDTO orderWorkerDTO : orderWorkersDTO) {
-                if(orderWorkerDTO.getRoleId() == 34L) {
-                    decorateContractDTO.setFinanceEmployeeId(orderWorkerDTO.getEmployeeId());
-                    decorateContractDTO.setFinanceEmployeeName(orderWorkerDTO.getName());
-                }
             }
         }
 
