@@ -326,14 +326,14 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
         //判断责任楼盘 1现 2责任 3 散
         String limitConsultOrgId = "," + prepareConfig.getLimitOrgId() + ",";
         //限制家装顾问只允许报备责任楼盘则进判断
-        if (prepareConfig.getIsLimitConsult().equals(1)) {
+/*        if (prepareConfig.getIsLimitConsult().equals(1)) {
             if (limitConsultOrgId.indexOf(prepareOrgId) != -1) {
                 HousesPlan housesPlan = housesPlanService.queryHousesPlan(dto.getHouseId(), dto.getPrepareEmployeeId());
                 if (housesPlan == null) {
                     throw new NotFoundException("报备员工只能报备责任楼盘！", ErrorKind.NOT_FOUND.getCode());
                 }
             }
-        }
+        }*/
     }
 
     @Override
