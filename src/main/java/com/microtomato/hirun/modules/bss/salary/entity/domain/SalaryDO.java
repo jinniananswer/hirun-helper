@@ -135,6 +135,10 @@ public class SalaryDO {
 
         //3 找到参与人对应的策略配置，再根据费用相关信息进行计算
         Integer salaryMonth = Integer.parseInt(TimeUtils.formatLocalDateTimeToString(now, TimeUtils.DATE_FMT_14));
+        int day = now.getDayOfMonth();
+        if (day >= 25) {
+            salaryMonth = Integer.parseInt(TimeUtils.formatLocalDateTimeToString(now.plusMonths(1L), TimeUtils.DATE_FMT_14));
+        }
 
         List<SalaryRoyaltyDetail> royaltyDetails = new ArrayList<>();
         for (OrderWorkerActionDTO workerAction : workerActions) {
