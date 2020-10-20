@@ -693,7 +693,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
         queryWrapper.eq(queryCondition.getCustNo() != null, "b.cust_no", queryCondition.getCustNo());
         //排除售后，订单关闭的状态
         queryWrapper.notIn("a.status", "32", "33", "100");
-        queryWrapper.exists("select 1 from order_worker w where w.order_id = a.order_id and employee_id = " + employeeId);
+        queryWrapper.exists("select 1 from order_worker w where w.order_id = a.order_id and w.end_date > now() and employee_id = " + employeeId);
         IPage<CustOrderInfoDTO> result = this.orderBaseMapper.queryCustOrderInfo(page, queryWrapper);
 
         List<CustOrderInfoDTO> custOrders = result.getRecords();
@@ -727,7 +727,6 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
             return null;
         }
 
-        ArrayList<FinancePendingTaskDTO> financeTasks = new ArrayList<>();
         Map<String, FinancePendingTaskDTO> temp = new HashMap<>();
         for (FinancePendingOrderDTO financeOrder : financeOrders) {
             String auditStatus = financeOrder.getAuditStatus();
@@ -1358,6 +1357,9 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
         wrapper.eq(StringUtils.isNotBlank(condition.getAuditStatus()), "c.audit_status", condition.getAuditStatus());
         wrapper.eq(condition.getHousesId() != null, "a.houses_id", condition.getHousesId());
         wrapper.eq(StringUtils.isNotBlank(condition.getMobileNo()), "b.mobile_no", condition.getMobileNo());
+
+        Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
+        wrapper.exists("select 1 from order_worker w where w.order_id = a.order_id and w.end_date > now() and employee_id = " + employeeId);
         wrapper.orderByAsc("a.status", "a.create_time");
 
         IPage<FinanceOrderTaskQueryDTO> page = new Page<>(condition.getPage(), condition.getLimit());

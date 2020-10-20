@@ -134,7 +134,9 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
                     for (EmployeeOrgRel orgRel : orgRels) {
                         Long relOrgId = orgRel.getOrgId();
                         Org relOrg = this.queryByOrgId(relOrgId);
-                        temps.add(relOrg);
+                        if (relOrg != null) {
+                            temps.add(relOrg);
+                        }
                     }
                 }
                 return temps;

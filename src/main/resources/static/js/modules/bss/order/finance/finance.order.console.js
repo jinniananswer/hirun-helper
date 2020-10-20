@@ -6,6 +6,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'util', 'vxe-table', 'vueselect','ho
             return {
                 tasks: [],
                 queryCond: {
+                    auditStatus: '0',
                     count: 0,
                     limit: 20,
                     page: 1,
