@@ -421,13 +421,15 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
             for (CustOrderInfoDTO custOrder : custOrders) {
                 OrderStatusCfg statusCfg = this.orderStatusCfgService.getCfgByTypeStatus(custOrder.getType(), custOrder.getStatus());
                 RoleAttentionStatusCfg roleAttentionStatusCfg = this.roleAttentionStatusCfgService.getByStatusId(statusCfg.getId());
-                Long roleId = roleAttentionStatusCfg.getRoleId();
-                OrderWorker orderWorker = this.orderWorkerService.getOneOrderWorkerByOrderIdRoleId(custOrder.getOrderId(), roleId);
-                if (orderWorker != null) {
-                    Long currentEmployeeId = orderWorker.getEmployeeId();
-                    String currentEmployeeName = this.employeeService.getEmployeeNameEmployeeId(currentEmployeeId);
-                    custOrder.setCurrentEmployeeId(currentEmployeeId);
-                    custOrder.setCurrentEmployeeName(currentEmployeeName);
+                if (roleAttentionStatusCfg != null) {
+                    Long roleId = roleAttentionStatusCfg.getRoleId();
+                    OrderWorker orderWorker = this.orderWorkerService.getOneOrderWorkerByOrderIdRoleId(custOrder.getOrderId(), roleId);
+                    if (orderWorker != null) {
+                        Long currentEmployeeId = orderWorker.getEmployeeId();
+                        String currentEmployeeName = this.employeeService.getEmployeeNameEmployeeId(currentEmployeeId);
+                        custOrder.setCurrentEmployeeId(currentEmployeeId);
+                        custOrder.setCurrentEmployeeName(currentEmployeeName);
+                    }
                 }
 
                 UsualFeeDTO usualFee = this.getUsualOrderFee(custOrder.getOrderId(), custOrder.getType());

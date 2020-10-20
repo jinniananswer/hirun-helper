@@ -122,6 +122,10 @@ public class OrderWholeRoomDrawServiceImpl extends ServiceImpl<OrderWholeRoomDra
         orderWholeRoomDrawDTO.setOrderId(orderId);
 
         List<OrderWorkerActionDTO> orderWorkerActionDTOS = orderWorkerActionService.queryByOrderIdActionDto(orderId, DesignerConst.OPER_DRAW_CONSTRUCT);
+        if (ArrayUtils.isEmpty(orderWorkerActionDTOS)) {
+            orderWorkerActionDTOS = orderWorkerActionService.queryByOrderIdActionDto(orderId, DesignerConst.OPER_WALL_IN_DESIGN);
+        }
+
         if (ArrayUtils.isNotEmpty(orderWorkerActionDTOS)) {
             List<Long> assistants = new ArrayList<>();
             orderWorkerActionDTOS.forEach(action -> {
