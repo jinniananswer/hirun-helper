@@ -463,7 +463,7 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
         queryWrapper.likeRight(StringUtils.isNotEmpty(queryCondition.getMobileNo()), "b.mobile_no", queryCondition.getMobileNo());
         queryWrapper.eq(StringUtils.isNotEmpty(queryCondition.getOrderStatus()), "a.status", queryCondition.getOrderStatus());
         queryWrapper.eq(queryCondition.getHousesId() != null, "a.housesId", queryCondition.getHousesId());
-        queryWrapper.exists("select 1 from order_worker w where w.order_id = a.order_id and w.employee_id = " + employeeId);
+        queryWrapper.exists("select 1 from order_worker w where w.order_id = a.order_id  and w.end_date > now() and w.employee_id = " + employeeId);
         IPage<CustOrderInfoDTO> result = this.orderBaseMapper.queryCustOrderInfo(page, queryWrapper);
 
         List<CustOrderInfoDTO> custOrders = result.getRecords();

@@ -17,6 +17,8 @@ public class DecorateContractDTO {
 
     private Long id;
 
+    private String contractNo;
+
     private LocalDate signDate;
 
     private LocalDate startDate;
