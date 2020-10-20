@@ -209,7 +209,7 @@ public class OrderContractServiceImpl extends ServiceImpl<OrderContractMapper, O
         } else if (shopId.equals(48L)) {
             prefix = "9";
         } else if (shopId.equals(118L)) {
-            prefix = "001";
+            prefix = "6";
         } else if (shopId.equals(40L)) {
             prefix = "5";
         }
