@@ -61,6 +61,14 @@ public class JwtInterceptor implements HandlerInterceptor {
             return true;
         }
 
+        String requestURI = request.getRequestURI();
+        log.info("requestURI: {}", requestURI);
+
+        if (null != requestURI && requestURI.indexOf("api/system/session/authentication") >= 0) {
+            log.info("老系统协同，不做登录校验。");
+            return true;
+        }
+
         // 重定向到登录页面
         response.sendRedirect("/hirun");
         return false;
