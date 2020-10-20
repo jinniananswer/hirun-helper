@@ -6,7 +6,9 @@ import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.CustConsultDTO;
 import com.microtomato.hirun.modules.bss.customer.entity.po.CustBase;
+import com.microtomato.hirun.modules.bss.customer.entity.po.Party;
 import com.microtomato.hirun.modules.bss.customer.service.ICustBaseService;
+import com.microtomato.hirun.modules.bss.customer.service.IPartyService;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderBase;
@@ -58,6 +60,9 @@ public class OrderConsultServiceImpl extends ServiceImpl<OrderConsultMapper, Ord
 
     @Autowired
     private IEmployeeJobRoleService employeeJobRoleService;
+
+    @Autowired
+    private IPartyService partyService;
 
     @Override
     public OrderConsult queryOrderConsult(Long orderId) {
@@ -113,6 +118,10 @@ public class OrderConsultServiceImpl extends ServiceImpl<OrderConsultMapper, Ord
         //更新客户表中的咨询时间
         OrderBase orderBase = orderBaseService.getById(dto.getOrderId());
         custBaseService.update(new UpdateWrapper<CustBase>().lambda().eq(CustBase::getCustId, orderBase.getCustId()).set(CustBase::getConsultTime, dto.getConsultTime()));
+        CustBase custBase=custBaseService.getById(orderBase.getCustId());
+        if(custBase!=null){
+            partyService.update(new UpdateWrapper<Party>().lambda().eq(Party::getPartyId,custBase.getPartyId()).set(Party::getConsultTime, dto.getConsultTime()));
+        }
     }
 
     @Override
