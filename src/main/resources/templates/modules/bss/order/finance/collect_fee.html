@@ -137,7 +137,7 @@
                         <div slot="header">
                             <span>操作区</span>
                         </div>
-                        <order-payment :order-id="orderId" :pay-no="payNo" ref="pay"></order-payment>
+                        <order-payment :order-id="orderId" :pay-no="payNo" :remark.sync="remark" ref="pay"></order-payment>
                         <el-form :inline="false" ref="custForm" :model="cust" label-position="right" label-width="80px">
                             <el-row>
                                 <el-col :span="8">
@@ -156,7 +156,15 @@
                                     </el-form-item>
                                 </el-col>
                             </el-row>
+                            <el-row>
+                                <el-col :span="24">
+                                    <el-form-item label="收款摘要">
+                                        <el-input type="textarea" :rows="3" v-model="remark"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
                         </el-form>
+                        <el-divider v-if="auditComment != null">复核意见：{{auditComment}}</el-divider>
                         <div class="bottom clearfix">
                             <el-button type="primary" @click="submit">提交</el-button>
                         </div>

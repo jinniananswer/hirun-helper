@@ -78,6 +78,7 @@
                                 </el-table-column>
                             </el-table>
                         </template>
+                        <el-divider>收款摘要：{{remark}}</el-divider>
                     </el-card>
                     <el-card class="box-card">
                         <div slot="header">
@@ -86,8 +87,8 @@
                         <el-form>
                             <el-row>
                                 <el-col :span="24">
-                                    <el-form-item label="审核备注" prop="remark" label-width="100px">
-                                        <el-input type="textarea" v-model="auditData.remark"></el-input>
+                                    <el-form-item label="审核备注" prop="auditComment" label-width="100px">
+                                        <el-input type="textarea" v-model="auditData.auditComment"></el-input>
                                     </el-form-item>
                                 </el-col>
                             </el-row>
