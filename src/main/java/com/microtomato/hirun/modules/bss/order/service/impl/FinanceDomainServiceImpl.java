@@ -244,6 +244,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
         OrderPayNo orderPayNo = this.orderPayNoService.getByOrderIdAndPayNo(orderId, payNo);
         if (orderPayNo != null) {
             data.setPayNoRemark(orderPayNo.getRemark());
+            data.setAuditComment(orderPayNo.getAuditComment());
         }
 
         CustBase custBase = this.custBaseService.queryByCustId(orderBase.getCustId());
@@ -835,7 +836,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
 
             Long auditEmployeeId = orderPayNo.getAuditEmployeeId();
             if (auditEmployeeId != null) {
-                EmployeeDO employeeDO = SpringContextUtils.getBean(EmployeeDO.class, employeeId);
+                EmployeeDO employeeDO = SpringContextUtils.getBean(EmployeeDO.class, auditEmployeeId);
                 orderPayInfo.setAuditEmployeeName(employeeDO.getEmployee().getName());
             }
 
