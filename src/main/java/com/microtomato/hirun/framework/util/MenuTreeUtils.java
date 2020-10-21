@@ -47,10 +47,15 @@ public class MenuTreeUtils {
 
         List<MenuNode> children = new ArrayList<>();
         for (MenuNode child : nodes) {
-            if (child.getPid() == node.getId()) {
-                children.add(child);
-                child.setTitle(child.getTitle());
-                buildChildren(child, nodes);
+            Long pid = child.getPid();
+            Long id = node.getId();
+
+            if (null != pid && null != id) {
+                if (pid.equals(id)) {
+                    children.add(child);
+                    child.setTitle(child.getTitle());
+                    buildChildren(child, nodes);
+                }
             }
         }
 
