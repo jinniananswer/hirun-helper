@@ -11,6 +11,7 @@ import com.microtomato.hirun.modules.college.topic.mapper.ExamTopicMapper;
 import com.microtomato.hirun.modules.college.topic.entity.po.ExamTopic;
 import com.microtomato.hirun.modules.college.topic.service.IExamTopicOptionService;
 import com.microtomato.hirun.modules.college.topic.service.IExamTopicService;
+import com.microtomato.hirun.framework.util.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -68,6 +69,12 @@ public class ExamTopicServiceImpl extends ServiceImpl<ExamTopicMapper, ExamTopic
             topicList.add(topic);
         }
 
+        if (ArrayUtils.isNotEmpty(topicList)) {
+            for (int i = 0; i < topicList.size(); i++) {
+                TopicServiceDTO topicServiceDTO = topicList.get(i);
+                topicServiceDTO.setTopicNum(Long.parseLong(String.valueOf(i+1)));
+            }
+        }
         return topicList;
     }
 
@@ -84,5 +91,18 @@ public class ExamTopicServiceImpl extends ServiceImpl<ExamTopicMapper, ExamTopic
         topics.setTotal(pages.getTotal());
         topics.setRecords(getTopicInfo(list));
         return topics;
+    }
+
+    @Override
+    public List<TopicServiceDTO> queryByTopicIds(List<Long> topicIds) {
+        List<ExamTopic> topics = this.list(new QueryWrapper<ExamTopic>().lambda()
+                .in(ExamTopic::getTopicId, topicIds)
+                .eq(ExamTopic::getStatus, "0"));
+
+        if (ArrayUtils.isEmpty(topics)) {
+            return new ArrayList<>();
+        }
+
+        return getTopicInfo(topics);
     }
 }

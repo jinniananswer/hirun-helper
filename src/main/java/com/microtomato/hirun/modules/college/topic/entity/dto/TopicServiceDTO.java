@@ -2,8 +2,10 @@ package com.microtomato.hirun.modules.college.topic.entity.dto;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.microtomato.hirun.modules.college.topic.entity.po.ExamTopicOption;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
@@ -12,6 +14,7 @@ import java.util.List;
  * @date 2020-09-05
  */
 @Data
+@SuperBuilder
 @NoArgsConstructor
 public class TopicServiceDTO {
 
@@ -26,6 +29,13 @@ public class TopicServiceDTO {
     private Integer score;
 
     private String status;
+
+    private String answer;
+
+    private Long topicNum;
+
+    @Builder.Default
+    private Boolean isAnswer = Boolean.FALSE;
 
     private List<TopicOptionServiceDTO> topicOptions;
 }

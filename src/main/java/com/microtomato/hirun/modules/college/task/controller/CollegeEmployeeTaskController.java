@@ -11,10 +11,14 @@ import com.microtomato.hirun.modules.college.config.service.ICollegeStudyTaskCfg
 import com.microtomato.hirun.modules.college.task.entity.dto.*;
 import com.microtomato.hirun.modules.college.task.entity.po.CollegeEmployeeTask;
 import com.microtomato.hirun.modules.college.task.entity.po.CollegeEmployeeTaskScore;
+import com.microtomato.hirun.modules.college.task.entity.po.CollegeStudyTopicRel;
 import com.microtomato.hirun.modules.college.task.service.ICollegeEmployeeTaskScoreService;
 import com.microtomato.hirun.modules.college.task.service.ICollegeEmployeeTaskService;
+import com.microtomato.hirun.modules.college.task.service.ICollegeStudyTopicRelService;
 import com.microtomato.hirun.modules.college.task.service.ITaskDomainOpenService;
-import com.microtomato.hirun.modules.organization.entity.dto.SimpleEmployeeDTO;
+import com.microtomato.hirun.modules.college.topic.entity.po.CollegeTopicLabelRel;
+import com.microtomato.hirun.modules.college.topic.service.ICollegeTopicLabelRelService;
+import com.microtomato.hirun.modules.college.topic.service.IExamTopicService;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
 import com.microtomato.hirun.modules.organization.entity.po.Org;
@@ -69,6 +73,15 @@ public class CollegeEmployeeTaskController {
     
     @Autowired
     private IOrgService orgServiceImpl;
+
+    @Autowired
+    private ICollegeStudyTopicRelService collegeStudyTopicRelService;
+
+    @Autowired
+    private ICollegeTopicLabelRelService collegeTopicLabelRelService;
+
+    @Autowired
+    private IExamTopicService examTopicService;
 
     /**
      * 分页查询所有数据
@@ -498,5 +511,39 @@ public class CollegeEmployeeTaskController {
     @RestResult
     public List<CollegeEmployeeTaskTutorOptionsDTO> queryLoginEmployeeSelectTutor(){
         return this.collegeEmployeeTaskService.queryLoginEmployeeSelectTutor();
+    }
+
+    @GetMapping("queryTopicByTaskId")
+    @RestResult
+    public CollegeEmployeeTaskTopicDTO queryTopicByTaskId(Long taskId) {
+        CollegeEmployeeTaskTopicDTO response = new CollegeEmployeeTaskTopicDTO();
+        // 获取studyTaskId
+        CollegeEmployeeTask employeeTask = collegeEmployeeTaskService.getById(taskId);
+        String studyTaskId = null != employeeTask ? employeeTask.getStudyTaskId() : "";
+        // 获取studyId
+        if (StringUtils.isBlank(studyTaskId)) {
+            return response;
+        }
+        CollegeStudyTaskCfg studyTask = collegeStudyTaskCfgServiceImpl.getEffectiveByStudyTaskId(Long.parseLong(studyTaskId));
+        String studyId = StringUtils.isNotBlank(studyTask.getStudyId()) ? studyTask.getStudyId() : "";
+        // 获取labelId
+        if (StringUtils.isBlank(studyId)) {
+            return response;
+        }
+        CollegeStudyTopicRel studyTopic = collegeStudyTopicRelService.getEffectiveByStudyId(studyId);
+        Long labelId = studyTopic.getLabelId();
+        // 获取topic
+        List<CollegeTopicLabelRel> topicRels = collegeTopicLabelRelService.queryEffectiveByLabelId(labelId);
+        if (ArrayUtils.isEmpty(topicRels)) {
+            return response;
+        }
+        List<Long> topicIds = new ArrayList<>();
+        topicRels.stream().forEach(x -> {
+            topicIds.add(x.getTopicId());
+        });
+
+        response.setTaskId(taskId);
+        response.setTaskTopics(examTopicService.queryByTopicIds(topicIds));
+        return response;
     }
 }

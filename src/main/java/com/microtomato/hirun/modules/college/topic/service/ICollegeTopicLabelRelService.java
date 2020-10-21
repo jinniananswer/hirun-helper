@@ -3,6 +3,8 @@ package com.microtomato.hirun.modules.college.topic.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.microtomato.hirun.modules.college.topic.entity.po.CollegeTopicLabelRel;
 
+import java.util.List;
+
 /**
  * (CollegeTopicLabelRel)表服务接口
  *
@@ -12,4 +14,5 @@ import com.microtomato.hirun.modules.college.topic.entity.po.CollegeTopicLabelRe
  */
 public interface ICollegeTopicLabelRelService extends IService<CollegeTopicLabelRel> {
 
+    List<CollegeTopicLabelRel> queryEffectiveByLabelId(Long labelId);
 }
