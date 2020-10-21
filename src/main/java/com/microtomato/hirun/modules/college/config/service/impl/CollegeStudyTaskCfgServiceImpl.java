@@ -8,20 +8,33 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.college.config.entity.dto.*;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeCourseChaptersCfg;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeStudyTaskCfg;
 import com.microtomato.hirun.modules.college.config.mapper.CollegeStudyTaskCfgMapper;
 import com.microtomato.hirun.modules.college.config.service.ICollegeCourseChaptersCfgService;
 import com.microtomato.hirun.modules.college.config.service.ICollegeStudyTaskCfgService;
+import com.microtomato.hirun.modules.college.task.entity.po.CollegeEmployeeTask;
+import com.microtomato.hirun.modules.college.task.entity.po.CollegeStudyTaskScore;
+import com.microtomato.hirun.modules.college.task.service.ICollegeEmployeeTaskScoreService;
+import com.microtomato.hirun.modules.college.task.service.ICollegeEmployeeTaskService;
+import com.microtomato.hirun.modules.college.task.service.ICollegeEmployeeTaskTutorService;
+import com.microtomato.hirun.modules.college.task.service.ICollegeStudyTaskScoreService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
+import io.lettuce.core.output.DoubleOutput;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.util.Internal;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * (CollegeStudyTaskCfg)表服务实现类
@@ -43,6 +56,12 @@ public class CollegeStudyTaskCfgServiceImpl extends ServiceImpl<CollegeStudyTask
 
     @Autowired
     private IStaticDataService staticDataServiceImpl;
+
+    @Autowired
+    private ICollegeEmployeeTaskService collegeEmployeeTaskServiceImpl;
+
+    @Autowired
+    private ICollegeStudyTaskScoreService collegeStudyTaskScoreServiceImpl;
 
     @Override
     public List<CollegeStudyTaskCfg> queryByTaskType(String taskType) {
@@ -162,6 +181,7 @@ public class CollegeStudyTaskCfgServiceImpl extends ServiceImpl<CollegeStudyTask
 
     @Override
     public CollegeStudyTaskResponseDTO getCollegeStudyTaskByStudyTaskId(String studyTaskId) {
+        LocalDateTime now = TimeUtils.getCurrentLocalDateTime();
         CollegeStudyTaskResponseDTO result = new CollegeStudyTaskResponseDTO();
         if (StringUtils.isNotEmpty(studyTaskId)){
             CollegeStudyTaskCfg collegeStudyTaskCfg = this.getEffectiveByStudyTaskId(Long.valueOf(studyTaskId));
@@ -196,6 +216,165 @@ public class CollegeStudyTaskCfgServiceImpl extends ServiceImpl<CollegeStudyTask
                     taskTypeName = taskType;
                 }
                 result.setTaskTypeName(taskTypeName);
+
+                //设置任务分配详情
+                //任务分配总数量
+                Integer taskAllNum = 0;
+                //任务分配有效数量
+                Integer taskEffectiveNum = 0;
+                //任务分配有效百分比
+                Integer taskEffective = 0;
+                //任务分配完成数量
+                Integer taskFinishNum = 0;
+                //任务分配完成百分比
+                Integer taskFinish = 0;
+                //任务分配延期数量
+                Integer taskDelayNum = 0;
+                //任务分配延期百分比
+                Integer taskDelay = 0;
+                //任务分配涉及员工数量
+                Integer taskEmployeeNum = 0;
+                //任务难度平均分
+                Double argTaskDifficultyScore = 0.0;
+                //老师平均分
+                Double argTutorScore = 0.0;
+                Integer allTaskDifficultyScore = 0;
+                Integer allEmployeeScoreNum = 0;
+                Integer allTutorScore = 0;
+                List<CollegeEmployeeTask> collegeEmployeeTaskList = collegeEmployeeTaskServiceImpl.queryByStudyTaskId(studyTaskId);
+                Map<String, String> employeeMap = new HashMap<>();
+                if (ArrayUtils.isNotEmpty(collegeEmployeeTaskList)){
+                    taskAllNum = collegeEmployeeTaskList.size();
+                    for (CollegeEmployeeTask collegeEmployeeTask : collegeEmployeeTaskList) {
+                        if (StringUtils.equals("0", collegeEmployeeTask.getStatus())){
+                            taskEffectiveNum++;
+                        }
+
+                        if (null != collegeEmployeeTask.getTaskCompleteDate()){
+                            taskFinishNum++;
+                        }
+
+                        if (TimeUtils.compareTwoTime(now, collegeEmployeeTask.getStudyEndDate()) > 0){
+                            taskDelayNum++;
+                        }
+                        employeeMap.put(collegeEmployeeTask.getEmployeeId(), null);
+
+                        Long taskId = collegeEmployeeTask.getTaskId();
+                        CollegeStudyTaskScore studyScoreByTaskId = collegeStudyTaskScoreServiceImpl.getStudyScoreByTaskId(String.valueOf(taskId));
+                        if (null != studyScoreByTaskId){
+                            allTaskDifficultyScore += null != studyScoreByTaskId.getTaskDifficultyScore() ? studyScoreByTaskId.getTaskDifficultyScore() : 0;
+                            allTutorScore += null != studyScoreByTaskId.getTutorScore() ? studyScoreByTaskId.getTutorScore() : 0;
+                            allEmployeeScoreNum++;
+                        }
+                    }
+                    if (null != employeeMap && employeeMap.size() > 0){
+                        taskEmployeeNum = employeeMap.size();
+                    }
+                }
+                result.setTaskAllNum(taskAllNum);
+                result.setTaskEffectiveNum(taskEffectiveNum);
+                result.setTaskFinishNum(taskFinishNum);
+                result.setTaskDelayNum(taskDelayNum);
+                result.setTaskEmployeeNum(taskEmployeeNum);
+
+                if (taskAllNum > 0){
+                    taskEffective = (taskEffectiveNum * 100) / taskAllNum;
+                    taskFinish = (taskFinishNum * 100) / taskAllNum;
+                    taskDelay = (taskDelayNum * 100) / taskAllNum;
+                }
+                result.setTaskEffective(taskEffective);
+                result.setTaskFinish(taskFinish);
+                result.setTaskDelay(taskDelay);
+
+                if (0 != allEmployeeScoreNum){
+                    argTaskDifficultyScore = new BigDecimal((float)allTaskDifficultyScore/allEmployeeScoreNum).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
+                    argTutorScore = new BigDecimal((float)allTutorScore/allEmployeeScoreNum).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
+                }
+                result.setArgTaskDifficultyScore(argTaskDifficultyScore);
+                result.setArgTutorScore(argTutorScore);
+
+                //设置评分排名
+                int count = this.count();
+                Integer taskDifficultyScoreRanking = count;
+                Integer tutorScoreRanking = count;
+                String taskDifficultyScoreCxceedPercentage = "0%";
+                String tutorScoreCxceedPercentage = "0%";
+                if (argTaskDifficultyScore > 0 && argTutorScore > 0){
+                    Map<String, Map<String, Integer>> taskDifficultyScoreMap = new HashMap<>();
+                    Map<String, Double> taskDifficultyArgScoreMap = new HashMap<>();
+                    Map<String, Map<String, Integer>> tutorScoreMap = new HashMap<>();
+                    Map<String, Double> taskTutorArgScoreMap = new HashMap<>();
+                    List<CollegeStudyTaskScore> collegeStudyTaskScores = collegeStudyTaskScoreServiceImpl.queryAllStudyScore();
+                    if (ArrayUtils.isNotEmpty(collegeStudyTaskScores)){
+                        for (CollegeStudyTaskScore collegeStudyTaskScore : collegeStudyTaskScores) {
+                            String scoreStudyTaskId = collegeStudyTaskScore.getStudyTaskId();
+                            Integer taskDifficultyScore = 0;
+                            Integer employeeNum = 1;
+                            Map<String, Integer> difficultyAllScoreMap = new HashMap<>();
+                            if (taskDifficultyScoreMap.containsKey(scoreStudyTaskId)){
+                                difficultyAllScoreMap = taskDifficultyScoreMap.get(scoreStudyTaskId);
+                            }
+                            if (difficultyAllScoreMap.containsKey("score")){
+                                taskDifficultyScore = difficultyAllScoreMap.get("score") + collegeStudyTaskScore.getTaskDifficultyScore();
+                            }else {
+                                taskDifficultyScore = collegeStudyTaskScore.getTaskDifficultyScore();
+                            }
+                            if (difficultyAllScoreMap.containsKey("employeeNum")){
+                                employeeNum = difficultyAllScoreMap.get("employeeNum") + 1;
+                            }
+                            difficultyAllScoreMap.put("score", taskDifficultyScore);
+                            difficultyAllScoreMap.put("employeeNum", employeeNum);
+                            taskDifficultyScoreMap.put(scoreStudyTaskId, difficultyAllScoreMap);
+
+
+                            Map<String, Integer> tutorAllScoreMap = new HashMap<>();
+                            Integer tutorScore = 0;
+                            if (tutorScoreMap.containsKey(scoreStudyTaskId)){
+                                tutorAllScoreMap = tutorScoreMap.get(scoreStudyTaskId);
+                            }
+                            if (tutorAllScoreMap.containsKey("score")){
+                                tutorScore = tutorAllScoreMap.get("score") + collegeStudyTaskScore.getTutorScore();
+                            }else {
+                                tutorScore = collegeStudyTaskScore.getTutorScore();
+                            }
+
+                            tutorAllScoreMap.put("score", tutorScore);
+                            tutorAllScoreMap.put("employeeNum", employeeNum);
+                            tutorScoreMap.put(scoreStudyTaskId, tutorAllScoreMap);
+                        }
+                        if (null != taskDifficultyScoreMap && taskDifficultyScoreMap.size() > 0){
+                            taskDifficultyScoreRanking = taskDifficultyScoreMap.size();
+                            for (String key : taskDifficultyScoreMap.keySet()){
+                                Map<String, Integer> map = taskDifficultyScoreMap.get(key);
+                                Integer allScore = map.get("score");
+                                Integer employeeNum = map.get("employeeNum");
+                                Double argScore = new BigDecimal((float)allScore/employeeNum).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
+                                taskDifficultyArgScoreMap.put(key, argScore);
+                                if (!StringUtils.equals(studyTaskId, key) && argTaskDifficultyScore >= argScore){
+                                    taskDifficultyScoreRanking --;
+                                }
+                            }
+                            taskDifficultyScoreCxceedPercentage = ((count - taskDifficultyScoreRanking + 1) * 100 / count) + "%";
+                        }
+                        if (null != tutorScoreMap && tutorScoreMap.size() > 0){
+                            tutorScoreRanking = tutorScoreMap.size();
+                            for (String key : tutorScoreMap.keySet()){
+                                Map<String, Integer> map = tutorScoreMap.get(key);
+                                Integer allScore = map.get("score");
+                                Integer employeeNum = map.get("employeeNum");
+                                Double argScore = new BigDecimal((float)allScore/employeeNum).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
+                                if (!StringUtils.equals(studyTaskId, key) && argTutorScore >= argScore){
+                                    tutorScoreRanking --;
+                                }
+                                tutorScoreCxceedPercentage = ((count - tutorScoreRanking + 1) * 100 / count) + "%";
+                            }
+                        }
+                    }
+                }
+                result.setTaskDifficultyScoreRanking(taskDifficultyScoreRanking);
+                result.setTaskDifficultyScoreCxceedPercentage(taskDifficultyScoreCxceedPercentage);
+                result.setTutorScoreRanking(tutorScoreRanking);
+                result.setTutorScoreCxceedPercentage(tutorScoreCxceedPercentage);
 
                 /*//设置章节信息
                 List<CollegeCourseChaptersCfg> collegeCourseChaptersCfgList = collegeCourseChaptersCfgServiceImpl.queryByStudyId(result.getStudyId());

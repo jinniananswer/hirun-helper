@@ -39,5 +39,7 @@ public class CollegeEmployTaskInfoResponseDTO {
 
     private String selectTutor;
 
+    private LocalDateTime taskCompleteDate;
+
     private List<CollegeTaskStudyContentResponseDTO> taskStudyContentList;
 }

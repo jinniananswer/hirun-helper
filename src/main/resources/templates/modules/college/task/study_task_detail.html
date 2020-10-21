@@ -89,49 +89,152 @@
                     </el-tabs>
                 </el-card>
             </el-row>
-            <el-row :gutter="12">
-                <el-card class="box-card" shadow="hover">
-                    <div slot="header" class="clearfix">
-                        <span>学习章节任务信息</span>
+            <el-row :gutter="5">
+                <el-col :span="16">
+                    <div class="grid-content bg-purple">
+                        <el-card class="box-card" shadow="hover">
+                            <div class="grid-content bg-purple-light">
+                                <el-collapse value="1" accordion>
+                                    <el-card class="box-card" shadow="hover">
+                                        <div>
+                                            <el-divider content-position="left"><span style="font-weight: 700">任务评分详情</span>
+                                            </el-divider>
+                                        </div>
+                                        <el-row>
+                                            <span class="demonstration">任务难度评分</span>
+                                            <div>
+                                                <el-tag size="mini">任务难度评价排名{{studyTaskInfo.taskDifficultyScoreRanking}}超过{{studyTaskInfo.taskDifficultyScoreCxceedPercentage}}的任务</el-tag>
+                                            </div>
+                                            <el-rate
+                                                    v-model="studyTaskInfo.argTaskDifficultyScore"
+                                                    disabled
+                                                    show-score="true"
+                                                    text-color="#ff9900"
+                                                    score-template="{value}">
+                                            </el-rate>
+                                        </el-row>
+                                        <el-row>
+                                            <span class="demonstration">老师评分</span>
+                                            <div>
+                                                <el-tag size="mini">任务老师评价排名{{studyTaskInfo.tutorScoreRanking}}超过{{studyTaskInfo.tutorScoreCxceedPercentage}}的任务</el-tag>
+                                            </div>
+                                            <el-rate
+                                                    v-model="studyTaskInfo.argTutorScore"
+                                                    disabled
+                                                    show-score="true"
+                                                    text-color="#ff9900"
+                                                    score-template="{value}">
+                                            </el-rate>
+                                        </el-row>
+                                    </el-card>
+                                </el-collapse>
+                            </div>
+                        </el-card>
                     </div>
-                    <el-timeline>
-                        <el-button  icon="fa fa-plus" @click="addChapters()">新增课程章节</el-button>
-                        <el-table border
-                                  :data="collegeCourseChapterInfo" stripe="true" height="250"
-                                  style="width: 100%" align="center" ref="collegeCourseChapterInfo">
-                            <el-table-column prop="studyName" width="150" label="学习内容" align="center"></el-table-column>
-                            <el-table-column prop="chaptersName" width="200" label="章节名称" align="center"></el-table-column>
-                            <el-table-column prop="chaptersTypeName" width="100" label="章节类型" align="center"></el-table-column>
-                            <el-table-column prop="studyTime" width="100" label="学习时间/天" align="center"></el-table-column>
-                            <el-table-column prop="exercisesNumber" width="100" label="习题次数" align="center"></el-table-column>
-                            <el-table-column prop="passScore" width="100" label="考试合格分数" align="center"></el-table-column>
-                            <el-table-column label="操作" align="center" width="80">
-                                <template slot-scope="scope">
-                                    <el-button type="danger" width="50" size="mini" icon="el-icon-edit"
-                                               @click="editChapters(scope.row)">修改
-                                    </el-button>
+                </el-col>
+                <el-col :span="8">
+                    <div class="grid-content bg-purple-light">
+                        <el-collapse value="1" accordion>
+                            <el-card class="box-card" shadow="hover">
+                                <div>
+                                    <el-divider content-position="left"><span style="font-weight: 700">任务分配情况</span>
+                                    </el-divider>
+                                </div>
+                                <template>
+                                    <el-row :gutter="5">
+                                        <el-col :span="12">
+                                            <span>任务分配总数：
+                                                <template v-if="studyTaskInfo.taskAllNum != null && studyTaskInfo.taskAllNum != ''">
+                                                    <el-tag type="danger">{{studyTaskInfo.taskAllNum}}</el-tag>
+                                                </template>
+                                            </span>
+                                        </el-col>
+                                    </el-row>
+                                    <el-row :gutter="5" align="center">
+                                        <el-col :span="12">
+                                            <el-row>
+                                                <el-col>
+                                                    <span>任务有效数量：
+                                                        <el-tag type="danger">{{studyTaskInfo.taskEffectiveNum}}</el-tag>
+                                                    </span>
+                                                </el-col>
+                                            </el-row>
+                                            <el-row>
+                                                <el-col>
+                                                    <el-progress type="circle" :percentage="studyTaskInfo.taskEffective"></el-progress>
+                                                </el-col>
+                                            </el-row>
+                                        </el-col>
+                                    </el-row>
                                 </template>
-                            </el-table-column>
-                        </el-table>
-                    </el-timeline>
-                    <div style="text-align: center">
-                        <el-pagination
-                                layout="total, prev, pager, next"
-                                :total="queryCond.count"
-                                :current-page.sync="queryCond.page"
-                                :page-size="queryCond.limit"
-                                @current-change="initTaskInfo">
-                        </el-pagination>
+                            </el-card>
+                        </el-collapse>
+                        <el-card class="box-card" shadow="hover">
+                            <div>
+                                <el-divider content-position="left"><span style="font-weight: 700">任务完成情况</span>
+                                </el-divider>
+                            </div>
+                            <template>
+                                <el-row :gutter="5">
+                                    <el-col :span="12">
+                                            <span>任务分配总数：
+                                                <template v-if="studyTaskInfo.taskAllNum != null && studyTaskInfo.taskAllNum != ''">
+                                                    <el-tag type="danger">{{studyTaskInfo.taskAllNum}}</el-tag>
+                                                </template>
+                                            </span>
+                                    </el-col>
+                                </el-row>
+                                <el-row :gutter="5" align="center">
+                                    <el-col :span="12">
+                                        <el-row>
+                                            <span>任务完成数量：
+                                                <el-tag type="danger">{{studyTaskInfo.taskFinishNum}}</el-tag>
+                                            </span>
+                                        </el-row>
+                                        <el-row>
+                                            <el-col>
+                                                <el-progress type="circle" :percentage="studyTaskInfo.taskFinish"></el-progress>
+                                            </el-col>
+                                        </el-row>
+                                    </el-col>
+                                </el-row>
+                            </template>
+                        </el-card>
+                        <el-card class="box-card" shadow="hover">
+                            <div>
+                                <el-divider content-position="left"><span style="font-weight: 700">任务延期情况</span>
+                                </el-divider>
+                            </div>
+                            <template>
+                                <el-row :gutter="5">
+                                    <el-col :span="12">
+                                            <span>任务分配总数：
+                                                <template v-if="studyTaskInfo.taskAllNum != null && studyTaskInfo.taskAllNum != ''">
+                                                    <el-tag type="danger">{{studyTaskInfo.taskAllNum}}</el-tag>
+                                                </template>
+                                            </span>
+                                    </el-col>
+                                </el-row>
+                                <el-row :gutter="5" align="center">
+                                    <el-col :span="12">
+                                        <el-row>
+                                            <el-col>
+                                                <span>延期数量：
+                                                    <el-tag type="danger">{{studyTaskInfo.taskDelayNum}}</el-tag>
+                                                </span>
+                                            </el-col>
+                                        </el-row>
+                                        <el-row>
+                                            <el-col>
+                                                <el-progress type="circle" :percentage="studyTaskInfo.taskDelay"></el-progress>
+                                            </el-col>
+                                        </el-row>
+                                    </el-col>
+                                </el-row>
+                            </template>
+                        </el-card>
                     </div>
-                </el-card>
-                <el-card class="box-card" shadow="hover">
-                    <div>
-                        <el-divider content-position="left"><span style="font-weight: 700">学习任务工作岗位信息</span>
-                        </el-divider>
-                    </div>
-                    <template>
-                    </template>
-                </el-card>
+                </el-col>
             </el-row>
 
             <el-dialog width="80%" title="新增学习章节配置" append-to-body :visible.sync="addChaptersDialogVisible">

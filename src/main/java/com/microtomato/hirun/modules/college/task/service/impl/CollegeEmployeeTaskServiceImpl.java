@@ -389,14 +389,15 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
                     }
                     collegeEmployeeTaskDetailResponseDTO.setTaskName(taskName);
                 }
-                if (null != collegeEmployeeTaskScore){
+                LocalDateTime taskCompleteDate = collegeEmployeeTask.getTaskCompleteDate();
+                if (null != taskCompleteDate){
                     finishTaskList.add(collegeEmployeeTaskDetailResponseDTO);
                 }else {
                     LocalDateTime studyStartDate = collegeEmployeeTask.getStudyStartDate();
                     LocalDateTime studyEndDate = collegeEmployeeTask.getStudyEndDate();
                     LocalDateTime todayFirstTime = TimeUtils.getFirstSecondDay(nowTime, 0);
                     LocalDateTime todayLastTime = TimeUtils.addSeconds(TimeUtils.getFirstSecondDay(todayFirstTime, 1), -1);
-                    if (TimeUtils.compareTwoTime(studyStartDate, todayLastTime) <= 0 && TimeUtils.compareTwoTime(studyEndDate, todayFirstTime) >= 0 && TimeUtils.compareTwoTime(studyEndDate, studyStartDate) > 0){
+                    if (TimeUtils.compareTwoTime(studyStartDate, todayLastTime) <= 0  && TimeUtils.compareTwoTime(studyEndDate, studyStartDate) > 0){
                         todayTaskList.add(collegeEmployeeTaskDetailResponseDTO);
                     }
 
@@ -559,6 +560,12 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
             }
         }
         return result;
+    }
+
+    @Override
+    public List<CollegeEmployeeTask> queryByStudyTaskId(String studyTaskId) {
+        return  this.list(Wrappers.<CollegeEmployeeTask>lambdaQuery()
+                .eq(CollegeEmployeeTask::getStudyTaskId, studyTaskId));
     }
 
     private CollegeEmployeeTaskTypeFinishDetailsRequestDTO taskClassification(List<CollegeEmployeeTaskDetailResponseDTO> taskList){

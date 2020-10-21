@@ -170,8 +170,8 @@ public class CollegeEmployeeTaskController {
             for (CollegeEmployeeTask collegeEmployeeTask : collegeEmployeeTaskList){
                 String studyTaskId = collegeEmployeeTask.getStudyTaskId();
                 CollegeStudyTaskCfg collegeStudyTask = collegeStudyTaskCfgServiceImpl.getAllByStudyTaskId(Long.valueOf(studyTaskId));
-                LocalDateTime studyCompleteDate = collegeEmployeeTask.getStudyCompleteDate();
-                if (null != studyCompleteDate){
+                LocalDateTime taskCompleteDate = collegeEmployeeTask.getTaskCompleteDate();
+                if (null != taskCompleteDate){
                     taskFinishNum++;
                 }
                 Integer exercisesCompletedNumber = collegeEmployeeTask.getExercisesCompletedNumber();
@@ -198,12 +198,14 @@ public class CollegeEmployeeTaskController {
                     allScore += score;
                     CollegeEmployeeTaskScore collegeEmployeeTaskScore = collegeEmployeeTaskScoreServiceImpl.getByTaskId(String.valueOf(collegeEmployeeTask.getTaskId()));
                     if (null != collegeEmployeeTaskScore){
-                        Integer examEvaluate = collegeEmployeeTaskScore.getExamScore();
-                        allExamScore += examEvaluate;
-                        Integer exercisesEvaluate = collegeEmployeeTaskScore.getExercisesScore();
-                        allExercisesScore += exercisesEvaluate;
-                        Integer studyEvaluate = collegeEmployeeTaskScore.getStudyScore();
-                        allStudyScore += studyEvaluate;
+                        if (!StringUtils.equals("2", collegeStudyTask.getStudyType())){
+                            Integer examEvaluate = collegeEmployeeTaskScore.getExamScore();
+                            allExamScore += examEvaluate;
+                            Integer exercisesEvaluate = collegeEmployeeTaskScore.getExercisesScore();
+                            allExercisesScore += exercisesEvaluate;
+                            Integer studyEvaluate = collegeEmployeeTaskScore.getStudyScore();
+                            allStudyScore += studyEvaluate;
+                        }
                     }
                 }
             }

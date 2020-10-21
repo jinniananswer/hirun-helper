@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
  *
  * @author makejava
  * @version 1.0.0
- * @date 2020-09-23 03:08:25
+ * @date 2020-10-22 01:31:29
  */
 @Data
 @Builder
@@ -96,5 +96,11 @@ public class CollegeEmployeeTask extends BaseEntity {
      */
     @TableField(value = "study_date_length")
     private Integer studyDateLength;
+
+    /**
+     * 任务完成时间
+     */
+    @TableField(value = "task_complete_date")
+    private LocalDateTime taskCompleteDate;
 
 }

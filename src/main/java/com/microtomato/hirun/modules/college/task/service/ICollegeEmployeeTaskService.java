@@ -47,4 +47,6 @@ public interface ICollegeEmployeeTaskService extends IService<CollegeEmployeeTas
     CollegeEmployTaskInfoResponseDTO queryEmployTaskInfoByTaskId(Long taskId);
 
     List<CollegeEmployeeTaskTutorOptionsDTO> queryLoginEmployeeSelectTutor();
+
+    List<CollegeEmployeeTask> queryByStudyTaskId(String studyTaskId);
 }
