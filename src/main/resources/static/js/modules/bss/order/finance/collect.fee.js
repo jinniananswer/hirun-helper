@@ -6,7 +6,8 @@ require(['vue', 'ELEMENT','ajax', 'vueselect', 'util','cust-info', 'order-info',
                 custId: util.getRequest('custId'),
                 orderId: util.getRequest('orderId'),
                 payNo: util.getRequest('payNo'),
-                remark: '',
+                remark: null,
+                auditComment:null,
                 cust: {
                     custName: '',
                     housesId: null,
@@ -44,6 +45,25 @@ require(['vue', 'ELEMENT','ajax', 'vueselect', 'util','cust-info', 'order-info',
                     this.show = 'display:none';
                     this.queryShow = 'display:block';
                 }
+
+                if (this.orderId && this.payNo) {
+                    this.getData();
+                }
+            },
+
+            getData : function() {
+                let data = {
+                    orderId : this.orderId,
+                    payNo : this.payNo
+                }
+                let that = this;
+                ajax.get('api/bss.order/finance/getCustPayData', data, function(responseData){
+                    that.cust.custName = responseData.custName;
+                    that.cust.housesId = responseData.housesId;
+                    that.cust.address = responseData.address;
+                    that.remark = responseData.payNoRemark;
+                    that.auditComment = responseData.auditComment;
+                });
             },
 
             showCustQuery: function() {

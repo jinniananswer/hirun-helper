@@ -10,6 +10,7 @@ require(['vue', 'ELEMENT','ajax', 'vueselect', 'util','cust-info', 'order-info',
                     auditStatus:0,
                     auditReason:"",
                 },
+                remark: null,
                 payItems: [],
                 payments: [],
             }
@@ -35,6 +36,7 @@ require(['vue', 'ELEMENT','ajax', 'vueselect', 'util','cust-info', 'order-info',
                         }
                         that.payments = tempPayments;
                     }
+                    that.remark = data.remark;
                     if (data.payItems) {
                         that.payItems = data.payItems;
                     }
