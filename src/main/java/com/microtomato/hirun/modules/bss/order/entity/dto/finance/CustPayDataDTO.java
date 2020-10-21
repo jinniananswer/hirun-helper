@@ -24,4 +24,6 @@ public class CustPayDataDTO {
     private String address;
 
     private String payNoRemark;
+
+    private String auditComment;
 }
