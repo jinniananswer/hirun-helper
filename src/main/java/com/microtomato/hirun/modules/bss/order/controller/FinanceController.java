@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
 
 import com.microtomato.hirun.modules.bss.order.entity.dto.*;
+import com.microtomato.hirun.modules.bss.order.entity.dto.finance.CustPayDataDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.finance.FinanceOrderTaskDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.finance.FinanceOrderTaskQueryDTO;
 import com.microtomato.hirun.modules.bss.order.service.IFinanceDomainService;
@@ -93,5 +94,11 @@ public class FinanceController {
     @RestResult
     public IPage<FinanceOrderTaskDTO> queryFinanceOrderTasks(FinanceOrderTaskQueryDTO condition) {
         return this.domainService.queryFinanceOrderTasks(condition);
+    }
+
+    @GetMapping("/getCustPayData")
+    @RestResult
+    public CustPayDataDTO getCustPayData(Long orderId, Long payNo) {
+        return this.domainService.getCustPayData(orderId, payNo);
     }
 }

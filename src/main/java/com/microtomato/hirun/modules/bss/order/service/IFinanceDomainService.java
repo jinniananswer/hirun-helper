@@ -3,6 +3,7 @@ package com.microtomato.hirun.modules.bss.order.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.modules.bss.order.entity.dto.*;
+import com.microtomato.hirun.modules.bss.order.entity.dto.finance.CustPayDataDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.finance.FinanceOrderTaskDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.finance.FinanceOrderTaskQueryDTO;
 
@@ -19,6 +20,8 @@ public interface IFinanceDomainService {
     PayComponentDTO initPayComponent(Long orderId, Long payNo);
 
     CollectionComponentDTO initCollectionComponent(Long payNo);
+
+    CustPayDataDTO getCustPayData(Long orderId, Long payNo);
 
     void collectFee(CollectFeeDTO feeData);
 

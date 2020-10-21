@@ -1,20 +1,12 @@
 package com.microtomato.hirun.modules.bss.order.entity.po;
 
+import com.baomidou.mybatisplus.annotation.*;
+import com.microtomato.hirun.framework.data.BaseEntity;
+import lombok.*;
+import lombok.experimental.Accessors;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.microtomato.hirun.framework.data.BaseEntity;
-import com.baomidou.mybatisplus.annotation.TableField;
-
-import lombok.Data;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
 /**
  * 订单支付流水表表(OrderPayNo)表实体类
@@ -85,6 +77,9 @@ public class OrderPayNo extends BaseEntity {
     @TableField(value = "org_id")
     private Long orgId;
 
+    /** 收据编号 */
+    @TableField(value = "receipt_no")
+    private String receiptNo;
 
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)
     private Long createUserId;

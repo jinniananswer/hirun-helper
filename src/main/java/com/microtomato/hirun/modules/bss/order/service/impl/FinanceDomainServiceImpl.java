@@ -19,6 +19,7 @@ import com.microtomato.hirun.modules.bss.house.entity.po.Houses;
 import com.microtomato.hirun.modules.bss.house.service.IHousesService;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.*;
+import com.microtomato.hirun.modules.bss.order.entity.dto.finance.CustPayDataDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.finance.FinanceOrderTaskDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.finance.FinanceOrderTaskQueryDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.*;
@@ -167,6 +168,8 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
                     componentData.setNeedPay(totalMoney.doubleValue() / 100);
                 }
                 componentData.setPayDate(orderPayNo.getPayDate());
+                componentData.setAuditComment(orderPayNo.getAuditComment());
+                componentData.setRemark(orderPayNo.getRemark());
             }
 
             List<OrderPayItem> payItems = this.orderPayItemService.queryByOrderIdPayNo(orderId, payNo);
@@ -216,6 +219,39 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
 
 
         return componentData;
+    }
+
+    /**
+     * 获取支付其他信息
+     * @param orderId
+     * @param payNo
+     * @return
+     */
+    @Override
+    public CustPayDataDTO getCustPayData(Long orderId, Long payNo) {
+        CustPayDataDTO data = new CustPayDataDTO();
+
+        OrderBase orderBase = this.orderBaseService.queryByOrderId(orderId);
+        if (orderBase == null) {
+            return null;
+        }
+
+        data.setOrderId(orderBase.getOrderId());
+        data.setCustId(orderBase.getCustId());
+        data.setAddress(orderBase.getDecorateAddress());
+        data.setHousesId(orderBase.getHousesId());
+
+        OrderPayNo orderPayNo = this.orderPayNoService.getByOrderIdAndPayNo(orderId, payNo);
+        if (orderPayNo != null) {
+            data.setPayNoRemark(orderPayNo.getRemark());
+        }
+
+        CustBase custBase = this.custBaseService.queryByCustId(orderBase.getCustId());
+        if (custBase != null) {
+            data.setCustName(custBase.getCustName());
+        }
+
+        return data;
     }
 
     /**

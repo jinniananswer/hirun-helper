@@ -213,7 +213,7 @@ public class OrderFeeServiceImpl extends ServiceImpl<OrderFeeMapper, OrderFee> i
     @Override
     public void costReview(OrderPayNo orderPayNo) {
         Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
-        OrderPayNoService.update(new UpdateWrapper<OrderPayNo>().lambda().eq(OrderPayNo::getPayNo, orderPayNo.getPayNo()).eq(OrderPayNo::getOrderId, orderPayNo.getOrderId()).gt(OrderPayNo::getEndDate, LocalDateTime.now()).set(OrderPayNo::getAuditStatus, orderPayNo.getAuditStatus()).set(OrderPayNo::getAuditEmployeeId, employeeId).set(OrderPayNo::getUpdateTime, LocalDateTime.now()).set(OrderPayNo::getRemark, orderPayNo.getRemark()));
+        OrderPayNoService.update(new UpdateWrapper<OrderPayNo>().lambda().eq(OrderPayNo::getPayNo, orderPayNo.getPayNo()).eq(OrderPayNo::getOrderId, orderPayNo.getOrderId()).gt(OrderPayNo::getEndDate, LocalDateTime.now()).set(OrderPayNo::getAuditStatus, orderPayNo.getAuditStatus()).set(OrderPayNo::getAuditEmployeeId, employeeId).set(OrderPayNo::getUpdateTime, LocalDateTime.now()).set(OrderPayNo::getAuditComment, orderPayNo.getAuditComment()));
         if(StringUtils.equals(orderPayNo.getAuditStatus(),"1")){
             orderMaterialContractService.updateContractInfoByPay(orderPayNo.getPayNo());
         }
