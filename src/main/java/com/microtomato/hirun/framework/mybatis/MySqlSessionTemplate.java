@@ -26,7 +26,6 @@ import static org.mybatis.spring.SqlSessionUtils.*;
 import static org.springframework.util.Assert.notNull;
 
 @Slf4j
-//@Component
 public class  MySqlSessionTemplate extends SqlSessionTemplate {
 
     private final SqlSessionFactory sqlSessionFactory;
@@ -37,6 +36,10 @@ public class  MySqlSessionTemplate extends SqlSessionTemplate {
     @Getter
     @Setter
     private Map<String, SqlSessionFactory> targetSqlSessionFactories;
+
+    @Getter
+    @Setter
+    private Map<String, DataSourceWrapper> targetDataSourceWrappers;
 
     @Getter
     @Setter

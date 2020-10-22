@@ -1,8 +1,6 @@
 package com.microtomato.hirun.framework.mybatis.config;
 
-import com.alibaba.druid.support.http.StatViewServlet;
-import com.alibaba.druid.support.http.WebStatFilter;
-import com.atomikos.jdbc.AtomikosDataSourceBean;
+import com.atomikos.jdbc.nonxa.AtomikosNonXADataSourceBean;
 import com.baomidou.mybatisplus.autoconfigure.SpringBootVFS;
 import com.baomidou.mybatisplus.core.parser.ISqlParser;
 import com.baomidou.mybatisplus.extension.parsers.BlockAttackSqlParser;
@@ -15,6 +13,7 @@ import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
 import com.microtomato.hirun.framework.aop.AutoSetMetaObjectAdvice;
 import com.microtomato.hirun.framework.interceptor.SqlPerformanceInterceptor;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
+import com.microtomato.hirun.framework.mybatis.DataSourceWrapper;
 import com.microtomato.hirun.framework.mybatis.MyGlobalConfig;
 import com.microtomato.hirun.framework.mybatis.MySqlSessionTemplate;
 import com.microtomato.hirun.framework.mybatis.aop.RowBoundsLimitInterceptor;
@@ -30,8 +29,6 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -71,29 +68,56 @@ public class MyBatisPlusConfig {
     private RowBoundsLimitInterceptor rowBoundsLimitInterceptor;
 
     private Map<String, SqlSessionFactory> sqlSessionFactoryMap = new HashMap<>(16);
+    private Map<String, DataSourceWrapper> dataSourceWrapperMap = new HashMap<>(16);
 
     @Primary
     @Bean
     @ConfigurationProperties(prefix = "spring.datasource.atomikos.sys")
-    public AtomikosDataSourceBean sysDataSource() {
-        return DataSourceBuilder.create().type(AtomikosDataSourceBean.class).build();
+    public AtomikosNonXADataSourceBean sysDataSource() {
+        AtomikosNonXADataSourceBean bean = DataSourceBuilder.create().type(AtomikosNonXADataSourceBean.class).build();
+        bean.setConcurrentConnectionValidation(false);
+        return bean;
     }
 
     @Bean
     @ConfigurationProperties(prefix = "spring.datasource.atomikos.ins")
-    public AtomikosDataSourceBean insDataSource() {
-        return DataSourceBuilder.create().type(AtomikosDataSourceBean.class).build();
+    public AtomikosNonXADataSourceBean insDataSource() {
+        AtomikosNonXADataSourceBean bean = DataSourceBuilder.create().type(AtomikosNonXADataSourceBean.class).build();
+        bean.setConcurrentConnectionValidation(false);
+        return bean;
     }
 
     @Bean(name = "sqlSessionTemplate")
     public MySqlSessionTemplate customSqlSessionTemplate() throws Exception {
 
-        sqlSessionFactoryMap.put(DataSourceKey.SYS, createSqlSessionFactory(sysDataSource(), true));
-        sqlSessionFactoryMap.put(DataSourceKey.INS, createSqlSessionFactory(insDataSource(), true));
+        recording(DataSourceKey.SYS, sysDataSource());
+        recording(DataSourceKey.INS, insDataSource());
 
         MySqlSessionTemplate sqlSessionTemplate = new MySqlSessionTemplate(sqlSessionFactoryMap.get(DataSourceKey.SYS));
         sqlSessionTemplate.setTargetSqlSessionFactories(sqlSessionFactoryMap);
+        sqlSessionTemplate.setTargetDataSourceWrappers(dataSourceWrapperMap);
         return sqlSessionTemplate;
+    }
+
+    /**
+     * 记录映射关系，方便从数据源名获取到 SqlSessionFactory 和 AtomikosNonXADataSourceBean，
+     * 获取 AtomikosNonXADataSourceBean 目的是做数据源的心跳检查。
+     *
+     *  key -> SqlSessionFactory
+     *  key -> AtomikosNonXADataSourceBean
+     *
+     * @param key
+     * @param atomikosNonXADataSourceBean
+     * @throws Exception
+     */
+    private void recording(String key, AtomikosNonXADataSourceBean atomikosNonXADataSourceBean) throws Exception {
+        DataSourceWrapper dataSourceWrapper = new DataSourceWrapper();
+        dataSourceWrapper.setAtomikosNonXADataSourceBean(atomikosNonXADataSourceBean);
+        dataSourceWrapper.setValidationQuery(atomikosNonXADataSourceBean.getTestQuery());
+        sqlSessionFactoryMap.put(key, createSqlSessionFactory(atomikosNonXADataSourceBean, true));
+        dataSourceWrapperMap.put(key, dataSourceWrapper);
+        /** 设置为 null，避免 testOnBorrow 带来性能开销 */
+        atomikosNonXADataSourceBean.setTestQuery(null);
     }
 
     /**
@@ -103,7 +127,7 @@ public class MyBatisPlusConfig {
      * @param reuse      是否复用前面的 Configuration 以加速启动过程。
      * @return
      */
-    private SqlSessionFactory createSqlSessionFactory(AtomikosDataSourceBean dataSource, boolean reuse) throws Exception {
+    private SqlSessionFactory createSqlSessionFactory(AtomikosNonXADataSourceBean dataSource, boolean reuse) throws Exception {
 
         long start = System.currentTimeMillis();
         log.info("数据源初始化开始: {}", dataSource.toString());
@@ -266,30 +290,30 @@ public class MyBatisPlusConfig {
         return sqlPerformanceInterceptor;
     }
 
-    @Bean
-    public ServletRegistrationBean druidServlet() {
-        log.info("Init Druid Servlet Configuration ");
-        ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean(new StatViewServlet(), "/druid/*");
-        // IP白名单，不设默认都可以
-//        servletRegistrationBean.addInitParameter("allow", "192.168.2.25,127.0.0.1");
-        // IP黑名单(共同存在时，deny优先于allow)
-        servletRegistrationBean.addInitParameter("deny", "192.168.1.100");
-        //控制台管理用户
-        servletRegistrationBean.addInitParameter("loginUsername", "root");
-        servletRegistrationBean.addInitParameter("loginPassword", "root");
-        //是否能够重置数据 禁用HTML页面上的“Reset All”功能
-        servletRegistrationBean.addInitParameter("resetEnable", "false");
-        return servletRegistrationBean;
-    }
-
-    @Bean
-    public FilterRegistrationBean filterRegistrationBean() {
-        FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean(new WebStatFilter());
-        //添加过滤规则
-        filterRegistrationBean.addUrlPatterns("/*");
-        //添加不需要忽略的格式信息
-        filterRegistrationBean.addInitParameter("exclusions", "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*");
-        return filterRegistrationBean;
-    }
+//    @Bean
+//    public ServletRegistrationBean druidServlet() {
+//        log.info("Init Druid Servlet Configuration ");
+//        ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean(new StatViewServlet(), "/druid/*");
+//        // IP白名单，不设默认都可以
+////        servletRegistrationBean.addInitParameter("allow", "192.168.2.25,127.0.0.1");
+//        // IP黑名单(共同存在时，deny优先于allow)
+//        servletRegistrationBean.addInitParameter("deny", "192.168.1.100");
+//        //控制台管理用户
+//        servletRegistrationBean.addInitParameter("loginUsername", "root");
+//        servletRegistrationBean.addInitParameter("loginPassword", "root");
+//        //是否能够重置数据 禁用HTML页面上的“Reset All”功能
+//        servletRegistrationBean.addInitParameter("resetEnable", "false");
+//        return servletRegistrationBean;
+//    }
+//
+//    @Bean
+//    public FilterRegistrationBean filterRegistrationBean() {
+//        FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean(new WebStatFilter());
+//        //添加过滤规则
+//        filterRegistrationBean.addUrlPatterns("/*");
+//        //添加不需要忽略的格式信息
+//        filterRegistrationBean.addInitParameter("exclusions", "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*");
+//        return filterRegistrationBean;
+//    }
 
 }
