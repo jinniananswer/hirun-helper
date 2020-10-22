@@ -69,6 +69,10 @@ public class JwtInterceptor implements HandlerInterceptor {
             return true;
         }
 
+        if (null != requestURI && requestURI.indexOf("api/demo") >= 0) {
+            return true;
+        }
+
         // 重定向到登录页面
         response.sendRedirect("/hirun");
         return false;

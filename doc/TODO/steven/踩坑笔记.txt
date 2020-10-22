@@ -1,4 +1,4 @@
-JVM 默认时区为: Asia/Shanghai 与 java 程序中 GMT+08 不一致时的异常说明
+### JVM 默认时区为: Asia/Shanghai 与 java 程序中 GMT+08 不一致时的异常说明
 
 在Spring程序中配置了spring.jackson.time-zone=GMT+08时，部分时间相差一个小时问题，且是固定的时间出现了固定的时差问题。
 经过排查，发现是JVM的默认时区为：Asia/Shanghai，两者不一致，然后Asia/Shanghai 这个时区并不一定与GMT+08这个时区相等，
@@ -6,3 +6,28 @@ JVM 默认时区为: Asia/Shanghai 与 java 程序中 GMT+08 不一致时的异�
 在这样的时间区间，夏季时，会将时间拨快1个小时（即东9区时间），夏季结束时会再次将时间拨回一个小时（即东8区时间）。
 所以要保证程序显示的时间没有问题，需要将JVM和spring.jackson.time-zone设置的时区保持一致即可解决问题。
 JVM中设置为：Asia/Shanghai，经代码调试出现的底层时区调整的测试案例。
+
+### atomikos 事务控制
+
+AtomikosDataSourceBean: 遵守标准的XA规范，实现两阶段提交。可以和Druid数据源集成。
+AtomikosNonXADataSourceBean: 实现多数据源统一提交或回滚，但不是两阶段提交，是一个简化版的实现。不可以集成Druid数据源。
+
+AtomikosNonXADataSourceBean 参数说明:
+  minPoolSize: 2
+  maxPoolSize: 10
+  maxIdleTime: 60              最大空闲时间（秒），应设置成小于防火墙回收闲置网络连接的时间。(maxLifetime+maintenanceInterval) < 防火墙超时
+  maxLifetime: 200             连接最大生存期（秒），超过最大生存期的连接会在下一次 maintenance 时被回收。
+  borrowConnectionTimeout: 5
+  maintenanceInterval: 60      连接池维护间隔（秒）
+  testQuery: SELECT 1          保活语句
+
+连接池保活机制:
+1. Atomikos 自带的连接池没有自动保活的机制。
+2. 如果配了 testQuery，会导致 testOnBorrow，严重影响性能，建议关闭。hirun 里配置这个参数是为了给自己心跳程序用，做过特殊处理，不会有性能问题。
+        /** 设置为 null，避免 testOnBorrow 带来性能开销 */
+        atomikosNonXADataSourceBean.setTestQuery(null);
+3. 自动保活的目的有两个:
+    3.1 防止防火墙超时，或数据库服务端超时，导致客户端的连接失效。
+        由 maxLifetime 控制连接的最大生存周期。
+    3.2 在发生网络闪断，数据库节点切换时，能够在可控的时间内对连接进行重置，以达到快速切换的目的。
+        由 DataSourcePingServiceImpl 进行周期性探测，发现探测失败，就对连接池进行重置。

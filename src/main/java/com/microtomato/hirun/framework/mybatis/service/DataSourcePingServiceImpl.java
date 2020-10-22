@@ -85,6 +85,12 @@ public class DataSourcePingServiceImpl implements ApplicationContextAware {
             Connection conn = null;
             Statement stmt = null;
             try {
+
+                /**
+                 * atomikos 连接池的内部实现基于 ArrayList，每次都是从第一个迭代，直至找到一个可用的连接返回。
+                 * 因此这里保证不了池内的所有连接都测试一遍，只是拿池内的一个代表出来探测，如果成功代表没有问题，
+                 * 如果失败就对连接池进行重置。
+                 */
                 conn = ads.getConnection();
                 if (null == conn) {
                     return;
