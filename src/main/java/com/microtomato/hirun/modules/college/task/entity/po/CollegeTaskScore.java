@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
  *
  * @author huanghua@asiainfo.com
  * @version 1.0.0
- * @date 2020-10-22 04:16:25
+ * @date 2020-10-22 13:17:45
  */
 @Data
 @Builder
@@ -33,9 +33,7 @@ public class CollegeTaskScore extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
     
-
-
-    @TableField(value = "id")
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
 

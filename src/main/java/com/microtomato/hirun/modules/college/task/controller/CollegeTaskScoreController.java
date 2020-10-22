@@ -13,6 +13,7 @@ import com.microtomato.hirun.modules.college.task.service.ICollegeTaskScoreServi
 import com.microtomato.hirun.framework.annotation.RestResult;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -88,5 +89,15 @@ public class CollegeTaskScoreController {
     @GetMapping("deleteByIds")
     public boolean deleteByIds(@RequestParam("idList") List<Long> idList) {
         return this.collegeTaskScoreService.removeByIds(idList);
+    }
+
+    @PostMapping("addScore")
+    public boolean addScore(@RequestBody Long taskId, String scoreType, Integer score) {
+
+        return this.collegeTaskScoreService.save(CollegeTaskScore.builder()
+                .taskId(taskId)
+                .scoreType(scoreType)
+                .score(score)
+                .time(LocalDateTime.now()).build());
     }
 }

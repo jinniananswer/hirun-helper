@@ -537,6 +537,8 @@ public class CollegeEmployeeTaskController {
         if (ArrayUtils.isEmpty(topicRels)) {
             return response;
         }
+
+        // 获取topicIds,需要根据任务的习题数量配置以及标签获取
         List<Long> topicIds = new ArrayList<>();
         topicRels.stream().forEach(x -> {
             topicIds.add(x.getTopicId());
