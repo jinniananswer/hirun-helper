@@ -124,7 +124,7 @@ public class CollegeExamCfgController {
                             CollegeExamRelCfg collegeExamRelCfg = new CollegeExamRelCfg();
                             collegeExamRelCfg.setTopicNum(Integer.valueOf(exercisesNumber));
                             collegeExamRelCfg.setTopicType(exercisesType);
-                            collegeExamRelCfg.setStudyExercisesId(String.valueOf(examTopicId));
+                            collegeExamRelCfg.setExamTopicId(examTopicId);
                             collegeExamRelCfg.setStatus("0");
                             collegeExamRelCfgList.add(collegeExamRelCfg);
                         }

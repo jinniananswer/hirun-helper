@@ -2,6 +2,7 @@ package com.microtomato.hirun.modules.college.task.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.microtomato.hirun.modules.college.task.entity.po.CollegeTaskScore;
+import org.springframework.web.bind.annotation.RequestBody;
 
 /**
  * (CollegeTaskScore)表服务接口
@@ -12,4 +13,5 @@ import com.microtomato.hirun.modules.college.task.entity.po.CollegeTaskScore;
  */
 public interface ICollegeTaskScoreService extends IService<CollegeTaskScore> {
 
+    int getExamScoreNumByTaskId(Long taskId);
 }

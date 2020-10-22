@@ -570,7 +570,7 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                         ajax.post('api/CollegeExamCfg/releaseTaskExam', requestInfo, function(responseData){
                             that.$message({
                                 showClose: true,
-                                message: '课程任务新增成功',
+                                message: '课程任务考试设置成功',
                                 type: 'success'
                             });
                             that.releaseExamDialogVisible = false;

@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
  *
  * @author makejava
  * @version 1.0.0
- * @date 2020-09-18 01:12:19
+ * @date 2020-10-22 04:19:12
  */
 @Data
 @Builder
@@ -73,5 +73,11 @@ public class CollegeExamCfg extends BaseEntity {
      */
     @TableField(value = "status")
     private String status;
+
+    /**
+     * 考试时间
+     */
+    @TableField(value = "exam_time")
+    private Integer examTime;
 
 }

@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
  *
  * @author makejava
  * @version 1.0.0
- * @date 2020-09-18 01:12:54
+ * @date 2020-10-23 01:13:22
  */
 @Data
 @Builder
@@ -35,8 +35,8 @@ public class CollegeExamRelCfg extends BaseEntity {
     /**
      * 学习标识
      */
-    @TableField(value = "study_exercises_id")
-    private String studyExercisesId;
+    @TableField(value = "exam_topic_id")
+    private Long examTopicId;
 
     /**
      * 题目类型
