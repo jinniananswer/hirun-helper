@@ -355,7 +355,7 @@
                     <el-form :inline="false" :model="studyTopicTypeInfo"  ref="studyTopicTypeInfo" label-position="right"
                              label-width="120px">
                         <el-row>
-                            <el-col :span="8" :style="showExercises">
+                            <el-col :span="8">
                                 <el-form-item label="最多练习次数" label-width="120px" prop="examMaxNum">
                                     <el-input v-model.number="studyTopicTypeInfo.examMaxNum" autocomplete="off"></el-input>
                                 </el-form-item>
@@ -363,6 +363,11 @@
                             <el-col :span="8" :style="showExam">
                                 <el-form-item label="考试合格分数" label-width="120px" prop="passScore">
                                     <el-input v-model.number="studyTopicTypeInfo.passScore" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8" :style="showExam">
+                                <el-form-item label="考试时间/分钟" label-width="120px" prop="examTime">
+                                    <el-input v-model.number="studyTopicTypeInfo.examTime" autocomplete="off"></el-input>
                                 </el-form-item>
                             </el-col>
                         </el-row>

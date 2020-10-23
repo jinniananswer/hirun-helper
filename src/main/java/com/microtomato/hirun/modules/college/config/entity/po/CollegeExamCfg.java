@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
  *
  * @author makejava
  * @version 1.0.0
- * @date 2020-10-22 04:19:12
+ * @date 2020-10-23 01:41:37
  */
 @Data
 @Builder
@@ -31,12 +31,16 @@ public class CollegeExamCfg extends BaseEntity {
      */
     @TableId(value = "exam_topic_id", type = IdType.AUTO)
     private Long examTopicId;
-
     /**
      * 学习任务标识
      */
-    @TableField(value = "study_task_id")
+    @TableId(value = "study_task_Id", type = IdType.AUTO)
     private String studyTaskId;
+    /**
+     * 考试类型：0-练习，1-考试
+     */
+    @TableId(value = "exam_type", type = IdType.AUTO)
+    private String examType;
 
     /**
      * 学习标识
@@ -61,12 +65,6 @@ public class CollegeExamCfg extends BaseEntity {
      */
     @TableField(value = "pass_score")
     private Integer passScore;
-
-    /**
-     * 考试类型：0-练习，1-考试
-     */
-    @TableField(value = "exam_type")
-    private String examType;
 
     /**
      * 状态

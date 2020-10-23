@@ -5,6 +5,21 @@ package com.microtomato.hirun.modules.college.task.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.modules.college.config.entity.po.CollegeExamCfg;
+import com.microtomato.hirun.modules.college.config.entity.po.CollegeExamRelCfg;
+import com.microtomato.hirun.modules.college.config.entity.po.CollegeStudyTaskCfg;
+import com.microtomato.hirun.modules.college.config.service.ICollegeExamCfgService;
+import com.microtomato.hirun.modules.college.config.service.ICollegeExamRelCfgService;
+import com.microtomato.hirun.modules.college.config.service.ICollegeStudyTaskCfgService;
+import com.microtomato.hirun.modules.college.task.entity.dto.CollegeTaskExamDetailResponseDTO;
+import com.microtomato.hirun.modules.college.task.entity.dto.ExamTopicResponseDTO;
+import com.microtomato.hirun.modules.college.task.entity.po.CollegeEmployeeTask;
+import com.microtomato.hirun.modules.college.task.service.ICollegeEmployeeTaskService;
+import com.microtomato.hirun.modules.organization.service.ICourseService;
+import com.microtomato.hirun.modules.system.service.IStaticDataService;
+import com.microtomato.hirun.modules.system.service.IUploadFileService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -14,6 +29,7 @@ import com.microtomato.hirun.framework.annotation.RestResult;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,6 +48,27 @@ public class CollegeTaskScoreController {
      */
     @Autowired
     private ICollegeTaskScoreService collegeTaskScoreService;
+
+    @Autowired
+    private ICollegeStudyTaskCfgService collegeStudyTaskCfgServiceImpl;
+
+    @Autowired
+    private ICollegeEmployeeTaskService collegeEmployeeTaskServiceImpl;
+
+    @Autowired
+    private ICollegeExamCfgService collegeExamCfgServiceImpl;
+
+    @Autowired
+    private IUploadFileService uploadFileServiceImpl;
+
+    @Autowired
+    private ICourseService courseServiceImpl;
+
+    @Autowired
+    private ICollegeExamRelCfgService collegeExamRelCfgServiceImpl;
+
+    @Autowired
+    private IStaticDataService staticDataServiceImpl;
 
     /**
      * 分页查询所有数据
@@ -100,5 +137,75 @@ public class CollegeTaskScoreController {
                 .scoreType(scoreType)
                 .score(Integer.parseInt(score))
                 .time(LocalDateTime.now()).build());
+    }
+
+    @GetMapping("getExamDetailByTaskId")
+    @RestResult
+    public CollegeTaskExamDetailResponseDTO getExamDetailByTaskId(@RequestParam("taskId") Long taskId, @RequestParam("examType") String examType){
+        CollegeTaskExamDetailResponseDTO responseDTO = new CollegeTaskExamDetailResponseDTO();
+        int examScoreNumByTaskId = this.collegeTaskScoreService.getExamScoreNumByTaskId(taskId, examType);
+        responseDTO.setCurrentExamNum(examScoreNumByTaskId);
+        CollegeEmployeeTask collegeEmployeeTask = collegeEmployeeTaskServiceImpl.getById(taskId);
+        Integer examMaxNum = 0;
+        if (null != collegeEmployeeTask){
+            String studyTaskId = collegeEmployeeTask.getStudyTaskId();
+            CollegeExamCfg collegeExamCfg = collegeExamCfgServiceImpl.getByStudyTaskIdAndExamType(studyTaskId, "1");
+            if (null != collegeExamCfg){
+                String examDesc = "本次";
+                String examTypeName = "";
+                if (StringUtils.equals("1", examType)){
+                    examMaxNum = null != collegeExamCfg.getExamMaxNum() ? collegeExamCfg.getExamMaxNum() : 0;
+                    examTypeName = "考试";
+                }else {
+                    examTypeName = "练习";
+                }
+                examDesc += examTypeName;
+                Integer passScore = collegeExamCfg.getPassScore();
+                CollegeStudyTaskCfg allByStudyTaskId = collegeStudyTaskCfgServiceImpl.getAllByStudyTaskId(Long.valueOf(studyTaskId));
+                if (null != allByStudyTaskId){
+                    String studyType = allByStudyTaskId.getStudyType();
+                    String studyId = allByStudyTaskId.getStudyId();
+                    String studyName = "";
+                    if (StringUtils.equals("1", studyType)){
+                        studyName = uploadFileServiceImpl.getFileNameByFileId(studyId);
+                    }else {
+                        studyName = courseServiceImpl.getCourseNameByCourseId(Long.valueOf(studyId));
+                    }
+                    examDesc += "为" + studyName + "学习任务";
+                }
+                examDesc += examTypeName;
+                if (StringUtils.equals("1", examType)){
+                    examDesc += "合格分数为：" + (null != passScore ? passScore : 0);
+                }
+                responseDTO.setExamDesc(examDesc);
+
+                List<CollegeExamRelCfg> collegeExamRelCfgs = collegeExamRelCfgServiceImpl.queryByExamTopicId(collegeExamCfg.getExamTopicId());
+                if (ArrayUtils.isNotEmpty(collegeExamRelCfgs)){
+                    List<ExamTopicResponseDTO> examTopicList = new ArrayList<>();
+                    for (CollegeExamRelCfg collegeExamRelCfg : collegeExamRelCfgs) {
+                        ExamTopicResponseDTO examTopicResponseDTO = new ExamTopicResponseDTO();
+                        examTopicResponseDTO.setTopicNum(collegeExamRelCfg.getTopicNum());
+                        String topicType = collegeExamRelCfg.getTopicType();
+                        String topicTypeName = staticDataServiceImpl.getCodeName("EXERCISES_TYPE", topicType);
+                        if (StringUtils.isEmpty(topicTypeName)){
+                            topicTypeName = topicType;
+                        }
+                        examTopicResponseDTO.setTopicType(topicTypeName);
+                        Integer examScore = 0;
+                        if (StringUtils.equals("1", topicType) || StringUtils.equals("3", topicType)){
+                            examScore = 2;
+                        }else {
+                            examScore = 4;
+                        }
+                        examTopicResponseDTO.setTopicScore(examScore);
+                        examTopicList.add(examTopicResponseDTO);
+                    }
+                    responseDTO.setExamTopicList(examTopicList);
+                }
+            }
+        }
+        responseDTO.setMaxExamNum(examMaxNum);
+
+        return responseDTO;
     }
 }

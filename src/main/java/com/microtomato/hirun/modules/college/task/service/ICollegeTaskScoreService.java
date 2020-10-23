@@ -13,5 +13,5 @@ import org.springframework.web.bind.annotation.RequestBody;
  */
 public interface ICollegeTaskScoreService extends IService<CollegeTaskScore> {
 
-    int getExamScoreNumByTaskId(Long taskId);
+    int getExamScoreNumByTaskId(Long taskId, String examType);
 }

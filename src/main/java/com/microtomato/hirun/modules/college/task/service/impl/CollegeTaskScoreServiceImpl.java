@@ -25,7 +25,7 @@ public class CollegeTaskScoreServiceImpl extends ServiceImpl<CollegeTaskScoreMap
 
 
     @Override
-    public int getExamScoreNumByTaskId(Long taskId) {
-        return this.count(Wrappers.<CollegeTaskScore>lambdaQuery().eq(CollegeTaskScore::getTaskId, taskId).eq(CollegeTaskScore::getScoreType, "1"));
+    public int getExamScoreNumByTaskId(Long taskId, String examType) {
+        return this.count(Wrappers.<CollegeTaskScore>lambdaQuery().eq(CollegeTaskScore::getTaskId, taskId).eq(CollegeTaskScore::getScoreType, examType));
     }
 }

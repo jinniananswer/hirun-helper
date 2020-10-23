@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeExamCfg;
-import com.microtomato.hirun.modules.college.config.entity.po.CollegeExamRelCfg;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeStudyTaskCfg;
 import com.microtomato.hirun.modules.college.config.service.ICollegeExamCfgService;
 import com.microtomato.hirun.modules.college.config.service.ICollegeExamRelCfgService;

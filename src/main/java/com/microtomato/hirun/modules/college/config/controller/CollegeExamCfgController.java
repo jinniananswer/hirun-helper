@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -104,34 +103,46 @@ public class CollegeExamCfgController {
     @Transactional(rollbackFor = Exception.class)
     @RestResult
     public void releaseTaskExam(@RequestBody CollegeReleaseTaskExamRequestDTO collegeReleaseTaskExamRequestDTO){
+
         if (null != collegeReleaseTaskExamRequestDTO){
-            List<CollegeExamRelCfg> collegeExamRelCfgList = new ArrayList<>();
             List<CollegeReleaseExamTaskDTO> studyChaptersList = collegeReleaseTaskExamRequestDTO.getTaskInfoList();
             if (ArrayUtils.isNotEmpty(studyChaptersList)){
                 for (CollegeReleaseExamTaskDTO collegeReleaseExamTaskDTO : studyChaptersList){
                     String studyTaskId = collegeReleaseExamTaskDTO.getStudyTaskId();
-                    CollegeExamCfg collegeExamCfg = new CollegeExamCfg();
-                    BeanUtils.copyProperties(collegeReleaseTaskExamRequestDTO, collegeExamCfg);
-                    collegeExamCfg.setStudyTaskId(studyTaskId);
-                    collegeExamCfg.setStatus("0");
-                    this.collegeExamCfgService.save(collegeExamCfg);
+                    CollegeExamCfg collegeExamCfg = this.collegeExamCfgService.getByStudyTaskIdAndExamType(studyTaskId, collegeReleaseTaskExamRequestDTO.getExamType());
+                    if (null != collegeExamCfg){
+                        collegeExamCfg.setExamMaxNum(collegeReleaseTaskExamRequestDTO.getExamMaxNum());
+                        collegeExamCfg.setPassScore(collegeReleaseTaskExamRequestDTO.getPassScore());
+                        collegeExamCfg.setExamTime(collegeReleaseTaskExamRequestDTO.getExamTime());
+                        this.collegeExamCfgService.updateByIds(collegeExamCfg);
+                    }else {
+                        collegeExamCfg = new CollegeExamCfg();
+                        BeanUtils.copyProperties(collegeReleaseTaskExamRequestDTO, collegeExamCfg);
+                        collegeExamCfg.setStudyTaskId(studyTaskId);
+                        collegeExamCfg.setStatus("0");
+                        this.collegeExamCfgService.save(collegeExamCfg);
+                    }
                     Long examTopicId = collegeExamCfg.getExamTopicId();
                     List<CollegeTopicInfoRequestDTO> studyTopicTypeInfoDetails = collegeReleaseTaskExamRequestDTO.getStudyTopicTypeInfoDetails();
                     if (ArrayUtils.isNotEmpty(studyTopicTypeInfoDetails)){
                         for (CollegeTopicInfoRequestDTO collegeTopicInfoRequestDTO : studyTopicTypeInfoDetails){
                             String exercisesNumber = collegeTopicInfoRequestDTO.getExercisesNumber();
                             String exercisesType = collegeTopicInfoRequestDTO.getExercisesType();
-                            CollegeExamRelCfg collegeExamRelCfg = new CollegeExamRelCfg();
-                            collegeExamRelCfg.setTopicNum(Integer.valueOf(exercisesNumber));
-                            collegeExamRelCfg.setTopicType(exercisesType);
-                            collegeExamRelCfg.setExamTopicId(examTopicId);
-                            collegeExamRelCfg.setStatus("0");
-                            collegeExamRelCfgList.add(collegeExamRelCfg);
+                            CollegeExamRelCfg collegeExamRelCfg = collegeExamRelCfgServiceImpl.getEffectiveByExamTopicIdAndTopicType(examTopicId, exercisesType);
+                            if (null != collegeExamRelCfg){
+                                collegeExamRelCfg.setTopicNum(Integer.valueOf(exercisesNumber));
+                                collegeExamRelCfg.setTopicType(exercisesType);
+                                collegeExamRelCfgServiceImpl.updateById(collegeExamRelCfg);
+                            }else {
+                                collegeExamRelCfg = new CollegeExamRelCfg();
+                                collegeExamRelCfg.setTopicNum(Integer.valueOf(exercisesNumber));
+                                collegeExamRelCfg.setTopicType(exercisesType);
+                                collegeExamRelCfg.setExamTopicId(examTopicId);
+                                collegeExamRelCfg.setStatus("0");
+                                collegeExamRelCfgServiceImpl.save(collegeExamRelCfg);
+                            }
                         }
                     }
-                }
-                if (ArrayUtils.isNotEmpty(collegeExamRelCfgList)){
-                    collegeExamRelCfgServiceImpl.saveBatch(collegeExamRelCfgList);
                 }
             }
         }

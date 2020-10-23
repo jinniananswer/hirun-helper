@@ -13,6 +13,8 @@ public class CollegeReleaseTaskExamRequestDTO {
 
     private Integer passScore;
 
+    private Integer examTime;
+
     private List<CollegeTopicInfoRequestDTO> studyTopicTypeInfoDetails;
 
     private List<CollegeReleaseExamTaskDTO> taskInfoList;

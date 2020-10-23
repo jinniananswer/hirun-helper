@@ -10,9 +10,13 @@ import java.util.List;
  *
  * @author makejava
  * @version 1.0.0
- * @date 2020-09-18 01:12:54
+ * @date 2020-10-24 04:19:05
  */
 public interface ICollegeExamRelCfgService extends IService<CollegeExamRelCfg> {
 
     List<CollegeExamRelCfg> queryExamRelInfo(Long examTopicId);
+
+    List<CollegeExamRelCfg> queryByExamTopicId(Long examTopicId);
+
+    CollegeExamRelCfg getEffectiveByExamTopicIdAndTopicType(Long examTopicId, String topicType);
 }
