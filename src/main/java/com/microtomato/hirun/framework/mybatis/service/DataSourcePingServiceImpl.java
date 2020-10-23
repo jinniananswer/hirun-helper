@@ -54,6 +54,9 @@ public class DataSourcePingServiceImpl implements ApplicationContextAware {
                 try {
 
                     Thread.sleep(pingInterval * 1000);
+                    if (null == ctx) {
+                        continue;
+                    }
 
                     MyGlobalConfig myGlobalConfig = ctx.getBean(MyGlobalConfig.class);
                     MySqlSessionTemplate sqlSessionTemplate = myGlobalConfig.getSqlSessionTemplate();
