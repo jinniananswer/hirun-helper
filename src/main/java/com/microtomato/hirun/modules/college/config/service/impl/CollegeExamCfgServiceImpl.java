@@ -1,5 +1,6 @@
 package com.microtomato.hirun.modules.college.config.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeExamCfg;
 import com.microtomato.hirun.modules.college.config.mapper.CollegeExamCfgMapper;
@@ -21,4 +22,10 @@ public class CollegeExamCfgServiceImpl extends ServiceImpl<CollegeExamCfgMapper,
     private CollegeExamCfgMapper collegeExamCfgMapper;
 
 
+    @Override
+    public CollegeExamCfg getByStudyTaskId(Long studyTaskId) {
+        return this.getOne(new QueryWrapper<CollegeExamCfg>().lambda()
+                .eq(CollegeExamCfg::getStudyTaskId, studyTaskId)
+                .eq(CollegeExamCfg::getStatus, "0"));
+    }
 }

@@ -6,7 +6,11 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.modules.college.config.entity.po.CollegeExamCfg;
+import com.microtomato.hirun.modules.college.config.entity.po.CollegeExamRelCfg;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeStudyTaskCfg;
+import com.microtomato.hirun.modules.college.config.service.ICollegeExamCfgService;
+import com.microtomato.hirun.modules.college.config.service.ICollegeExamRelCfgService;
 import com.microtomato.hirun.modules.college.config.service.ICollegeStudyTaskCfgService;
 import com.microtomato.hirun.modules.college.task.entity.dto.*;
 import com.microtomato.hirun.modules.college.task.entity.po.CollegeEmployeeTask;
@@ -34,10 +38,7 @@ import org.thymeleaf.util.ListUtils;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * (CollegeEmployeeTask)表控制层
@@ -513,6 +514,12 @@ public class CollegeEmployeeTaskController {
         return this.collegeEmployeeTaskService.queryLoginEmployeeSelectTutor();
     }
 
+    @Autowired
+    private ICollegeExamCfgService collegeExamCfgService;
+
+    @Autowired
+    private ICollegeExamRelCfgService collegeExamRelCfgService;
+
     @GetMapping("queryTopicByTaskId")
     @RestResult
     public CollegeEmployeeTaskTopicDTO queryTopicByTaskId(Long taskId) {
@@ -524,6 +531,18 @@ public class CollegeEmployeeTaskController {
         if (StringUtils.isBlank(studyTaskId)) {
             return response;
         }
+        // 获取考试习题数量
+        CollegeExamCfg examCfg = collegeExamCfgService.getByStudyTaskId(Long.parseLong(studyTaskId));
+        if (Objects.isNull(examCfg)) {
+            return response;
+        }
+
+//        List<CollegeExamRelCfg> examRel = collegeExamRelCfgService.queryExamRelInfo(examCfg.getExamTopicId());
+//        if (ArrayUtils.isEmpty(examRel)) {
+//            return response;
+//        }
+
+        // 获取考试范围
         CollegeStudyTaskCfg studyTask = collegeStudyTaskCfgServiceImpl.getEffectiveByStudyTaskId(Long.parseLong(studyTaskId));
         String studyId = StringUtils.isNotBlank(studyTask.getStudyId()) ? studyTask.getStudyId() : "";
         // 获取labelId

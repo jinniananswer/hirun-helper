@@ -18,7 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * (ExamTopic)表服务实现类
@@ -69,6 +71,7 @@ public class ExamTopicServiceImpl extends ServiceImpl<ExamTopicMapper, ExamTopic
             topicList.add(topic);
         }
 
+        topicList = topicList.stream().sorted(Comparator.comparing(TopicServiceDTO::getType)).collect(Collectors.toList());
         if (ArrayUtils.isNotEmpty(topicList)) {
             for (int i = 0; i < topicList.size(); i++) {
                 TopicServiceDTO topicServiceDTO = topicList.get(i);

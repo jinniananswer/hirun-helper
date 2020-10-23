@@ -3,6 +3,8 @@ package com.microtomato.hirun.modules.college.config.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeExamRelCfg;
 
+import java.util.List;
+
 /**
  * (CollegeExamRelCfg)表服务接口
  *
@@ -12,4 +14,5 @@ import com.microtomato.hirun.modules.college.config.entity.po.CollegeExamRelCfg;
  */
 public interface ICollegeExamRelCfgService extends IService<CollegeExamRelCfg> {
 
+    List<CollegeExamRelCfg> queryExamRelInfo(Long examTopicId);
 }

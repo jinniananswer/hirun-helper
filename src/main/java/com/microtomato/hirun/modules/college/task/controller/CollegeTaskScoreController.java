@@ -92,12 +92,13 @@ public class CollegeTaskScoreController {
     }
 
     @PostMapping("addScore")
-    public boolean addScore(@RequestBody Long taskId, String scoreType, Integer score) {
+    @RestResult
+    public boolean addScore(@RequestParam("taskId") String taskId,@RequestParam("scoreType")  String scoreType,@RequestParam("score") String score) {
 
         return this.collegeTaskScoreService.save(CollegeTaskScore.builder()
-                .taskId(taskId)
+                .taskId(Long.parseLong(taskId))
                 .scoreType(scoreType)
-                .score(score)
+                .score(Integer.parseInt(score))
                 .time(LocalDateTime.now()).build());
     }
 }

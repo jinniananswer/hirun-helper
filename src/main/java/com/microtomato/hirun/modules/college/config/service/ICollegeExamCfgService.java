@@ -12,4 +12,5 @@ import com.microtomato.hirun.modules.college.config.entity.po.CollegeExamCfg;
  */
 public interface ICollegeExamCfgService extends IService<CollegeExamCfg> {
 
+    CollegeExamCfg getByStudyTaskId(Long studyTaskId);
 }
