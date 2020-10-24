@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeExamCfg;
+import com.microtomato.hirun.modules.college.config.entity.po.CollegeExamRelCfg;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeStudyTaskCfg;
 import com.microtomato.hirun.modules.college.config.service.ICollegeExamCfgService;
 import com.microtomato.hirun.modules.college.config.service.ICollegeExamRelCfgService;
@@ -19,6 +20,7 @@ import com.microtomato.hirun.modules.college.task.service.ICollegeEmployeeTaskSc
 import com.microtomato.hirun.modules.college.task.service.ICollegeEmployeeTaskService;
 import com.microtomato.hirun.modules.college.task.service.ICollegeStudyTopicRelService;
 import com.microtomato.hirun.modules.college.task.service.ITaskDomainOpenService;
+import com.microtomato.hirun.modules.college.topic.entity.dto.TopicServiceDTO;
 import com.microtomato.hirun.modules.college.topic.entity.po.CollegeTopicLabelRel;
 import com.microtomato.hirun.modules.college.topic.service.ICollegeTopicLabelRelService;
 import com.microtomato.hirun.modules.college.topic.service.IExamTopicService;
@@ -38,6 +40,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * (CollegeEmployeeTask)表控制层
@@ -519,6 +522,11 @@ public class CollegeEmployeeTaskController {
     @Autowired
     private ICollegeExamRelCfgService collegeExamRelCfgService;
 
+    /**
+     * 获取任务考试习题
+     * @param taskId
+     * @return
+     */
     @GetMapping("queryTopicByTaskId")
     @RestResult
     public CollegeEmployeeTaskTopicDTO queryTopicByTaskId(Long taskId) {
@@ -530,16 +538,15 @@ public class CollegeEmployeeTaskController {
         if (StringUtils.isBlank(studyTaskId)) {
             return response;
         }
-        // 获取考试习题数量
+        // 获取考试习题配置
         CollegeExamCfg examCfg = collegeExamCfgService.getByStudyTaskId(Long.parseLong(studyTaskId));
         if (Objects.isNull(examCfg)) {
             return response;
         }
-
-//        List<CollegeExamRelCfg> examRel = collegeExamRelCfgService.queryExamRelInfo(examCfg.getExamTopicId());
-//        if (ArrayUtils.isEmpty(examRel)) {
-//            return response;
-//        }
+        List<CollegeExamRelCfg> examRels = collegeExamRelCfgService.queryExamRelInfo(examCfg.getExamTopicId());
+        if (ArrayUtils.isEmpty(examRels)) {
+            return response;
+        }
 
         // 获取考试范围
         CollegeStudyTaskCfg studyTask = collegeStudyTaskCfgServiceImpl.getEffectiveByStudyTaskId(Long.parseLong(studyTaskId));
@@ -561,9 +568,53 @@ public class CollegeEmployeeTaskController {
         topicRels.stream().forEach(x -> {
             topicIds.add(x.getTopicId());
         });
+        List<TopicServiceDTO> topicServices = examTopicService.queryByTopicIds(topicIds);
+        /**
+         * 根据配置筛选习题
+         * 1.获取任务对应的标签下所有习题
+         * 2.根据配置随机获取，数量不够则重复使用
+         */
+        List<TopicServiceDTO> topics = new ArrayList<>();
+        for (CollegeExamRelCfg examRel : examRels) {
+            List<TopicServiceDTO> collect = topicServices.stream().filter(x ->
+                    StringUtils.equals(x.getType(), examRel.getTopicType())).collect(Collectors.toList());
+            if (ArrayUtils.isEmpty(collect)) {
+                return response;
+            }
+            Collections.shuffle(collect);
+            int num = 0;
+            int size = collect.size();
+            int topicNum = examRel.getTopicNum();
+            if (size > topicNum) {
+                num = size - topicNum;
+                for (int i = 0; i < num; i++) {
+                    collect.remove(i);
+                }
+            } else if (size < topicNum){
+                num = topicNum - size;
+                List<TopicServiceDTO> temp = new ArrayList<>();
+                for (int i = 0; i < num; i++) {
+                    temp.add(collect.get(i));
+                }
+                collect.addAll(temp);
+            }
 
+            topics.addAll(collect);
+        }
+
+        setNum(topics);
         response.setTaskId(taskId);
-        response.setTaskTopics(examTopicService.queryByTopicIds(topicIds));
+        response.setTaskTopics(topics);
         return response;
+    }
+
+    private void setNum(List<TopicServiceDTO> topics) {
+        topics = topics.stream().sorted(Comparator.comparing(TopicServiceDTO::getType)).collect(Collectors.toList());
+        if (ArrayUtils.isNotEmpty(topics)) {
+            for (int i = 0; i < topics.size(); i++) {
+                TopicServiceDTO topicServiceDTO = topics.get(i);
+                topicServiceDTO.setTopicNum(Long.parseLong(String.valueOf(i+1)));
+            }
+        }
     }
 }
