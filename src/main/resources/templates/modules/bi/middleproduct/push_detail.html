@@ -95,10 +95,22 @@
                             max-height="800px"
                             :auto-resize="true"
                             :data="pushDatas">
-                        <vxe-table-column field="name" title="名称" sortable width="200"></vxe-table-column>
-                        <vxe-table-column field="pushNum" title="推送数" sortable width="200"></vxe-table-column>
-                        <vxe-table-column field="openNum" title="打开数" width="200" sortable></vxe-table-column>
-                        <vxe-table-column field="openRate" title="打开率" sortable></vxe-table-column>
+                        <vxe-table-column field="custName" title="客户姓名" sortable width="200"></vxe-table-column>
+                        <vxe-table-column field="houseName" title="楼盘名称" sortable width="200"></vxe-table-column>
+                        <vxe-table-column field="pushEmployeeName" title="推送员工" sortable width="200"></vxe-table-column>
+                        <vxe-table-column field="pushTime" title="推送时间" width="200" sortable></vxe-table-column>
+                        <vxe-table-column field="pushContent" title="推送内容" sortable></vxe-table-column>
+                        <vxe-table-column field="shareTime" title="分享时间" sortable></vxe-table-column>
+                        <vxe-table-column field="shareTypeName" title="分享类型" sortable></vxe-table-column>
+                        <vxe-table-column title="详情" width="100" show-overflow>
+                            <template v-slot="{ row }">
+                                <el-button
+                                        size="mini"
+                                        type="danger"
+                                        icon="el-icon-delete"
+                                        @click="deletePayItem(row)">详情</el-button>
+                            </template>
+                        </vxe-table-column>
                     </vxe-table>
                 </el-card>
             </el-row>
