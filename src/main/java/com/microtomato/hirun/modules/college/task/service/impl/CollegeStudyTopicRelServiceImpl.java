@@ -2,6 +2,8 @@ package com.microtomato.hirun.modules.college.task.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.framework.mybatis.DataSourceKey;
+import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 import com.microtomato.hirun.modules.college.task.entity.po.CollegeStudyTopicRel;
 import com.microtomato.hirun.modules.college.task.mapper.CollegeStudyTopicRelMapper;
 import com.microtomato.hirun.modules.college.task.service.ICollegeStudyTopicRelService;
@@ -18,6 +20,7 @@ import java.util.List;
  * @date 2020-10-20 02:17:16
  */
 @Service("collegeStudyTopicRelService")
+@DataSource(DataSourceKey.INS)
 public class CollegeStudyTopicRelServiceImpl extends ServiceImpl<CollegeStudyTopicRelMapper, CollegeStudyTopicRel> implements ICollegeStudyTopicRelService {
 
     @Autowired

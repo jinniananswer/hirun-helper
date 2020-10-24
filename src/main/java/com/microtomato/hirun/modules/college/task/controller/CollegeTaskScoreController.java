@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeExamCfg;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeExamRelCfg;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeStudyTaskCfg;
@@ -19,6 +20,7 @@ import com.microtomato.hirun.modules.college.task.service.ICollegeEmployeeTaskSe
 import com.microtomato.hirun.modules.organization.service.ICourseService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import com.microtomato.hirun.modules.system.service.IUploadFileService;
+import io.swagger.models.auth.In;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -130,13 +132,43 @@ public class CollegeTaskScoreController {
 
     @PostMapping("addScore")
     @RestResult
-    public boolean addScore(@RequestParam("taskId") String taskId,@RequestParam("scoreType")  String scoreType,@RequestParam("score") String score) {
-
-        return this.collegeTaskScoreService.save(CollegeTaskScore.builder()
+    public void addScore(@RequestParam("taskId") String taskId,@RequestParam("scoreType")  String scoreType,@RequestParam("score") String score) {
+        LocalDateTime now = TimeUtils.getCurrentLocalDateTime();
+        boolean save = this.collegeTaskScoreService.save(CollegeTaskScore.builder()
                 .taskId(Long.parseLong(taskId))
                 .scoreType(scoreType)
                 .score(Integer.parseInt(score))
                 .time(LocalDateTime.now()).build());
+        if (save){
+            CollegeEmployeeTask collegeEmployeeTask = collegeEmployeeTaskServiceImpl.getById(taskId);
+            if (null != collegeEmployeeTask){
+                if (StringUtils.equals("0", scoreType)){
+                    Integer exercisesCompletedNumber = collegeEmployeeTask.getExercisesCompletedNumber();
+                    collegeEmployeeTask.setExercisesCompletedNumber(null != exercisesCompletedNumber ? exercisesCompletedNumber + 1 : 1);
+                }else if (StringUtils.equals("1", scoreType)){
+                    Integer examScore = collegeEmployeeTask.getExamScore();
+                    if (null != examScore){
+                        //设置最高分数
+                        if (examScore < Integer.valueOf(score)){
+                            collegeEmployeeTask.setExamScore(Integer.valueOf(score));
+                        }
+                    }
+                    CollegeStudyTaskCfg collegeStudyTaskCfg = collegeStudyTaskCfgServiceImpl.getAllByStudyTaskId(Long.valueOf(collegeEmployeeTask.getStudyTaskId()));
+                    if (null != collegeStudyTaskCfg){
+                        //考试通过视为完成
+                        Integer passScore = collegeStudyTaskCfg.getPassScore();
+                        if (null != passScore){
+                            if (Integer.valueOf(score) >= passScore){
+                                LocalDateTime taskCompleteDate = collegeEmployeeTask.getTaskCompleteDate();
+                                if (null == taskCompleteDate){
+                                    collegeEmployeeTask.setTaskCompleteDate(now);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @GetMapping("getExamDetailByTaskId")
