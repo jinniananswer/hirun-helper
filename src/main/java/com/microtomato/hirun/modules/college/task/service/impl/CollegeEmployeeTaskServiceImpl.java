@@ -19,10 +19,12 @@ import com.microtomato.hirun.modules.college.task.entity.dto.*;
 import com.microtomato.hirun.modules.college.task.entity.po.CollegeEmployeeTask;
 import com.microtomato.hirun.modules.college.task.entity.po.CollegeEmployeeTaskScore;
 import com.microtomato.hirun.modules.college.task.entity.po.CollegeEmployeeTaskTutor;
+import com.microtomato.hirun.modules.college.task.entity.po.CollegeStudyTaskScore;
 import com.microtomato.hirun.modules.college.task.mapper.CollegeEmployeeTaskMapper;
 import com.microtomato.hirun.modules.college.task.service.ICollegeEmployeeTaskScoreService;
 import com.microtomato.hirun.modules.college.task.service.ICollegeEmployeeTaskService;
 import com.microtomato.hirun.modules.college.task.service.ICollegeEmployeeTaskTutorService;
+import com.microtomato.hirun.modules.college.task.service.ICollegeStudyTaskScoreService;
 import com.microtomato.hirun.modules.organization.entity.dto.SimpleEmployeeDTO;
 import com.microtomato.hirun.modules.organization.entity.po.CourseFile;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
@@ -99,6 +101,9 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
 
     @Autowired
     private ICourseFileService courseFileServiceImpl;
+
+    @Autowired
+    private ICollegeStudyTaskScoreService collegeStudyTaskScoreServiceImpl;
 
     @Override
     public List<CollegeEmployeeTask> queryByEmployeeIdAndTaskType(String employeeId, String taskType) {
@@ -498,6 +503,7 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
                 taskStudyContentList.add(collegeTaskStudyContentResponseDTO);
             }
         }
+
         result.setIsDelayFlag(isDelayFlag);
         result.setIsExerciseFlag(isExerciseFlag);
         result.setIsExamFlag(isExamFlag);
@@ -515,6 +521,12 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
             result.setSelectTutor("[" + tutorId + "]" + employeeName);
         }
         result.setIsSelectTutorFlag(isSelectTutorFlag);
+
+        CollegeStudyTaskScore studyScoreByTaskId = collegeStudyTaskScoreServiceImpl.getStudyScoreByTaskId(String.valueOf(taskId));
+        if (null != studyScoreByTaskId){
+            result.setTutorScore(studyScoreByTaskId.getTutorScore());
+            result.setTaskDifficultyScore(studyScoreByTaskId.getTaskDifficultyScore());
+        }
         return result;
     }
 

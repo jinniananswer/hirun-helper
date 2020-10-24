@@ -41,5 +41,9 @@ public class CollegeEmployTaskInfoResponseDTO {
 
     private LocalDateTime taskCompleteDate;
 
+    private Integer taskDifficultyScore;
+
+    private Integer tutorScore;
+
     private List<CollegeTaskStudyContentResponseDTO> taskStudyContentList;
 }
