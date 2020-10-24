@@ -71,13 +71,6 @@ public class ExamTopicServiceImpl extends ServiceImpl<ExamTopicMapper, ExamTopic
             topicList.add(topic);
         }
 
-        topicList = topicList.stream().sorted(Comparator.comparing(TopicServiceDTO::getType)).collect(Collectors.toList());
-        if (ArrayUtils.isNotEmpty(topicList)) {
-            for (int i = 0; i < topicList.size(); i++) {
-                TopicServiceDTO topicServiceDTO = topicList.get(i);
-                topicServiceDTO.setTopicNum(Long.parseLong(String.valueOf(i+1)));
-            }
-        }
         return topicList;
     }
 
