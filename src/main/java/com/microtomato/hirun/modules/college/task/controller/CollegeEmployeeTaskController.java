@@ -31,6 +31,7 @@ import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleServic
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import com.microtomato.hirun.modules.organization.service.IOrgService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -569,17 +570,27 @@ public class CollegeEmployeeTaskController {
             topicIds.add(x.getTopicId());
         });
         List<TopicServiceDTO> topicServices = examTopicService.queryByTopicIds(topicIds);
-        /**
-         * 根据配置筛选习题
-         * 1.获取任务对应的标签下所有习题
-         * 2.根据配置随机获取，数量不够则重复使用
-         */
+        // 根据配置筛选习题
+        List<TopicServiceDTO> topics = filterTopic(examRels, topicServices);
+
+        setNum(topics);
+        response.setTaskId(taskId);
+        response.setTaskTopics(topics);
+        return response;
+    }
+
+    /**
+     * 根据配置筛选习题
+     * 1.获取任务对应的标签下所有习题
+     * 2.根据配置随机获取，数量不够则重复使用
+     */
+    private List<TopicServiceDTO> filterTopic(List<CollegeExamRelCfg> examRels, List<TopicServiceDTO> topicServices) {
         List<TopicServiceDTO> topics = new ArrayList<>();
         for (CollegeExamRelCfg examRel : examRels) {
             List<TopicServiceDTO> collect = topicServices.stream().filter(x ->
                     StringUtils.equals(x.getType(), examRel.getTopicType())).collect(Collectors.toList());
             if (ArrayUtils.isEmpty(collect)) {
-                return response;
+                return new ArrayList<>();
             }
             Collections.shuffle(collect);
             int num = 0;
@@ -592,20 +603,22 @@ public class CollegeEmployeeTaskController {
                 }
             } else if (size < topicNum){
                 num = topicNum - size;
-                List<TopicServiceDTO> temp = new ArrayList<>();
-                for (int i = 0; i < num; i++) {
-                    temp.add(collect.get(i));
+                List<TopicServiceDTO> temps = new ArrayList<>();
+                int i = 0;
+                Random random = new Random();
+                while (i < num) {
+                    i++;
+                    TopicServiceDTO temp = new TopicServiceDTO();
+                    BeanUtils.copyProperties(collect.get(random.nextInt(size)), temp);
+                    temps.add(temp);
                 }
-                collect.addAll(temp);
+                collect.addAll(temps);
             }
 
             topics.addAll(collect);
         }
 
-        setNum(topics);
-        response.setTaskId(taskId);
-        response.setTaskTopics(topics);
-        return response;
+        return topics;
     }
 
     private void setNum(List<TopicServiceDTO> topics) {
