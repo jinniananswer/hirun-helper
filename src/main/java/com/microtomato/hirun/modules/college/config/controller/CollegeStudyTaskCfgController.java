@@ -416,8 +416,8 @@ public class CollegeStudyTaskCfgController {
         //1.根据学习任务标识查询学习任务配置
         CollegeStudyTaskCfg collegeStudyTaskCfg = this.collegeStudyTaskCfgService.getEffectiveByStudyTaskId(collegeStudyTaskResponseDTO.getStudyTaskId());
         if (null != collegeStudyTaskCfg){
-            collegeStudyTaskCfg.setExercisesNumber(collegeStudyTaskResponseDTO.getExercisesNumber());
-            collegeStudyTaskCfg.setPassScore(collegeStudyTaskResponseDTO.getPassScore());
+            /*collegeStudyTaskCfg.setExercisesNumber(collegeStudyTaskResponseDTO.getExercisesNumber());
+            collegeStudyTaskCfg.setPassScore(collegeStudyTaskResponseDTO.getPassScore());*/
             collegeStudyTaskCfg.setStudyTime(collegeStudyTaskResponseDTO.getStudyTime());
             this.collegeStudyTaskCfgService.updateById(collegeStudyTaskCfg);
 

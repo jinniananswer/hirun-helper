@@ -156,12 +156,15 @@ public class CollegeTaskScoreController {
                     CollegeStudyTaskCfg collegeStudyTaskCfg = collegeStudyTaskCfgServiceImpl.getAllByStudyTaskId(Long.valueOf(collegeEmployeeTask.getStudyTaskId()));
                     if (null != collegeStudyTaskCfg){
                         //考试通过视为完成
-                        Integer passScore = collegeStudyTaskCfg.getPassScore();
-                        if (null != passScore){
-                            if (Integer.valueOf(score) >= passScore){
-                                LocalDateTime taskCompleteDate = collegeEmployeeTask.getTaskCompleteDate();
-                                if (null == taskCompleteDate){
-                                    collegeEmployeeTask.setTaskCompleteDate(now);
+                        CollegeExamCfg collegeExamCfg = collegeExamCfgServiceImpl.getByStudyTaskIdAndExamType(String.valueOf(collegeStudyTaskCfg.getStudyTaskId()), "1");
+                        if (null != collegeExamCfg){
+                            Integer passScore = collegeExamCfg.getPassScore();
+                            if (null != passScore){
+                                if (Integer.valueOf(score) >= passScore){
+                                    LocalDateTime taskCompleteDate = collegeEmployeeTask.getTaskCompleteDate();
+                                    if (null == taskCompleteDate){
+                                        collegeEmployeeTask.setTaskCompleteDate(now);
+                                    }
                                 }
                             }
                         }

@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
  *
  * @author makejava
  * @version 1.0.0
- * @date 2020-10-23 01:41:37
+ * @date 2020-10-25 01:21:45
  */
 @Data
 @Builder
@@ -59,6 +59,12 @@ public class CollegeExamCfg extends BaseEntity {
      */
     @TableField(value = "exam_max_num")
     private Integer examMaxNum;
+
+    /**
+     * 考试要求练习最小数量
+     */
+    @TableField(value = "min_num")
+    private Integer minNum;
 
     /**
      * 考试合格分数

@@ -67,22 +67,6 @@
                                             </template>
                                         </div>
                                     </el-col>
-                                    <el-col :span="8">
-                                        <div class="text">
-                                            习题次数：
-                                            <template>
-                                                <el-tag>{{studyTaskInfo.exercisesNumber}}</el-tag>
-                                            </template>
-                                        </div>
-                                    </el-col>
-                                    <el-col :span="8">
-                                        <div class="text">
-                                            考试合格分数：
-                                            <template>
-                                                <el-tag>{{studyTaskInfo.passScore}}</el-tag>
-                                            </template>
-                                        </div>
-                                    </el-col>
                                 </el-row>
                             </el-col>
                         </el-tab-pane>
@@ -95,6 +79,58 @@
                         <el-card class="box-card" shadow="hover">
                             <div class="grid-content bg-purple-light">
                                 <el-collapse value="1" accordion>
+                                    <el-card class="box-card" shadow="hover">
+                                        <div>
+                                            <el-divider content-position="left"><span style="font-weight: 700">练习详情</span>
+                                            </el-divider>
+                                        </div>
+                                        <template v-if="studyTaskInfo.exercisesFlag">
+                                            <template v-if="studyTaskInfo.exercisesTopicList != null && studyTaskInfo.exercisesTopicList != [] && studyTaskInfo.exercisesTopicList.length > 0">
+                                                <el-row v-for="item in studyTaskInfo.examTopicList">
+                                                    <el-tag>{{item.topicType}}题数量:{{item.topicNum}}</el-tag>
+                                                </el-row>
+                                            </template>
+                                        </template>
+                                    </el-card>
+                                    <el-card class="box-card" shadow="hover">
+                                        <div>
+                                            <el-divider content-position="left"><span style="font-weight: 700">考试详情</span>
+                                            </el-divider>
+                                        </div>
+                                        <template v-if="studyTaskInfo.examFlag">
+                                            <el-row>
+                                                <el-col :span="8">
+                                                    <div class="text">
+                                                        考试最大次数：
+                                                        <template>
+                                                            <el-tag>{{studyTaskInfo.examMaxNum}}</el-tag>
+                                                        </template>
+                                                    </div>
+                                                </el-col>
+                                                <el-col :span="8">
+                                                    <div class="text">
+                                                        考试要求习题次数：
+                                                        <template>
+                                                            <el-tag>{{studyTaskInfo.minNum}}</el-tag>
+                                                        </template>
+                                                    </div>
+                                                </el-col>
+                                                <el-col :span="8">
+                                                    <div class="text">
+                                                        考试合格分数：
+                                                        <template>
+                                                            <el-tag>{{studyTaskInfo.passScore}}</el-tag>
+                                                        </template>
+                                                    </div>
+                                                </el-col>
+                                            </el-row>
+                                            <template v-if="studyTaskInfo.examTopicList != null && studyTaskInfo.examTopicList != [] && studyTaskInfo.examTopicList.length > 0">
+                                                <el-row v-for="item in studyTaskInfo.examTopicList">
+                                                    <el-tag >{{item.topicType}}题数量:{{item.topicNum}}</el-tag>
+                                                </el-row>
+                                            </template>
+                                        </template>
+                                    </el-card>
                                     <el-card class="box-card" shadow="hover">
                                         <div>
                                             <el-divider content-position="left"><span style="font-weight: 700">任务评分详情</span>
@@ -144,9 +180,7 @@
                                     <el-row :gutter="5">
                                         <el-col :span="12">
                                             <span>任务分配总数：
-                                                <template v-if="studyTaskInfo.taskAllNum != null && studyTaskInfo.taskAllNum != ''">
-                                                    <el-tag type="danger">{{studyTaskInfo.taskAllNum}}</el-tag>
-                                                </template>
+                                                <el-tag type="danger">{{studyTaskInfo.taskAllNum}}</el-tag>
                                             </span>
                                         </el-col>
                                     </el-row>
@@ -178,9 +212,7 @@
                                 <el-row :gutter="5">
                                     <el-col :span="12">
                                             <span>任务分配总数：
-                                                <template v-if="studyTaskInfo.taskAllNum != null && studyTaskInfo.taskAllNum != ''">
-                                                    <el-tag type="danger">{{studyTaskInfo.taskAllNum}}</el-tag>
-                                                </template>
+                                                <el-tag type="danger">{{studyTaskInfo.taskAllNum}}</el-tag>
                                             </span>
                                     </el-col>
                                 </el-row>
@@ -209,9 +241,7 @@
                                 <el-row :gutter="5">
                                     <el-col :span="12">
                                             <span>任务分配总数：
-                                                <template v-if="studyTaskInfo.taskAllNum != null && studyTaskInfo.taskAllNum != ''">
-                                                    <el-tag type="danger">{{studyTaskInfo.taskAllNum}}</el-tag>
-                                                </template>
+                                                <el-tag type="danger">{{studyTaskInfo.taskAllNum}}</el-tag>
                                             </span>
                                     </el-col>
                                 </el-row>

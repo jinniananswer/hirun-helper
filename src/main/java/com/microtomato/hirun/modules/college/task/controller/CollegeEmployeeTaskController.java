@@ -87,6 +87,9 @@ public class CollegeEmployeeTaskController {
     @Autowired
     private IExamTopicService examTopicService;
 
+    @Autowired
+    private ICollegeExamCfgService collegeExamCfgServiceImpl;
+
     /**
      * 分页查询所有数据
      *
@@ -191,24 +194,45 @@ public class CollegeEmployeeTaskController {
                 if (null != taskCompleteDate){
                     taskFinishNum++;
                 }
-                Integer exercisesCompletedNumber = collegeEmployeeTask.getExercisesCompletedNumber();
-                if (null != exercisesCompletedNumber){
-                    Integer exercisesNumber = collegeStudyTask.getExercisesNumber();
+
+                CollegeExamCfg exercisesCfg = collegeExamCfgServiceImpl.getByStudyTaskIdAndExamType(studyTaskId, "0");
+                //是否需要考试
+                if (null != exercisesCfg){
+                    //有练习
+                    Integer exercisesNumber = exercisesCfg.getExamMaxNum();
                     if (null != exercisesNumber){
+                        //有练习次数要求，判断练习次数
+                        Integer exercisesCompletedNumber = collegeEmployeeTask.getExercisesCompletedNumber();
                         if (exercisesCompletedNumber >= exercisesNumber){
                             exercisesFinishNum++;
                         }
+                    }else {
+                        //无练习次数要求，默认为完成
+                        exercisesFinishNum++;
                     }
+                }else {
+                    //无练习，默认为完成
+                    exercisesFinishNum++;
                 }
-                Integer examScore = collegeEmployeeTask.getExamScore();
-                if (null != examScore){
-                    Integer passScore = collegeStudyTask.getPassScore();
-                    if (null != passScore){
-                        if (null != examScore && examScore > passScore){
-                            examPassNum++;
+                //是否需要考试
+                CollegeExamCfg examCfg = collegeExamCfgServiceImpl.getByStudyTaskIdAndExamType(studyTaskId, "1");
+
+                if (null != examCfg){
+                    //有考试，判断考试分数是否合格
+                    Integer examScore = collegeEmployeeTask.getExamScore();
+                    if (null != examScore){
+                        Integer passScore = exercisesCfg.getPassScore();
+                        if (null != passScore){
+                            if (null != examScore && examScore > passScore){
+                                examPassNum++;
+                            }
                         }
                     }
+                }else {
+                    //无考试，默认合格
+                    examPassNum++;
                 }
+
                 Integer score = collegeEmployeeTask.getScore();
                 if (null != score){
                     evaluateTaskNum++;

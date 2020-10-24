@@ -114,12 +114,19 @@ public class CollegeExamCfgController {
                         collegeExamCfg.setExamMaxNum(collegeReleaseTaskExamRequestDTO.getExamMaxNum());
                         collegeExamCfg.setPassScore(collegeReleaseTaskExamRequestDTO.getPassScore());
                         collegeExamCfg.setExamTime(collegeReleaseTaskExamRequestDTO.getExamTime());
+                        collegeExamCfg.setMinNum(collegeReleaseTaskExamRequestDTO.getMinNum());
+                        if (null == collegeExamCfg.getPassScore()){
+                            collegeExamCfg.setPassScore(80);
+                        }
                         this.collegeExamCfgService.updateByIds(collegeExamCfg);
                     }else {
                         collegeExamCfg = new CollegeExamCfg();
                         BeanUtils.copyProperties(collegeReleaseTaskExamRequestDTO, collegeExamCfg);
                         collegeExamCfg.setStudyTaskId(studyTaskId);
                         collegeExamCfg.setStatus("0");
+                        if (null == collegeExamCfg.getPassScore()){
+                            collegeExamCfg.setPassScore(80);
+                        }
                         this.collegeExamCfgService.save(collegeExamCfg);
                     }
                     Long examTopicId = collegeExamCfg.getExamTopicId();

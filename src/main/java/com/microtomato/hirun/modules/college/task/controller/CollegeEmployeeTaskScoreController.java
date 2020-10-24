@@ -6,7 +6,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.modules.college.config.entity.po.CollegeExamCfg;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeStudyTaskCfg;
+import com.microtomato.hirun.modules.college.config.service.ICollegeExamCfgService;
 import com.microtomato.hirun.modules.college.config.service.ICollegeStudyTaskCfgService;
 import com.microtomato.hirun.modules.college.task.entity.dto.CollegeEmployeeTaskScoreRequestDTO;
 import com.microtomato.hirun.modules.college.task.entity.dto.CollegeJudgeEvaluateTaskResponseDTO;
@@ -44,6 +46,9 @@ public class CollegeEmployeeTaskScoreController {
 
     @Autowired
     private ICollegeStudyTaskCfgService collegeStudyTaskCfgServiceImpl;
+
+    @Autowired
+    private ICollegeExamCfgService collegeExamCfgServiceImpl;
 
     /**
      * 分页查询所有数据
@@ -152,11 +157,14 @@ public class CollegeEmployeeTaskScoreController {
                 String studyTaskId = collegeEmployeeTask.getStudyTaskId();
                 CollegeStudyTaskCfg collegeStudyTaskCfg = collegeStudyTaskCfgServiceImpl.getAllByStudyTaskId(Long.valueOf(studyTaskId));
                 if (null != collegeStudyTaskCfg){
-                    Integer exercisesNumber = collegeStudyTaskCfg.getExercisesNumber();
-                    if (null != exercisesNumber && exercisesNumber >= exercisesCompletedNumber){
-                        result.setEvaluateTask(false);
-                        result.setScoreNotReasons("练习未完成，不能评分");
-                        return result;
+                    CollegeExamCfg collegeExamCfg = collegeExamCfgServiceImpl.getByStudyTaskIdAndExamType(studyTaskId, "0");
+                    if (null != collegeExamCfg){
+                        Integer exercisesNumber = collegeExamCfg.getExamMaxNum();
+                        if (null != exercisesNumber && exercisesNumber >= exercisesCompletedNumber){
+                            result.setEvaluateTask(false);
+                            result.setScoreNotReasons("练习未完成，不能评分");
+                            return result;
+                        }
                     }
                 }
                 Integer examScore = collegeEmployeeTask.getExamScore();

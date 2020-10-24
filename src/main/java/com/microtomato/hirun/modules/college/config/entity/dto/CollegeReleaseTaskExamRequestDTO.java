@@ -15,6 +15,8 @@ public class CollegeReleaseTaskExamRequestDTO {
 
     private Integer examTime;
 
+    private Integer minNum;
+
     private List<CollegeTopicInfoRequestDTO> studyTopicTypeInfoDetails;
 
     private List<CollegeReleaseExamTaskDTO> taskInfoList;

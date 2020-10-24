@@ -11,10 +11,15 @@ import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.college.config.entity.dto.*;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeCourseChaptersCfg;
+import com.microtomato.hirun.modules.college.config.entity.po.CollegeExamCfg;
+import com.microtomato.hirun.modules.college.config.entity.po.CollegeExamRelCfg;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeStudyTaskCfg;
 import com.microtomato.hirun.modules.college.config.mapper.CollegeStudyTaskCfgMapper;
 import com.microtomato.hirun.modules.college.config.service.ICollegeCourseChaptersCfgService;
+import com.microtomato.hirun.modules.college.config.service.ICollegeExamCfgService;
+import com.microtomato.hirun.modules.college.config.service.ICollegeExamRelCfgService;
 import com.microtomato.hirun.modules.college.config.service.ICollegeStudyTaskCfgService;
+import com.microtomato.hirun.modules.college.task.entity.dto.ExamTopicResponseDTO;
 import com.microtomato.hirun.modules.college.task.entity.po.CollegeEmployeeTask;
 import com.microtomato.hirun.modules.college.task.entity.po.CollegeStudyTaskScore;
 import com.microtomato.hirun.modules.college.task.service.ICollegeEmployeeTaskScoreService;
@@ -62,6 +67,12 @@ public class CollegeStudyTaskCfgServiceImpl extends ServiceImpl<CollegeStudyTask
 
     @Autowired
     private ICollegeStudyTaskScoreService collegeStudyTaskScoreServiceImpl;
+
+    @Autowired
+    private ICollegeExamCfgService collegeExamCfgServiceImpl;
+
+    @Autowired
+    private ICollegeExamRelCfgService collegeExamRelCfgServiceImpl;
 
     @Override
     public List<CollegeStudyTaskCfg> queryByTaskType(String taskType) {
@@ -375,6 +386,58 @@ public class CollegeStudyTaskCfgServiceImpl extends ServiceImpl<CollegeStudyTask
                 result.setTaskDifficultyScoreCxceedPercentage(taskDifficultyScoreCxceedPercentage);
                 result.setTutorScoreRanking(tutorScoreRanking);
                 result.setTutorScoreCxceedPercentage(tutorScoreCxceedPercentage);
+
+                CollegeExamCfg collegeExamCfg = this.collegeExamCfgServiceImpl.getByStudyTaskIdAndExamType(studyTaskId, "1");
+                Boolean examFlag = false;
+                if (null != collegeExamCfg){
+                    examFlag = true;
+                    result.setMinNum(null != collegeExamCfg.getMinNum() ? collegeExamCfg.getMinNum() : 0);
+                    result.setPassScore(null != collegeExamCfg.getPassScore() ? collegeExamCfg.getPassScore() : 0);
+                    result.setExamMaxNum(null != collegeExamCfg.getExamMaxNum() ? collegeExamCfg.getExamMaxNum() : 0);
+                    List<CollegeExamRelCfg> collegeExamRelCfgs = collegeExamRelCfgServiceImpl.queryByExamTopicId(collegeExamCfg.getExamTopicId());
+                    if (ArrayUtils.isNotEmpty(collegeExamRelCfgs)){
+                        List<ExamTopicResponseDTO> examTopicList = new ArrayList<>();
+                        for (CollegeExamRelCfg collegeExamRelCfg : collegeExamRelCfgs) {
+                            ExamTopicResponseDTO examTopicResponseDTO = new ExamTopicResponseDTO();
+                            examTopicResponseDTO.setTopicNum(collegeExamRelCfg.getTopicNum());
+                            String topicType = collegeExamRelCfg.getTopicType();
+                            String topicTypeName = staticDataServiceImpl.getCodeName("EXERCISES_TYPE", topicType);
+                            if (StringUtils.isEmpty(topicTypeName)){
+                                topicTypeName = topicType;
+                            }
+                            examTopicResponseDTO.setTopicType(topicTypeName);
+                            examTopicList.add(examTopicResponseDTO);
+                        }
+                        result.setExamTopicList(examTopicList);
+                    }
+                }
+                result.setExamFlag(examFlag);
+
+                CollegeExamCfg exercisesCfg = this.collegeExamCfgServiceImpl.getByStudyTaskIdAndExamType(studyTaskId, "0");
+                Boolean exercisesFlag = false;
+                if (null != collegeExamCfg){
+                    exercisesFlag = true;
+                    result.setMinNum(null != collegeExamCfg.getMinNum() ? collegeExamCfg.getMinNum() : 0);
+                    result.setPassScore(null != collegeExamCfg.getPassScore() ? collegeExamCfg.getPassScore() : 0);
+                    result.setExamMaxNum(null != collegeExamCfg.getExamMaxNum() ? collegeExamCfg.getExamMaxNum() : 0);
+                    List<CollegeExamRelCfg> collegeExamRelCfgs = collegeExamRelCfgServiceImpl.queryByExamTopicId(collegeExamCfg.getExamTopicId());
+                    if (ArrayUtils.isNotEmpty(collegeExamRelCfgs)){
+                        List<ExamTopicResponseDTO> examTopicList = new ArrayList<>();
+                        for (CollegeExamRelCfg collegeExamRelCfg : collegeExamRelCfgs) {
+                            ExamTopicResponseDTO examTopicResponseDTO = new ExamTopicResponseDTO();
+                            examTopicResponseDTO.setTopicNum(collegeExamRelCfg.getTopicNum());
+                            String topicType = collegeExamRelCfg.getTopicType();
+                            String topicTypeName = staticDataServiceImpl.getCodeName("EXERCISES_TYPE", topicType);
+                            if (StringUtils.isEmpty(topicTypeName)){
+                                topicTypeName = topicType;
+                            }
+                            examTopicResponseDTO.setTopicType(topicTypeName);
+                            examTopicList.add(examTopicResponseDTO);
+                        }
+                        result.setExercisesTopicList(examTopicList);
+                    }
+                }
+                result.setExercisesFlag(exercisesFlag);
 
                 /*//设置章节信息
                 List<CollegeCourseChaptersCfg> collegeCourseChaptersCfgList = collegeCourseChaptersCfgServiceImpl.queryByStudyId(result.getStudyId());

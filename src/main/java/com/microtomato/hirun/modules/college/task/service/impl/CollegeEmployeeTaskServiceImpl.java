@@ -12,8 +12,10 @@ import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.framework.util.UserContextUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
+import com.microtomato.hirun.modules.college.config.entity.po.CollegeExamCfg;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeStudyTaskCfg;
 import com.microtomato.hirun.modules.college.config.service.ICollegeCourseChaptersCfgService;
+import com.microtomato.hirun.modules.college.config.service.ICollegeExamCfgService;
 import com.microtomato.hirun.modules.college.config.service.ICollegeStudyTaskCfgService;
 import com.microtomato.hirun.modules.college.task.entity.dto.*;
 import com.microtomato.hirun.modules.college.task.entity.po.CollegeEmployeeTask;
@@ -104,6 +106,9 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
 
     @Autowired
     private ICollegeStudyTaskScoreService collegeStudyTaskScoreServiceImpl;
+
+    @Autowired
+    private ICollegeExamCfgService collegeExamCfgServiceImpl;
 
     @Override
     public List<CollegeEmployeeTask> queryByEmployeeIdAndTaskType(String employeeId, String taskType) {
@@ -451,11 +456,19 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
                 Integer studyLength = collegeStudyTaskCfg.getStudyLength();
                 Integer studyDateLength = collegeEmployeeTask.getStudyDateLength();
                 if (null != studyDateLength && null != studyLength && studyDateLength >= studyLength){
-                    isExerciseFlag = true;
-                    Integer exercisesNumber = collegeStudyTaskCfg.getExercisesNumber();
-                    Integer exercisesCompletedNumber = collegeEmployeeTask.getExercisesCompletedNumber();
-                    if (null != exercisesCompletedNumber && null != exercisesNumber && exercisesNumber <= exercisesCompletedNumber){
-                        isExamFlag = true;
+                    //是否有习题
+                    CollegeExamCfg exercisesCfg = collegeExamCfgServiceImpl.getByStudyTaskIdAndExamType(studyTaskId, "0");
+                    if (null != exercisesCfg){
+                        isExerciseFlag = true;
+                    }
+                    //是否有考试
+                    CollegeExamCfg examCfg = collegeExamCfgServiceImpl.getByStudyTaskIdAndExamType(studyTaskId, "1");
+                    if (null != examCfg){
+                        Integer minNum = examCfg.getMinNum();
+                        Integer exercisesCompletedNumber = collegeEmployeeTask.getExercisesCompletedNumber();
+                        if (null == minNum || (null != minNum && null != exercisesCompletedNumber && minNum <= exercisesCompletedNumber)){
+                            isExamFlag = true;
+                        }
                     }
                 }
 

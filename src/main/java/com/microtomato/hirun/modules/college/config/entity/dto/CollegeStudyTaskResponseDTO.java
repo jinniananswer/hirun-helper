@@ -2,6 +2,7 @@ package com.microtomato.hirun.modules.college.config.entity.dto;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeCourseChaptersCfg;
+import com.microtomato.hirun.modules.college.task.entity.dto.ExamTopicResponseDTO;
 import lombok.Data;
 
 import java.util.List;
@@ -97,14 +98,19 @@ public class CollegeStudyTaskResponseDTO {
     private Integer studyLength;
 
     /**
-     * 习题次数
+     * 考试要求习题次数
      */
-    private Integer exercisesNumber;
+    private Integer minNum;
 
     /**
      * 考试合格分数
      */
     private Integer passScore;
+
+    /**
+     * 考试最大次数
+     */
+    private Integer examMaxNum;
 
     /**
      * 章节集合
@@ -205,4 +211,12 @@ public class CollegeStudyTaskResponseDTO {
      * 老师评分百分比
      */
     private String tutorScoreCxceedPercentage;
+
+    private Boolean examFlag;
+
+    private List<ExamTopicResponseDTO> examTopicList;
+
+    private Boolean exercisesFlag;
+
+    private List<ExamTopicResponseDTO> exercisesTopicList;
 }

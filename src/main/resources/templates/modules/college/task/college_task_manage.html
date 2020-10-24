@@ -163,7 +163,7 @@
                                     <el-input v-model.number="addStudyTaskInfo.studyLength" autocomplete="off"></el-input>
                                 </el-form-item>
                             </el-col>
-                            <el-col :span="8">
+                            <!--<el-col :span="8">
                                 <el-form-item :style="showExercisesNumber" label="习题次数" label-width="120px" prop="exercisesNumber">
                                     <el-input v-model.number="addStudyTaskInfo.exercisesNumber" autocomplete="off"></el-input>
                                 </el-form-item>
@@ -172,7 +172,7 @@
                                 <el-form-item :style="showPassScore" label="考试合格分数" label-width="120px" prop="passScore">
                                     <el-input v-model.number="addStudyTaskInfo.passScore" autocomplete="off"></el-input>
                                 </el-form-item>
-                            </el-col>
+                            </el-col>-->
                             <el-col :span="8">
                                 <el-form-item label="任务开始方式" label-width="120px" prop="studyStartType">
                                     <vue-select @change="changeStudyStartType" code-type="STUDY_START_TYPE" v-model="addStudyTaskInfo.studyStartType"></vue-select>
@@ -320,23 +320,23 @@
                                 </el-form-item>
                             </el-col>
                             <el-col :span="8">
-                                <el-form-item label="习题次数" label-width="120px" prop="exercisesNumber">
-                                    <el-input v-model.number="editStudyTaskInfo.exercisesNumber" autocomplete="off"></el-input>
-                                </el-form-item>
-                            </el-col>
-                        </el-row>
-                        <el-row>
-                            <el-col :span="8">
-                                <el-form-item label="考试合格分数" label-width="120px" prop="passScore">
-                                    <el-input v-model.number="editStudyTaskInfo.passScore" autocomplete="off"></el-input>
-                                </el-form-item>
-                            </el-col>
-                            <el-col :span="8">
                                 <el-form-item label="学习时间/天" label-width="120px" prop="studyTime">
                                     <el-input v-model.number="editStudyTaskInfo.studyTime" autocomplete="off"></el-input>
                                 </el-form-item>
                             </el-col>
                         </el-row>
+                        <!--<el-row>
+                            <el-col :span="8">
+                                <el-form-item label="习题次数" label-width="120px" prop="exercisesNumber">
+                                    <el-input v-model.number="editStudyTaskInfo.exercisesNumber" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="考试合格分数" label-width="120px" prop="passScore">
+                                    <el-input v-model.number="editStudyTaskInfo.passScore" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>-->
                         <el-row>
                             <div style="text-align: center">
                                 <el-button type="primary" @click="submitStudyTaskEdit(editStudyTaskInfo)">保存</el-button>
@@ -363,6 +363,11 @@
                             <el-col :span="8" :style="showExam">
                                 <el-form-item label="考试合格分数" label-width="120px" prop="passScore">
                                     <el-input v-model.number="studyTopicTypeInfo.passScore" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8" :style="showExam">
+                                <el-form-item label="考试要求练习数" label-width="120px" prop="minNum">
+                                    <el-input v-model.number="studyTopicTypeInfo.minNum" autocomplete="off"></el-input>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="8" :style="showExam">

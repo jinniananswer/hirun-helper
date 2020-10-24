@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
  *
  * @author makejava
  * @version 1.0.0
- * @date 2020-09-23 01:00:57
+ * @date 2020-10-25 00:58:57
  */
 @Data
 @Builder
@@ -102,18 +102,6 @@ public class CollegeStudyTaskCfg extends BaseEntity {
      */
     @TableField(value = "study_length")
     private Integer studyLength;
-
-    /**
-     * 习题次数
-     */
-    @TableField(value = "exercises_number")
-    private Integer exercisesNumber;
-
-    /**
-     * 考试合格分数
-     */
-    @TableField(value = "pass_score")
-    private Integer passScore;
 
     /**
      * 任务发布时间
