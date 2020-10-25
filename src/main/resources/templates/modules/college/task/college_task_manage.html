@@ -104,7 +104,7 @@
             <el-dialog width="80%" title="新增学习任务配置" append-to-body :visible.sync="addStudyTaskDialogVisible">
                 <el-card class="box-card" shadow="hover">
                     <div slot="header" class="clearfix">
-                        <span>选择课件类型</span>
+                        <span>选择任务大类</span>
                         <el-select v-model="taskCoursewareType" @change="changeTaskCoursewareType" filterable placeholder="请选择">
                             <el-option
                                 v-for="taskCoursewareType in taskCoursewareTypes"
@@ -124,6 +124,32 @@
                             placeholder="请输入实践任务描述"
                             v-model="addStudyTaskInfo.taskDesc">
                         </el-input>
+                        <vxe-table
+                                border
+                                resizable
+                                ref="studyTopicTypeInfoDetails"
+                                show-overflow
+                                highlight-hover-row
+                                highlight-cell
+                                keep-source
+                                max-height="800px"
+                                :auto-resize="true"
+                                :data="studyTopicTypeInfoDetails"
+                                :edit-config="{trigger: 'click', mode: 'cell', showStatus: true}"
+                                :checkbox-config="{strict: true, range: true, trigger: 'row', highlight: true}">
+                            <vxe-table-column type="checkbox" align="center" width="40"></vxe-table-column>
+                            <vxe-table-column field="exercisesType" align="center" title="题目类型" width="100" :edit-render="{name: 'select', options: studyTopicTypeOptions}"></vxe-table-column>
+                            <vxe-table-column field="exercisesNumber" align="center" sortable title="题目数量" width="250" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+                            <vxe-table-column fixed="right" title="操作" align="center" width="80" show-overflow>
+                                <template v-slot="{ row }">
+                                    <el-button
+                                            size="mini"
+                                            type="danger"
+                                            icon="el-icon-delete"
+                                            @click="deleteTopicType(row)">删除</el-button>
+                                </template>
+                            </vxe-table-column>
+                        </vxe-table>
                     </div>
                 </el-card>
                 <el-card>

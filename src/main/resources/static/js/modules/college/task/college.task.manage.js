@@ -143,7 +143,8 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
             this.taskCoursewareTypes = [
                 {value : "0", label : "选择课程"},
                 {value : "1", label : "上传课件"},
-                {value : "2", label : "实践任务"}
+                {value : "2", label : "实践任务"},
+                {value : "3", label : "答题任务"}
             ];
             this.studyTopicTypeOptions = [
                 {value : "1", label : "单选"},
@@ -392,7 +393,7 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     });
                     return;
                 }
-                this.$confirm('是否删除选中的学习任务?本次删除同时会连带删除选中学习任务的章节信息配置！', '提示', {
+                this.$confirm('是否删除选中的学习任务?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
@@ -417,7 +418,7 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
             },
             deleteStudyTaskRow: function (row) {
                 let deleteStudyName = row.studyName;
-                this.$confirm('是否删除' + deleteStudyName + '学习任务配置?本次删除同时会连带删除章节信息配置！', '提示', {
+                this.$confirm('是否删除' + deleteStudyName + '学习任务配置?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
@@ -526,45 +527,90 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     });
                     return;
                 }
-                this.studyTopicTypeInfo = {};
-                //批量设置
-                this.studyTopicTypeInfo.releaseType = '0';
-                this.releaseExamDialogVisible = true;
-                this.examType = examType;
-                this.showExercises = 'display:none'
-                this.showExam = 'display:none'
-                if (examType == "0"){
-                    this.showExercises = 'display:block'
-                    this.showExam = 'display:none'
-                }else if (examType == "1"){
+                this.$confirm('您选中批量设置练习和考试的任务中如果有实践任务，实践任务不会设置练习和考试，是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.studyTopicTypeInfo = {};
+                    //批量设置
+                    this.studyTopicTypeInfo.releaseType = '0';
+                    this.releaseExamDialogVisible = true;
+                    this.examType = examType;
                     this.showExercises = 'display:none'
-                    this.showExam = 'display:block'
-                }
+                    this.showExam = 'display:none'
+                    if (examType == "0"){
+                        this.showExercises = 'display:block'
+                        this.showExam = 'display:none'
+                    }else if (examType == "1"){
+                        this.showExercises = 'display:none'
+                        this.showExam = 'display:block'
+                    }
+                })
             },
             submitReleaseExam: function(studyTopicTypeInfo){
                 this.$refs.studyTopicTypeInfo.validate((valid) => {
                     if (valid) {
                         let releaseType = studyTopicTypeInfo.releaseType;
-                        let requestInfo = studyTopicTypeInfo;
-                        if (releaseType == '0'){
-                            let val = this.multipleSelection
-                            if(val == undefined || val == 'undefined' || val.length <= 0){
+                        let studyTopicTypeInfoList = studyTopicTypeInfo.studyTopicTypeInfoDetails;
+                        if (null == studyTopicTypeInfoList || undefined == studyTopicTypeInfoList || studyTopicTypeInfoList == [] || studyTopicTypeInfoList.length <= 0){
+                            this.$message({
+                                showClose: true,
+                                duration: 3000,
+                                message: '请设置习题类型和数量。',
+                                center: true
+                            });
+                            return;
+                        }
+                        let topicTypes = ',';
+                        let allScore = 0;
+                        let exercisesTypeOptions = {};
+                        for (let i = 0 ; i < studyTopicTypeInfoList.length; i++){
+                            let studyTopicTypeInfo = studyTopicTypeInfoList[i];
+                            let type = "";
+                            this.studyTopicTypeOptions.forEach((option) => {
+                                if (option.value == studyTopicTypeInfo.exercisesType){
+                                    type = option.label;
+                                }
+                            });
+                            if (undefined == studyTopicTypeInfo.exercisesNumber || null == studyTopicTypeInfo.exercisesNumber || studyTopicTypeInfo.exercisesNumber == 0 || studyTopicTypeInfo.exercisesNumber == '0'){
                                 this.$message({
                                     showClose: true,
                                     duration: 3000,
-                                    message: '您未选择需要设置习题目标的任务配置！请选择后再点击设置。',
+                                    message: '请设置' + type + '习题的数量，且不能为0',
                                     center: true
                                 });
                                 return;
                             }
-                            let taskInfoList = [];
-                            val.forEach((studyInfo) => {
-                                let taskInfo = {};
-                                taskInfo.studyTaskId = studyInfo.studyTaskId;
-                                taskInfoList.push(taskInfo);
-                            })
-                            requestInfo.taskInfoList = taskInfoList;
+                            if (topicTypes.indexOf("," + studyTopicTypeInfo.exercisesType + ",") > -1){
+                                this.$message({
+                                    showClose: true,
+                                    duration: 3000,
+                                    message: '习题类型' + type + '不能重复设置',
+                                    center: true
+                                });
+                                return;
+                            }
+                            topicTypes = topicTypes + studyTopicTypeInfo.exercisesType + ",";
                         }
+                        let requestInfo = studyTopicTypeInfo;
+                        let val = this.multipleSelection
+                        if(val == undefined || val == 'undefined' || val.length <= 0){
+                            this.$message({
+                                showClose: true,
+                                duration: 3000,
+                                message: '您未选择需要设置习题目标的任务配置！请选择后再点击设置。',
+                                center: true
+                            });
+                            return;
+                        }
+                        let taskInfoList = [];
+                        val.forEach((studyInfo) => {
+                            let taskInfo = {};
+                            taskInfo.studyTaskId = studyInfo.studyTaskId;
+                            taskInfoList.push(taskInfo);
+                        })
+                        requestInfo.taskInfoList = taskInfoList;
                         let that = this;
                         requestInfo.examType = that.examType
                         ajax.post('api/CollegeExamCfg/releaseTaskExam', requestInfo, function(responseData){
