@@ -88,6 +88,8 @@ public class MidprodOpen extends BaseEntity {
     @TableField(value = "open_time")
     private LocalDateTime openTime;
 
+    @TableField(value = "staff_name")
+    private String staffName;
 
     @TableField(value = "open_id")
     private String openId;
@@ -107,6 +109,7 @@ public class MidprodOpen extends BaseEntity {
 
     @TableField(value = "head_url")
     private String headUrl;
+
 
 
     @TableField(value = "create_time", fill = FieldFill.INSERT)

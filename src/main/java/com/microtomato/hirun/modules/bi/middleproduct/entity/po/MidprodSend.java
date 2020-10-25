@@ -64,6 +64,8 @@ public class MidprodSend extends BaseEntity {
     @TableField(value = "staff_id")
     private String staffId;
 
+    @TableField(value = "staff_name")
+    private String staffName;
 
     @TableField(value = "employee_id")
     private Long employeeId;
