@@ -114,7 +114,7 @@
                             </el-option>
                         </el-select>
                     </div>
-                    <div style="height: 20vh;overflow: auto;">
+                    <div style="height: 40vh;overflow: auto;">
                         <upload-file :style="showUpload" ref="upload" accept=".pdf" limit="1"></upload-file>
                         <el-tree :style="showTree" :data="studyInfos" node-key="courseId" :props="defaultProps" @node-click="handleNodeClick" accordion></el-tree>
                         <div class="sub-title" :style="showTaskDesc">请输入具体实践的内容描述，比如：去建材市场识别材料并上传图片</div>
@@ -124,32 +124,40 @@
                             placeholder="请输入实践任务描述"
                             v-model="addStudyTaskInfo.taskDesc">
                         </el-input>
-                        <vxe-table
-                                border
-                                resizable
-                                ref="studyTopicTypeInfoDetails"
-                                show-overflow
-                                highlight-hover-row
-                                highlight-cell
-                                keep-source
-                                max-height="800px"
-                                :auto-resize="true"
-                                :data="studyTopicTypeInfoDetails"
-                                :edit-config="{trigger: 'click', mode: 'cell', showStatus: true}"
-                                :checkbox-config="{strict: true, range: true, trigger: 'row', highlight: true}">
-                            <vxe-table-column type="checkbox" align="center" width="40"></vxe-table-column>
-                            <vxe-table-column field="exercisesType" align="center" title="题目类型" width="100" :edit-render="{name: 'select', options: studyTopicTypeOptions}"></vxe-table-column>
-                            <vxe-table-column field="exercisesNumber" align="center" sortable title="题目数量" width="250" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
-                            <vxe-table-column fixed="right" title="操作" align="center" width="80" show-overflow>
-                                <template v-slot="{ row }">
-                                    <el-button
-                                            size="mini"
-                                            type="danger"
-                                            icon="el-icon-delete"
-                                            @click="deleteTopicType(row)">删除</el-button>
+                        <div class="sub-title" :style="showTopic">
+                            <vxe-toolbar>
+                                <template v-slot:buttons>
+                                    <vxe-button icon="fa fa-plus" @click="addTopicType">添加习题题目类型</vxe-button>
+                                    <vxe-button icon="fa fa-plus" @click="deleteSelectedTopicType">删除习题题目类型</vxe-button>
                                 </template>
-                            </vxe-table-column>
-                        </vxe-table>
+                            </vxe-toolbar>
+                            <vxe-table
+                                    border
+                                    resizable
+                                    ref="studyTopicTypeInfoDetails"
+                                    show-overflow
+                                    highlight-hover-row
+                                    highlight-cell
+                                    keep-source
+                                    max-height="800px"
+                                    :auto-resize="true"
+                                    :data="studyTopicTypeInfoDetails"
+                                    :edit-config="{trigger: 'click', mode: 'cell', showStatus: true}"
+                                    :checkbox-config="{strict: true, range: true, trigger: 'row', highlight: true}">
+                                <vxe-table-column type="checkbox" align="center" width="40"></vxe-table-column>
+                                <vxe-table-column field="exercisesType" align="center" title="题目类型" width="100" :edit-render="{name: 'select', options: studyTopicTypeOptions}"></vxe-table-column>
+                                <vxe-table-column field="exercisesNumber" align="center" sortable title="题目数量" width="250" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+                                <vxe-table-column fixed="right" title="操作" align="center" width="80" show-overflow>
+                                    <template v-slot="{ row }">
+                                        <el-button
+                                                size="mini"
+                                                type="danger"
+                                                icon="el-icon-delete"
+                                                @click="deleteTopicType(row)">删除</el-button>
+                                    </template>
+                                </vxe-table-column>
+                            </vxe-table>
+                        </div>
                     </div>
                 </el-card>
                 <el-card>
@@ -158,7 +166,28 @@
                     </div>
                     <el-form :inline="false" :model="addStudyTaskInfo"  ref="addStudyTaskInfo" label-position="right"
                              label-width="120px" :rules="studyTaskRules">
-                        <el-row>
+                        <el-row :style="showTopic">
+                            <el-col :span="8">
+                                <el-form-item label="任务名称" label-width="120px" prop="taskName">
+                                    <el-input v-model="addStudyTaskInfo.taskName" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row :style="showTopic">
+                            <el-col :span="8">
+                                <el-form-item label="答题任务类型" label-width="120px" prop="answerTaskType">
+                                    <vue-select code-type="ANSWER_TASK_TYPE" v-model="addStudyTaskInfo.answerTaskType"></vue-select>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row :style="showTopic">
+                            <el-col :span="8">
+                                <el-form-item label="员工工作类型" label-width="120px" prop="jobType">
+                                    <vue-select @change="changeJobType" code-type="JOB_TYPE" v-model="addStudyTaskInfo.jobType"></vue-select>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row :style="showNoTopic">
                             <el-col :span="8">
                                 <el-form-item label="任务名称" label-width="120px" prop="taskName">
                                     <el-input v-model="addStudyTaskInfo.taskName" autocomplete="off"></el-input>

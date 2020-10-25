@@ -65,4 +65,14 @@ public class CollegeCourseChaptersTaskRequestDTO {
      * 任务描述
      */
     private String taskDesc;
+
+    /**
+     * 答题任务类型
+     */
+    private String answerTaskType;
+
+    /**
+     * 题目集合
+     */
+    private List<CollegeTopicInfoRequestDTO> studyTopicTypeInfoDetails;
 }

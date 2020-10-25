@@ -124,7 +124,9 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 showStudyLength: 'display:none',
                 showTaskDesc: 'display:none',
                 showExercisesNumber: 'display:none',
-                showPassScore: 'display:none'
+                showPassScore: 'display:none',
+                showTopic: 'display:none',
+                showNoTopic: 'display:none'
             }
         },
         mounted: function() {
@@ -245,6 +247,11 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     this.$alert("请选择任务学习类型后再提交", "错误提示", {type: 'error'})
                     return;
                 }
+
+                if (null == this.addStudyTaskInfo.jobType || undefined == this.addStudyTaskInfo.jobType || '' == this.addStudyTaskInfo.jobType){
+                    this.$alert("请选择员工工作类型后再提交", "错误提示", {type: 'error'})
+                    return;
+                }
                 if ("2" != this.addStudyTaskInfo.jobType && (this.selectJobRoleInfos == [] || this.selectJobRoleInfos == undefined || this.selectJobRoleInfos.length == 0)){
                     this.$alert("工作类型非所有员工的请选择员工岗位再提交", "错误提示", {type: 'error'})
                     return;
@@ -266,6 +273,82 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                         this.$alert("实践任务，任务描述不能为空", "错误提示", {type: 'error'})
                         return;
                     }
+                }else if (this.studyType == '3'){
+                    let answerTaskName = this.addStudyTaskInfo.taskName;
+                    if (undefined == answerTaskName || null == answerTaskName || '' == answerTaskName){
+                        this.$message({
+                            showClose: true,
+                            duration: 3000,
+                            message: '请设置任务名称！',
+                            center: true
+                        });
+                        return;
+                    }
+                    let answerTaskType = this.addStudyTaskInfo.answerTaskType;
+                    if (undefined == answerTaskType || null == answerTaskType || '' == answerTaskType){
+                        this.$message({
+                            showClose: true,
+                            duration: 3000,
+                            message: '请选择答题任务类型！',
+                            center: true
+                        });
+                        return;
+                    }
+                    let studyTopicTypeInfoList = this.studyTopicTypeInfoDetails;
+                    if (null == studyTopicTypeInfoList || undefined == studyTopicTypeInfoList || studyTopicTypeInfoList == [] || studyTopicTypeInfoList.length <= 0){
+                        this.$message({
+                            showClose: true,
+                            duration: 3000,
+                            message: '请设置习题类型和数量。',
+                            center: true
+                        });
+                        return;
+                    }
+                    let topicTypes = ',';
+                    let allScore = 0;
+                    let exercisesTypeOptions = {};
+                    for (let i = 0 ; i < studyTopicTypeInfoList.length; i++){
+                        let studyTopicTypeInfo = studyTopicTypeInfoList[i];
+                        let type = "";
+                        this.studyTopicTypeOptions.forEach((option) => {
+                            if (option.value == studyTopicTypeInfo.exercisesType){
+                                type = option.label;
+                            }
+                        });
+                        if (undefined == studyTopicTypeInfo.exercisesNumber || null == studyTopicTypeInfo.exercisesNumber || studyTopicTypeInfo.exercisesNumber == 0 || studyTopicTypeInfo.exercisesNumber == '0'){
+                            this.$message({
+                                showClose: true,
+                                duration: 3000,
+                                message: '请设置' + type + '习题的数量，且不能为0',
+                                center: true
+                            });
+                            return;
+                        }
+                        if (topicTypes.indexOf("," + studyTopicTypeInfo.exercisesType + ",") > -1){
+                            this.$message({
+                                showClose: true,
+                                duration: 3000,
+                                message: '习题类型' + type + '不能重复设置',
+                                center: true
+                            });
+                            return;
+                        }
+                        topicTypes = topicTypes + studyTopicTypeInfo.exercisesType + ",";
+                    }
+                    let that = this;
+                    return;
+                    ajax.post('api/CollegeStudyTaskCfg/addStudyTaskCfg', that.addStudyTaskInfo, function(responseData){
+                        that.$message({
+                            showClose: true,
+                            message: '课程任务新增成功',
+                            type: 'success'
+                        });
+                        that.studyTaskInfo.push(responseData);
+                        that.addStudyTaskInfo = {};
+                        that.courseChaptersDetails = [];
+                        that.addStudyTaskDialogVisible = false;
+                        that.studyTopicTypeInfoDetails = []
+                    });
                 }
                 //判断学习时长
                 if (this.studyType != '2'){
@@ -347,6 +430,8 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 this.showUpload = 'display:none'
                 this.showExercisesNumber = 'display:block'
                 this.showPassScore = 'display:block'
+                this.showTopic = 'display:none'
+                this.showNoTopic = 'display:block'
                 if (1 == val){
                     let that = this
                     that.showUpload = 'display:block'
@@ -377,6 +462,9 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     this.showStudyLength = 'display:none'
                     this.showExercisesNumber = 'display:none'
                     this.showPassScore = 'display:none'
+                }else if(3 == val){
+                    this.showTopic = 'display:block'
+                    this.showNoTopic = 'display:none'
                 }
             },
             handleClick() {
