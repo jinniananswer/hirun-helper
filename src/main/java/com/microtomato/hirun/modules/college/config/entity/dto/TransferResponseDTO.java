@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class JobRoleTransferResponseDTO {
+public class TransferResponseDTO {
 
     private String label;
 

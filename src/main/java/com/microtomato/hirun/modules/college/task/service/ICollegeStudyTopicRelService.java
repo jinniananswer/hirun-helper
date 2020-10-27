@@ -15,5 +15,5 @@ import java.util.List;
 public interface ICollegeStudyTopicRelService extends IService<CollegeStudyTopicRel> {
     List<CollegeStudyTopicRel> queryEffectiveByStudyAndChaptersId(String studyId, String chaptersId);
 
-    CollegeStudyTopicRel getEffectiveByStudyId(String studyId);
+    List<CollegeStudyTopicRel> getEffectiveByStudyId(String studyId);
 }

@@ -75,4 +75,9 @@ public class CollegeCourseChaptersTaskRequestDTO {
      * 题目集合
      */
     private List<CollegeTopicInfoRequestDTO> studyTopicTypeInfoDetails;
+
+    /**
+     * 答题任务选择标签集合
+     */
+    private List<Long> labelIdList;
 }

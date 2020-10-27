@@ -11,13 +11,9 @@ import com.microtomato.hirun.modules.college.config.entity.po.CollegeCourseChapt
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeStudyTaskCfg;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeTaskJobCfg;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeTopicLabelCfg;
-import com.microtomato.hirun.modules.college.config.service.ICollegeCourseChaptersCfgService;
-import com.microtomato.hirun.modules.college.config.service.ICollegeStudyTaskCfgService;
-import com.microtomato.hirun.modules.college.config.service.ICollegeTaskJobCfgService;
-import com.microtomato.hirun.modules.college.config.service.ICollegeTopicLabelCfgService;
+import com.microtomato.hirun.modules.college.config.service.*;
 import com.microtomato.hirun.modules.college.task.entity.po.CollegeStudyTopicRel;
 import com.microtomato.hirun.modules.college.task.service.ICollegeStudyTopicRelService;
-import com.microtomato.hirun.modules.college.topic.entity.po.CollegeTopicLabelRel;
 import com.microtomato.hirun.modules.organization.service.ICourseService;
 import com.microtomato.hirun.modules.system.entity.po.StaticData;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
@@ -30,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -69,6 +66,9 @@ public class CollegeStudyTaskCfgController {
 
     @Autowired
     private ICollegeTopicLabelCfgService collegeTopicLabelCfgServiceImpl;
+
+    @Autowired
+    private ICollegeExamCfgService collegeExamCfgService;
 
     /**
      * 分页查询所有数据
@@ -141,6 +141,10 @@ public class CollegeStudyTaskCfgController {
     public CollegeStudyTaskResponseDTO addStudyTaskCfg(@RequestBody CollegeCourseChaptersTaskRequestDTO collegeCourseChaptersTaskRequestDTO){
         CollegeStudyTaskResponseDTO result = new CollegeStudyTaskResponseDTO();
         CollegeStudyTaskCfg collegeStudyTaskCfg = new CollegeStudyTaskCfg();
+        if (StringUtils.isEmpty(collegeCourseChaptersTaskRequestDTO.getStudyId())){
+            long currentTimeMillis = System.currentTimeMillis();
+            collegeCourseChaptersTaskRequestDTO.setStudyId(String.valueOf(currentTimeMillis));
+        }
         BeanUtils.copyProperties(collegeCourseChaptersTaskRequestDTO, collegeStudyTaskCfg);
         BeanUtils.copyProperties(collegeCourseChaptersTaskRequestDTO, result);
         collegeStudyTaskCfg.setStatus("0");
@@ -149,17 +153,54 @@ public class CollegeStudyTaskCfgController {
         String studyId = collegeStudyTaskCfg.getStudyId();
         collegeStudyTaskCfg.setReleaseStatus("0");
         result.setReleaseStatus("0");
-        CollegeStudyTopicRel collegeStudyTopicCfg = collegeStudyTopicRelServiceImpl.getEffectiveByStudyId(studyId);
-        if (null == collegeStudyTopicCfg){
-            String studyName = "";
-            if (StringUtils.equals("1", studyType)){
-                studyName = uploadFileServiceImpl.getFileNameByFileId(studyId);
-            }else if(StringUtils.equals("0", studyType)){
-                studyName = courseServiceImpl.getCourseNameByCourseId(Long.valueOf(studyId));
+        this.collegeStudyTaskCfgService.save(collegeStudyTaskCfg);
+        List<CollegeStudyTopicRel> collegeStudyTopicCfgResultList = collegeStudyTopicRelServiceImpl.getEffectiveByStudyId(studyId);
+        if (ArrayUtils.isEmpty(collegeStudyTopicCfgResultList)){
+            if (StringUtils.equals("3", studyType) || StringUtils.equals("2", studyType)){
+                if (StringUtils.equals("3", studyType)){
+                    //答题任务,直接设置任务与标签关系
+                    List<Long> labelIdList = collegeCourseChaptersTaskRequestDTO.getLabelIdList();
+                    if (ArrayUtils.isNotEmpty(labelIdList)){
+                        String answerTaskType = collegeCourseChaptersTaskRequestDTO.getAnswerTaskType();
+                        String answerTaskName = staticDataServiceImpl.getCodeName("ANSWER_TASK_TYPE", answerTaskType);
+                        if (StringUtils.isEmpty(answerTaskName)){
+                            answerTaskName = answerTaskType;
+                        }
+                        for (Long labelId : labelIdList) {
+                            CollegeStudyTopicRel addCollegeStudyTopicRel = new CollegeStudyTopicRel();
+                            addCollegeStudyTopicRel.setStatus("0");
+                            addCollegeStudyTopicRel.setStudyId(collegeStudyTaskCfg.getStudyId());
+                            addCollegeStudyTopicRel.setStudyTopicDesc(answerTaskName + "与习题范围关系");
+                            addCollegeStudyTopicRel.setStudyTopicName(answerTaskName + "习题");
+                            addCollegeStudyTopicRel.setLabelId(labelId);
+                            collegeStudyTopicCfgList.add(addCollegeStudyTopicRel);
+                        }
+                    }
+
+                    //设置题目
+                    List<CollegeTopicInfoRequestDTO> studyTopicTypeInfoDetails = collegeCourseChaptersTaskRequestDTO.getStudyTopicTypeInfoDetails();
+                    if (ArrayUtils.isNotEmpty(studyTopicTypeInfoDetails)){
+                        CollegeReleaseTaskExamRequestDTO requestDTO = new CollegeReleaseTaskExamRequestDTO();
+                        requestDTO.setExamType("0");
+                        requestDTO.setStudyTopicTypeInfoDetails(studyTopicTypeInfoDetails);
+                        List<CollegeReleaseExamTaskDTO> taskInfoList = new ArrayList<>();
+                        CollegeReleaseExamTaskDTO collegeReleaseExamTaskDTO = new CollegeReleaseExamTaskDTO();
+                        collegeReleaseExamTaskDTO.setStudyId(collegeStudyTaskCfg.getStudyId());
+                        collegeReleaseExamTaskDTO.setStudyTaskId(String.valueOf(collegeStudyTaskCfg.getStudyTaskId()));
+                        taskInfoList.add(collegeReleaseExamTaskDTO);
+                        requestDTO.setTaskInfoList(taskInfoList);
+                        collegeExamCfgService.releaseTaskExam(requestDTO);
+                    }
+                }
             }else {
-                studyName = collegeCourseChaptersTaskRequestDTO.getTaskName();
-            }
-            if (!StringUtils.equals("2", studyType)){
+                String studyName = "";
+                if (StringUtils.equals("1", studyType)){
+                    studyName = uploadFileServiceImpl.getFileNameByFileId(studyId);
+                }else if(StringUtils.equals("0", studyType)){
+                    studyName = courseServiceImpl.getCourseNameByCourseId(Long.valueOf(studyId));
+                }else {
+                    studyName = collegeCourseChaptersTaskRequestDTO.getTaskName();
+                }
                 //如果没有学习内容与习题的关系，则新增
                 CollegeTopicLabelCfg collegeTopicLabelCfg = new CollegeTopicLabelCfg();
                 collegeTopicLabelCfg.setStatus("0");
@@ -175,9 +216,9 @@ public class CollegeStudyTaskCfgController {
                 addCollegeStudyTopicRel.setLabelId(collegeTopicLabelCfg.getLabelId());
                 collegeStudyTopicCfgList.add(addCollegeStudyTopicRel);
             }
+
         }
 
-        this.collegeStudyTaskCfgService.save(collegeStudyTaskCfg);
         result.setStudyTaskId(collegeStudyTaskCfg.getStudyTaskId());
         String studyModel = result.getStudyModel();
         String studyModelName = studyModel;
@@ -390,17 +431,20 @@ public class CollegeStudyTaskCfgController {
                 }
                 this.collegeCourseChaptersCfgServiceImpl.updateBatchById(collegeCourseChaptersCfgList);
             }else {
-                CollegeStudyTopicRel collegeStudyTopicRel = collegeStudyTopicRelServiceImpl.getEffectiveByStudyId(collegeStudyTaskCfg.getStudyId());
-                if (null != collegeStudyTopicRel){
-                    List<CollegeTopicLabelCfg> collegeTopicLabelCfgList = collegeTopicLabelCfgServiceImpl.queryByLabelId(Long.valueOf(collegeStudyTopicRel.getLabelId()));
-                    if (ArrayUtils.isNotEmpty(collegeTopicLabelCfgList)){
-                        for (CollegeTopicLabelCfg collegeTopicLabelCfg : collegeTopicLabelCfgList) {
-                            collegeTopicLabelCfg.setStatus("1");
+                List<CollegeStudyTopicRel> collegeStudyTopicRelList = collegeStudyTopicRelServiceImpl.getEffectiveByStudyId(collegeStudyTaskCfg.getStudyId());
+                if (ArrayUtils.isNotEmpty(collegeStudyTopicRelList)){
+                    for (CollegeStudyTopicRel collegeStudyTopicRel : collegeStudyTopicRelList) {
+                        List<CollegeTopicLabelCfg> collegeTopicLabelCfgList = collegeTopicLabelCfgServiceImpl.queryByLabelId(Long.valueOf(collegeStudyTopicRel.getLabelId()));
+                        if (ArrayUtils.isNotEmpty(collegeTopicLabelCfgList)){
+                            for (CollegeTopicLabelCfg collegeTopicLabelCfg : collegeTopicLabelCfgList) {
+                                collegeTopicLabelCfg.setStatus("1");
+                            }
+                            collegeTopicLabelCfgServiceImpl.updateBatchById(collegeTopicLabelCfgList);
                         }
-                        collegeTopicLabelCfgServiceImpl.updateBatchById(collegeTopicLabelCfgList);
+                        collegeStudyTopicRel.setStatus("1");
+                        deleteCollegeStudyTopicCfgList.add(collegeStudyTopicRel);
                     }
-                    collegeStudyTopicRel.setStatus("1");
-                    deleteCollegeStudyTopicCfgList.add(collegeStudyTopicRel);
+
                 }
             }
             if (ArrayUtils.isNotEmpty(deleteCollegeStudyTopicCfgList)){
@@ -436,15 +480,15 @@ public class CollegeStudyTaskCfgController {
 
     @GetMapping("queryJobRoleTransferInfo")
     @RestResult
-    List<JobRoleTransferResponseDTO> queryJobRoleTransferInfo(){
-        List<JobRoleTransferResponseDTO> result = new ArrayList<>();
+    List<TransferResponseDTO> queryJobRoleTransferInfo(){
+        List<TransferResponseDTO> result = new ArrayList<>();
         List<StaticData> staticDatas = staticDataServiceImpl.getStaticDatas("JOB_ROLE");
         if (ArrayUtils.isNotEmpty(staticDatas)){
             for (StaticData staticData : staticDatas){
-                JobRoleTransferResponseDTO jobRoleTransferResponseDTO = new JobRoleTransferResponseDTO();
-                jobRoleTransferResponseDTO.setLabel(staticData.getCodeName());
-                jobRoleTransferResponseDTO.setKey(staticData.getCodeValue());
-                result.add(jobRoleTransferResponseDTO);
+                TransferResponseDTO transferResponseDTO = new TransferResponseDTO();
+                transferResponseDTO.setLabel(staticData.getCodeName());
+                transferResponseDTO.setKey(staticData.getCodeValue());
+                result.add(transferResponseDTO);
             }
         }
         return result;
@@ -462,4 +506,19 @@ public class CollegeStudyTaskCfgController {
         return this.collegeStudyTaskCfgService.queryEffectiveTogetherStudyTaskList();
     }
 
+    @GetMapping("queryLabelTransferInfo")
+    @RestResult
+    List<TransferResponseDTO> queryLabelTransferInfo(){
+        List<TransferResponseDTO> result = new ArrayList<>();
+        List<CollegeTopicLabelCfg> collegeTopicLabelCfgs = collegeTopicLabelCfgServiceImpl.queryEffectiveLabel();
+        if (ArrayUtils.isNotEmpty(collegeTopicLabelCfgs)){
+            for (CollegeTopicLabelCfg collegeTopicLabelCfg : collegeTopicLabelCfgs) {
+                TransferResponseDTO transferResponseDTO = new TransferResponseDTO();
+                transferResponseDTO.setLabel(collegeTopicLabelCfg.getLabelName());
+                transferResponseDTO.setKey(String.valueOf(collegeTopicLabelCfg.getLabelId()));
+                result.add(transferResponseDTO);
+            }
+        }
+        return result;
+    }
 }

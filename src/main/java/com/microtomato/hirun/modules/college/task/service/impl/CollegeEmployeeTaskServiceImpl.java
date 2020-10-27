@@ -64,8 +64,6 @@ import java.util.Map;
  */
 @Service("collegeEmployeeTaskService")
 @DataSource(DataSourceKey.INS)
-
-
 public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeTaskMapper, CollegeEmployeeTask> implements ICollegeEmployeeTaskService {
 
     @Autowired
@@ -591,6 +589,28 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
     public List<CollegeEmployeeTask> queryByStudyTaskId(String studyTaskId) {
         return  this.list(Wrappers.<CollegeEmployeeTask>lambdaQuery()
                 .eq(CollegeEmployeeTask::getStudyTaskId, studyTaskId));
+    }
+
+    @Override
+    public void clearTaskInfoByTaskIdList(List<Long> taskIdList, String answerTaskType) {
+        LocalDateTime now = TimeUtils.getCurrentLocalDateTime();
+        LocalDateTime firstSecondDay = TimeUtils.getFirstSecondDay(now, 0);
+        LocalDateTime lastSecondDay = TimeUtils.addSeconds(TimeUtils.addDays(firstSecondDay, 1), -1);
+        if (StringUtils.equals("2", answerTaskType)){
+            lastSecondDay = TimeUtils.addSeconds(TimeUtils.addDays(firstSecondDay, 7), -1);
+        }
+        this.update(Wrappers.<CollegeEmployeeTask>lambdaUpdate()
+                .set(CollegeEmployeeTask::getExercisesCompletedNumber, null)
+                .set(CollegeEmployeeTask::getDailyCompletion, null)
+                .set(CollegeEmployeeTask::getExamScore, null)
+                .set(CollegeEmployeeTask::getScore, null)
+                .set(CollegeEmployeeTask::getStudyCompleteDate, null)
+                .set(CollegeEmployeeTask::getTaskCompleteDate, null)
+                .set(CollegeEmployeeTask::getStudyDateLength, null)
+                .set(CollegeEmployeeTask::getStudyStartDate, firstSecondDay)
+                .set(CollegeEmployeeTask::getStudyEndDate, lastSecondDay)
+                .in(CollegeEmployeeTask::getTaskId, taskIdList)
+                .eq(CollegeEmployeeTask::getStatus, "0"));
     }
 
     private CollegeEmployeeTaskTypeFinishDetailsRequestDTO taskClassification(List<CollegeEmployeeTaskDetailResponseDTO> taskList){

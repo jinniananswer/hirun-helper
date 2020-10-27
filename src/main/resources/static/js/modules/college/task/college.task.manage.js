@@ -112,6 +112,8 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 taskCoursewareType: '',
                 jobRoleInfos: [],
                 selectJobRoleInfos: [],
+                allLabelIdList: [],
+                labelIdList: [],
                 togetherStudyTaskList: [],
                 studyTopicTypeInfo: {},
                 releaseExamDialogVisible: false,
@@ -244,36 +246,62 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
             },
             submitAdd: function (courseChaptersDetails) {
                 if (null == this.studyType || undefined == this.studyType || '' == this.studyType){
-                    this.$alert("请选择任务学习类型后再提交", "错误提示", {type: 'error'})
+                    this.$message({
+                        showClose: true,
+                        duration: 3000,
+                        message: '请选择任务学习类型后再提交!',
+                        center: true
+                    });
                     return;
                 }
 
                 if (null == this.addStudyTaskInfo.jobType || undefined == this.addStudyTaskInfo.jobType || '' == this.addStudyTaskInfo.jobType){
-                    this.$alert("请选择员工工作类型后再提交", "错误提示", {type: 'error'})
+                    this.$message({
+                        showClose: true,
+                        duration: 3000,
+                        message: '请选择员工工作类型后再提交!',
+                        center: true
+                    });
                     return;
                 }
                 if ("2" != this.addStudyTaskInfo.jobType && (this.selectJobRoleInfos == [] || this.selectJobRoleInfos == undefined || this.selectJobRoleInfos.length == 0)){
-                    this.$alert("工作类型非所有员工的请选择员工岗位再提交", "错误提示", {type: 'error'})
+                    this.$message({
+                        showClose: true,
+                        duration: 3000,
+                        message: '工作类型非所有员工的请选择员工岗位再提交!',
+                        center: true
+                    });
                     return;
                 }
                 this.addStudyTaskInfo.jobRoleInfos = this.selectJobRoleInfos;
+                this.addStudyTaskInfo.studyType = this.studyType;
                 if (this.studyType == '1'){
                     let fileList = this.$refs.upload.fileList;
                     if (fileList == undefined || fileList == "fileList" || fileList == [] || fileList.length == 0){
-                        this.$alert("请上传课件后再提交", "错误提示", {type: 'error'})
+                        this.$message({
+                            showClose: true,
+                            duration: 3000,
+                            message: '请上传课件后再提交!',
+                            center: true
+                        });
                         return;
                     }
                     this.addStudyTaskInfo.studyId = fileList[0].response;
                     this.addStudyTaskInfo.studyName = fileList[0].name;
-                    this.addStudyTaskInfo.studyType = this.studyType;
                 }else if (this.studyType == '2'){
                     //判断任务描述
-                    this.addStudyTaskInfo.studyType = this.studyType;
                     if (null == this.addStudyTaskInfo.taskDesc || undefined == this.addStudyTaskInfo.taskDesc || '' == this.addStudyTaskInfo.taskDesc){
-                        this.$alert("实践任务，任务描述不能为空", "错误提示", {type: 'error'})
+                        this.$message({
+                            showClose: true,
+                            duration: 3000,
+                            message: '实践任务，任务描述不能为空',
+                            center: true
+                        });
                         return;
                     }
                 }else if (this.studyType == '3'){
+                    this.addStudyTaskInfo.labelIdList = this.labelIdList;
+                    this.addStudyTaskInfo.studyTopicTypeInfoDetails = this.studyTopicTypeInfoDetails;
                     let answerTaskName = this.addStudyTaskInfo.taskName;
                     if (undefined == answerTaskName || null == answerTaskName || '' == answerTaskName){
                         this.$message({
@@ -304,9 +332,17 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                         });
                         return;
                     }
+                    if (null == this.labelIdList || undefined == this.labelIdList || [] == this.labelIdList || this.labelIdList.length == 0){
+                        this.$message({
+                            showClose: true,
+                            duration: 3000,
+                            message: '请选择题目标签后再提交',
+                            center: true
+                        });
+                        return;
+                    }
                     let topicTypes = ',';
                     let allScore = 0;
-                    let exercisesTypeOptions = {};
                     for (let i = 0 ; i < studyTopicTypeInfoList.length; i++){
                         let studyTopicTypeInfo = studyTopicTypeInfoList[i];
                         let type = "";
@@ -336,7 +372,6 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                         topicTypes = topicTypes + studyTopicTypeInfo.exercisesType + ",";
                     }
                     let that = this;
-                    return;
                     ajax.post('api/CollegeStudyTaskCfg/addStudyTaskCfg', that.addStudyTaskInfo, function(responseData){
                         that.$message({
                             showClose: true,
@@ -347,17 +382,32 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                         that.addStudyTaskInfo = {};
                         that.courseChaptersDetails = [];
                         that.addStudyTaskDialogVisible = false;
-                        that.studyTopicTypeInfoDetails = []
+                        that.studyTopicTypeInfoDetails = [];
+                        that.studyTopicTypeInfo = {};
+                        that.selectJobRoleInfos = [];
+                        that.labelIdList = [];
+                        that.studyTopicTypeInfoDetails = [];
                     });
+                    return;
                 }
                 //判断学习时长
                 if (this.studyType != '2'){
                     if (null == this.addStudyTaskInfo.studyLength || undefined == this.addStudyTaskInfo.studyLength || '' == this.addStudyTaskInfo.studyLength || 0 == this.addStudyTaskInfo.studyLength){
-                        this.$alert("学习任务，学习时长不能为空", "错误提示", {type: 'error'})
+                        this.$message({
+                            showClose: true,
+                            duration: 3000,
+                            message: '学习任务，学习时长不能为空',
+                            center: true
+                        });
                         return;
                     }
                     if (null == this.addStudyTaskInfo.taskName || undefined == this.addStudyTaskInfo.taskName || '' == this.addStudyTaskInfo.taskName || 0 == this.addStudyTaskInfo.taskName){
-                        this.$alert("学习任务，请先选择学习内容", "错误提示", {type: 'error'})
+                        this.$message({
+                            showClose: true,
+                            duration: 3000,
+                            message: '学习任务，请先选择学习内容',
+                            center: true
+                        });
                         return;
                     }
                 }
@@ -367,14 +417,24 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 if (3 == studyStartType){
                     let studyModel = this.addStudyTaskInfo.studyModel;
                     if (null == studyModel || undefined == studyModel || "null" == studyModel || "" == studyModel || "undefined" == studyModel){
-                        this.$alert("接上个任务开始学习，请选择学习模式", "错误提示", {type: 'error'})
+                        this.$message({
+                            showClose: true,
+                            duration: 3000,
+                            message: '接上个任务开始学习，请选择学习模式',
+                            center: true
+                        });
                         return;
                     }
                     //如果是同时学习
                     if (1 == studyModel){
                         let togetherStudyTaskId = this.addStudyTaskInfo.togetherStudyTaskId;
                         if (null == togetherStudyTaskId || undefined == togetherStudyTaskId || "null" == togetherStudyTaskId || "" == togetherStudyTaskId || "undefined" == togetherStudyTaskId){
-                            this.$alert("同时学习模式，请选择同时学习任务", "错误提示", {type: 'error'})
+                            this.$message({
+                                showClose: true,
+                                duration: 3000,
+                                message: '同时学习模式，请选择同时学习任务',
+                                center: true
+                            });
                             return;
                         }
                     }
@@ -382,7 +442,12 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 let taskType = this.addStudyTaskInfo.taskType;
                 if (2 == taskType){
                     if (null == this.addStudyTaskInfo.taskValidityTerm || undefined == this.addStudyTaskInfo.taskValidityTerm || '' == this.addStudyTaskInfo.taskValidityTerm || 0 == this.addStudyTaskInfo.taskValidityTerm){
-                        this.$alert("活动任务任务，任务有效期不能为空", "错误提示", {type: 'error'})
+                        this.$message({
+                            showClose: true,
+                            duration: 3000,
+                            message: '活动任务任务，任务有效期不能为空',
+                            center: true
+                        });
                         return;
                     }
                 }
@@ -405,6 +470,10 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                                 that.addStudyTaskInfo = {};
                                 that.courseChaptersDetails = [];
                                 that.addStudyTaskDialogVisible = false;
+                                that.studyTopicTypeInfo = {};
+                                that.selectJobRoleInfos = [];
+                                that.labelIdList = [];
+                                that.studyTopicTypeInfoDetails = [];
                             });
                         })
                     }
@@ -421,6 +490,9 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 that.showJob = 'display:none';
                 this.releaseExamDialogVisible = false;
                 this.studyTopicTypeInfo = {};
+                this.selectJobRoleInfos = [];
+                this.labelIdList = [];
+                this.studyTopicTypeInfoDetails = [];
             },
             changeTaskCoursewareType: function (val) {
                 this.studyType = val
@@ -463,6 +535,12 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     this.showExercisesNumber = 'display:none'
                     this.showPassScore = 'display:none'
                 }else if(3 == val){
+                    let that = this;
+                    if (null == that.allLabelIdList || [] == that.allLabelIdList || undefined == that.allLabelIdList || that.allLabelIdList.length == 0){
+                        ajax.get('api/CollegeStudyTaskCfg/queryLabelTransferInfo', null, function(responseData){
+                            that.allLabelIdList = responseData;
+                        });
+                    }
                     this.showTopic = 'display:block'
                     this.showNoTopic = 'display:none'
                 }
@@ -652,7 +730,6 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                         }
                         let topicTypes = ',';
                         let allScore = 0;
-                        let exercisesTypeOptions = {};
                         for (let i = 0 ; i < studyTopicTypeInfoList.length; i++){
                             let studyTopicTypeInfo = studyTopicTypeInfoList[i];
                             let type = "";
@@ -805,6 +882,9 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 this.showExercisesNumber = 'display:none'
                 this.showPassScore = 'display:none'
                 this.showJob = 'display:none'
+            },
+            filterLabelMethod: function (query, item) {
+                return item.label.indexOf(query) > -1;
             }
         }
 

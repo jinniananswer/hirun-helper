@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.college.config.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.microtomato.hirun.modules.college.config.entity.dto.CollegeReleaseTaskExamRequestDTO;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeExamCfg;
 
 /**
@@ -17,4 +18,6 @@ public interface ICollegeExamCfgService extends IService<CollegeExamCfg> {
     CollegeExamCfg getByStudyTaskIdAndExamType(String studyTaskId, String examType);
 
     boolean updateByIds(CollegeExamCfg collegeExamCfg);
+
+    void releaseTaskExam(CollegeReleaseTaskExamRequestDTO collegeReleaseTaskExamRequestDTO);
 }

@@ -17,4 +17,6 @@ public interface ICollegeTopicLabelCfgService extends IService<CollegeTopicLabel
     List<CollegeTopicLabelCfg> queryByLabelId(Long labelId);
 
     List<CollegeTopicLabelCfg> queryByLabelIdList(List<Long> labelIdList);
+
+    List<CollegeTopicLabelCfg> queryEffectiveLabel();
 }

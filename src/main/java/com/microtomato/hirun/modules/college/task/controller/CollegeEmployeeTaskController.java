@@ -580,11 +580,19 @@ public class CollegeEmployeeTaskController {
         if (StringUtils.isBlank(studyId)) {
             return response;
         }
-        CollegeStudyTopicRel studyTopic = collegeStudyTopicRelService.getEffectiveByStudyId(studyId);
-        Long labelId = studyTopic.getLabelId();
-        // 获取topic
-        List<CollegeTopicLabelRel> topicRels = collegeTopicLabelRelService.queryEffectiveByLabelId(labelId);
-        if (ArrayUtils.isEmpty(topicRels)) {
+        List<CollegeTopicLabelRel> topicRels = new ArrayList<>();
+        List<CollegeStudyTopicRel> studyTopicList = collegeStudyTopicRelService.getEffectiveByStudyId(studyId);
+        if (ArrayUtils.isNotEmpty(studyTopicList)){
+            for (CollegeStudyTopicRel collegeStudyTopicRel : studyTopicList) {
+                Long labelId = collegeStudyTopicRel.getLabelId();
+                // 获取topic
+                List<CollegeTopicLabelRel> collegeTopicLabelRels = collegeTopicLabelRelService.queryEffectiveByLabelId(labelId);
+                if (ArrayUtils.isEmpty(collegeTopicLabelRels)) {
+                    topicRels.addAll(collegeTopicLabelRels);
+                }
+            }
+        }
+        if (ArrayUtils.isEmpty(topicRels)){
             return response;
         }
 

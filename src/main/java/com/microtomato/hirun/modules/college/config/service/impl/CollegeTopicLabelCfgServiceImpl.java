@@ -33,4 +33,9 @@ public class CollegeTopicLabelCfgServiceImpl extends ServiceImpl<CollegeTopicLab
     public List<CollegeTopicLabelCfg> queryByLabelIdList(List<Long> labelIdList) {
         return this.list(Wrappers.<CollegeTopicLabelCfg>lambdaQuery().in(CollegeTopicLabelCfg::getLabelId, labelIdList).eq(CollegeTopicLabelCfg::getStatus, "0"));
     }
+
+    @Override
+    public List<CollegeTopicLabelCfg> queryEffectiveLabel() {
+        return this.list(Wrappers.<CollegeTopicLabelCfg>lambdaQuery().eq(CollegeTopicLabelCfg::getStatus, "0"));
+    }
 }

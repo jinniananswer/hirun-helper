@@ -52,7 +52,7 @@
                                     <el-col :span="8">
                                         <div class="text item">
                                             任务类型：
-                                            <template>
+                                            <template v-if="studyTaskInfo.taskTypeName != null && studyTaskInfo.taskTypeName != ''">
                                                 <el-tag>{{studyTaskInfo.taskTypeName}}</el-tag>
                                             </template>
                                         </div>
@@ -62,8 +62,8 @@
                                     <el-col :span="8">
                                         <div class="text">
                                             学习时间/天：
-                                            <template>
-                                                <el-tag>{{studyTaskInfo.studyTime}}</el-tag>
+                                            <template v-if="studyTaskInfo.studyTime != null && studyTaskInfo.studyTime != ''">
+                                                <el-tag>{{studyTaskInfo.taskTypeName}}</el-tag>
                                             </template>
                                         </div>
                                     </el-col>
@@ -86,7 +86,7 @@
                                         </div>
                                         <template v-if="studyTaskInfo.exercisesFlag">
                                             <template v-if="studyTaskInfo.exercisesTopicList != null && studyTaskInfo.exercisesTopicList != [] && studyTaskInfo.exercisesTopicList.length > 0">
-                                                <el-row v-for="item in studyTaskInfo.examTopicList">
+                                                <el-row v-for="item in studyTaskInfo.exercisesTopicList">
                                                     <el-tag>{{item.topicType}}题数量:{{item.topicNum}}</el-tag>
                                                 </el-row>
                                             </template>

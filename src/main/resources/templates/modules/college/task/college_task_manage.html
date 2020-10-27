@@ -182,6 +182,26 @@
                         </el-row>
                         <el-row :style="showTopic">
                             <el-col :span="8">
+                                <el-form-item label="题目标签:" label-width="100px" prop="">
+
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row :style="showTopic" align="center">
+                            <template align="center">
+                                <el-transfer
+                                        filterable
+                                        :filter-method="filterLabelMethod"
+                                        filter-placeholder="请输入标签名称"
+                                        v-model="labelIdList"
+                                        :data="allLabelIdList"
+                                        :titles="['可选择标签', '已选择标签']"
+                                        :button-texts="['删除', '选择']">
+                                </el-transfer>
+                            </template>
+                        </el-row>
+                        <el-row :style="showTopic">
+                            <el-col :span="8">
                                 <el-form-item label="员工工作类型" label-width="120px" prop="jobType">
                                     <vue-select @change="changeJobType" code-type="JOB_TYPE" v-model="addStudyTaskInfo.jobType"></vue-select>
                                 </el-form-item>

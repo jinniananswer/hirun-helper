@@ -34,9 +34,9 @@ public class CollegeStudyTopicRelServiceImpl extends ServiceImpl<CollegeStudyTop
     }
 
     @Override
-    public CollegeStudyTopicRel getEffectiveByStudyId(String studyId) {
-        return this.getOne(Wrappers.<CollegeStudyTopicRel>lambdaQuery().eq(CollegeStudyTopicRel::getStudyId, studyId)
-                .eq(CollegeStudyTopicRel::getStatus, "0"), false);
+    public List<CollegeStudyTopicRel> getEffectiveByStudyId(String studyId) {
+        return this.list(Wrappers.<CollegeStudyTopicRel>lambdaQuery().eq(CollegeStudyTopicRel::getStudyId, studyId)
+                .eq(CollegeStudyTopicRel::getStatus, "0"));
     }
 
 }

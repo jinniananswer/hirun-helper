@@ -415,12 +415,12 @@ public class CollegeStudyTaskCfgServiceImpl extends ServiceImpl<CollegeStudyTask
 
                 CollegeExamCfg exercisesCfg = this.collegeExamCfgServiceImpl.getByStudyTaskIdAndExamType(studyTaskId, "0");
                 Boolean exercisesFlag = false;
-                if (null != collegeExamCfg){
+                if (null != exercisesCfg){
                     exercisesFlag = true;
-                    result.setMinNum(null != collegeExamCfg.getMinNum() ? collegeExamCfg.getMinNum() : 0);
-                    result.setPassScore(null != collegeExamCfg.getPassScore() ? collegeExamCfg.getPassScore() : 0);
-                    result.setExamMaxNum(null != collegeExamCfg.getExamMaxNum() ? collegeExamCfg.getExamMaxNum() : 0);
-                    List<CollegeExamRelCfg> collegeExamRelCfgs = collegeExamRelCfgServiceImpl.queryByExamTopicId(collegeExamCfg.getExamTopicId());
+                    result.setMinNum(null != exercisesCfg.getMinNum() ? exercisesCfg.getMinNum() : 0);
+                    result.setPassScore(null != exercisesCfg.getPassScore() ? exercisesCfg.getPassScore() : 0);
+                    result.setExamMaxNum(null != exercisesCfg.getExamMaxNum() ? exercisesCfg.getExamMaxNum() : 0);
+                    List<CollegeExamRelCfg> collegeExamRelCfgs = collegeExamRelCfgServiceImpl.queryByExamTopicId(exercisesCfg.getExamTopicId());
                     if (ArrayUtils.isNotEmpty(collegeExamRelCfgs)){
                         List<ExamTopicResponseDTO> examTopicList = new ArrayList<>();
                         for (CollegeExamRelCfg collegeExamRelCfg : collegeExamRelCfgs) {
