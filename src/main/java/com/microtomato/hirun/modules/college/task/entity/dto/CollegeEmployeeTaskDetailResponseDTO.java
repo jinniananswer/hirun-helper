@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.college.task.entity.dto;
 
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -55,4 +56,9 @@ public class CollegeEmployeeTaskDetailResponseDTO {
     private String taskRemainderTime;
 
     private Double taskProgress;
+
+    /**
+     * 答题任务类型 详情请见STATIC表ANSWER_TASK_TYPE
+     */
+    private String answerTaskType;
 }

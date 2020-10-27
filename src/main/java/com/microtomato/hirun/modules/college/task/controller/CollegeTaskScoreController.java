@@ -184,7 +184,7 @@ public class CollegeTaskScoreController {
         Integer examMaxNum = 0;
         if (null != collegeEmployeeTask){
             String studyTaskId = collegeEmployeeTask.getStudyTaskId();
-            CollegeExamCfg collegeExamCfg = collegeExamCfgServiceImpl.getByStudyTaskIdAndExamType(studyTaskId, "1");
+            CollegeExamCfg collegeExamCfg = collegeExamCfgServiceImpl.getByStudyTaskIdAndExamType(studyTaskId, examType);
             if (null != collegeExamCfg){
                 String examDesc = "本次";
                 String examTypeName = "";

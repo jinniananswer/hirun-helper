@@ -587,7 +587,7 @@ public class CollegeEmployeeTaskController {
                 Long labelId = collegeStudyTopicRel.getLabelId();
                 // 获取topic
                 List<CollegeTopicLabelRel> collegeTopicLabelRels = collegeTopicLabelRelService.queryEffectiveByLabelId(labelId);
-                if (ArrayUtils.isEmpty(collegeTopicLabelRels)) {
+                if (ArrayUtils.isNotEmpty(collegeTopicLabelRels)) {
                     topicRels.addAll(collegeTopicLabelRels);
                 }
             }

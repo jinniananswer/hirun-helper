@@ -9,9 +9,7 @@ import java.util.List;
 @Data
 public class CollegeEmployeeTaskTypeFinishDetailsRequestDTO {
 
-    private List<CollegeEmployeeTaskDetailResponseDTO> courseTaskList;
+    private String taskType;
 
-    private List<CollegeEmployeeTaskDetailResponseDTO> coursewareTaskList;
-
-    private List<CollegeEmployeeTaskDetailResponseDTO> practiceTaskList;
+    private List<CollegeEmployeeTaskDetailResponseDTO> taskList;
 }

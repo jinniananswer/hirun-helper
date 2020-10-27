@@ -47,9 +47,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -396,6 +398,7 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
                         taskName = studyTaskId;
                     }
                     collegeEmployeeTaskDetailResponseDTO.setTaskName(taskName);
+                    collegeEmployeeTaskDetailResponseDTO.setAnswerTaskType(collegeStudyTaskCfg.getAnswerTaskType());
                 }
                 LocalDateTime taskCompleteDate = collegeEmployeeTask.getTaskCompleteDate();
                 if (null != taskCompleteDate){
@@ -416,11 +419,11 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
                     }
                 }
             }
-            CollegeEmployeeTaskTypeFinishDetailsRequestDTO finishTask = taskClassification(finishTaskList);
+            List<CollegeEmployeeTaskTypeFinishDetailsRequestDTO> finishTask = taskClassification(finishTaskList);
             result.setFinishTask(finishTask);
-            CollegeEmployeeTaskTypeFinishDetailsRequestDTO todayTask = taskClassification(todayTaskList);
+            List<CollegeEmployeeTaskTypeFinishDetailsRequestDTO> todayTask = taskClassification(todayTaskList);
             result.setTodayTask(todayTask);
-            CollegeEmployeeTaskTypeFinishDetailsRequestDTO tomorrowTask = taskClassification(tomorrowTaskList);
+            List<CollegeEmployeeTaskTypeFinishDetailsRequestDTO> tomorrowTask = taskClassification(tomorrowTaskList);
             result.setTomorrowTask(tomorrowTask);
         }
         return result;
@@ -613,14 +616,18 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
                 .eq(CollegeEmployeeTask::getStatus, "0"));
     }
 
-    private CollegeEmployeeTaskTypeFinishDetailsRequestDTO taskClassification(List<CollegeEmployeeTaskDetailResponseDTO> taskList){
-        CollegeEmployeeTaskTypeFinishDetailsRequestDTO result = new CollegeEmployeeTaskTypeFinishDetailsRequestDTO();
+    private List<CollegeEmployeeTaskTypeFinishDetailsRequestDTO> taskClassification(List<CollegeEmployeeTaskDetailResponseDTO> taskList){
+        List<CollegeEmployeeTaskTypeFinishDetailsRequestDTO> result = new ArrayList<>();
 
         List<CollegeEmployeeTaskDetailResponseDTO> courseTaskList = new ArrayList<>();
 
         List<CollegeEmployeeTaskDetailResponseDTO> coursewareTaskList = new ArrayList<>();
 
         List<CollegeEmployeeTaskDetailResponseDTO> practiceTaskList = new ArrayList<>();
+
+        List<CollegeEmployeeTaskDetailResponseDTO> everydayAnswerTaskList = new ArrayList<>();
+
+        List<CollegeEmployeeTaskDetailResponseDTO> weeklyAnswerTaskList = new ArrayList<>();
         if (ArrayUtils.isNotEmpty(taskList)){
             for (CollegeEmployeeTaskDetailResponseDTO task : taskList){
                 String studyType = task.getStudyType();
@@ -630,12 +637,56 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
                     coursewareTaskList.add(task);
                 }else if (StringUtils.equals("2", studyType)){
                     practiceTaskList.add(task);
+                }else if (StringUtils.equals("3", studyType)){
+                    if (StringUtils.equals("1", task.getAnswerTaskType())){
+                        LocalDateTime studyStartDate = task.getStudyStartDate();
+                        String dateStr = TimeUtils.formatLocalDateTimeToString(studyStartDate, TimeUtils.DATE_FMT_4);
+                        task.setTaskDesc(dateStr + "答题任务");
+                        everydayAnswerTaskList.add(task);
+                    }else if (StringUtils.equals("2", task.getAnswerTaskType())){
+
+                        LocalDateTime studyStartDate = task.getStudyStartDate();
+                        int year = studyStartDate.getYear();
+                        int monthValue = studyStartDate.getMonthValue();
+                        WeekFields weekFields = WeekFields.of(DayOfWeek.MONDAY,1);
+                        int weeks = studyStartDate.get(weekFields.weekOfMonth());
+                        String taskDesc = year + "年" + monthValue + "月第" + weeks + "周答题任务";
+                        task.setTaskDesc(taskDesc);
+                        weeklyAnswerTaskList.add(task);
+                    }
                 }
             }
         }
-        result.setCourseTaskList(courseTaskList);
-        result.setCoursewareTaskList(coursewareTaskList);
-        result.setPracticeTaskList(practiceTaskList);
+        if (ArrayUtils.isNotEmpty(courseTaskList)){
+            CollegeEmployeeTaskTypeFinishDetailsRequestDTO collegeEmployeeTaskTypeFinishDetailsRequestDTO = new CollegeEmployeeTaskTypeFinishDetailsRequestDTO();
+            collegeEmployeeTaskTypeFinishDetailsRequestDTO.setTaskList(courseTaskList);
+            collegeEmployeeTaskTypeFinishDetailsRequestDTO.setTaskType("课程任务");
+            result.add(collegeEmployeeTaskTypeFinishDetailsRequestDTO);
+        }
+        if (ArrayUtils.isNotEmpty(coursewareTaskList)){
+            CollegeEmployeeTaskTypeFinishDetailsRequestDTO collegeEmployeeTaskTypeFinishDetailsRequestDTO = new CollegeEmployeeTaskTypeFinishDetailsRequestDTO();
+            collegeEmployeeTaskTypeFinishDetailsRequestDTO.setTaskList(coursewareTaskList);
+            collegeEmployeeTaskTypeFinishDetailsRequestDTO.setTaskType("课件任务");
+            result.add(collegeEmployeeTaskTypeFinishDetailsRequestDTO);
+        }
+        if (ArrayUtils.isNotEmpty(practiceTaskList)){
+            CollegeEmployeeTaskTypeFinishDetailsRequestDTO collegeEmployeeTaskTypeFinishDetailsRequestDTO = new CollegeEmployeeTaskTypeFinishDetailsRequestDTO();
+            collegeEmployeeTaskTypeFinishDetailsRequestDTO.setTaskList(practiceTaskList);
+            collegeEmployeeTaskTypeFinishDetailsRequestDTO.setTaskType("实践任务");
+            result.add(collegeEmployeeTaskTypeFinishDetailsRequestDTO);
+        }
+        if (ArrayUtils.isNotEmpty(everydayAnswerTaskList)){
+            CollegeEmployeeTaskTypeFinishDetailsRequestDTO collegeEmployeeTaskTypeFinishDetailsRequestDTO = new CollegeEmployeeTaskTypeFinishDetailsRequestDTO();
+            collegeEmployeeTaskTypeFinishDetailsRequestDTO.setTaskList(everydayAnswerTaskList);
+            collegeEmployeeTaskTypeFinishDetailsRequestDTO.setTaskType("每日答题");
+            result.add(collegeEmployeeTaskTypeFinishDetailsRequestDTO);
+        }
+        if (ArrayUtils.isNotEmpty(weeklyAnswerTaskList)){
+            CollegeEmployeeTaskTypeFinishDetailsRequestDTO collegeEmployeeTaskTypeFinishDetailsRequestDTO = new CollegeEmployeeTaskTypeFinishDetailsRequestDTO();
+            collegeEmployeeTaskTypeFinishDetailsRequestDTO.setTaskList(weeklyAnswerTaskList);
+            collegeEmployeeTaskTypeFinishDetailsRequestDTO.setTaskType("每周答题");
+            result.add(collegeEmployeeTaskTypeFinishDetailsRequestDTO);
+        }
         return result;
     }
 

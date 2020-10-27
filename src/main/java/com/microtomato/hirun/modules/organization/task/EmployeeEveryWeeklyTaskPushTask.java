@@ -42,7 +42,7 @@ public class EmployeeEveryWeeklyTaskPushTask {
      * 每天凌晨 00：00 开始执行。
      * 给员工发布任务自动进程
      */
-    @Scheduled(cron = "0 32 3 * * 1")
+    @Scheduled(cron = "0 30 0 * * 1")
     public void scheduled() {
         //统一时间
         LocalDateTime now = LocalDateTime.now();
@@ -123,7 +123,7 @@ public class EmployeeEveryWeeklyTaskPushTask {
                         CollegeEmployeeTask employeeTask = collegeEmployeeTaskServiceImpl.getLastEffectiveByEmployeeIdAndStudyTaskId(String.valueOf(employeeId), String.valueOf(studyTaskId));
 
                         LocalDateTime firstSecondDay = TimeUtils.getFirstSecondDay(now, 0);
-                        LocalDateTime lastSecondDay = TimeUtils.addSeconds(TimeUtils.addDays(firstSecondDay, 1), -1);
+                        LocalDateTime lastSecondDay = TimeUtils.addSeconds(TimeUtils.addDays(firstSecondDay, 7), -1);
                         //如果该员工分配了该项任务，则跳过
                         if (null != employeeTask && TimeUtils.compareTwoTime(firstSecondDay, employeeTask.getStudyStartDate()) == 0){
                             continue;
