@@ -5,6 +5,10 @@ package com.microtomato.hirun.modules.college.wiki.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.modules.college.wiki.entity.dto.WikiServiceDTO;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -13,6 +17,7 @@ import com.microtomato.hirun.modules.college.wiki.service.ICollegeWikiService;
 import com.microtomato.hirun.framework.annotation.RestResult;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -88,5 +93,14 @@ public class CollegeWikiController {
     @GetMapping("deleteByIds")
     public boolean deleteByIds(@RequestParam("idList") List<Long> idList) {
         return this.collegeWikiService.removeByIds(idList);
+    }
+
+    @GetMapping("queryByText")
+    @RestResult
+    public List<CollegeWiki> queryByText(@RequestParam("keyStr") String keyStr) {
+        keyStr = StringUtils.equals("1", keyStr) ? "" : keyStr;
+        List<CollegeWiki> collegeWikis = collegeWikiService.queryByText(keyStr);
+
+        return collegeWikis;
     }
 }
