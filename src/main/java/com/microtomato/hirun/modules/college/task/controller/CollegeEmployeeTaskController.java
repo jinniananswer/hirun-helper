@@ -554,7 +554,7 @@ public class CollegeEmployeeTaskController {
      */
     @GetMapping("queryTopicByTaskId")
     @RestResult
-    public CollegeEmployeeTaskTopicDTO queryTopicByTaskId(Long taskId) {
+    public CollegeEmployeeTaskTopicDTO queryTopicByTaskId(@RequestParam("taskId") Long taskId) {
         CollegeEmployeeTaskTopicDTO response = new CollegeEmployeeTaskTopicDTO();
         // 获取studyTaskId
         CollegeEmployeeTask employeeTask = collegeEmployeeTaskService.getById(taskId);
