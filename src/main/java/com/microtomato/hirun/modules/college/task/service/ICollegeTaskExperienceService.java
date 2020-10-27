@@ -4,6 +4,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.microtomato.hirun.modules.college.task.entity.dto.CollegeTaskExperienceScoreResponseDTO;
 import com.microtomato.hirun.modules.college.task.entity.po.CollegeTaskExperience;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 /**
  * (CollegeTaskExperience)表服务接口
  *
@@ -13,5 +16,7 @@ import com.microtomato.hirun.modules.college.task.entity.po.CollegeTaskExperienc
  */
 public interface ICollegeTaskExperienceService extends IService<CollegeTaskExperience> {
 
-    public CollegeTaskExperienceScoreResponseDTO queryByTaskId(String taskId);
+    CollegeTaskExperienceScoreResponseDTO queryByTaskId(String taskId);
+
+    void addExperience(Long taskId, String experience, List<String> fileIdList, LocalDateTime now);
 }

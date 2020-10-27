@@ -7,8 +7,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.framework.util.UserContextUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.college.knowhow.consts.KnowhowConsts;
+import com.microtomato.hirun.modules.college.knowhow.entity.dto.CollegeQuestionOptionsDTO;
+import com.microtomato.hirun.modules.college.knowhow.entity.dto.QuestionInfoDTO;
 import com.microtomato.hirun.modules.college.knowhow.entity.dto.QuestionServiceDTO;
 import com.microtomato.hirun.modules.college.knowhow.entity.dto.ReplyServiceDTO;
 import com.microtomato.hirun.modules.college.knowhow.entity.po.CollegeQuestionRela;
@@ -18,6 +21,8 @@ import com.microtomato.hirun.modules.college.knowhow.service.ICollegeQuestionRel
 import com.microtomato.hirun.modules.college.knowhow.service.ICollegeReplyService;
 import com.microtomato.hirun.modules.college.teacher.entity.po.Teacher;
 import com.microtomato.hirun.modules.college.teacher.service.ITeacherService;
+import com.microtomato.hirun.modules.system.entity.po.StaticData;
+import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
@@ -59,6 +64,9 @@ public class CollegeQuestionController {
 
     @Autowired
     private ITeacherService teacherService;
+
+    @Autowired
+    private IStaticDataService staticDataServiceImpl;
 
     /**
      * 点赞
@@ -236,5 +244,71 @@ public class CollegeQuestionController {
 
             this.collegeQuestionService.updatePublishQuestionByIds(questionIds);
         }
+    }
+
+    @GetMapping("queryQuestionByName")
+    @RestResult
+    public List<QuestionInfoDTO> queryQuestionByName(){
+        return this.collegeQuestionService.queryQuestionByName(null);
+    }
+
+    @GetMapping("queryLoginQuestion")
+    @RestResult
+    public List<QuestionInfoDTO> queryLoginQuestion(){
+        return this.collegeQuestionService.queryLoginQuestion();
+    }
+
+    @GetMapping("queryQuestionTypeOptions")
+    @RestResult
+    public List<CollegeQuestionOptionsDTO> queryQuestionTypeOptions(){
+        List<CollegeQuestionOptionsDTO> result = new ArrayList<>();
+        List<StaticData> questionTypeList = staticDataServiceImpl.getStaticDatas("QUESTION_TYPE");
+        if (ArrayUtils.isNotEmpty(questionTypeList)){
+            for (StaticData staticData : questionTypeList) {
+                CollegeQuestionOptionsDTO collegeQuestionOptionsDTO = new CollegeQuestionOptionsDTO();
+                collegeQuestionOptionsDTO.setName(staticData.getCodeName());
+                collegeQuestionOptionsDTO.setValue(staticData.getCodeValue());
+                result.add(collegeQuestionOptionsDTO);
+            }
+        }
+        return result;
+    }
+
+    @GetMapping("queryQuestionTeacherOptions")
+    @RestResult
+    public List<CollegeQuestionOptionsDTO> queryQuestionTeacherOptions(){
+        List<CollegeQuestionOptionsDTO> result = new ArrayList<>();
+        List<Teacher> teachers = teacherService.queryTeacher();
+        if (ArrayUtils.isNotEmpty(teachers)){
+            for (Teacher teacher : teachers) {
+                CollegeQuestionOptionsDTO collegeQuestionOptionsDTO = new CollegeQuestionOptionsDTO();
+                collegeQuestionOptionsDTO.setName(teacher.getName());
+                collegeQuestionOptionsDTO.setValue(String.valueOf(teacher.getTeacherId()));
+                result.add(collegeQuestionOptionsDTO);
+            }
+        }
+        return result;
+    }
+
+    @PostMapping("addQuestionByType")
+    @RestResult
+    public void addQuestionByType(@RequestParam("questionType") String questionType, @RequestParam("teacherId") String teacherId, @RequestParam("title") String title, @RequestParam("desc") String desc){
+        UserContext userContext = WebContextUtils.getUserContext();
+        if (userContext == null) {
+            userContext = UserContextUtils.getUserContext();
+        }
+        Long employeeId = userContext.getEmployeeId();
+        teacherId = teacherId.substring(teacherId.indexOf("[") + 1, teacherId.indexOf("]"));
+        questionType = questionType.substring(questionType.indexOf("[") + 1, questionType.indexOf("]"));
+
+        QuestionServiceDTO request = new QuestionServiceDTO();
+        request.setEmployeeId(userContext.getEmployeeId());
+        // 暂时写死审批人与回答人
+        request.setApprovedId(userContext.getEmployeeId());
+        request.setRespondent(Long.valueOf(teacherId));
+        request.setQuestionContent(desc);
+        request.setQuestionTitle(title);
+        request.setQuestionType(questionType);
+        this.collegeKnowhowDomainService.addQuestion(request);
     }
 }

@@ -1,6 +1,8 @@
 package com.microtomato.hirun.modules.college.task.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.framework.mybatis.DataSourceKey;
+import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 import com.microtomato.hirun.modules.college.task.entity.po.CollegeTaskDeferApply;
 import com.microtomato.hirun.modules.college.task.mapper.CollegeTaskDeferApplyMapper;
 import com.microtomato.hirun.modules.college.task.service.ICollegeTaskDeferApplyService;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
  * @date 2020-09-13 14:01:01
  */
 @Service("collegeTaskDeferApplyService")
+@DataSource(DataSourceKey.INS)
 public class CollegeTaskDeferApplyServiceImpl extends ServiceImpl<CollegeTaskDeferApplyMapper, CollegeTaskDeferApply> implements ICollegeTaskDeferApplyService {
 
     @Autowired

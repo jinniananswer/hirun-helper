@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
+import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.college.task.entity.dto.CollegeTaskExperienceScoreResponseDTO;
 import com.microtomato.hirun.modules.college.task.entity.po.CollegeEmployeeTask;
 import com.microtomato.hirun.modules.college.task.entity.po.CollegeEmployeeTaskScore;
@@ -17,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -115,5 +118,18 @@ public class CollegeTaskExperienceController {
             collegeTaskExperienceScoreResponseDTO.setTaskScore(collegeEmployeeTask.getScore());
         }
         return collegeTaskExperienceScoreResponseDTO;
+    }
+
+    @PostMapping("addExperience")
+    @RestResult
+    public void addExperience(@RequestParam("taskId") Long taskId, @RequestParam("experience") String experience, @RequestParam("fileIdList") List<String> fileIdList){
+        LocalDateTime now = TimeUtils.getCurrentLocalDateTime();
+        this.collegeTaskExperienceService.addExperience(taskId, experience, fileIdList, now);
+        //实践任务完成
+        CollegeEmployeeTask collegeEmployeeTask = collegeEmployeeTaskServiceImpl.getById(taskId);
+        if (null != collegeEmployeeTask){
+            collegeEmployeeTask.setTaskCompleteDate(now);
+            collegeEmployeeTaskServiceImpl.updateById(collegeEmployeeTask);
+        }
     }
 }

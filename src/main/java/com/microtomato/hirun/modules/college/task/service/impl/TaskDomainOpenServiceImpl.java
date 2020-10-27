@@ -1,5 +1,7 @@
 package com.microtomato.hirun.modules.college.task.service.impl;
 
+import com.microtomato.hirun.framework.mybatis.DataSourceKey;
+import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeStudyTaskCfg;
@@ -23,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Service
+@DataSource(DataSourceKey.INS)
 public class TaskDomainOpenServiceImpl implements ITaskDomainOpenService {
 
     @Autowired

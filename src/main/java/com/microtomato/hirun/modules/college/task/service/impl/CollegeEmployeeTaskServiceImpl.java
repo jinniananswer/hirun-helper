@@ -23,10 +23,7 @@ import com.microtomato.hirun.modules.college.task.entity.po.CollegeEmployeeTaskS
 import com.microtomato.hirun.modules.college.task.entity.po.CollegeEmployeeTaskTutor;
 import com.microtomato.hirun.modules.college.task.entity.po.CollegeStudyTaskScore;
 import com.microtomato.hirun.modules.college.task.mapper.CollegeEmployeeTaskMapper;
-import com.microtomato.hirun.modules.college.task.service.ICollegeEmployeeTaskScoreService;
-import com.microtomato.hirun.modules.college.task.service.ICollegeEmployeeTaskService;
-import com.microtomato.hirun.modules.college.task.service.ICollegeEmployeeTaskTutorService;
-import com.microtomato.hirun.modules.college.task.service.ICollegeStudyTaskScoreService;
+import com.microtomato.hirun.modules.college.task.service.*;
 import com.microtomato.hirun.modules.organization.entity.dto.SimpleEmployeeDTO;
 import com.microtomato.hirun.modules.organization.entity.po.CourseFile;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
@@ -109,6 +106,9 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
 
     @Autowired
     private ICollegeExamCfgService collegeExamCfgServiceImpl;
+
+    @Autowired
+    private ICollegeTaskExperienceService collegeTaskExperienceServiceImpl;
 
     @Override
     public List<CollegeEmployeeTask> queryByEmployeeIdAndTaskType(String employeeId, String taskType) {
@@ -540,6 +540,19 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
         if (null != studyScoreByTaskId){
             result.setTutorScore(studyScoreByTaskId.getTutorScore());
             result.setTaskDifficultyScore(studyScoreByTaskId.getTaskDifficultyScore());
+        }
+
+        CollegeTaskExperienceScoreResponseDTO collegeTaskExperienceScoreResponseDTO = this.collegeTaskExperienceServiceImpl.queryByTaskId(String.valueOf(taskId));
+        if(null != collegeTaskExperienceScoreResponseDTO){
+            result.setExperience(collegeTaskExperienceScoreResponseDTO.getWrittenExperience());
+            List<CollegeTaskExperienceImgResponseDTO> imgExperienceList = collegeTaskExperienceScoreResponseDTO.getImgExperienceList();
+            if(ArrayUtils.isNotEmpty(imgExperienceList)){
+                List<String> fileList = new ArrayList<>();
+                for (CollegeTaskExperienceImgResponseDTO collegeTaskExperienceImgResponseDTO : imgExperienceList) {
+                    fileList.add(collegeTaskExperienceImgResponseDTO.getFileUrl());
+                }
+                result.setFileList(fileList);
+            }
         }
         return result;
     }

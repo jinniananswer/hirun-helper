@@ -1,7 +1,9 @@
 package com.microtomato.hirun.modules.college.knowhow.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.microtomato.hirun.modules.college.knowhow.entity.dto.QuestionInfoDTO;
 import com.microtomato.hirun.modules.college.knowhow.entity.po.CollegeQuestion;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -29,4 +31,8 @@ public interface ICollegeQuestionService extends IService<CollegeQuestion> {
     void updateClicksById(String questionId);
 
     void thumbsUpById(Long valueOf, String cancelTag);
+
+    List<QuestionInfoDTO> queryQuestionByName(String name);
+
+    List<QuestionInfoDTO> queryLoginQuestion();
 }

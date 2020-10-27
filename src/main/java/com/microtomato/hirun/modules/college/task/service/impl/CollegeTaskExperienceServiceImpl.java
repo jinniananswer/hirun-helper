@@ -2,7 +2,10 @@ package com.microtomato.hirun.modules.college.task.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.framework.mybatis.DataSourceKey;
+import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.college.task.entity.dto.CollegeTaskExperienceImgResponseDTO;
 import com.microtomato.hirun.modules.college.task.entity.dto.CollegeTaskExperienceScoreResponseDTO;
 import com.microtomato.hirun.modules.college.task.entity.po.CollegeTaskExperience;
@@ -14,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +29,7 @@ import java.util.List;
  * @date 2020-09-27 03:36:43
  */
 @Service("collegeTaskExperienceService")
+@DataSource(DataSourceKey.INS)
 public class CollegeTaskExperienceServiceImpl extends ServiceImpl<CollegeTaskExperienceMapper, CollegeTaskExperience> implements ICollegeTaskExperienceService {
 
     @Autowired
@@ -51,7 +56,7 @@ public class CollegeTaskExperienceServiceImpl extends ServiceImpl<CollegeTaskExp
                     if (null != uploadFile){
                         CollegeTaskExperienceImgResponseDTO collegeTaskExperienceImgResponseDTO = new CollegeTaskExperienceImgResponseDTO();
                         collegeTaskExperienceImgResponseDTO.setFileId(fileId);
-                        String fileUrl = "/api/system/file/display/" + fileId;
+                        String fileUrl = uploadFileServiceImpl.getDisplayPath(fileId);
                         collegeTaskExperienceImgResponseDTO.setFileUrl(fileUrl);
                         imgExperienceList.add(collegeTaskExperienceImgResponseDTO);
                     }
@@ -61,5 +66,30 @@ public class CollegeTaskExperienceServiceImpl extends ServiceImpl<CollegeTaskExp
             requetDTO.setWrittenExperience(writtenExperience);
         }
         return requetDTO;
+    }
+
+    @Override
+    public void addExperience(Long taskId, String experience, List<String> fileIdList, LocalDateTime now) {
+        List<CollegeTaskExperience> entityList = new ArrayList<>();
+        CollegeTaskExperience experienceEntity = new CollegeTaskExperience();
+        experienceEntity.setTaskId(String.valueOf(taskId));
+        experienceEntity.setExperienceType("0");
+        experienceEntity.setExperienceContent(experience);
+        experienceEntity.setStatus("0");
+        experienceEntity.setCreateTime(now);
+        experienceEntity.setUpdateTime(now);
+        entityList.add(experienceEntity);
+
+        for (String fileId : fileIdList) {
+            CollegeTaskExperience fileEntity = new CollegeTaskExperience();
+            fileEntity.setTaskId(String.valueOf(taskId));
+            fileEntity.setExperienceType("1");
+            fileEntity.setExperienceContent(fileId);
+            fileEntity.setStatus("0");
+            fileEntity.setCreateTime(now);
+            fileEntity.setUpdateTime(now);
+            entityList.add(fileEntity);
+        }
+        this.saveBatch(entityList);
     }
 }
