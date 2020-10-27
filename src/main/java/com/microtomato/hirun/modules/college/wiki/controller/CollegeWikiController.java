@@ -103,4 +103,17 @@ public class CollegeWikiController {
 
         return collegeWikis;
     }
+
+    @PostMapping("addWiki")
+    @RestResult
+    public void addWiki(@RequestParam("wikiTitle") String wikiTitle, @RequestParam("wikiContent") String wikiContent, @RequestParam("wikiType") String wikiType) {
+        CollegeWiki wiki = CollegeWiki.builder()
+                .wikiTitle(wikiTitle)
+                .wikiContent(wikiContent)
+                .wikiType(wikiType)
+                .status("0")
+                .clicks(0L)
+                .wikiType(wikiType.substring(wikiType.indexOf("[") + 1, wikiType.indexOf("]"))).build();
+        this.collegeWikiService.save(wiki);
+    }
 }

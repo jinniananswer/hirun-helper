@@ -290,6 +290,22 @@ public class CollegeQuestionController {
         return result;
     }
 
+    @GetMapping("queryWikiOptions")
+    @RestResult
+    public List<CollegeQuestionOptionsDTO> queryWikiOptions(){
+        List<CollegeQuestionOptionsDTO> result = new ArrayList<>();
+        List<StaticData> questionTypeList = staticDataServiceImpl.getStaticDatas("WIKI_TYPE");
+        if (ArrayUtils.isNotEmpty(questionTypeList)){
+            for (StaticData staticData : questionTypeList) {
+                CollegeQuestionOptionsDTO collegeQuestionOptionsDTO = new CollegeQuestionOptionsDTO();
+                collegeQuestionOptionsDTO.setName(staticData.getCodeName());
+                collegeQuestionOptionsDTO.setValue(staticData.getCodeValue());
+                result.add(collegeQuestionOptionsDTO);
+            }
+        }
+        return result;
+    }
+
     @PostMapping("addQuestionByType")
     @RestResult
     public void addQuestionByType(@RequestParam("questionType") String questionType, @RequestParam("teacherId") String teacherId, @RequestParam("title") String title, @RequestParam("desc") String desc){
