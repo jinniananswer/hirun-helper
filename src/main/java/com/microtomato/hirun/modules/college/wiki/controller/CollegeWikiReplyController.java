@@ -5,6 +5,7 @@ package com.microtomato.hirun.modules.college.wiki.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.microtomato.hirun.modules.college.wiki.entity.dto.WikiServiceDTO;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
