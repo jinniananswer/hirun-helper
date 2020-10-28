@@ -547,9 +547,9 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
             result.setExperience(collegeTaskExperienceScoreResponseDTO.getWrittenExperience());
             List<CollegeTaskExperienceImgResponseDTO> imgExperienceList = collegeTaskExperienceScoreResponseDTO.getImgExperienceList();
             if(ArrayUtils.isNotEmpty(imgExperienceList)){
-                List<String> fileList = new ArrayList<>();
+                List<CollegeTaskExperienceImgResponseDTO> fileList = new ArrayList<>();
                 for (CollegeTaskExperienceImgResponseDTO collegeTaskExperienceImgResponseDTO : imgExperienceList) {
-                    fileList.add(collegeTaskExperienceImgResponseDTO.getFileUrl());
+                    fileList.add(collegeTaskExperienceImgResponseDTO);
                 }
                 result.setFileList(fileList);
             }

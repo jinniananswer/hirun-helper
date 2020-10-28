@@ -47,7 +47,7 @@ public class CollegeEmployTaskInfoResponseDTO {
 
     private String experience;
 
-    private List<String> fileList;
+    private List<CollegeTaskExperienceImgResponseDTO> fileList;
 
     private List<CollegeTaskStudyContentResponseDTO> taskStudyContentList;
 }
