@@ -1,4 +1,4 @@
-require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'util', 'order-selectemployee', 'house-select'], function (Vue, element, ajax, table, vueselect, util, orderSelectEmployee) {
+require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'util', 'order-selectemployee', 'house-select','shop-select'], function (Vue, element, ajax, table, vueselect, util, orderSelectEmployee,houseSelect,shopSelect) {
     Vue.use(table);
     let vm = new Vue({
         el: '#app',
@@ -12,12 +12,13 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'util', 'order-sele
                     customerType: '',
                     reportEmployeeId: '',
                     timeType: '',
-                    startTime: util.getNowDate(),
-                    endTime: util.getNowDate(),
+                    startTime: '',
+                    endTime: '',
                     houseMode: '',
                     orderStatus: '',
                     houseId: '',
                     agentEmployeeId: '',
+                    shopId:'',
                     page: 1,
                     size: 10,
                     total: 0
@@ -28,12 +29,26 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'util', 'order-sele
                 checked: null,
                 display: 'display:block',
                 mobileNo: '',
+                activities : [],
             }
+        },
+
+        mounted: function() {
+            this.activities = [
+                {value : "1", name : "活动3"},
+                {value : "2", name : "活动4"}
+            ];
         },
 
         methods: {
             queryCustomer: function () {
                 let that = this;
+                if(this.timeType!=''){
+                    if(this.startTime==''||this.endTime==''){
+                        alert("开始时间与结束时间不能为空");
+                        return;
+                    }
+                }
                 ajax.get('api/customer/cust-base/queryCustomerInfo', this.custQueryCond, function (responseData) {
                     vm.customerInfo = responseData.records;
                     that.custQueryCond.page = responseData.current;

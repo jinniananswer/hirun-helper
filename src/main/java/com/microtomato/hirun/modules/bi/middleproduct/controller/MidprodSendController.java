@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
+import com.microtomato.hirun.modules.bi.middleproduct.entity.dto.PushDataStatisticDTO;
+import com.microtomato.hirun.modules.bi.middleproduct.entity.dto.QueryPushDataStatisticDTO;
 import com.microtomato.hirun.modules.bi.middleproduct.entity.po.MidprodSend;
 import com.microtomato.hirun.modules.bi.middleproduct.service.IMidprodSendService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +45,12 @@ public class MidprodSendController {
         return this.midprodSendService.page(page, new QueryWrapper<>(midprodSend));
     }
 
+
+    @GetMapping("/querySendCountData")
+    @RestResult
+    public List<PushDataStatisticDTO> querySendCountData(QueryPushDataStatisticDTO dto) {
+        return midprodSendService.querySendCountData(dto);
+    }
     /**
      * 通过主键查询单条数据
      *

@@ -1,11 +1,16 @@
 package com.microtomato.hirun.modules.bi.middleproduct.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.modules.bi.middleproduct.entity.dto.PushDataStatisticDTO;
+import com.microtomato.hirun.modules.bi.middleproduct.entity.dto.QueryPushDataDetailDTO;
+import com.microtomato.hirun.modules.bi.middleproduct.entity.dto.QueryPushDataStatisticDTO;
 import com.microtomato.hirun.modules.bi.middleproduct.entity.po.MidprodSend;
 import com.microtomato.hirun.modules.bi.middleproduct.mapper.MidprodSendMapper;
 import com.microtomato.hirun.modules.bi.middleproduct.service.IMidprodSendService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * (MidprodSend)表服务实现类
@@ -21,4 +26,8 @@ public class MidprodSendServiceImpl extends ServiceImpl<MidprodSendMapper, Midpr
     private MidprodSendMapper midprodSendMapper;
 
 
+    @Override
+    public List<PushDataStatisticDTO> querySendCountData(QueryPushDataStatisticDTO dto) {
+        return null;
+    }
 }

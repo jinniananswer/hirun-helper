@@ -63,9 +63,9 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
     @Cacheable(value = "all-org")
     public List<Org> listAllOrgs() {
         List<Org> orgs = this.list(
-            Wrappers.<Org>lambdaQuery()
-                .select(Org::getOrgId, Org::getParentOrgId, Org::getName, Org::getType, Org::getEnterpriseId, Org::getCity, Org::getStatus,Org::getNature,Org::getCompanyNature)
-                .eq(Org::getStatus, "0")
+                Wrappers.<Org>lambdaQuery()
+                        .select(Org::getOrgId, Org::getParentOrgId, Org::getName, Org::getType, Org::getEnterpriseId, Org::getCity, Org::getStatus, Org::getNature, Org::getCompanyNature)
+                        .eq(Org::getStatus, "0")
 
         );
         return orgs;
@@ -299,6 +299,7 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
 
     /**
      * 按指定类型构建部门树
+     *
      * @param type
      * @return
      */
@@ -311,7 +312,7 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
 
         List<TreeNode> nodes = new ArrayList<>();
         for (Org org : orgs) {
-            if (StringUtils.indexOf("," + type + ",", org.getType()) < 0 ) {
+            if (StringUtils.indexOf("," + type + ",", org.getType()) < 0) {
                 continue;
             }
             TreeNode node = new TreeNode();
@@ -376,6 +377,80 @@ public class OrgServiceImpl extends ServiceImpl<OrgMapper, Org> implements IOrgS
     @Override
     public String listOrgSecurityLine() {
         List<Org> orgs = this.listOrgsSecurity();
+        if (ArrayUtils.isEmpty(orgs)) {
+            return "";
+        }
+        String orgLine = "";
+
+        for (Org org : orgs) {
+            orgLine += org.getOrgId() + ",";
+        }
+        return orgLine.substring(0, orgLine.length() - 1);
+    }
+
+    /**
+     * 根据权限筛选门店
+     */
+    @Override
+    public List<Org> selectShop() {
+        List<Org> allOrgs = this.listAllOrgs();
+
+        if (SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_ORG)
+                || SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_BU)
+                || SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_SUB_COMPANY)
+                || SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_COMANY_SHOP)) {
+
+            List<Org> shops = this.listByType(OrgConst.TYPE_SHOP);
+            return shops;
+        } else {
+            UserContext userContext = WebContextUtils.getUserContext();
+            Long employeeId = userContext.getEmployeeId();
+
+            EmployeeJobRole mainJobRole = this.employeeJobRoleService.queryValidMain(employeeId);
+            Long orgId = mainJobRole.getOrgId();
+
+            OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+            List<Org> temps = new ArrayList<>();
+
+            Org belong = null;
+             if (SecurityUtils.hasFuncId(OrgConst.SECURITY_SELF_SUB_COMPANY) || SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_SHOP)) {
+                belong = orgDO.getBelongCompany();
+
+                if (SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_SHOP) && belong != null) {
+                   //有查分公司下所有门店的权限
+                   List<Org> children = this.findChildren(belong, allOrgs);
+                   List<Org> shops = this.listByType(OrgConst.TYPE_SHOP, children);
+                    temps.addAll(shops);
+                    return temps;
+                }
+
+            } else if (SecurityUtils.hasFuncId(OrgConst.SECURITY_SELF_SHOP)) {
+                belong = orgDO.getBelongShop();
+                 temps.add(belong);
+                 return temps;
+             } else {
+
+                /*List<EmployeeOrgRel> orgRels = this.employeeOrgRelService.queryRelByEmployeeId(employeeId);
+                if (ArrayUtils.isNotEmpty(orgRels)) {
+                    for (EmployeeOrgRel orgRel : orgRels) {
+                        Long relOrgId = orgRel.getOrgId();
+                        Org relOrg = this.queryByOrgId(relOrgId);
+                        if (relOrg != null) {
+                            temps.add(relOrg);
+                        }
+                    }
+                }*/
+                 belong = orgDO.getBelongShop();
+                 temps.add(belong);
+                return temps;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public String listShopLine() {
+        List<Org> orgs = this.selectShop();
         if (ArrayUtils.isEmpty(orgs)) {
             return "";
         }

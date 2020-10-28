@@ -38,7 +38,6 @@ public class CustBaseController {
     @GetMapping("/queryCustomerInfo")
     @RestResult
     public IPage<CustInfoDTO> queryCustomerInfo(CustQueryCondDTO custQueryCond){
-        log.debug(custQueryCond.toString());
         return custBaseServiceImpl.queryCustomerInfo(custQueryCond);
     }
 

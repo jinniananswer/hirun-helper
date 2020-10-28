@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.security.UserContext;
+import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.framework.util.SecurityUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.CustInfoDTO;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.CustQueryCondDTO;
@@ -16,7 +18,11 @@ import com.microtomato.hirun.modules.bss.house.service.IHousesService;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderBase;
 import com.microtomato.hirun.modules.bss.order.service.IOrderBaseService;
 import com.microtomato.hirun.modules.bss.order.service.IOrderWorkerService;
+import com.microtomato.hirun.modules.organization.entity.consts.OrgConst;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeInfoDTO;
+import com.microtomato.hirun.modules.organization.entity.po.Org;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
+import com.microtomato.hirun.modules.organization.service.IOrgService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -27,6 +33,7 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -59,6 +66,9 @@ public class CustBaseServiceImpl extends ServiceImpl<CustBaseMapper, CustBase> i
     @Autowired
     private IOrderWorkerService workerService;
 
+    @Autowired
+    private IOrgService orgService;
+
     @Override
     public CustBase queryByCustId(Long custId) {
         return this.getById(custId);
@@ -90,8 +100,8 @@ public class CustBaseServiceImpl extends ServiceImpl<CustBaseMapper, CustBase> i
                 if (StringUtils.isNotBlank(custInfoDTO.getSex())) {
                     custInfoDTO.setSexName(this.staticDataService.getCodeName("SEX", custInfoDTO.getSex()));
                 }
-                if(StringUtils.isNotBlank(custInfoDTO.getCustType())){
-                    custInfoDTO.setCustTypeName(this.staticDataService.getCodeName("CUSTOMER_TYPE",custBase.getCustType()));
+                if (StringUtils.isNotBlank(custInfoDTO.getCustType())) {
+                    custInfoDTO.setCustTypeName(this.staticDataService.getCodeName("CUSTOMER_TYPE", custBase.getCustType()));
                 }
             }
         }
@@ -101,6 +111,7 @@ public class CustBaseServiceImpl extends ServiceImpl<CustBaseMapper, CustBase> i
 
     @Override
     public IPage<CustInfoDTO> queryCustomerInfo(CustQueryCondDTO condDTO) {
+        condDTO=this.dealQueryCond(condDTO);
         QueryWrapper<CustQueryCondDTO> queryWrapper = new QueryWrapper<>();
         Page<CustQueryCondDTO> page = new Page<>(condDTO.getPage(), condDTO.getSize());
 
@@ -111,11 +122,63 @@ public class CustBaseServiceImpl extends ServiceImpl<CustBaseMapper, CustBase> i
         queryWrapper.eq(StringUtils.isNotEmpty(condDTO.getInformationSource()), "c.information_source", condDTO.getInformationSource());
         queryWrapper.eq(StringUtils.isNotEmpty(condDTO.getOrderStatus()), "d.status", condDTO.getOrderStatus());
         queryWrapper.eq(StringUtils.isNotEmpty(condDTO.getCustomerType()), "a.cust_type", condDTO.getCustomerType());
-        queryWrapper.eq(condDTO.getDesignEmployeeId()!=null,"f.design_employee_id",condDTO.getDesignEmployeeId());
-        queryWrapper.eq(condDTO.getAgentEmployeeId()!=null,"f.cust_service_employee_id",condDTO.getAgentEmployeeId());
+        queryWrapper.eq(condDTO.getDesignEmployeeId() != null, "f.design_employee_id", condDTO.getDesignEmployeeId());
+        queryWrapper.eq(condDTO.getAgentEmployeeId() != null, "f.cust_service_employee_id", condDTO.getAgentEmployeeId());
+        //2020/10/29新增
+        queryWrapper.in(StringUtils.isNotBlank(condDTO.getOrgLine()),"d.shop_id", Arrays.asList(condDTO.getOrgLine()));
+        queryWrapper.exists(StringUtils.isNotBlank(condDTO.getEmployeeIds())," select 1 from order_worker x where x.order_id=d.order_id and x.end_date > now() and x.employee_id in ( "+condDTO.getEmployeeIds()+")");
+        if(StringUtils.isNotBlank(condDTO.getTimeType())){
+            //咨询时间判断
+            if(StringUtils.equals(condDTO.getTimeType(),"1")){
+                queryWrapper.between("f.consult_time",condDTO.getStartTime(),condDTO.getEndTime());
+            }
 
-        queryWrapper.apply(" a.party_id=c.party_id");
+            //量房时间判断
+            if(StringUtils.equals(condDTO.getTimeType(),"2")){
+                queryWrapper.exists(" select 1 from order_measure_house i where d.order_id =i.order_id and i.measure_time between  "+ condDTO.getStartTime() +" and "+condDTO.getEndTime());
+            }
+
+            //设计费时间判断未完成
+            if(StringUtils.equals(condDTO.getTimeType(),"3")){
+                queryWrapper.exists(" select 1 from order_pay_item j, order_pay_no p where d.order_id =j.order_id " +
+                        " and p.pay_no=j.pay_no and j.pay_item_id='1' and p.audit_status='1' and p.pay_date between  "+ condDTO.getStartTime() +" and "+condDTO.getEndTime());
+            }
+
+            //签单时间时间判断
+            if(StringUtils.equals(condDTO.getTimeType(),"4")){
+                queryWrapper.exists(" select 1 from order_contract k where d.order_id =k.order_id and k.sign_date between  "+ condDTO.getStartTime() +" and "+condDTO.getEndTime());
+            }
+
+            //首付时间时间判断未完成
+            if(StringUtils.equals(condDTO.getTimeType(),"5")){
+                //queryWrapper.exists(" select 1 from order_contract l where d.order_id =l.order_id and k.sign_date between  "+ condDTO.getStartTime() +" and "+condDTO.getEndTime());
+            }
+
+            //施工开始时间判断--未找到录入施工开始的时间点判断
+            if(StringUtils.equals(condDTO.getTimeType(),"6")){
+               // queryWrapper.exists(" select 1 from order_contract l where d.order_id =l.order_id and k.sign_date between  "+ condDTO.getStartTime() +" and "+condDTO.getEndTime());
+            }
+
+
+            //验收时间时间判断未完成
+            if(StringUtils.equals(condDTO.getTimeType(),"7")){
+                queryWrapper.exists(" select 1 from order_settlement o where d.order_id =o.order_id and o.actual_check_date between  "+ condDTO.getStartTime() +" and "+condDTO.getEndTime());
+            }
+
+            //活动时间时间判断
+            if(StringUtils.equals(condDTO.getTimeType(),"8")){
+                queryWrapper.between(" a.ploy_time",condDTO.getStartTime(),condDTO.getEndTime());
+            }
+
+            //录入时间时间判断
+            if(StringUtils.equals(condDTO.getTimeType(),"9")){
+                queryWrapper.between("a.update_time",condDTO.getStartTime(),condDTO.getEndTime());
+            }
+        }
+
         queryWrapper.apply(" a.cust_id=d.cust_id");
+        queryWrapper.apply(" c.party_id=a.party_id");
+
         queryWrapper.orderByDesc("a.create_time");
 
         IPage<CustInfoDTO> iPage = this.baseMapper.queryCustomerInfo(page, queryWrapper);
@@ -136,32 +199,79 @@ public class CustBaseServiceImpl extends ServiceImpl<CustBaseMapper, CustBase> i
             dto.setPrepareEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getPrepareEmployeeId()));
             dto.setHouseModeName(staticDataService.getCodeName("HOUSE_MODE", dto.getHouseMode()));
 
-            String houseAddress="";
-            if(dto.getHouseId()!=null){
-                houseAddress=housesService.queryHouseName(dto.getHouseId());
+            String houseAddress = "";
+            if (dto.getHouseId() != null) {
+                houseAddress = housesService.queryHouseName(dto.getHouseId());
             }
-            if(StringUtils.isNotEmpty(dto.getHouseBuilding())){
-                houseAddress=houseAddress+"|"+dto.getHouseBuilding();
+            if (StringUtils.isNotEmpty(dto.getHouseBuilding())) {
+                houseAddress = houseAddress + "|" + dto.getHouseBuilding();
             }
-            if(StringUtils.isNotEmpty(dto.getHouseRoomNo())){
-                houseAddress=houseAddress+"|"+dto.getHouseRoomNo();
+            if (StringUtils.isNotEmpty(dto.getHouseRoomNo())) {
+                houseAddress = houseAddress + "|" + dto.getHouseRoomNo();
             }
             dto.setHouseAddress(houseAddress);
             dto.setRulingEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getRulingEmployeeId()));
             dto.setPrepareStatusName(staticDataService.getCodeName("PREPARATION_STATUS", dto.getPrepareStatus() + ""));
-            dto.setCustTypeName(staticDataService.getCodeName("CUSTOMER_TYPE",dto.getCustType()));
-            dto.setPrepareStatusName(staticDataService.getCodeName("PREPARATION_STATUS",dto.getPrepareStatus()+""));
-            dto.setInformationSource(staticDataService.getCodeName("INFORMATIONSOURCE",dto.getInformationSource()+""));
-            dto.setPloyType(staticDataService.getCodeName("MARKETING_TYPE",dto.getPloyType()+""));
-            dto.setOrderStatusName(staticDataService.getCodeName("ORDER_STATUS",dto.getOrderStatus()));
+            dto.setCustTypeName(staticDataService.getCodeName("CUSTOMER_TYPE", dto.getCustType()));
+            dto.setPrepareStatusName(staticDataService.getCodeName("PREPARATION_STATUS", dto.getPrepareStatus() + ""));
+            dto.setInformationSource(staticDataService.getCodeName("INFORMATIONSOURCE", dto.getInformationSource() + ""));
+            dto.setPloyType(staticDataService.getCodeName("MARKETING_TYPE", dto.getPloyType() + ""));
+            dto.setOrderStatusName(staticDataService.getCodeName("ORDER_STATUS", dto.getOrderStatus()));
             dto.setCustomerServiceName(employeeService.getEmployeeNameEmployeeId(dto.getCustServiceEmployeeId()));
             dto.setDesignEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getDesignEmployeeId()));
-            if(!workerService.checkIncludeEmployeeId(dto.getOrderId(),employeeId)){
+            if (!workerService.checkIncludeEmployeeId(dto.getOrderId(), employeeId)) {
                 dto.setCustName(this.nameDesensitization(dto.getCustName()));
                 dto.setMobileNo("***********");
             }
         }
         return iPage;
+    }
+
+    /**
+     * 处理查询条件
+     *
+     * @param dto
+     * @return
+     */
+    private CustQueryCondDTO dealQueryCond(CustQueryCondDTO dto) {
+
+        if (dto == null) {
+            return null;
+        }
+
+        UserContext userContext = WebContextUtils.getUserContext();
+        Long employeeId = userContext.getEmployeeId();
+        String employeeIds = "";
+        String orgLine = "";
+
+        if (dto.getShopId() == null) {
+            orgLine=orgService.listShopLine();
+        }else{
+            orgLine=dto.getShopId()+"";
+        }
+
+        dto.setOrgLine(orgLine);
+
+        if (!SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_ORG)
+                && !SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_BU)
+                && !SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_SUB_COMPANY)
+                && !SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_SHOP)
+                && !SecurityUtils.hasFuncId(OrgConst.SECURITY_SELF_SHOP)
+                && !SecurityUtils.hasFuncId(OrgConst.SECURITY_SELF_BU)
+                && !SecurityUtils.hasFuncId(OrgConst.SECURITY_SELF_SUB_COMPANY)
+                && !SecurityUtils.hasFuncId(OrgConst.SECURITY_ALL_COMANY_SHOP)) {
+
+            List<EmployeeInfoDTO> employeeList = employeeService.recursiveAllSubordinates(employeeId + "");
+            if (ArrayUtils.isEmpty(employeeList)) {
+                dto.setEmployeeIds(employeeId + "");
+            }
+            for (EmployeeInfoDTO employee : employeeList) {
+                employeeIds += employee.getEmployeeId() + ",";
+            }
+            dto.setEmployeeIds(employeeIds + employeeId);
+        }
+
+        return dto;
     }
 
     @Override

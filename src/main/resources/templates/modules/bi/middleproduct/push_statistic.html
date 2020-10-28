@@ -40,19 +40,24 @@
                         </el-row>
                         <el-row :gutter="12">
                             <el-col :span="8">
-                                <el-form-item label="推送时间">
+                                <el-form-item label="开始时间">
                                     <el-date-picker
-                                            v-model="queryCond.pushTime"
-                                            type="daterange"
-                                            format="yyyy-MM-dd"
-                                            value-format="yyyy-MM-dd"
-                                            align="right"
-                                            unlink-panels
-                                            range-separator="至"
-                                            start-placeholder="开始日期"
-                                            end-placeholder="结束日期"
-                                            style="width:100%"
-                                            :picker-options="pickerOptions">
+                                            v-model="queryCond.startTime"
+                                            type="datetime"
+                                            value-format="yyyy-MM-dd HH:mm:ss"
+                                            placeholder="选择日期"
+                                            style="width:100%">
+                                    </el-date-picker>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="结束时间">
+                                    <el-date-picker
+                                            v-model="queryCond.endTime"
+                                            type="datetime"
+                                            value-format="yyyy-MM-dd HH:mm:ss"
+                                            placeholder="选择日期"
+                                            style="width:100%">
                                     </el-date-picker>
                                 </el-form-item>
                             </el-col>

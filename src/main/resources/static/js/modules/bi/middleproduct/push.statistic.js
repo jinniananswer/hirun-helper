@@ -10,36 +10,6 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'util'
                 employeeDisplay: 'display:block',
                 orgDisplay : 'display:none',
                 pushDatas: [],
-                pickerOptions: {
-                    shortcuts: [{
-                        text: '最近一周',
-                        onClick(picker) {
-                            const end = util.getNowDate();
-                            const start = new Date();
-                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-                            let begin = util.formatDate(start, "YYYY-MM-DD");
-                            picker.$emit('pick', [begin, end]);
-                        }
-                    }, {
-                        text: '最近一个月',
-                        onClick(picker) {
-                            const end = util.getNowDate();
-                            const start = new Date();
-                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-                            let begin = util.formatDate(start, "YYYY-MM-DD");
-                            picker.$emit('pick', [begin, end]);
-                        }
-                    }, {
-                        text: '最近三个月',
-                        onClick(picker) {
-                            const end = util.getNowDate();
-                            const start = new Date();
-                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
-                            let begin = util.formatDate(start, "YYYY-MM-DD");
-                            picker.$emit('pick', [begin, end]);
-                        }
-                    }]
-                }
             }
         },
 
@@ -50,7 +20,7 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'util'
 
             query: function() {
                 let that = this;
-                ajax.post('api/bss/order/order-fee/queryDesignFees', this.queryCond, function(responseData){
+                ajax.get('api/MidprodSend/querySendCountData', this.queryCond, function(responseData){
                     if (responseData) {
                         that.pushDatas = responseData;
                     }
