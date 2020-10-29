@@ -327,4 +327,10 @@ public class CollegeQuestionController {
         request.setQuestionType(questionType);
         this.collegeKnowhowDomainService.addQuestion(request);
     }
+
+    @GetMapping("queryQuestionByQuestionType")
+    @RestResult
+    public List<QuestionInfoDTO> queryQuestionByQuestionType(@RequestParam("questionType") String questionType){
+        return this.collegeQuestionService.queryQuestionByQuestionType(questionType);
+    }
 }

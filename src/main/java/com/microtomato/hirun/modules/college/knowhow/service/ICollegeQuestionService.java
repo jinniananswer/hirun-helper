@@ -35,4 +35,6 @@ public interface ICollegeQuestionService extends IService<CollegeQuestion> {
     List<QuestionInfoDTO> queryQuestionByName(String name);
 
     List<QuestionInfoDTO> queryLoginQuestion();
+
+    List<QuestionInfoDTO> queryQuestionByQuestionType(String questionType);
 }

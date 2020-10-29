@@ -184,4 +184,20 @@ public class CollegeQuestionServiceImpl extends ServiceImpl<CollegeQuestionMappe
         return result;
     }
 
+    @Override
+    public List<QuestionInfoDTO> queryQuestionByQuestionType(String questionType) {
+        List<QuestionInfoDTO> result = new ArrayList<>();
+        List<CollegeQuestion> list = this.list(Wrappers.<CollegeQuestion>lambdaQuery().eq(CollegeQuestion::getQuestionType, questionType));
+        String questionTypeName = staticDataServiceImpl.getCodeName("QUESTION_TYPE", questionType);
+        if (StringUtils.isEmpty(questionTypeName)){
+            questionTypeName = questionType;
+        }
+        QuestionInfoDTO questionInfoDTO = new QuestionInfoDTO();
+        questionInfoDTO.setQuestionType(questionType);
+        questionInfoDTO.setQuestionTypeName(questionTypeName);
+        questionInfoDTO.setQuestionList(list);
+        result.add(questionInfoDTO);
+        return result;
+    }
+
 }

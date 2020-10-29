@@ -42,7 +42,7 @@ public class EmployeeEveryDayTaskPushTask {
      * 每天凌晨 00：00 开始执行。
      * 给员工发布任务自动进程
      */
-    @Scheduled(cron = "0 10 0 * * ?")
+    @Scheduled(cron = "0 27 15 * * ?")
     public void scheduled() {
         //统一时间
         LocalDateTime now = LocalDateTime.now();

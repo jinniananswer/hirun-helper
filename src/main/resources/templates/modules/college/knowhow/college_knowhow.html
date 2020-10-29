@@ -91,28 +91,28 @@
                                 </el-table-column>
                             </el-table>
                         </el-tab-pane>
-                        <el-tab-pane label="装修百科" name="wiki">
-                            <el-table :data="wikiInfos" stripe="true" border height="350" style="width: 100%">
-                                <el-table-column prop="wikiTitle" label="百科标题" align="center">
-                                    <template slot-scope="wikiColumn">
-                                        <el-button type="text" @click="showWikiDetail(wikiColumn.row.wikiId)">
-                                            {{wikiColumn.row.wikiTitle}}
-                                        </el-button>
-                                    </template>
-                                </el-table-column>
-                                <el-table-column prop="wikiContent" label="百科内容" align="center"></el-table-column>
-                                <el-table-column prop="wikiType" label="百科类型" :formatter="wikiTypeTransfer" align="center"></el-table-column>
-                                <el-table-column prop="wikier" label="创建人" align="center"></el-table-column>
-                                <el-table-column prop="createTime" label="创建时间" align="center" width="180"></el-table-column>
-                                <el-table-column prop="thumbsUp" label="热度" align="center" width="80"></el-table-column>
-                                <el-table-column label="操作" align="center" width="200">
-                                    <template slot-scope="wiki">
-                                        <el-button type="text" icon="el-icon-thumb" width="35" size="mini" @click="thumbsUpWiki(wiki.row)">赞</el-button>
-                                        <el-button type="text" icon="el-icon-edit" width="35" size="mini" @click="comment(wiki.row)">评论</el-button>
-                                    </template>
-                                </el-table-column>
-                            </el-table>
-                        </el-tab-pane>
+<!--                        <el-tab-pane label="装修百科" name="wiki">-->
+<!--                            <el-table :data="wikiInfos" stripe="true" border height="350" style="width: 100%">-->
+<!--                                <el-table-column prop="wikiTitle" label="百科标题" align="center">-->
+<!--                                    <template slot-scope="wikiColumn">-->
+<!--                                        <el-button type="text" @click="showWikiDetail(wikiColumn.row.wikiId)">-->
+<!--                                            {{wikiColumn.row.wikiTitle}}-->
+<!--                                        </el-button>-->
+<!--                                    </template>-->
+<!--                                </el-table-column>-->
+<!--                                <el-table-column prop="wikiContent" label="百科内容" align="center"></el-table-column>-->
+<!--                                <el-table-column prop="wikiType" label="百科类型" :formatter="wikiTypeTransfer" align="center"></el-table-column>-->
+<!--                                <el-table-column prop="wikier" label="创建人" align="center"></el-table-column>-->
+<!--                                <el-table-column prop="createTime" label="创建时间" align="center" width="180"></el-table-column>-->
+<!--                                <el-table-column prop="thumbsUp" label="热度" align="center" width="80"></el-table-column>-->
+<!--                                <el-table-column label="操作" align="center" width="200">-->
+<!--                                    <template slot-scope="wiki">-->
+<!--                                        <el-button type="text" icon="el-icon-thumb" width="35" size="mini" @click="thumbsUpWiki(wiki.row)">赞</el-button>-->
+<!--                                        <el-button type="text" icon="el-icon-edit" width="35" size="mini" @click="comment(wiki.row)">评论</el-button>-->
+<!--                                    </template>-->
+<!--                                </el-table-column>-->
+<!--                            </el-table>-->
+<!--                        </el-tab-pane>-->
                     </el-tabs>
                 </el-card>
             </el-row>

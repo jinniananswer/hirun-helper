@@ -554,7 +554,7 @@ public class CollegeEmployeeTaskController {
      */
     @GetMapping("queryTopicByTaskId")
     @RestResult
-    public CollegeEmployeeTaskTopicDTO queryTopicByTaskId(@RequestParam("taskId") Long taskId) {
+    public CollegeEmployeeTaskTopicDTO queryTopicByTaskId(@RequestParam("taskId") Long taskId, @RequestParam("scoreType") String scoreType) {
         CollegeEmployeeTaskTopicDTO response = new CollegeEmployeeTaskTopicDTO();
         // 获取studyTaskId
         CollegeEmployeeTask employeeTask = collegeEmployeeTaskService.getById(taskId);
@@ -564,7 +564,7 @@ public class CollegeEmployeeTaskController {
             return response;
         }
         // 获取考试习题配置
-        CollegeExamCfg examCfg = collegeExamCfgService.getByStudyTaskId(Long.parseLong(studyTaskId));
+        CollegeExamCfg examCfg = collegeExamCfgService.getByStudyTaskIdAndExamType(studyTaskId, scoreType);
         if (Objects.isNull(examCfg)) {
             return response;
         }
