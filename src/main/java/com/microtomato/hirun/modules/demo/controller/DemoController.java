@@ -5,7 +5,6 @@ import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.demo.entity.po.Steven;
-import com.microtomato.hirun.modules.demo.entity.po.Zhoulin;
 import com.microtomato.hirun.modules.demo.mapper.ZhoulinMapper;
 import com.microtomato.hirun.modules.demo.service.IDemoService;
 import com.microtomato.hirun.modules.demo.service.IStevenService;
@@ -134,6 +133,12 @@ public class DemoController {
         }
         System.out.println("size: " + list.size());
         //return true;
+    }
+
+    @RestResult
+    @GetMapping("makesureIdempotent")
+    public void makesureIdempotent() {
+        zhoulinService.isExistTransactionId();
     }
 
 }
