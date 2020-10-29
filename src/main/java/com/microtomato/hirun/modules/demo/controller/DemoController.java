@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 /**
  * <p>
@@ -123,9 +124,15 @@ public class DemoController {
     }
 
     @RestResult
-    @PostMapping("test1")
-    public void test1() {
-        log.info("===> test1");
+    @GetMapping("maxRecords")
+    public void maxRecords() {
+        log.info("===> maxRecords");
+        List<Employee> list = employeeService.list();
+
+        for (Employee employee : list) {
+            System.out.println(employee.getEmployeeId() + ": " + employee.getName());
+        }
+        System.out.println("size: " + list.size());
         //return true;
     }
 
