@@ -15,9 +15,11 @@ repositories {
 }
 
 dependencies {
-    implementation('org.springframework.boot:spring-boot-starter') {
-        exclude group: "ch.qos.logback", module: "logback-classic"
-    }
+    implementation 'org.springframework.boot:spring-boot-starter'
+
+//    implementation('org.springframework.boot:spring-boot-starter') {
+//        exclude group: "ch.qos.logback", module: "logback-classic"
+//    }
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
@@ -55,7 +57,7 @@ dependencies {
 
     // 运行期有效
     runtimeOnly 'mysql:mysql-connector-java:8.0.11'
-    implementation 'org.springframework.boot:spring-boot-starter-log4j:1.3.8.RELEASE'
+    //implementation 'org.springframework.boot:spring-boot-starter-log4j:1.3.8.RELEASE'
 
     // 编译期有效，不参与打包
     annotationProcessor 'org.projectlombok:lombok:1.18.10'
