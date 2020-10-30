@@ -99,7 +99,7 @@ public class FinanceAcctServiceImpl extends ServiceImpl<FinanceAcctMapper, Finan
                         break;
                     }
                 }
-                if (isCashier && companyId.equals(company.getOrgId())) {
+                if (isCashier && StringUtils.contains(","+companyId+",", ","+company.getOrgId()+",")) {
                     isFixCachier = true;
                 }
             }
