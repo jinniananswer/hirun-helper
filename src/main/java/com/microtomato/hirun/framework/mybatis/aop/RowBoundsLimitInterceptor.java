@@ -1,5 +1,6 @@
 package com.microtomato.hirun.framework.mybatis.aop;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.plugin.Interceptor;
@@ -20,6 +21,7 @@ import javax.annotation.PostConstruct;
  * @author Steven
  * @date 2020-05-14
  */
+@Slf4j
 @Component
 @Intercepts(
     @Signature(
@@ -35,20 +37,18 @@ import javax.annotation.PostConstruct;
 )
 public class RowBoundsLimitInterceptor implements Interceptor {
 
-    @Value("${row.bounds.limit:100000}")
+    @Value("${row.bounds.limit:20000}")
     private int limit;
-
-    private RowBounds rowBounds;
 
     @PostConstruct
     public void init() {
-        rowBounds = new RowBounds(0, limit);
+        log.info("查询结果集条数限制: {} 条", limit);
     }
 
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
         Object[] args = invocation.getArgs();
-        args[2] = rowBounds;
+        args[2] = new RowBounds(0, limit);
         return invocation.proceed();
     }
 

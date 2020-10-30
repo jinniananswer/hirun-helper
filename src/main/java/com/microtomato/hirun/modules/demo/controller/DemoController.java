@@ -5,7 +5,6 @@ import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.demo.entity.po.Steven;
-import com.microtomato.hirun.modules.demo.entity.po.Zhoulin;
 import com.microtomato.hirun.modules.demo.mapper.ZhoulinMapper;
 import com.microtomato.hirun.modules.demo.service.IDemoService;
 import com.microtomato.hirun.modules.demo.service.IStevenService;
@@ -22,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 /**
  * <p>
@@ -123,10 +123,22 @@ public class DemoController {
     }
 
     @RestResult
-    @PostMapping("test1")
-    public void test1() {
-        log.info("===> test1");
+    @GetMapping("maxRecords")
+    public void maxRecords() {
+        log.info("===> maxRecords");
+        List<Employee> list = employeeService.list();
+
+        for (Employee employee : list) {
+            System.out.println(employee.getEmployeeId() + ": " + employee.getName());
+        }
+        System.out.println("size: " + list.size());
         //return true;
+    }
+
+    @RestResult
+    @GetMapping("makesureIdempotent")
+    public void makesureIdempotent() {
+        zhoulinService.isExistTransactionId();
     }
 
 }

@@ -3,6 +3,8 @@ package com.microtomato.hirun.modules.bi.middleproduct.entity.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 /**
  * @program: hirun-helper
  * @description: 中间产品推送统计查询条件
@@ -31,7 +33,12 @@ public class QueryPushDataStatisticDTO {
     /**
      * 推送时间
      */
-    private String[] pushTime;
+    private LocalDateTime startTime;
+
+    /**
+     * 推送时间
+     */
+    private LocalDateTime endTime;
 
     /**
      * 产品类型

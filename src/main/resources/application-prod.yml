@@ -3,7 +3,7 @@ server:
   servlet.context-path: /
   servlet:
     session:
-      timeout: PT1H
+      timeout: PT5H
       cookie:
         name: HIRUN_SID
 
@@ -49,64 +49,6 @@ spring:
         borrowConnectionTimeout: 5
         maintenanceInterval: 60
         testQuery: SELECT 1
-
-#      sys:
-#        unique-resource-name: sys
-#        min-pool-size: 0
-#        max-pool-size: 50
-#        max-lifetime: 3600
-#        borrow-connection-timeout: 10000
-#        xa-data-source-class-name: com.alibaba.druid.pool.xa.DruidXADataSource
-#        xa-properties:
-#          url: jdbc:mysql://127.0.0.1:3306/sys?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
-#          username: sys
-#          password: ENC(viZyjCQosuNPI/YI5a/bkAjnKGT9R5zD)
-#          driverClassName: com.mysql.cj.jdbc.Driver
-#          initialSize: 10
-#          minIdle: 10
-#          maxActive: 50
-#          maxWait: 60000
-#          timeBetweenEvictionRunsMillis: 30000
-#          #minEvictableIdleTimeMillis: 1800000
-#          #maxEvictableIdleTimeMillis: 25200000
-#          validationQuery: select 1
-#          testWhileIdle: true
-#          testOnBorrow: false
-#          testOnReturn: false
-#          numTestsPerEvictionRun: 2
-#          poolPreparedStatements: false
-#          keepAlive: true
-#          keepAliveBetweenTimeMillis: 30000
-#          filters: stat,slf4j,wall
-
-#      ins:
-#        unique-resource-name: ins
-#        min-pool-size: 0
-#        max-pool-size: 50
-#        max-lifetime: 3600
-#        borrow-connection-timeout: 10000
-#        xa-data-source-class-name: com.alibaba.druid.pool.xa.DruidXADataSource
-#        xa-properties:
-#          url: jdbc:mysql://127.0.0.1:3306/ins?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
-#          username: ins
-#          password: ENC(EFtPlR9pOu98f6a1eLlznevxCmlBJH/S)
-#          driverClassName: com.mysql.cj.jdbc.Driver
-#          initialSize: 10
-#          minIdle: 10
-#          maxActive: 50
-#          maxWait: 60000
-#          timeBetweenEvictionRunsMillis: 30000
-#          #minEvictableIdleTimeMillis: 1800000
-#          #maxEvictableIdleTimeMillis: 25200000
-#          validationQuery: select 1
-#          testWhileIdle: true
-#          testOnBorrow: false
-#          testOnReturn: false
-#          numTestsPerEvictionRun: 2
-#          poolPreparedStatements: false
-#          keepAlive: true
-#          keepAliveBetweenTimeMillis: 30000
-#          filters: stat,slf4j,wall
 
   cache:
     # 指定缓存类型: none(禁用缓存), simple(用于开发), redis（用于生产）

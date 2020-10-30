@@ -65,7 +65,9 @@ define(['vue', 'ELEMENT', 'ajax'], function (Vue, element, ajax) {
             handleBefore(file) {
                 let filename = file.name
                 let arr = filename.split('.')
-                if (this.accept.indexOf(arr[1]) == -1) {
+                //if (this.accept.indexOf(arr[1]) == -1) {
+                let suffix = arr[arr.length - 1]
+                if (this.accept.indexOf(suffix) == -1) {
                     this.$message({
                         type: 'warning',
                         duration: 0,

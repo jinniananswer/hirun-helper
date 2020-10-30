@@ -4,6 +4,7 @@ import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.data.TreeNode;
 import com.microtomato.hirun.framework.util.TreeUtils;
 import com.microtomato.hirun.modules.organization.entity.dto.EmployeeOrgGroupByDTO;
+import com.microtomato.hirun.modules.organization.entity.po.Org;
 import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
 import com.microtomato.hirun.modules.organization.service.IOrgService;
 import lombok.extern.slf4j.Slf4j;
@@ -160,5 +161,10 @@ public class OrgController {
         }
     }
 
+    @GetMapping("/selectShop")
+    @RestResult
+    public List<Org> selectShop() {
+        return orgServiceImpl.selectShop();
+    }
 
 }
