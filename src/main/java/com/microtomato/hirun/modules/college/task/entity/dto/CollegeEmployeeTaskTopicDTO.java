@@ -12,7 +12,9 @@ public class CollegeEmployeeTaskTopicDTO {
 
     private Long taskId;
 
-    private int taskTimeLen;
+    private Integer taskTimeLen;
 
     private List<TopicServiceDTO> taskTopics;
+
+    private Integer passScore;
 }

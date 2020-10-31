@@ -572,6 +572,16 @@ public class CollegeEmployeeTaskController {
         if (ArrayUtils.isEmpty(examRels)) {
             return response;
         }
+        Integer passScore = examCfg.getPassScore();
+        if (null == passScore){
+            passScore = 80;
+        }
+        response.setPassScore(passScore);
+        Integer examTime = examCfg.getExamTime();
+        if (null == examTime){
+            examTime = 60;
+        }
+        response.setTaskTimeLen(examTime);
 
         // 获取考试范围
         CollegeStudyTaskCfg studyTask = collegeStudyTaskCfgServiceImpl.getEffectiveByStudyTaskId(Long.parseLong(studyTaskId));
