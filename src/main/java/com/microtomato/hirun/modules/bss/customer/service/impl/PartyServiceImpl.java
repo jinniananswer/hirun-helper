@@ -101,6 +101,16 @@ public class PartyServiceImpl extends ServiceImpl<PartyMapper, Party> implements
         queryWrapper.apply(" c.role_type='CUSTOMERSERVICE'");
         queryWrapper.orderByDesc("a.consult_time ");
 
+        //2020/11/1新增
+        if(StringUtils.equals(condDTO.getSendFilter(),"1")){
+            queryWrapper.exists(" select 1 from ins_midprod_open k where k.open_id=a.open_id ");
+        }
+
+        if(StringUtils.equals(condDTO.getSendFilter(),"2")){
+            queryWrapper.notExists(" select 1 from ins_midprod_open k where k.open_id=a.open_id ");
+        }
+
+
         IPage<CustomerInfoDetailDTO> iPage = this.baseMapper.queryCustomerInfo(page, queryWrapper);
         if (iPage.getRecords().size() <= 0) {
             return iPage;

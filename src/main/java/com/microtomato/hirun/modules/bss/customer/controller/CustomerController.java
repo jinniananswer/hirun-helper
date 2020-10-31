@@ -2,6 +2,7 @@ package com.microtomato.hirun.modules.bss.customer.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.microtomato.hirun.framework.annotation.RestResult;
+import com.microtomato.hirun.modules.bi.middleproduct.entity.po.MidprodOpen;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.*;
 import com.microtomato.hirun.modules.bss.customer.entity.po.Party;
 import com.microtomato.hirun.modules.bss.customer.service.ICustomerDomainService;
@@ -56,6 +57,12 @@ public class CustomerController {
     @RestResult
     public XQLTEInfoDTO getXQLTEInfo(String openId) {
         return customerDomainService.getXQLTEInfo(openId);
+    }
+
+    @GetMapping("/getMidProdInfo")
+    @RestResult
+    public List<MidprodOpen> getMidProdInfo(String openId) {
+        return customerDomainService.getMidPordInfo(openId);
     }
 
     @GetMapping("/queryCustomerInfo")
