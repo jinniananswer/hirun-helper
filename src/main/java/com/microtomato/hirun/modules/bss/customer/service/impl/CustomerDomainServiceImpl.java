@@ -167,7 +167,7 @@ public class CustomerDomainServiceImpl implements ICustomerDomainService {
         UserContext userContext = WebContextUtils.getUserContext();
         Long employeeId = userContext.getEmployeeId();
         if (!employeeId.equals(customerInfoDetailDTO.getLinkEmployeeId()) && !employeeId.equals(customerInfoDetailDTO.getHouseCounselorId())) {
-            customerInfoDetailDTO.setCustomerName(this.nameDesensitization(customerInfoDetailDTO.getCustomerName()));
+            //customerInfoDetailDTO.setCustomerName(this.nameDesensitization(customerInfoDetailDTO.getCustomerName()));
             customerInfoDetailDTO.setMobileNo("***********");
         }
         return customerInfoDetailDTO;

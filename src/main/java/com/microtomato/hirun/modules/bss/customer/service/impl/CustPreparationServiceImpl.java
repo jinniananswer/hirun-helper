@@ -438,7 +438,7 @@ public class CustPreparationServiceImpl extends ServiceImpl<CustPreparationMappe
             Long employeeId = userContext.getEmployeeId();
             //模糊化姓名和电话
             if (!dto.getPrepareEmployeeId().equals(employeeId)) {
-                dto.setCustName(this.nameDesensitization(dto.getCustName()));
+                //dto.setCustName(this.nameDesensitization(dto.getCustName()));
                 dto.setMobileNo("***********");
             }
 

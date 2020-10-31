@@ -136,7 +136,7 @@ public class PartyServiceImpl extends ServiceImpl<PartyMapper, Party> implements
                 dto.setHouseModeName(staticDataService.getCodeName("HOUSE_MODE",dto.getHouseMode()));
             }
             if(!employeeId.equals(dto.getHouseCounselorId())&&!employeeId.equals(dto.getLinkEmployeeId())){
-                dto.setCustomerName(this.nameDesensitization(dto.getCustomerName()));
+                //dto.setCustomerName(this.nameDesensitization(dto.getCustomerName()));
                 dto.setMobileNo("***********");
             }
         }
