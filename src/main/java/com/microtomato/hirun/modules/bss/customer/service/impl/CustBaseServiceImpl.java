@@ -219,7 +219,7 @@ public class CustBaseServiceImpl extends ServiceImpl<CustBaseMapper, CustBase> i
             dto.setOrderStatusName(staticDataService.getCodeName("ORDER_STATUS", dto.getOrderStatus()));
             dto.setCustomerServiceName(employeeService.getEmployeeNameEmployeeId(dto.getCustServiceEmployeeId()));
             dto.setDesignEmployeeName(employeeService.getEmployeeNameEmployeeId(dto.getDesignEmployeeId()));
-            if (!workerService.checkIncludeEmployeeId(dto.getOrderId(), employeeId)) {
+            if (!workerService.checkIncludeEmployeeIdAndRole(dto.getOrderId(), employeeId,"15,30,555")) {
                 //dto.setCustName(this.nameDesensitization(dto.getCustName()));
                 dto.setMobileNo("***********");
             }
