@@ -5,7 +5,8 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'util'
         data: function() {
             return {
                 queryCond: {
-                    queryType : '1'
+                    queryType : '1',
+                    openFilter : '2'
                 },
                 employeeDisplay: 'display:block',
                 orgDisplay : 'display:none',

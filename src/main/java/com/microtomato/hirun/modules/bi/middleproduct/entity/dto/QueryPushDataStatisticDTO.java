@@ -49,4 +49,6 @@ public class QueryPushDataStatisticDTO {
      */
     private Long shopId;
 
+    private String openFilter;
+
 }
