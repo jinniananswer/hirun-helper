@@ -15,9 +15,13 @@ public class PushDataStatisticDTO {
 
     private String name;
 
-    private Long pushNum;
+    private Long pushNum=0L;
 
-    private Long openNum;
+    private Long openNum=0L;
 
-    private Double openRate;
+    private String openRate="0.00%";
+
+    private Long employeeId;
+
+    private Long orgId;
 }

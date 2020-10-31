@@ -29,7 +29,7 @@
                                     <el-input v-model="queryCond.employeeName" placeholder="请输入员工姓名（模糊查找）"></el-input>
                                 </el-form-item>
                                 <el-form-item label="部门" :style="orgDisplay">
-                                    <org-orgtree :org-id.sync="queryCond.orgIds" :org-name.sync="queryCond.orgName" mode="multi"></org-orgtree>
+                                    <shop-select v-model="queryCond.shopId"></shop-select>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="8">
@@ -85,10 +85,11 @@
                             keep-source
                             max-height="800px"
                             :auto-resize="true"
-                            :data="pushDatas">
-                        <vxe-table-column field="name" title="名称" sortable width="200"></vxe-table-column>
-                        <vxe-table-column field="pushNum" title="推送数" sortable width="200"></vxe-table-column>
-                        <vxe-table-column field="openNum" title="打开数" width="200" sortable></vxe-table-column>
+                            :data="pushDatas"
+                            :footer-method="footerMethod">
+                        <vxe-table-column field="name" title="名称" sortable width="300"></vxe-table-column>
+                        <vxe-table-column field="pushNum" title="推送数" sortable width="300"></vxe-table-column>
+                        <vxe-table-column field="openNum" title="打开数" width="300" sortable></vxe-table-column>
                         <vxe-table-column field="openRate" title="打开率" sortable></vxe-table-column>
                     </vxe-table>
                 </el-card>
