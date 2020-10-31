@@ -89,9 +89,17 @@ public class FinanceAcctServiceImpl extends ServiceImpl<FinanceAcctMapper, Finan
 
             boolean isFixCachier = false;
             if (StringUtils.isNotBlank(companyId)) {
-                //company主要针对位于公司下的出纳
-                boolean isCashier = this.hasRole(roles, 60L);
-                if (isCashier && companyId.equals(company.getOrgId())) {
+
+                String[] useRoleIds = useRoleId.split(",");
+
+                boolean isCashier = false;
+                for (String id : useRoleIds) {
+                    isCashier = this.hasRole(roles, Long.parseLong(id));
+                    if (isCashier) {
+                        break;
+                    }
+                }
+                if (isCashier && StringUtils.contains(","+companyId+",", ","+company.getOrgId()+",")) {
                     isFixCachier = true;
                 }
             }

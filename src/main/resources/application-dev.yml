@@ -3,7 +3,7 @@ server:
   servlet.context-path: /hirun
   servlet:
     session:
-      timeout: PT1H
+      timeout: PT5H
       cookie:
         name: HIRUN_SID
 
