@@ -38,7 +38,7 @@
                         <el-row>
                             <el-col :span="8">
                                 <el-form-item label="审核状态">
-                                    <vue-select code-type="AUDIT_STATUS" v-model="queryCond.auditStatus"></vue-select>
+                                    <vue-select code-type="PAY_AUDIT_STATUS" v-model="queryCond.auditStatus"></vue-select>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="8">
@@ -81,8 +81,12 @@
                                         size="mini"
                                         type="danger"
                                         icon="el-icon-setting"
-                                        :disabled="row.auditStatus ==  '1'"
-                                        @click="openProcess(row.orderId, row.custId, row.payNo, row.auditStatus)">处理</el-button>
+                                        v-if="row.auditStatus != '3' && row.auditStatus != '4'"
+                                        @click="openProcess(row.orderId, row.custId, row.payNo, row.auditStatus)">
+                                    <span v-if="row.auditStatus=='0'">复核</span>
+                                    <span v-if="row.auditStatus=='1'">交单</span>
+                                    <span v-if="row.auditStatus=='2'">重新制单</span>
+                                </el-button>
                             </template>
                         </vxe-table-column>
                     </vxe-table>

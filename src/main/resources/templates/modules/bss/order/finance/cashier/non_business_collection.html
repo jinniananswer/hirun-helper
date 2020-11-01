@@ -15,14 +15,10 @@
     <el-container>
         <el-main>
             <el-row :gutter="12">
-                <el-col :span="6">
-                    <div class="grid-content bg-purple">
-                    </div>
-                </el-col>
-                <el-col :span="18">
+                <el-col :span="24">
                     <div class="grid-content bg-purple-light">
                         <el-card class="box-card">
-                            <div slot="header">
+                            <div slot="header" style="font-size: 14px">
                                 <span>收费操作区</span>
                             </div>
                             <div>
@@ -58,34 +54,60 @@
                                         </el-col>
                                     </el-row>
                                 </el-form>
-                                <el-divider><i class="el-icon-money"></i>付款项目</el-divider>
-                                <el-row style="margin-bottom: 18px;">
-                                    <el-button type="primary" @click="popupDialog">新增收款项</el-button>
-                                    <el-dialog title="新增收款项" :visible.sync="dialogVisible">
-                                        <el-form :inline="false" :model="payItem" label-position="right"
-                                                 label-width="80px">
-                                            <el-row>
-                                                <el-col :span="24">
-                                                    <el-form-item label="收款项目">
-                                                        <el-cascader
-                                                                v-model="payItem.selectedPayItem"
-                                                                placeholder="搜索收款项目"
-                                                                :props="{ multiple: true }"
-                                                                :options="payItemOptions"
-                                                                @change="handlePayItem"
-                                                                clearable
-                                                                filterable
-                                                                style="width:100%">
-                                                        </el-cascader>
-                                                    </el-form-item>
-                                                </el-col>
-                                            </el-row>
-                                        </el-form>
-                                        <div slot="footer" class="dialog-footer">
-                                            <el-button type="primary" @click="confirmSelectPayItem">确 定</el-button>
-                                        </div>
-                                    </el-dialog>
-                                </el-row>
+                                <el-divider><i class="el-icon-money"></i>收款项目</el-divider>
+                                <el-form ref="itemForm" :model="payItem" label-width="80px">
+                                    <el-row style="margin-bottom: 18px;" :gutter="12">
+                                        <el-col :span="8">
+                                            <el-form-item label="收款项目">
+                                                <el-cascader
+                                                        v-model="payItem.selectedPayItem"
+                                                        ref="payItems"
+                                                        placeholder="搜索收款项目"
+                                                        :options="payItemOptions"
+                                                        :props="{ expandTrigger: 'hover' }"
+                                                        @change="handlePayItem"
+                                                        clearable
+                                                        filterable
+                                                        style="width:100%">
+                                                </el-cascader>
+                                            </el-form-item>
+                                        </el-col>
+                                        <el-col :span="8" :style="extendDisplay">
+                                            <el-form-item label="选择师傅" :style="decoratorDisplay">
+                                                <el-select v-model="decoratorIds" multiple filterable placeholder="请选择" style="width:100%">
+                                                    <el-option
+                                                            v-for="decorator in decorators"
+                                                            :key="decorator.decoratorId"
+                                                            :label="decorator.name"
+                                                            :value="decorator.decoratorId">
+                                                    </el-option>
+                                                </el-select>
+                                            </el-form-item>
+                                            <el-form-item label="供应品牌" :style="brandDisplay">
+                                                <el-select v-model="brandIds"  multiple filterable placeholder="请选择" style="width:100%">
+                                                    <el-option
+                                                            v-for="brand in brands"
+                                                            :key="brand.id"
+                                                            :label="brand.name"
+                                                            :value="brand.id">
+                                                    </el-option>
+                                                </el-select>
+                                            </el-form-item>
+                                            <el-form-item label="选择员工" :style="employeeDisplay">
+                                                <org-selectemployee mode="priv" v-model="employeeIds" ref="selectEmployees" :multi="true"></org-selectemployee>
+                                            </el-form-item>
+                                            <el-form-item label="选择公司" :style="companyDisplay">
+                                                <org-orgtree :org-id.sync="companyIds" :org-name.sync="companyNames" :org-type="2" mode="multi"></org-orgtree>
+                                            </el-form-item>
+                                            <el-form-item label="选择门店" :style="shopDisplay">
+                                                <org-orgtree :org-id.sync="shopIds" :org-name.sync="shopNames" :org-type="4" mode="multi"></org-orgtree>
+                                            </el-form-item>
+                                        </el-col>
+                                        <el-col :span = "8">
+                                            <el-button type="primary" @click="addPayItem">添加收款项</el-button>
+                                        </el-col>
+                                    </el-row>
+                                </el-form>
                                 <vxe-table
                                         border
                                         resizable
@@ -98,10 +120,8 @@
                                         :edit-rules="validRules"
                                         :footer-method="footerMethod"
                                         :edit-config="{trigger: 'click', mode: 'cell'}">
-                                    <vxe-table-column field="payItemName" title="款项"></vxe-table-column>
-                                    <vxe-table-column field="subjectName" title="科目类别" width="100"></vxe-table-column>
-                                    <vxe-table-column field="projectName" title="项目名称" width="100"></vxe-table-column>
-                                    <vxe-table-column field="money" title="应付金额（单位：元）" width="180"
+                                    <vxe-table-column field="payItemName" title="收款项"></vxe-table-column>
+                                    <vxe-table-column field="money" title="应付金额（单位：元）" width="200"
                                                       :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
                                     <vxe-table-column title="操作" width="100" show-overflow>
                                         <template v-slot="{ row }">
@@ -114,7 +134,7 @@
                                         </template>
                                     </vxe-table-column>
                                 </vxe-table>
-                                <el-divider><i class="el-icon-money"></i>付款方式</el-divider>
+                                <el-divider><i class="el-icon-money"></i>收款方式</el-divider>
                                 <vxe-table
                                         border
                                         resizable
@@ -126,6 +146,7 @@
                                         :data="payments"
                                         :footer-method="footerMethod"
                                         :edit-config="{trigger: 'click', mode: 'cell'}">
+                                    <vxe-table-column field="paymentTypeName" width="200" title="收款类型"></vxe-table-column>
                                     <vxe-table-column field="paymentName" title="付款方式"></vxe-table-column>
                                     <vxe-table-column field="money" title="付款金额（单位：元）"
                                                       :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
@@ -134,27 +155,21 @@
                             </div>
                             <el-row>
                                 <el-col :span="24">
-                                    <el-form-item label="备注" prop="auditRemark" label-width="100px">
-                                        <el-input type="textarea" v-model="auditRemark"></el-input>
-                                    </el-form-item>
+                                    <el-form ref="payForm" :model="payForm" label-width="80px">
+                                        <el-form-item label="收款摘要" prop="auditRemark" label-width="100px">
+                                            <el-input type="textarea" v-model="auditRemark"></el-input>
+                                        </el-form-item>
+                                    </el-form>
                                 </el-col>
                             </el-row>
                             <el-row>
-                                <div style="text-align: center">
-                                    <el-col :span="8" v-if="auditStatus == ''">
-                                        <el-button type="primary" @click="submit">提交审核</el-button>
-                                    </el-col>
-                                    <el-col :span="12" v-if="auditStatus == '0'">
-                                        <el-button type="primary" @click="submitForUpdate">保存</el-button>
-                                        <el-button type="primary" @click="submitForAudit">审核通过</el-button>
-                                        <el-button type="warning" @click="submitForNo">审核不通过</el-button>
-                                    </el-col>
-                                    <el-col :span="12" v-if="auditStatus == '2'">
-                                        <el-button type="primary" @click="submitForReview">重新审核</el-button>
-                                        <el-button type="primary" @click="submitForUpdate">保存</el-button>
-                                    </el-col>
+                                <el-col :span="8" v-if="auditStatus == ''">
+                                    <el-button type="primary" @click="submit">提交</el-button>
+                                </el-col>
+                                <el-col :span="12" v-if="auditStatus == '2'">
+                                    <el-button type="primary" @click="submitForUpdate">重新复核</el-button>
+                                </el-col>
 
-                                </div>
                             </el-row>
                         </el-card>
 
@@ -185,7 +200,7 @@
         display: none;
     }
 </style>
-<script src="static/js/modules/bss/order/finance/cashier/collect.fee.js"
-        th:src="@{static/js/modules/bss/order/finance/cashier/collect.fee.js(v=${version})}"></script>
+<script src="static/js/modules/bss/order/finance/cashier/non.business.collection.js"
+        th:src="@{static/js/modules/bss/order/finance/cashier/non.business.collection.js(v=${version})}"></script>
 </body>
 </html>
