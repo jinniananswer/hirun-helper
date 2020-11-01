@@ -32,9 +32,14 @@
                                     <shop-select v-model="queryCond.shopId"></shop-select>
                                 </el-form-item>
                             </el-col>
-                            <el-col :span="8">
+<!--                            <el-col :span="8">
                                 <el-form-item label="产品类型">
                                     <vue-select code-type="MIDDLE_PRODUCT_TYPE" v-model="queryCond.productType" @change="changeType"></vue-select>
+                                </el-form-item>
+                            </el-col>-->
+                            <el-col :span="8">
+                                <el-form-item label="点开去重">
+                                    <vue-select code-type="YES_NO" v-model="queryCond.openFilter"></vue-select>
                                 </el-form-item>
                             </el-col>
                         </el-row>
@@ -62,17 +67,13 @@
                                 </el-form-item>
                             </el-col>
                             <el-col :span="8">
-                                <el-form-item label="点开去重">
-                                    <vue-select code-type="YES_NO" v-model="queryCond.openFilter"></vue-select>
-                                </el-form-item>
-                            </el-col>
-                        </el-row>
-                        <el-row :gutter="12">
-                            <el-col :span="8">
                                 <el-form-item>
                                     <el-button type="primary" @click="query">查询</el-button>
                                 </el-form-item>
                             </el-col>
+                        </el-row>
+                        <el-row :gutter="12">
+
                         </el-row>
                     </el-form>
                 </el-card>
