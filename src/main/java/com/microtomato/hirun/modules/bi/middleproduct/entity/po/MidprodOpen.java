@@ -30,7 +30,7 @@ public class MidprodOpen extends BaseEntity {
 
 
     @TableField(value = "send_id")
-    private Long sendId;
+    private String sendId;
 
 
     @TableField(value = "mode_id")

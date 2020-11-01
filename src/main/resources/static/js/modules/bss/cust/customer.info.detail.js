@@ -12,6 +12,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 xqltyInfo:[],
                 styleInfos:[],
                 ltzdsInfo:[],
+                midprodInfo:[],
                 activeNames:'',
                 dialogTableVisible: false,
                 funcDialogVisibleA:false,
@@ -71,6 +72,19 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                 })
             },
 
+            initMidProd : function() {
+                let that = this;
+                ajax.get('api/bss.customer/customer/getMidProdInfo', {openId:this.openId}, function(midProdInfo) {
+                    that.midprodInfo=midProdInfo;
+                })
+            },
+
+            showMidprod:function(content){
+                this.$alert(content+'', '内容', {
+                    dangerouslyUseHTMLString: true
+                });
+            },
+
             initLtzds : function() {
                 let that = this;
                 ajax.get('api/bss.customer/customer/getLtzdsInfo', {openId:this.openId}, function(ltzdsData) {
@@ -119,6 +133,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
             this.initXqlty();
             this.initXqlte();
             this.initLtzds();
+            this.initMidProd();
         },
 
     });

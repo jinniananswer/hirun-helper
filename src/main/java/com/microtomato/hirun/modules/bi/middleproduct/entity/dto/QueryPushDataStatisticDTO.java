@@ -44,4 +44,11 @@ public class QueryPushDataStatisticDTO {
      * 产品类型
      */
     private String productType;
+    /**
+     * 门店
+     */
+    private Long shopId;
+
+    private String openFilter;
+
 }

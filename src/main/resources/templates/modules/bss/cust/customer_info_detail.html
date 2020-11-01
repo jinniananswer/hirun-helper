@@ -388,6 +388,49 @@
                                 </div>
                             </template>
                         </el-card>
+                        <el-card class="box-card" shadow="hover">
+                            <div>
+                                <el-divider content-position="left"><span style="font-weight: 700">中间产品</span>
+                                </el-divider>
+                            </div>
+                            <template>
+                                <el-table
+                                        :data="midprodInfo"
+                                        border
+                                        stripe="true"
+                                        style="width: 100%">
+                                    <el-table-column
+                                            prop="title"
+                                            label="标题"
+                                            align="center"
+                                            width="250">
+<!--                                        <template slot-scope="scope">
+                                            <el-button type="text"
+                                                       @click="showMidprod(scope.content)">{{
+                                                scope.row.title }}
+                                            </el-button>
+                                        </template>-->
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="sendTime"
+                                            label="推送时间"
+                                            align="center"
+                                            width="220">
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="openTime"
+                                            label="打开时间"
+                                            align="center"
+                                            width="220">
+                                    </el-table-column>
+                                    <el-table-column
+                                            prop="staffName"
+                                            align="center"
+                                            label="推送人">
+                                    </el-table-column>
+                                </el-table>
+                            </template>
+                        </el-card>
 
                         <el-card class="box-card" shadow="hover">
                             <div>

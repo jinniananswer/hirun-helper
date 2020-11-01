@@ -50,4 +50,6 @@ public class QueryCustCondDTO {
     private String wxNick;
 
     private String busiStatus;
+
+    private String sendFilter;
 }

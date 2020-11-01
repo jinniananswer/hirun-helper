@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.bss.order.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.exception.ErrorKind;
@@ -29,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -275,6 +277,34 @@ public class OrderWorkerServiceImpl extends ServiceImpl<OrderWorkerMapper, Order
         }
         String employeeIds = "";
         for (OrderWorker orderWorker : list) {
+            employeeIds += orderWorker.getEmployeeId() + ",";
+        }
+        if (("," + employeeIds).indexOf("," + employeeId + ",") >= 0) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean checkIncludeEmployeeIdAndRole(Long orderId, Long employeeId, String roleId) {
+
+        if(orderId==null){
+            return false;
+        }
+        List roleList=null;
+        if(StringUtils.isNotBlank(roleId)){
+           roleList= Arrays.asList(roleId);
+        }
+        List<OrderWorker> list = this.queryValidByOrderId(orderId);
+
+        if (ArrayUtils.isEmpty(list)) {
+            return false;
+        }
+        String employeeIds = "";
+        for (OrderWorker orderWorker : list) {
+            if(!roleList.contains(orderWorker.getRoleId())){
+                continue;
+            }
             employeeIds += orderWorker.getEmployeeId() + ",";
         }
         if (("," + employeeIds).indexOf("," + employeeId + ",") >= 0) {

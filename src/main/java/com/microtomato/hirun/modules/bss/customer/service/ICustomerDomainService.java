@@ -2,6 +2,7 @@ package com.microtomato.hirun.modules.bss.customer.service;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.microtomato.hirun.modules.bi.middleproduct.entity.po.MidprodOpen;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.*;
 import com.microtomato.hirun.modules.bss.customer.entity.po.Party;
 
@@ -63,4 +64,6 @@ public interface ICustomerDomainService {
      */
     List<LTZDSInfoDTO> getLtzdsInfo(String openId);
 
+
+    List<MidprodOpen> getMidPordInfo(String openId);
 }

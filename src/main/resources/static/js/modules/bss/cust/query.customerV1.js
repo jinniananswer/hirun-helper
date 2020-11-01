@@ -1,4 +1,4 @@
-require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'order-selectemployee', 'org-orgtree','house-select'], function (Vue, element, axios, ajax, vueselect, util, orderSelectEmployee, orgOrgTree,houseSelect) {
+require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'order-selectemployee', 'org-orgtree','house-select',], function (Vue, element, axios, ajax, vueselect, util, orderSelectEmployee, orgOrgTree,houseSelect) {
     let vm = new Vue({
         el: '#app',
         data: function () {
@@ -18,6 +18,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'order-selectem
                     wxNick:'',
                     houseId:'',
                     busiStatus:'1',
+                    sendFilter:'2',
                     page:1,
                     size:10,
                     total:0
