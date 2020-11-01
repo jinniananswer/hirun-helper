@@ -79,7 +79,7 @@
                         max-height="800px"
                         :auto-resize="true"
                         :data="normalPayInfos">
-                    <vxe-table-column title="收款单号" sortable width="200">
+                    <vxe-table-column title="收款单号" sortable width="100">
                         <template v-slot="{row}">
                             <el-button type="text" @click="toDetail(row.payNo)">{{ row.payNo }}</el-button>
                         </template>
@@ -87,9 +87,9 @@
                     <vxe-table-column field="payItemName" title="收款项" sortable></vxe-table-column>
                     <vxe-table-column field="payDate" title="收款时间" sortable width="200"></vxe-table-column>
                     <vxe-table-column field="auditStatusName" title="单据状态" sortable width="150"></vxe-table-column>
-                    <vxe-table-column field="totalMoney" title="收取金额" sortable width="150"></vxe-table-column>
-                    <vxe-table-column field="employeeName" title="收款人" sortable width="150"></vxe-table-column>
-                    <vxe-table-column field="financeEmployeeName" title="收单会计" sortable width="150"></vxe-table-column>
+                    <vxe-table-column field="totalMoney" title="收取金额" sortable width="100"></vxe-table-column>
+                    <vxe-table-column field="employeeName" title="收款人" sortable width="100"></vxe-table-column>
+                    <vxe-table-column field="financeEmployeeName" title="收单会计" sortable width="100"></vxe-table-column>
                     <vxe-table-column title="操作" width="200" fixed="right" show-overflow>
                         <template v-slot="{ row }">
                             <el-button

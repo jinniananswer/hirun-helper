@@ -72,7 +72,7 @@
                                     <el-row>
                                         <el-col :span="24">
                                             <el-form-item label="审核备注" prop="auditComment" label-width="100px">
-                                                <el-input type="textarea" v-model="auditComment" :disabled="auditStatus == '1'"></el-input>
+                                                <el-input type="textarea" v-model="auditComment" :disabled="auditStatus == '1' || auditStatus == '3'"></el-input>
                                             </el-form-item>
                                         </el-col>
                                     </el-row>
@@ -92,6 +92,18 @@
                                     </el-row>
                                     <el-form-item style="text-align: center " v-if="auditStatus == '1'">
                                         <el-button type="primary" @click="submitReceipt">提交会计收单</el-button>
+                                    </el-form-item>
+
+                                    <el-row v-if="auditStatus == '3'">
+                                        <el-col :span="24">
+                                            <el-form-item label="收单备注" label-width="100px">
+                                                <el-input type="textarea" v-model="receiveComment" :disabled="auditStatus == '1'"></el-input>
+                                            </el-form-item>
+                                        </el-col>
+                                    </el-row>
+                                    <el-form-item style="text-align: center " v-if="auditStatus == '3'">
+                                        <el-button type="primary" @click="submitReceive">收单</el-button>
+                                        <el-button type="danger" @click="submitNoReceive">退单</el-button>
                                     </el-form-item>
                                 </el-form>
                             </el-card>
