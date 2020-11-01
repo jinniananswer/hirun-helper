@@ -1,4 +1,4 @@
-require(['vue', 'ELEMENT','ajax', 'vueselect', 'util','cust-info', 'order-info', 'order-worker', 'order-payment'], function(Vue, element, ajax, vueselect, util, custInfo, orderInfo, orderWorker, payment) {
+require(['vue', 'ELEMENT','ajax', 'vueselect', 'util','cust-info', 'order-info', 'order-worker', 'order-payment', 'org-selectemployee'], function(Vue, element, ajax, vueselect, util, custInfo, orderInfo, orderWorker, payment, selecteemployee) {
     let vm = new Vue({
         el: '#app',
         data: function() {
@@ -8,7 +8,7 @@ require(['vue', 'ELEMENT','ajax', 'vueselect', 'util','cust-info', 'order-info',
                     payNo:util.getRequest('payNo'),
                     custId:util.getRequest('custId'),
                     auditStatus:0,
-                    auditReason:"",
+                    auditComment: null,
                 },
                 remark: null,
                 payItems: [],
@@ -37,6 +37,8 @@ require(['vue', 'ELEMENT','ajax', 'vueselect', 'util','cust-info', 'order-info',
                         that.payments = tempPayments;
                     }
                     that.remark = data.remark;
+                    that.auditData.auditComment = data.auditComment;
+                    that.auditData.auditStatus = data.auditStatus;
                     if (data.payItems) {
                         that.payItems = data.payItems;
                     }
@@ -44,16 +46,27 @@ require(['vue', 'ELEMENT','ajax', 'vueselect', 'util','cust-info', 'order-info',
             },
             submitAudit:  function(){
                 this.auditData['auditStatus'] = "1";
-                    ajax.post('api/bss/order/order-fee/costReview', this.auditData);
+                ajax.post('api/bss/order/order-fee/costReview', this.auditData);
 
             },
             auditFailed:  function() {
                 this.auditData['auditStatus'] = "2";
-                    ajax.post('api/bss/order/order-fee/costReview', this.auditData);
+                ajax.post('api/bss/order/order-fee/costReview', this.auditData);
 
+            },
+
+            submitReceipt : function() {
+                if (this.auditData.financeEmployeeId == null || this.auditData.financeEmployeeId == '') {
+                    this.$message.error('收单会计不能为空');
+                    return;
+                }
+                let data = {
+                    orderId: this.auditData.orderId,
+                    payNo: this.auditData.payNo,
+                    financeEmployeeId: this.auditData.financeEmployeeId
+                }
+                ajax.get('api/bss.order/finance/submitBusinessReceipt', data);
             }
-
-
         }
     });
 

@@ -78,7 +78,7 @@ define(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'util'], function(Vue,
                                         <el-cascader
                                             v-model="payItem.selectedPayItem"
                                             placeholder="搜索收款项目"
-                                            :props="{ multiple: true }"
+                                            :props="{ multiple: true ,expandTrigger: 'hover'}"
                                             :options="payItemOptions"
                                             @change="handlePayItem"
                                             clearable
