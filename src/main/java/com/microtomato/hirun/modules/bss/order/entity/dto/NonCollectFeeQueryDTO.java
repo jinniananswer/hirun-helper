@@ -22,6 +22,8 @@ public class NonCollectFeeQueryDTO {
 
     private List<String> payItemId;
 
+    private String receiptNo;
+
     private Integer page;
 
     private Integer limit;

@@ -23,6 +23,8 @@ public class FinanceOrderTaskDTO extends OrderTaskDTO {
 
     private String auditStatusName;
 
+    private String receiptNo;
+
     private Long payNo;
 
     private LocalDateTime payDate;

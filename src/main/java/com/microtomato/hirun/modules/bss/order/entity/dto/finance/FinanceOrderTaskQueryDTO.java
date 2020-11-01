@@ -17,6 +17,8 @@ public class FinanceOrderTaskQueryDTO extends OrderTaskQueryDTO {
 
     private String auditStatus;
 
+    private String receiptNo;
+
     private Integer page;
 
     private Integer limit;

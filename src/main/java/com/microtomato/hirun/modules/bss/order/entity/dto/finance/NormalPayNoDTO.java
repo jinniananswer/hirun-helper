@@ -64,4 +64,9 @@ public class NormalPayNoDTO {
      * 应付总金额
      */
     private Double totalMoney;
+
+    /**
+     * 收据编号
+     */
+    private String receiptNo;
 }
