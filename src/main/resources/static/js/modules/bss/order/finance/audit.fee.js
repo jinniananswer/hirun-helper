@@ -9,6 +9,7 @@ require(['vue', 'ELEMENT','ajax', 'vueselect', 'util','cust-info', 'order-info',
                     custId:util.getRequest('custId'),
                     auditStatus:0,
                     auditComment: null,
+                    receiveComment: null
                 },
                 remark: null,
                 payItems: [],
@@ -66,6 +67,18 @@ require(['vue', 'ELEMENT','ajax', 'vueselect', 'util','cust-info', 'order-info',
                     financeEmployeeId: this.auditData.financeEmployeeId
                 }
                 ajax.get('api/bss.order/finance/submitBusinessReceipt', data);
+            },
+
+            submitReceive:  function(){
+                this.auditData['auditStatus'] = "4";
+                ajax.post('api/finance/finance-field/submitBusinessReceiveReceipt', this.auditData);
+
+            },
+
+            submitNoReceive:  function(){
+                this.auditData['auditStatus'] = "5";
+                ajax.post('api/finance/finance-field/submitBusinessReceiveReceipt', this.auditData);
+
             }
         }
     });

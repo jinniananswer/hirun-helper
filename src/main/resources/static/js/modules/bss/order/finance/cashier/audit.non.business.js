@@ -12,6 +12,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vxe-table', 'vueselect', 'org-selec
                     remark: '',
                     auditStatus: '',
                     auditComment: '',
+                    receiveComment: null,
                     financeEmployeeId: null,
                     payNo: util.getRequest("payNo")
                 }
@@ -103,6 +104,25 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vxe-table', 'vueselect', 'org-selec
                         financeEmployeeId: this.financeEmployeeId
                     }
                     ajax.get('api/bss.order/finance/submitNonBusinessReceipt', data);
+                },
+
+                submitReceive:  function(){
+                    let auditData = {
+                        payNo: this.payNo,
+                        receiveComment : this.receiveComment,
+                        auditStatus: '4'
+                    }
+                    ajax.post('api/finance/finance-field/submitNonBusinessReceiveReceipt', auditData);
+
+                },
+
+                submitNoReceive:  function(){
+                    let auditData = {
+                        payNo: this.payNo,
+                        receiveComment : this.receiveComment,
+                        auditStatus: '5'
+                    }
+                    ajax.post('api/finance/finance-field/submitNonBusinessReceiveReceipt', auditData);
                 }
             }
         })
