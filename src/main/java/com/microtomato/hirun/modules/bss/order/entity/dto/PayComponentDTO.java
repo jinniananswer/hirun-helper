@@ -21,6 +21,8 @@ public class PayComponentDTO {
 
     private String auditComment;
 
+    private String auditStatus;
+
     private String remark;
 
     private List<PaymentDTO> payments;

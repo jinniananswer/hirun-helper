@@ -4,10 +4,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
 
+import com.microtomato.hirun.modules.bss.config.entity.po.CollectionItemCfg;
 import com.microtomato.hirun.modules.bss.order.entity.dto.*;
 import com.microtomato.hirun.modules.bss.order.entity.dto.finance.CustPayDataDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.finance.FinanceOrderTaskDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.finance.FinanceOrderTaskQueryDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.finance.NormalPayNoDTO;
 import com.microtomato.hirun.modules.bss.order.service.IFinanceDomainService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,9 +40,9 @@ public class FinanceController {
         return this.domainService.queryCustOrderInfos(queryCond, page);
     }
 
-    @GetMapping("/queryPayInfoByCond")
+    @PostMapping("/queryPayInfoByCond")
     @RestResult
-    public List<NonCollectFeeDTO> queryPayInfoByCond(NonCollectFeeQueryDTO queryCondition) {
+    public IPage<NormalPayNoDTO> queryPayInfoByCond(@RequestBody  NonCollectFeeQueryDTO queryCondition) {
         return this.domainService.queryPayInfoByCond(queryCondition);
     }
 
@@ -48,6 +50,12 @@ public class FinanceController {
     @RestResult
     public CollectionComponentDTO initCollectionComponent( Long payNo) {
         return this.domainService.initCollectionComponent(payNo);
+    }
+
+    @GetMapping("/initCollectionItems")
+    @RestResult
+    public List<CascadeDTO<CollectionItemCfg>> initCollectionItems() {
+        return this.domainService.initCollectionItem();
     }
 
     @GetMapping("/initPayComponent")
@@ -100,5 +108,17 @@ public class FinanceController {
     @RestResult
     public CustPayDataDTO getCustPayData(Long orderId, Long payNo) {
         return this.domainService.getCustPayData(orderId, payNo);
+    }
+
+    @GetMapping("/submitNonBusinessReceipt")
+    @RestResult
+    public void submitNonBusinessReceipt(Long payNo, Long financeEmployeeId) {
+        this.domainService.submitNonBusinessReceipt(payNo, financeEmployeeId);
+    }
+
+    @GetMapping("/submitBusinessReceipt")
+    @RestResult
+    public void submitBusinessReceipt(Long orderId, Long payNo, Long financeEmployeeId) {
+        this.domainService.submitBusinessReceipt(orderId, payNo, financeEmployeeId);
     }
 }

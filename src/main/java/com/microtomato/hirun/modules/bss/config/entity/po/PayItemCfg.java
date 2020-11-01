@@ -59,6 +59,12 @@ public class PayItemCfg extends BaseEntity {
     @TableField("direction")
     private Integer direction;
 
+    /**
+     * 其它扩展
+     */
+    @TableField("extend")
+    private String extend;
+
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)
     private Long createUserId;
 

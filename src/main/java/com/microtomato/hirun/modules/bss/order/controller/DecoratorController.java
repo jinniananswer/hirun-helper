@@ -5,16 +5,12 @@ import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.bss.order.entity.dto.DecoratorInfoDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.Decorator;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.beans.factory.annotation.Autowired;
-import lombok.extern.slf4j.Slf4j;
-
 import com.microtomato.hirun.modules.bss.order.service.IDecoratorService;
-
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -52,6 +48,12 @@ public class DecoratorController {
     @RestResult
     public IPage<Decorator> queryDecoratorInfo(String name, String identityNo, int page, int size) {
         return this.decoratorServiceImpl.queryDecoratorInfo(name, identityNo, page, size);
+    }
+
+    @GetMapping("/initDecorators")
+    @RestResult
+    public List<DecoratorInfoDTO> initDecorators() {
+        return this.decoratorServiceImpl.initDecorators();
     }
 
 }

@@ -81,6 +81,14 @@ public class OrderPayNo extends BaseEntity {
     @TableField(value = "receipt_no")
     private String receiptNo;
 
+    /** 收单会计 */
+    @TableField(value = "finance_employee_id")
+    private Long financeEmployeeId;
+
+    /** 收单备注 */
+    @TableField(value = "receive_comment")
+    private String receiveComment;
+
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)
     private Long createUserId;
 

@@ -1,31 +1,22 @@
 package com.microtomato.hirun.modules.bss.order.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
-import com.microtomato.hirun.framework.util.SpringContextUtils;
-import com.microtomato.hirun.modules.bss.customer.entity.dto.CustInfoDTO;
-import com.microtomato.hirun.modules.bss.customer.entity.dto.CustQueryCondDTO;
-import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
-import com.microtomato.hirun.modules.bss.order.entity.dto.ConstructionDTO;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.modules.bss.order.entity.dto.DecoratorInfoDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.OrderFeeDTO;
-import com.microtomato.hirun.modules.bss.order.entity.po.*;
+import com.microtomato.hirun.modules.bss.order.entity.po.Decorator;
 import com.microtomato.hirun.modules.bss.order.mapper.DecoratorMapper;
 import com.microtomato.hirun.modules.bss.order.service.IDecoratorService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -94,5 +85,26 @@ public class DecoratorServiceImpl extends ServiceImpl<DecoratorMapper, Decorator
                 .eq(Decorator::getIdentityNo, identityNo));
 
         return decorator;
+    }
+
+    /**
+     * 查询所有工人信息，用于生成下拉框数据
+     * @return
+     */
+    @Override
+    public List<DecoratorInfoDTO> initDecorators() {
+        List<Decorator> decorators = this.queryAllInfo();
+        if (ArrayUtils.isEmpty(decorators)) {
+            return null;
+        }
+
+        List<DecoratorInfoDTO> result = new ArrayList<>();
+        for (Decorator decorator : decorators) {
+            DecoratorInfoDTO decoratorInfo = new DecoratorInfoDTO();
+            decoratorInfo.setDecoratorId(decorator.getDecoratorId());
+            decoratorInfo.setName(decorator.getName());
+            result.add(decoratorInfo);
+        }
+        return result;
     }
 }

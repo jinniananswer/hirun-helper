@@ -15,9 +15,7 @@ public class NormalPayItemDTO {
 
     private String payItemName;
 
-    private String subjectId;
-
-    private String subjectName;
+    private String parentPayItemId;
 
     private String projectId;
 

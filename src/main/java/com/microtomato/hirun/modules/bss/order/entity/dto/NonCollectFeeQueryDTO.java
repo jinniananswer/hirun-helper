@@ -2,7 +2,7 @@ package com.microtomato.hirun.modules.bss.order.entity.dto;
 
 import lombok.Data;
 
-import java.time.LocalDate;
+import java.util.List;
 
 /**
  * @program: hirun-helper
@@ -16,11 +16,11 @@ public class NonCollectFeeQueryDTO {
 
     private Long employeeId;
 
-    private LocalDate startDate;
-
-    private LocalDate endDate;
+    private String[] feeTime;
 
     private String auditStatus;
+
+    private List<String> payItemId;
 
     private Integer page;
 

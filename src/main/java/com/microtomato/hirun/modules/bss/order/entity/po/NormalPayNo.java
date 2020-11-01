@@ -1,17 +1,12 @@
 package com.microtomato.hirun.modules.bss.order.entity.po;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.microtomato.hirun.framework.data.BaseEntity;
+import lombok.*;
+import lombok.experimental.Accessors;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
-import com.microtomato.hirun.framework.data.BaseEntity;
-import lombok.Data;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
 /**
  * <p>
@@ -100,6 +95,22 @@ public class NormalPayNo extends BaseEntity {
      */
     @TableField("org_id")
     private Long orgId;
+
+    /** 收据编号 */
+    @TableField(value = "receipt_no")
+    private String receiptNo;
+
+    /**
+     * 收单会计
+     */
+    @TableField("finance_employee_id")
+    private Long financeEmployeeId;
+
+    /**
+     * 收单意见
+     */
+    @TableField("receive_comment")
+    private Long receiveComment;
 
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)
     private Long createUserId;
