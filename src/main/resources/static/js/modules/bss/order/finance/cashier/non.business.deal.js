@@ -66,7 +66,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vxe-table', 'vueselect', 'org-selec
                     util.openPage('openUrl?url=modules/bss/order/finance/cashier/audit_non_business&payNo='+payNo, '非主营收款复核');
                 } else if (auditStatus == '1') {
                     util.openPage('openUrl?url=modules/bss/order/finance/cashier/audit_non_business&payNo='+payNo, '非主营收款交单');
-                } else if (auditStatus == '2') {
+                } else if (auditStatus == '2' || auditStatus == '5') {
                     util.openPage('openUrl?url=modules/bss/order/finance/cashier/non_business_collection&payNo='+payNo, '非主营收款修改');
                 }
             },

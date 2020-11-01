@@ -36,7 +36,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'util', 'vxe-table', 'vueselect','ho
                 } else if (auditStatus == '1') {
                     url = 'openUrl?url=modules/bss/order/finance/audit_fee'
                     title = '主营收款交单';
-                } else if (auditStatus == '2') {
+                } else if (auditStatus == '2' || auditStatus == '5') {
                     url = 'openUrl?url=modules/bss/order/finance/collect_fee'
                     title = '主营收款修改';
                 }
