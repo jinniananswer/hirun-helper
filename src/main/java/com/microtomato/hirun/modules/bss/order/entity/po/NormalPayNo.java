@@ -110,7 +110,7 @@ public class NormalPayNo extends BaseEntity {
      * 收单意见
      */
     @TableField("receive_comment")
-    private Long receiveComment;
+    private String receiveComment;
 
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)
     private Long createUserId;
