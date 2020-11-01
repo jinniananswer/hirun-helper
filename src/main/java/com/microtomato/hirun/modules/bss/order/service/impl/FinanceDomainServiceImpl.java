@@ -1435,6 +1435,11 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
                     task.setHousesName(house.getName());
                 }
             }
+
+            if (task.getFinanceEmployeeId() != null) {
+                String financeEmployeeName = this.employeeService.getEmployeeNameEmployeeId(task.getFinanceEmployeeId());
+                task.setFinanceEmployeeName(financeEmployeeName);
+            }
         });
         return pageTasks;
     }

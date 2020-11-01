@@ -26,4 +26,8 @@ public class FinanceOrderTaskDTO extends OrderTaskDTO {
     private Long payNo;
 
     private LocalDateTime payDate;
+
+    private Long financeEmployeeId;
+
+    private String financeEmployeeName;
 }
