@@ -132,7 +132,7 @@ public class CollegeTaskScoreController {
 
     @PostMapping("addScore")
     @RestResult
-    public void addScore(@RequestParam("taskId") String taskId,@RequestParam("scoreType")  String scoreType,@RequestParam("score") String score) {
+    public boolean addScore(@RequestParam("taskId") String taskId,@RequestParam("scoreType")  String scoreType,@RequestParam("score") String score) {
         LocalDateTime now = TimeUtils.getCurrentLocalDateTime();
         boolean save = this.collegeTaskScoreService.save(CollegeTaskScore.builder()
                 .taskId(Long.parseLong(taskId))
@@ -165,6 +165,8 @@ public class CollegeTaskScoreController {
                                     if (null == taskCompleteDate){
                                         collegeEmployeeTask.setTaskCompleteDate(now);
                                     }
+                                } else {
+                                    save = false;
                                 }
                             }
                         }
@@ -172,6 +174,8 @@ public class CollegeTaskScoreController {
                 }
             }
         }
+
+        return save;
     }
 
     @GetMapping("getExamDetailByTaskId")
