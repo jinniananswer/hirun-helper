@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.microtomato.hirun.modules.college.task.entity.dto.*;
 import com.microtomato.hirun.modules.college.task.entity.po.CollegeEmployeeTask;
+import com.microtomato.hirun.modules.college.task.entity.po.CollegeEmployeeTaskTutor;
 import com.microtomato.hirun.modules.organization.entity.dto.SimpleEmployeeDTO;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -51,4 +52,6 @@ public interface ICollegeEmployeeTaskService extends IService<CollegeEmployeeTas
     List<CollegeEmployeeTask> queryByStudyTaskId(String studyTaskId);
 
     void clearTaskInfoByTaskIdList(List<Long> taskIdList, String answerTaskType);
+
+    List<CollegeEmployeeTaskTutor> queryLoginEmployeeCommentTaskInfo();
 }

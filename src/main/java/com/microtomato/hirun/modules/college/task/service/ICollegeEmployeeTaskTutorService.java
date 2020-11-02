@@ -18,4 +18,6 @@ public interface ICollegeEmployeeTaskTutorService extends IService<CollegeEmploy
     List<CollegeEmployeeTaskTutor> queryEffectiveByTaskId(String taskId);
 
     void addByTaskIdAndSelectTutor(String taskId, String selectTutor);
+
+    List<CollegeEmployeeTaskTutor> queryEffectiveByTutorId(String tutorId);
 }

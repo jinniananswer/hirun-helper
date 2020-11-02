@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeExamCfg;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeExamRelCfg;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeStudyTaskCfg;
@@ -15,11 +16,9 @@ import com.microtomato.hirun.modules.college.config.service.ICollegeStudyTaskCfg
 import com.microtomato.hirun.modules.college.task.entity.dto.*;
 import com.microtomato.hirun.modules.college.task.entity.po.CollegeEmployeeTask;
 import com.microtomato.hirun.modules.college.task.entity.po.CollegeEmployeeTaskScore;
+import com.microtomato.hirun.modules.college.task.entity.po.CollegeEmployeeTaskTutor;
 import com.microtomato.hirun.modules.college.task.entity.po.CollegeStudyTopicRel;
-import com.microtomato.hirun.modules.college.task.service.ICollegeEmployeeTaskScoreService;
-import com.microtomato.hirun.modules.college.task.service.ICollegeEmployeeTaskService;
-import com.microtomato.hirun.modules.college.task.service.ICollegeStudyTopicRelService;
-import com.microtomato.hirun.modules.college.task.service.ITaskDomainOpenService;
+import com.microtomato.hirun.modules.college.task.service.*;
 import com.microtomato.hirun.modules.college.topic.entity.dto.TopicServiceDTO;
 import com.microtomato.hirun.modules.college.topic.entity.po.CollegeTopicLabelRel;
 import com.microtomato.hirun.modules.college.topic.service.ICollegeTopicLabelRelService;
@@ -40,6 +39,7 @@ import org.thymeleaf.util.ListUtils;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -89,6 +89,9 @@ public class CollegeEmployeeTaskController {
 
     @Autowired
     private ICollegeExamCfgService collegeExamCfgServiceImpl;
+
+    @Autowired
+    private ICollegeTaskExperienceService collegeTaskExperienceServiceImpl;
 
     /**
      * 分页查询所有数据
@@ -619,6 +622,114 @@ public class CollegeEmployeeTaskController {
         response.setTaskId(taskId);
         response.setTaskTopics(topics);
         return response;
+    }
+
+    /**
+     * 获取登陆员工点评任务
+     * @return
+     */
+    @GetMapping("queryLoginEmployeeCommentTaskInfo")
+    @RestResult
+    public CollegeLoginCommentTaskInfoResponseDTO queryLoginEmployeeCommentTaskInfo() {
+        CollegeLoginCommentTaskInfoResponseDTO result = new CollegeLoginCommentTaskInfoResponseDTO();
+        List<CollegeEmployeeTaskTutor> collegeEmployeeTaskTutors = this.collegeEmployeeTaskService.queryLoginEmployeeCommentTaskInfo();
+        List<CollegeTaskCommentDetailResponseDTO> noComment = new ArrayList<>();
+        List<CollegeTaskCommentDetailResponseDTO> finishComment = new ArrayList<>();
+        if (ArrayUtils.isNotEmpty(collegeEmployeeTaskTutors)){
+            for (CollegeEmployeeTaskTutor collegeEmployeeTaskTutor : collegeEmployeeTaskTutors) {
+                String taskId = collegeEmployeeTaskTutor.getTaskId();
+                CollegeEmployeeTask collegeEmployeeTask = this.collegeEmployeeTaskService.getById(Long.valueOf(taskId));
+                if (null != collegeEmployeeTask){
+                    LocalDateTime taskCompleteDate = collegeEmployeeTask.getTaskCompleteDate();
+                    //只展示已经完成的任务
+                    if (null == taskCompleteDate){
+                        continue;
+                    }
+                    String studyTaskId = collegeEmployeeTask.getStudyTaskId();
+                    CollegeStudyTaskCfg collegeStudyTaskCfg = this.collegeStudyTaskCfgServiceImpl.getEffectiveByStudyTaskId(Long.valueOf(studyTaskId));
+                    if (null != collegeStudyTaskCfg){
+                        //只展示实践任务
+                        if (!StringUtils.equals("2", collegeStudyTaskCfg.getStudyType())){
+                            continue;
+                        }
+                        CollegeTaskCommentDetailResponseDTO collegeTaskCommentDetailResponseDTO = new CollegeTaskCommentDetailResponseDTO();
+                        collegeTaskCommentDetailResponseDTO.setTaskDesc(collegeStudyTaskCfg.getTaskDesc());
+                        collegeTaskCommentDetailResponseDTO.setTaskName(collegeStudyTaskCfg.getTaskName());
+                        collegeTaskCommentDetailResponseDTO.setTaskId(Long.valueOf(taskId));
+
+                        String employeeId = collegeEmployeeTask.getEmployeeId();
+                        collegeTaskCommentDetailResponseDTO.setEmployeeId(employeeId);
+                        String employeeName = this.employeeServiceImpl.getEmployeeNameEmployeeId(Long.valueOf(employeeId));
+                        collegeTaskCommentDetailResponseDTO.setEmployeeName(employeeName);
+                        CollegeEmployeeTaskScore collegeEmployeeTaskScore = collegeEmployeeTaskScoreServiceImpl.getByTaskId(taskId);
+                        boolean isFinish = false;
+                        if (null != collegeEmployeeTaskScore){
+                            Integer imgScore = collegeEmployeeTaskScore.getImgScore();
+                            Integer experienceScore = collegeEmployeeTaskScore.getExperienceScore();
+                            if (null != imgScore && null != experienceScore){
+                                isFinish = true;
+                            }
+                        }
+                        if (isFinish){
+                            finishComment.add(collegeTaskCommentDetailResponseDTO);
+                        }else {
+                            noComment.add(collegeTaskCommentDetailResponseDTO);
+                        }
+                    }
+                }
+            }
+        }
+        result.setFinishComment(finishComment);
+        result.setNoComment(noComment);
+        return result;
+    }
+
+    @GetMapping("queryTaskCommentInfoByTaskId")
+    @RestResult
+    public CollegeTaskCommentInfoResponseDTO queryTaskCommentInfoByTaskId(@RequestParam("taskId") Long taskId){
+        CollegeTaskCommentInfoResponseDTO result = new CollegeTaskCommentInfoResponseDTO();
+        LocalDateTime nowTime = TimeUtils.getCurrentLocalDateTime();
+        CollegeEmployeeTask collegeEmployeeTask = this.collegeEmployeeTaskService.getById(taskId);
+        if (null != collegeEmployeeTask){
+            BeanUtils.copyProperties(collegeEmployeeTask, result);
+            String studyTaskId = collegeEmployeeTask.getStudyTaskId();
+            CollegeStudyTaskCfg collegeStudyTaskCfg = this.collegeStudyTaskCfgServiceImpl.getEffectiveByStudyTaskId(Long.valueOf(studyTaskId));
+            if (null != collegeStudyTaskCfg){
+                String employeeId = collegeEmployeeTask.getEmployeeId();
+                result.setEmployeeId(employeeId);
+                String employeeName = this.employeeServiceImpl.getEmployeeNameEmployeeId(Long.valueOf(employeeId));
+                result.setEmployeeName(employeeName);
+                CollegeEmployeeTaskScore collegeEmployeeTaskScore = collegeEmployeeTaskScoreServiceImpl.getByTaskId(String.valueOf(taskId));
+                if (null != collegeEmployeeTaskScore){
+                    Integer imgScore = collegeEmployeeTaskScore.getImgScore();
+                    Integer experienceScore = collegeEmployeeTaskScore.getExperienceScore();
+                    if (null != imgScore && null != experienceScore){
+                        result.setImgScore(imgScore);
+                        result.setExperienceScore(experienceScore);
+                    }
+                }
+                Boolean isDelayFlag = false;
+                LocalDateTime studyEndDate = result.getStudyEndDate();
+                LocalDateTime taskCompleteDate = result.getTaskCompleteDate();
+                if(TimeUtils.compareTwoTime(studyEndDate, taskCompleteDate) < 0){
+                    isDelayFlag = true;
+                }
+                result.setIsDelayFlag(isDelayFlag);
+                CollegeTaskExperienceScoreResponseDTO collegeTaskExperienceScoreResponseDTO = this.collegeTaskExperienceServiceImpl.queryByTaskId(String.valueOf(taskId));
+                if(null != collegeTaskExperienceScoreResponseDTO){
+                    result.setExperience(collegeTaskExperienceScoreResponseDTO.getWrittenExperience());
+                    List<CollegeTaskExperienceImgResponseDTO> imgExperienceList = collegeTaskExperienceScoreResponseDTO.getImgExperienceList();
+                    if(ArrayUtils.isNotEmpty(imgExperienceList)){
+                        List<String> fileList = new ArrayList<>();
+                        for (CollegeTaskExperienceImgResponseDTO collegeTaskExperienceImgResponseDTO : imgExperienceList) {
+                            fileList.add(collegeTaskExperienceImgResponseDTO.getFileUrl());
+                        }
+                        result.setFileList(fileList);
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     /**

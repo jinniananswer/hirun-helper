@@ -448,7 +448,13 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
             result.setTaskName(collegeStudyTaskCfg.getTaskName());
             result.setTaskDesc(collegeStudyTaskCfg.getTaskDesc());
             LocalDateTime studyEndDate = result.getStudyEndDate();
-            if (TimeUtils.compareTwoTime(studyEndDate, nowTime) < 0){
+            LocalDateTime taskCompleteDate = result.getTaskCompleteDate();
+            //如果任务已完成，判断完成时间
+            if (null != taskCompleteDate){
+                if(TimeUtils.compareTwoTime(studyEndDate, taskCompleteDate) < 0){
+                    isDelayFlag = true;
+                }
+            }else if (TimeUtils.compareTwoTime(studyEndDate, nowTime) < 0){
                 isDelayFlag = true;
             }
             String studyType = collegeStudyTaskCfg.getStudyType();
@@ -470,6 +476,12 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
                         if (null == minNum || (null != minNum && null != exercisesCompletedNumber && minNum <= exercisesCompletedNumber)){
                             isExamFlag = true;
                         }
+                    }
+                }else if (StringUtils.equals("3", studyType)){
+                    //是否有习题
+                    CollegeExamCfg exercisesCfg = collegeExamCfgServiceImpl.getByStudyTaskIdAndExamType(studyTaskId, "0");
+                    if (null != exercisesCfg){
+                        isExerciseFlag = true;
                     }
                 }
 
@@ -547,9 +559,9 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
             result.setExperience(collegeTaskExperienceScoreResponseDTO.getWrittenExperience());
             List<CollegeTaskExperienceImgResponseDTO> imgExperienceList = collegeTaskExperienceScoreResponseDTO.getImgExperienceList();
             if(ArrayUtils.isNotEmpty(imgExperienceList)){
-                List<CollegeTaskExperienceImgResponseDTO> fileList = new ArrayList<>();
+                List<String> fileList = new ArrayList<>();
                 for (CollegeTaskExperienceImgResponseDTO collegeTaskExperienceImgResponseDTO : imgExperienceList) {
-                    fileList.add(collegeTaskExperienceImgResponseDTO);
+                    fileList.add(collegeTaskExperienceImgResponseDTO.getFileUrl());
                 }
                 result.setFileList(fileList);
             }
@@ -627,6 +639,17 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
                 .set(CollegeEmployeeTask::getStudyEndDate, lastSecondDay)
                 .in(CollegeEmployeeTask::getTaskId, taskIdList)
                 .eq(CollegeEmployeeTask::getStatus, "0"));
+    }
+
+    @Override
+    public List<CollegeEmployeeTaskTutor> queryLoginEmployeeCommentTaskInfo() {
+        CollegeLoginCommentTaskInfoResponseDTO result = new CollegeLoginCommentTaskInfoResponseDTO();
+        UserContext userContext = WebContextUtils.getUserContext();
+        if (userContext == null) {
+            userContext = UserContextUtils.getUserContext();
+        }
+        Long employeeId = userContext.getEmployeeId();
+        return collegeEmployeeTaskTutorServiceImpl.queryEffectiveByTutorId(String.valueOf(employeeId));
     }
 
     private List<CollegeEmployeeTaskTypeFinishDetailsRequestDTO> taskClassification(List<CollegeEmployeeTaskDetailResponseDTO> taskList){

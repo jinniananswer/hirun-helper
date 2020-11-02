@@ -46,4 +46,10 @@ public class CollegeEmployeeTaskTutorServiceImpl extends ServiceImpl<CollegeEmpl
             this.save(collegeEmployeeTaskTutor);
         }
     }
+
+    @Override
+    public List<CollegeEmployeeTaskTutor> queryEffectiveByTutorId(String tutorId) {
+        return this.list(Wrappers.<CollegeEmployeeTaskTutor>lambdaQuery().eq(CollegeEmployeeTaskTutor::getTutorId, tutorId)
+                .eq(CollegeEmployeeTaskTutor::getStatus, "0"));
+    }
 }

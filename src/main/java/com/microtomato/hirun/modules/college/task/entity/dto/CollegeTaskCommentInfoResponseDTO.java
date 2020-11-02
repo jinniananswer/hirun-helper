@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-public class CollegeEmployTaskInfoResponseDTO {
+public class CollegeTaskCommentInfoResponseDTO {
 
     private String studyTaskId;
 
@@ -15,39 +15,27 @@ public class CollegeEmployTaskInfoResponseDTO {
 
     private String taskName;
 
+    private String employeeId;
+
+    private String employeeName;
+
+    private Long taskId;
+
     private Boolean isDelayFlag;
 
     private String taskDesc;
-
-    private String studyType;
 
     private LocalDateTime studyStartDate;
 
     private LocalDateTime studyEndDate;
 
-    private Boolean isExerciseFlag;
-
-    private Boolean isExamFlag;
-
-    private Double taskProgress;
-
-    private Double taskTimeProgress;
-
-    private LocalDateTime sysdate;
-
-    private Boolean isSelectTutorFlag;
-
-    private String selectTutor;
-
     private LocalDateTime taskCompleteDate;
 
-    private Integer taskDifficultyScore;
+    private Integer experienceScore;
 
-    private Integer tutorScore;
+    private Integer imgScore;
 
     private String experience;
 
     private List<String> fileList;
-
-    private List<CollegeTaskStudyContentResponseDTO> taskStudyContentList;
 }
