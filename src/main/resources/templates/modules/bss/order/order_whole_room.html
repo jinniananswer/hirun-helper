@@ -125,7 +125,7 @@
                                     </el-button>
 
                                     <el-dropdown-menu  v-if="!isAudit" slot="dropdown">
-                                        <el-dropdown-item v-if="isShow&&!isBackToDesigner" command="submitToAuditPicturesFlow">不做场景，提交审图</el-dropdown-item>
+                                        <el-dropdown-item command="submitToAuditPicturesFlow">不做场景，提交审图</el-dropdown-item>
                                         <el-dropdown-item v-if="isShow&&!isBackToDesigner" command="submitToConfirmFlow">等待客户确认全房图</el-dropdown-item>
                                         <el-dropdown-item v-if="!isBackToDesigner"command="submitCancelDesignExpensesFlow">退设计费</el-dropdown-item>
                                         <el-dropdown-item  v-if="isShow&&!isBackToDesigner" command="submitToWholeRoomDelayTimeFlow">申请延迟出全房图时间</el-dropdown-item>
