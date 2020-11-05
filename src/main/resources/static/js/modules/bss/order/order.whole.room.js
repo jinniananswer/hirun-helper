@@ -63,7 +63,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
 
             handleCommand : function(command) {
                 if ( command == 'submitToAuditPicturesFlow') {
-                    this.$confirm('确定要执行[不做场景，提交审图]吗?', '提示', {
+                    this.$confirm('确定要执行[提交审图]吗?', '提示', {
                         confirmButtonText: '确定',
                         cancelButtonText: '取消',
                         type: 'warning'
