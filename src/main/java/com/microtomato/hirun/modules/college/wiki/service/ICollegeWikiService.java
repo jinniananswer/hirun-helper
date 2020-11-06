@@ -1,6 +1,8 @@
 package com.microtomato.hirun.modules.college.wiki.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.microtomato.hirun.modules.college.wiki.entity.dto.WikiDetailServiceDTO;
+import com.microtomato.hirun.modules.college.wiki.entity.dto.WikiServiceDTO;
 import com.microtomato.hirun.modules.college.wiki.entity.po.CollegeWiki;
 
 import java.util.List;
@@ -15,4 +17,7 @@ import java.util.List;
 public interface ICollegeWikiService extends IService<CollegeWiki> {
     List<CollegeWiki> queryByText(String keyStr);
 
+    List<WikiServiceDTO> queryWikiByType(String wikiType);
+
+    WikiDetailServiceDTO getDetailByWikiId(Long wikiId);
 }

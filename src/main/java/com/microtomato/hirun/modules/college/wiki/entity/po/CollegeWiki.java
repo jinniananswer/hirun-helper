@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
  *
  * @author huanghua@asiainfo.com
  * @version 1.0.0
- * @date 2020-10-28 05:59:36
+ * @date 2020-11-05 13:14:24
  */
 @Data
 @Builder
@@ -59,5 +59,13 @@ public class CollegeWiki extends BaseEntity {
 
     @TableField(value = "wiki_type")
     private String wikiType;
+
+
+    @TableField(value = "thumbs_up")
+    private Long thumbsUp;
+
+
+    @TableField(value = "author")
+    private Long author;
 
 }

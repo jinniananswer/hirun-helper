@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
  *
  * @author huanghua@asiainfo.com
  * @version 1.0.0
- * @date 2020-10-28 02:20:48
+ * @date 2020-11-05 13:13:52
  */
 @Data
 @Builder
@@ -55,5 +55,9 @@ public class CollegeWikiReply extends BaseEntity {
 
     @TableField(value = "status")
     private String status;
+
+
+    @TableField(value = "thumbs_up")
+    private Long thumbsUp;
 
 }
