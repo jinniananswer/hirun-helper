@@ -3,6 +3,8 @@ package com.microtomato.hirun.modules.college.wiki.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.microtomato.hirun.modules.college.wiki.entity.po.CollegeWikiReply;
 
+import java.util.List;
+
 /**
  * (CollegeWikiReply)表服务接口
  *
@@ -12,4 +14,5 @@ import com.microtomato.hirun.modules.college.wiki.entity.po.CollegeWikiReply;
  */
 public interface ICollegeWikiReplyService extends IService<CollegeWikiReply> {
 
+    List<CollegeWikiReply> queryByWikiId(Long wikiId);
 }

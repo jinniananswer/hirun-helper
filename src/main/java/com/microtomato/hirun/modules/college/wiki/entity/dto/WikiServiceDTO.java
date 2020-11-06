@@ -4,10 +4,12 @@ import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.microtomato.hirun.modules.college.wiki.entity.po.CollegeWiki;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @author huanghua
@@ -16,20 +18,10 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 public class WikiServiceDTO {
-    private Long wikiId;
-
-    private String wikiTitle;
-
-    private String wikiContent;
-
-    private LocalDateTime createTime;
-
-    private String status;
-
-    private Long clicks;
-
-    private Long thumbsUp;
 
     private String wikiType;
 
+    private String wikiTypeName;
+
+    private List<CollegeWiki> wikiList;
 }

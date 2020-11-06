@@ -5,8 +5,13 @@ package com.microtomato.hirun.modules.college.wiki.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.framework.util.UserContextUtils;
+import com.microtomato.hirun.modules.college.wiki.entity.dto.WikiDetailServiceDTO;
 import com.microtomato.hirun.modules.college.wiki.entity.dto.WikiServiceDTO;
+import com.microtomato.hirun.modules.college.wiki.entity.po.CollegeWikiReply;
+import com.microtomato.hirun.modules.college.wiki.service.ICollegeWikiReplyService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +22,7 @@ import com.microtomato.hirun.modules.college.wiki.service.ICollegeWikiService;
 import com.microtomato.hirun.framework.annotation.RestResult;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +42,9 @@ public class CollegeWikiController {
      */
     @Autowired
     private ICollegeWikiService collegeWikiService;
+
+    @Autowired
+    private ICollegeWikiReplyService collegeWikiReplyService;
 
     /**
      * 分页查询所有数据
@@ -115,5 +124,32 @@ public class CollegeWikiController {
                 .clicks(0L)
                 .wikiType(wikiType.substring(wikiType.indexOf("[") + 1, wikiType.indexOf("]"))).build();
         this.collegeWikiService.save(wiki);
+    }
+
+    @GetMapping("queryWikiByType")
+    @RestResult
+    public List<WikiServiceDTO> queryWikiByType(@RequestParam("wikiType") String wikiType) {
+        return this.collegeWikiService.queryWikiByType(wikiType);
+    }
+
+    @GetMapping("getDetailByWikiId")
+    @RestResult
+    public WikiDetailServiceDTO getDetailByWikiId(@RequestParam("wikiId") Long wikiId) {
+        return this.collegeWikiService.getDetailByWikiId(wikiId);
+    }
+
+    @PostMapping("replyWiki")
+    @RestResult
+    public void replyWiki(@RequestParam("wikiId") Long wikiId, @RequestParam("replyContent") String replyContent) {
+        UserContext context = UserContextUtils.getUserContext();
+        CollegeWikiReply reply = CollegeWikiReply.builder()
+                .wikiId(wikiId)
+                .replyContent(replyContent)
+                .status("0")
+                .thumbsUp(0L)
+                .replyTime(LocalDateTime.now())
+                .respondent(context.getEmployeeId()).build();
+
+        collegeWikiReplyService.save(reply);
     }
 }
