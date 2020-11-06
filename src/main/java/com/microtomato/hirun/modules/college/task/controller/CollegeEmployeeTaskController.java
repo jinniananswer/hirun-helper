@@ -718,14 +718,8 @@ public class CollegeEmployeeTaskController {
                 CollegeTaskExperienceScoreResponseDTO collegeTaskExperienceScoreResponseDTO = this.collegeTaskExperienceServiceImpl.queryByTaskId(String.valueOf(taskId));
                 if(null != collegeTaskExperienceScoreResponseDTO){
                     result.setExperience(collegeTaskExperienceScoreResponseDTO.getWrittenExperience());
-                    List<CollegeTaskExperienceImgResponseDTO> imgExperienceList = collegeTaskExperienceScoreResponseDTO.getImgExperienceList();
-                    if(ArrayUtils.isNotEmpty(imgExperienceList)){
-                        List<String> fileList = new ArrayList<>();
-                        for (CollegeTaskExperienceImgResponseDTO collegeTaskExperienceImgResponseDTO : imgExperienceList) {
-                            fileList.add(collegeTaskExperienceImgResponseDTO.getFileUrl());
-                        }
-                        result.setFileList(fileList);
-                    }
+                    result.setFileList(collegeTaskExperienceScoreResponseDTO.getImgExperienceList());
+                    result.setExperienceImgList(collegeTaskExperienceScoreResponseDTO.getExperienceDescImgList());
                 }
             }
         }

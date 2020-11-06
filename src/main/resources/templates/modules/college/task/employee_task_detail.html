@@ -439,16 +439,28 @@
                             </el-tab-pane>
                         </el-tabs>
                         <el-tabs v-model="subTaskExperienceActiveTab" type="border-card">
-                            <el-tab-pane label="文字心得" name="writtenInfo">
-                                <div>
+                            <el-tab-pane label="心得描述" name="writtenInfo">
+                                <div :span="20">
                                     <el-input
                                         type="textarea"
                                         autosize
                                         :disabled="true"
-                                        :autosize="{ minRows: 10, maxRows: 20}"
+                                        :autosize="{ minRows: 5, maxRows: 10}"
                                         size="medium"
                                         v-model="writtenExperience">
                                     </el-input>
+                                    <el-row>
+
+                                    </el-row>
+                                    <el-row :gutter="5" v-if="undefined != experienceImgList && experienceImgList != [] && experienceImgList.length > 0">
+                                        <el-col :span="3" v-for="item in experienceImgList">
+                                            <el-image
+                                                style="width: 100px; height: 100px"
+                                                :src="item"
+                                                :preview-src-list="experienceImgList">
+                                            </el-image>
+                                        </el-col>
+                                    </el-row>
                                 </div>
                             </el-tab-pane>
                             <el-tab-pane label="任务图片" name="imgInfo">

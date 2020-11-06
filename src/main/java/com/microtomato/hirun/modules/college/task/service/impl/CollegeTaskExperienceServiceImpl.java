@@ -46,39 +46,64 @@ public class CollegeTaskExperienceServiceImpl extends ServiceImpl<CollegeTaskExp
                 .eq(CollegeTaskExperience::getStatus, "0"));
         if (ArrayUtils.isNotEmpty(list)){
             String writtenExperience = "";
-            List<CollegeTaskExperienceImgResponseDTO> imgExperienceList = new ArrayList<>();
+            List<String> imgExperienceList = new ArrayList<>();
+            List<String> experienceDescImgList = new ArrayList<>();
             for (CollegeTaskExperience collegeTaskExperience : list){
                 if (StringUtils.equals("0", collegeTaskExperience.getExperienceType())){
-                    writtenExperience = collegeTaskExperience.getExperienceContent();
+                    if (StringUtils.equals("0", collegeTaskExperience.getDescType())){
+                        writtenExperience = collegeTaskExperience.getExperienceContent();
+                    }else if (StringUtils.equals("1", collegeTaskExperience.getDescType())){
+                        String fileId = collegeTaskExperience.getExperienceContent();
+                        UploadFile uploadFile = uploadFileServiceImpl.getByFileId(fileId);
+                        if (null != uploadFile){
+                            String fileUrl = uploadFileServiceImpl.getDisplayPath(fileId);
+                            experienceDescImgList.add(fileUrl);
+                        }
+                    }
                 }else if (StringUtils.equals("1", collegeTaskExperience.getExperienceType())){
                     String fileId = collegeTaskExperience.getExperienceContent();
                     UploadFile uploadFile = uploadFileServiceImpl.getByFileId(fileId);
                     if (null != uploadFile){
-                        CollegeTaskExperienceImgResponseDTO collegeTaskExperienceImgResponseDTO = new CollegeTaskExperienceImgResponseDTO();
-                        collegeTaskExperienceImgResponseDTO.setFileId(fileId);
                         String fileUrl = uploadFileServiceImpl.getDisplayPath(fileId);
-                        collegeTaskExperienceImgResponseDTO.setFileUrl(fileUrl);
-                        imgExperienceList.add(collegeTaskExperienceImgResponseDTO);
+                        imgExperienceList.add(fileUrl);
                     }
                 }
             }
             requetDTO.setImgExperienceList(imgExperienceList);
             requetDTO.setWrittenExperience(writtenExperience);
+            requetDTO.setExperienceDescImgList(experienceDescImgList);
         }
         return requetDTO;
     }
 
     @Override
-    public void addExperience(Long taskId, String experience, List<String> fileIdList, LocalDateTime now) {
+    public void addExperience(Long taskId, String experience, List<String> fileIdList, List<String> experienceImgList, LocalDateTime now) {
         List<CollegeTaskExperience> entityList = new ArrayList<>();
-        CollegeTaskExperience experienceEntity = new CollegeTaskExperience();
-        experienceEntity.setTaskId(String.valueOf(taskId));
-        experienceEntity.setExperienceType("0");
-        experienceEntity.setExperienceContent(experience);
-        experienceEntity.setStatus("0");
-        experienceEntity.setCreateTime(now);
-        experienceEntity.setUpdateTime(now);
-        entityList.add(experienceEntity);
+        if (StringUtils.isNotEmpty(experience)){
+            CollegeTaskExperience experienceEntity = new CollegeTaskExperience();
+            experienceEntity.setTaskId(String.valueOf(taskId));
+            experienceEntity.setExperienceType("0");
+            experienceEntity.setExperienceContent(experience);
+            experienceEntity.setStatus("0");
+            experienceEntity.setDescType("0");
+            experienceEntity.setCreateTime(now);
+            experienceEntity.setUpdateTime(now);
+            entityList.add(experienceEntity);
+        }
+
+        if (ArrayUtils.isNotEmpty(experienceImgList)){
+            for (String fileId : experienceImgList) {
+                CollegeTaskExperience fileEntity = new CollegeTaskExperience();
+                fileEntity.setTaskId(String.valueOf(taskId));
+                fileEntity.setExperienceType("0");
+                fileEntity.setExperienceContent(fileId);
+                fileEntity.setStatus("0");
+                fileEntity.setDescType("1");
+                fileEntity.setCreateTime(now);
+                fileEntity.setUpdateTime(now);
+                entityList.add(fileEntity);
+            }
+        }
 
         for (String fileId : fileIdList) {
             CollegeTaskExperience fileEntity = new CollegeTaskExperience();

@@ -13,5 +13,7 @@ public class CollegeTaskExamDetailResponseDTO {
 
     private String examDesc;
 
+    private Boolean topicFlag;
+
     private List<ExamTopicResponseDTO> examTopicList;
 }

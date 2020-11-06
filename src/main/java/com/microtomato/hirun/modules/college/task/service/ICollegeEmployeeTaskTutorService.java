@@ -15,7 +15,7 @@ import java.util.List;
  */
 public interface ICollegeEmployeeTaskTutorService extends IService<CollegeEmployeeTaskTutor> {
 
-    List<CollegeEmployeeTaskTutor> queryEffectiveByTaskId(String taskId);
+    CollegeEmployeeTaskTutor getEffectiveByTaskId(String taskId);
 
     void addByTaskIdAndSelectTutor(String taskId, String selectTutor);
 

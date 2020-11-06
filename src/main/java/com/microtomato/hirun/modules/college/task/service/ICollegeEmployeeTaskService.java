@@ -54,4 +54,6 @@ public interface ICollegeEmployeeTaskService extends IService<CollegeEmployeeTas
     void clearTaskInfoByTaskIdList(List<Long> taskIdList, String answerTaskType);
 
     List<CollegeEmployeeTaskTutor> queryLoginEmployeeCommentTaskInfo();
+
+    List<CollegeEmployeeTask> queryAllTaskByDelay();
 }

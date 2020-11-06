@@ -15,4 +15,6 @@ import java.util.List;
 public interface ICollegeTopicLabelRelService extends IService<CollegeTopicLabelRel> {
 
     List<CollegeTopicLabelRel> queryEffectiveByLabelId(Long labelId);
+
+    List<CollegeTopicLabelRel> queryEffectiveByLabelIdList(List<Long> labelIdList);
 }

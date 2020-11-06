@@ -30,4 +30,11 @@ public class CollegeTopicLabelRelServiceImpl extends ServiceImpl<CollegeTopicLab
                 .eq(CollegeTopicLabelRel::getLabelId, labelId)
                 .eq(CollegeTopicLabelRel::getStatus, "0"));
     }
+
+    @Override
+    public List<CollegeTopicLabelRel> queryEffectiveByLabelIdList(List<Long> labelIdList) {
+        return this.list(new QueryWrapper<CollegeTopicLabelRel>().lambda()
+                .in(CollegeTopicLabelRel::getLabelId, labelIdList)
+                .eq(CollegeTopicLabelRel::getStatus, "0"));
+    }
 }

@@ -538,10 +538,9 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
         result.setTaskStudyContentList(taskStudyContentList);
         result.setSysdate(nowTime);
 
-        List<CollegeEmployeeTaskTutor> collegeEmployeeTaskTutorList = collegeEmployeeTaskTutorServiceImpl.queryEffectiveByTaskId(String.valueOf(taskId));
-        if (ArrayUtils.isNotEmpty(collegeEmployeeTaskTutorList)){
+        CollegeEmployeeTaskTutor collegeEmployeeTaskTutor = collegeEmployeeTaskTutorServiceImpl.getEffectiveByTaskId(String.valueOf(taskId));
+        if (null != collegeEmployeeTaskTutor){
             isSelectTutorFlag = false;
-            CollegeEmployeeTaskTutor collegeEmployeeTaskTutor = collegeEmployeeTaskTutorList.get(0);
             String tutorId = collegeEmployeeTaskTutor.getTutorId();
             String employeeName = employeeServiceImpl.getEmployeeNameEmployeeId(Long.valueOf(tutorId));
             result.setSelectTutor("[" + tutorId + "]" + employeeName);
@@ -557,14 +556,8 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
         CollegeTaskExperienceScoreResponseDTO collegeTaskExperienceScoreResponseDTO = this.collegeTaskExperienceServiceImpl.queryByTaskId(String.valueOf(taskId));
         if(null != collegeTaskExperienceScoreResponseDTO){
             result.setExperience(collegeTaskExperienceScoreResponseDTO.getWrittenExperience());
-            List<CollegeTaskExperienceImgResponseDTO> imgExperienceList = collegeTaskExperienceScoreResponseDTO.getImgExperienceList();
-            if(ArrayUtils.isNotEmpty(imgExperienceList)){
-                List<String> fileList = new ArrayList<>();
-                for (CollegeTaskExperienceImgResponseDTO collegeTaskExperienceImgResponseDTO : imgExperienceList) {
-                    fileList.add(collegeTaskExperienceImgResponseDTO.getFileUrl());
-                }
-                result.setFileList(fileList);
-            }
+            result.setExperienceImgList(collegeTaskExperienceScoreResponseDTO.getExperienceDescImgList());
+            result.setFileList(collegeTaskExperienceScoreResponseDTO.getImgExperienceList());
         }
         return result;
     }
@@ -650,6 +643,15 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
         }
         Long employeeId = userContext.getEmployeeId();
         return collegeEmployeeTaskTutorServiceImpl.queryEffectiveByTutorId(String.valueOf(employeeId));
+    }
+
+    @Override
+    public List<CollegeEmployeeTask> queryAllTaskByDelay() {
+        LocalDateTime now = TimeUtils.getCurrentLocalDateTime();
+        return this.list(Wrappers.<CollegeEmployeeTask>lambdaQuery()
+                .isNull(CollegeEmployeeTask::getTaskCompleteDate)
+                .lt(CollegeEmployeeTask::getStudyEndDate, now)
+                .eq(CollegeEmployeeTask::getStatus, "0"));
     }
 
     private List<CollegeEmployeeTaskTypeFinishDetailsRequestDTO> taskClassification(List<CollegeEmployeeTaskDetailResponseDTO> taskList){

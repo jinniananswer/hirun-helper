@@ -16,7 +16,11 @@ import com.microtomato.hirun.modules.college.config.service.ICollegeStudyTaskCfg
 import com.microtomato.hirun.modules.college.task.entity.dto.CollegeTaskExamDetailResponseDTO;
 import com.microtomato.hirun.modules.college.task.entity.dto.ExamTopicResponseDTO;
 import com.microtomato.hirun.modules.college.task.entity.po.CollegeEmployeeTask;
+import com.microtomato.hirun.modules.college.task.entity.po.CollegeStudyTopicRel;
 import com.microtomato.hirun.modules.college.task.service.ICollegeEmployeeTaskService;
+import com.microtomato.hirun.modules.college.task.service.ICollegeStudyTopicRelService;
+import com.microtomato.hirun.modules.college.topic.entity.po.CollegeTopicLabelRel;
+import com.microtomato.hirun.modules.college.topic.service.ICollegeTopicLabelRelService;
 import com.microtomato.hirun.modules.organization.service.ICourseService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import com.microtomato.hirun.modules.system.service.IUploadFileService;
@@ -72,6 +76,11 @@ public class CollegeTaskScoreController {
     @Autowired
     private IStaticDataService staticDataServiceImpl;
 
+    @Autowired
+    private ICollegeStudyTopicRelService collegeStudyTopicRelServiceImpl;
+
+    @Autowired
+    private ICollegeTopicLabelRelService collegeTopicLabelRelServiceImpl;
     /**
      * 分页查询所有数据
      *
@@ -240,6 +249,25 @@ public class CollegeTaskScoreController {
                         examTopicList.add(examTopicResponseDTO);
                     }
                     responseDTO.setExamTopicList(examTopicList);
+
+                    String studyId = allByStudyTaskId.getStudyId();
+                    List<Long> labelIdList = new ArrayList<>();
+                    if (StringUtils.isNotEmpty(studyId)){
+                        List<CollegeStudyTopicRel> collegeStudyTopicRelList = collegeStudyTopicRelServiceImpl.getEffectiveByStudyId(studyId);
+                        if (ArrayUtils.isNotEmpty(collegeStudyTopicRelList)){
+                            for (CollegeStudyTopicRel collegeStudyTopicRel : collegeStudyTopicRelList) {
+                                Long labelId = collegeStudyTopicRel.getLabelId();
+                                labelIdList.add(labelId);
+                            }
+                        }
+                    }
+                    if (ArrayUtils.isNotEmpty(labelIdList)){
+                        List<CollegeTopicLabelRel> collegeTopicLabelRels = collegeTopicLabelRelServiceImpl.queryEffectiveByLabelIdList(labelIdList);
+                        if (ArrayUtils.isNotEmpty(collegeTopicLabelRels)){
+                            //responseDTO.setTopicFlag(true);
+                        }
+                    }
+
                 }
             }
         }

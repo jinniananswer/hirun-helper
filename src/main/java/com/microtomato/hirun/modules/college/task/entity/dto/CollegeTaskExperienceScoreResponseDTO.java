@@ -12,7 +12,9 @@ public class CollegeTaskExperienceScoreResponseDTO {
 
     private String writtenExperience;
 
-    private List<CollegeTaskExperienceImgResponseDTO> imgExperienceList;
+    private List<String> imgExperienceList;
+
+    private List<String> experienceDescImgList;
 
     private Integer taskScore;
 

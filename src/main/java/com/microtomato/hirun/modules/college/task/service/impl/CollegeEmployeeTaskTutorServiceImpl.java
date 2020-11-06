@@ -30,9 +30,9 @@ public class CollegeEmployeeTaskTutorServiceImpl extends ServiceImpl<CollegeEmpl
 
 
     @Override
-    public List<CollegeEmployeeTaskTutor> queryEffectiveByTaskId(String taskId) {
-        return this.list(Wrappers.<CollegeEmployeeTaskTutor>lambdaQuery().eq(CollegeEmployeeTaskTutor::getTaskId, taskId)
-                .eq(CollegeEmployeeTaskTutor::getStatus, "0"));
+    public CollegeEmployeeTaskTutor getEffectiveByTaskId(String taskId) {
+        return this.getOne(Wrappers.<CollegeEmployeeTaskTutor>lambdaQuery().eq(CollegeEmployeeTaskTutor::getTaskId, taskId)
+                .eq(CollegeEmployeeTaskTutor::getStatus, "0"), false);
     }
 
     @Override

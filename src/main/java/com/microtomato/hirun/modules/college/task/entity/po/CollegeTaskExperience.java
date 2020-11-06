@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
  *
  * @author makejava
  * @version 1.0.0
- * @date 2020-09-27 03:36:42
+ * @date 2020-11-04 03:51:32
  */
 @Data
 @Builder
@@ -45,6 +45,12 @@ public class CollegeTaskExperience extends BaseEntity {
      */
     @TableField(value = "experience_type")
     private String experienceType;
+
+    /**
+     * 描述类型:0-文字描述 1-图片描述
+     */
+    @TableField(value = "desc_type")
+    private String descType;
 
     /**
      * 状态

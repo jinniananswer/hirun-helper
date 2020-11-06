@@ -18,5 +18,5 @@ public interface ICollegeTaskExperienceService extends IService<CollegeTaskExper
 
     CollegeTaskExperienceScoreResponseDTO queryByTaskId(String taskId);
 
-    void addExperience(Long taskId, String experience, List<String> fileIdList, LocalDateTime now);
+    void addExperience(Long taskId, String experience, List<String> fileIdList, List<String> experienceImgList, LocalDateTime now);
 }

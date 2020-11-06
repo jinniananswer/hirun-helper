@@ -38,4 +38,6 @@ public class CollegeTaskCommentInfoResponseDTO {
     private String experience;
 
     private List<String> fileList;
+
+    private List<String> experienceImgList;
 }
