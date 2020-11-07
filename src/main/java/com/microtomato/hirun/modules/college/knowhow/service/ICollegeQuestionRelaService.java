@@ -24,4 +24,5 @@ public interface ICollegeQuestionRelaService extends IService<CollegeQuestionRel
      */
     List<CollegeQuestionRela> queryByEmployeeIdAndRelaType(Long employeeId, String relationType);
 
+    Long getEmployeeByQuestionId(Long questionId);
 }

@@ -17,4 +17,6 @@ public interface ITeacherService extends IService<Teacher> {
     List<Teacher> queryTeacher();
 
     Teacher getById(Long id);
+
+    List<Teacher> queryTeacherByIds(List<Long> teacherIds);
 }

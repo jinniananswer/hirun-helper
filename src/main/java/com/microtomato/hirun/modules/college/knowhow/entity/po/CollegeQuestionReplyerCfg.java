@@ -1,6 +1,5 @@
 package com.microtomato.hirun.modules.college.knowhow.entity.po;
 
-import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -16,11 +15,11 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 /**
- * (CollegeReply)表实体类
+ * (CollegeQuestionReplyerCfg)表实体类
  *
  * @author huanghua@asiainfo.com
  * @version 1.0.0
- * @date 2020-08-16 16:10:04
+ * @date 2020-11-07 13:29:05
  */
 @Data
 @Builder
@@ -28,37 +27,24 @@ import lombok.NoArgsConstructor;
 @Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("college_reply")
-public class CollegeReply extends BaseEntity {
+@TableName("college_question_replyer_cfg")
+public class CollegeQuestionReplyerCfg extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
     
-    @TableId(value = "reply_id", type = IdType.AUTO)
-    private Long replyId;
+    @TableId(value = "rel_id", type = IdType.AUTO)
+    private Long relId;
 
-    /** 问题ID */
-    @TableField(value = "question_id")
-    private Long questionId;
 
-    /** 回复内容 */
-    @TableField(value = "reply_content")
-    private String replyContent;
+    @TableField(value = "question_type")
+    private String questionType;
 
-    /** 解答人标识 */
-    @TableField(value = "respondent")
-    private Long respondent;
 
-    /** 回复时间 */
-    @TableField(value = "reply_time")
-    private LocalDateTime replyTime;
+    @TableField(value = "teacher_id")
+    private Long teacherId;
 
-    /** 状态 */
+
     @TableField(value = "status")
     private String status;
 
-    /**
-     * 点赞数
-     */
-    @TableField(value = "thumbs_up")
-    private Long thumbsUp;
 }

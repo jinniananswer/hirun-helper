@@ -1,8 +1,10 @@
 package com.microtomato.hirun.modules.college.knowhow.entity.dto;
 
-import lombok.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @author huanghua
@@ -10,7 +12,7 @@ import java.time.LocalDateTime;
  */
 @Data
 @NoArgsConstructor
-public class QuestionServiceDTO {
+public class CollegeQuestionServiceDTO {
 
     private Long questionId;
 
@@ -28,15 +30,11 @@ public class QuestionServiceDTO {
 
     private String approvedTag;
 
-    private String replyContent;
-
     private String cancelTag;
 
     private String questioner;
 
-    private String replyer;
-
     private LocalDateTime createTime;
 
-    private LocalDateTime replyTime;
+    private List<ReplyServiceDTO> replyInfos;
 }

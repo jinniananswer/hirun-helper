@@ -14,6 +14,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class ReplyServiceDTO {
 
+    private Long replyId;
+
     /** 回复内容 */
     private String replyContent;
 
@@ -25,4 +27,6 @@ public class ReplyServiceDTO {
 
     /** 解答人 */
     private String replyer;
+
+    private Long thumbsUp;
 }

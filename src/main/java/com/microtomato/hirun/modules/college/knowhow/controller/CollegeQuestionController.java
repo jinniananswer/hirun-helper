@@ -10,15 +10,10 @@ import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.UserContextUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.college.knowhow.consts.KnowhowConsts;
-import com.microtomato.hirun.modules.college.knowhow.entity.dto.CollegeQuestionOptionsDTO;
-import com.microtomato.hirun.modules.college.knowhow.entity.dto.QuestionInfoDTO;
-import com.microtomato.hirun.modules.college.knowhow.entity.dto.QuestionServiceDTO;
-import com.microtomato.hirun.modules.college.knowhow.entity.dto.ReplyServiceDTO;
+import com.microtomato.hirun.modules.college.knowhow.entity.dto.*;
 import com.microtomato.hirun.modules.college.knowhow.entity.po.CollegeQuestionRela;
 import com.microtomato.hirun.modules.college.knowhow.entity.po.CollegeReply;
-import com.microtomato.hirun.modules.college.knowhow.service.ICollegeKnowhowDomainService;
-import com.microtomato.hirun.modules.college.knowhow.service.ICollegeQuestionRelaService;
-import com.microtomato.hirun.modules.college.knowhow.service.ICollegeReplyService;
+import com.microtomato.hirun.modules.college.knowhow.service.*;
 import com.microtomato.hirun.modules.college.teacher.entity.po.Teacher;
 import com.microtomato.hirun.modules.college.teacher.service.ITeacherService;
 import com.microtomato.hirun.modules.system.entity.po.StaticData;
@@ -29,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.microtomato.hirun.modules.college.knowhow.entity.po.CollegeQuestion;
-import com.microtomato.hirun.modules.college.knowhow.service.ICollegeQuestionService;
 import com.microtomato.hirun.framework.annotation.RestResult;
 
 import java.io.Serializable;
@@ -67,6 +61,9 @@ public class CollegeQuestionController {
 
     @Autowired
     private IStaticDataService staticDataServiceImpl;
+
+    @Autowired
+    private ICollegeQuestionReplyerCfgService collegeQuestionReplyerCfgService;
 
     /**
      * 点赞
@@ -276,9 +273,14 @@ public class CollegeQuestionController {
 
     @GetMapping("queryQuestionTeacherOptions")
     @RestResult
-    public List<CollegeQuestionOptionsDTO> queryQuestionTeacherOptions(){
+    public List<CollegeQuestionOptionsDTO> queryQuestionTeacherOptions(@RequestParam("questionType") String questionType){
+        questionType = questionType.substring(questionType.indexOf("[") + 1, questionType.indexOf("]"));
         List<CollegeQuestionOptionsDTO> result = new ArrayList<>();
-        List<Teacher> teachers = teacherService.queryTeacher();
+        List<Long> teacherIds = collegeQuestionReplyerCfgService.queryTeacherByType(questionType);
+        List<Teacher> teachers = new ArrayList<>();
+        if (ArrayUtils.isNotEmpty(teacherIds)) {
+            teachers = teacherService.queryTeacherByIds(teacherIds);
+        }
         if (ArrayUtils.isNotEmpty(teachers)){
             for (Teacher teacher : teachers) {
                 CollegeQuestionOptionsDTO collegeQuestionOptionsDTO = new CollegeQuestionOptionsDTO();
@@ -332,5 +334,17 @@ public class CollegeQuestionController {
     @RestResult
     public List<QuestionInfoDTO> queryQuestionByQuestionType(@RequestParam("questionType") String questionType){
         return this.collegeQuestionService.queryQuestionByQuestionType(questionType);
+    }
+
+    @GetMapping("getQuestionById")
+    @RestResult
+    public CollegeQuestionServiceDTO getQuestionById(@RequestParam("questionId") Long questionId) {
+        return this.collegeQuestionService.getQuestionById(questionId);
+    }
+
+    @PostMapping("replyThumbsUp")
+    @RestResult
+    public void replyThumbsUp(@RequestParam("replyId") Long replyId, @RequestParam("cancelTag") String cancelTag) {
+        this.collegeReplyService.thumbsUpById(replyId, cancelTag);
     }
 }
