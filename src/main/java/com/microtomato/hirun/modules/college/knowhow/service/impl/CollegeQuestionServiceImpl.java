@@ -9,15 +9,21 @@ import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.UserContextUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.college.knowhow.consts.KnowhowConsts;
+import com.microtomato.hirun.modules.college.knowhow.entity.dto.CollegeQuestionServiceDTO;
 import com.microtomato.hirun.modules.college.knowhow.entity.dto.QuestionInfoDTO;
+import com.microtomato.hirun.modules.college.knowhow.entity.dto.ReplyServiceDTO;
 import com.microtomato.hirun.modules.college.knowhow.entity.po.CollegeQuestionRela;
+import com.microtomato.hirun.modules.college.knowhow.entity.po.CollegeReply;
 import com.microtomato.hirun.modules.college.knowhow.mapper.CollegeQuestionMapper;
 import com.microtomato.hirun.modules.college.knowhow.entity.po.CollegeQuestion;
 import com.microtomato.hirun.modules.college.knowhow.service.ICollegeQuestionRelaService;
 import com.microtomato.hirun.modules.college.knowhow.service.ICollegeQuestionService;
+import com.microtomato.hirun.modules.college.knowhow.service.ICollegeReplyService;
+import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import io.lettuce.core.dynamic.annotation.Key;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -44,6 +50,12 @@ public class CollegeQuestionServiceImpl extends ServiceImpl<CollegeQuestionMappe
 
     @Autowired
     private ICollegeQuestionRelaService collegeQuestionRelaServiceImpl;
+
+    @Autowired
+    private ICollegeReplyService collegeReplyService;
+
+    @Autowired
+    private IEmployeeService employeeService;
 
     @Override
     public CollegeQuestion getValidById(Long questionId) {
@@ -107,7 +119,8 @@ public class CollegeQuestionServiceImpl extends ServiceImpl<CollegeQuestionMappe
     @Override
     public List<QuestionInfoDTO> queryQuestionByName(String name) {
         List<QuestionInfoDTO> result = new ArrayList<>();
-        List<CollegeQuestion> list = this.list(Wrappers.<CollegeQuestion>lambdaQuery());
+        List<CollegeQuestion> list = this.list(Wrappers.<CollegeQuestion>lambdaQuery()
+                .eq(CollegeQuestion::getStatus, "4"));
         Map<String, List<CollegeQuestion>> questionMap = new HashMap<>();
         if (ArrayUtils.isNotEmpty(list)){
             for (CollegeQuestion collegeQuestion : list) {
@@ -187,7 +200,8 @@ public class CollegeQuestionServiceImpl extends ServiceImpl<CollegeQuestionMappe
     @Override
     public List<QuestionInfoDTO> queryQuestionByQuestionType(String questionType) {
         List<QuestionInfoDTO> result = new ArrayList<>();
-        List<CollegeQuestion> list = this.list(Wrappers.<CollegeQuestion>lambdaQuery().eq(CollegeQuestion::getQuestionType, questionType));
+        List<CollegeQuestion> list = this.list(Wrappers.<CollegeQuestion>lambdaQuery()
+                .eq(CollegeQuestion::getQuestionType, questionType));
         String questionTypeName = staticDataServiceImpl.getCodeName("QUESTION_TYPE", questionType);
         if (StringUtils.isEmpty(questionTypeName)){
             questionTypeName = questionType;
@@ -198,6 +212,31 @@ public class CollegeQuestionServiceImpl extends ServiceImpl<CollegeQuestionMappe
         questionInfoDTO.setQuestionList(list);
         result.add(questionInfoDTO);
         return result;
+    }
+
+    @Override
+    public CollegeQuestionServiceDTO getQuestionById(Long questionId) {
+        CollegeQuestionServiceDTO questionService = new CollegeQuestionServiceDTO();
+        CollegeQuestion question = this.getValidById(questionId);
+        if (null == question || null == question.getQuestionId()) {
+            return questionService;
+        }
+        BeanUtils.copyProperties(question, questionService);
+        List<ReplyServiceDTO> replyInfos = new ArrayList<>();
+        List<CollegeReply> replys = collegeReplyService.queryReplysByQuestionId(questionId);
+        if (ArrayUtils.isNotEmpty(replys)) {
+            replys.stream().forEach(x -> {
+                ReplyServiceDTO reply = new ReplyServiceDTO();
+                BeanUtils.copyProperties(x, reply);
+                reply.setReplyer(employeeService.getEmployeeNameEmployeeId(x.getRespondent()));
+                replyInfos.add(reply);
+            });
+        }
+
+        questionService.setReplyInfos(replyInfos);
+        Long questionerId = collegeQuestionRelaServiceImpl.getEmployeeByQuestionId(questionId);
+        questionService.setQuestioner(employeeService.getEmployeeNameEmployeeId(questionerId));
+        return questionService;
     }
 
 }

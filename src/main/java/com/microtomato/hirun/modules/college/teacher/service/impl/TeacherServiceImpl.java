@@ -33,4 +33,11 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
     public Teacher getById(Long id) {
         return this.getOne(new QueryWrapper<Teacher>().lambda().eq(Teacher::getId, id), false);
     }
+
+    @Override
+    public List<Teacher> queryTeacherByIds(List<Long> teacherIds) {
+        return this.list(new QueryWrapper<Teacher>().lambda()
+                .in(Teacher::getTeacherId, teacherIds)
+                .eq(Teacher::getStatus, "0"));
+    }
 }

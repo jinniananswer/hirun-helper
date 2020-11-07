@@ -3,6 +3,8 @@ package com.microtomato.hirun.modules.college.knowhow.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.microtomato.hirun.modules.college.knowhow.entity.po.CollegeReply;
 
+import java.util.List;
+
 /**
  * (CollegeReply)表服务接口
  *
@@ -19,6 +21,8 @@ public interface ICollegeReplyService extends IService<CollegeReply> {
      */
     CollegeReply queryReplyByQuestionId(Long questionId);
 
+    List<CollegeReply> queryReplysByQuestionId(Long questionId);
+
     /**
      * 回复内容入表
      * @param questionId
@@ -26,4 +30,11 @@ public interface ICollegeReplyService extends IService<CollegeReply> {
      * @param respondent
      */
     void insertReply(Long questionId, String replyContent, Long respondent);
+
+    /**
+     * 点赞
+     * @param replyId
+     * @param cancelTag
+     */
+    void thumbsUpById(Long replyId, String cancelTag);
 }

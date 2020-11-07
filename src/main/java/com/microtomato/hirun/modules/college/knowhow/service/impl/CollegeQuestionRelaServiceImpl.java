@@ -34,4 +34,13 @@ public class CollegeQuestionRelaServiceImpl extends ServiceImpl<CollegeQuestionR
                 .eq(StringUtils.isNotEmpty(relationType), CollegeQuestionRela::getRelationType, relationType)
                 .eq(CollegeQuestionRela::getStatus, KnowhowConsts.NORMAL_STATUS_VALID));
     }
+
+    @Override
+    public Long getEmployeeByQuestionId(Long questionId) {
+        CollegeQuestionRela rela = this.getOne(new QueryWrapper<CollegeQuestionRela>().lambda()
+                .eq(CollegeQuestionRela::getQuestionId, questionId)
+                .eq(CollegeQuestionRela::getRelationType, "0")
+                .eq(CollegeQuestionRela::getStatus, "1"));
+        return rela.getEmployeeId();
+    }
 }
