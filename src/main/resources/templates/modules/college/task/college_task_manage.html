@@ -301,6 +301,26 @@
                                 </el-transfer>
                             </template>
                         </el-row>
+                        <el-row :style="showEmployee">
+                            <el-col :span="8">
+                                <el-form-item label="员工信息:" label-width="100px" prop="">
+
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row :style="showEmployee" align="center">
+                            <template align="center">
+                                <el-transfer
+                                        filterable
+                                        :filter-method="filterJobRoleMethod"
+                                        filter-placeholder="请输入员工名称"
+                                        v-model="selectEmployeeInfos"
+                                        :data="employeeInfos"
+                                        :titles="['可选择员工', '已选择员工']"
+                                        :button-texts="['删除', '选择']">
+                                </el-transfer>
+                            </template>
+                        </el-row>
                        <!--  章节暂时屏蔽
                              <el-row :style="showTree">
                             <el-col :span="8">

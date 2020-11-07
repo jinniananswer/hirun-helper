@@ -3,6 +3,8 @@ package com.microtomato.hirun.modules.college.config.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.framework.mybatis.DataSourceKey;
+import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.modules.college.config.entity.dto.CollegeReleaseExamTaskDTO;
 import com.microtomato.hirun.modules.college.config.entity.dto.CollegeReleaseTaskExamRequestDTO;
@@ -26,6 +28,7 @@ import java.util.List;
  * @date 2020-10-24 04:21:53
  */
 @Service("collegeExamCfgService")
+@DataSource(DataSourceKey.SYS)
 public class CollegeExamCfgServiceImpl extends ServiceImpl<CollegeExamCfgMapper, CollegeExamCfg> implements ICollegeExamCfgService {
 
     @Autowired

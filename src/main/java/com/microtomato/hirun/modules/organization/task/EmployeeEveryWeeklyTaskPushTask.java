@@ -3,8 +3,10 @@ package com.microtomato.hirun.modules.organization.task;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeStudyTaskCfg;
+import com.microtomato.hirun.modules.college.config.entity.po.CollegeTaskEmployeeCfg;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeTaskJobCfg;
 import com.microtomato.hirun.modules.college.config.service.ICollegeStudyTaskCfgService;
+import com.microtomato.hirun.modules.college.config.service.ICollegeTaskEmployeeCfgService;
 import com.microtomato.hirun.modules.college.config.service.ICollegeTaskJobCfgService;
 import com.microtomato.hirun.modules.college.task.entity.po.CollegeEmployeeTask;
 import com.microtomato.hirun.modules.college.task.service.ICollegeEmployeeTaskService;
@@ -36,6 +38,9 @@ public class EmployeeEveryWeeklyTaskPushTask {
 
     @Autowired
     private ICollegeEmployeeTaskService collegeEmployeeTaskServiceImpl;
+
+    @Autowired
+    private ICollegeTaskEmployeeCfgService collegeTaskEmployeeCfgServiceImpl;
 
 
     /**
@@ -91,7 +96,16 @@ public class EmployeeEveryWeeklyTaskPushTask {
                             employeeIdList.add(employeeId);
                         }
                     }
-                }else {
+                }else if(StringUtils.equals("3", jobType)){
+                    //指定员工
+                    List<CollegeTaskEmployeeCfg> employeeCfgList = collegeTaskEmployeeCfgServiceImpl.queryEffectiveByTaskId(String.valueOf(studyTaskId));
+                    if (ArrayUtils.isNotEmpty(employeeCfgList)){
+                        for (CollegeTaskEmployeeCfg collegeTaskEmployeeCfg : employeeCfgList) {
+                            employeeIdList.add(Long.valueOf(collegeTaskEmployeeCfg.getEmployeeId()));
+                        }
+                    }
+
+                } else {
                     List<CollegeTaskJobCfg> collegeTaskJobCfgList = collegeTaskJobCfgServiceImpl.queryEffectiveByTaskId(String.valueOf(studyTaskId));
                     if (ArrayUtils.isNotEmpty(collegeTaskJobCfgList)){
                         List<String> jobRoleList = new ArrayList<>();

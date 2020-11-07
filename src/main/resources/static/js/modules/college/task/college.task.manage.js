@@ -101,6 +101,7 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     label: 'studyName'
                 },
                 showJob: 'display:none',
+                showEmployee: 'display:none',
                 showStudyModel: 'display:none',
                 showTogetherStudyTask: 'display:none',
                 showAppointDay: 'display:none',
@@ -111,7 +112,9 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 chaptersTypes: [],
                 taskCoursewareType: '',
                 jobRoleInfos: [],
+                employeeInfos: [],
                 selectJobRoleInfos: [],
+                selectEmployeeInfos: [],
                 allLabelIdList: [],
                 labelIdList: [],
                 togetherStudyTaskList: [],
@@ -264,16 +267,26 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     });
                     return;
                 }
-                if ("2" != this.addStudyTaskInfo.jobType && (this.selectJobRoleInfos == [] || this.selectJobRoleInfos == undefined || this.selectJobRoleInfos.length == 0)){
+                if (("0" == this.addStudyTaskInfo.jobType || "1" == this.addStudyTaskInfo.jobType) && (this.selectJobRoleInfos == [] || this.selectJobRoleInfos == undefined || this.selectJobRoleInfos.length == 0)){
                     this.$message({
                         showClose: true,
                         duration: 3000,
-                        message: '工作类型非所有员工的请选择员工岗位再提交!',
+                        message: '正式员工或新员工类型请选择员工岗位再提交!',
+                        center: true
+                    });
+                    return;
+                }
+                if ("3" == this.addStudyTaskInfo.jobType && (this.selectEmployeeInfos == [] || this.selectEmployeeInfos == undefined || this.selectEmployeeInfos.length == 0)){
+                    this.$message({
+                        showClose: true,
+                        duration: 3000,
+                        message: '指定员工类型请选择指定的员工再提交!',
                         center: true
                     });
                     return;
                 }
                 this.addStudyTaskInfo.jobRoleInfos = this.selectJobRoleInfos;
+                this.addStudyTaskInfo.employeeInfos = this.selectEmployeeInfos;
                 this.addStudyTaskInfo.studyType = this.studyType;
                 if (this.studyType == '1'){
                     let fileList = this.$refs.upload.fileList;
@@ -634,10 +647,20 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 })
             },
             changeJobType: function (val) {
+                this.showJob = 'display:none'
+                this.showEmployee = 'display:none'
                 if(val == 0 || val == 1){
                     this.showJob = 'display:block'
                 }else if(val == 2){
                     this.showJob = 'display:none'
+                }else if (val == 3){
+                    let that = this
+                    if (null == that.employeeInfos || [] == that.employeeInfos || undefined == that.employeeInfos || that.employeeInfos.length == 0){
+                        ajax.get('api/CollegeStudyTaskCfg/queryEmployeeTransferInfo', null, function(responseData){
+                            that.employeeInfos = responseData;
+                        });
+                    }
+                    this.showEmployee = 'display:block'
                 }
             },
             filterJobRoleMethod: function (query, item) {
@@ -882,6 +905,7 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 this.showExercisesNumber = 'display:none'
                 this.showPassScore = 'display:none'
                 this.showJob = 'display:none'
+                this.showEmployee = 'display:none'
             },
             filterLabelMethod: function (query, item) {
                 return item.label.indexOf(query) > -1;

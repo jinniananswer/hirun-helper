@@ -57,6 +57,11 @@ public class CollegeCourseChaptersTaskRequestDTO {
     List<String> jobRoleInfos;
 
     /**
+     * 指定员工ID集合
+     */
+    List<String> employeeInfos;
+
+    /**
      * 任务有效期
      */
     private Integer taskValidityTerm;

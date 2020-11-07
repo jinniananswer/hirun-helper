@@ -559,6 +559,47 @@ public class CollegeEmployeeTaskServiceImpl extends ServiceImpl<CollegeEmployeeT
             result.setExperienceImgList(collegeTaskExperienceScoreResponseDTO.getExperienceDescImgList());
             result.setFileList(collegeTaskExperienceScoreResponseDTO.getImgExperienceList());
         }
+
+        CollegeEmployeeTaskScore collegeEmployeeTaskScore = collegeEmployeeTaskScoreServiceImpl.getByTaskId(String.valueOf(taskId));
+        List<CollegeEmployeeTaskScoreResponseDTO> taskScoreList = new ArrayList<>();
+        if (null != collegeEmployeeTaskScore){
+            Integer examScore = collegeEmployeeTaskScore.getExamScore();
+            if (null != examScore){
+                CollegeEmployeeTaskScoreResponseDTO collegeEmployeeTaskScoreResponseDTO = new CollegeEmployeeTaskScoreResponseDTO();
+                collegeEmployeeTaskScoreResponseDTO.setName("考试评分");
+                collegeEmployeeTaskScoreResponseDTO.setScore(examScore);
+                taskScoreList.add(collegeEmployeeTaskScoreResponseDTO);
+            }
+            Integer exercisesScore = collegeEmployeeTaskScore.getExercisesScore();
+            if (null != exercisesScore){
+                CollegeEmployeeTaskScoreResponseDTO collegeEmployeeTaskScoreResponseDTO = new CollegeEmployeeTaskScoreResponseDTO();
+                collegeEmployeeTaskScoreResponseDTO.setName("练习评分");
+                collegeEmployeeTaskScoreResponseDTO.setScore(exercisesScore);
+                taskScoreList.add(collegeEmployeeTaskScoreResponseDTO);
+            }
+            Integer studyScore = collegeEmployeeTaskScore.getStudyScore();
+            if (null != studyScore){
+                CollegeEmployeeTaskScoreResponseDTO collegeEmployeeTaskScoreResponseDTO = new CollegeEmployeeTaskScoreResponseDTO();
+                collegeEmployeeTaskScoreResponseDTO.setName("学习评分");
+                collegeEmployeeTaskScoreResponseDTO.setScore(studyScore);
+                taskScoreList.add(collegeEmployeeTaskScoreResponseDTO);
+            }
+            Integer experienceScore = collegeEmployeeTaskScore.getExperienceScore();
+            if (null != experienceScore){
+                CollegeEmployeeTaskScoreResponseDTO collegeEmployeeTaskScoreResponseDTO = new CollegeEmployeeTaskScoreResponseDTO();
+                collegeEmployeeTaskScoreResponseDTO.setName("心得评分");
+                collegeEmployeeTaskScoreResponseDTO.setScore(experienceScore);
+                taskScoreList.add(collegeEmployeeTaskScoreResponseDTO);
+            }
+            Integer imgScore = collegeEmployeeTaskScore.getImgScore();
+            if (null != imgScore){
+                CollegeEmployeeTaskScoreResponseDTO collegeEmployeeTaskScoreResponseDTO = new CollegeEmployeeTaskScoreResponseDTO();
+                collegeEmployeeTaskScoreResponseDTO.setName("任务照片评分");
+                collegeEmployeeTaskScoreResponseDTO.setScore(imgScore);
+                taskScoreList.add(collegeEmployeeTaskScoreResponseDTO);
+            }
+        }
+        result.setTaskScoreList(taskScoreList);
         return result;
     }
 

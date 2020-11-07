@@ -3,8 +3,10 @@ package com.microtomato.hirun.modules.organization.task;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeStudyTaskCfg;
+import com.microtomato.hirun.modules.college.config.entity.po.CollegeTaskEmployeeCfg;
 import com.microtomato.hirun.modules.college.config.entity.po.CollegeTaskJobCfg;
 import com.microtomato.hirun.modules.college.config.service.ICollegeStudyTaskCfgService;
+import com.microtomato.hirun.modules.college.config.service.ICollegeTaskEmployeeCfgService;
 import com.microtomato.hirun.modules.college.config.service.ICollegeTaskJobCfgService;
 import com.microtomato.hirun.modules.college.task.entity.po.CollegeEmployeeTask;
 import com.microtomato.hirun.modules.college.task.service.ICollegeEmployeeTaskService;
@@ -37,6 +39,9 @@ public class EmployeeEveryDayTaskPushTask {
     @Autowired
     private ICollegeEmployeeTaskService collegeEmployeeTaskServiceImpl;
 
+    @Autowired
+    private ICollegeTaskEmployeeCfgService collegeTaskEmployeeCfgServiceImpl;
+
 
     /**
      * 每天凌晨 00：00 开始执行。
@@ -49,11 +54,11 @@ public class EmployeeEveryDayTaskPushTask {
         log.debug("任务发布时间：" + now);
         List<CollegeStudyTaskCfg> collegeStudyTaskCfgList = collegeStudyTaskCfgServiceImpl.queryEffectiveReleased();
         List<CollegeStudyTaskCfg> allTaskList = new ArrayList<>();
-        if (ArrayUtils.isNotEmpty(collegeStudyTaskCfgList)){
-            for (CollegeStudyTaskCfg collegeStudyTaskCfg : collegeStudyTaskCfgList){
+        if (ArrayUtils.isNotEmpty(collegeStudyTaskCfgList)) {
+            for (CollegeStudyTaskCfg collegeStudyTaskCfg : collegeStudyTaskCfgList) {
                 //答题任务单独设置
-                if (StringUtils.equals("3", collegeStudyTaskCfg.getStudyType())){
-                    if (StringUtils.equals("1", collegeStudyTaskCfg.getAnswerTaskType())){
+                if (StringUtils.equals("3", collegeStudyTaskCfg.getStudyType())) {
+                    if (StringUtils.equals("1", collegeStudyTaskCfg.getAnswerTaskType())) {
                         allTaskList.add(collegeStudyTaskCfg);
                     }
                 }
@@ -76,40 +81,49 @@ public class EmployeeEveryDayTaskPushTask {
             }
         }*/
 
-        if (ArrayUtils.isNotEmpty(allTaskList)){
-            for (int i = 0 ; i < allTaskList.size(); i++){
+        if (ArrayUtils.isNotEmpty(allTaskList)) {
+            for (int i = 0; i < allTaskList.size(); i++) {
                 CollegeStudyTaskCfg collegeStudyTaskCfg = allTaskList.get(i);
                 String jobType = collegeStudyTaskCfg.getJobType();
                 Long studyTaskId = collegeStudyTaskCfg.getStudyTaskId();
                 //所有员工
                 List<Long> employeeIdList = new ArrayList<>();
-                if (StringUtils.equals("2", jobType)){
+                if (StringUtils.equals("2", jobType)) {
                     List<Employee> employeeList = employeeServiceImpl.queryAllEffectiveEmployee();
-                    if (ArrayUtils.isNotEmpty(employeeList)){
-                        for (Employee employee : employeeList){
+                    if (ArrayUtils.isNotEmpty(employeeList)) {
+                        for (Employee employee : employeeList) {
                             Long employeeId = employee.getEmployeeId();
                             employeeIdList.add(employeeId);
                         }
                     }
-                }else {
+                } else if (StringUtils.equals("3", jobType)) {
+                    //指定员工
+                    List<CollegeTaskEmployeeCfg> employeeCfgList = collegeTaskEmployeeCfgServiceImpl.queryEffectiveByTaskId(String.valueOf(studyTaskId));
+                    if (ArrayUtils.isNotEmpty(employeeCfgList)) {
+                        for (CollegeTaskEmployeeCfg collegeTaskEmployeeCfg : employeeCfgList) {
+                            employeeIdList.add(Long.valueOf(collegeTaskEmployeeCfg.getEmployeeId()));
+                        }
+                    }
+
+                } else {
                     List<CollegeTaskJobCfg> collegeTaskJobCfgList = collegeTaskJobCfgServiceImpl.queryEffectiveByTaskId(String.valueOf(studyTaskId));
-                    if (ArrayUtils.isNotEmpty(collegeTaskJobCfgList)){
+                    if (ArrayUtils.isNotEmpty(collegeTaskJobCfgList)) {
                         List<String> jobRoleList = new ArrayList<>();
-                        for (CollegeTaskJobCfg collegeTaskJobCfg : collegeTaskJobCfgList){
+                        for (CollegeTaskJobCfg collegeTaskJobCfg : collegeTaskJobCfgList) {
                             String jobRole = collegeTaskJobCfg.getJobRole();
                             jobRoleList.add(jobRole);
                         }
-                        if (ArrayUtils.isNotEmpty(jobRoleList)){
+                        if (ArrayUtils.isNotEmpty(jobRoleList)) {
                             List<Employee> employeeList = new ArrayList<>();
-                            if (StringUtils.equals("0", jobType)){
+                            if (StringUtils.equals("0", jobType)) {
                                 //正式员工
                                 employeeList = employeeServiceImpl.queryEffectiveByJobRoleList(jobRoleList);
-                            }else if (StringUtils.equals("1", jobType)){
+                            } else if (StringUtils.equals("1", jobType)) {
                                 //新员工
                                 employeeList = employeeServiceImpl.queryNewEffectiveByJobRoleList(jobRoleList);
                             }
-                            if (ArrayUtils.isNotEmpty(employeeList) && employeeList.size() > 0){
-                                for (Employee employee : employeeList){
+                            if (ArrayUtils.isNotEmpty(employeeList) && employeeList.size() > 0) {
+                                for (Employee employee : employeeList) {
                                     Long employeeId = employee.getEmployeeId();
                                     employeeIdList.add(employeeId);
                                 }
@@ -117,15 +131,15 @@ public class EmployeeEveryDayTaskPushTask {
                         }
                     }
                 }
-                if (ArrayUtils.isNotEmpty(employeeIdList)){
+                if (ArrayUtils.isNotEmpty(employeeIdList)) {
                     List<CollegeEmployeeTask> collegeEmployeeTaskList = new ArrayList<>();
-                    for (Long employeeId : employeeIdList){
+                    for (Long employeeId : employeeIdList) {
                         CollegeEmployeeTask employeeTask = collegeEmployeeTaskServiceImpl.getLastEffectiveByEmployeeIdAndStudyTaskId(String.valueOf(employeeId), String.valueOf(studyTaskId));
 
                         LocalDateTime firstSecondDay = TimeUtils.getFirstSecondDay(now, 0);
                         LocalDateTime lastSecondDay = TimeUtils.addSeconds(TimeUtils.addDays(firstSecondDay, 1), -1);
                         //如果该员工分配了该项任务，则跳过
-                        if (null != employeeTask && TimeUtils.compareTwoTime(firstSecondDay, employeeTask.getStudyStartDate()) == 0){
+                        if (null != employeeTask && TimeUtils.compareTwoTime(firstSecondDay, employeeTask.getStudyStartDate()) == 0) {
                             continue;
                         }
                         CollegeEmployeeTask collegeEmployeeTask = new CollegeEmployeeTask();
@@ -137,7 +151,7 @@ public class EmployeeEveryDayTaskPushTask {
                         collegeEmployeeTask.setStudyEndDate(lastSecondDay);
                         collegeEmployeeTaskList.add(collegeEmployeeTask);
                     }
-                    if (ArrayUtils.isNotEmpty(collegeEmployeeTaskList)){
+                    if (ArrayUtils.isNotEmpty(collegeEmployeeTaskList)) {
                         collegeEmployeeTaskServiceImpl.saveBatch(collegeEmployeeTaskList);
                     }
                 }

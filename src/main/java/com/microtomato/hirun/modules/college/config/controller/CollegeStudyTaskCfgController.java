@@ -7,14 +7,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.modules.college.config.entity.dto.*;
-import com.microtomato.hirun.modules.college.config.entity.po.CollegeCourseChaptersCfg;
-import com.microtomato.hirun.modules.college.config.entity.po.CollegeStudyTaskCfg;
-import com.microtomato.hirun.modules.college.config.entity.po.CollegeTaskJobCfg;
-import com.microtomato.hirun.modules.college.config.entity.po.CollegeTopicLabelCfg;
+import com.microtomato.hirun.modules.college.config.entity.po.*;
 import com.microtomato.hirun.modules.college.config.service.*;
 import com.microtomato.hirun.modules.college.task.entity.po.CollegeStudyTopicRel;
 import com.microtomato.hirun.modules.college.task.service.ICollegeStudyTopicRelService;
+import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.service.ICourseService;
+import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import com.microtomato.hirun.modules.system.entity.po.StaticData;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import com.microtomato.hirun.modules.system.service.IUploadFileService;
@@ -69,6 +68,12 @@ public class CollegeStudyTaskCfgController {
 
     @Autowired
     private ICollegeExamCfgService collegeExamCfgService;
+
+    @Autowired
+    private IEmployeeService employeeServiceImpl;
+
+    @Autowired
+    private ICollegeTaskEmployeeCfgService collegeTaskEmployeeCfgServiceImpl;
 
     /**
      * 分页查询所有数据
@@ -310,6 +315,22 @@ public class CollegeStudyTaskCfgController {
                 collegeTaskJobCfgServiceImpl.saveBatch(collegeTaskJobCfgList);
             }
         }
+        //设置任务指定员工
+        List<String> employeeInfos = collegeCourseChaptersTaskRequestDTO.getEmployeeInfos();
+        if (StringUtils.equals("3", jobType)){
+            List<CollegeTaskEmployeeCfg> employeeCfgList = new ArrayList<>();
+            String taskId = String.valueOf(collegeStudyTaskCfg.getStudyTaskId());
+            for (String employeeId : employeeInfos) {
+                CollegeTaskEmployeeCfg collegeTaskEmployeeCfg = new CollegeTaskEmployeeCfg();
+                collegeTaskEmployeeCfg.setEmployeeId(employeeId);
+                collegeTaskEmployeeCfg.setStatus("0");
+                collegeTaskEmployeeCfg.setTaskId(taskId);
+                employeeCfgList.add(collegeTaskEmployeeCfg);
+            }
+            if (ArrayUtils.isNotEmpty(employeeCfgList)){
+                collegeTaskEmployeeCfgServiceImpl.saveBatch(employeeCfgList);
+            }
+        }
         String studyTypeName = "";
         if (StringUtils.isNotEmpty(studyType)){
             studyTypeName = staticDataServiceImpl.getCodeName("TASK_COURSEWARE_TYPE", studyType);
@@ -516,6 +537,22 @@ public class CollegeStudyTaskCfgController {
                 TransferResponseDTO transferResponseDTO = new TransferResponseDTO();
                 transferResponseDTO.setLabel(collegeTopicLabelCfg.getLabelName());
                 transferResponseDTO.setKey(String.valueOf(collegeTopicLabelCfg.getLabelId()));
+                result.add(transferResponseDTO);
+            }
+        }
+        return result;
+    }
+
+    @GetMapping("queryEmployeeTransferInfo")
+    @RestResult
+    List<TransferResponseDTO> queryEmployeeTransferInfo(){
+        List<TransferResponseDTO> result = new ArrayList<>();
+        List<Employee> employees = employeeServiceImpl.queryAllEffectiveEmployee();
+        if (ArrayUtils.isNotEmpty(employees)){
+            for (Employee employee : employees) {
+                TransferResponseDTO transferResponseDTO = new TransferResponseDTO();
+                transferResponseDTO.setKey(employee.getEmployeeId() + "");
+                transferResponseDTO.setLabel("[" + employee.getEmployeeId() + "]" + employee.getName());
                 result.add(transferResponseDTO);
             }
         }

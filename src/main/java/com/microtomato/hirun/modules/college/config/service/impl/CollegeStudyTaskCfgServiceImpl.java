@@ -50,7 +50,6 @@ import java.util.Map;
  */
 @Service("collegeStudyTaskCfgService")
 @DataSource(DataSourceKey.SYS)
-
 public class CollegeStudyTaskCfgServiceImpl extends ServiceImpl<CollegeStudyTaskCfgMapper, CollegeStudyTaskCfg> implements ICollegeStudyTaskCfgService {
 
     @Autowired
