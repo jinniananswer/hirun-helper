@@ -8,12 +8,16 @@ import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.mybatis.sequence.impl.ExamTopicSeq;
 import com.microtomato.hirun.framework.mybatis.service.IDualService;
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.modules.college.config.entity.po.CollegeTopicLabelCfg;
+import com.microtomato.hirun.modules.college.config.service.ICollegeTopicLabelCfgService;
 import com.microtomato.hirun.modules.college.knowhow.consts.KnowhowConsts;
 import com.microtomato.hirun.modules.college.knowhow.entity.po.CollegeQuestionRela;
 import com.microtomato.hirun.modules.college.topic.entity.dto.TopicOptionServiceDTO;
 import com.microtomato.hirun.modules.college.topic.entity.dto.TopicServiceDTO;
+import com.microtomato.hirun.modules.college.topic.entity.po.CollegeTopicLabelRel;
 import com.microtomato.hirun.modules.college.topic.entity.po.ExamTopic;
 import com.microtomato.hirun.modules.college.topic.entity.po.ExamTopicOption;
+import com.microtomato.hirun.modules.college.topic.service.ICollegeTopicLabelRelService;
 import com.microtomato.hirun.modules.college.topic.service.IExamTopicOptionService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,6 +51,12 @@ public class ExamTopicController {
 
     @Autowired
     private IDualService dualService;
+
+    @Autowired
+    private ICollegeTopicLabelCfgService collegeTopicLabelCfgService;
+
+    @Autowired
+    private ICollegeTopicLabelRelService collegeTopicLabelRelService;
 
     @GetMapping("init")
     @RestResult
@@ -96,6 +106,15 @@ public class ExamTopicController {
         examTopic.setTopicId(topicId);
 
         this.examTopicService.save(examTopic);
+        List<String> labelIds = topic.getLabelIds();
+        if (ArrayUtils.isNotEmpty(labelIds)) {
+            labelIds.stream().forEach(x -> {
+                this.collegeTopicLabelRelService.save(CollegeTopicLabelRel.builder()
+                        .labelId(Long.parseLong(x))
+                        .status("0")
+                        .topicId(topicId).build());
+            });
+        }
 
         List<TopicOptionServiceDTO> topicOptions = topic.getTopicOptions();
         topicOptions.stream().forEach(option -> {

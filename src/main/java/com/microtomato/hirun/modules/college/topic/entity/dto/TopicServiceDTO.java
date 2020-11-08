@@ -34,6 +34,8 @@ public class TopicServiceDTO {
 
     private Long topicNum;
 
+    private List<String> labelIds;
+
     @Builder.Default
     private Boolean isAnswer = Boolean.FALSE;
 

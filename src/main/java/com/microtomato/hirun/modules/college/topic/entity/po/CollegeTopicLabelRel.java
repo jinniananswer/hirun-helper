@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
  *
  * @author huanghua@asiainfo.com
  * @version 1.0.0
- * @date 2020-10-20 01:22:11
+ * @date 2020-11-08 14:44:43
  */
 @Data
 @Builder
@@ -32,9 +32,8 @@ public class CollegeTopicLabelRel extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
     
-
     /** 关系标识 */
-    @TableField(value = "rel_id")
+    @TableId(value = "rel_id", type = IdType.AUTO)
     private Long relId;
 
     /** 习题标识 */
