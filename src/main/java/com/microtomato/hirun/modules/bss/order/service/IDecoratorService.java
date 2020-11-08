@@ -3,6 +3,7 @@ package com.microtomato.hirun.modules.bss.order.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.CustInfoDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.DecoratorInfoDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.DecoratorServiceDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.Decorator;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -25,7 +26,7 @@ public interface IDecoratorService extends IService<Decorator> {
      */
     List<Decorator> queryDecoratorInfo(Long orgId, Long type);
 
-    IPage<Decorator> queryDecoratorInfo(String name, String identityNo, int current, int size);
+    IPage<DecoratorServiceDTO> queryDecoratorInfo(String name, String identityNo, String decoratorType, int current, int size);
 
     /**
      * 查询所有

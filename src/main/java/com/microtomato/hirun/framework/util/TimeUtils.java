@@ -704,6 +704,34 @@ public class TimeUtils {
     public static LocalDateTime getForeverTime() {
         return stringToLocalDateTime(FOREVER_TIME, TIME_PATTERN);
     }
+    /**
+     * 获取传入时间偏移后所在天的第一秒
+     * @param time
+     * @return
+     */
+    public static LocalDateTime getFirstSecondDay(LocalDateTime time, int offset) {
+        return LocalDateTime.of(addDays(time, offset).toLocalDate(), LocalTime.MIN);
+    }
+
+    /**
+     * 根据传入的时间，偏移N天
+     * @param time
+     * @param offset
+     * @return
+     */
+    public static LocalDateTime addDays(LocalDateTime time, int offset) {
+        return time.plusDays((long)offset);
+    }
+
+    /**
+     * 传入的时间加上N秒
+     * @param time
+     * @param seconds
+     * @return
+     */
+    public static LocalDateTime addSeconds(LocalDateTime time, long seconds) {
+        return time.plusSeconds(seconds);
+    }
 
     public static void main(String[] args) {
         System.out.println(StringUtils.split(","));
