@@ -1,7 +1,5 @@
 package com.microtomato.hirun.modules.college.knowhow.controller;
 
-
-
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -26,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.microtomato.hirun.modules.college.knowhow.entity.po.CollegeQuestion;
 import com.microtomato.hirun.framework.annotation.RestResult;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -249,10 +246,22 @@ public class CollegeQuestionController {
         return this.collegeQuestionService.queryQuestionByName(null);
     }
 
+    @GetMapping("queryQuestionByText")
+    @RestResult
+    public List<QuestionInfoDTO> queryQuestionByText(@RequestParam("name") String name){
+        return this.collegeQuestionService.queryQuestionByName(name);
+    }
+
     @GetMapping("queryLoginQuestion")
     @RestResult
     public List<QuestionInfoDTO> queryLoginQuestion(){
-        return this.collegeQuestionService.queryLoginQuestion();
+        return this.collegeQuestionService.queryLoginQuestion(null);
+    }
+
+    @GetMapping("queryLoginQuestionByText")
+    @RestResult
+    public List<QuestionInfoDTO> queryLoginQuestionByText(@RequestParam("name") String name){
+        return this.collegeQuestionService.queryLoginQuestion(name);
     }
 
     @GetMapping("queryQuestionTypeOptions")
@@ -346,5 +355,33 @@ public class CollegeQuestionController {
     @RestResult
     public void replyThumbsUp(@RequestParam("replyId") Long replyId, @RequestParam("cancelTag") String cancelTag) {
         this.collegeReplyService.thumbsUpById(replyId, cancelTag);
+    }
+
+    @PostMapping("addClick")
+    @RestResult
+    public void addClick(@RequestParam("questionId") Long questionId) {
+        CollegeQuestion question = collegeQuestionService.getById(questionId);
+        if (null == question || null == question.getQuestionId()) {
+            return;
+        }
+
+        question.setClicks(question.getClicks() + 1);
+        collegeQuestionService.updateById(question);
+    }
+
+    @PostMapping("addThumbsUp")
+    @RestResult
+    public void addThumbsUp(@RequestParam("questionId") Long questionId, @RequestParam("cancelTag") String cancelTag) {
+        CollegeQuestion question = collegeQuestionService.getById(questionId);
+        if (null == question || null == question.getQuestionId()) {
+            return;
+        }
+
+        if (StringUtils.equals("0", cancelTag)) {
+            question.setThumbsUp(question.getThumbsUp() + 1);
+        } else {
+            question.setThumbsUp(question.getThumbsUp() - 1);
+        }
+        collegeQuestionService.updateById(question);
     }
 }

@@ -41,6 +41,9 @@ public class CollegeQuestionRelaServiceImpl extends ServiceImpl<CollegeQuestionR
                 .eq(CollegeQuestionRela::getQuestionId, questionId)
                 .eq(CollegeQuestionRela::getRelationType, "0")
                 .eq(CollegeQuestionRela::getStatus, "1"));
+        if (null == rela) {
+            return null;
+        }
         return rela.getEmployeeId();
     }
 }
