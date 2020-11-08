@@ -3,16 +3,17 @@ package com.microtomato.hirun.modules.bss.order.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.security.UserContext;
+import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.bss.order.entity.dto.DecoratorInfoDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.DecoratorServiceDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.Decorator;
 import com.microtomato.hirun.modules.bss.order.service.IDecoratorService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -46,8 +47,8 @@ public class DecoratorController {
 
     @GetMapping("/queryDecoratorInfo")
     @RestResult
-    public IPage<Decorator> queryDecoratorInfo(String name, String identityNo, int page, int size) {
-        return this.decoratorServiceImpl.queryDecoratorInfo(name, identityNo, page, size);
+    public IPage<DecoratorServiceDTO> queryDecoratorInfo(String name, String identityNo, String decoratorType, int page, int size) {
+        return this.decoratorServiceImpl.queryDecoratorInfo(name, identityNo, decoratorType, page, size);
     }
 
     @GetMapping("/initDecorators")
@@ -56,4 +57,22 @@ public class DecoratorController {
         return this.decoratorServiceImpl.initDecorators();
     }
 
+    @PostMapping("/addDecorator")
+    @RestResult
+    public void addDecorator(@RequestBody Decorator decorator) {
+        decorator.setStatus("0");
+        this.decoratorServiceImpl.save(decorator);
+    }
+
+    @PostMapping("deleteDecoratorBatch")
+    @RestResult
+    public void deleteDecoratorBatch(@RequestBody List<Decorator> decorators) {
+        List<Long> decoratorIds = new ArrayList<>();
+        if (ArrayUtils.isNotEmpty(decorators)) {
+            for (Decorator decorator : decorators) {
+                decoratorIds.add(decorator.getDecoratorId());
+            }
+            this.decoratorServiceImpl.removeByIds(decoratorIds);
+        }
+    }
 }

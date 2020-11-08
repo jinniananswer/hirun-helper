@@ -372,4 +372,11 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
             " ${ew.customSqlSegment}"
     )
     List<SimpleEmployeeDTO> queryEmployeeByRoleAndOrg(@Param(Constants.WRAPPER) Wrapper wrapper);
+
+    @Select("select * from ins_employee  ${ew.customSqlSegment}")
+    IPage<Employee> queryNewEmployeeByPage(Page<EmployeeQueryDTO> page, @Param(Constants.WRAPPER) Wrapper wrapper);
+
+    @Select("select a.employee_id,a.name, b.org_id, b.job_role from ins_employee a, ins_employee_job_role b " +
+            " ${ew.customSqlSegment}")
+    List<Employee> queryEffectiveByJobRoleList(@Param(Constants.WRAPPER) Wrapper wrapper);
 }
