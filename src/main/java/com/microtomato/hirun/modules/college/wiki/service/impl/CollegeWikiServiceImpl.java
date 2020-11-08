@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * (CollegeWiki)表服务实现类
@@ -46,11 +47,18 @@ public class CollegeWikiServiceImpl extends ServiceImpl<CollegeWikiMapper, Colle
     
     @Override
     public List<CollegeWiki> queryByText(String keyStr) {
-        return this.list(new QueryWrapper<CollegeWiki>().lambda()
-//                .and(q -> q.like(StringUtils.isNotEmpty(keyStr), CollegeWiki::getWikiTitle, keyStr)
-//                        .or().like(StringUtils.isNotEmpty(keyStr), CollegeWiki::getWikiContent, keyStr))
+        List<CollegeWiki> list = this.list(new QueryWrapper<CollegeWiki>().lambda()
                 .eq(CollegeWiki::getStatus, "0")
                 .orderByDesc(CollegeWiki::getWikiType));
+
+        if (ArrayUtils.isEmpty(list)) {
+            return list;
+        }
+
+        return list.stream().filter(x ->
+                x.getWikiTitle().contains(keyStr)
+                        || x.getWikiContent().contains(keyStr))
+                .collect(Collectors.toList());
     }
 
     @Override

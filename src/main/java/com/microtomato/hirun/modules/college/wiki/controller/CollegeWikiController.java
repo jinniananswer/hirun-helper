@@ -116,12 +116,15 @@ public class CollegeWikiController {
     @PostMapping("addWiki")
     @RestResult
     public void addWiki(@RequestParam("wikiTitle") String wikiTitle, @RequestParam("wikiContent") String wikiContent, @RequestParam("wikiType") String wikiType) {
+        UserContext context = UserContextUtils.getUserContext();
         CollegeWiki wiki = CollegeWiki.builder()
                 .wikiTitle(wikiTitle)
                 .wikiContent(wikiContent)
                 .wikiType(wikiType)
                 .status("0")
                 .clicks(0L)
+                .thumbsUp(0L)
+                .author(context.getEmployeeId())
                 .wikiType(wikiType.substring(wikiType.indexOf("[") + 1, wikiType.indexOf("]"))).build();
         this.collegeWikiService.save(wiki);
     }
@@ -151,5 +154,33 @@ public class CollegeWikiController {
                 .respondent(context.getEmployeeId()).build();
 
         collegeWikiReplyService.save(reply);
+    }
+
+    @PostMapping("addClick")
+    @RestResult
+    public void addClick(@RequestParam("wikiId") Long wikiId) {
+        CollegeWiki wiki = collegeWikiService.getById(wikiId);
+        if (null == wiki || null == wiki.getWikiId()) {
+            return;
+        }
+
+        wiki.setClicks(wiki.getClicks() + 1);
+        collegeWikiService.updateById(wiki);
+    }
+
+    @PostMapping("thumbsUp")
+    @RestResult
+    public void thumbsUp(@RequestParam("wikiId") Long wikiId, @RequestParam("cancelTag") String cancelTag) {
+        CollegeWiki wiki = collegeWikiService.getById(wikiId);
+        if (null == wiki || null == wiki.getWikiId()) {
+            return;
+        }
+
+        if (StringUtils.equals("0", cancelTag)) {
+            wiki.setThumbsUp(wiki.getThumbsUp() + 1);
+        } else {
+            wiki.setThumbsUp(wiki.getThumbsUp() - 1);
+        }
+        collegeWikiService.updateById(wiki);
     }
 }

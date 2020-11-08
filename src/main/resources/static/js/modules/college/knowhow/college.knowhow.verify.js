@@ -111,7 +111,6 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
             queryByEmployeeIdAndRelaType: function (relationType) {
                 var that = this;
                 this.queryCond.relationType = relationType;
-                this.queryCond.optionTag = 'APPROVE';
                 ajax.get('api/CollegeQuestion/querySelfQuestion', this.queryCond, function (responseData) {
                     if (0 == responseData.total) {
                         that.questionInfo = '';
@@ -143,11 +142,25 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
             typeTransfer: function (row, column) {
                 let type = row.questionType;
                 if(type === '1'){
-                    return '施工类'
+                    return '整体产品知识'
                 } else if(type === '2'){
-                    return '订单类'
+                    return '木制品知识'
                 } else if(type === '3'){
-                    return '售后类'
+                    return '主材知识'
+                } else if(type === '4'){
+                    return '基材知识'
+                } else if(type === '5'){
+                    return '宅配知识'
+                } else if(type === '6'){
+                    return '市场开发'
+                } else if(type === '7'){
+                    return '家装设计'
+                } else if(type === '8'){
+                    return '家装预算'
+                } else if(type === '9'){
+                    return '家装施工'
+                } else if(type === '10'){
+                    return '售后服务'
                 }
             },
 
@@ -180,8 +193,10 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                     }).then(() => {
                         val.forEach(v => {
                             v.approvedTag = '1'
+                            v.createTime = ''
                         })
                         ajax.post('api/CollegeQuestion/verifyQuestion', val, function (responseData) {
+                            that.queryCond.optionTag = 'APPROVE';
                             that.queryByEmployeeIdAndRelaType('2');
                             that.$message({
                                 type: 'success',
@@ -201,8 +216,10 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                     }).then(() => {
                         val.forEach(v => {
                             v.approvedTag = '0'
+                            v.createTime = ''
                         })
                         ajax.post('api/CollegeQuestion/verifyQuestion', val, function (responseData) {
+                            that.queryCond.optionTag = 'APPROVE';
                             that.queryByEmployeeIdAndRelaType('2');
                             that.$message({
                                 type: 'info',
@@ -233,7 +250,9 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                     cancelButtonText: '取消',
                     center: true
                 }).then(() => {
+                    val[0].createTime = '';
                     ajax.post('api/CollegeQuestion/publishQuestion', val, function (responseData) {
+                        that.queryCond.optionTag = 'PUBLISH';
                         that.queryByEmployeeIdAndRelaType('0');
                         that.$message({
                             type: 'success',

@@ -26,11 +26,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * (CollegeQuestion)表服务实现类
@@ -121,6 +120,17 @@ public class CollegeQuestionServiceImpl extends ServiceImpl<CollegeQuestionMappe
         List<QuestionInfoDTO> result = new ArrayList<>();
         List<CollegeQuestion> list = this.list(Wrappers.<CollegeQuestion>lambdaQuery()
                 .eq(CollegeQuestion::getStatus, "4"));
+        if (ArrayUtils.isEmpty(list)) {
+            return result;
+        }
+
+        if (StringUtils.isNotBlank(name)) {
+            list = list.stream().filter(x ->
+                    x.getQuestionTitle().contains(name)
+                            || x.getQuestionContent().contains(name))
+                    .collect(Collectors.toList());
+        }
+
         Map<String, List<CollegeQuestion>> questionMap = new HashMap<>();
         if (ArrayUtils.isNotEmpty(list)){
             for (CollegeQuestion collegeQuestion : list) {
@@ -150,7 +160,7 @@ public class CollegeQuestionServiceImpl extends ServiceImpl<CollegeQuestionMappe
     }
 
     @Override
-    public List<QuestionInfoDTO> queryLoginQuestion() {
+    public List<QuestionInfoDTO> queryLoginQuestion(String name) {
         List<QuestionInfoDTO> result = new ArrayList<>();
         UserContext userContext = WebContextUtils.getUserContext();
         if (userContext == null) {
@@ -166,6 +176,11 @@ public class CollegeQuestionServiceImpl extends ServiceImpl<CollegeQuestionMappe
             }
             if (ArrayUtils.isNotEmpty(questionIdList)){
                 List<CollegeQuestion> list = this.list(Wrappers.<CollegeQuestion>lambdaQuery().in(CollegeQuestion::getQuestionId, questionIdList));
+                if (StringUtils.isNotBlank(name)) {
+                    list = list.stream().filter(x -> x.getQuestionTitle().contains(name)
+                            || x.getQuestionContent().contains(name)).collect(Collectors.toList());
+                }
+
                 Map<String, List<CollegeQuestion>> questionMap = new HashMap<>();
                 if (ArrayUtils.isNotEmpty(list)){
                     for (CollegeQuestion collegeQuestion : list) {
@@ -235,7 +250,10 @@ public class CollegeQuestionServiceImpl extends ServiceImpl<CollegeQuestionMappe
 
         questionService.setReplyInfos(replyInfos);
         Long questionerId = collegeQuestionRelaServiceImpl.getEmployeeByQuestionId(questionId);
-        questionService.setQuestioner(employeeService.getEmployeeNameEmployeeId(questionerId));
+        if (Objects.nonNull(questionerId)) {
+            questionService.setQuestioner(employeeService.getEmployeeNameEmployeeId(questionerId));
+        }
+
         return questionService;
     }
 

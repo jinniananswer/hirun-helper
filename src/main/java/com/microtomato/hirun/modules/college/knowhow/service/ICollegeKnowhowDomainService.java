@@ -18,7 +18,7 @@ public interface ICollegeKnowhowDomainService {
 
     IPage<CollegeQuestion> queryByEmployeeIdAndRelaType(Long employeeId, String relationType, Page<CollegeQuestionRela> page);
 
-    IPage<CollegeQuestion> querySelfQuestion(String questionText, String sortType, Long employeeId, String relationType, String optionTag, Page<CollegeQuestionRela> page);
+    IPage<CollegeQuestion> querySelfQuestion(String questionText, String sortType, Long employeeId, String relationType, String optionTag, Page<CollegeQuestionRela> page, String questionType);
 
     IPage<CollegeQuestion> queryAllQuestion(Page<CollegeQuestion> page);
 }
