@@ -893,10 +893,11 @@ public class CollegeEmployeeTaskController {
             int size = collect.size();
             int topicNum = examRel.getTopicNum();
             if (size > topicNum) {
-                num = size - topicNum;
-                for (int i = 0; i < num; i++) {
-                    collect.remove(i);
+                List<TopicServiceDTO> currentList = new ArrayList<>();
+                for (int i = 0; i < topicNum; i++) {
+                    currentList.add(collect.get(i));
                 }
+                collect = currentList;
             } else if (size < topicNum){
                 num = topicNum - size;
                 List<TopicServiceDTO> temps = new ArrayList<>();
