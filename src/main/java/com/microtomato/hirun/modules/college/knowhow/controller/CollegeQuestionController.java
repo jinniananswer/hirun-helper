@@ -14,6 +14,9 @@ import com.microtomato.hirun.modules.college.knowhow.entity.po.CollegeReply;
 import com.microtomato.hirun.modules.college.knowhow.service.*;
 import com.microtomato.hirun.modules.college.teacher.entity.po.Teacher;
 import com.microtomato.hirun.modules.college.teacher.service.ITeacherService;
+import com.microtomato.hirun.modules.organization.entity.dto.EmployeeInfoDTO;
+import com.microtomato.hirun.modules.organization.entity.po.Employee;
+import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import com.microtomato.hirun.modules.system.entity.po.StaticData;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import org.apache.commons.lang3.StringUtils;
@@ -26,6 +29,7 @@ import com.microtomato.hirun.framework.annotation.RestResult;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * (CollegeQuestion)表控制层
@@ -61,6 +65,9 @@ public class CollegeQuestionController {
 
     @Autowired
     private ICollegeQuestionReplyerCfgService collegeQuestionReplyerCfgService;
+
+    @Autowired
+    private IEmployeeService employeeService;
 
     /**
      * 点赞
@@ -113,9 +120,9 @@ public class CollegeQuestionController {
      */
     @GetMapping("querySelfQuestion")
     @RestResult
-    public IPage<CollegeQuestion> querySelfQuestion(Page<CollegeQuestionRela> page, String questionText, String sortType, String relationType, String optionTag) {
+    public IPage<CollegeQuestion> querySelfQuestion(Page<CollegeQuestionRela> page, String questionText, String sortType, String relationType, String optionTag, String questionType) {
         UserContext userContext = WebContextUtils.getUserContext();
-        return this.collegeKnowhowDomainService.querySelfQuestion(questionText, sortType, userContext.getEmployeeId(), relationType, optionTag,  page);
+        return this.collegeKnowhowDomainService.querySelfQuestion(questionText, sortType, userContext.getEmployeeId(), relationType, optionTag,  page, questionType);
     }
 
     /**
@@ -286,15 +293,21 @@ public class CollegeQuestionController {
         questionType = questionType.substring(questionType.indexOf("[") + 1, questionType.indexOf("]"));
         List<CollegeQuestionOptionsDTO> result = new ArrayList<>();
         List<Long> teacherIds = collegeQuestionReplyerCfgService.queryTeacherByType(questionType);
-        List<Teacher> teachers = new ArrayList<>();
+
+        List<EmployeeInfoDTO> teachers = new ArrayList<>();
         if (ArrayUtils.isNotEmpty(teacherIds)) {
-            teachers = teacherService.queryTeacherByIds(teacherIds);
+            teacherIds.forEach(x -> {
+                EmployeeInfoDTO employee = employeeService.queryEmployeeInfoByEmployeeId(x);
+                if (Objects.nonNull(employee) && null != employee.getEmployeeId()) {
+                    teachers.add(employee);
+                }
+            });
         }
         if (ArrayUtils.isNotEmpty(teachers)){
-            for (Teacher teacher : teachers) {
+            for (EmployeeInfoDTO teacher : teachers) {
                 CollegeQuestionOptionsDTO collegeQuestionOptionsDTO = new CollegeQuestionOptionsDTO();
                 collegeQuestionOptionsDTO.setName(teacher.getName());
-                collegeQuestionOptionsDTO.setValue(String.valueOf(teacher.getTeacherId()));
+                collegeQuestionOptionsDTO.setValue(String.valueOf(teacher.getEmployeeId()));
                 result.add(collegeQuestionOptionsDTO);
             }
         }

@@ -105,7 +105,7 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                         type: that.thumbsUpInfo.thumbsUpTag ? 'success' : 'info',
                     });
                     that.queryCond.showType = 'questionSquare';
-                    that.query();
+                    that.queryByCond();
                 });
             },
             queryTeacher() {
@@ -210,13 +210,25 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
             typeTransfer: function (row, column) {
                 let type = row.questionType;
                 if(type === '1'){
-                    return '施工类'
+                    return '整体产品知识'
                 } else if(type === '2'){
-                    return '订单类'
+                    return '木制品知识'
                 } else if(type === '3'){
-                    return '售后类'
+                    return '主材知识'
                 } else if(type === '4'){
-                    return '设计类'
+                    return '基材知识'
+                } else if(type === '5'){
+                    return '宅配知识'
+                } else if(type === '6'){
+                    return '市场开发'
+                } else if(type === '7'){
+                    return '家装设计'
+                } else if(type === '8'){
+                    return '家装预算'
+                } else if(type === '9'){
+                    return '家装施工'
+                } else if(type === '10'){
+                    return '售后服务'
                 }
             },
 

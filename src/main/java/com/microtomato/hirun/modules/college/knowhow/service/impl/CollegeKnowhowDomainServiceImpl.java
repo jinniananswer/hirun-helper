@@ -113,10 +113,14 @@ public class CollegeKnowhowDomainServiceImpl implements ICollegeKnowhowDomainSer
     }
 
     @Override
-    public IPage<CollegeQuestion> querySelfQuestion(String questionText, String sortType, Long employeeId, String relationType, String optionTag, Page<CollegeQuestionRela> page) {
+    public IPage<CollegeQuestion> querySelfQuestion(String questionText, String sortType, Long employeeId, String relationType, String optionTag, Page<CollegeQuestionRela> page, String questionType) {
         List<CollegeQuestionRela> questionRelas = collegeQuestionRelaService.queryByEmployeeIdAndRelaType(employeeId, relationType);
 
         List<CollegeQuestion> questions = this.queryQuestionByRelas(questionRelas);
+        if (StringUtils.isNotBlank(questionType)) {
+            questions = questions.stream().filter(question -> StringUtils.equals(questionType, question.getQuestionType())).collect(Collectors.toList());
+        }
+
         if (StringUtils.isNotEmpty(questionText)) {
             questions = questions.stream().filter(question -> question.getQuestionContent().contains(questionText) || question.getQuestionTitle().contains(questionText)).collect(Collectors.toList());
         }
