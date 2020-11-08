@@ -9,6 +9,8 @@ import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
+import com.microtomato.hirun.modules.bi.middleproduct.entity.po.MidprodOpen;
+import com.microtomato.hirun.modules.bi.middleproduct.service.IMidprodOpenService;
 import com.microtomato.hirun.modules.bss.config.entity.po.Action;
 import com.microtomato.hirun.modules.bss.config.service.IActionService;
 import com.microtomato.hirun.modules.bss.customer.entity.dto.*;
@@ -64,6 +66,9 @@ public class CustomerDomainServiceImpl implements ICustomerDomainService {
 
     @Autowired
     private IProjectOriginalActionService projectOriginalActionService;
+
+    @Autowired
+    private IMidprodOpenService midprodOpenService;
 
     @Override
     public CustomerInfoDetailDTO queryCustomerInfoDetail(Long customerId, String openId, Long partyId) {
@@ -167,7 +172,7 @@ public class CustomerDomainServiceImpl implements ICustomerDomainService {
         UserContext userContext = WebContextUtils.getUserContext();
         Long employeeId = userContext.getEmployeeId();
         if (!employeeId.equals(customerInfoDetailDTO.getLinkEmployeeId()) && !employeeId.equals(customerInfoDetailDTO.getHouseCounselorId())) {
-            customerInfoDetailDTO.setCustomerName(this.nameDesensitization(customerInfoDetailDTO.getCustomerName()));
+            //customerInfoDetailDTO.setCustomerName(this.nameDesensitization(customerInfoDetailDTO.getCustomerName()));
             customerInfoDetailDTO.setMobileNo("***********");
         }
         return customerInfoDetailDTO;
@@ -250,7 +255,12 @@ public class CustomerDomainServiceImpl implements ICustomerDomainService {
                 actionMap.put("XQLTYTS_ALL", this.setValue("XQLTYTS_ALL", TimeUtils.stringToLocalDateTime(xqltyBlue.getModeTime(),"yyyy-MM-dd HH:mm:ss")));
             }
         }
-
+        //202011/1中间产品推送数据
+        List<MidprodOpen> openList=midprodOpenService.queryByOpenId(openId);
+        if(openList.size()>0){
+            MidprodOpen midprodOpen=openList.get(0);
+            actionMap.put("MIDPROD_ALL", this.setValue("MIDPROD_ALL",midprodOpen.getOpenTime()));
+        }
         //将未完成的动作加入到流程信息
         List<CustomerActionInfoDTO> result = new ArrayList<>();
         for (Action action : actionList) {
@@ -408,6 +418,11 @@ public class CustomerDomainServiceImpl implements ICustomerDomainService {
         }
 
         return dtoList;
+    }
+
+    @Override
+    public List<MidprodOpen> getMidPordInfo(String openId) {
+        return midprodOpenService.queryByOpenId(openId);
     }
 
 

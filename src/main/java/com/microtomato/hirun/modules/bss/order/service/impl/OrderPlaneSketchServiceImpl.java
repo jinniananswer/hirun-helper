@@ -240,6 +240,8 @@ public class OrderPlaneSketchServiceImpl extends ServiceImpl<OrderPlaneSketchMap
          */
         if (dto.getFinanceEmployeeId() != null) {
             orderWorkerService.updateOrderWorker(dto.getOrderId(),34L,dto.getFinanceEmployeeId());
+        } else {
+            throw new OrderException(OrderException.OrderExceptionEnum.FINACNE_EMPLOYEE_MUST);
         }
 
         OrderBase orderBase = this.orderBaseService.queryByOrderId(orderId);

@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.bss.order.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.exception.ErrorKind;
@@ -29,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -127,7 +129,7 @@ public class OrderWorkerServiceImpl extends ServiceImpl<OrderWorkerMapper, Order
             throw new NotFoundException("参数缺失", ErrorKind.NOT_FOUND.getCode());
         }
         OrderWorker orderWorker = this.orderWorkerMapper.selectOne(new QueryWrapper<OrderWorker>().lambda()
-                .eq(OrderWorker::getOrderId, orderId).eq(OrderWorker::getRoleId, roleId).eq(OrderWorker::getEmployeeId,employeeId)
+                .eq(OrderWorker::getOrderId, orderId).eq(OrderWorker::getRoleId, roleId).eq(OrderWorker::getEmployeeId, employeeId)
                 .gt(OrderWorker::getEndDate, RequestTimeHolder.getRequestTime()));
 
         if (orderWorker != null) {
@@ -150,6 +152,7 @@ public class OrderWorkerServiceImpl extends ServiceImpl<OrderWorkerMapper, Order
 
     /**
      * 根据订单ID列表及角色列表查询订单参与人相关信息
+     *
      * @param orderIds
      * @param roleIds
      * @return
@@ -180,6 +183,7 @@ public class OrderWorkerServiceImpl extends ServiceImpl<OrderWorkerMapper, Order
 
     /**
      * 订单详情获取时展示工作人员信息
+     *
      * @param orderId
      * @return
      */
@@ -206,6 +210,7 @@ public class OrderWorkerServiceImpl extends ServiceImpl<OrderWorkerMapper, Order
 
     /**
      * 根据订单ID与角色ID查找有效的一条记录
+     *
      * @param orderId
      * @param roleId
      * @return
@@ -223,6 +228,7 @@ public class OrderWorkerServiceImpl extends ServiceImpl<OrderWorkerMapper, Order
 
     /**
      * 根据主键终止工作人员记录
+     *
      * @param ids
      */
     @Override
@@ -244,6 +250,7 @@ public class OrderWorkerServiceImpl extends ServiceImpl<OrderWorkerMapper, Order
 
     /**
      * 根据订单ID和角色ID查询工作人员
+     *
      * @param orderId
      * @param roleId
      * @return
@@ -255,5 +262,54 @@ public class OrderWorkerServiceImpl extends ServiceImpl<OrderWorkerMapper, Order
                 .eq(OrderWorker::getOrderId, orderId)
                 .eq(OrderWorker::getRoleId, roleId)
                 .ge(OrderWorker::getEndDate, now));
+    }
+
+    @Override
+    public boolean checkIncludeEmployeeId(Long orderId, Long employeeId) {
+        if(orderId==null){
+            return false;
+        }
+
+        List<OrderWorker> list = this.queryValidByOrderId(orderId);
+
+        if (ArrayUtils.isEmpty(list)) {
+            return false;
+        }
+        String employeeIds = "";
+        for (OrderWorker orderWorker : list) {
+            employeeIds += orderWorker.getEmployeeId() + ",";
+        }
+        if (("," + employeeIds).indexOf("," + employeeId + ",") >= 0) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean checkIncludeEmployeeIdAndRole(Long orderId, Long employeeId, String roleId) {
+
+        if(orderId==null){
+            return false;
+        }
+        List roleList=null;
+        if(StringUtils.isNotBlank(roleId)){
+           roleList= Arrays.asList(roleId);
+        }
+        List<OrderWorker> list = this.queryValidByOrderId(orderId);
+
+        if (ArrayUtils.isEmpty(list)) {
+            return false;
+        }
+        String employeeIds = "";
+        for (OrderWorker orderWorker : list) {
+            if(!roleList.contains(orderWorker.getRoleId())){
+                continue;
+            }
+            employeeIds += orderWorker.getEmployeeId() + ",";
+        }
+        if (("," + employeeIds).indexOf("," + employeeId + ",") >= 0) {
+            return true;
+        }
+        return false;
     }
 }

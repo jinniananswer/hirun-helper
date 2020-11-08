@@ -75,5 +75,5 @@ public interface ICustPreparationService extends IService<CustPreparation> {
 
     IPage<CustInfoDTO> queryPreparationInfo(CustQueryCondDTO condDTO);
 
-
+    boolean checkRulingRight();
 }

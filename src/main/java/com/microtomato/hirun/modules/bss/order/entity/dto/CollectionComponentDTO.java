@@ -1,7 +1,6 @@
 package com.microtomato.hirun.modules.bss.order.entity.dto;
 
 import com.microtomato.hirun.modules.bss.config.entity.po.CollectionItemCfg;
-import com.microtomato.hirun.modules.bss.config.entity.po.PayItemCfg;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -29,4 +28,8 @@ public class CollectionComponentDTO {
     private List<CascadeDTO<CollectionItemCfg>> collectionItemOption;
 
     private String auditStatus;
+
+    private String remark;
+
+    private String auditComment;
 }

@@ -56,4 +56,8 @@ public interface IOrgService extends IService<Org> {
 
     String listOrgSecurityLine();
 
+    List<Org> selectShop();
+
+    String listShopLine();
+
 }

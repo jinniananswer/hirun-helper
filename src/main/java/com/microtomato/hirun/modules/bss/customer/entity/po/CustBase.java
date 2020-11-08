@@ -217,6 +217,12 @@ public class CustBase extends BaseEntity {
     @TableField("prepare_id")
     private Long prepareId;
 
+    /**
+     * 报备ID
+     */
+    @TableField("party_id")
+    private Long partyId;
+
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)
     private Long createUserId;
 

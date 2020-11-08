@@ -8,8 +8,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.annotation.Storage;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
 import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
-import com.microtomato.hirun.modules.bss.customer.entity.dto.CustQueryCondDTO;
-import com.microtomato.hirun.modules.bss.plan.entity.dto.AgentMonthPlanDTO;
 import com.microtomato.hirun.modules.organization.entity.dto.*;
 import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import org.apache.ibatis.annotations.Param;
@@ -350,7 +348,8 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
             " and a.status='0'" +
             " and (now() between b.start_date and b.end_date)" +
             " and b.org_id in (${orgId}) " +
-            " and c.role_id = #{roleId}")
+            " and c.role_id = #{roleId} " +
+            " order by b.org_id asc ")
     List<SimpleEmployeeDTO> querySimpleEmployees(@Param("roleId")Long roleId, @Param("orgId")String orgId);
 
     @Select("select a.employee_id,a.name, b.org_id, b.job_role from " +

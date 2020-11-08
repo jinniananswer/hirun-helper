@@ -3,7 +3,7 @@ server:
   servlet.context-path: /
   servlet:
     session:
-      timeout: PT1H
+      timeout: PT5H
       cookie:
         name: HIRUN_SID
 
@@ -17,6 +17,7 @@ logging:
     com.baomidou.mybatisplus: info
     com.microtomato.hirun: debug
     com.microtomato.hirun.framework.interceptor: info
+    #com.microtomato.hirun.framework.mybatis: trace
     # 必要时可开启 XA 事务调试日志，方便查找问题，默认不开启设置为 info
     org.springframework.transaction.jta.JtaTransactionManager: info
     org.mybatis.spring.transaction.SpringManagedTransaction: info
@@ -31,65 +32,32 @@ spring:
   datasource:
     atomikos:
       sys:
-        unique-resource-name: sys
-        min-pool-size: 0
-        max-pool-size: 50
-        max-lifetime: 20000
-        borrow-connection-timeout: 10000
-        xa-data-source-class-name: com.alibaba.druid.pool.xa.DruidXADataSource
-        xa-properties:
-          url: jdbc:mysql://39.106.228.124:3306/sys?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
-          username: sys
-          password: ENC(kOszr+P7A1igBzGeAY/bpx0ZLffsMGc/)
-          driverClassName: com.mysql.cj.jdbc.Driver
-          initialSize: 5
-          minIdle: 5
-          maxActive: 50
-          maxWait: 60000
-          timeBetweenEvictionRunsMillis: 30000
-          #minEvictableIdleTimeMillis: 1800000
-          #maxEvictableIdleTimeMillis: 25200000
-          validationQuery: select 1
-          testWhileIdle: true
-          testOnBorrow: false
-          testOnReturn: false
-          numTestsPerEvictionRun: 2
-          poolPreparedStatements: false
-          keepAlive: true
-          keepAliveBetweenTimeMillis: 30000
-          filters: stat,slf4j,wall
-
-
+        uniqueResourceName: sys
+        driverClassName: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://39.106.228.124:3306/sys?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
+        user: sys
+        password: ENC(kOszr+P7A1igBzGeAY/bpx0ZLffsMGc/)
+        minPoolSize: 2
+        maxPoolSize: 10
+        maxIdleTime: 60
+        maxLifetime: 200
+        borrowConnectionTimeout: 5
+        maintenanceInterval: 60
+        testQuery: SELECT 1
 
       ins:
-        unique-resource-name: ins
-        min-pool-size: 0
-        max-pool-size: 50
-        max-lifetime: 20000
-        borrow-connection-timeout: 10000
-        xa-data-source-class-name: com.alibaba.druid.pool.xa.DruidXADataSource
-        xa-properties:
-          url: jdbc:mysql://39.106.228.124:3306/ins?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
-          username: ins
-          password: ENC(iLNwZcUXiXjVM2TOiymyEwsRUeZMnFKY)
-          driverClassName: com.mysql.cj.jdbc.Driver
-          initialSize: 5
-          minIdle: 5
-          maxActive: 50
-          maxWait: 60000
-          timeBetweenEvictionRunsMillis: 30000
-          #minEvictableIdleTimeMillis: 1800000
-          #maxEvictableIdleTimeMillis: 25200000
-          validationQuery: select 1
-          testWhileIdle: true
-          testOnBorrow: false
-          testOnReturn: false
-          numTestsPerEvictionRun: 2
-          poolPreparedStatements: false
-          keepAlive: true
-          keepAliveBetweenTimeMillis: 30000
-          filters: stat,slf4j,wall
-
+        uniqueResourceName: ins
+        driverClassName: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://39.106.228.124:3306/ins?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
+        user: ins
+        password: ENC(iLNwZcUXiXjVM2TOiymyEwsRUeZMnFKY)
+        minPoolSize: 2
+        maxPoolSize: 10
+        maxIdleTime: 60
+        maxLifetime: 200
+        borrowConnectionTimeout: 5
+        maintenanceInterval: 60
+        testQuery: SELECT 1
 
   cache:
     # 指定缓存类型: none(禁用缓存), simple(用于开发), redis（用于生产）

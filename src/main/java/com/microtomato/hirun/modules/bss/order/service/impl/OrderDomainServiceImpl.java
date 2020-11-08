@@ -35,6 +35,7 @@ import com.microtomato.hirun.modules.organization.entity.dto.SimpleEmployeeDTO;
 import com.microtomato.hirun.modules.organization.entity.po.Org;
 import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
+import com.microtomato.hirun.modules.organization.service.IOrgService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -124,6 +125,9 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
 
     @Autowired
     private IEmployeeService employeeService;
+
+    @Autowired
+    private IOrgService orgService;
 
     /**
      * 查询订单综合信息
@@ -414,6 +418,15 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
         queryWrapper.likeRight(StringUtils.isNotEmpty(queryCondition.getMobileNo()), "b.mobile_no", queryCondition.getMobileNo());
         queryWrapper.eq(StringUtils.isNotEmpty(queryCondition.getOrderStatus()), "a.status", queryCondition.getOrderStatus());
         queryWrapper.eq(queryCondition.getHousesId() != null, "a.housesId", queryCondition.getHousesId());
+
+        List<Org> orgs = this.orgService.listOrgsSecurity();
+        if (ArrayUtils.isNotEmpty(orgs)) {
+            List<Long> orgIds = new ArrayList<>();
+            orgs.forEach(org -> {
+                orgIds.add(org.getOrgId());
+            });
+            queryWrapper.in(ArrayUtils.isNotEmpty(orgIds), "a.shop_id", orgIds);
+        }
         IPage<CustOrderInfoDTO> result = this.orderBaseMapper.queryCustOrderInfo(page, queryWrapper);
 
         List<CustOrderInfoDTO> custOrders = result.getRecords();
@@ -421,13 +434,15 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
             for (CustOrderInfoDTO custOrder : custOrders) {
                 OrderStatusCfg statusCfg = this.orderStatusCfgService.getCfgByTypeStatus(custOrder.getType(), custOrder.getStatus());
                 RoleAttentionStatusCfg roleAttentionStatusCfg = this.roleAttentionStatusCfgService.getByStatusId(statusCfg.getId());
-                Long roleId = roleAttentionStatusCfg.getRoleId();
-                OrderWorker orderWorker = this.orderWorkerService.getOneOrderWorkerByOrderIdRoleId(custOrder.getOrderId(), roleId);
-                if (orderWorker != null) {
-                    Long currentEmployeeId = orderWorker.getEmployeeId();
-                    String currentEmployeeName = this.employeeService.getEmployeeNameEmployeeId(currentEmployeeId);
-                    custOrder.setCurrentEmployeeId(currentEmployeeId);
-                    custOrder.setCurrentEmployeeName(currentEmployeeName);
+                if (roleAttentionStatusCfg != null) {
+                    Long roleId = roleAttentionStatusCfg.getRoleId();
+                    OrderWorker orderWorker = this.orderWorkerService.getOneOrderWorkerByOrderIdRoleId(custOrder.getOrderId(), roleId);
+                    if (orderWorker != null) {
+                        Long currentEmployeeId = orderWorker.getEmployeeId();
+                        String currentEmployeeName = this.employeeService.getEmployeeNameEmployeeId(currentEmployeeId);
+                        custOrder.setCurrentEmployeeId(currentEmployeeId);
+                        custOrder.setCurrentEmployeeName(currentEmployeeName);
+                    }
                 }
 
                 UsualFeeDTO usualFee = this.getUsualOrderFee(custOrder.getOrderId(), custOrder.getType());
@@ -463,7 +478,7 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
         queryWrapper.likeRight(StringUtils.isNotEmpty(queryCondition.getMobileNo()), "b.mobile_no", queryCondition.getMobileNo());
         queryWrapper.eq(StringUtils.isNotEmpty(queryCondition.getOrderStatus()), "a.status", queryCondition.getOrderStatus());
         queryWrapper.eq(queryCondition.getHousesId() != null, "a.housesId", queryCondition.getHousesId());
-        queryWrapper.exists("select 1 from order_worker w where w.order_id = a.order_id and w.employee_id = " + employeeId);
+        queryWrapper.exists("select 1 from order_worker w where w.order_id = a.order_id  and w.end_date > now() and w.employee_id = " + employeeId);
         IPage<CustOrderInfoDTO> result = this.orderBaseMapper.queryCustOrderInfo(page, queryWrapper);
 
         List<CustOrderInfoDTO> custOrders = result.getRecords();
@@ -471,13 +486,15 @@ public class OrderDomainServiceImpl implements IOrderDomainService {
             for (CustOrderInfoDTO custOrder : custOrders) {
                 OrderStatusCfg statusCfg = this.orderStatusCfgService.getCfgByTypeStatus(custOrder.getType(), custOrder.getStatus());
                 RoleAttentionStatusCfg roleAttentionStatusCfg = this.roleAttentionStatusCfgService.getByStatusId(statusCfg.getId());
-                Long roleId = roleAttentionStatusCfg.getRoleId();
-                OrderWorker orderWorker = this.orderWorkerService.getOneOrderWorkerByOrderIdRoleId(custOrder.getOrderId(), roleId);
-                if (orderWorker != null) {
-                    Long currentEmployeeId = orderWorker.getEmployeeId();
-                    String currentEmployeeName = this.employeeService.getEmployeeNameEmployeeId(currentEmployeeId);
-                    custOrder.setCurrentEmployeeId(currentEmployeeId);
-                    custOrder.setCurrentEmployeeName(currentEmployeeName);
+                if (roleAttentionStatusCfg != null) {
+                    Long roleId = roleAttentionStatusCfg.getRoleId();
+                    OrderWorker orderWorker = this.orderWorkerService.getOneOrderWorkerByOrderIdRoleId(custOrder.getOrderId(), roleId);
+                    if (orderWorker != null) {
+                        Long currentEmployeeId = orderWorker.getEmployeeId();
+                        String currentEmployeeName = this.employeeService.getEmployeeNameEmployeeId(currentEmployeeId);
+                        custOrder.setCurrentEmployeeId(currentEmployeeId);
+                        custOrder.setCurrentEmployeeName(currentEmployeeName);
+                    }
                 }
 
                 UsualFeeDTO usualFee = this.getUsualOrderFee(custOrder.getOrderId(), custOrder.getType());

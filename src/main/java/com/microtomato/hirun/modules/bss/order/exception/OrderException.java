@@ -49,6 +49,9 @@ public class OrderException extends BaseException {
 
         @Error(code = ErrorKind.NOT_FOUND, message = "未进行费用收取，不能审核")
         ORDER_COSTFEE_NOT_FOUND,
+
+        @Error(code = ErrorKind.NOT_FOUND, message = "收银员必须选择")
+        FINACNE_EMPLOYEE_MUST,
     }
 
     public OrderException(String message, int code) {

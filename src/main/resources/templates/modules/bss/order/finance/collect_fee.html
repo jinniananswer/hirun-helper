@@ -22,7 +22,7 @@
                             <div slot="header" class="clearfix">
                                 <span>查询条件区</span>
                             </div>
-                            <el-form :inline="false" :model="queryCond" label-position="right" label-width="80px">
+                            <el-form :inline="false" ref="queryForm" :model="queryCond" label-position="right" label-width="80px">
                                 <el-row>
                                     <el-col :span="8">
                                         <el-form-item label="客户姓名">
@@ -68,12 +68,10 @@
                                 style="width: 100%">
                             <el-table-column
                                     label="客户姓名"
+                                    prop="custName"
                                     fixed
                                     width="80"
                                     align="center">
-                                <template slot-scope="scope">
-                                    <el-button type="text" @click="selectCustOrder(scope.row.orderId, scope.row.custId)">{{ scope.row.custName }}</el-button>
-                                </template>
                             </el-table-column>
                             <el-table-column
                                     prop="sexName"
@@ -139,7 +137,34 @@
                         <div slot="header">
                             <span>操作区</span>
                         </div>
-                        <order-payment :order-id="orderId" :pay-no="payNo" ref="pay"></order-payment>
+                        <order-payment :order-id="orderId" :pay-no="payNo" :remark.sync="remark" ref="pay"></order-payment>
+                        <el-form :inline="false" ref="custForm" :model="cust" label-position="right" label-width="80px">
+                            <el-row>
+                                <el-col :span="8">
+                                    <el-form-item label="客户姓名">
+                                        <el-input v-model="cust.custName" placeholder="请输入客户姓名"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="归属楼盘">
+                                        <house-select v-model="cust.housesId"></house-select>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="装修地址">
+                                        <el-input v-model="cust.address" placeholder="请输入装修地址"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-row>
+                                <el-col :span="24">
+                                    <el-form-item label="收款摘要">
+                                        <el-input type="textarea" :rows="3" v-model="remark"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                        </el-form>
+                        <el-divider v-if="auditComment != null">复核意见：{{auditComment}}</el-divider>
                         <div class="bottom clearfix">
                             <el-button type="primary" @click="submit">提交</el-button>
                         </div>

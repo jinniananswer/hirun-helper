@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>推送详情查询</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script src="static/js/framework/requirejs/require.min.js" th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js" th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+</head>
+<body>
+<div id="app" v-cloak>
+    <el-container>
+        <el-main>
+            <el-row>
+                <el-card class="box-card" shadow="hover">
+                    <div slot="header" class="clearfix">
+                        <span>查询条件区</span>
+                    </div>
+                    <el-form :inline="false" :model="queryCond" label-position="right" label-width="80px">
+                        <el-row :gutter="12">
+                            <el-col :span="8">
+                                <el-form-item label="客户名称">
+                                    <el-input v-model="queryCond.custName" placeholder="请输入客户姓名（模糊查找）"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="微信昵称">
+                                    <el-input v-model="queryCond.wechatNickname" placeholder="请输入客户微信昵称（模糊查找）"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="楼盘">
+                                    <house-select v-model="queryCond.housesId"></house-select>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row :gutter="12">
+                            <el-col :span="8">
+                                <el-form-item label="部门">
+                                    <org-orgtree :org-id.sync="queryCond.orgIds" :org-name.sync="queryCond.orgName" mode="multi"></org-orgtree>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="员工">
+                                    <el-input v-model="queryCond.employeeName" placeholder="请输入员工姓名（模糊查找）"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="筛选条件">
+                                    <vue-select code-type="PUSH_FILTER_TYPE" v-model="queryCond.filterType"></vue-select>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row :gutter="12">
+                            <el-col :span="8">
+                                <el-form-item label="推送时间">
+                                    <el-date-picker
+                                            v-model="queryCond.pushTime"
+                                            type="daterange"
+                                            format="yyyy-MM-dd"
+                                            value-format="yyyy-MM-dd"
+                                            align="right"
+                                            unlink-panels
+                                            range-separator="至"
+                                            start-placeholder="开始日期"
+                                            end-placeholder="结束日期"
+                                            style="width:100%"
+                                            :picker-options="pickerOptions">
+                                    </el-date-picker>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item>
+                                    <el-button type="primary" @click="query">查询</el-button>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+
+                            </el-col>
+                        </el-row>
+                    </el-form>
+                </el-card>
+            </el-row>
+            <el-row>
+                <el-card class="box-card" shadow="hover">
+                    <vxe-table
+                            border
+                            resizable
+                            ref="pushTable"
+                            show-overflow
+                            highlight-hover-row
+                            highlight-cell
+                            keep-source
+                            max-height="800px"
+                            :auto-resize="true"
+                            :data="pushDatas">
+                        <vxe-table-column field="custName" title="客户姓名" sortable width="200"></vxe-table-column>
+                        <vxe-table-column field="houseName" title="楼盘名称" sortable width="200"></vxe-table-column>
+                        <vxe-table-column field="pushEmployeeName" title="推送员工" sortable width="200"></vxe-table-column>
+                        <vxe-table-column field="pushTime" title="推送时间" width="200" sortable></vxe-table-column>
+                        <vxe-table-column field="pushContent" title="推送内容" sortable></vxe-table-column>
+                        <vxe-table-column field="shareTime" title="分享时间" sortable></vxe-table-column>
+                        <vxe-table-column field="shareTypeName" title="分享类型" sortable></vxe-table-column>
+                        <vxe-table-column title="详情" width="100" show-overflow>
+                            <template v-slot="{ row }">
+                                <el-button
+                                        size="mini"
+                                        type="danger"
+                                        icon="el-icon-delete"
+                                        @click="deletePayItem(row)">详情</el-button>
+                            </template>
+                        </vxe-table-column>
+                    </vxe-table>
+                </el-card>
+            </el-row>
+
+        </el-main>
+    </el-container>
+</div>
+<style>
+    .text {
+        font-size: 14px;
+    }
+
+    .box-card {
+        margin-bottom: 12px;
+    }
+
+    .item {
+        margin-bottom: 18px;
+    }
+
+    .el-card__header {
+        padding:10px;
+    }
+
+    .modify_row {
+        color: #ff4835;
+    }
+
+    .new_row {
+        color: #4DAF29;
+    }
+
+    .delete_row {
+        text-decoration:line-through;
+    }
+    [v-cloak] {
+        display: none;
+    }
+</style>
+<script src="static/js/modules/bi/middleproduct/push.detail.js" th:src="@{static/js/modules/bi/middleproduct/push.detail.js(v=${version})}"></script>
+</body>
+</html>

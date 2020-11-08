@@ -34,12 +34,8 @@ public class CustQueryCondDTO {
 
     private String timeType;
 
-    @JsonSerialize(using = JsonLocalDateTimeSerializer.class)
-    @JsonDeserialize(using = JsonLocalDateTimeDeserializer.class)
     private LocalDate startTime;
 
-    @JsonSerialize(using = JsonLocalDateTimeSerializer.class)
-    @JsonDeserialize(using = JsonLocalDateTimeDeserializer.class)
     private LocalDate endTime;
 
     private String houseMode;
@@ -58,4 +54,9 @@ public class CustQueryCondDTO {
 
     private Long agentEmployeeId;
 
+    private Long shopId;
+
+    private String employeeIds;
+
+    private String orgLine;
 }

@@ -305,8 +305,8 @@ layui.define('view', function(exports){
     
     //关闭当前 pageTabs
     ,closeThisTabs: function(){
-      if(!admin.tabsPage.index) return;
-      $(TABS_HEADER).eq(admin.tabsPage.index).find('.layui-tab-close').trigger('click');
+      // if(!admin.tabsPage.index) return;
+      $(TABS_HEADER).eq($(TABS_HEADER).length -1).find('.layui-tab-close').trigger('click');
     }
     
     //……
@@ -641,6 +641,13 @@ layui.define('view', function(exports){
   //监听 tab 组件切换，同步 index
   element.on('tab('+ FILTER_TAB_TBAS +')', function(data){
     admin.tabsPage.index = data.index;
+    if ($(this).attr('lay-id').indexOf('employee_order_console') > 0 || $(this).attr('lay-id').indexOf('finance_order_console') > 0) {
+      let iframe = admin.tabsBody(admin.tabsPage.index).find('.layadmin-iframe');
+      let button = iframe[0].contentWindow.document.getElementById('query_button');
+      if (button) {
+        button.click();
+      }
+    }
   });
   
   //监听选项卡切换，改变菜单状态
@@ -754,7 +761,6 @@ layui.define('view', function(exports){
     
     obj.index && admin.tabsBody(obj.index).remove();
     setThisRouter(othis);
-    
     //移除resize事件
     admin.delResize();
   });

@@ -1,16 +1,11 @@
 package com.microtomato.hirun.modules.bss.order.entity.po;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.microtomato.hirun.framework.data.BaseEntity;
+import lombok.*;
+import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
-
-import com.microtomato.hirun.framework.data.BaseEntity;
-import lombok.Data;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
 /**
  * <p>
@@ -45,6 +40,10 @@ public class NormalPayMoney extends BaseEntity {
      */
     @TableField("payment_type")
     private String paymentType;
+
+    /** 付费方式，见finance_acct */
+    @TableField(value = "payment_id")
+    private Long paymentId;
 
     /**
      * 费用

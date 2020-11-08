@@ -19,6 +19,12 @@ public class PayComponentDTO {
 
     private Double needPay;
 
+    private String auditComment;
+
+    private String auditStatus;
+
+    private String remark;
+
     private List<PaymentDTO> payments;
 
     private List<PayItemDTO> payItems;

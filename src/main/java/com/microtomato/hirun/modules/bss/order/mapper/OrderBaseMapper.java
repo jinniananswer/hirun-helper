@@ -53,7 +53,7 @@ public interface OrderBaseMapper extends BaseMapper<OrderBase> {
     )
     List<OrderTaskDTO> queryOrderTaskInConsole(@Param(Constants.WRAPPER)Wrapper wrapper);
 
-    @Select("select a.cust_id, a.order_id, a.status,a.decorate_address,a.house_layout, a.houses_id, a.indoor_area,a.type, b.cust_no, b.cust_name, b.mobile_no, a.create_time, c.total_money/100 total_money, c.pay_no, c.audit_status,c.pay_date from order_base a, cust_base b, order_pay_no c " +
+    @Select("select a.cust_id, a.order_id, a.status,a.decorate_address,a.house_layout, a.houses_id, a.indoor_area,a.type, b.cust_no, b.cust_name, b.mobile_no, a.create_time, c.total_money/100 total_money, c.pay_no, c.audit_status,c.pay_date, c.receipt_no, c.finance_employee_id from order_base a, cust_base b, order_pay_no c " +
             " ${ew.customSqlSegment}"
     )
     IPage<FinanceOrderTaskDTO> queryFinanceOrderTaskInConsole(IPage<FinanceOrderTaskQueryDTO> condition, @Param(Constants.WRAPPER)Wrapper wrapper);

@@ -2,6 +2,7 @@ package com.microtomato.hirun.modules.bss.order.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.microtomato.hirun.framework.mybatis.sequence.impl.FeeNoCycleSeq;
 import com.microtomato.hirun.framework.mybatis.sequence.impl.PayNoCycleSeq;
@@ -13,12 +14,16 @@ import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.bss.config.entity.po.*;
 import com.microtomato.hirun.modules.bss.config.service.*;
+import com.microtomato.hirun.modules.bss.customer.entity.po.CustBase;
+import com.microtomato.hirun.modules.bss.customer.service.ICustBaseService;
 import com.microtomato.hirun.modules.bss.house.entity.po.Houses;
 import com.microtomato.hirun.modules.bss.house.service.IHousesService;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.*;
+import com.microtomato.hirun.modules.bss.order.entity.dto.finance.CustPayDataDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.finance.FinanceOrderTaskDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.finance.FinanceOrderTaskQueryDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.finance.NormalPayNoDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.*;
 import com.microtomato.hirun.modules.bss.order.exception.OrderException;
 import com.microtomato.hirun.modules.bss.order.mapper.NormalPayNoMapper;
@@ -34,7 +39,6 @@ import com.microtomato.hirun.modules.organization.entity.po.Employee;
 import com.microtomato.hirun.modules.organization.entity.po.Org;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import com.microtomato.hirun.modules.organization.service.IOrgService;
-import com.microtomato.hirun.modules.system.entity.po.StaticData;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -128,6 +132,9 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
 
     @Autowired
     private IFinanceAcctService financeAcctService;
+
+    @Autowired
+    private ICustBaseService custBaseService;
     /**
      * 初始化支付组件
      *
@@ -162,6 +169,9 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
                     componentData.setNeedPay(totalMoney.doubleValue() / 100);
                 }
                 componentData.setPayDate(orderPayNo.getPayDate());
+                componentData.setAuditComment(orderPayNo.getAuditComment());
+                componentData.setRemark(orderPayNo.getRemark());
+                componentData.setAuditStatus(orderPayNo.getAuditStatus());
             }
 
             List<OrderPayItem> payItems = this.orderPayItemService.queryByOrderIdPayNo(orderId, payNo);
@@ -211,6 +221,40 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
 
 
         return componentData;
+    }
+
+    /**
+     * 获取支付其他信息
+     * @param orderId
+     * @param payNo
+     * @return
+     */
+    @Override
+    public CustPayDataDTO getCustPayData(Long orderId, Long payNo) {
+        CustPayDataDTO data = new CustPayDataDTO();
+
+        OrderBase orderBase = this.orderBaseService.queryByOrderId(orderId);
+        if (orderBase == null) {
+            return null;
+        }
+
+        data.setOrderId(orderBase.getOrderId());
+        data.setCustId(orderBase.getCustId());
+        data.setAddress(orderBase.getDecorateAddress());
+        data.setHousesId(orderBase.getHousesId());
+
+        OrderPayNo orderPayNo = this.orderPayNoService.getByOrderIdAndPayNo(orderId, payNo);
+        if (orderPayNo != null) {
+            data.setPayNoRemark(orderPayNo.getRemark());
+            data.setAuditComment(orderPayNo.getAuditComment());
+        }
+
+        CustBase custBase = this.custBaseService.queryByCustId(orderBase.getCustId());
+        if (custBase != null) {
+            data.setCustName(custBase.getCustName());
+        }
+
+        return data;
     }
 
     /**
@@ -364,6 +408,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
         orderPayNo.setEndDate(forever);
         orderPayNo.setTotalMoney(needPay);
         orderPayNo.setPayEmployeeId(employeeId);
+        orderPayNo.setRemark(feeData.getRemark());
         orderPayNo.setOrgId(WebContextUtils.getUserContext().getOrgId());
         this.orderPayNoService.save(orderPayNo);
 
@@ -374,35 +419,16 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
             this.orderPayMoneyService.saveBatch(payMonies);
         }
 
-        //更新店面信息
-        if (feeType.size() > 0) {
-            OrderBase orderBase = this.orderBaseService.queryByOrderId(orderId);
-            feeType.forEach((key, value) -> {
-                String type = null;
-                if (StringUtils.indexOf(key, ",") > 0) {
-                    //有分期信息，肯定不是设计费
-                    return;
-                } else {
-                    type = key;
-                }
-                //以设计师的部门为准
-//                if (StringUtils.equals("1", type)) {
-//                    //收设计费，更新店面信息
-//                    UserContext userContext = WebContextUtils.getUserContext();
-//                    Long orgId = userContext.getOrgId();
-//                    if (orgId != null) {
-//                        OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
-//                        Org shop = orgDO.getBelongShop();
-//                        if (shop != null) {
-//                            //以收设计费的店铺为准
-//                            orderBase.setShopId(shop.getOrgId());
-//                        }
-//                    }
-//                    return;
-//                }
-            });
+        OrderBase orderBase = this.orderBaseService.queryByOrderId(orderId);
+        orderBase.setHousesId(feeData.getHousesId());
+        orderBase.setDecorateAddress(feeData.getAddress());
 
-            this.updatePayed(orderBase);
+        this.updatePayed(orderBase);
+
+        CustBase custBase = this.custBaseService.queryByCustId(orderBase.getCustId());
+        if (StringUtils.isNotBlank(feeData.getCustName())) {
+            custBase.setCustName(feeData.getCustName());
+            this.custBaseService.updateById(custBase);
         }
     }
 
@@ -706,7 +732,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
         queryWrapper.eq(queryCondition.getCustNo() != null, "b.cust_no", queryCondition.getCustNo());
         //排除售后，订单关闭的状态
         queryWrapper.notIn("a.status", "32", "33", "100");
-        queryWrapper.exists("select 1 from order_worker w where w.order_id = a.order_id and employee_id = " + employeeId);
+        queryWrapper.exists("select 1 from order_worker w where w.order_id = a.order_id and w.end_date > now() and employee_id = " + employeeId);
         IPage<CustOrderInfoDTO> result = this.orderBaseMapper.queryCustOrderInfo(page, queryWrapper);
 
         List<CustOrderInfoDTO> custOrders = result.getRecords();
@@ -740,7 +766,6 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
             return null;
         }
 
-        ArrayList<FinancePendingTaskDTO> financeTasks = new ArrayList<>();
         Map<String, FinancePendingTaskDTO> temp = new HashMap<>();
         for (FinancePendingOrderDTO financeOrder : financeOrders) {
             String auditStatus = financeOrder.getAuditStatus();
@@ -813,7 +838,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
 
             Long auditEmployeeId = orderPayNo.getAuditEmployeeId();
             if (auditEmployeeId != null) {
-                EmployeeDO employeeDO = SpringContextUtils.getBean(EmployeeDO.class, employeeId);
+                EmployeeDO employeeDO = SpringContextUtils.getBean(EmployeeDO.class, auditEmployeeId);
                 orderPayInfo.setAuditEmployeeName(employeeDO.getEmployee().getName());
             }
 
@@ -890,12 +915,14 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
         CollectionComponentDTO componentData = new CollectionComponentDTO();
         List<PaymentDTO> payments = new ArrayList<>();
 
-        List<StaticData> configs = this.staticDataService.getStaticDatas("PAYMENT_TYPE");
-        if (ArrayUtils.isNotEmpty(configs)) {
-            for (StaticData config : configs) {
+        List<FinanceAcct> financeAccts = this.financeAcctService.queryByLoginEmployeeId();
+        if (ArrayUtils.isNotEmpty(financeAccts)) {
+            for (FinanceAcct financeAcct : financeAccts) {
                 PaymentDTO payment = new PaymentDTO();
-                payment.setPaymentType(config.getCodeValue());
-                payment.setPaymentName(config.getCodeName());
+                payment.setPaymentId(financeAcct.getId());
+                payment.setPaymentName(financeAcct.getName());
+                payment.setPaymentType(financeAcct.getType());
+                payment.setPaymentTypeName(this.staticDataService.getCodeName("FINANCE_ACCT_TYPE", financeAcct.getType()));
                 payments.add(payment);
             }
             componentData.setPayments(payments);
@@ -918,7 +945,9 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
                     componentData.setNeedPay(totalMoney.doubleValue() / 100);
                 }
                 componentData.setPayDate(normalPayNo.getPayDate());
+                componentData.setAuditComment(normalPayNo.getAuditComment());
                 componentData.setAuditStatus(normalPayNo.getAuditStatus());
+                componentData.setRemark(normalPayNo.getRemark());
             }
 
             List<NormalPayItem> payItems = this.normalPayItemService.queryByPayNo(payNo);
@@ -928,50 +957,12 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
                     NormalPayItemDTO normalPayItemDTO = new NormalPayItemDTO();
                     String payItemId = payItem.getPayItemId().toString();
                     Long projectId = payItem.getProject();
-                    normalPayItemDTO.setPayItemId("pay_" + payItem.getParentPayItemId());
-                    normalPayItemDTO.setSubjectId("pay_" + payItem.getPayItemId());
-                    normalPayItemDTO.setProjectId("pay_" + projectId);
+                    normalPayItemDTO.setPayItemId("pay_" + payItem.getPayItemId());
+                    normalPayItemDTO.setProjectId(projectId + "");
                     normalPayItemDTO.setMoney(payItem.getFee().doubleValue() / 100);
 
-                    String payItemName = this.collectionItemCfgService.getFeeItem(payItem.getParentPayItemId()).getName();
-                    String subjectName = this.collectionItemCfgService.getFeeItem(payItem.getPayItemId()).getName();
-                    String projectName = "";
-                    //根据不同的收费小类信息区分项目信息
-                    //查询品牌信息
-                    if (StringUtils.equals("12", payItemId)) {
-                        SupplierBrand supplierBrands = this.supplierBrandService.getSupplierBrand(projectId);
-                        projectName = supplierBrands.getName();
-                    }
-                    //查询工人信息
-                    if (StringUtils.equals("16", payItemId) || StringUtils.equals("25", payItemId) || StringUtils.equals("28", payItemId) || StringUtils.equals("33", payItemId) || StringUtils.equals("34", payItemId)) {
-                        Decorator decorators = this.decoratorService.getDecorator(projectId);
-                        projectName = decorators.getName();
-                    }
-
-                    //查询用户信息
-                    if (StringUtils.equals("20", payItemId)) {
-                        Employee employees = this.employeeService.queryByUserId(projectId);
-                        projectName = employees.getName();
-                    }
-                    //查询公司信息
-                    if (StringUtils.equals("19", payItemId)) {
-                        Enterprise enterprises = this.enterpriseService.getEnterpriseId(projectId);
-                        projectName = enterprises.getName();
-                    }
-                    //查询门店信息
-                    if (StringUtils.equals("13", payItemId) || StringUtils.equals("14", payItemId) || StringUtils.equals("15", payItemId) || StringUtils.equals("18", payItemId)
-                            || StringUtils.equals("21", payItemId) || StringUtils.equals("22", payItemId) || StringUtils.equals("23", payItemId) || StringUtils.equals("26", payItemId)
-                            || StringUtils.equals("27", payItemId) || StringUtils.equals("29", payItemId) || StringUtils.equals("30", payItemId) || StringUtils.equals("31", payItemId)
-                            || StringUtils.equals("32", payItemId) || StringUtils.equals("35", payItemId) || StringUtils.equals("36", payItemId)) {
-                        Org orgs = this.orgService.queryByOrgId(projectId);
-                        projectName = orgs.getName();
-
-                    }
-
+                    String payItemName = this.getPayItemName(payItem);
                     normalPayItemDTO.setPayItemName(payItemName);
-                    normalPayItemDTO.setSubjectName(subjectName);
-                    normalPayItemDTO.setProjectName(projectName);
-
                     normalPayItemDTOS.add(normalPayItemDTO);
                 }
                 componentData.setPayItems(normalPayItemDTOS);
@@ -981,7 +972,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
             if (ArrayUtils.isNotEmpty(payMonies)) {
                 for (NormalPayMoney payMoney : payMonies) {
                     for (PaymentDTO payment : payments) {
-                        if (StringUtils.equals(payment.getPaymentType(), payMoney.getPaymentType())) {
+                        if (payment.getPaymentId().equals(payMoney.getPaymentId())) {
                             payment.setMoney(payMoney.getMoney().doubleValue() / 100);
                             break;
                         }
@@ -994,6 +985,17 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
         return componentData;
     }
 
+
+    /**
+     * 初始化非主营收款级联选项
+     * @return
+     */
+    @Override
+    public List<CascadeDTO<CollectionItemCfg>> initCollectionItem() {
+        List<CollectionItemCfg> collectionItemCfgs = this.collectionItemCfgService.queryPlusCollectionyItems();
+        List<CascadeDTO<CollectionItemCfg>> collectionItems = this.buildPayItemCollectionCascade(collectionItemCfgs);
+        return collectionItems;
+    }
 
     /**
      * sunxin
@@ -1049,7 +1051,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
         if (ArrayUtils.isNotEmpty(childrens)) {
             root.setChildren(childrens);
             for (CascadeDTO<CollectionItemCfg> children : childrens) {
-                this.buildCollectionGrandChildren(children);
+                //this.buildCollectionGrandChildren(children);
             }
         }
     }
@@ -1157,98 +1159,97 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
         List<NormalPayItemDTO> payItems = feeData.getPayItems();
         Long payNo = feeData.getPayNo();
 
-            payNo = this.dualService.nextval(PayNoCycleSeq.class);
-            Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
-            LocalDate payDate = feeData.getPayDate();
-            LocalDateTime now = RequestTimeHolder.getRequestTime();
-            LocalDateTime forever = TimeUtils.getForeverTime();
+        payNo = this.dualService.nextval(PayNoCycleSeq.class);
+        Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
+        LocalDate payDate = feeData.getPayDate();
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+        LocalDateTime forever = TimeUtils.getForeverTime();
 
-            Double needPayDouble = feeData.getNeedPay();
+        Double needPayDouble = feeData.getNeedPay();
 
-            if (needPayDouble == null || needPayDouble <= 0.001) {
-                throw new OrderException(OrderException.OrderExceptionEnum.PAY_MUST_MORE_THAN_ZERO);
-            }
+        if (needPayDouble == null || needPayDouble <= 0.001) {
+            throw new OrderException(OrderException.OrderExceptionEnum.PAY_MUST_MORE_THAN_ZERO);
+        }
 
-            Long needPay = new Long(Math.round(needPayDouble * 100));
-            Long payItemTotal = 0L;
-            List<NormalPayItem> normalPayItems = new ArrayList<>();
+        Long needPay = new Long(Math.round(needPayDouble * 100));
+        Long payItemTotal = 0L;
+        List<NormalPayItem> normalPayItems = new ArrayList<>();
 
-            if (ArrayUtils.isNotEmpty(payItems)) {
-                for (NormalPayItemDTO payItem : payItems) {
-                    Double money = payItem.getMoney();
-                    if (money == null || money <= 0.001) {
-                        continue;
-                    }
-
-                    Long fee = new Long(Math.round(money * 100));
-
-                    Long payItemId = new Long(payItem.getPayItemId());
-                    Long subjectId = new Long(payItem.getSubjectId());
-                    Long projectId = new Long(payItem.getProjectId());
-                    CollectionItemCfg payItemCfg = this.collectionItemCfgService.getFeeItem(subjectId);
-                    if (payItemCfg == null) {
-                        throw new OrderException(OrderException.OrderExceptionEnum.PAY_ITEM_NOT_FOUND, payItem.getSubjectId());
-                    }
-                    NormalPayItem normalPayItem = new NormalPayItem();
-                    normalPayItem.setPayItemId(subjectId);
-                    normalPayItem.setParentPayItemId(payItemId);
-                    normalPayItem.setProject(projectId);
-                    normalPayItem.setFee(fee);
-                    normalPayItem.setPayNo(payNo);
-                    normalPayItem.setStartDate(now);
-                    normalPayItem.setEndDate(forever);
-                    normalPayItems.add(normalPayItem);
-                    payItemTotal += fee;
+        if (ArrayUtils.isNotEmpty(payItems)) {
+            for (NormalPayItemDTO payItem : payItems) {
+                Double money = payItem.getMoney();
+                if (money == null || money <= 0.001) {
+                    continue;
                 }
-            }
-            List<PaymentDTO> payments = feeData.getPayments();
-            List<NormalPayMoney> payMonies = new ArrayList<>();
-            Long totalMoney = 0L;
 
-            if (ArrayUtils.isNotEmpty(payments)) {
-                for (PaymentDTO payment : payments) {
-                    NormalPayMoney payMoney = new NormalPayMoney();
-                    payMoney.setPaymentType(payment.getPaymentType());
+                Long fee = new Long(Math.round(money * 100));
 
-                    Double money = payment.getMoney();
-                    if (money == null || money <= 0.001) {
-                        continue;
-                    }
-                    Long fee = new Long(Math.round(money * 100));
-                    payMoney.setMoney(fee);
-                    payMoney.setPayNo(payNo);
-                    payMoney.setStartDate(now);
-                    payMoney.setEndDate(forever);
-                    payMonies.add(payMoney);
-                    totalMoney += fee;
+                Long payItemId = new Long(payItem.getPayItemId());
+                Long projectId = new Long(payItem.getProjectId());
+                CollectionItemCfg payItemCfg = this.collectionItemCfgService.getFeeItem(payItemId);
+                if (payItemCfg == null) {
+                    throw new OrderException(OrderException.OrderExceptionEnum.PAY_ITEM_NOT_FOUND, payItemId + "");
                 }
+                NormalPayItem normalPayItem = new NormalPayItem();
+                normalPayItem.setPayItemId(payItemId);
+                normalPayItem.setParentPayItemId(payItemCfg.getParentCollectionItemId());
+                normalPayItem.setProject(projectId);
+                normalPayItem.setFee(fee);
+                normalPayItem.setPayNo(payNo);
+                normalPayItem.setStartDate(now);
+                normalPayItem.setEndDate(forever);
+                normalPayItems.add(normalPayItem);
+                payItemTotal += fee;
             }
-            if (!payItemTotal.equals(needPay)) {
-                throw new OrderException(OrderException.OrderExceptionEnum.PAY_MUST_EQUAL_PAYITEM);
-            }
-            if (!payItemTotal.equals(totalMoney)) {
-                throw new OrderException(OrderException.OrderExceptionEnum.PAY_MUST_EQUAL_PAYITEM);
-            }
+        }
+        List<PaymentDTO> payments = feeData.getPayments();
+        List<NormalPayMoney> payMonies = new ArrayList<>();
+        Long totalMoney = 0L;
 
-            NormalPayNo normalPayNo = new NormalPayNo();
-            normalPayNo.setPayDate(payDate);
-            normalPayNo.setPayNo(payNo);
-            //待审核状态
-            normalPayNo.setAuditStatus(OrderConst.AUDIT_STATUS_INIT);
-            normalPayNo.setStartDate(now);
-            normalPayNo.setEndDate(forever);
-            normalPayNo.setTotalMoney(needPay);
-            normalPayNo.setPayEmployeeId(employeeId);
-            normalPayNo.setOrgId(WebContextUtils.getUserContext().getOrgId());
-            normalPayNo.setAuditComment(feeData.getAuditRemark());
-            this.normalPayNoService.save(normalPayNo);
+        if (ArrayUtils.isNotEmpty(payments)) {
+            for (PaymentDTO payment : payments) {
+                NormalPayMoney payMoney = new NormalPayMoney();
+                payMoney.setPaymentType(payment.getPaymentType());
+                payMoney.setPaymentId(payment.getPaymentId());
+                Double money = payment.getMoney();
+                if (money == null || money <= 0.001) {
+                    continue;
+                }
+                Long fee = new Long(Math.round(money * 100));
+                payMoney.setMoney(fee);
+                payMoney.setPayNo(payNo);
+                payMoney.setStartDate(now);
+                payMoney.setEndDate(forever);
+                payMonies.add(payMoney);
+                totalMoney += fee;
+            }
+        }
+        if (!payItemTotal.equals(needPay)) {
+            throw new OrderException(OrderException.OrderExceptionEnum.PAY_MUST_EQUAL_PAYITEM);
+        }
+        if (!payItemTotal.equals(totalMoney)) {
+            throw new OrderException(OrderException.OrderExceptionEnum.PAY_MUST_EQUAL_PAYITEM);
+        }
 
-            if (ArrayUtils.isNotEmpty(normalPayItems)) {
-                this.normalPayItemService.saveBatch(normalPayItems);
-            }
-            if (ArrayUtils.isNotEmpty(payMonies)) {
-                this.normalPayMoneyService.saveBatch(payMonies);
-            }
+        NormalPayNo normalPayNo = new NormalPayNo();
+        normalPayNo.setPayDate(payDate);
+        normalPayNo.setPayNo(payNo);
+        //待审核状态
+        normalPayNo.setAuditStatus(OrderConst.AUDIT_STATUS_INIT);
+        normalPayNo.setStartDate(now);
+        normalPayNo.setEndDate(forever);
+        normalPayNo.setTotalMoney(needPay);
+        normalPayNo.setPayEmployeeId(employeeId);
+        normalPayNo.setOrgId(WebContextUtils.getUserContext().getOrgId());
+        normalPayNo.setRemark(feeData.getRemark());
+        this.normalPayNoService.save(normalPayNo);
+
+        if (ArrayUtils.isNotEmpty(normalPayItems)) {
+            this.normalPayItemService.saveBatch(normalPayItems);
+        }
+        if (ArrayUtils.isNotEmpty(payMonies)) {
+            this.normalPayMoneyService.saveBatch(payMonies);
+        }
 
     }
 
@@ -1259,42 +1260,76 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
      * @return
      */
     @Override
-    public List<NonCollectFeeDTO> queryPayInfoByCond(NonCollectFeeQueryDTO queryCondition) {
+    public IPage<NormalPayNoDTO> queryPayInfoByCond(NonCollectFeeQueryDTO queryCondition) {
+        IPage<NonCollectFeeQueryDTO> request = new Page<>(queryCondition.getPage(), queryCondition.getLimit());
+        String[] feeTime = queryCondition.getFeeTime();
+        Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
+        QueryWrapper wrapper = new QueryWrapper();
 
-        QueryWrapper<NormalPayNo> queryWrapper = new QueryWrapper<>();
-        if(null!=queryCondition.getStartDate()&&null!=queryCondition.getEndDate()){
-            queryWrapper.between("pay_date", queryCondition.getStartDate(), queryCondition.getEndDate());
+        wrapper.eq("pay_employee_id", employeeId);
+        wrapper.ge("end_date", RequestTimeHolder.getRequestTime());
+        wrapper.eq(StringUtils.isNotBlank(queryCondition.getAuditStatus()), "audit_status", queryCondition.getAuditStatus());
+
+        if (ArrayUtils.isNotEmpty(feeTime)) {
+            wrapper.between(ArrayUtils.isNotEmpty(feeTime), "pay_date", feeTime[0], feeTime[1]);
         }
-        queryWrapper.eq(StringUtils.isNotEmpty(queryCondition.getAuditStatus()), "audit_status", queryCondition.getAuditStatus());
-        queryWrapper.eq(queryCondition.getEmployeeId() != null, "pay_employee_id", queryCondition.getEmployeeId());
-        queryWrapper.ge("end_date", RequestTimeHolder.getRequestTime());
-        List<NormalPayNo> normalPayNos = this.normalPayNoMapper.queryPayNoInfo(queryWrapper);
+        if (ArrayUtils.isNotEmpty(queryCondition.getPayItemId())) {
+            String payItemIds = "";
+            List<String> tempPayItemIds = queryCondition.getPayItemId();
+            for (String tempPayItemId : tempPayItemIds) {
+                payItemIds += tempPayItemId.split("_")[1] + ",";
+            }
 
-//        if (ArrayUtils.isEmpty(normalPayNos)) {
-//            return null;
-//        }
-
-        List<NonCollectFeeDTO> normalPayInfos = new ArrayList<>();
+            wrapper.exists("select 1 from normal_pay_item b where b.pay_item_id in (" + payItemIds.substring(0, payItemIds.length() - 1)+ ") and b.pay_no = a.pay_no ");
+        }
+        IPage<NormalPayNo> infos = this.normalPayNoMapper.queryPayNoInfo(request, wrapper);
+        List<NormalPayNo> normalPayNos = infos.getRecords();
+        List<NormalPayNoDTO> normalPayInfos = new ArrayList<>();
         for (NormalPayNo normalPayNo : normalPayNos) {
-            NonCollectFeeDTO normalPayInfo = new NonCollectFeeDTO();
+            NormalPayNoDTO normalPayInfo = new NormalPayNoDTO();
             normalPayInfo.setPayDate(normalPayNo.getPayDate());
             normalPayInfo.setPayNo(normalPayNo.getPayNo());
-            Long employeeId = normalPayNo.getPayEmployeeId();
+            normalPayInfo.setAuditStatus(normalPayNo.getAuditStatus());
+
             if (employeeId != null) {
                 EmployeeDO employeeDO = SpringContextUtils.getBean(EmployeeDO.class, employeeId);
                 normalPayInfo.setEmployeeName(employeeDO.getEmployee().getName());
             }
-            normalPayInfo.setAuditStatusName(this.staticDataService.getCodeName("AUDIT_STATUS", normalPayNo.getAuditStatus()));
 
-
+            Long financeEmployeeId = normalPayNo.getFinanceEmployeeId();
+            if (financeEmployeeId != null) {
+                EmployeeDO employeeDO = SpringContextUtils.getBean(EmployeeDO.class, employeeId);
+                normalPayInfo.setFinanceEmployeeName(employeeDO.getEmployee().getName());
+            }
+            normalPayInfo.setAuditStatusName(this.staticDataService.getCodeName("PAY_AUDIT_STATUS", normalPayNo.getAuditStatus()));
             if (normalPayNo.getTotalMoney() != null) {
                 normalPayInfo.setTotalMoney(normalPayNo.getTotalMoney().doubleValue() / 100);
             } else {
                 normalPayInfo.setTotalMoney(0d);
             }
+
+            List<NormalPayItem> payItems = this.normalPayItemService.queryByPayNo(normalPayNo.getPayNo());
+            if (ArrayUtils.isNotEmpty(payItems)) {
+                StringBuilder sb = new StringBuilder();
+                payItems.forEach(payItem -> {
+                    String payItemName = this.getPayItemName(payItem);
+                    if (StringUtils.isNotBlank(payItemName)) {
+                        sb.append(payItemName + "|");
+                    }
+                });
+                if (sb.length() > 0) {
+                    normalPayInfo.setPayItemName(sb.substring(0, sb.length() -1));
+                }
+            }
             normalPayInfos.add(normalPayInfo);
         }
-        return normalPayInfos;
+        IPage<NormalPayNoDTO> result = new Page<>();
+        result.setSize(infos.getSize());
+        result.setTotal(infos.getTotal());
+        result.setPages(infos.getPages());
+        result.setCurrent(infos.getCurrent());
+        result.setRecords(normalPayInfos);
+        return result;
     }
 
     /**
@@ -1356,6 +1391,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
         //更新payNo表记录
         NormalPayNo normalPayNo = this.normalPayNoService.getByPayNo(payNo);
         if (normalPayNo != null) {
+            normalPayNo.setAuditComment(feeData.getAuditComment());
             normalPayNo.setAuditStatus(auditStatus);
             normalPayNo.setAuditEmployeeId(WebContextUtils.getUserContext().getEmployeeId());
             this.normalPayNoService.updateById(normalPayNo);
@@ -1371,6 +1407,9 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
         wrapper.eq(StringUtils.isNotBlank(condition.getAuditStatus()), "c.audit_status", condition.getAuditStatus());
         wrapper.eq(condition.getHousesId() != null, "a.houses_id", condition.getHousesId());
         wrapper.eq(StringUtils.isNotBlank(condition.getMobileNo()), "b.mobile_no", condition.getMobileNo());
+
+        Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
+        wrapper.exists("select 1 from order_worker w where w.order_id = a.order_id and w.end_date > now() and employee_id = " + employeeId);
         wrapper.orderByAsc("a.status", "a.create_time");
 
         IPage<FinanceOrderTaskQueryDTO> page = new Page<>(condition.getPage(), condition.getLimit());
@@ -1384,7 +1423,7 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
         tasks.forEach(task -> {
             task.setHouseLayoutName(this.staticDataService.getCodeName("HOUSE_MODE", task.getHouseLayout()));
             task.setTypeName(this.staticDataService.getCodeName("ORDER_TYPE", task.getType()));
-            task.setAuditStatusName(this.staticDataService.getCodeName("AUDIT_STATUS", task.getAuditStatus()));
+            task.setAuditStatusName(this.staticDataService.getCodeName("PAY_AUDIT_STATUS", task.getAuditStatus()));
             OrderStatusCfg statusCfg = this.orderStatusCfgService.getCfgByTypeStatus(task.getType(), task.getStatus());
             if (statusCfg != null) {
                 task.setStatusName(statusCfg.getStatusName());
@@ -1396,7 +1435,92 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
                     task.setHousesName(house.getName());
                 }
             }
+
+            if (task.getFinanceEmployeeId() != null) {
+                String financeEmployeeName = this.employeeService.getEmployeeNameEmployeeId(task.getFinanceEmployeeId());
+                task.setFinanceEmployeeName(financeEmployeeName);
+            }
         });
         return pageTasks;
+    }
+
+    /**
+     * 非主营收款交单
+     * @param payNo
+     */
+    @Override
+    public void submitNonBusinessReceipt(Long payNo, Long financeEmployeeId) {
+        NormalPayNo payNoData = new NormalPayNo();
+        payNoData.setPayNo(payNo);
+        payNoData.setAuditStatus("3");
+        payNoData.setFinanceEmployeeId(financeEmployeeId);
+
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+        this.normalPayNoService.update(payNoData, Wrappers.<NormalPayNo>lambdaQuery().eq(NormalPayNo::getPayNo, payNo).ge(NormalPayNo::getEndDate, now));
+    }
+
+    /**
+     * 主营收款交单
+     * @param orderId
+     * @param payNo
+     * @param financeEmployeeId
+     */
+    @Override
+    public void submitBusinessReceipt(Long orderId, Long payNo, Long financeEmployeeId) {
+        OrderPayNo payNoData = new OrderPayNo();
+        payNoData.setOrderId(orderId);
+        payNoData.setPayNo(payNo);
+        payNoData.setAuditStatus("3");
+        payNoData.setFinanceEmployeeId(financeEmployeeId);
+
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+        this.orderPayNoService.update(payNoData, Wrappers.<OrderPayNo>lambdaQuery().eq(OrderPayNo::getOrderId, orderId).eq(OrderPayNo::getPayNo, payNo).ge(OrderPayNo::getEndDate, now));
+    }
+
+    /**
+     * 获取付款项名称
+     * @param payItem
+     * @return
+     */
+    private String getPayItemName(NormalPayItem payItem) {
+        Long projectId = payItem.getProject();
+        CollectionItemCfg collectionItemCfg = this.collectionItemCfgService.getFeeItem(payItem.getPayItemId());
+        String payItemName = collectionItemCfg.getName();
+
+        String parentPayItemName = null;
+        if (payItem.getParentPayItemId() != null && !payItem.getParentPayItemId().equals(-1L)) {
+            parentPayItemName = this.collectionItemCfgService.getFeeItem(payItem.getParentPayItemId()).getName();
+        }
+
+        String extend = collectionItemCfg.getExtend();
+        String projectName = "";
+        //根据不同的收费小类信息区分项目信息
+        //查询品牌信息
+        if (StringUtils.equals("B", extend)) {
+            SupplierBrand supplierBrands = this.supplierBrandService.getSupplierBrand(projectId);
+            projectName = supplierBrands.getName();
+        } else if (StringUtils.equals("D", extend)) {
+            //查询工人信息
+            Decorator decorators = this.decoratorService.getDecorator(projectId);
+            projectName = decorators.getName();
+        } else if (StringUtils.equals("E", extend)) {
+            //查询员工信息
+            Employee employees = this.employeeService.queryByUserId(projectId);
+            projectName = employees.getName();
+        } else if (StringUtils.equals("S", extend) || StringUtils.equals("C", extend)) {
+            //查询门店信息
+            Org orgs = this.orgService.queryByOrgId(projectId);
+            projectName = orgs.getName();
+        }
+
+        if (StringUtils.isNotBlank(parentPayItemName)) {
+            payItemName = parentPayItemName + "-" + payItemName;
+        }
+
+        if (StringUtils.isNotBlank(projectName)) {
+            payItemName = payItemName + "-" + projectName;
+        }
+
+        return payItemName;
     }
 }

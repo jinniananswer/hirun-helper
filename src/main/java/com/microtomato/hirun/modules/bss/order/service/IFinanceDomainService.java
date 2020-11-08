@@ -2,9 +2,12 @@ package com.microtomato.hirun.modules.bss.order.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.microtomato.hirun.modules.bss.config.entity.po.CollectionItemCfg;
 import com.microtomato.hirun.modules.bss.order.entity.dto.*;
+import com.microtomato.hirun.modules.bss.order.entity.dto.finance.CustPayDataDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.finance.FinanceOrderTaskDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.finance.FinanceOrderTaskQueryDTO;
+import com.microtomato.hirun.modules.bss.order.entity.dto.finance.NormalPayNoDTO;
 
 import java.util.List;
 
@@ -20,7 +23,11 @@ public interface IFinanceDomainService {
 
     CollectionComponentDTO initCollectionComponent(Long payNo);
 
+    CustPayDataDTO getCustPayData(Long orderId, Long payNo);
+
     void collectFee(CollectFeeDTO feeData);
+
+    List<CascadeDTO<CollectionItemCfg>> initCollectionItem();
 
     void nonCollectFee(NonCollectFeeDTO feeData);
 
@@ -36,7 +43,11 @@ public interface IFinanceDomainService {
 
     List<OrderPayInfoDTO> queryPayInfoByOrderId(Long orderId);
 
-    List<NonCollectFeeDTO> queryPayInfoByCond(NonCollectFeeQueryDTO queryCondition);
+    IPage<NormalPayNoDTO> queryPayInfoByCond(NonCollectFeeQueryDTO queryCondition);
 
     IPage<FinanceOrderTaskDTO> queryFinanceOrderTasks(FinanceOrderTaskQueryDTO condition);
+
+    void submitNonBusinessReceipt(Long payNo, Long financeEmployeeId);
+
+    void submitBusinessReceipt(Long orderId, Long payNo, Long financeEmployeeId);
 }

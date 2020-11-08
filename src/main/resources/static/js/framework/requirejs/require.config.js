@@ -31,7 +31,8 @@ require.config({
         'order-discount-item':'static/js/modules/bss/component/order.discount.item',
         'org-orgtree':'static/js/modules/organization/component/org.orgtree',
         'org-selectemployee':'static/js/modules/organization/component/org.selectemployee',
-        'echarts': 'static/js/framework/extend/chart/echarts'
+        'echarts': 'static/js/framework/extend/chart/echarts',
+        'shop-select': 'static/js/modules/bss/component/shop.select',
 
     },
     shim: {

@@ -5,14 +5,13 @@ import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
+import com.microtomato.hirun.modules.bss.order.entity.dto.DecoratorInfoDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.DecoratorServiceDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.Decorator;
-import com.microtomato.hirun.modules.college.topic.entity.po.ExamTopic;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import lombok.extern.slf4j.Slf4j;
-
 import com.microtomato.hirun.modules.bss.order.service.IDecoratorService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,10 +51,10 @@ public class DecoratorController {
         return this.decoratorServiceImpl.queryDecoratorInfo(name, identityNo, decoratorType, page, size);
     }
 
-    @PostMapping("/updateById")
+    @GetMapping("/initDecorators")
     @RestResult
-    public void updateById(@RequestBody Decorator decorator) {
-        this.decoratorServiceImpl.updateById(decorator);
+    public List<DecoratorInfoDTO> initDecorators() {
+        return this.decoratorServiceImpl.initDecorators();
     }
 
     @PostMapping("/addDecorator")

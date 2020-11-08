@@ -382,6 +382,7 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.apply("a.employee_id=b.employee_id " +
                 " and a.status='0' and (now() between b.start_date and b.end_date) and is_main='1'");
+        queryWrapper.orderByAsc("b.org_id");
         if (isSelf) {
             //只查询自己
             UserContext userContext = WebContextUtils.getUserContext();
@@ -398,6 +399,28 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
             if (root != null) {
                 String orgLine = orgDO.getOrgLine(root.getOrgId());
                 employees = this.employeeMapper.querySimpleEmployees(roleId, orgLine);
+            }
+        }
+
+        if (ArrayUtils.isNotEmpty(employees)) {
+            for (SimpleEmployeeDTO employee : employees) {
+                OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, employee.getOrgId());
+                Org company = orgDO.getBelongCompany();
+                Org shop = orgDO.getBelongShop();
+
+                if (shop != null) {
+                    employee.setShopName(shop.getName());
+                } else {
+                    Org self = orgDO.getOrg();
+                    if (self != null) {
+                        employee.setShopName(self.getName());
+                    }
+                }
+
+                if (company != null) {
+                    employee.setCompanyName(company.getName());
+                }
+
             }
         }
         return employees;

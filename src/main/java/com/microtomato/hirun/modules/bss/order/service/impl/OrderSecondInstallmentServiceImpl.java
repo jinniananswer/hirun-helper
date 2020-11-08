@@ -1,6 +1,5 @@
 package com.microtomato.hirun.modules.bss.order.service.impl;
 
-import com.microtomato.hirun.framework.exception.cases.NotFoundException;
 import com.microtomato.hirun.modules.bss.config.entity.consts.FeeConst;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.FeeDTO;
@@ -9,7 +8,6 @@ import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerSalaryDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.SecondInstallmentCollectionDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFee;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFeeItem;
-import com.microtomato.hirun.modules.bss.order.entity.po.OrderWorker;
 import com.microtomato.hirun.modules.bss.order.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -116,7 +114,7 @@ public class OrderSecondInstallmentServiceImpl implements IOrderSecondInstallmen
         List<OrderWorkerDTO> orderWorkersDTO = workerService.queryByOrderId(orderId);
         if(orderWorkersDTO != null) {
             for(OrderWorkerDTO orderWorkerDTO : orderWorkersDTO) {
-                if(orderWorkerDTO.getRoleId() == 35L) {
+                if(orderWorkerDTO.getRoleId() == 34L) {
                     dto.setFinanceEmployeeId(orderWorkerDTO.getEmployeeId());
                     dto.setFinanceEmployeeName(orderWorkerDTO.getName());
                 }

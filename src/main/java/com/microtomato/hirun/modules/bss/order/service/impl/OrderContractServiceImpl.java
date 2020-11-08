@@ -4,16 +4,21 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.exception.cases.NotFoundException;
+import com.microtomato.hirun.framework.mybatis.sequence.impl.PayNoCycleSeq;
+import com.microtomato.hirun.framework.mybatis.service.IDualService;
+import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.bss.config.entity.consts.FeeConst;
 import com.microtomato.hirun.modules.bss.order.entity.consts.OrderConst;
 import com.microtomato.hirun.modules.bss.order.entity.dto.DecorateContractDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.FeeDTO;
 import com.microtomato.hirun.modules.bss.order.entity.dto.OrderWorkerDTO;
+import com.microtomato.hirun.modules.bss.order.entity.po.OrderBase;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderContract;
 import com.microtomato.hirun.modules.bss.order.entity.po.OrderFeeItem;
 import com.microtomato.hirun.modules.bss.order.mapper.OrderContractMapper;
 import com.microtomato.hirun.modules.bss.order.service.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,10 +56,26 @@ public class OrderContractServiceImpl extends ServiceImpl<OrderContractMapper, O
     @Autowired
     private IOrderFeeItemService orderFeeItemService;
 
+    @Autowired
+    private IOrderBaseService orderBaseService;
+
+    @Autowired
+    private IDualService dualService;
+
     @Override
     public DecorateContractDTO getDecorateContractInfo(Long orderId) {
         DecorateContractDTO decorateContractDTO = new DecorateContractDTO();
         decorateContractDTO.setOrderId(orderId);
+
+        List<OrderWorkerDTO> orderWorkersDTO = orderWorkerService.queryByOrderId(orderId);
+        if(orderWorkersDTO != null) {
+            for(OrderWorkerDTO orderWorkerDTO : orderWorkersDTO) {
+                if(orderWorkerDTO.getRoleId() == 34L) {
+                    decorateContractDTO.setFinanceEmployeeId(orderWorkerDTO.getEmployeeId());
+                    decorateContractDTO.setFinanceEmployeeName(orderWorkerDTO.getName());
+                }
+            }
+        }
 
         OrderContract orderContract = this.baseMapper.selectOne(new QueryWrapper<OrderContract>().lambda()
                 .eq(OrderContract::getOrderId, orderId).eq(OrderContract::getContractType, "1"));
@@ -78,17 +99,6 @@ public class OrderContractServiceImpl extends ServiceImpl<OrderContractMapper, O
             }
         }
 
-        //财务审核人员
-        List<OrderWorkerDTO> orderWorkersDTO = orderWorkerService.queryByOrderId(orderId);
-        if(orderWorkersDTO != null) {
-            for(OrderWorkerDTO orderWorkerDTO : orderWorkersDTO) {
-                if(orderWorkerDTO.getRoleId() == 35L) {
-                    decorateContractDTO.setFinanceEmployeeId(orderWorkerDTO.getEmployeeId());
-                    decorateContractDTO.setFinanceEmployeeName(orderWorkerDTO.getName());
-                }
-            }
-        }
-
         return decorateContractDTO;
     }
 
@@ -99,13 +109,17 @@ public class OrderContractServiceImpl extends ServiceImpl<OrderContractMapper, O
             throw new NotFoundException("请先上传合同附件", -1);
         }
 
+        OrderBase orderBase = this.orderBaseService.queryByOrderId(decorateContractDTO.getOrderId());
         //保存基本信息到
         OrderContract orderContract = this.baseMapper.selectById(decorateContractDTO.getId());
         if(orderContract == null) {
             orderContract = new OrderContract();
             orderContract.setContractType("1");
+            orderContract.setContractNo(this.generateContractNo(orderBase.getShopId()));
         }
+
         BeanUtils.copyProperties(decorateContractDTO, orderContract);
+
         this.saveOrUpdate(orderContract);
         //保存费用信息到各个表
         List<FeeDTO> fees = new ArrayList<>();
@@ -169,4 +183,36 @@ public class OrderContractServiceImpl extends ServiceImpl<OrderContractMapper, O
         return orderContracts;
     }
 
+    /**
+     * 获取合同编号
+     * @param shopId
+     * @return
+     */
+    private String generateContractNo(Long shopId) {
+        if (shopId == null) {
+            return null;
+        }
+        Long value = this.dualService.nextval(PayNoCycleSeq.class);
+        String strNextval = StringUtils.leftPad(String.valueOf(value), 6, '0');
+        String timestamp = TimeUtils.now("yyyy");
+
+        String prefix = "0";
+        if (shopId.equals(44L)) {
+            prefix = "1";
+        } else if (shopId.equals(45L)) {
+            prefix = "2";
+        } else if (shopId.equals(46L)) {
+            prefix = "3";
+        } else if (shopId.equals(47L)) {
+            prefix = "7";
+        } else if (shopId.equals(48L)) {
+            prefix = "9";
+        } else if (shopId.equals(118L)) {
+            prefix = "6";
+        } else if (shopId.equals(40L)) {
+            prefix = "5";
+        }
+
+        return prefix + "." + timestamp + "." + strNextval;
+    }
 }

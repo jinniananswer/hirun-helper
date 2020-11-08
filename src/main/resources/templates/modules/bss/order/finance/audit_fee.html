@@ -43,6 +43,12 @@
                                         fixed
                                         min-width>
                                 </el-table-column>
+                                <el-table-column
+                                        prop="remark"
+                                        label="收款备注"
+                                        fixed
+                                        min-width>
+                                </el-table-column>
                             </el-table>
                         </template>
                         <el-divider></el-divider>
@@ -72,6 +78,7 @@
                                 </el-table-column>
                             </el-table>
                         </template>
+                        <el-divider>收款摘要：{{remark}}</el-divider>
                     </el-card>
                     <el-card class="box-card">
                         <div slot="header">
@@ -80,14 +87,39 @@
                         <el-form>
                             <el-row>
                                 <el-col :span="24">
-                                    <el-form-item label="审核备注" prop="remark" label-width="100px">
-                                        <el-input type="textarea" v-model="auditData.remark"></el-input>
+                                    <el-form-item label="审核备注" prop="auditComment" label-width="100px">
+                                        <el-input type="textarea" v-model="auditData.auditComment" :disabled="auditData.auditStatus == '1' || auditData.auditStatus == '3'"></el-input>
                                     </el-form-item>
                                 </el-col>
                             </el-row>
-                            <el-form-item style="text-align: center ">
-                                <el-button type="primary" @click="submitAudit">审核通过</el-button>
-                                <el-button type="warning" @click="auditFailed">审核不通过</el-button>
+                            <el-form-item style="text-align: center " v-if="auditData.auditStatus == '0'">
+                                <el-button type="primary" @click="submitAudit">复核通过</el-button>
+                                <el-button type="danger" @click="auditFailed">复核不通过</el-button>
+                            </el-form-item>
+
+                            <el-row v-if="auditData.auditStatus == '1'">
+                                <el-col :span="12">
+                                    <el-form-item label="收单会计" label-width="100px" :rules="{
+                                          required: true, message: '收单会计不能为空', trigger: 'blur'
+                                        }">
+                                        <org-selectemployee role-id="1" v-model="auditData.financeEmployeeId"></org-selectemployee>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-form-item style="text-align: center " v-if="auditData.auditStatus == '1'">
+                                <el-button type="primary" @click="submitReceipt">提交会计收单</el-button>
+                            </el-form-item>
+
+                            <el-row v-if="auditData.auditStatus == '3'">
+                                <el-col :span="24">
+                                    <el-form-item label="收单备注" label-width="100px">
+                                        <el-input type="textarea" v-model="auditData.receiveComment" :disabled="auditData.auditStatus == '1'"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                            <el-form-item style="text-align: center " v-if="auditData.auditStatus == '3'">
+                                <el-button type="primary" @click="submitReceive">收单</el-button>
+                                <el-button type="danger" @click="submitNoReceive">退单</el-button>
                             </el-form-item>
                         </el-form>
                     </el-card>

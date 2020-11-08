@@ -49,4 +49,6 @@ public interface IDecoratorService extends IService<Decorator> {
      * @return
      */
     Decorator getDecorator(String name, String identityNo);
+
+    List<DecoratorInfoDTO> initDecorators();
 }

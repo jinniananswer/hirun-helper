@@ -43,7 +43,7 @@ public class NonCollectFeeDTO {
     /**
      * 备注
      */
-    private String auditRemark;
+    private String remark;
 
     /**
      * 收款人
@@ -59,6 +59,11 @@ public class NonCollectFeeDTO {
      * 单据状态
      */
     private String auditStatus;
+
+    /**
+     * 复核意见
+     */
+    private String auditComment;
 
     /**
      * 应付总金额

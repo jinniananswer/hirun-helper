@@ -117,7 +117,7 @@ public class SalaryDO {
         OrderPlaneSketch planeSketch = this.orderPlaneSketchService.getByOrderId(orderId);
         Integer designFeeStandard = 0;
         if (planeSketch != null) {
-            designFeeStandard = planeSketch.getDesignFeeStandard() / 100;
+            designFeeStandard = planeSketch.getDesignFeeStandard();
         } else {
             throw new SalaryException(SalaryException.SalaryExceptionEnum.DESIGN_FEE_STANDARD_NOT_FOUND, String.valueOf(orderId));
         }
@@ -135,6 +135,10 @@ public class SalaryDO {
 
         //3 找到参与人对应的策略配置，再根据费用相关信息进行计算
         Integer salaryMonth = Integer.parseInt(TimeUtils.formatLocalDateTimeToString(now, TimeUtils.DATE_FMT_14));
+        int day = now.getDayOfMonth();
+        if (day >= 25) {
+            salaryMonth = Integer.parseInt(TimeUtils.formatLocalDateTimeToString(now.plusMonths(1L), TimeUtils.DATE_FMT_14));
+        }
 
         List<SalaryRoyaltyDetail> royaltyDetails = new ArrayList<>();
         for (OrderWorkerActionDTO workerAction : workerActions) {

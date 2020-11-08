@@ -25,7 +25,7 @@ import java.util.List;
 public interface SalaryFixMapper extends BaseMapper<SalaryFix> {
 
     @Select("select a.name, a.employee_id, a.status, date_format(a.in_date,'%Y-%m-%d') in_date," +
-            " b.job_role,b.org_id, c.name org_name,a.type, d.id, d.bank_acct_one, d.bank_acct_two, d.bank_acct_three, d.basic/100 basic, d.rank/100 rank,d.performance/100 performance,d.duty/100 duty,d.overtime/100 overtime,d.float_award/100 float_award,d.other/100 other,d.back_pay/100 back_pay,d.medical/100 medical,d.overage/100 overage,d.unemployment/100 unemployment, d.serious_ill/100 serious_ill, d.tax/100 tax,d.remark,d.audit_status,d.audit_remark " +
+            " b.job_role,b.org_id, c.name org_name,a.type, d.id, d.bank_acct_one, d.bank_acct_two, d.bank_acct_three, d.basic/100 basic, d.rank/100 rank, d.job/100 job, d.performance/100 performance,d.duty/100 duty,d.overtime/100 overtime,d.float_award/100 float_award,d.other/100 other,d.back_pay/100 back_pay,d.medical/100 medical,d.overage/100 overage,d.unemployment/100 unemployment, d.serious_ill/100 serious_ill, d.tax/100 tax,d.remark,d.audit_status,d.audit_remark " +
             " from ins_org c, ins_employee a " +
             " LEFT JOIN ( select * from ins_employee_job_role k where k.job_role_id in(select max(i.job_role_id) from ins_employee_job_role i where i.is_main = '1' group by i.employee_id)) b" +
             " on (a.employee_id=b.employee_id) "+
@@ -35,7 +35,7 @@ public interface SalaryFixMapper extends BaseMapper<SalaryFix> {
     List<SalaryFixDTO> queryFixSalaries(@Param(Constants.WRAPPER) Wrapper wrapper);
 
     @Select("select a.name, a.employee_id, a.status, date_format(a.in_date,'%Y-%m-%d') in_date," +
-            " b.job_role,b.org_id, c.name org_name,a.type, d.id, d.bank_acct_one, d.bank_acct_two, d.bank_acct_three, d.basic/100 basic, d.rank/100 rank,d.performance/100 performance,d.duty/100 duty,d.overtime/100 overtime,d.float_award/100 float_award,d.other/100 other,d.back_pay/100 back_pay,d.medical/100 medical,d.overage/100 overage,d.unemployment/100 unemployment, d.serious_ill/100 serious_ill, d.tax/100 tax,d.remark,d.audit_status,d.audit_remark " +
+            " b.job_role,b.org_id, c.name org_name,a.type, d.id, d.bank_acct_one, d.bank_acct_two, d.bank_acct_three, d.basic/100 basic, d.rank/100 rank, d.job/100 job, d.performance/100 performance,d.duty/100 duty,d.overtime/100 overtime,d.float_award/100 float_award,d.other/100 other,d.back_pay/100 back_pay,d.medical/100 medical,d.overage/100 overage,d.unemployment/100 unemployment, d.serious_ill/100 serious_ill, d.tax/100 tax,d.remark,d.audit_status,d.audit_remark " +
             " from ins_org c,  salary_fix d, ins_employee a " +
             " LEFT JOIN ( select * from ins_employee_job_role k where k.job_role_id in(select max(i.job_role_id) from (select * from ins_employee_job_role h where is_main= '1') i group by i.employee_id)) b" +
             " on (a.employee_id=b.employee_id) "+

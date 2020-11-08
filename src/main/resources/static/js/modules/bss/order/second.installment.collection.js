@@ -70,7 +70,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
             getWoodProductFee: {
                 get() {
                     let woodProductFee = parseFloat(this.secondInstallment.doorFee) + parseFloat(this.secondInstallment.furnitureFee)
-                    this.secondInstallment.woodProductFee = woodProductFee;
+                    this.secondInstallment.woodProductFee = Math.floor(woodProductFee);
                     return woodProductFee;
                 }
             },
@@ -79,14 +79,14 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util','cust-info', 'or
                     let secondContractFee = parseFloat(this.secondInstallment.woodProductFee) + parseFloat(this.secondInstallment.baseDecorationFee)
                         + parseFloat(this.secondInstallment.taxFee)
                         + parseFloat(this.secondInstallment.otherFee)
-                    this.secondInstallment.secondContractFee = secondContractFee;
+                    this.secondInstallment.secondContractFee = Math.floor(secondContractFee);
                     return secondContractFee;
                 }
             },
             getSecondInstallmentFee : {
                 get() {
                     let secondInstallmentFee = parseFloat(this.secondInstallment.secondContractFee) *0.95 - parseFloat(this.secondInstallment.chargedDecorateFee)
-                    this.secondInstallment.secondInstallmentFee = secondInstallmentFee;
+                    this.secondInstallment.secondInstallmentFee = Math.floor(secondInstallmentFee);
                     return secondInstallmentFee
                 }
             }

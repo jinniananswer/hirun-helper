@@ -46,7 +46,7 @@
                         <el-row :gutter="20">
                             <el-col :span="6">
                                 <el-form-item label="房屋面积" prop="houseArea">
-                                    <el-input-number v-model="customerPreparation.houseArea" :step="0.1" :max="5000" style="width: 220px"></el-input-number>
+                                    <el-input-number v-model="customerPreparation.houseArea" :step="0.1" :max="5000" style="width: 100%"></el-input-number>
                                 </el-form-item>
                             </el-col>
                             <el-col :span="6">
@@ -87,7 +87,7 @@
 
                             <el-col :span="6">
                                 <el-form-item label="报备时间"  prop="prepareTime">
-                                    <el-date-picker v-model="customerPreparation.prepareTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" readonly>
+                                    <el-date-picker v-model="customerPreparation.prepareTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" style="width:100%" readonly>
                                     </el-date-picker>
                                 </el-form-item>
                             </el-col>

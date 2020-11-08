@@ -40,4 +40,20 @@ public interface IOrderWorkerService extends IService<OrderWorker> {
     void deleteOrderWorker(List<Long> ids);
 
     List<OrderWorker> queryByOrderIdRoleId(Long orderId, Long roleId);
+
+    /**
+     * 判断传入员工是否参与到工程中
+     * @param orderId
+     * @param employeeId
+     * @return
+     */
+    boolean checkIncludeEmployeeId(Long orderId,Long employeeId);
+    /**
+     * 判断传入员工以是否某个角色参与到工程中
+     * @param orderId
+     * @param employeeId
+     * @return
+     */
+    boolean checkIncludeEmployeeIdAndRole(Long orderId,Long employeeId,String roleId);
+
 }
