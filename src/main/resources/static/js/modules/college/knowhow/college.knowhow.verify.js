@@ -37,7 +37,7 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
 
         // 页面初始化触发点
         created: function () {
-            that.queryCond.optionTag = 'APPROVE';
+            this.queryCond.optionTag = 'APPROVE';
             this.queryByEmployeeIdAndRelaType('2');
         },
 
