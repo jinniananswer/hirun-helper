@@ -114,7 +114,11 @@ public class CollegeKnowhowDomainServiceImpl implements ICollegeKnowhowDomainSer
 
     @Override
     public IPage<CollegeQuestion> querySelfQuestion(String questionText, String sortType, Long employeeId, String relationType, String optionTag, Page<CollegeQuestionRela> page, String questionType) {
+        IPage<CollegeQuestion> pages = new Page<>(page.getSize(), page.getCurrent());
         List<CollegeQuestionRela> questionRelas = collegeQuestionRelaService.queryByEmployeeIdAndRelaType(employeeId, relationType);
+        if (ArrayUtils.isEmpty(questionRelas)) {
+            return pages;
+        }
 
         List<CollegeQuestion> questions = this.queryQuestionByRelas(questionRelas);
         if (StringUtils.isNotBlank(questionType)) {
@@ -141,7 +145,6 @@ public class CollegeKnowhowDomainServiceImpl implements ICollegeKnowhowDomainSer
             questions = questions.stream().sorted(Comparator.comparing(CollegeQuestion::getClicks).reversed()).collect(Collectors.toList());
         }
 
-        IPage<CollegeQuestion> pages = new Page<>(page.getSize(), page.getCurrent());
         pages.setRecords(questions);
         pages.setTotal(questions.size());
         return pages;

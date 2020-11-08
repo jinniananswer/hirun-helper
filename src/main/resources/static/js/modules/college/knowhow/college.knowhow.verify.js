@@ -111,7 +111,6 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
             queryByEmployeeIdAndRelaType: function (relationType) {
                 var that = this;
                 this.queryCond.relationType = relationType;
-                this.queryCond.optionTag = 'APPROVE';
                 ajax.get('api/CollegeQuestion/querySelfQuestion', this.queryCond, function (responseData) {
                     if (0 == responseData.total) {
                         that.questionInfo = '';
@@ -194,8 +193,10 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                     }).then(() => {
                         val.forEach(v => {
                             v.approvedTag = '1'
+                            v.createTime = ''
                         })
                         ajax.post('api/CollegeQuestion/verifyQuestion', val, function (responseData) {
+                            that.queryCond.optionTag = 'APPROVE';
                             that.queryByEmployeeIdAndRelaType('2');
                             that.$message({
                                 type: 'success',
@@ -218,6 +219,7 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                             v.createTime = ''
                         })
                         ajax.post('api/CollegeQuestion/verifyQuestion', val, function (responseData) {
+                            that.queryCond.optionTag = 'APPROVE';
                             that.queryByEmployeeIdAndRelaType('2');
                             that.$message({
                                 type: 'info',
@@ -250,6 +252,7 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                 }).then(() => {
                     val[0].createTime = '';
                     ajax.post('api/CollegeQuestion/publishQuestion', val, function (responseData) {
+                        that.queryCond.optionTag = 'PUBLISH';
                         that.queryByEmployeeIdAndRelaType('0');
                         that.$message({
                             type: 'success',

@@ -11,6 +11,7 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                     relationType: '',
                     questionId: '',
                     questionReply: '',
+                    replyContent: '',
                     replyTitle: '',
                     showType: '',
                     status:'',
@@ -259,6 +260,7 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
 
             reply(row, column) {
                 let id = row.questionId;
+                this.queryCond.replyContent = '';
                 this.queryCond.questionId = id;
                 this.queryCond.replyTitle = row.questionTitle;
                 this.replyDialogVisible = true;
@@ -272,7 +274,7 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                         message: '回复成功!'
                     });
                     that.replyDialogVisible = false;
-                    that.queryByEmployeeIdAndRelaType('1');
+                    that.queryByCond();
                 });
             },
 

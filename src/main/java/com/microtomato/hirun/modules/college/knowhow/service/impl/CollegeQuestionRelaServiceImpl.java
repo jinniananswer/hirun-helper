@@ -1,18 +1,22 @@
 package com.microtomato.hirun.modules.college.knowhow.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.modules.college.knowhow.consts.KnowhowConsts;
-import com.microtomato.hirun.modules.college.knowhow.entity.po.CollegeQuestion;
 import com.microtomato.hirun.modules.college.knowhow.mapper.CollegeQuestionRelaMapper;
 import com.microtomato.hirun.modules.college.knowhow.entity.po.CollegeQuestionRela;
 import com.microtomato.hirun.modules.college.knowhow.service.ICollegeQuestionRelaService;
+import com.microtomato.hirun.modules.system.entity.po.StaticData;
+import com.microtomato.hirun.modules.system.service.IStaticDataService;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * (CollegeQuestionRela)表服务实现类
@@ -27,10 +31,30 @@ public class CollegeQuestionRelaServiceImpl extends ServiceImpl<CollegeQuestionR
     @Autowired
     private CollegeQuestionRelaMapper collegeQuestionRelaMapper;
 
+    @Autowired
+    private IStaticDataService staticDataService;
+
     @Override
     public List<CollegeQuestionRela> queryByEmployeeIdAndRelaType(Long employeeId, String relationType) {
+        Boolean flag = true;
+        if (StringUtils.equals("2", relationType)) {
+            List<StaticData> approveManagers = staticDataService.getStaticDatas("APPROVE_MANAGER");
+            flag = false;
+            if (ArrayUtils.isNotEmpty(approveManagers)) {
+                flag = true;
+                List<StaticData> collect = approveManagers.stream().filter(x ->
+                        StringUtils.equals(x.getCodeValue(), String.valueOf(employeeId)))
+                        .collect(Collectors.toList());
+                if (ArrayUtils.isNotEmpty(collect)) {
+                    flag = false;
+                } else {
+                    return new ArrayList<>();
+                }
+            }
+        }
+
         return this.list(new QueryWrapper<CollegeQuestionRela>().lambda()
-                .eq(CollegeQuestionRela::getEmployeeId, employeeId)
+                .eq(flag, CollegeQuestionRela::getEmployeeId, employeeId)
                 .eq(StringUtils.isNotEmpty(relationType), CollegeQuestionRela::getRelationType, relationType)
                 .eq(CollegeQuestionRela::getStatus, KnowhowConsts.NORMAL_STATUS_VALID));
     }
