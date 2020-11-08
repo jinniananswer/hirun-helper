@@ -37,6 +37,7 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
 
         // 页面初始化触发点
         created: function () {
+            that.queryCond.optionTag = 'APPROVE';
             this.queryByEmployeeIdAndRelaType('2');
         },
 
@@ -100,6 +101,7 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                 }
                 ajax.get('api/CollegeQuestion/querySelfQuestion', this.queryCond, function (responseData) {
                     if (0 == responseData.total) {
+                        that.questionInfo = '';
                         return;
                     }
                     that.questionInfo = responseData.records;
