@@ -29,6 +29,7 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                     correctAnswer: '',
                     score: '',
                     examId: '',
+                    labelIds: [],
                 },
                 options: [{
                     value: '0',
@@ -75,15 +76,29 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                         { required: true, message: '习题分数不能为空', trigger: 'blur' }
                     ],
                 },
+                allLabelIdList: [],
+                labelIdList: [],
             }
         },
 
         // 页面初始化触发点
         created: function () {
             this.query();
+            this.init();
         },
 
         methods: {
+            filterLabelMethod: function (query, item) {
+                return item.label.indexOf(query) > -1;
+            },
+            init: function() {
+                let that = this;
+                if (null == that.allLabelIdList || [] == that.allLabelIdList || undefined == that.allLabelIdList || that.allLabelIdList.length == 0){
+                    ajax.get('api/CollegeStudyTaskCfg/queryLabelTransferInfo', null, function(responseData){
+                        that.allLabelIdList = responseData;
+                    });
+                }
+            },
             query: function () {
                 var that = this;
                 ajax.get('api/ExamTopic/init', this.queryCond, function (responseData) {
@@ -101,6 +116,7 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                 var that = this;
                 ajax.get('api/ExamTopic/queryByCond', this.queryCond, function (responseData) {
                     if (0 == responseData.total) {
+                        that.topicInfo = '';
                         return;
                     }
                     that.topicInfo = responseData.records;
@@ -220,6 +236,7 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                             type: 'warning'
                         }).then(() => {
                             that.topicAddCond.topicOptions = that.addTopicOptionInfos;
+                            that.topicAddCond.labelIds = that.labelIdList;
                             ajax.post('api/ExamTopic/addTopic', that.topicAddCond, function(responseData){
                                 that.query();
                                 that.$message({
@@ -229,6 +246,7 @@ require(['vue', 'ELEMENT', 'ajax', 'vxe-table', 'vueselect', 'org-orgtree', 'hou
                                 });
                                 that.addTopicDialogVisible = false;
                                 that.addTopicOptionInfos = [];
+                                that.labelIdList = [];
                             });
                         })
                     }

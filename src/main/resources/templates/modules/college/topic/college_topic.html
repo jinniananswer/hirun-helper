@@ -129,7 +129,7 @@
                 </div>
             </el-dialog>
 
-            <el-dialog width="60%" title="习题信息填写" append-to-body :visible.sync="addTopicDialogVisible">
+            <el-dialog width="80%" title="习题信息填写" append-to-body :visible.sync="addTopicDialogVisible">
                 <el-card class="box-card" shadow="hover">
                     <el-form :inline="false" :model="topicAddCond"  ref="topicAddCond" label-position="right"
                              label-width="120px" :rules="topicAddRules">
@@ -161,6 +161,25 @@
                                     <vue-select code-type="EXAM_RANGE" v-model="queryCond.examId"></vue-select>
                                 </el-form-item>
                             </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="9">
+                                <el-form-item label="习题标签:" prop="examId" label-position="right">
+
+                                </el-form-item>
+                            </el-col>
+
+                        </el-row>
+                        <el-row label-position="center">
+                            <el-transfer
+                                    filterable
+                                    :filter-method="filterLabelMethod"
+                                    filter-placeholder="请输入标签名称"
+                                    v-model="labelIdList"
+                                    :data="allLabelIdList"
+                                    :titles="['可选择标签', '已选择标签']"
+                                    :button-texts="['删除', '选择']">
+                            </el-transfer>
                         </el-row>
                         <el-row :style="showTree">
                             <vxe-toolbar>
