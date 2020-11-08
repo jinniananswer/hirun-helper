@@ -1,4 +1,4 @@
-require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'order-selectemployee', 'vue-router','house-select'], function (Vue, element, axios, ajax, vueselect, util, orderSelectEmployee, vueRouter,houseSelect) {
+require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'order-selectemployee', 'vue-router','house-select','order-file-upload', 'upload-file'], function (Vue, element, axios, ajax, vueselect, util, orderSelectEmployee, vueRouter,houseSelect,orderFileUpload) {
     let vm = new Vue({
         el: '#app',
         data: function () {
@@ -25,6 +25,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'order-selectem
                 courseFileInfo: [],
                 checked: null,
                 display: 'display:block',
+                dialogVisible: false,
             }
         },
 
@@ -41,12 +42,12 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'order-selectem
             handleSizeChange: function (size) {
                 this.courseFileQueryCond.size = size;
                 this.courseFileQueryCond.page = 1;
-                this.queryDecorator();
+                this.queryCourseFileInfo();
             },
 
             handleCurrentChange: function(currentPage){
                 this.courseFileQueryCond.page = currentPage;
-                this.queryDecorator();
+                this.queryCourseFileInfo();
             },
             deleteCourseFileById(courseFile){
                 ajax.post('api/organization/coursefile/deleteCourseFileById', courseFile, function(responseData){
@@ -60,6 +61,20 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'order-selectem
                 this.modifyTag = "2";
                 this.courseFileEditCond = JSON.parse(JSON.stringify(courseFile));
                 this.editCourseFileDialogVisible = true;
+            },
+            submitUpload(){
+                let fileId =  this.$refs.upload.fileId;
+                let that = this;
+                ajax.post('api/organization/coursefile/addUploadCourseFile', fileId, function(responseData){
+                    that.queryCourseFileInfo();
+                    that.dialogVisible = false;
+                    that.$refs.upload = {};
+                    that.$message({
+                        showClose: true,
+                        message: '课件上传成功',
+                        type: 'success'
+                    });
+                },null, true);
             },
             submitEdit(courseFileEditCond){
                 this.$refs.courseFileEditCond.validate((valid) => {
@@ -122,7 +137,17 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vueselect', 'util', 'order-selectem
                 ajax.post('api/organization/coursefile/deleteCourseFileByIds', val, function(responseData){
 
                 },null, true);
-            }
+            },
+            handleClose(done) {
+                this.$confirm('确认关闭？')
+                    .then(_ => {
+                        done();
+                    })
+                    .catch(_ => {});
+            },
+            handleSuccess: function (fileList) {
+                alert("fileId: " + JSON.stringify(fileList));
+            },
         }
     });
 

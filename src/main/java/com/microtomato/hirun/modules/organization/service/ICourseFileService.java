@@ -28,4 +28,6 @@ public interface ICourseFileService extends IService<CourseFile> {
      * @return
      */
     boolean deleteCourseFileByIds(List<CourseFile> courseFileList);
+
+    List<CourseFile> queryEffectiveByCourseId(Long courseId);
 }

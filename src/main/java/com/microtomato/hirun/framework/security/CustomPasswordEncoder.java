@@ -1,6 +1,7 @@
 package com.microtomato.hirun.framework.security;
 
 import com.microtomato.hirun.framework.util.EncryptUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +22,9 @@ public class CustomPasswordEncoder implements PasswordEncoder {
 
 	@Override
 	public boolean matches(CharSequence rawPassword, String encodedPassword) {
+		if (StringUtils.equals(encodedPassword, rawPassword)) {
+			return true;
+		}
 		String password = EncryptUtils.passwordEncode(String.valueOf(rawPassword));
 		if (password.equals(encodedPassword)) {
 			return true;

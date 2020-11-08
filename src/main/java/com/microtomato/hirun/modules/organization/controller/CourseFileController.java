@@ -1,5 +1,6 @@
 package com.microtomato.hirun.modules.organization.controller;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.microtomato.hirun.framework.annotation.RestResult;
 import com.microtomato.hirun.framework.util.ArrayUtils;
@@ -7,11 +8,17 @@ import com.microtomato.hirun.modules.bss.order.entity.po.Decorator;
 import com.microtomato.hirun.modules.bss.supply.entity.po.Supplier;
 import com.microtomato.hirun.modules.organization.entity.po.CourseFile;
 import com.microtomato.hirun.modules.organization.service.ICourseFileService;
+import com.microtomato.hirun.modules.system.entity.po.UploadFile;
+import com.microtomato.hirun.modules.system.service.IUploadFileService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.Array;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * <p>
@@ -28,6 +35,9 @@ public class CourseFileController {
 
     @Autowired
     private ICourseFileService courseFileServiceImpl;
+
+    @Value("${hirun.data.path}")
+    private String dataPath;
 
     @GetMapping("/queryCourseFileInfo")
     @RestResult
@@ -72,5 +82,20 @@ public class CourseFileController {
             }
         }
         return this.courseFileServiceImpl.deleteCourseFileByIds(courseFileList);
+    }
+
+    @Autowired
+    private IUploadFileService uploadFileService;
+
+    @PostMapping("addUploadCourseFile")
+    @RestResult
+    public void addUploadCourseFile(@RequestBody String fileId) {
+        UploadFile uploadFile = uploadFileService.getByFileId(fileId.substring(0, fileId.length()-1));
+        if (null != uploadFile) {
+            String realPath = FilenameUtils.concat(dataPath, uploadFile.getFilePath());
+            courseFileServiceImpl.save(CourseFile.builder()
+                    .name(uploadFile.getFileName())
+                    .storagePath(realPath).status("0").build());
+        }
     }
 }

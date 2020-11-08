@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>知乎问答</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script src="static/js/framework/requirejs/require.min.js"
+            th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js"
+            th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+</head>
+<body>
+<div id="topic">
+    <el-container>
+        <el-main>
+            <!-- 查询区域 -->
+            <el-card class="box-card" shadow="hover">
+                <el-form :inline="false" :model="queryCond" label-position="right" label-width="100px">
+                    <el-row>
+                        <el-col :span="8">
+                            <el-form-item label="员工部门">
+                                <org-orgtree :org-id.sync="queryCond.orgId" :org-name.sync="queryCond.orgName" mode="multi"></org-orgtree>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="8">
+                            <el-form-item>
+                                <el-button type="primary" @click="queryByCond">查询</el-button>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </el-card>
+
+            <!-- 展示区域 -->
+            <el-card class="box-card" shadow="hover">
+                <el-table :data="taskInfos" stripe="true" border height="350" style="width: 100%">
+                    <el-table-column prop="taskName" label="任务名称" align="center">
+                        <template slot-scope="taskColumn">
+                            <el-button type="text" @click="showTaskDetailReport(taskColumn.row)">
+                                {{taskColumn.row.taskName}}
+                            </el-button>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="rates" label="任务完成情况" align="center">
+                        <template slot-scope="taskColumn">
+                            <el-progress :percentage=taskColumn.row.rates :format="format"></el-progress>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="allNums" label="参与任务总人数" align="center"></el-table-column>
+                    <el-table-column prop="completeNums" label="任务已完成人数" align="center"></el-table-column>
+                    <el-table-column prop="examNums" label="已考试人数" align="center" width="180"></el-table-column>
+                    <el-table-column prop="exerciseNums" label="已练习人数" align="center" width="180"></el-table-column>
+                </el-table>
+            </el-card>
+
+            <!-- 分页信息 -->
+            <div style="text-align: center">
+                <el-pagination
+                        layout="total, prev, pager, next"
+                        :total="queryCond.count"
+                        :current-page.sync="queryCond.page"
+                        :page-size="queryCond.limit"
+                        @current-change="query">
+                </el-pagination>
+            </div>
+        </el-main>
+    </el-container>
+</div>
+<style>
+
+    .box-card {
+        margin-bottom: 12px;
+    }
+</style>
+
+<script src="../../../static/js/modules/college/report/college.report.task.js"
+        th:src="@{static/js/modules/college/report/college.report.task.js(v=${version})}"></script>
+</body>
+</html>

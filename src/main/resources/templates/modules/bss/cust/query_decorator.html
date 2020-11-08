@@ -30,9 +30,12 @@
                                         <el-input v-model="decoratorQueryCond.identityNo" placeholder="证件号码"></el-input>
                                     </el-form-item>
                                 </el-col>
-                            </el-row>
-                            <el-row>
-                                <el-col :span="20">
+                                <el-col :span="6">
+                                    <el-form-item label="工人类别">
+                                        <vue-select code-type="DECORATOR_TYPE" v-model="decoratorQueryCond.decoratorType"></vue-select>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="6">
                                     <el-form-item style="text-align: right">
                                         <el-button type="primary" @click="queryDecorator">查询</el-button>
                                     </el-form-item>
@@ -44,13 +47,24 @@
             </el-card>
 
             <template>
-                <el-table :data="decoratorInfo" stripe="true" style="width: 100%" fit="true" border height="400px">
-                    <el-table-column prop="decoratorId" label="工人ID" align="center" width="100"></el-table-column>
+                <el-row style="padding-bottom: 12px">
+                    <el-button type="success" icon="el-icon-folder-add" @click="addDecorator">新增</el-button>
+                    <el-button type="danger" icon="el-icon-delete" @click="deleteDecoratorBatch">删除</el-button>
+                </el-row>
+                <el-table :data="decoratorInfo" stripe="true" style="width: 100%" fit="true" height="400px" @selection-change="handleSelectionChange">
+                    <el-table-column type="selection" width="60" align="center"></el-table-column>
                     <el-table-column prop="name" label="姓名" fixed align="center" width="100"></el-table-column>
                     <el-table-column prop="identityNo" label="身份证号" align="center" width="180"></el-table-column>
                     <el-table-column prop="mobileNo" label="手机号" align="center" width="180"></el-table-column>
-                    <el-table-column prop="decoratorType" label="工人类别" align="center"></el-table-column>
+                    <el-table-column prop="decoratorType" :formatter="typeTransfer" label="工人类别" align="center"></el-table-column>
                     <el-table-column prop="agreementTag" label="协议标记" align="center" width="180"></el-table-column>
+                    <el-table-column fixed="right" label="操作" align="center" width="200">
+                        <template slot-scope="scope">
+                            <el-button type="warning" width="35" size="mini" icon="el-icon-edit"
+                                       @click="editDecoratorById(scope.row)">编辑
+                            </el-button>
+                        </template>
+                    </el-table-column>
                 </el-table>
                 <div class="pagination">
                     <el-pagination
@@ -63,6 +77,88 @@
                             @current-change="handleCurrentChange">
                     </el-pagination>
                 </div>
+
+                <el-dialog width="80%" title="工人信息修改" append-to-body :visible.sync="editDecoratorDialogVisible">
+                    <el-form :inline="false" :model="decoratorEditCond" :rules="decoratorRules" ref="decoratorEditCond" label-position="right"
+                             label-width="120px">
+                        <el-row>
+                            <el-col :span="8">
+                                <el-form-item label="姓名" label-width="100px" prop="name">
+                                    <el-input v-model="decoratorEditCond.name" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="身份证号" label-width="100px" prop="identityNo">
+                                    <el-input v-model="decoratorEditCond.identityNo" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="手机号" label-width="100px" prop="mobileNo">
+                                    <el-input v-model="decoratorEditCond.mobileNo" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="8">
+                                <el-form-item label="工人类别" label-width="100px" prop="decoratorType">
+                                    <vue-select code-type="DECORATOR_TYPE" v-model="decoratorEditCond.decoratorType" multiple></vue-select>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="协议号" label-width="100px" prop="agreementTag">
+                                    <el-input v-model="decoratorEditCond.agreementTag" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <div style="text-align: center">
+                                <el-button type="primary" @click="submitEdit(decoratorEditCond)">提交修改</el-button>
+                                <el-button @click="cancelEdit()">取消</el-button>
+                            </div>
+                        </el-row>
+                    </el-form>
+                </el-dialog>
+
+                <el-dialog width="80%" title="工人信息新增" append-to-body :visible.sync="addDecoratorDialogVisible">
+                    <el-form :inline="false" :model="decoratorAddCond"  ref="decoratorAddCond" label-position="right"
+                             label-width="120px" :rules="decoratorAddRules">
+                        <el-row>
+                            <el-col :span="8">
+                                <el-form-item label="姓名" label-width="100px" prop="name">
+                                    <el-input v-model="decoratorAddCond.name" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="身份证号" label-width="100px" prop="identityNo">
+                                    <el-input v-model="decoratorAddCond.identityNo" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="手机号" label-width="100px" prop="mobileNo">
+                                    <el-input v-model="decoratorAddCond.mobileNo" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="8">
+                                <el-form-item label="工人类别" label-width="100px" prop="decoratorType">
+                                    <vue-select code-type="DECORATOR_TYPE" v-model="decoratorEditCond.decoratorType" multiple></vue-select>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="8">
+                                <el-form-item label="协议号" label-width="100px" prop="agreementTag">
+                                    <el-input v-model="decoratorAddCond.agreementTag" autocomplete="off"></el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <div style="text-align: center">
+                                <el-button type="primary" @click="submitAdd(decoratorAddCond)">保存</el-button>
+                                <el-button @click="cancel()">取消</el-button>
+                            </div>
+                        </el-row>
+                    </el-form>
+                </el-dialog>
             </template>
         </el-main>
     </el-container>

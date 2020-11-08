@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
+<head>
+    <meta charset="UTF-8">
+    <title>知乎广场</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script src="static/js/framework/requirejs/require.min.js"
+            th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js"
+            th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+</head>
+<body>
+<div id="knowhow" v-cloak>
+    <el-container>
+        <el-main>
+            <!-- 查询区域 -->
+            <el-card class="box-card" shadow="hover">
+                <el-form :inline="false" :model="queryCond" label-position="right" label-width="100px">
+                    <el-row>
+                        <el-col :span="6">
+                            <el-form-item label="问题信息">
+                                <el-input v-model="queryCond.questionText" placeholder="问题信息"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="6">
+                            <el-form-item label="问题类型">
+                                <vue-select code-type="QUESTION_TYPE" v-model="queryCond.questionType"></vue-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="6">
+                            <el-form-item label="排序方式">
+                                <el-select v-model="queryCond.sortType" placeholder="请选择">
+                                    <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="6">
+                            <el-form-item>
+                                <el-button type="primary" @click="queryByCond">查询</el-button>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+            </el-card>
+
+            <!-- 展示区域 -->
+            <el-row :gutter="12">
+                <el-card class="box-card" shadow="hover">
+                    <el-tabs v-model="activeName" @tab-click="handleClick">
+                        <el-tab-pane label="问题广场" name="questionSquare">
+                            <el-table :data="questionInfo" stripe="true" border height="350" style="width: 100%">
+                                <el-table-column prop="questionTitle" label="问题标题" align="center"></el-table-column>
+                                <el-table-column prop="questionContent" label="问题内容" align="center"></el-table-column>
+                                <el-table-column prop="questionType" label="问题类型" :formatter="typeTransfer" align="center"></el-table-column>
+                                <el-table-column prop="createTime" label="问题创建时间" align="center" width="180"></el-table-column>
+                                <el-table-column prop="status" label="状态" :formatter="statusTransfer" align="center" width="80"></el-table-column>
+                                <el-table-column label="操作" align="center" width="180">
+                                    <template slot-scope="question">
+                                        <el-button type="text" icon="el-icon-thumb" width="35" size="mini" @click="thumbsUp(question.row)">{{question.row.thumbsUp}}</el-button>
+                                        <el-button type="text" icon="el-icon-view" width="35" size="mini" @click="queryReply(question.row)">查看回复</el-button>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                        </el-tab-pane>
+                        <el-tab-pane label="我的问题" name="selfQuestion">
+                            <el-row style="padding-bottom: 12px">
+                                <el-button size="medium" type="primary" icon="el-icon-document" @click="addQuestionDialogVisible = true">我要提问</el-button>
+                                <el-button size="medium" type="info" icon="el-icon-delete" @click="deleteQuestionBatch">删除</el-button>
+                            </el-row>
+                            <el-table :data="questionInfo" stripe="true" border height="350" style="width: 100%" @selection-change="handleSelectChange">
+                                <el-table-column type="selection" width="40" align="center"></el-table-column>
+                                <el-table-column prop="questionTitle" label="问题标题" align="center"></el-table-column>
+                                <el-table-column prop="questionContent" label="问题内容" align="center"></el-table-column>
+                                <el-table-column prop="questionType" label="问题类型" :formatter="typeTransfer" align="center"></el-table-column>
+                                <el-table-column prop="createTime" label="问题创建时间" align="center" width="180"></el-table-column>
+                                <el-table-column prop="status" label="状态" :formatter="statusTransfer" align="center" width="80"></el-table-column>
+                            </el-table>
+                        </el-tab-pane>
+                        <el-tab-pane label="问题回复" name="letMeResponse">
+                            <el-table :data="questionInfo" stripe="true" border height="350" style="width: 100%">
+                                <el-table-column prop="questionTitle" label="问题标题" align="center"></el-table-column>
+                                <el-table-column prop="questionContent" label="问题内容" align="center"></el-table-column>
+                                <el-table-column prop="questionType" label="问题类型" :formatter="typeTransfer" align="center"></el-table-column>
+                                <el-table-column prop="createTime" label="问题创建时间" align="center" width="180"></el-table-column>
+                                <el-table-column prop="status" label="状态" :formatter="statusTransfer" align="center" width="80"></el-table-column>
+                                <el-table-column label="操作" align="center" width="200">
+                                    <template slot-scope="question">
+                                        <el-button type="text" icon="el-icon-edit-outline" width="35" size="mini" @click="reply(question.row)">回复</el-button>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                        </el-tab-pane>
+<!--                        <el-tab-pane label="装修百科" name="wiki">-->
+<!--                            <el-table :data="wikiInfos" stripe="true" border height="350" style="width: 100%">-->
+<!--                                <el-table-column prop="wikiTitle" label="百科标题" align="center">-->
+<!--                                    <template slot-scope="wikiColumn">-->
+<!--                                        <el-button type="text" @click="showWikiDetail(wikiColumn.row.wikiId)">-->
+<!--                                            {{wikiColumn.row.wikiTitle}}-->
+<!--                                        </el-button>-->
+<!--                                    </template>-->
+<!--                                </el-table-column>-->
+<!--                                <el-table-column prop="wikiContent" label="百科内容" align="center"></el-table-column>-->
+<!--                                <el-table-column prop="wikiType" label="百科类型" :formatter="wikiTypeTransfer" align="center"></el-table-column>-->
+<!--                                <el-table-column prop="wikier" label="创建人" align="center"></el-table-column>-->
+<!--                                <el-table-column prop="createTime" label="创建时间" align="center" width="180"></el-table-column>-->
+<!--                                <el-table-column prop="thumbsUp" label="热度" align="center" width="80"></el-table-column>-->
+<!--                                <el-table-column label="操作" align="center" width="200">-->
+<!--                                    <template slot-scope="wiki">-->
+<!--                                        <el-button type="text" icon="el-icon-thumb" width="35" size="mini" @click="thumbsUpWiki(wiki.row)">赞</el-button>-->
+<!--                                        <el-button type="text" icon="el-icon-edit" width="35" size="mini" @click="comment(wiki.row)">评论</el-button>-->
+<!--                                    </template>-->
+<!--                                </el-table-column>-->
+<!--                            </el-table>-->
+<!--                        </el-tab-pane>-->
+                    </el-tabs>
+                </el-card>
+            </el-row>
+
+            <el-dialog :title="wikiInfo.wikiTitle" :visible.sync="wikiDialogVisible" width="60%" :before-close="handleClose">
+                <span type="textarea">{{wikiInfo.wikiContent}}</span>
+                <el-row class="box-col">
+                    <el-col :span="6"><div class="grid-content bg-purple">提出人：{{wikiInfo.wikier}}</div></el-col>
+                    <el-col :span="6" offset="12"><div class="grid-content bg-purple">{{wikiInfo.createTime}}</div></el-col>
+                </el-row>
+                <el-divider></el-divider>
+                <el-row>
+                    <el-col :span="6"><div class="grid-content bg-purple">1楼：</div></el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="24"><div class="grid-content bg-purple">沙发！！！</div></el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="6"><div class="grid-content bg-purple">回复人：黄桦</div></el-col>
+                    <el-col :span="6" offset="12"><div class="grid-content bg-purple">2020-09-12 22:10:23</div></el-col>
+                </el-row>
+                <el-divider></el-divider>
+                <el-row>
+                    <el-col :span="6"><div class="grid-content bg-purple">2楼：</div></el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="24"><div class="grid-content bg-purple">顶！</div></el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="6"><div class="grid-content bg-purple">回复人：李俊</div></el-col>
+                    <el-col :span="6" offset="12"><div class="grid-content bg-purple">2020-09-12 23:42:10</div></el-col>
+                </el-row>
+                <span slot="footer" class="dialog-footer">
+                    <el-button type="primary" @click="wikiDialogVisible = false">确 定</el-button>
+                </span>
+            </el-dialog>
+
+            <el-dialog :title="queryCond.replyTitle" :visible.sync="dialogVisible" width="60%" :before-close="handleClose">
+                <span type="textarea">{{replyInfo.replyContent}}</span>
+                <el-divider></el-divider>
+                <el-row>
+                    <el-col :span="6" class="box-col"><div class="grid-content bg-purple">{{replyInfo.replyTime}}</div></el-col>
+                    <el-col :span="6" offset="12"><div class="grid-content bg-purple">回复人：{{replyInfo.replyer}}</div></el-col>
+                </el-row>
+                <span slot="footer" class="dialog-footer">
+                    <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+                </span>
+            </el-dialog>
+
+            <el-dialog title="问题编辑区" :visible.sync="addQuestionDialogVisible" width="60%" :before-close="handleClose">
+                <el-form :model="form">
+                    <el-form-item label="问题标题" :label-width="formLabelWidth">
+                        <el-input v-model="queryCond.questionTitle" placeholder="问题标题"></el-input>
+                    </el-form-item>
+                    <el-form-item label="问题内容" :label-width="formLabelWidth">
+                        <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 6}" v-model="queryCond.questionContent" placeholder="问题内容"></el-input>
+                    </el-form-item>
+                    <el-row>
+                        <el-col :span="10">
+                            <el-form-item label="问题类型" :label-width="formLabelWidth">
+                                <vue-select code-type="QUESTION_TYPE" v-model="queryCond.questionType"></vue-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="10">
+                            <el-form-item label="回答老师" :label-width="formLabelWidth">
+                                <el-select v-model="queryCond.respondent" placeholder="请选择">
+                                    <el-option
+                                            v-for="item in teachers"
+                                            :key="item.id"
+                                            :label="item.name"
+                                            :value="item.id">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+                <span slot="footer" class="dialog-footer">
+                    <el-button @click="addQuestionDialogVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="addQuestion">确 定</el-button>
+                </span>
+            </el-dialog>
+
+            <el-dialog :title="queryCond.replyTitle" :visible.sync="replyDialogVisible" width="30%" :before-close="handleClose">
+                <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 6}" v-model="queryCond.replyContent" placeholder="回复内容"></el-input>
+                <span slot="footer" class="dialog-footer">
+                    <el-button @click="replyDialogVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="replyQuestion">确 定</el-button>
+                </span>
+            </el-dialog>
+
+            <!-- 分页信息 -->
+            <div style="text-align: center">
+                <el-pagination
+                        layout="total, prev, pager, next"
+                        :total="queryCond.count"
+                        :current-page.sync="queryCond.page"
+                        :page-size="queryCond.limit"
+                        @current-change="query">
+                </el-pagination>
+            </div>
+        </el-main>
+    </el-container>
+</div>
+<style>
+    [v-cloak] {
+        display: none;
+    }
+    .text {
+        font-size: 18px;
+    }
+
+    .box-card {
+        margin-bottom: 12px;
+    }
+
+    .box-col {
+        margin-bottom: 12px;
+    }
+
+    .item {
+        margin-bottom: 18px;
+    }
+
+    .el-card__header {
+        padding: 10px;
+    }
+
+    .modify_row {
+        color: #ff4835;
+    }
+
+    .new_row {
+        color: #4DAF29;
+    }
+
+    .delete_row {
+        text-decoration: line-through;
+    }
+</style>
+
+<script src="../../../static/js/modules/college/knowhow/college.knowhow.js"
+        th:src="@{static/js/modules/college/knowhow/college.knowhow.js(v=${version})}"></script>
+</body>
+</html>
