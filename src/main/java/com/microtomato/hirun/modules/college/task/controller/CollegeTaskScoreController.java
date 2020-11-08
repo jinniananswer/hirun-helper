@@ -264,7 +264,7 @@ public class CollegeTaskScoreController {
                     if (ArrayUtils.isNotEmpty(labelIdList)){
                         List<CollegeTopicLabelRel> collegeTopicLabelRels = collegeTopicLabelRelServiceImpl.queryEffectiveByLabelIdList(labelIdList);
                         if (ArrayUtils.isNotEmpty(collegeTopicLabelRels)){
-                            //responseDTO.setTopicFlag(true);
+                            responseDTO.setTopicFlag(true);
                         }
                     }
 

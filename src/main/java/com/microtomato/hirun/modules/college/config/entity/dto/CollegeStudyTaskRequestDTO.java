@@ -13,6 +13,8 @@ public class CollegeStudyTaskRequestDTO {
 
     private Long studyTaskId;
 
+    private String releaseStatus;
+
     private Integer page;
 
     private Integer limit;

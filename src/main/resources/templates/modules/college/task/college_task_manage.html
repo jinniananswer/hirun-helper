@@ -30,13 +30,11 @@
                                 <el-input v-model.number="queryCond.taskName"></el-input>
                             </el-form-item>
                         </el-col>
-                        <!--
-                            <el-col :span="8">
-                                <el-form-item label="学习任务标识">
-                                    <el-input v-model="queryCond.studyTaskId"></el-input>
-                                </el-form-item>
-                            </el-col>
-                        -->
+                        <el-col :span="8">
+                            <el-form-item label="发布状态">
+                                <vue-select code-type="RELEASE_STATUS" v-model="queryCond.releaseStatus"></vue-select>
+                            </el-form-item>
+                        </el-col>
                     </el-row>
                     <el-row>
                         <el-col :span="8">
@@ -451,7 +449,7 @@
                              label-width="120px">
                         <el-row>
                             <el-col :span="8">
-                                <el-form-item label="最多练习次数" label-width="120px" prop="examMaxNum">
+                                <el-form-item :label="examMaxLabel" label-width="120px" prop="examMaxNum">
                                     <el-input v-model.number="studyTopicTypeInfo.examMaxNum" autocomplete="off"></el-input>
                                 </el-form-item>
                             </el-col>

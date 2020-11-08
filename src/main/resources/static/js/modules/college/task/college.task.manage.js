@@ -29,6 +29,7 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     studyId: '',
                     studyName: '',
                     studyTaskId: '',
+                    releaseStatus: '',
                     limit: 20,
                     page: 1,
                     count: null
@@ -131,7 +132,8 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                 showExercisesNumber: 'display:none',
                 showPassScore: 'display:none',
                 showTopic: 'display:none',
-                showNoTopic: 'display:none'
+                showNoTopic: 'display:none',
+                examMaxLabel: '最多考试次数'
             }
         },
         mounted: function() {
@@ -398,6 +400,7 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                         that.studyTopicTypeInfoDetails = [];
                         that.studyTopicTypeInfo = {};
                         that.selectJobRoleInfos = [];
+                        that.selectEmployeeInfos = [];
                         that.labelIdList = [];
                         that.studyTopicTypeInfoDetails = [];
                     });
@@ -485,6 +488,7 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                                 that.addStudyTaskDialogVisible = false;
                                 that.studyTopicTypeInfo = {};
                                 that.selectJobRoleInfos = [];
+                                that.selectEmployeeInfos = [];
                                 that.labelIdList = [];
                                 that.studyTopicTypeInfoDetails = [];
                             });
@@ -731,9 +735,11 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     if (examType == "0"){
                         this.showExercises = 'display:block'
                         this.showExam = 'display:none'
+                        this.examMaxLabel = '最多练习次数'
                     }else if (examType == "1"){
                         this.showExercises = 'display:none'
                         this.showExam = 'display:block'
+                        this.examMaxLabel = '最多考试次数'
                     }
                 })
             },
@@ -879,6 +885,7 @@ require(['vue','ELEMENT','ajax', 'vxe-table', 'vueselect', 'org-orgtree','house-
                     that.showTogetherStudyTask = 'display:none';
                     that.showAppointDay = 'display:none';
                     this.showTaskValidityTerm = 'display:none';
+                    that.query();
                 });
             },
             changeTaskType: function (val) {
