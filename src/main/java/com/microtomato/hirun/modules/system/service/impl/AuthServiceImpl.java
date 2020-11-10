@@ -247,7 +247,7 @@ public class AuthServiceImpl implements IAuthService {
             List<Role> roles = new ArrayList<>();
 
             for (Map map : list) {
-                Long id = Long.parseLong((String) map.get("id"));
+                Long id = (Long) map.get("id");
                 String name = (String) map.get("name");
                 Role role = new Role(id, name);
                 roles.add(role);
