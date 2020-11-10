@@ -247,8 +247,16 @@ public class AuthServiceImpl implements IAuthService {
             System.out.println("======================");
             System.out.println("list: " + list);
 
-            List<Role> roles = (List<Role>) claims.get("roles", List.class);
+            List<Role> roles = claims.get("roles", List.class);
+            List<Role> xx = new ArrayList<>();
+            for (Role role : roles) {
+                xx.add(role);
+            }
+
+
             System.out.println("roles: " + roles);
+            System.out.println("xx   : " + xx);
+            System.out.println("size: " + roles.get(0).getClass());
             System.out.println("======================");
 
             Boolean admin = claims.get("admin", Boolean.class);
@@ -263,7 +271,7 @@ public class AuthServiceImpl implements IAuthService {
             UserContext userContext = UserContext.builder()
                 .userId(userId)
                 .username(username)
-                .roles(roles)
+                .roles(xx)
                 .admin(admin)
                 .mobileNo(mobileNo)
                 .status(status)
