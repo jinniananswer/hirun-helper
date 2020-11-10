@@ -242,7 +242,15 @@ public class AuthServiceImpl implements IAuthService {
             Claims claims = this.parseJwt(jsonWebToken);
             Long userId = claims.get("userId", Long.class);
             String username = claims.get("username", String.class);
-            List<Role> roles = claims.get("roles", List.class);
+
+            List list = claims.get("roles", List.class);
+            System.out.println("======================");
+            System.out.println("list: " + list);
+
+            List<Role> roles = (List<Role>) claims.get("roles", List.class);
+            System.out.println("roles: " + roles);
+            System.out.println("======================");
+
             Boolean admin = claims.get("admin", Boolean.class);
             String mobileNo = claims.get("mobileNo", String.class);
             String status = claims.get("status", String.class);
