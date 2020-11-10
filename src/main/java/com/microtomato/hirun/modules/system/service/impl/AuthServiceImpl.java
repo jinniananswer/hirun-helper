@@ -244,14 +244,7 @@ public class AuthServiceImpl implements IAuthService {
             String username = claims.get("username", String.class);
 
             List<Map> list = claims.get("roles", List.class);
-            List<Role> roles = new ArrayList<>();
-
-            for (Map map : list) {
-                Integer id = (Integer) map.get("id");
-                String name = (String) map.get("name");
-                Role role = new Role(Long.valueOf(id), name);
-                roles.add(role);
-            }
+            List<Role> roles = convert(list);
 
             Boolean admin = claims.get("admin", Boolean.class);
             String mobileNo = claims.get("mobileNo", String.class);
@@ -391,5 +384,24 @@ public class AuthServiceImpl implements IAuthService {
                 return;
             }
         }
+    }
+
+    /**
+     * 角色数据转换
+     *
+     * @param list
+     * @return
+     */
+    private List<Role> convert(List<Map> list) {
+        List<Role> roles = new ArrayList<>();
+
+        for (Map map : list) {
+            Integer id = (Integer) map.get("id");
+            String name = (String) map.get("name");
+            Role role = new Role(Long.valueOf(id), name);
+            roles.add(role);
+        }
+
+        return roles;
     }
 }

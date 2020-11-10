@@ -85,7 +85,6 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 	@Override
 	public Set<Long> listMenusForNormal() {
 		UserContext userContext = WebContextUtils.getUserContext();
-		System.out.println("userContext: " + userContext);
 
 		Set<Long> rtn = new HashSet<>(100);
 		List<MenuTemp> menuTempList = menuTempServiceImpl.list(
