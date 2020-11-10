@@ -243,21 +243,15 @@ public class AuthServiceImpl implements IAuthService {
             Long userId = claims.get("userId", Long.class);
             String username = claims.get("username", String.class);
 
-            List list = claims.get("roles", List.class);
-            System.out.println("======================");
-            System.out.println("list: " + list);
+            List<Map> list = claims.get("roles", List.class);
+            List<Role> roles = new ArrayList<>();
 
-            List<Role> roles = claims.get("roles", List.class);
-            List<Role> xx = new ArrayList<>();
-            for (Role role : roles) {
-                xx.add(role);
+            for (Map map : list) {
+                Long id = Long.parseLong((String) map.get("id"));
+                String name = (String) map.get("name");
+                Role role = new Role(id, name);
+                roles.add(role);
             }
-
-
-            System.out.println("roles: " + roles);
-            System.out.println("xx   : " + xx);
-            System.out.println("size: " + roles.get(0).getClass());
-            System.out.println("======================");
 
             Boolean admin = claims.get("admin", Boolean.class);
             String mobileNo = claims.get("mobileNo", String.class);
@@ -271,7 +265,7 @@ public class AuthServiceImpl implements IAuthService {
             UserContext userContext = UserContext.builder()
                 .userId(userId)
                 .username(username)
-                .roles(xx)
+                .roles(roles)
                 .admin(admin)
                 .mobileNo(mobileNo)
                 .status(status)
