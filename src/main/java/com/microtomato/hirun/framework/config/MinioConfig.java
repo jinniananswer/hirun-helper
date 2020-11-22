@@ -19,10 +19,10 @@ public class MinioConfig {
     @Value("${hirun.minio.endpoint}")
     private String endpoint;
 
-    @Value("${hirun.minio.accessKey}")
+    @Value("${hirun.minio.accessKey:hirun}")
     private String accessKey;
 
-    @Value("${hirun.minio.secretKey}")
+    @Value("${hirun.minio.secretKey:1q1w1e1r}")
     private String secretKey;
 
     @Bean

@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
+import javax.validation.Validator;
 import java.util.Set;
 
 import static com.microtomato.hirun.framework.exception.ErrorKind.ALREADY_EXIST;
@@ -79,6 +80,12 @@ public final class ValidationUtils {
     private static final String SPLIT = "、";
 
     /**
+     * 线程安全，此对象创建成本很高！
+     * 通过 ValidatorFactory 得到了一个 Validator 的实例. Validator 是线程安全的，可以重复使用。
+     */
+    private static Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+
+    /**
      * 基于 JSR303 规则的验证
      * <p>
      * 如果返回 null 则表示没有错误
@@ -92,7 +99,7 @@ public final class ValidationUtils {
             return "入参不能为空！";
         }
 
-        Set<ConstraintViolation<Object>> validResult = Validation.buildDefaultValidatorFactory().getValidator().validate(obj);
+        Set<ConstraintViolation<Object>> validResult = validator.validate(obj);
         if (null != validResult && validResult.size() > 0) {
             StringBuilder sb = new StringBuilder();
 

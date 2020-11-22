@@ -85,7 +85,7 @@ mybatis-plus:
 production.mode: false
 
 # mobile系统地址
-mhirun.host-port: http://47.105.64.145:8080/
+mhirun.host-port: http://bss.hi-run.net:8080/
 
 # 图表仓库位置
 hirun.icon.store: //at.alicdn.com/t/font_1556215_eowo332z65g.css

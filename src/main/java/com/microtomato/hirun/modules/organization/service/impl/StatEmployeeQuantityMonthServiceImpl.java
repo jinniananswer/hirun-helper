@@ -386,7 +386,9 @@ public class StatEmployeeQuantityMonthServiceImpl extends ServiceImpl<StatEmploy
         if (StringUtils.isNotEmpty(time)) {
             year = time.split("-")[0];
             month = time.split("-")[1];
-            if (month.contains("0")) {
+            if(StringUtils.equals(month,"10")){
+                month="10";
+            }else if(month.contains("0")) {
                 month = month.substring(1, 2);
             }
             //2020/03/20新增

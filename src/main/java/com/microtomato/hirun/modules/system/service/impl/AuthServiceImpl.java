@@ -4,16 +4,14 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microtomato.hirun.framework.jwt.JwtConstants;
 import com.microtomato.hirun.framework.security.CustomPasswordEncoder;
+import com.microtomato.hirun.framework.security.Role;
 import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.threadlocal.UserContextHolder;
 import com.microtomato.hirun.framework.util.Constants;
 import com.microtomato.hirun.modules.system.entity.po.Func;
 import com.microtomato.hirun.modules.system.service.IAuthService;
 import com.microtomato.hirun.modules.system.service.IFuncService;
-import com.microtomato.hirun.modules.user.entity.po.FuncRole;
-import com.microtomato.hirun.modules.user.entity.po.FuncTemp;
-import com.microtomato.hirun.modules.user.entity.po.User;
-import com.microtomato.hirun.modules.user.entity.po.UserRole;
+import com.microtomato.hirun.modules.user.entity.po.*;
 import com.microtomato.hirun.modules.user.service.IFuncRoleService;
 import com.microtomato.hirun.modules.user.service.IFuncTempService;
 import com.microtomato.hirun.modules.user.service.IUserRoleService;
@@ -244,7 +242,10 @@ public class AuthServiceImpl implements IAuthService {
             Claims claims = this.parseJwt(jsonWebToken);
             Long userId = claims.get("userId", Long.class);
             String username = claims.get("username", String.class);
-            List roles = claims.get("roles", List.class);
+
+            List<Map> list = claims.get("roles", List.class);
+            List<Role> roles = convert(list);
+
             Boolean admin = claims.get("admin", Boolean.class);
             String mobileNo = claims.get("mobileNo", String.class);
             String status = claims.get("status", String.class);
@@ -383,5 +384,24 @@ public class AuthServiceImpl implements IAuthService {
                 return;
             }
         }
+    }
+
+    /**
+     * 角色数据转换
+     *
+     * @param list
+     * @return
+     */
+    private List<Role> convert(List<Map> list) {
+        List<Role> roles = new ArrayList<>();
+
+        for (Map map : list) {
+            Integer id = (Integer) map.get("id");
+            String name = (String) map.get("name");
+            Role role = new Role(Long.valueOf(id), name);
+            roles.add(role);
+        }
+
+        return roles;
     }
 }
