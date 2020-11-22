@@ -11,7 +11,7 @@
             th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
 </head>
 <body>
-<div id="app">
+<div id="app" v-cloak>
     <el-container>
         <el-main>
             <el-row :gutter="12">
@@ -150,6 +150,10 @@
 
     .el-card__header {
         padding: 10px;
+    }
+
+    [v-cloak] {
+        display: none;
     }
 </style>
 <script src="static/js/modules/finance/voucher.preparation.js"

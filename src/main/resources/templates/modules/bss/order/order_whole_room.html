@@ -39,17 +39,28 @@
                             </el-row>
                             <el-row>
                                 <el-col :span="8">
+                                    <el-form-item label="vr渲染人员" >
+                                        <order-selectemployee v-model="wholeRoomDrawing.vrEmployeeId" :role-id="41"></order-selectemployee>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
+                                    <el-form-item label="建白模人员" >
+                                        <order-selectemployee v-model="wholeRoomDrawing.suEmployeeId" :role-id="41"></order-selectemployee>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="8">
                                     <el-form-item label="行政助理">
                                         <order-selectemployee role-id="40" v-model="wholeRoomDrawing.adminAssistant"></order-selectemployee>
                                     </el-form-item>
                                 </el-col>
+                            </el-row>
+                            <el-row>
                                 <el-col :span="8">
                                     <el-form-item label="水电设计师">
                                         <order-selectemployee role-id="38" v-model="wholeRoomDrawing.hydropowerDesigner"></order-selectemployee>
                                         <!--<order-selectemployee role-id="38" v-model="wholeRoomDrawing.hydropowerDesigner"></order-selectemployee>-->
                                     </el-form-item>
                                 </el-col>
-
                             </el-row>
                             <el-row>
                                 <el-col :span="8">

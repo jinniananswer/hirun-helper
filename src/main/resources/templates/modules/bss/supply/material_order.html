@@ -140,7 +140,7 @@
             </el-row>
             <el-row :style="show">
                 <div class="grid-content bg-purple-light">
-                    <order-info :order_id="MaterialInfo.orderId"></order-info>
+                    <order-info :order-id="MaterialInfo.orderId"></order-info>
 
                     <el-card class="box-card">
                         <div slot="header">
@@ -149,14 +149,23 @@
                         <el-card class="box-card" shadow="hover" :style="show">
 
                                 <el-divider content-position="left">材料单</el-divider>
-                                <div class="text item">
-                                    <el-select v-model="selectedMaterial" filterable placeholder="输入材料名称或材料编码或供应商名称搜索"
-                                               @change="selectedMaterialChange" style="width: 500px">
-                                        <el-option v-for="item in materialOptions" :key="item.id"
-                                                   :label="item.name + '-' + item.supplierName+ '-' + item.materialUnit"
-                                                   :value="item.id + '-' + item.name + '-' + item.supplierName+ '-' +  item.standard +  '-' + item.materialUnit+ '-' + item.costPrice + '-' + item.salePrice+ '-'+ item.supplierId"></el-option>
-                                    </el-select>
-                                </div>
+                                <el-form :inline="false" :model="queryCond" label-position="right" label-width="80px">
+                                    <el-row>
+                                        <el-col :span="16">
+                                            <el-form-item label="选择材料">
+                                                <el-select v-model="selectedMaterial" multiple filterable placeholder="输入材料名称或材料编码或供应商名称搜索" style="width: 100%">
+                                                    <el-option v-for="item in materialOptions" :key="item.id"
+                                                               :label="item.materialCode + ' | ' + item.name + ' | ' + item.supplierName"
+                                                               :value="item.id">
+                                                    </el-option>
+                                                </el-select>
+                                            </el-form-item>
+                                        </el-col>
+                                        <el-col :span="8">
+                                            <el-button type="primary" @click="addMaterial">添加</el-button>
+                                        </el-col>
+                                    </el-row>
+                                </el-form>
 
                                 <vxe-table
                                         border
@@ -168,17 +177,22 @@
                                         :auto-resize="true"
                                         :data="materialTableData"
                                         :edit-rules="validRules"
+                                        :footer-method="footerMethod"
                                         :edit-config="{trigger: 'click', mode: 'cell'}">
-                                    <vxe-table-column field="id" title="材料编码"></vxe-table-column>
+                                    <vxe-table-column field="materialCode" title="材料编码" width="100"></vxe-table-column>
+                                    <vxe-table-column field="name" title="材料名称" width="200"></vxe-table-column>
                                     <vxe-table-column field="supplierName" title="供应商名称" width="100"></vxe-table-column>
-                                    <vxe-table-column field="materialName" title="材料名称" width="100"></vxe-table-column>
-<!--                                    <vxe-table-column field="standard" title="规格"></vxe-table-column>-->
-                                    <vxe-table-column field="costPrice" title="费用" ></vxe-table-column>
-                                    <vxe-table-column field="supplierId" title="供应商id" ></vxe-table-column>
+                                    <vxe-table-column field="costPrice" title="成本价" width="100" ></vxe-table-column>
                                     <vxe-table-column field="materialUnit" title="材料单位" width="100"></vxe-table-column>
-                                    <vxe-table-column field="materialNum" title="预算数量"
+                                    <vxe-table-column field="materialNum" title="数量" width="100"
                                                       :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
-                                    <vxe-table-column title="操作" width="100" show-overflow>
+                                    <vxe-table-column field="totalMoney" title="总金额" width="150">
+                                        <template v-slot="{ row }">
+                                            <span>{{ sumMoney(row) }} 元</span>
+                                        </template>
+                                    </vxe-table-column>
+                                    <vxe-table-column field="remark" title="下单备注" width="200" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                                    <vxe-table-column title="操作" show-overflow>
                                         <template v-slot="{ row }">
                                             <el-button
                                                     size="mini"
@@ -188,11 +202,9 @@
                                             </el-button>
                                         </template>
                                     </vxe-table-column>
-                                    <vxe-table-column field="remark" title="下单备注" width="100"></vxe-table-column>
                                 </vxe-table>
                                 <el-row style="padding-top: 12px" :style="show">
                                     <el-button type="success" @click="save">下单</el-button>
-                                    <el-button type="success" @click="saveForOther">补单</el-button>
                                 </el-row>
 
                         </el-card>

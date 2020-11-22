@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>新建领款单</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script src="static/js/framework/requirejs/require.min.js"
+            th:src="@{static/js/framework/requirejs/require.min.js(v=${version})}"></script>
+    <script src="static/js/framework/requirejs/require.config.js"
+            th:src="@{static/js/framework/requirejs/require.config.js(v=${version})}"></script>
+</head>
+<body>
+<div id="app" v-cloak>
+    <el-container>
+        <el-main>
+            <el-row :gutter="12">
+                <el-card class="box-card" shadow="hover">
+                    <el-tabs v-model="voucherTab">
+                        <el-tab-pane label="财务付款" name="voucherTab">
+                            <el-form :inline="false" :model="voucher" ref="financePayForm" label-position="right" label-width="80px">
+                                <el-row :gutter="12">
+                                    <el-col :span="8">
+                                        <el-form-item label="领款单号">
+                                            <el-input v-model="voucher.voucherNo" :disabled="true"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="类型" prop="voucherType" :rules="[
+                                                    { required: true, message: '请选择制单类型', trigger: 'blur' }
+                                                ]">
+                                            <vue-select code-type="VOUCHER_TYPE" v-model="voucher.voucherType" @change="changeVoucherType"></vue-select>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="制单日期"
+                                                      prop="voucherDate"
+                                                      :rules="[
+                                                            { required: true, message: '请选择制单日期', trigger: 'blur' }
+                                                        ]">
+                                            <el-date-picker
+                                                    type="date"
+                                                    v-model="voucher.voucherDate"
+                                                    value-format="yyyy-MM-dd"
+                                                    placeholder="选择日期"
+                                                    style="width:100%">
+                                            </el-date-picker>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row :gutter="12">
+                                    <el-col :span="8">
+                                        <el-form-item prop="totalMoney" label="总金额" :rules="[
+                                                { required: true, message: '请输入总金额', trigger: 'blur' },
+                                                {type:'number', message: '金额必须为数字'},
+                                            ]">
+                                            <el-input v-model.number="voucher.totalMoney" @input="toChinese"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="16">
+                                        <el-form-item label="大写金额">
+                                            <el-input v-model="voucher.chineseTotalMoney" :disabled="true"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row :gutter="12">
+                                    <el-col :span="24">
+                                        <el-form-item label="摘要">
+                                            <el-input v-model="voucher.remark"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-divider><i class="el-icon-money"></i>费用明细</el-divider>
+                                <el-row :gutter="12">
+                                    <el-col :span="8">
+                                        <el-form-item label="财务科目" required="true">
+                                            <el-cascader
+                                                    v-model="financeItemId"
+                                                    ref="financeItems"
+                                                    placeholder="搜索财务科目"
+                                                    :options="financeItems"
+                                                    :props="{ expandTrigger: 'hover' }"
+                                                    filterable
+                                                    style="width:100%">
+                                            </el-cascader>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="领款员工">
+                                            <order-search-employee :employee-id.sync="employeeId" :employee-name.sync="employeeName"></order-search-employee>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span = "8">
+                                        <el-button type="primary" @click="addVoucherItem">添加费用明细</el-button>
+                                        <el-button type="danger" @click="clearEmployee">清空员工</el-button>
+                                    </el-col>
+                                </el-row>
+                                <vxe-table
+                                        border
+                                        resizable
+                                        ref="voucherItems"
+                                        show-footer
+                                        show-overflow
+                                        highlight-hover-row
+                                        :auto-resize="true"
+                                        :mouse-config="{selected: true}"
+                                        :keyboard-config="{isArrow: true, isDel: true, isEnter: true, isTab: true, isEdit: true}"
+                                        :data="voucher.voucherItems"
+                                        :footer-method="footerMethod"
+                                        :edit-config="{trigger: 'click', mode: 'cell', activeMethod: activeCellMethod}">
+                                    <vxe-table-column field="orgName" title="部门名称" width="200"></vxe-table-column>
+                                    <vxe-table-column field="projectName" title="领款人" width="200"
+                                                      :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                                    <vxe-table-column field="financeItemName" title="财务科目" width="200"></vxe-table-column>
+                                    <vxe-table-column field="fee" title="总金额" width="200"
+                                                      :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+                                    <vxe-table-column field="trafficType" v-if="voucher.voucherType == '5'" title="交通类别" width="200" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                                    <vxe-table-column field="trafficDate" v-if="voucher.voucherType == '5'" title="日期" width="200" :edit-render="{name: 'input', attrs: {type: 'date'}}"></vxe-table-column>
+                                    <vxe-table-column field="trafficBegin" v-if="voucher.voucherType == '5'" title="起点" width="200" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                                    <vxe-table-column field="trafficEnd" v-if="voucher.voucherType == '5'" title="终点" width="200" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                                    <vxe-table-column field="trafficFee" v-if="voucher.voucherType == '5'" title="交通费" width="200"
+                                                      :edit-render="{name:  'input', attrs: {type: 'number'}}"></vxe-table-column>
+                                    <vxe-table-column field="allowance" v-if="voucher.voucherType == '5'" title="出差补助" width="200"
+                                                      :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+                                    <vxe-table-column field="hotelFee" v-if="voucher.voucherType == '5'" title="住宿费" width="200"
+                                                      :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+                                    <vxe-table-column field="remark" title="摘要" width="300" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                                    <vxe-table-column title="操作" min-width="200" show-overflow>
+                                        <template v-slot="{ row }">
+                                            <el-button
+                                                    size="mini"
+                                                    type="danger"
+                                                    icon="el-icon-delete"
+                                                    @click="deleteVoucherItem(row)">删除
+                                            </el-button>
+                                        </template>
+                                    </vxe-table-column>
+                                </vxe-table>
+                            </el-form>
+                            <div class="bottom clearfix" style="margin-top : 18px">
+                                <el-button type="primary" @click="submit">提交</el-button>
+                            </div>
+                        </el-tab-pane>
+                        <el-tab-pane label="材料制单" name="materialTab">
+                            <el-card class="box-card" shadow="hover">
+                                <div slot="header" class="clearfix">
+                                    <span>查询条件区</span>
+                                </div>
+                                <el-form :inline="false" :model="queryCond" label-position="right"
+                                         label-width="80px">
+                                    <el-row>
+                                        <el-col :span="8">
+                                            <el-form-item label="单据状态">
+                                                <vue-select code-type="SUPPLY_AUDIT_STATUS"
+                                                            v-model="queryCond.auditStatus"></vue-select>
+                                            </el-form-item>
+                                        </el-col>
+                                        <el-col :span="8">
+                                            <el-form-item>
+                                                <el-button type="primary" @click="queryMaterials">查询</el-button>
+                                            </el-form-item>
+                                        </el-col>
+                                    </el-row>
+                                </el-form>
+                            </el-card>
+                            <el-card class="box-card" shadow="hover">
+                                <el-row style="padding-bottom: 12px">
+                                    <el-button type="success" @click="showMaterialVoucher">材料制单</el-button>
+                                    <el-button type="danger" @click="auditMaterial">审核不通过</el-button>
+                                </el-row>
+                                <vxe-table
+                                        border
+                                        resizable
+                                        ref="materialTable"
+                                        show-overflow
+                                        highlight-hover-row
+                                        highlight-cell
+                                        keep-source
+                                        max-height="800px"
+                                        :auto-resize="true"
+                                        :data="materialDatas"
+                                        :edit-config="{trigger: 'click', mode: 'cell', showStatus: true, activeMethod: activeRowMethod}"
+                                        :checkbox-config="{strict: true,checkMethod: checkMethod, range: true, trigger: 'row', highlight: true}">
+                                    <vxe-table-column type="checkbox" fixed="left" width="40"></vxe-table-column>
+                                    <vxe-table-column field="materialCode" title="材料名称" sortable width="150" ></vxe-table-column>
+                                    <vxe-table-column field="materialName" title="材料名称" sortable width="150" ></vxe-table-column>
+                                    <vxe-table-column field="supplierName" title="供应商名称" sortable width="150" ></vxe-table-column>
+                                    <vxe-table-column field="materialNum" title="数量" sortable width="150" ></vxe-table-column>
+                                    <vxe-table-column field="materialUnit" title="单位" sortable width="150" ></vxe-table-column>
+                                    <vxe-table-column field="totalMoney" title="总费用" sortable width="150" ></vxe-table-column>
+                                    <vxe-table-column field="createEmployeeName" title="下单员" sortable width="100"></vxe-table-column>
+                                    <vxe-table-column field="auditStatusName" title="制单状态" sortable width="100"></vxe-table-column>
+                                    <vxe-table-column field="supplyOrderName" title="材料下单类型" sortable width="150"></vxe-table-column>
+                                    <vxe-table-column align="center" field="remark" title="下单备注"></vxe-table-column>
+                                </vxe-table>
+                                <div style="text-align: center">
+                                    <el-pagination
+                                            layout="total, prev, pager, next"
+                                            :total="queryCond.count"
+                                            :current-page.sync="queryCond.page"
+                                            :page-size="queryCond.limit"
+                                            @current-change="queryMaterials">
+                                    </el-pagination>
+                                </div>
+                                <el-dialog title="制单" :visible.sync="materialVoucherVisible">
+                                    <el-form :inline="false" :model="materialVoucher" label-position="right"
+                                             label-width="80px">
+                                        <el-row>
+                                            <el-col :span="8">
+                                                <el-form-item label="制单日期"
+                                                              required="true">
+                                                    <el-date-picker
+                                                            type="date"
+                                                            v-model="materialVoucher.voucherDate"
+                                                            value-format="yyyy-MM-dd"
+                                                            placeholder="选择日期"
+                                                            style="width:100%">
+                                                    </el-date-picker>
+                                                </el-form-item>
+                                            </el-col>
+                                            <el-col :span="8">
+                                                <el-form-item label="财务科目" required="true">
+                                                    <el-cascader
+                                                            v-model="materialVoucher.financeItemId"
+                                                            ref="financeItems"
+                                                            placeholder="搜索财务科目"
+                                                            :options="financeItems"
+                                                            :props="{ expandTrigger: 'hover' }"
+                                                            filterable
+                                                            style="width:100%">
+                                                    </el-cascader>
+                                                </el-form-item>
+                                            </el-col>
+                                            <el-col :span="8">
+                                                <el-form-item label="摘要">
+                                                    <el-input v-model="materialVoucher.remark"></el-input>
+                                                </el-form-item>
+                                            </el-col>
+                                        </el-row>
+                                        <el-row style="padding-top: 12px" >
+                                            <el-button type="primary" @click="submitMaterial">新增材料制单</el-button>
+                                        </el-row>
+                                    </el-form>
+                                </el-dialog>
+                            </el-card>
+                        </el-tab-pane>
+                        <el-tab-pane label="施工队制单" name="constructionTab">
+
+
+                        </el-tab-pane>
+                        <el-tab-pane label="其他制单" name="otherTab" @click="">
+
+                        </el-tab-pane>
+                    </el-tabs>
+                </el-card>
+            </el-row>
+        </el-main>
+    </el-container>
+</div>
+<style>
+    .text {
+        font-size: 14px;
+    }
+
+    .item {
+        margin-bottom: 18px;
+    }
+
+    .box-card {
+        margin-bottom: 12px;
+    }
+
+    .el-card__header {
+        padding: 10px;
+    }
+    [v-cloak] {
+        display: none;
+    }
+</style>
+<script src="static/js/modules/finance/bill/new.voucher.js"
+        th:src="@{static/js/modules/finance/bill/new.voucher.js(v=${version})}"></script>
+</body>
+</html>
