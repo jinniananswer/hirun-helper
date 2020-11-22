@@ -11,6 +11,8 @@ import lombok.Data;
 @Data
 public class OrderWorkerActionDTO {
 
+    private Long id;
+
     private Long orderId;
 
     private Long roleId;

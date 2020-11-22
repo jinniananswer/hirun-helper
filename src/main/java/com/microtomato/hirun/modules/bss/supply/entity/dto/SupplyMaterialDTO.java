@@ -11,6 +11,8 @@ public class SupplyMaterialDTO {
 
     private Long materialId;
 
+    private String materialCode;
+
     private String name;
 
     private String supplierName;

@@ -18,9 +18,9 @@ public class SupplyOrderDTO {
 
     private String supplierName;
 
-    private Long createUserId;
+    private Long createEmployeeId;
 
-    private String createUserName;
+    private String createEmployeeName;
 
     private Double money;
     /**

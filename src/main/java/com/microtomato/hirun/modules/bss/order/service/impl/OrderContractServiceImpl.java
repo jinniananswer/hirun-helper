@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.exception.cases.NotFoundException;
-import com.microtomato.hirun.framework.mybatis.sequence.impl.PayNoCycleSeq;
+import com.microtomato.hirun.framework.mybatis.sequence.impl.ContractNoCycleSeq;
 import com.microtomato.hirun.framework.mybatis.service.IDualService;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.modules.bss.config.entity.consts.FeeConst;
@@ -192,7 +192,7 @@ public class OrderContractServiceImpl extends ServiceImpl<OrderContractMapper, O
         if (shopId == null) {
             return null;
         }
-        Long value = this.dualService.nextval(PayNoCycleSeq.class);
+        Long value = this.dualService.nextval(ContractNoCycleSeq.class);
         String strNextval = StringUtils.leftPad(String.valueOf(value), 6, '0');
         String timestamp = TimeUtils.now("yyyy");
 

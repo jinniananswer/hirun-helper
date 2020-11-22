@@ -1,20 +1,12 @@
 package com.microtomato.hirun.modules.finance.entity.po;
 
+import com.baomidou.mybatisplus.annotation.*;
+import com.microtomato.hirun.framework.data.BaseEntity;
+import lombok.*;
+import lombok.experimental.Accessors;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.microtomato.hirun.framework.data.BaseEntity;
-import com.baomidou.mybatisplus.annotation.TableField;
-
-import lombok.Data;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
 /**
  * 财务领款单表(FinanceVoucher)表实体类
@@ -37,18 +29,20 @@ public class FinanceVoucher extends BaseEntity {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
+    @TableId(value = "voucher_no")
+    private String voucherNo;
 
     /** 领款单类型 1-材料单 2-施工队领款单 3-其他领款单 */
     @TableField(value = "voucher_type")
-    private Long voucherType;
+    private String voucherType;
 
     /** 领款单日期 */
     @TableField(value = "voucher_date")
-    private LocalDateTime voucherDate;
+    private LocalDate voucherDate;
 
     /** 领款单总金额 */
     @TableField(value = "total_money")
-    private Double totalMoney;
+    private Long totalMoney;
 
     /** 0-未审核 1-财务审核通过 2-审核不通过 3-出纳付款中 4-待提交会计 5-挂账中 6-会计收单 */
     @TableField(value = "audit_status")
@@ -85,6 +79,10 @@ public class FinanceVoucher extends BaseEntity {
     /** 制单员 */
     @TableField(value = "create_employee_id")
     private Long createEmployeeId;
+
+    /** 订单ID */
+    @TableField(value = "order_id")
+    private Long orderId;
 
 
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)

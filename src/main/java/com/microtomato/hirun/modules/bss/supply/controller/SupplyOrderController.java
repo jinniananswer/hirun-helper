@@ -4,11 +4,7 @@ package com.microtomato.hirun.modules.bss.supply.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.microtomato.hirun.framework.annotation.RestResult;
-import com.microtomato.hirun.framework.security.UserContext;
-import com.microtomato.hirun.framework.util.WebContextUtils;
-import com.microtomato.hirun.modules.bss.supply.entity.dto.QuerySupplyOrderDTO;
-import com.microtomato.hirun.modules.bss.supply.entity.dto.SupplyMaterialDTO;
-import com.microtomato.hirun.modules.bss.supply.entity.dto.SupplyOrderDTO;
+import com.microtomato.hirun.modules.bss.supply.entity.dto.*;
 import com.microtomato.hirun.modules.bss.supply.service.ISupplyOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -47,11 +43,7 @@ public class SupplyOrderController {
 
     @GetMapping("/querySupplyInfo")
     @RestResult
-    public IPage<SupplyOrderDTO> querySupplyInfo(QuerySupplyOrderDTO querySupplyDTO) {
-        UserContext userContext = WebContextUtils.getUserContext();
-        if(querySupplyDTO.getEmployeeId()==null){
-            querySupplyDTO.setEmployeeId(userContext.getEmployeeId());
-        }
+    public IPage<SupplyOrderDetailDTO> querySupplyInfo(QuerySupplyOrderDetailDTO querySupplyDTO) {
         return this.supplyOrderService.querySupplyInfo(querySupplyDTO);
     }
 
@@ -65,6 +57,12 @@ public class SupplyOrderController {
     @RestResult
     public void auditSupplyDetail(@RequestBody List<SupplyOrderDTO> supplyOrderDTOS) {
         this.supplyOrderService.auditSupplyDetail(supplyOrderDTOS);
+    }
+
+    @PostMapping("/submitSupplyDetail")
+    @RestResult
+    public void submitSupplyDetail(@RequestBody MaterialVoucherDTO data) {
+        this.supplyOrderService.submitSupplyDetail(data);
     }
 
 }

@@ -1,10 +1,7 @@
 package com.microtomato.hirun.modules.finance.entity.dto;
 
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.microtomato.hirun.modules.bss.supply.entity.dto.SupplyMaterialDTO;
 import lombok.Data;
-
-import java.util.List;
 
 
 @Data
@@ -24,7 +21,7 @@ public class FinanceVoucherDTO {
     @TableField(value = "supply_id")
     private Long supplyId;
 
-    private Long voucherType;
+    private String voucherType;
 
     private Double totalMoney;
 

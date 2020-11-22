@@ -3,11 +3,12 @@ package com.microtomato.hirun.modules.finance.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.microtomato.hirun.modules.bss.order.entity.dto.DecoratorInfoDTO;
-import com.microtomato.hirun.modules.bss.supply.entity.dto.QuerySupplyOrderDTO;
-import com.microtomato.hirun.modules.bss.supply.entity.dto.SupplyOrderDTO;
 import com.microtomato.hirun.modules.finance.entity.dto.FinanceVoucherDTO;
 import com.microtomato.hirun.modules.finance.entity.dto.QueryVoucherAuditDTO;
+import com.microtomato.hirun.modules.finance.entity.dto.VoucherDTO;
 import com.microtomato.hirun.modules.finance.entity.po.FinanceVoucher;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -36,4 +37,6 @@ public interface IFinanceVoucherService extends IService<FinanceVoucher> {
 
     void auditForSupplyReject(List<FinanceVoucherDTO> financeVoucherDTO);
 
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    void createVoucher(VoucherDTO request);
 }

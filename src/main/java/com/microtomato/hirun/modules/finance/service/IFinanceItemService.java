@@ -2,8 +2,8 @@ package com.microtomato.hirun.modules.finance.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.microtomato.hirun.modules.bss.order.entity.dto.CascadeDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.CollectionComponentDTO;
 import com.microtomato.hirun.modules.finance.entity.po.FinanceItem;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.util.List;
 
@@ -16,6 +16,8 @@ import java.util.List;
  */
 public interface IFinanceItemService extends IService<FinanceItem> {
 
-    List<CascadeDTO<FinanceItem>>  loadFinancenItem();
+    List<CascadeDTO<FinanceItem>> loadFinanceItems();
 
+    @Cacheable(value = "finance_item")
+    FinanceItem getByFinanceItemId(String financeItemId);
 }

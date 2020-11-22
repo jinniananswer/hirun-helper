@@ -37,6 +37,8 @@ public interface IOrderWorkerService extends IService<OrderWorker> {
 
     OrderWorker getOneOrderWorkerByOrderIdRoleId(Long orderId, Long roleId);
 
+    OrderWorker getOneOrderWorkerByOrderIdEmployeeIdRoleId(Long orderId, Long employeeId, Long roleId);
+
     void deleteOrderWorker(List<Long> ids);
 
     List<OrderWorker> queryByOrderIdRoleId(Long orderId, Long roleId);

@@ -3,18 +3,10 @@ package com.microtomato.hirun.modules.finance.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.util.ArrayUtils;
-import com.microtomato.hirun.modules.bss.config.entity.po.PayItemCfg;
 import com.microtomato.hirun.modules.bss.order.entity.dto.CascadeDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.PayComponentDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.PayItemDTO;
-import com.microtomato.hirun.modules.bss.order.entity.dto.PaymentDTO;
-import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayItem;
-import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayMoney;
-import com.microtomato.hirun.modules.bss.order.entity.po.OrderPayNo;
 import com.microtomato.hirun.modules.finance.entity.po.FinanceItem;
 import com.microtomato.hirun.modules.finance.mapper.FinanceItemMapper;
 import com.microtomato.hirun.modules.finance.service.IFinanceItemService;
-import com.microtomato.hirun.modules.system.entity.po.StaticData;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,11 +36,9 @@ public class FinanceItemServiceImpl extends ServiceImpl<FinanceItemMapper, Finan
      * @return
      */
     @Override
-    public List<CascadeDTO<FinanceItem>>  loadFinancenItem() {
+    public List<CascadeDTO<FinanceItem>> loadFinanceItems() {
         List<FinanceItem> financeItemCfgs = this.queryAll();
-        log.debug("financeItemCfgs=======rrrrr===="+financeItemCfgs);
         List<CascadeDTO<FinanceItem>> financeItems = this.buildFinanceItemCascade(financeItemCfgs);
-        log.debug("financeItems==========="+financeItems);
         return financeItems;
     }
 
@@ -59,8 +49,14 @@ public class FinanceItemServiceImpl extends ServiceImpl<FinanceItemMapper, Finan
 
     @Cacheable(value = "financeItem-all")
     public List<FinanceItem> queryAll() {
-        List<FinanceItem> financeItem = this.list(new QueryWrapper<FinanceItem>().lambda().eq(FinanceItem::getStatus, "0"));
+        List<FinanceItem> financeItem = this.list(new QueryWrapper<FinanceItem>().lambda().eq(FinanceItem::getStatus, "U"));
         return financeItem;
+    }
+
+    @Cacheable(value = "finance_item")
+    @Override
+    public FinanceItem getByFinanceItemId(String financeItemId) {
+        return this.getOne(new QueryWrapper<FinanceItem>().lambda().eq(FinanceItem::getFinanceItemId, financeItemId).eq(FinanceItem::getStatus, "U"));
     }
 
     /**
@@ -72,26 +68,20 @@ public class FinanceItemServiceImpl extends ServiceImpl<FinanceItemMapper, Finan
         if (ArrayUtils.isEmpty(financeItemCfgs)) {
             return null;
         }
-        log.debug("financeItemCfgs====1111====="+financeItemCfgs);
         List<CascadeDTO<FinanceItem>> roots = new ArrayList<>();
         for (FinanceItem financeItemCfg : financeItemCfgs) {
-            log.debug("financeItemCfg=========="+financeItemCfg);
-            if (financeItemCfg.getParentFinanceItemId().equals("-1")) {
-                log.debug("eeeeeeeeeeee");
+            if (StringUtils.isBlank(financeItemCfg.getParentFinanceItemId())) {
                 CascadeDTO<FinanceItem> root = new CascadeDTO<>();
                 root.setLabel(financeItemCfg.getName());
                 root.setValue(financeItemCfg.getFinanceItemId());
-                root.setSelf(financeItemCfg);
                 roots.add(root);
             }
         }
-        log.debug("roots====1111====="+roots);
         if (ArrayUtils.isNotEmpty(roots)) {
             for (CascadeDTO<FinanceItem> root : roots) {
                 this.buildFinanceItemChildren(root, financeItemCfgs);
             }
         }
-log.debug("roots=========="+roots);
         return roots;
     }
 
@@ -109,7 +99,6 @@ log.debug("roots=========="+roots);
                 CascadeDTO<FinanceItem> child = new CascadeDTO<>();
                 child.setLabel(financeItemCfg.getName());
                 child.setValue(financeItemCfg.getFinanceItemId());
-                child.setSelf(financeItemCfg);
                 children.add(child);
 
                 buildFinanceItemChildren(child, financeItemCfgs);

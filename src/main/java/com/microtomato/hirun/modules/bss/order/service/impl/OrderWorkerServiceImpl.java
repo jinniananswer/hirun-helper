@@ -227,6 +227,24 @@ public class OrderWorkerServiceImpl extends ServiceImpl<OrderWorkerMapper, Order
     }
 
     /**
+     * 根据订单ID、员工ID与角色ID查找有效的一条记录
+     * @param orderId
+     * @param roleId
+     * @return
+     */
+    @Override
+    public OrderWorker getOneOrderWorkerByOrderIdEmployeeIdRoleId(Long orderId, Long employeeId, Long roleId) {
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+        OrderWorker orderWorker = this.getOne(Wrappers.<OrderWorker>lambdaQuery()
+                .eq(OrderWorker::getOrderId, orderId)
+                .eq(OrderWorker::getRoleId, roleId)
+                .eq(OrderWorker::getEmployeeId, employeeId)
+                .le(OrderWorker::getStartDate, now)
+                .ge(OrderWorker::getEndDate, now), false);
+        return orderWorker;
+    }
+
+    /**
      * 根据主键终止工作人员记录
      *
      * @param ids

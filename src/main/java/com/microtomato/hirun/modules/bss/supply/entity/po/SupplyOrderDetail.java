@@ -1,19 +1,11 @@
 package com.microtomato.hirun.modules.bss.supply.entity.po;
 
-import java.time.LocalDateTime;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.*;
 import com.microtomato.hirun.framework.data.BaseEntity;
-import com.baomidou.mybatisplus.annotation.TableField;
-
-import lombok.Data;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import lombok.experimental.Accessors;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 /**
  * 供应订单明细表(SupplyOrderDetail)表实体类
@@ -54,15 +46,43 @@ public class SupplyOrderDetail extends BaseEntity {
 
     /** 明细费用 */
     @TableField(value = "fee")
-    private Double fee;
+    private Long fee;
 
     /** 材料数量 */
     @TableField(value = "num")
-    private String num;
+    private Integer num;
 
+    /** 材料数量 */
+    @TableField(value = "total_money")
+    private Long totalMoney;
 
+    /** 备注 */
     @TableField(value = "remark")
     private String remark;
+
+    /** 审核状态 */
+    @TableField(value = "audit_status")
+    private String auditStatus;
+
+    /** 审核人 */
+    @TableField(value = "audit_employee_id")
+    private Long auditEmployeeId;
+
+    /** 审核备注 */
+    @TableField(value = "audit_comment")
+    private String auditComment;
+
+    /** 下单人 */
+    @TableField(value = "create_employee_id")
+    private Long createEmployeeId;
+
+    /** 开始时间 */
+    @TableField(value = "start_date")
+    private LocalDateTime startDate;
+
+    /** 结束时间 */
+    @TableField(value = "end_date")
+    private LocalDateTime endDate;
 
 
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)

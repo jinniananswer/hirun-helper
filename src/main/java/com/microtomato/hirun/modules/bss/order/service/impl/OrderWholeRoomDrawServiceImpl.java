@@ -134,6 +134,16 @@ public class OrderWholeRoomDrawServiceImpl extends ServiceImpl<OrderWholeRoomDra
             orderWholeRoomDrawDTO.setAssistantDesigner(assistants);
         }
 
+        List<OrderWorkerActionDTO> vrEmployees = orderWorkerActionService.queryByOrderIdActionDto(orderId, "vr_360");
+        if (ArrayUtils.isNotEmpty(vrEmployees)) {
+            orderWholeRoomDrawDTO.setVrEmployeeId(vrEmployees.get(0).getEmployeeId());
+        }
+
+        List<OrderWorkerActionDTO> whiteModels = orderWorkerActionService.queryByOrderIdActionDto(orderId, "su_white_model");
+        if (ArrayUtils.isNotEmpty(whiteModels)) {
+            orderWholeRoomDrawDTO.setSuEmployeeId(whiteModels.get(0).getEmployeeId());
+        }
+
         List<OrderWorker> orderWorkers = this.orderWorkerService.queryValidByOrderId(orderId);
         if (ArrayUtils.isNotEmpty(orderWorkers)) {
             for (OrderWorker orderWorker : orderWorkers) {
@@ -204,6 +214,9 @@ public class OrderWholeRoomDrawServiceImpl extends ServiceImpl<OrderWholeRoomDra
         OrderBase orderBase = this.orderBaseService.queryByOrderId(orderId);
 
         List<Long> workerIds = this.orderWorkerActionService.deleteOrderWorkerAction(orderId, DesignerConst.OPER_DRAW_CONSTRUCT);
+        List<Long> vrWorkerIds = this.orderWorkerActionService.deleteOrderWorkerAction(dto.getOrderId(), "vr_360");
+        List<Long> suWorkerIds = this.orderWorkerActionService.deleteOrderWorkerAction(dto.getOrderId(), "su_white_model");
+
         if (ArrayUtils.isNotEmpty(workerIds)) {
             //检查是否有其它动作
             List<OrderWorkerAction> otherActions = this.orderWorkerActionService.hasOtherAction(workerIds, DesignerConst.OPER_DRAW_CONSTRUCT);
@@ -228,12 +241,76 @@ public class OrderWholeRoomDrawServiceImpl extends ServiceImpl<OrderWholeRoomDra
                 this.orderWorkerService.deleteOrderWorker(onlyDrawConstruct);
             }
         }
+
+        if (ArrayUtils.isNotEmpty(vrWorkerIds)) {
+            //检查是否有其它动作
+            List<OrderWorkerAction> vrOtherActions = this.orderWorkerActionService.hasOtherAction(vrWorkerIds, "vr_360");
+            List<Long> onlyVR360 = new ArrayList<>();
+
+            for (Long workerId : vrWorkerIds) {
+
+                boolean isFind = false;
+                if (ArrayUtils.isNotEmpty(vrOtherActions)) {
+                    for (OrderWorkerAction otherAction : vrOtherActions) {
+                        if (otherAction.getWorkerId().equals(workerId)) {
+                            isFind = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (!isFind) {
+                    onlyVR360.add(workerId);
+                }
+            }
+
+            if (ArrayUtils.isNotEmpty(onlyVR360)) {
+                this.orderWorkerService.deleteOrderWorker(onlyVR360);
+            }
+        }
+
+        if (ArrayUtils.isNotEmpty(suWorkerIds)) {
+            List<OrderWorkerAction> suOtherActions = this.orderWorkerActionService.hasOtherAction(vrWorkerIds, "su_white_model");
+            List<Long> onlySU = new ArrayList<>();
+
+            for (Long workerId : suWorkerIds) {
+
+                boolean isFind = false;
+                if (ArrayUtils.isNotEmpty(suOtherActions)) {
+                    for (OrderWorkerAction otherAction : suOtherActions) {
+                        if (otherAction.getWorkerId().equals(workerId)) {
+                            isFind = true;
+                            break;
+                        }
+                    }
+                }
+                if (!isFind) {
+                    onlySU.add(workerId);
+                }
+            }
+
+            if (ArrayUtils.isNotEmpty(onlySU)) {
+                this.orderWorkerService.deleteOrderWorker(onlySU);
+            }
+        }
+
+
         List<Long> assistantDesignerIds = dto.getAssistantDesigner();
         if (ArrayUtils.isNotEmpty(assistantDesignerIds)) {
             assistantDesignerIds.forEach(assistantDesignerId -> {
                 Long workerId = this.orderWorkerService.updateOrderWorker(orderId,41L, assistantDesignerId);
                 this.orderWorkerActionService.createOrderWorkerAction(orderId, assistantDesignerId, workerId, orderBase.getStatus(), DesignerConst.OPER_DRAW_CONSTRUCT);
             });
+        }
+
+        if (dto.getVrEmployeeId() != null) {
+            Long workerId = this.orderWorkerService.updateOrderWorker(dto.getOrderId(),41L, dto.getVrEmployeeId());
+            this.orderWorkerActionService.createOrderWorkerAction(dto.getOrderId(), dto.getVrEmployeeId(), workerId, orderBase.getStatus(), "vr_360");
+        }
+
+        if (dto.getSuEmployeeId() != null) {
+            Long workerId = this.orderWorkerService.updateOrderWorker(dto.getOrderId(),41L, dto.getSuEmployeeId());
+            this.orderWorkerActionService.createOrderWorkerAction(dto.getOrderId(), dto.getSuEmployeeId(), workerId, orderBase.getStatus(), "su_white_model");
         }
     }
 
@@ -262,33 +339,49 @@ public class OrderWholeRoomDrawServiceImpl extends ServiceImpl<OrderWholeRoomDra
      */
     public void mergeAssistantWorkerAction(Long orderId) {
         //先查助理设计师是不是有多人，如果有多人，则不需要合并
-        List<OrderWorker> assistants = this.orderWorkerService.queryByOrderIdRoleId(orderId, 41L);
-        if (ArrayUtils.isEmpty(assistants) || assistants.size() > 1) {
+        List<OrderWorkerActionDTO> measures = this.orderWorkerActionService.queryByOrderIdActionDto(orderId, DesignerConst.OPER_MEASURE);
+        List<OrderWorkerActionDTO> planes = this.orderWorkerActionService.queryByOrderIdActionDto(orderId, DesignerConst.OPER_DRAW_PLAN);
+        List<OrderWorkerActionDTO> constructs = this.orderWorkerActionService.queryByOrderIdActionDto(orderId, DesignerConst.OPER_DRAW_CONSTRUCT);
+
+        if (ArrayUtils.isEmpty(measures) || ArrayUtils.isEmpty(planes) || ArrayUtils.isEmpty(constructs)) {
             return;
         }
 
-        OrderWorker assistant = assistants.get(0);
-        Long id = assistant.getId();
+        OrderWorkerActionDTO measure = measures.get(0);
+        OrderWorkerActionDTO plane = planes.get(0);
+        OrderWorkerActionDTO construct = constructs.get(0);
 
-        List<OrderWorkerAction> workerActions = this.orderWorkerActionService.queryByWorkerId(id);
+        if (measure.getEmployeeId().equals(plane.getEmployeeId()) && measure.getEmployeeId().equals(construct.getEmployeeId())) {
+            LocalDateTime now = RequestTimeHolder.getRequestTime();
+            /**
+             * 如果同一个人做完量房，平面图，全房图，那么将三个动作合并为全程参与一个动作
+             * */
+            List<OrderWorkerAction> workerActions = new ArrayList<>();
+            OrderWorkerAction measureAction = new OrderWorkerAction();
+            measureAction.setId(measure.getId());
+            measureAction.setEndDate(now);
 
-        if (ArrayUtils.isEmpty(workerActions) || workerActions.size() < 3) {
-            return;
+            OrderWorkerAction planeAction = new OrderWorkerAction();
+            planeAction.setId(plane.getId());
+            planeAction.setEndDate(now);
+
+            OrderWorkerAction constructAction = new OrderWorkerAction();
+            constructAction.setId(construct.getId());
+            constructAction.setEndDate(now);
+
+            workerActions.add(measureAction);
+            workerActions.add(planeAction);
+            workerActions.add(constructAction);
+
+            this.orderWorkerActionService.updateBatchById(workerActions);
+
+            OrderBase orderBase = this.orderBaseService.getById(orderId);
+
+            OrderWorker worker = this.orderWorkerService.getOneOrderWorkerByOrderIdEmployeeIdRoleId(measure.getOrderId(), measure.getEmployeeId(), measure.getRoleId());
+            this.orderWorkerActionService.createOrderWorkerAction(orderId, worker.getEmployeeId(), worker.getId(), orderBase.getStatus(), DesignerConst.OPER_WALL_IN_DESIGN);
         }
 
-        /**
-         * 如果同一个人做完量房，平面图，全房图，那么将三个动作合并为全程参与一个动作
-         * */
 
-        LocalDateTime now = RequestTimeHolder.getRequestTime();
-        workerActions.forEach(workerAction -> {
-            workerAction.setEndDate(now);
-        });
-
-        this.orderWorkerActionService.updateBatchById(workerActions);
-
-        OrderBase orderBase = this.orderBaseService.getById(orderId);
-        this.orderWorkerActionService.createOrderWorkerAction(orderId, assistant.getEmployeeId(), assistant.getId(),orderBase.getStatus(), DesignerConst.OPER_WALL_IN_DESIGN);
     }
 
     /**

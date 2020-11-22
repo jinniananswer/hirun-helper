@@ -2,9 +2,7 @@ package com.microtomato.hirun.modules.bss.supply.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.microtomato.hirun.modules.bss.supply.entity.dto.QuerySupplyOrderDTO;
-import com.microtomato.hirun.modules.bss.supply.entity.dto.SupplyMaterialDTO;
-import com.microtomato.hirun.modules.bss.supply.entity.dto.SupplyOrderDTO;
+import com.microtomato.hirun.modules.bss.supply.entity.dto.*;
 import com.microtomato.hirun.modules.bss.supply.entity.po.SupplyOrder;
 
 import java.util.List;
@@ -20,10 +18,11 @@ public interface ISupplyOrderService extends IService<SupplyOrder> {
 
     void materialOrderDeal(SupplyOrderDTO supplyOrderInfo);
 
-    IPage<SupplyOrderDTO> querySupplyInfo(QuerySupplyOrderDTO condition);
+    IPage<SupplyOrderDetailDTO> querySupplyInfo(QuerySupplyOrderDetailDTO condition);
 
     List<SupplyMaterialDTO> querySupplyDetailInfo(QuerySupplyOrderDTO condition);
 
     void auditSupplyDetail(List<SupplyOrderDTO> supplyOrderDTOS);
 
+    void submitSupplyDetail(MaterialVoucherDTO data);
 }

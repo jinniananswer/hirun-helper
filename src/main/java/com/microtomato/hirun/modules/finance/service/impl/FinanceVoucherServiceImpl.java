@@ -3,44 +3,44 @@ package com.microtomato.hirun.modules.finance.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.microtomato.hirun.framework.security.UserContext;
-import com.microtomato.hirun.modules.bss.supply.entity.dto.QuerySupplyOrderDTO;
-import com.microtomato.hirun.modules.bss.supply.entity.dto.SupplyOrderDTO;
-import com.microtomato.hirun.modules.finance.entity.dto.QueryVoucherAuditDTO;
-import com.microtomato.hirun.modules.organization.service.IEmployeeService;
-import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.microtomato.hirun.framework.mybatis.DataSourceKey;
+import com.microtomato.hirun.framework.mybatis.annotation.DataSource;
+import com.microtomato.hirun.framework.mybatis.sequence.impl.VoucherNoCycleSeq;
+import com.microtomato.hirun.framework.mybatis.service.IDualService;
+import com.microtomato.hirun.framework.security.UserContext;
 import com.microtomato.hirun.framework.threadlocal.RequestTimeHolder;
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.framework.util.TimeUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.bss.order.entity.dto.DecoratorInfoDTO;
 import com.microtomato.hirun.modules.bss.order.entity.po.Decorator;
 import com.microtomato.hirun.modules.bss.order.service.IDecoratorService;
-import com.microtomato.hirun.modules.bss.salary.entity.dto.DesignRoyaltyDetailDTO;
-import com.microtomato.hirun.modules.bss.salary.entity.dto.ProjectRoyaltyDetailDTO;
-import com.microtomato.hirun.modules.bss.supply.entity.dto.SupplyMaterialDTO;
 import com.microtomato.hirun.modules.bss.supply.entity.po.SupplyOrder;
-import com.microtomato.hirun.modules.bss.supply.entity.po.SupplyOrderDetail;
 import com.microtomato.hirun.modules.bss.supply.mapper.SupplyOrderMapper;
 import com.microtomato.hirun.modules.bss.supply.service.ISupplierService;
 import com.microtomato.hirun.modules.bss.supply.service.ISupplyOrderService;
-import com.microtomato.hirun.modules.finance.entity.dto.FinanceVoucherDTO;
-import com.microtomato.hirun.modules.finance.entity.dto.FinanceVoucherItemDTO;
+import com.microtomato.hirun.modules.finance.entity.dto.*;
 import com.microtomato.hirun.modules.finance.entity.po.FinanceItem;
 import com.microtomato.hirun.modules.finance.entity.po.FinanceVoucher;
 import com.microtomato.hirun.modules.finance.entity.po.FinanceVoucherItem;
 import com.microtomato.hirun.modules.finance.mapper.FinanceVoucherMapper;
+import com.microtomato.hirun.modules.finance.service.IFinanceItemService;
 import com.microtomato.hirun.modules.finance.service.IFinanceVoucherItemService;
 import com.microtomato.hirun.modules.finance.service.IFinanceVoucherService;
+import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
+import com.microtomato.hirun.modules.organization.entity.po.Org;
+import com.microtomato.hirun.modules.organization.service.IEmployeeService;
+import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +54,7 @@ import java.util.List;
  */
 @Service
 @Slf4j
+@DataSource(DataSourceKey.INS)
 public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper, FinanceVoucher> implements IFinanceVoucherService {
 
     @Autowired
@@ -83,7 +84,11 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
     @Autowired
     private IEmployeeService employeeService;
 
+    @Autowired
+    private IDualService dualService;
 
+    @Autowired
+    private IFinanceItemService financeItemService;
 
     /**
      * 材料供应制单
@@ -100,7 +105,7 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
         financeVoucherDetails.forEach(financeVoucherDetail -> {
             // financeVoucherDetail.setAuditStatus("1");
             Long supplyId = financeVoucherDetail.getSupplyId();
-            financeVoucherDetail.setVoucherType(1L);
+            financeVoucherDetail.setVoucherType("1");
             SupplyOrder supplyOrder = this.supplyOrderMapper.selectById(supplyId);
             Long orderId = supplyOrder.getOrderId();
 //            List<FinanceVoucherItemDTO> financeVoucherItemDTOList = new ArrayList<>();
@@ -132,7 +137,7 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
         }
 
         financeVoucherDetails.forEach(financeVoucherDetail -> {
-            financeVoucherDetail.setVoucherType(2L);
+            financeVoucherDetail.setVoucherType("2");
             FinanceVoucherItemDTO financeVoucherItemDTO = new FinanceVoucherItemDTO();
             financeVoucherDetail.setParentVoucherItemId("-1");
             financeVoucherDetail.setVoucherItemId("503.02");
@@ -156,7 +161,7 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
         }
 
         financeVoucherDetails.forEach(financeVoucherDetail -> {
-            financeVoucherDetail.setVoucherType(3L);
+            financeVoucherDetail.setVoucherType("3");
             financeVoucherDetail.setParentVoucherItemId(financeVoucherDetail.getFinanceItemId());
             financeVoucherDetail.setVoucherItemId(financeVoucherDetail.getChildFinanceItemId());
         });
@@ -175,7 +180,7 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
         if (ArrayUtils.isEmpty(financeVoucherDetails)) {
             return;
         }
-        Long voucherType = financeVoucherDetails.get(0).getVoucherType();
+        String voucherType = financeVoucherDetails.get(0).getVoucherType();
         Double totalMoney = 0d;
         for (FinanceVoucherDTO financeVoucherDetail : financeVoucherDetails) {
             totalMoney += financeVoucherDetail.getMoney();
@@ -185,7 +190,7 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
         Long orgId = WebContextUtils.getUserContext().getOrgId();
         Long createUserId = WebContextUtils.getUserContext().getUserId();
         //材料下单根据不同供应商需要制作不同领款单
-        if (voucherType == 1L) {
+        if (StringUtils.equals(voucherType, "1")) {
             financeVoucherDetails.forEach(financeVoucherDetail -> {
                 //拼finance_voucher表数据
                 FinanceVoucher financeVoucher = new FinanceVoucher();
@@ -195,8 +200,8 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
                 financeVoucher.setCreateEmployeeId(employeeId);
                 financeVoucher.setCreateTime(createTime);
                 financeVoucher.setOrgId(orgId);
-                financeVoucher.setTotalMoney(financeVoucherDetail.getMoney());
-                financeVoucher.setVoucherDate(createTime);
+                financeVoucher.setTotalMoney(financeVoucherDetail.getMoney().longValue());
+                financeVoucher.setVoucherDate(createTime.toLocalDate());
                 financeVoucher.setStartDate(createTime);
                 financeVoucher.setEndDate(TimeUtils.getForeverTime());
                 financeVoucher.setVoucherEmployeeId(employeeId);
@@ -211,13 +216,13 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
                 financeVoucherItem.setSupplierId(financeVoucherDetail.getSupplierId());
                 financeVoucherItem.setSupplyId(financeVoucherDetail.getSupplyId());
                 financeVoucherItem.setProjectId(financeVoucherDetail.getOrderId());
-                financeVoucherItem.setParentVoucherItemId(financeVoucherDetail.getParentVoucherItemId());
-                financeVoucherItem.setVoucherId(financeVoucher.getId());
-                financeVoucherItem.setVoucherItemId(financeVoucherDetail.getVoucherItemId());
+                financeVoucherItem.setParentFinanceItemId(financeVoucherDetail.getParentVoucherItemId());
+                financeVoucherItem.setVoucherNo(financeVoucher.getId() + "");
+                financeVoucherItem.setFinanceItemId(financeVoucherDetail.getVoucherItemId());
                 financeVoucherItem.setCreateTime(createTime);
                 financeVoucherItem.setCreateUserId(createUserId);
                 financeVoucherItem.setStartDate(createTime);
-                financeVoucherItem.setFee(financeVoucherDetail.getMoney());
+                financeVoucherItem.setFee(financeVoucherDetail.getMoney().longValue());
                 financeVoucherItem.setEndDate(TimeUtils.getForeverTime());
                 //financeVoucherItem.setOrderId(financeVoucherDetail.getOrderId());
                 financeVoucherItemService.save(financeVoucherItem);
@@ -225,14 +230,13 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
                 //制单后需要更新supply表状态
                 SupplyOrder supplyOrder = new SupplyOrder();
                 supplyOrder.setId(financeVoucherDetail.getSupplyId());
-                supplyOrder.setSupplyStatus("2");//2表示已经制单，不能重复制单
                 supplyOrderService.updateById(supplyOrder);
 //                }
             });
 
         }
         //施工队领款单
-        if (voucherType == 2L) {
+        if (StringUtils.equals(voucherType, "2")) {
             //拼finance_voucher表数据
             FinanceVoucher financeVoucher = new FinanceVoucher();
             financeVoucher.setAuditStatus("0");
@@ -241,8 +245,8 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
             financeVoucher.setCreateEmployeeId(employeeId);
             financeVoucher.setCreateTime(createTime);
             financeVoucher.setOrgId(orgId);
-            financeVoucher.setTotalMoney(totalMoney);
-            financeVoucher.setVoucherDate(createTime);
+            financeVoucher.setTotalMoney(totalMoney.longValue());
+            financeVoucher.setVoucherDate(createTime.toLocalDate());
             financeVoucher.setStartDate(createTime);
             financeVoucher.setEndDate(TimeUtils.getForeverTime());
             financeVoucher.setVoucherEmployeeId(employeeId);
@@ -253,20 +257,20 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
                 //拼finance_voucher_item表数据
                 FinanceVoucherItem financeVoucherItem = new FinanceVoucherItem();
                 financeVoucherItem.setProjectId(financeVoucherDetail.getDecoratorId());
-                financeVoucherItem.setParentVoucherItemId(financeVoucherDetail.getParentVoucherItemId());
-                financeVoucherItem.setVoucherId(financeVoucher.getId());
-                financeVoucherItem.setVoucherItemId(financeVoucherDetail.getVoucherItemId());
+                financeVoucherItem.setParentFinanceItemId(financeVoucherDetail.getParentVoucherItemId());
+                financeVoucherItem.setVoucherNo(financeVoucher.getId() + "");
+                financeVoucherItem.setFinanceItemId(financeVoucherDetail.getVoucherItemId());
                 financeVoucherItem.setCreateTime(createTime);
                 financeVoucherItem.setCreateUserId(createUserId);
                 financeVoucherItem.setStartDate(createTime);
-                financeVoucherItem.setFee(financeVoucherDetail.getMoney());
+                financeVoucherItem.setFee(financeVoucherDetail.getMoney().longValue());
                 financeVoucherItem.setEndDate(TimeUtils.getForeverTime());
                 // financeVoucherItem.setOrderId(financeVoucherDetail.getOrderId());
                 financeVoucherItemService.save(financeVoucherItem);
             });
         }
         //其他领款单
-        if (voucherType == 3L) {
+        if (StringUtils.equals(voucherType, "3")) {
             //拼finance_voucher表数据
             FinanceVoucher financeVoucher = new FinanceVoucher();
             financeVoucher.setAuditStatus("0");
@@ -275,8 +279,8 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
             financeVoucher.setCreateEmployeeId(employeeId);
             financeVoucher.setCreateTime(createTime);
             financeVoucher.setOrgId(orgId);
-            financeVoucher.setTotalMoney(totalMoney);
-            financeVoucher.setVoucherDate(createTime);
+            financeVoucher.setTotalMoney(totalMoney.longValue());
+            financeVoucher.setVoucherDate(createTime.toLocalDate());
             financeVoucher.setStartDate(createTime);
             financeVoucher.setEndDate(TimeUtils.getForeverTime());
             financeVoucher.setVoucherEmployeeId(employeeId);
@@ -286,13 +290,13 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
                 //拼finance_voucher_item表数据
                 FinanceVoucherItem financeVoucherItem = new FinanceVoucherItem();
                 // financeVoucherItem.setProjectId(financeVoucherDetail.getDecoratorId());
-                financeVoucherItem.setParentVoucherItemId(financeVoucherDetail.getParentVoucherItemId());
-                financeVoucherItem.setVoucherId(financeVoucher.getId());
-                financeVoucherItem.setVoucherItemId(financeVoucherDetail.getVoucherItemId());
+                financeVoucherItem.setParentFinanceItemId(financeVoucherDetail.getParentVoucherItemId());
+                financeVoucherItem.setVoucherNo(financeVoucher.getId() + "");
+                financeVoucherItem.setFinanceItemId(financeVoucherDetail.getVoucherItemId());
                 financeVoucherItem.setCreateTime(createTime);
                 financeVoucherItem.setCreateUserId(createUserId);
                 financeVoucherItem.setStartDate(createTime);
-                financeVoucherItem.setFee(financeVoucherDetail.getMoney());
+                financeVoucherItem.setFee(financeVoucherDetail.getMoney().longValue());
                 financeVoucherItem.setEndDate(TimeUtils.getForeverTime());
                 //  financeVoucherItem.setOrderId(financeVoucherDetail.getOrderId());
                 financeVoucherItemService.save(financeVoucherItem);
@@ -394,5 +398,90 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
         });
 
 
+    }
+
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    @Override
+    public void createVoucher(VoucherDTO request) {
+        if (StringUtils.isBlank(request.getVoucherNo())) {
+            String voucherNo = "QT" + this.dualService.nextval(VoucherNoCycleSeq.class);
+            request.setVoucherNo(voucherNo);
+        }
+
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+        Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
+
+        FinanceVoucher voucher = new FinanceVoucher();
+        BeanUtils.copyProperties(request, voucher);
+        voucher.setStartDate(now);
+
+        Long fee = new Long(Math.round(request.getTotalMoney() * 100));
+        voucher.setTotalMoney(fee);
+        voucher.setEndDate(TimeUtils.getForeverTime());
+        voucher.setAuditStatus("0");
+        voucher.setCreateEmployeeId(employeeId);
+        voucher.setVoucherEmployeeId(employeeId);
+
+        List<VoucherItemDTO> voucherItemDatas = request.getVoucherItems();
+        List<FinanceVoucherItem> voucherItems = new ArrayList<>();
+        if (ArrayUtils.isNotEmpty(voucherItemDatas)) {
+            for (VoucherItemDTO voucherItemData : voucherItemDatas) {
+                Long money = new Long(Math.round(voucherItemData.getFee() * 100));
+
+                FinanceVoucherItem voucherItem = new FinanceVoucherItem();
+                BeanUtils.copyProperties(voucherItemData, voucherItem);
+                voucherItem.setFee(money);
+                voucherItem.setVoucherNo(request.getVoucherNo());
+                voucherItem.setStartDate(now);
+                voucherItem.setEndDate(TimeUtils.getForeverTime());
+
+                String financeItemId = voucherItemData.getFinanceItemId();
+                if (StringUtils.isNotBlank(financeItemId)) {
+                    FinanceItem financeItem = this.financeItemService.getByFinanceItemId(financeItemId);
+                    if (financeItem != null) {
+                        voucherItem.setParentFinanceItemId(financeItem.getParentFinanceItemId());
+                    }
+                }
+
+                Long orgId = voucherItemData.getOrgId();
+                if (orgId != null) {
+                    OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+                    Org shop = orgDO.getBelongShop();
+                    if (shop != null) {
+                        voucherItem.setShopId(shop.getOrgId());
+                    }
+                }
+
+                if (StringUtils.equals(voucher.getVoucherType(), "5")) {
+                    //差旅
+                    Long trafficFee = 0L;
+                    if (voucherItemData.getTrafficFee() != null) {
+                        trafficFee = new Long(Math.round(voucherItemData.getTrafficFee() * 100));
+                    }
+
+                    Long allowance = 0L;
+                    if (voucherItemData.getAllowance() != null) {
+                        allowance = new Long(Math.round(voucherItemData.getAllowance() * 100));
+                    }
+
+                    Long hotelFee = 0L;
+                    if (voucherItemData.getHotelFee() != null) {
+                        hotelFee = new Long(Math.round(voucherItemData.getHotelFee() * 100));
+                    }
+
+                    voucherItem.setTrafficFee(trafficFee);
+                    voucherItem.setAllowance(allowance);
+                    voucherItem.setHotelFee(hotelFee);
+                }
+
+                voucherItems.add(voucherItem);
+            }
+        }
+
+        this.save(voucher);
+
+        if (ArrayUtils.isNotEmpty(voucherItems)) {
+            this.financeVoucherItemService.saveBatch(voucherItems);
+        }
     }
 }

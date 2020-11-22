@@ -50,11 +50,11 @@ public class SupplyMaterial extends BaseEntity {
 
     /** 成本价 */
     @TableField(value = "cost_price")
-    private Integer costPrice;
+    private Long costPrice;
 
     /** 销售价 */
     @TableField(value = "sale_price")
-    private Integer salePrice;
+    private Long salePrice;
 
 
     @TableField(value = "remark")

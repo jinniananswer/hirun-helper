@@ -614,4 +614,19 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         return this.employeeMapper.queryEffectiveByJobRoleList(queryWrapper);
     }
 
+    @Override
+    public SimpleEmployeeDTO getSimpleEmployeeInfo(Long employeeId) {
+        SimpleEmployeeDTO result = new SimpleEmployeeDTO();
+        Employee employee = this.getById(employeeId);
+        result.setEmployeeId(employee.getEmployeeId());
+        result.setName(employee.getName());
+        result.setSex(employee.getSex());
+
+        EmployeeJobRole employeeJobRole = this.employeeJobRoleService.queryLast(employeeId);
+
+        OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, employeeJobRole.getOrgId());
+        result.setOrgPath(orgDO.getCompanyLinePath());
+        result.setOrgId(employeeJobRole.getOrgId());
+        return result;
+    }
 }

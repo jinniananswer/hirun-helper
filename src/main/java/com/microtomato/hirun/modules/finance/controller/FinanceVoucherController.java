@@ -4,16 +4,10 @@ package com.microtomato.hirun.modules.finance.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.microtomato.hirun.framework.annotation.RestResult;
-import com.microtomato.hirun.framework.security.UserContext;
-import com.microtomato.hirun.framework.util.WebContextUtils;
 import com.microtomato.hirun.modules.bss.order.entity.dto.DecoratorInfoDTO;
-import com.microtomato.hirun.modules.bss.service.entity.dto.ComplainOrderDTO;
-import com.microtomato.hirun.modules.bss.service.entity.dto.QueryComplainCondDTO;
-import com.microtomato.hirun.modules.bss.supply.entity.dto.QuerySupplyOrderDTO;
-import com.microtomato.hirun.modules.bss.supply.entity.dto.SupplyMaterialDTO;
-import com.microtomato.hirun.modules.bss.supply.entity.dto.SupplyOrderDTO;
 import com.microtomato.hirun.modules.finance.entity.dto.FinanceVoucherDTO;
 import com.microtomato.hirun.modules.finance.entity.dto.QueryVoucherAuditDTO;
+import com.microtomato.hirun.modules.finance.entity.dto.VoucherDTO;
 import com.microtomato.hirun.modules.finance.service.IFinanceVoucherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -77,6 +71,12 @@ public class FinanceVoucherController {
     @RestResult
     public void auditForSupplyReject(@RequestBody List<FinanceVoucherDTO> financeVoucherDTO) {
         this.financeVoucherService.auditForSupplyReject(financeVoucherDTO);
+    }
+
+    @PostMapping("/createVoucher")
+    @RestResult
+    public void createVoucher(@RequestBody VoucherDTO data) {
+        this.financeVoucherService.createVoucher(data);
     }
 
 }

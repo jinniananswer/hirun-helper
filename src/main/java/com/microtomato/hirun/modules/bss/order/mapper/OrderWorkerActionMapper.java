@@ -29,7 +29,7 @@ public interface OrderWorkerActionMapper extends BaseMapper<OrderWorkerAction> {
     )
     List<OrderWorkerActionDTO> queryByOrderId(Long orderId);
 
-    @Select("select a.order_id, a.employee_id, a.role_id, b.order_status, b.job_role, b.job_grade, b.org_id ,b.action " +
+    @Select("select b.id, a.order_id, a.employee_id, a.role_id, b.order_status, b.job_role, b.job_grade, b.org_id ,b.action " +
             "from order_worker a, order_worker_action b " +
             " where b.worker_id = a.id" +
             " and a.order_id =#{orderId} " +

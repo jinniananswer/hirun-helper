@@ -1,19 +1,12 @@
 package com.microtomato.hirun.modules.finance.entity.po;
 
-import java.time.LocalDateTime;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.*;
 import com.microtomato.hirun.framework.data.BaseEntity;
-import com.baomidou.mybatisplus.annotation.TableField;
-
-import lombok.Data;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import lombok.experimental.Accessors;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * 财务领款单明细表(FinanceVoucherItem)表实体类
@@ -37,12 +30,12 @@ public class FinanceVoucherItem extends BaseEntity {
     private Long id;
 
     /** 领款单编码 对应FinanceVoucher表ID*/
-    @TableField(value = "voucher_id")
-    private Long voucherId;
+    @TableField(value = "voucher_no")
+    private String voucherNo;
 
     /** 金额 */
     @TableField(value = "fee")
-    private Double fee;
+    private Long fee;
 
     /** 供应商id 针对材料付款使用 */
     @TableField(value = "supplier_id")
@@ -52,19 +45,52 @@ public class FinanceVoucherItem extends BaseEntity {
     @TableField(value = "supply_id")
     private Long supplyId;
 
-    private Long orderId;
+    /** 项目类型 1-公司员工 2-非公司员工 */
+    @TableField(value = "project_type")
+    private String projectType;
 
     /** 项目编码 可以为客户编码，师傅ID等 */
     @TableField(value = "project_id")
     private Long projectId;
 
+    @TableField(value = "project_name")
+    private String projectName;
+
     /** 费用科目，见参数finance_item */
-    @TableField(value = "voucher_item_id")
-    private String voucherItemId;
+    @TableField(value = "finance_item_id")
+    private String financeItemId;
 
     /** 上级费用科目，见参数finance_item */
-    @TableField(value = "parent_voucher_item_id")
-    private String parentVoucherItemId;
+    @TableField(value = "parent_finance_item_id")
+    private String parentFinanceItemId;
+
+    /** 差旅类型 */
+    @TableField(value = "traffic_type")
+    private String trafficType;
+
+    /** 差旅日期 */
+    @TableField(value = "traffic_date")
+    private LocalDate trafficDate;
+
+    /** 交通起点 */
+    @TableField(value = "traffic_begin")
+    private String trafficBegin;
+
+    /** 交通终点 */
+    @TableField(value = "traffic_end")
+    private String trafficEnd;
+
+    /** 交通费 */
+    @TableField(value = "traffic_Fee")
+    private Long trafficFee;
+
+    /** 出差补助 */
+    @TableField(value = "allowance")
+    private Long allowance;
+
+    /** 酒店费 */
+    @TableField(value = "hotel_fee")
+    private Long hotelFee;
 
     /** 开始时间 */
     @TableField(value = "start_date")
@@ -79,12 +105,12 @@ public class FinanceVoucherItem extends BaseEntity {
     private String remark;
 
     /** 归属部门 见org表 */
-    @TableField(value = "department")
-    private Long department;
+    @TableField(value = "org_id")
+    private Long orgId;
 
     /** 归属店面 见org表 */
-    @TableField(value = "storefront")
-    private Long storefront;
+    @TableField(value = "shop_id")
+    private Long shopId;
 
 
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)

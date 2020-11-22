@@ -108,16 +108,6 @@ public class OrderBudgetDTO {
     private Long checkEmployeeId;
 
     /**
-     * vr渲染员工
-     */
-    private Long vrEmployeeId;
-
-    /**
-     * su建白模员工
-     */
-    private Long suEmployeeId;
-
-    /**
      * 备注
      */
     private String remark;

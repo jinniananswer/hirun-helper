@@ -28,9 +28,9 @@ public class FinanceItemController {
     @Autowired
     private IFinanceItemService financeItemService;
 
-    @GetMapping("/loadFinancenItem")
+    @GetMapping("/loadFinanceItems")
     @RestResult
-    public List<CascadeDTO<FinanceItem>>  loadFinancenItem() {
-        return this.financeItemService.loadFinancenItem();
+    public List<CascadeDTO<FinanceItem>>  loadFinanceItems() {
+        return this.financeItemService.loadFinanceItems();
     }
 }

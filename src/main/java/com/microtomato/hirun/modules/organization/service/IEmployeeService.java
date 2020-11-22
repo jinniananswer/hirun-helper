@@ -156,4 +156,6 @@ public interface IEmployeeService extends IService<Employee> {
     List<Employee> queryEffectiveByJobRoleList(List<String> jobRoleList);
 
     List<Employee> queryNewEffectiveByJobRoleList(List<String> jobRoleList);
+
+    SimpleEmployeeDTO getSimpleEmployeeInfo(Long employeeId);
 }
