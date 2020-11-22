@@ -289,7 +289,7 @@ public class OrderPlaneSketchServiceImpl extends ServiceImpl<OrderPlaneSketchMap
          * */
         OrderFile orderFile = orderFileService.getOrderFile(OrderId, 456);
         if (orderFile == null) {
-            //throw new OrderException(OrderException.OrderExceptionEnum.FILE_PLANESKETCH_NOT_FOUND);
+            throw new OrderException(OrderException.OrderExceptionEnum.FILE_PLANESKETCH_NOT_FOUND);
         }
     }
 }
