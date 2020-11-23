@@ -4,11 +4,17 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.security.Role;
 import com.microtomato.hirun.framework.util.ArrayUtils;
+import com.microtomato.hirun.framework.util.SpringContextUtils;
 import com.microtomato.hirun.framework.util.WebContextUtils;
+import com.microtomato.hirun.modules.bss.order.entity.dto.PaymentDTO;
 import com.microtomato.hirun.modules.finance.entity.po.FinanceAcct;
 import com.microtomato.hirun.modules.finance.mapper.FinanceAcctMapper;
 import com.microtomato.hirun.modules.finance.service.IFinanceAcctService;
+import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
+import com.microtomato.hirun.modules.organization.entity.po.Org;
+import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +34,9 @@ public class FinanceAcctServiceImpl extends ServiceImpl<FinanceAcctMapper, Finan
 
     @Autowired
     private FinanceAcctMapper financeAcctMapper;
+
+    @Autowired
+    private IStaticDataService staticDataService;
 
     /**
      * 根据付款方式查询付款信息
@@ -73,59 +82,58 @@ public class FinanceAcctServiceImpl extends ServiceImpl<FinanceAcctMapper, Finan
 
         List<FinanceAcct> result = new ArrayList<>();
         List<FinanceAcct> all = this.queryAll();
-        return all;
-//        OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
-//        Org shop = orgDO.getBelongShop();
-//        Org company = orgDO.getBelongCompany();
-//
-//        for (FinanceAcct acct : all) {
-//            String useShopId = acct.getUseShopId();
-//            String companyId = acct.getCompanyId();
-//            String useRoleId = acct.getUseRoleId();
-//
-//            boolean isFixCachier = false;
-//            if (StringUtils.isNotBlank(companyId)) {
-//
-//                String[] useRoleIds = useRoleId.split(",");
-//
-//                boolean isCashier = false;
-//                for (String id : useRoleIds) {
-//                    isCashier = this.hasRole(roles, Long.parseLong(id));
-//                    if (isCashier) {
-//                        break;
-//                    }
-//                }
-//                if (isCashier && StringUtils.contains(","+companyId+",", ","+company.getOrgId()+",")) {
-//                    isFixCachier = true;
-//                }
-//            }
-//
-//            boolean isFixOther = false;
-//            if (StringUtils.isNotBlank(useShopId)) {
-//                if (StringUtils.contains(useShopId + ",", shop.getOrgId() + ",")) {
-//                    if (StringUtils.isNotBlank(useRoleId)) {
-//                        String[] useRoleIds = useRoleId.split(",");
-//
-//                        for (String id : useRoleIds) {
-//                            if (StringUtils.equals(id, "60")) {
-//                                continue;
-//                            }
-//
-//                            if (this.hasRole(roles, Long.parseLong(id))) {
-//                                isFixOther = true;
-//                                break;
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//
-//            if (isFixCachier || isFixOther) {
-//                result.add(acct);
-//            }
-//        }
-//
-//        return result;
+        OrgDO orgDO = SpringContextUtils.getBean(OrgDO.class, orgId);
+        Org shop = orgDO.getBelongShop();
+        Org company = orgDO.getBelongCompany();
+
+        for (FinanceAcct acct : all) {
+            String useShopId = acct.getUseShopId();
+            String companyId = acct.getCompanyId();
+            String useRoleId = acct.getUseRoleId();
+
+            boolean isFixCachier = false;
+            if (StringUtils.isNotBlank(companyId)) {
+
+                String[] useRoleIds = useRoleId.split(",");
+
+                boolean isCashier = false;
+                for (String id : useRoleIds) {
+                    isCashier = this.hasRole(roles, Long.parseLong(id));
+                    if (isCashier) {
+                        break;
+                    }
+                }
+                if (isCashier && StringUtils.contains(","+companyId+",", ","+company.getOrgId()+",")) {
+                    isFixCachier = true;
+                }
+            }
+
+            boolean isFixOther = false;
+            if (StringUtils.isNotBlank(useShopId)) {
+                if (StringUtils.contains(useShopId + ",", shop.getOrgId() + ",")) {
+                    if (StringUtils.isNotBlank(useRoleId)) {
+                        String[] useRoleIds = useRoleId.split(",");
+
+                        for (String id : useRoleIds) {
+                            if (StringUtils.equals(id, "60")) {
+                                continue;
+                            }
+
+                            if (this.hasRole(roles, Long.parseLong(id))) {
+                                isFixOther = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (isFixCachier || isFixOther) {
+                result.add(acct);
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -145,5 +153,22 @@ public class FinanceAcctServiceImpl extends ServiceImpl<FinanceAcctMapper, Finan
             }
         }
         return false;
+    }
+
+    @Override
+    public List<PaymentDTO> queryPayments() {
+        List<FinanceAcct> financeAccts = this.queryByLoginEmployeeId();
+        List<PaymentDTO> payments = new ArrayList<>();
+        if (ArrayUtils.isNotEmpty(financeAccts)) {
+            for (FinanceAcct financeAcct : financeAccts) {
+                PaymentDTO payment = new PaymentDTO();
+                payment.setPaymentId(financeAcct.getId());
+                payment.setPaymentName(financeAcct.getName());
+                payment.setPaymentType(financeAcct.getType());
+                payment.setPaymentTypeName(this.staticDataService.getCodeName("FINANCE_ACCT_TYPE", financeAcct.getType()));
+                payments.add(payment);
+            }
+        }
+        return payments;
     }
 }
