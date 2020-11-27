@@ -128,10 +128,6 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vxe-table', 'vueselect', 'org-selec
                 return true;
             },
 
-            changeVoucherType : function() {
-
-            },
-
             valid : function() {
                 let isFormValid = false;
                 this.$refs['financePayForm'].validate(valid => {
