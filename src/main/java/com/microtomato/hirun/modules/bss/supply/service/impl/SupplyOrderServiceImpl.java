@@ -29,6 +29,8 @@ import com.microtomato.hirun.modules.finance.entity.po.FinanceVoucherItem;
 import com.microtomato.hirun.modules.finance.service.IFinanceItemService;
 import com.microtomato.hirun.modules.finance.service.IFinanceVoucherItemService;
 import com.microtomato.hirun.modules.finance.service.IFinanceVoucherService;
+import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
+import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
@@ -93,6 +95,8 @@ public class SupplyOrderServiceImpl extends ServiceImpl<SupplyOrderMapper, Suppl
     @Autowired
     private IOrderBaseService orderBaseService;
 
+    @Autowired
+    private IEmployeeJobRoleService employeeJobRoleService;
 
     /**
      * 材料下单
@@ -286,7 +290,9 @@ public class SupplyOrderServiceImpl extends ServiceImpl<SupplyOrderMapper, Suppl
             voucher.setOrderId(orderId);
         }
         voucher.setOrderId(supplyOrderDetails.get(0).getOrderId());
-        voucher.setVoucherType("-1");
+        //材料制单
+        voucher.setType("1");
+        voucher.setItem("-1");
         voucher.setVoucherDate(data.getVoucherDate());
         voucher.setStartDate(now);
         voucher.setTotalMoney(totalMoney);
@@ -294,6 +300,11 @@ public class SupplyOrderServiceImpl extends ServiceImpl<SupplyOrderMapper, Suppl
         voucher.setAuditStatus("0");
         voucher.setCreateEmployeeId(employeeId);
         voucher.setVoucherEmployeeId(employeeId);
+
+        EmployeeJobRole jobRole = this.employeeJobRoleService.queryLast(employeeId);
+        if (jobRole != null) {
+            voucher.setOrgId(jobRole.getOrgId());
+        }
         voucher.setVoucherNo(voucherNo);
         voucher.setRemark(data.getRemark());
 

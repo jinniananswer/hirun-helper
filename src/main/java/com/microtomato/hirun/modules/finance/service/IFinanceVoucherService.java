@@ -3,13 +3,12 @@ package com.microtomato.hirun.modules.finance.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.microtomato.hirun.modules.bss.order.entity.dto.DecoratorInfoDTO;
-import com.microtomato.hirun.modules.finance.entity.dto.FinanceVoucherDTO;
-import com.microtomato.hirun.modules.finance.entity.dto.QueryVoucherAuditDTO;
-import com.microtomato.hirun.modules.finance.entity.dto.VoucherDTO;
+import com.microtomato.hirun.modules.finance.entity.dto.*;
 import com.microtomato.hirun.modules.finance.entity.po.FinanceVoucher;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -39,4 +38,22 @@ public interface IFinanceVoucherService extends IService<FinanceVoucher> {
 
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     void createVoucher(VoucherDTO request);
+
+    IPage<VoucherResultDTO> queryReviewVouchers(QueryVoucherDTO request);
+
+    FinanceVoucher getByVoucherNo(String voucherNo);
+
+    void review(List<VoucherResultDTO> datas, boolean pass);
+
+    void audit(List<VoucherResultDTO> datas, boolean pass);
+
+    void handVoucher(Long voucherId);
+
+    void receiveVoucher(Long voucherId, boolean pass);
+
+    void deleteVouchers(List<VoucherResultDTO> datas);
+
+    VoucherResultDTO getVoucher(Long id);
+
+    void updatePay(String voucherNo, String auditStatus, Long cashierEmployeeId, LocalDate payDate);
 }

@@ -32,7 +32,7 @@ public class OrderException extends BaseException {
         @Error(code = ErrorKind.BREACH_BUSINESS_RULE, message = "请先提交全房图")
         FILE_WHOLEROOM_DRAWING_NOT_FOUND,
 
-        @Error(code = ErrorKind.BREACH_BUSINESS_RULE, message = "收款金额必须等于付款金额")
+        @Error(code = ErrorKind.BREACH_BUSINESS_RULE, message = "收款金额必须等于明细金额之和")
         PAY_MUST_EQUAL_PAYITEM,
 
         @Error(code = ErrorKind.NOT_FOUND, message = "未找到费用项【%s】配置信息")

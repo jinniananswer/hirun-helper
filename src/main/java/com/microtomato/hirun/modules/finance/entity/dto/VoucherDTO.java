@@ -18,7 +18,7 @@ public class VoucherDTO {
 
     private String voucherNo;
 
-    private String voucherType;
+    private String item;
 
     private LocalDate voucherDate;
 

@@ -1,11 +1,15 @@
 package com.microtomato.hirun.modules.finance.controller;
 
 
-
+import com.microtomato.hirun.framework.annotation.RestResult;
+import com.microtomato.hirun.modules.finance.entity.dto.VoucherItemResultDTO;
 import com.microtomato.hirun.modules.finance.service.IFinanceVoucherItemService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * 财务领款单明细表(FinanceVoucherItem)表控制层
@@ -25,4 +29,9 @@ public class FinanceVoucherItemController {
     private IFinanceVoucherItemService financeVoucherItemService;
 
 
+    @GetMapping("/queryVoucherItems")
+    @RestResult
+    public List<VoucherItemResultDTO> queryVoucherItems(String voucherNo) {
+        return this.financeVoucherItemService.queryByVoucherNo(voucherNo);
+    }
 }

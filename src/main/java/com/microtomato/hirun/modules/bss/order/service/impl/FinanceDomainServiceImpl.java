@@ -1227,9 +1227,6 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
         if (!payItemTotal.equals(needPay)) {
             throw new OrderException(OrderException.OrderExceptionEnum.PAY_MUST_EQUAL_PAYITEM);
         }
-        if (!payItemTotal.equals(totalMoney)) {
-            throw new OrderException(OrderException.OrderExceptionEnum.PAY_MUST_EQUAL_PAYITEM);
-        }
 
         NormalPayNo normalPayNo = new NormalPayNo();
         normalPayNo.setPayDate(payDate);

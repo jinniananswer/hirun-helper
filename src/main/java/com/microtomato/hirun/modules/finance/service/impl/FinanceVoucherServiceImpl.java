@@ -1,7 +1,9 @@
 package com.microtomato.hirun.modules.finance.service.impl;
 
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.mybatis.DataSourceKey;
@@ -30,7 +32,9 @@ import com.microtomato.hirun.modules.finance.service.IFinanceItemService;
 import com.microtomato.hirun.modules.finance.service.IFinanceVoucherItemService;
 import com.microtomato.hirun.modules.finance.service.IFinanceVoucherService;
 import com.microtomato.hirun.modules.organization.entity.domain.OrgDO;
+import com.microtomato.hirun.modules.organization.entity.po.EmployeeJobRole;
 import com.microtomato.hirun.modules.organization.entity.po.Org;
+import com.microtomato.hirun.modules.organization.service.IEmployeeJobRoleService;
 import com.microtomato.hirun.modules.organization.service.IEmployeeService;
 import com.microtomato.hirun.modules.system.service.IStaticDataService;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +45,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -89,6 +94,9 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
 
     @Autowired
     private IFinanceItemService financeItemService;
+
+    @Autowired
+    private IEmployeeJobRoleService employeeJobRoleService;
 
     /**
      * 材料供应制单
@@ -205,7 +213,7 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
                 financeVoucher.setStartDate(createTime);
                 financeVoucher.setEndDate(TimeUtils.getForeverTime());
                 financeVoucher.setVoucherEmployeeId(employeeId);
-                financeVoucher.setVoucherType(financeVoucherDetail.getVoucherType());
+                financeVoucher.setItem(financeVoucherDetail.getVoucherType());
                 financeVoucher.setRemark(financeVoucherDetail.getRemark());
                 financeVoucherService.save(financeVoucher);
 //                List<FinanceVoucherItemDTO> financeVoucherItemDTOList = financeVoucherDetail.getFinanceVoucherItemDTOList();
@@ -250,7 +258,7 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
             financeVoucher.setStartDate(createTime);
             financeVoucher.setEndDate(TimeUtils.getForeverTime());
             financeVoucher.setVoucherEmployeeId(employeeId);
-            financeVoucher.setVoucherType(voucherType);
+            financeVoucher.setItem(voucherType);
             financeVoucherService.save(financeVoucher);
 
             financeVoucherDetails.forEach(financeVoucherDetail -> {
@@ -284,7 +292,7 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
             financeVoucher.setStartDate(createTime);
             financeVoucher.setEndDate(TimeUtils.getForeverTime());
             financeVoucher.setVoucherEmployeeId(employeeId);
-            financeVoucher.setVoucherType(voucherType);
+            financeVoucher.setType("3");
             financeVoucherService.save(financeVoucher);
             financeVoucherDetails.forEach(financeVoucherDetail -> {
                 //拼finance_voucher_item表数据
@@ -419,8 +427,15 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
         voucher.setTotalMoney(fee);
         voucher.setEndDate(TimeUtils.getForeverTime());
         voucher.setAuditStatus("0");
+        //财务其它制单
+        voucher.setType("3");
         voucher.setCreateEmployeeId(employeeId);
         voucher.setVoucherEmployeeId(employeeId);
+
+        EmployeeJobRole jobRole = this.employeeJobRoleService.queryLast(employeeId);
+        if (jobRole != null) {
+            voucher.setOrgId(jobRole.getOrgId());
+        }
 
         List<VoucherItemDTO> voucherItemDatas = request.getVoucherItems();
         List<FinanceVoucherItem> voucherItems = new ArrayList<>();
@@ -452,7 +467,7 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
                     }
                 }
 
-                if (StringUtils.equals(voucher.getVoucherType(), "5")) {
+                if (StringUtils.equals(voucher.getItem(), "5")) {
                     //差旅
                     Long trafficFee = 0L;
                     if (voucherItemData.getTrafficFee() != null) {
@@ -483,5 +498,225 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
         if (ArrayUtils.isNotEmpty(voucherItems)) {
             this.financeVoucherItemService.saveBatch(voucherItems);
         }
+    }
+
+    @Override
+    public IPage<VoucherResultDTO> queryReviewVouchers(QueryVoucherDTO request) {
+        IPage<FinanceVoucher> page = new Page<>(request.getPage(), request.getLimit());
+        String[] voucherDates = request.getVoucherDate();
+        LocalDate startDate = null;
+        LocalDate endDate = null;
+        if (ArrayUtils.isNotEmpty(voucherDates)) {
+            startDate = TimeUtils.stringToDate(voucherDates[0], TimeUtils.DATE_FMT_3);
+            endDate = TimeUtils.stringToDate(voucherDates[1], TimeUtils.DATE_FMT_3);
+        }
+
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+        Wrapper<FinanceVoucher> wrapper = Wrappers.<FinanceVoucher>lambdaQuery()
+                .eq(StringUtils.isNotBlank(request.getType()), FinanceVoucher::getType, request.getType())
+                .eq(request.getVoucherEmployeeId() != null, FinanceVoucher::getVoucherEmployeeId, request.getVoucherEmployeeId())
+                .between(ArrayUtils.isNotEmpty(voucherDates), FinanceVoucher::getVoucherDate, startDate, endDate)
+                .eq(StringUtils.isNotBlank(request.getAuditStatus()), FinanceVoucher::getAuditStatus, request.getAuditStatus())
+                .ge(FinanceVoucher::getEndDate, now)
+                .le(FinanceVoucher::getStartDate, now);
+        IPage<FinanceVoucher> vouchers = this.page(page, wrapper);
+
+        IPage<VoucherResultDTO> resultPage = new Page<>();
+        resultPage.setCurrent(page.getCurrent());
+        resultPage.setPages(page.getPages());
+        resultPage.setTotal(page.getTotal());
+        resultPage.setSize(page.getSize());
+
+        if (ArrayUtils.isEmpty(vouchers.getRecords())) {
+            return resultPage;
+        }
+
+        List<VoucherResultDTO> result = new ArrayList<>();
+        List<FinanceVoucher> records = vouchers.getRecords();
+        for (FinanceVoucher voucher : records) {
+            VoucherResultDTO voucherResult = new VoucherResultDTO();
+            BeanUtils.copyProperties(voucher, voucherResult);
+
+            if (StringUtils.isNotBlank(voucher.getItem())) {
+                voucherResult.setItemName(this.staticDataService.getCodeName("VOUCHER_ITEM", voucher.getItem()));
+            }
+
+            if (voucher.getVoucherEmployeeId() != null) {
+                String name = this.employeeService.getEmployeeNameEmployeeId(voucher.getVoucherEmployeeId());
+                voucherResult.setVoucherEmployeeName(name);
+            }
+
+            if (voucher.getAuditEmployeeId() != null) {
+                String name = this.employeeService.getEmployeeNameEmployeeId(voucher.getVoucherEmployeeId());
+                voucherResult.setAuditEmployeeName(name);
+            }
+
+            if (voucher.getCashierEmployeeId() != null) {
+                String name = this.employeeService.getEmployeeNameEmployeeId(voucher.getCashierEmployeeId());
+                voucherResult.setCashierEmployeeName(name);
+            }
+
+            voucherResult.setTypeName(this.staticDataService.getCodeName("VOUCHER_TYPE", voucherResult.getType()));
+            voucherResult.setAuditStatusName(this.staticDataService.getCodeName("VOUCHER_AUDIT_STATUS", voucherResult.getAuditStatus()));
+
+            Long money = voucher.getTotalMoney();
+            if (money != null) {
+                voucherResult.setTotalMoney(new Double(money / 100d));
+            }
+            result.add(voucherResult);
+        }
+
+        resultPage.setRecords(result);
+        return resultPage;
+    }
+
+    @Override
+    public FinanceVoucher getByVoucherNo(String voucherNo) {
+        LocalDateTime now = RequestTimeHolder.getRequestTime();
+        return this.getOne(Wrappers.<FinanceVoucher>lambdaQuery()
+                .eq(FinanceVoucher::getVoucherNo, voucherNo)
+                .ge(FinanceVoucher::getEndDate, now), false);
+    }
+
+    /**
+     * 复核
+     * @param datas
+     * @param pass
+     */
+    @Override
+    public void review(List<VoucherResultDTO> datas, boolean pass) {
+        if (ArrayUtils.isEmpty(datas)) {
+            return;
+        }
+
+        List<FinanceVoucher> vouchers = new ArrayList<>();
+        for (VoucherResultDTO data : datas) {
+            FinanceVoucher voucher = new FinanceVoucher();
+            voucher.setId(data.getId());
+            if (pass) {
+                voucher.setAuditStatus("1");
+            } else {
+                voucher.setAuditStatus("2");
+            }
+            vouchers.add(voucher);
+        }
+
+        this.updateBatchById(vouchers);
+    }
+
+    /**
+     * 财务审核
+     * @param datas
+     * @param pass
+     */
+    @Override
+    public void audit(List<VoucherResultDTO> datas, boolean pass) {
+        if (ArrayUtils.isEmpty(datas)) {
+            return;
+        }
+
+        Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
+        List<FinanceVoucher> vouchers = new ArrayList<>();
+        for (VoucherResultDTO data : datas) {
+            FinanceVoucher voucher = new FinanceVoucher();
+            voucher.setId(data.getId());
+            if (pass) {
+                voucher.setAuditStatus("3");
+            } else {
+                voucher.setAuditStatus("4");
+            }
+            voucher.setAuditEmployeeId(employeeId);
+            vouchers.add(voucher);
+        }
+
+        this.updateBatchById(vouchers);
+    }
+
+    @Override
+    public void handVoucher(Long voucherId) {
+        FinanceVoucher voucher = new FinanceVoucher();
+        voucher.setId(voucherId);
+        voucher.setAuditStatus("6");
+
+        this.updateById(voucher);
+    }
+
+    @Override
+    public void receiveVoucher(Long voucherId, boolean pass) {
+        FinanceVoucher voucher = new FinanceVoucher();
+        voucher.setId(voucherId);
+        if (pass) {
+            voucher.setAuditStatus("7");
+        } else {
+            voucher.setAuditStatus("8");
+        }
+
+        this.updateById(voucher);
+    }
+
+    @Override
+    public void deleteVouchers(List<VoucherResultDTO> datas) {
+        if (ArrayUtils.isEmpty(datas)) {
+            return;
+        }
+
+        for (VoucherResultDTO data : datas) {
+            FinanceVoucher voucher = new FinanceVoucher();
+            LocalDateTime now = RequestTimeHolder.getRequestTime();
+            voucher.setId(data.getId());
+            voucher.setEndDate(now);
+
+            this.updateById(voucher);
+            this.financeVoucherItemService.deleteItems(data.getVoucherNo());
+        }
+    }
+
+    @Override
+    public VoucherResultDTO getVoucher(Long id) {
+        FinanceVoucher voucher = this.getById(id);
+
+        if (voucher == null) {
+            return null;
+        }
+
+        VoucherResultDTO voucherResult = new VoucherResultDTO();
+        BeanUtils.copyProperties(voucher, voucherResult);
+
+        if (voucher.getVoucherEmployeeId() != null) {
+            String name = this.employeeService.getEmployeeNameEmployeeId(voucher.getVoucherEmployeeId());
+            voucherResult.setVoucherEmployeeName(name);
+        }
+
+        if (voucher.getAuditEmployeeId() != null) {
+            String name = this.employeeService.getEmployeeNameEmployeeId(voucher.getVoucherEmployeeId());
+            voucherResult.setAuditEmployeeName(name);
+        }
+        voucherResult.setAuditStatusName(this.staticDataService.getCodeName("VOUCHER_AUDIT_STATUS", voucherResult.getAuditStatus()));
+
+        Long money = voucher.getTotalMoney();
+        if (money != null) {
+            voucherResult.setTotalMoney(new Double(money / 100d));
+        }
+
+        String voucherNo = voucherResult.getVoucherNo();
+        List<VoucherItemResultDTO> voucherItems = this.financeVoucherItemService.queryByVoucherNo(voucherNo);
+        if (ArrayUtils.isNotEmpty(voucherItems)) {
+            voucherResult.setVoucherItems(voucherItems);
+        }
+
+        return voucherResult;
+    }
+
+    @Override
+    public void updatePay(String voucherNo, String auditStatus, Long cashierEmployeeId, LocalDate payDate) {
+        FinanceVoucher voucher = this.getByVoucherNo(voucherNo);
+        if (voucher == null) {
+            return;
+        }
+
+        voucher.setCashierEmployeeId(cashierEmployeeId);
+        voucher.setPayDate(payDate);
+        voucher.setAuditStatus(auditStatus);
+        this.updateById(voucher);
     }
 }

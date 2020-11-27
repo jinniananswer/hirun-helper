@@ -32,9 +32,13 @@ public class FinanceVoucher extends BaseEntity {
     @TableId(value = "voucher_no")
     private String voucherNo;
 
-    /** 领款单类型 1-材料单 2-施工队领款单 3-其他领款单 */
-    @TableField(value = "voucher_type")
-    private String voucherType;
+    /** 制单大类 */
+    @TableField(value = "type")
+    private String type;
+
+    /** 制单小类 */
+    @TableField(value = "item")
+    private String item;
 
     /** 领款单日期 */
     @TableField(value = "voucher_date")
@@ -84,6 +88,13 @@ public class FinanceVoucher extends BaseEntity {
     @TableField(value = "order_id")
     private Long orderId;
 
+    /** 出纳（付款员工） */
+    @TableField(value = "cashier_employee_id")
+    private Long cashierEmployeeId;
+
+    /** 付款日期 */
+    @TableField(value = "pay_date")
+    private LocalDate payDate;
 
     @TableField(value = "create_user_id", fill = FieldFill.INSERT)
     private Long createUserId;

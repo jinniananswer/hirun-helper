@@ -1,6 +1,7 @@
 package com.microtomato.hirun.modules.finance.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.microtomato.hirun.modules.bss.order.entity.dto.PaymentDTO;
 import com.microtomato.hirun.modules.finance.entity.po.FinanceAcct;
 
 import java.util.List;
@@ -21,4 +22,6 @@ public interface IFinanceAcctService extends IService<FinanceAcct> {
     List<FinanceAcct> queryAll();
 
     List<FinanceAcct> queryByLoginEmployeeId();
+
+    List<PaymentDTO> queryPayments();
 }
