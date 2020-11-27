@@ -26,10 +26,10 @@
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="8">
-                                        <el-form-item label="类型" prop="voucherType" :rules="[
+                                        <el-form-item label="类型" prop="item" :rules="[
                                                     { required: true, message: '请选择制单类型', trigger: 'blur' }
                                                 ]">
-                                            <vue-select code-type="VOUCHER_TYPE" v-model="voucher.voucherType" @change="changeVoucherType"></vue-select>
+                                            <vue-select code-type="VOUCHER_ITEM" v-model="voucher.item"></vue-select>
                                         </el-form-item>
                                     </el-col>
                                     <el-col :span="8">
@@ -112,18 +112,14 @@
                                     <vxe-table-column field="projectName" title="领款人" width="200"
                                                       :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
                                     <vxe-table-column field="financeItemName" title="财务科目" width="200"></vxe-table-column>
-                                    <vxe-table-column field="fee" title="总金额" width="200"
-                                                      :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
-                                    <vxe-table-column field="trafficType" v-if="voucher.voucherType == '5'" title="交通类别" width="200" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                                    <vxe-table-column field="trafficDate" v-if="voucher.voucherType == '5'" title="日期" width="200" :edit-render="{name: 'input', attrs: {type: 'date'}}"></vxe-table-column>
-                                    <vxe-table-column field="trafficBegin" v-if="voucher.voucherType == '5'" title="起点" width="200" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                                    <vxe-table-column field="trafficEnd" v-if="voucher.voucherType == '5'" title="终点" width="200" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
-                                    <vxe-table-column field="trafficFee" v-if="voucher.voucherType == '5'" title="交通费" width="200"
-                                                      :edit-render="{name:  'input', attrs: {type: 'number'}}"></vxe-table-column>
-                                    <vxe-table-column field="allowance" v-if="voucher.voucherType == '5'" title="出差补助" width="200"
-                                                      :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
-                                    <vxe-table-column field="hotelFee" v-if="voucher.voucherType == '5'" title="住宿费" width="200"
-                                                      :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+                                    <vxe-table-column field="fee" title="总金额" width="200" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+                                    <vxe-table-column field="trafficType" v-if="voucher.item == '5'" title="交通类别" width="200" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                                    <vxe-table-column field="trafficDate" v-if="voucher.item == '5'" title="日期" width="200" :edit-render="{name: 'input', attrs: {type: 'date'}}"></vxe-table-column>
+                                    <vxe-table-column field="trafficBegin" v-if="voucher.item == '5'" title="起点" width="200" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                                    <vxe-table-column field="trafficEnd" v-if="voucher.item == '5'" title="终点" width="200" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                                    <vxe-table-column field="trafficFee" v-if="voucher.item == '5'" title="交通费" width="200" :edit-render="{name:  'input', attrs: {type: 'number'}}"></vxe-table-column>
+                                    <vxe-table-column field="allowance" v-if="voucher.item == '5'" title="出差补助" width="200" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+                                    <vxe-table-column field="hotelFee" v-if="voucher.item == '5'" title="住宿费" width="200" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
                                     <vxe-table-column field="remark" title="摘要" width="300" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
                                     <vxe-table-column title="操作" min-width="200" show-overflow>
                                         <template v-slot="{ row }">
@@ -157,7 +153,7 @@
                                         </el-col>
                                         <el-col :span="8">
                                             <el-form-item>
-                                                <el-button type="primary" @click="queryMaterials">查询</el-button>
+                                                <el-button type="primary" icon="el-icon-search" @click="queryMaterials">查询</el-button>
                                             </el-form-item>
                                         </el-col>
                                     </el-row>
@@ -165,8 +161,8 @@
                             </el-card>
                             <el-card class="box-card" shadow="hover">
                                 <el-row style="padding-bottom: 12px">
-                                    <el-button type="success" @click="showMaterialVoucher">材料制单</el-button>
-                                    <el-button type="danger" @click="auditMaterial">审核不通过</el-button>
+                                    <el-button type="success" icon="el-icon-check" @click="showMaterialVoucher">材料制单</el-button>
+                                    <el-button type="danger" icon="el-icon-close" @click="auditMaterial">审核不通过</el-button>
                                 </el-row>
                                 <vxe-table
                                         border
