@@ -40,6 +40,13 @@ public class FinanceController {
         return this.domainService.queryCustOrderInfos(queryCond, page);
     }
 
+    @GetMapping("/queryCustOrderInfosEvenNotWorker")
+    @RestResult
+    public IPage<CustOrderInfoDTO> queryCustOrderInfosEvenNotWorker(CustOrderQueryDTO queryCond) {
+        Page<CustOrderQueryDTO> page = new Page<>(queryCond.getPage(), queryCond.getLimit());
+        return this.domainService.queryCustOrderInfosEvenNotWorker(queryCond, page);
+    }
+
     @PostMapping("/queryPayInfoByCond")
     @RestResult
     public IPage<NormalPayNoDTO> queryPayInfoByCond(@RequestBody  NonCollectFeeQueryDTO queryCondition) {

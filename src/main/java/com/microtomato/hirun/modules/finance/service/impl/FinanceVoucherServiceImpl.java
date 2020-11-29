@@ -331,7 +331,6 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
             decoratorInfoDTOs.setDecoratorTypeName(this.staticDataService.getCodeName("DECORATOR_TYPE", decorator.getDecoratorType()));
             decoratorInfoDTOArrayList.add(decoratorInfoDTOs);
         }
-        log.debug("decoratorInfoDTOArrayList=========" + decoratorInfoDTOArrayList);
         return decoratorInfoDTOArrayList;
     }
 
@@ -428,7 +427,13 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
         voucher.setEndDate(TimeUtils.getForeverTime());
         voucher.setAuditStatus("0");
         //财务其它制单
-        voucher.setType("3");
+        if (StringUtils.isBlank(voucher.getType())) {
+            voucher.setType("3");
+        }
+
+        if (StringUtils.isBlank(voucher.getItem())) {
+            voucher.setItem("-1");
+        }
         voucher.setCreateEmployeeId(employeeId);
         voucher.setVoucherEmployeeId(employeeId);
 
@@ -518,7 +523,8 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
                 .between(ArrayUtils.isNotEmpty(voucherDates), FinanceVoucher::getVoucherDate, startDate, endDate)
                 .eq(StringUtils.isNotBlank(request.getAuditStatus()), FinanceVoucher::getAuditStatus, request.getAuditStatus())
                 .ge(FinanceVoucher::getEndDate, now)
-                .le(FinanceVoucher::getStartDate, now);
+                .le(FinanceVoucher::getStartDate, now)
+                .orderByDesc(FinanceVoucher::getVoucherDate);
         IPage<FinanceVoucher> vouchers = this.page(page, wrapper);
 
         IPage<VoucherResultDTO> resultPage = new Page<>();
@@ -630,6 +636,22 @@ public class FinanceVoucherServiceImpl extends ServiceImpl<FinanceVoucherMapper,
         }
 
         this.updateBatchById(vouchers);
+    }
+
+    /**
+     * 单个财务审核不通过
+     * @param id
+     * @param auditComment
+     */
+    @Override
+    public void auditSingleNo(Long id, String auditComment) {
+        FinanceVoucher voucher = new FinanceVoucher();
+        voucher.setId(id);
+        voucher.setAuditStatus("4");
+        Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
+        voucher.setAuditEmployeeId(employeeId);
+        voucher.setAuditComment(auditComment);
+        this.updateById(voucher);
     }
 
     @Override

@@ -47,6 +47,8 @@ public interface IFinanceVoucherService extends IService<FinanceVoucher> {
 
     void audit(List<VoucherResultDTO> datas, boolean pass);
 
+    void auditSingleNo(Long id, String auditComment);
+
     void handVoucher(Long voucherId);
 
     void receiveVoucher(Long voucherId, boolean pass);

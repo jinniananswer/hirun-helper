@@ -112,6 +112,12 @@ public class FinanceVoucherController {
         this.financeVoucherService.audit(datas, false);
     }
 
+    @PostMapping("/auditSingleVoucherNo")
+    @RestResult
+    public void auditSingleVoucherNo(Long id, String auditComment) {
+        this.financeVoucherService.auditSingleNo(id, auditComment);
+    }
+
     @PostMapping("/deleteVouchers")
     @RestResult
     public void deleteVouchers(@RequestBody List<VoucherResultDTO> datas) {

@@ -39,6 +39,8 @@ public interface IFinanceDomainService {
 
     IPage<CustOrderInfoDTO> queryCustOrderInfos(CustOrderQueryDTO queryCondition, Page<CustOrderQueryDTO> page);
 
+    IPage<CustOrderInfoDTO> queryCustOrderInfosEvenNotWorker(CustOrderQueryDTO queryCondition, Page<CustOrderQueryDTO> page);
+
     List<FinancePendingTaskDTO> queryFinancePendingTask();
 
     List<OrderPayInfoDTO> queryPayInfoByOrderId(Long orderId);

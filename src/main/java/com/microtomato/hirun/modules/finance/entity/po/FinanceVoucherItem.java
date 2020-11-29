@@ -45,7 +45,7 @@ public class FinanceVoucherItem extends BaseEntity {
     @TableField(value = "supply_id")
     private Long supplyId;
 
-    /** 项目类型 1-公司员工 2-非公司员工 */
+    /** 项目类型 1-公司员工 2-非公司员工 3-工人 */
     @TableField(value = "project_type")
     private String projectType;
 

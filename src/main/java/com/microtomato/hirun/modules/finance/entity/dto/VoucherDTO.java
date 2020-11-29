@@ -18,6 +18,8 @@ public class VoucherDTO {
 
     private String voucherNo;
 
+    private String type;
+
     private String item;
 
     private LocalDate voucherDate;
@@ -25,6 +27,8 @@ public class VoucherDTO {
     private Double totalMoney;
 
     private String remark;
+
+    private Long orderId;
 
     private List<VoucherItemDTO> voucherItems;
 }

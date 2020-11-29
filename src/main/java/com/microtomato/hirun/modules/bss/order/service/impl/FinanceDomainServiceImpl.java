@@ -752,6 +752,38 @@ public class FinanceDomainServiceImpl implements IFinanceDomainService {
         return result;
     }
 
+    @Override
+    public IPage<CustOrderInfoDTO> queryCustOrderInfosEvenNotWorker(CustOrderQueryDTO queryCondition, Page<CustOrderQueryDTO> page) {
+        Long employeeId = WebContextUtils.getUserContext().getEmployeeId();
+        QueryWrapper<CustOrderQueryDTO> queryWrapper = new QueryWrapper<>();
+        queryWrapper.apply(" b.cust_id = a.cust_id ");
+        queryWrapper.like(StringUtils.isNotEmpty(queryCondition.getCustName()), "b.cust_name", queryCondition.getCustName());
+        queryWrapper.eq(StringUtils.isNotEmpty(queryCondition.getSex()), "b.sex", queryCondition.getSex());
+        queryWrapper.likeRight(StringUtils.isNotEmpty(queryCondition.getMobileNo()), "b.mobile_no", queryCondition.getMobileNo());
+        queryWrapper.eq(StringUtils.isNotEmpty(queryCondition.getOrderStatus()), "a.status", queryCondition.getOrderStatus());
+        queryWrapper.eq(queryCondition.getHousesId() != null, "a.housesId", queryCondition.getHousesId());
+        queryWrapper.eq(queryCondition.getCustNo() != null, "b.cust_no", queryCondition.getCustNo());
+        //排除售后，订单关闭的状态
+        queryWrapper.notIn("a.status", "32", "33", "100");
+        IPage<CustOrderInfoDTO> result = this.orderBaseMapper.queryCustOrderInfo(page, queryWrapper);
+
+        List<CustOrderInfoDTO> custOrders = result.getRecords();
+        if (ArrayUtils.isNotEmpty(custOrders)) {
+            for (CustOrderInfoDTO custOrder : custOrders) {
+                custOrder.setStageName(this.staticDataService.getCodeName("ORDER_STAGE", custOrder.getStage()));
+                custOrder.setSexName(this.staticDataService.getCodeName("SEX", custOrder.getSex()));
+                custOrder.setStatusName(this.staticDataService.getCodeName("ORDER_STATUS", custOrder.getStatus()));
+                custOrder.setHouseLayoutName(this.staticDataService.getCodeName("HOUSE_LAYOUT", custOrder.getHouseLayout()));
+                Long housesId = custOrder.getHousesId();
+                if (housesId != null) {
+                    custOrder.setHousesName(this.housesService.queryHouseName(housesId));
+
+                }
+            }
+        }
+        return result;
+    }
+
     /**
      * 查询财务待办任务
      *
