@@ -66,7 +66,6 @@
                 <el-card class="box-card" shadow="hover">
                     <el-row style="padding-bottom: 12px">
                         <el-button type="success" icon="el-icon-check" @click="auditPass">审核通过</el-button>
-                        <el-button type="warning" icon="el-icon-close" @click="auditNo">审核不通过</el-button>
                     </el-row>
                     <vxe-table
                             border
@@ -93,11 +92,19 @@
                         <vxe-table-column field="voucherEmployeeName" title="制单人" sortable width="100"></vxe-table-column>
                         <vxe-table-column field="remark" title="制单备注" sortable width="120" fixed="left"></vxe-table-column>
                         <vxe-table-column field="totalMoney" title="总金额" sortable width="150"></vxe-table-column>
-                        <vxe-table-column field="cashierEmployeeName" title="出纳" sortable width="100" ></vxe-table-column>
-                        <vxe-table-column field="auditEmployeeName" title="审核人" sortable width="100" ></vxe-table-column>
-                        <vxe-table-column field="auditComment" title="审核意见" sortable width="100" ></vxe-table-column>
                         <vxe-table-column field="remark" title="摘要" sortable width="100" ></vxe-table-column>
-                        <vxe-table-column field="payDate" title="付款时间" width="150" sortable></vxe-table-column>
+                        <vxe-table-column title="操作" width="200" fixed="right" show-overflow>
+                            <template v-slot="{ row }">
+                                <el-button
+                                        size="mini"
+                                        type="danger"
+                                        v-if="row.auditStatus == '1'"
+                                        icon="el-icon-setting"
+                                        @click="toAuditNo(row.id)">
+                                    审核不通过
+                                </el-button>
+                            </template>
+                        </vxe-table-column>
                     </vxe-table>
                     <div style="text-align: center">
                         <el-pagination

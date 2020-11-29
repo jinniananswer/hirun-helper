@@ -17,7 +17,7 @@
             <el-row :gutter="12">
                 <el-card class="box-card" shadow="hover">
                     <el-tabs v-model="voucherTab">
-                        <el-tab-pane label="财务付款" name="voucherTab">
+                        <el-tab-pane label="财务领款" name="voucherTab">
                             <el-form :inline="false" :model="voucher" ref="financePayForm" label-position="right" label-width="80px">
                                 <el-row :gutter="12">
                                     <el-col :span="8">
@@ -241,10 +241,245 @@
                             </el-card>
                         </el-tab-pane>
                         <el-tab-pane label="施工队制单" name="constructionTab">
-
-
-                        </el-tab-pane>
-                        <el-tab-pane label="其他制单" name="otherTab" @click="">
+                            <el-form :inline="false" :model="construct" ref="constructForm" label-position="right" label-width="80px">
+                                <el-row :gutter="12">
+                                    <el-col :span="8">
+                                        <el-form-item label="领款单号">
+                                            <el-input v-model="construct.voucherNo" :disabled="true"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="制单日期"
+                                                      prop="voucherDate"
+                                                      :rules="[
+                                                            { required: true, message: '请选择制单日期', trigger: 'blur' }
+                                                        ]">
+                                            <el-date-picker
+                                                    type="date"
+                                                    v-model="construct.voucherDate"
+                                                    value-format="yyyy-MM-dd"
+                                                    placeholder="选择日期"
+                                                    style="width:100%">
+                                            </el-date-picker>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="客户姓名">
+                                            <el-input placeholder="请点击进行客户订单查询" v-model="construct.custName" @focus="showCustQuery"></el-input>
+                                        </el-form-item>
+                                        <el-dialog width="80%" title="客户订单查询" :visible.sync="orderDialogVisible">
+                                            <el-card class="box-card" shadow="hover">
+                                                <div slot="header" class="clearfix">
+                                                    <span>查询条件区</span>
+                                                </div>
+                                                <el-form :inline="false" :model="queryConstructionCond" label-position="right"
+                                                         label-width="80px">
+                                                    <el-row>
+                                                        <el-col :span="8">
+                                                            <el-form-item label="客户姓名">
+                                                                <el-input v-model="queryConstructionCond.custName"
+                                                                          placeholder="请输入客户姓名"></el-input>
+                                                            </el-form-item>
+                                                        </el-col>
+                                                        <el-col :span="8">
+                                                            <el-form-item label="客户性别">
+                                                                <vue-select code-type="SEX"
+                                                                            v-model="queryConstructionCond.sex"></vue-select>
+                                                            </el-form-item>
+                                                        </el-col>
+                                                        <el-col :span="8">
+                                                            <el-form-item label="联系电话">
+                                                                <el-input v-model="queryConstructionCond.mobileNo"
+                                                                          placeholder="请输入联系电话"></el-input>
+                                                            </el-form-item>
+                                                        </el-col>
+                                                    </el-row>
+                                                    <el-row>
+                                                        <el-col :span="8">
+                                                            <el-form-item label="归属楼盘">
+                                                                <house-select
+                                                                        v-model="queryConstructionCond.housesId"></house-select>
+                                                            </el-form-item>
+                                                        </el-col>
+                                                        <el-col :span="8">
+                                                            <el-form-item label="订单状态">
+                                                                <vue-select code-type="ORDER_STATUS"
+                                                                            v-model="queryConstructionCond.orderStatus"></vue-select>
+                                                            </el-form-item>
+                                                        </el-col>
+                                                        <el-col :span="8">
+                                                            <el-form-item>
+                                                                <el-button type="primary" @click="queryOrders">查询
+                                                                </el-button>
+                                                            </el-form-item>
+                                                        </el-col>
+                                                    </el-row>
+                                                </el-form>
+                                            </el-card>
+                                            <el-table
+                                                    :data="custOrder"
+                                                    stripe="true"
+                                                    border
+                                                    height="400"
+                                                    style="width: 100%">
+                                                <el-table-column
+                                                        label="客户姓名"
+                                                        fixed
+                                                        width="80"
+                                                        align="center">
+                                                    <!--需要针对主流程的人员处理，捞取对应工种工资-->
+                                                    <template slot-scope="scope">
+                                                        <el-button type="text"
+                                                                   @click="backOrder(scope.row.orderId, scope.row.custName)">
+                                                            {{ scope.row.custName }}
+                                                        </el-button>
+                                                    </template>
+                                                </el-table-column>
+                                                <el-table-column
+                                                        prop="sexName"
+                                                        width="60"
+                                                        label="性别">
+                                                </el-table-column>
+                                                <el-table-column
+                                                        prop="mobileNo"
+                                                        width="120"
+                                                        label="联系电话"
+                                                        align="center">
+                                                </el-table-column>
+                                                <el-table-column
+                                                        prop="decorateAddress"
+                                                        label="装修地址">
+                                                </el-table-column>
+                                                <el-table-column
+                                                        width="150"
+                                                        prop="housesName"
+                                                        label="所属楼盘">
+                                                </el-table-column>
+                                                <el-table-column
+                                                        width="100"
+                                                        prop="houseLayoutName"
+                                                        label="户型">
+                                                </el-table-column>
+                                                <el-table-column
+                                                        width="100"
+                                                        prop="floorage"
+                                                        label="建筑面积">
+                                                </el-table-column>
+                                                <el-table-column
+                                                        width="100"
+                                                        prop="indoorArea"
+                                                        label="室内面积">
+                                                </el-table-column>
+                                                <el-table-column
+                                                        width="100"
+                                                        prop="stageName"
+                                                        label="订单阶段">
+                                                </el-table-column>
+                                                <el-table-column
+                                                        width="100"
+                                                        prop="statusName"
+                                                        label="订单状态">
+                                                </el-table-column>
+                                            </el-table>
+                                            <div style="text-align: center">
+                                                <el-pagination
+                                                        layout="total, prev, pager, next"
+                                                        :total="queryConstructionCond.count"
+                                                        :current-page.sync="queryConstructionCond.page"
+                                                        :page-size="queryConstructionCond.limit"
+                                                        @current-change="queryOrders">
+                                                </el-pagination>
+                                            </div>
+                                        </el-dialog>
+                                    </el-col>
+                                </el-row>
+                                <el-row :gutter="12">
+                                    <el-col :span="8">
+                                        <el-form-item prop="totalMoney" label="总金额" :rules="[
+                                                { required: true, message: '请输入总金额', trigger: 'blur' },
+                                                {type:'number', message: '金额必须为数字'},
+                                            ]">
+                                            <el-input v-model.number="construct.totalMoney" @input="toConstructChinese"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="16">
+                                        <el-form-item label="大写金额">
+                                            <el-input v-model="construct.chineseTotalMoney" :disabled="true"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-row :gutter="12">
+                                    <el-col :span="24">
+                                        <el-form-item label="摘要">
+                                            <el-input v-model="construct.remark"></el-input>
+                                        </el-form-item>
+                                    </el-col>
+                                </el-row>
+                                <el-divider><i class="el-icon-money"></i>费用明细</el-divider>
+                                <el-row :gutter="12">
+                                    <el-col :span="8">
+                                        <el-form-item label="财务科目" required="true">
+                                            <el-cascader
+                                                    v-model="constructFinanceItemId"
+                                                    ref="financeItems"
+                                                    placeholder="搜索财务科目"
+                                                    :options="financeItems"
+                                                    :props="{ expandTrigger: 'hover' }"
+                                                    filterable
+                                                    style="width:100%">
+                                            </el-cascader>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <el-form-item label="领款工人">
+                                            <el-select v-model="decoratorId" filterable
+                                                       placeholder="输入工人名字或者工种搜索" multiple style="width: 100%">
+                                                <el-option v-for="item in decoratorOptions" :key="item.decoratorId"
+                                                           :label="item.name"
+                                                           :value="item.decoratorId">
+                                                    <span style="float: left">{{ item.name }}</span>
+                                                    <span style="float: right; color: #8492a6; font-size: 13px">{{ item.decoratorTypeName }}</span>
+                                                </el-option>
+                                            </el-select>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col :span = "8">
+                                        <el-button type="primary" @click="addConstructVoucherItem">添加费用明细</el-button>
+                                    </el-col>
+                                </el-row>
+                                <vxe-table
+                                        border
+                                        resizable
+                                        ref="constructItems"
+                                        show-footer
+                                        show-overflow
+                                        highlight-hover-row
+                                        :auto-resize="true"
+                                        :mouse-config="{selected: true}"
+                                        :keyboard-config="{isArrow: true, isDel: true, isEnter: true, isTab: true, isEdit: true}"
+                                        :data="construct.voucherItems"
+                                        :footer-method="footerMethod"
+                                        :edit-config="{trigger: 'click', mode: 'cell', activeMethod: activeCellMethod}">
+                                    <vxe-table-column field="projectName" title="领款人" width="200"
+                                                      :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                                    <vxe-table-column field="financeItemName" title="财务科目" width="200"></vxe-table-column>
+                                    <vxe-table-column field="fee" title="总金额" width="200" :edit-render="{name: 'input', attrs: {type: 'number'}}"></vxe-table-column>
+                                    <vxe-table-column field="remark" title="摘要" width="300" :edit-render="{name: 'input', attrs: {type: 'text'}}"></vxe-table-column>
+                                    <vxe-table-column title="操作" min-width="200" show-overflow>
+                                        <template v-slot="{ row }">
+                                            <el-button
+                                                    size="mini"
+                                                    type="danger"
+                                                    icon="el-icon-delete"
+                                                    @click="deleteConstructItem(row)">删除
+                                            </el-button>
+                                        </template>
+                                    </vxe-table-column>
+                                </vxe-table>
+                            </el-form>
+                            <div class="bottom clearfix" style="margin-top : 18px">
+                                <el-button type="primary" @click="submitConstruct">提交</el-button>
+                            </div>
 
                         </el-tab-pane>
                     </el-tabs>
