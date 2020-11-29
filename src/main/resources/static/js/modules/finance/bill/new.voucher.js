@@ -1,4 +1,4 @@
-require(['vue', 'ELEMENT', 'axios', 'ajax', 'vxe-table', 'vueselect', 'org-selectemployee', 'org-orgtree', 'order-search-employee', 'util'], function (Vue, element, axios, ajax, table, vueselect, orgSelectEmployee, orgTree, orgSearchEmployee, util) {
+require(['vue', 'ELEMENT', 'axios', 'ajax', 'vxe-table', 'vueselect', 'org-selectemployee', 'org-orgtree', 'order-search-employee', 'house-select', 'util'], function (Vue, element, axios, ajax, table, vueselect, orgSelectEmployee, orgTree, orgSearchEmployee, houseSelect, util) {
     Vue.use(table);
     let vm = new Vue({
         el: '#app',
@@ -8,11 +8,22 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vxe-table', 'vueselect', 'org-selec
                     voucherDate: util.getNowDate(),
                     voucherItems: []
                 },
+                construct: {
+                    type: '2',
+                    voucherDate: util.getNowDate(),
+                    voucherItems: []
+                },
                 queryCond : {
                     count: 0,
                     limit: 20,
                     page: 1
                 },
+                queryConstructionCond : {
+                    count: 0,
+                    limit: 20,
+                    page: 1
+                },
+                custOrder : [],
                 materialVoucher: {
                     voucherDate: util.getNowDate()
                 },
@@ -20,8 +31,13 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vxe-table', 'vueselect', 'org-selec
                 materialDatas: [],
                 financeItems: null,
                 financeItemId: null,
+                constructFinanceItemId: null,
                 employeeId: null,
                 employeeName: null,
+                decoratorId: [],
+                decoratorName: null,
+                decoratorOptions: [],
+                orderDialogVisible : false,
                 voucherTab: 'voucherTab'
             }
         },
@@ -140,12 +156,12 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vxe-table', 'vueselect', 'org-selec
                 }
 
                 if (this.voucher.totalMoney == '') {
-                    this.$message.error('付款总金额不能为空');
+                    this.$message.error('总金额不能为空');
                     return false;
                 }
 
                 if (this.voucher.totalMoney == 0) {
-                    this.$message.error('付款总金额不能为0');
+                    this.$message.error('总金额不能为0');
                     return false;
                 }
 
@@ -154,7 +170,7 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vxe-table', 'vueselect', 'org-selec
                     for (let i=0;i<this.voucher.voucherItems.length;i++) {
                         let voucherItem = this.voucher.voucherItems[i];
                         if (voucherItem.fee != '') {
-                            totalMoney += voucherItem.fee;
+                            totalMoney += parseFloat(voucherItem.fee);
                         }
                     }
                 }
@@ -240,6 +256,146 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'vxe-table', 'vueselect', 'org-selec
 
             auditMaterial : function() {
 
+            },
+
+            showCustQuery: function () {
+                this.orderDialogVisible = true;
+            },
+
+            queryOrders: function () {
+                let that = this;
+                ajax.get('api/bss.order/finance/queryCustOrderInfosEvenNotWorker', this.queryConstructionCond, function (responseData) {
+                    that.custOrder = responseData.records;
+                    that.queryConstructionCond.page = responseData.current;
+                    that.queryConstructionCond.count = responseData.total;
+                });
+            },
+
+            backOrder: function (orderId, custName) {
+                this.construct.orderId = orderId;
+                this.construct.custName = custName;
+                let that = this;
+                ajax.get('api/finance/finance-voucher/selectDecorator', null, function (responseData) {
+                    that.decoratorOptions = responseData;
+                });
+                this.orderDialogVisible = false;
+            },
+
+            addConstructVoucherItem : function() {
+                if (!this.constructFinanceItemId) {
+                    this.$message.error('请选择财务科目！');
+                    return false;
+                }
+
+                let length = this.constructFinanceItemId.length;
+                let financeItemName = "";
+                for (let i=0;i<length;i++) {
+                    let name = this.findFinanceItemName(this.constructFinanceItemId[i], this.financeItems);
+                    if (name != "") {
+                        financeItemName += name + "/";
+                    }
+                }
+
+                if (financeItemName.length > 0) {
+                    financeItemName = financeItemName.substring(0, financeItemName.length - 1);
+                }
+
+                if (this.decoratorId != null && this.decoratorId.length > 0) {
+                    for (let i = 0;i < this.decoratorId.length;i++) {
+                        let voucherItem = {};
+                        let id = this.decoratorId[i];
+                        voucherItem.projectType = '3';
+                        voucherItem.financeItemName = financeItemName;
+                        voucherItem.financeItemId = this.constructFinanceItemId[this.constructFinanceItemId.length - 1];
+                        let decorator = this.findDecorator(this.decoratorId[i]);
+                        if (decorator != null) {
+                            voucherItem.projectName = decorator.name;
+                        }
+                        voucherItem.projectId = id;
+                        this.construct.voucherItems.push(voucherItem);
+                    }
+                }
+            },
+
+            findDecorator : function(decoratorId) {
+                if (this.decoratorOptions == null || this.decoratorOptions.length <= 0) {
+                    return null;
+                }
+
+                for (let i=0;i<this.decoratorOptions.length;i++) {
+                    if (this.decoratorOptions[i].decoratorId == decoratorId) {
+                        return this.decoratorOptions[i];
+                    }
+                }
+                return null;
+            },
+
+            toConstructChinese : function() {
+                this.construct.chineseTotalMoney = util.moneyToChinese(this.construct.totalMoney);
+            },
+
+            deleteConstructItem: function(row) {
+                this.$confirm('此操作将删除款项, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$refs.constructItems.remove(row);
+                    this.$refs.constructItems.updateFooter();
+                    for (let i=0;i<this.construct.voucherItems.length;i++) {
+                        let item = this.construct.voucherItems[i];
+                        if (item._XID == row._XID) {
+                            this.construct.voucherItems.splice(i,1);
+                            break;
+                        }
+                    }
+                });
+            },
+
+            validConstruct : function() {
+                let isFormValid = false;
+                this.$refs['constructForm'].validate(valid => {
+                    isFormValid = valid;
+                });
+
+                if (!isFormValid) {
+                    this.$message.error('填写信息不完整，请亲仔细检查哦~~~~~~~！');
+                    return false;
+                }
+
+                if (this.construct.totalMoney == '') {
+                    this.$message.error('总金额不能为空');
+                    return false;
+                }
+
+                if (this.construct.totalMoney == 0) {
+                    this.$message.error('付款总金额不能为0');
+                    return false;
+                }
+
+                let totalMoney = 0;
+                if (this.construct.voucherItems.length > 0) {
+                    for (let i=0;i<this.construct.voucherItems.length;i++) {
+                        let voucherItem = this.construct.voucherItems[i];
+                        if (voucherItem.fee != '') {
+                            totalMoney += parseFloat(voucherItem.fee);
+                        }
+                    }
+                }
+
+                if (totalMoney != this.construct.totalMoney) {
+                    this.$message.error('总金额与明细金额不相等，请仔细检查');
+                    return false;
+                }
+
+                return true;
+            },
+
+            submitConstruct : function() {
+                let isValid = this.validConstruct();
+                if (isValid) {
+                    ajax.post('api/finance/finance-voucher/createVoucher', this.construct);
+                }
             }
         },
 

@@ -93,6 +93,10 @@ require(['vue', 'ELEMENT', 'axios', 'ajax', 'util', 'vxe-table', 'vueselect','ho
 
             showDetail : function(id, voucherNo) {
                 util.openPage('openUrl?url=modules/finance/bill/voucher_detail&id='+id, '领款详情');
+            },
+
+            toAuditNo : function(id) {
+                util.openPage('openUrl?url=modules/finance/bill/audit_no_voucher&id='+id, '审核不通过');
             }
         },
 
