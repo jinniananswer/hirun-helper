@@ -95,4 +95,11 @@ public class MidprodSendController {
     public boolean deleteByIds(@RequestParam("idList") List<Long> idList) {
         return this.midprodSendService.removeByIds(idList);
     }
+
+
+    @GetMapping("/queryTopData")
+    @RestResult
+    public List<PushDataStatisticDTO> queryTopData(QueryPushDataStatisticDTO dto) {
+        return midprodSendService.queryTopData(dto);
+    }
 }
