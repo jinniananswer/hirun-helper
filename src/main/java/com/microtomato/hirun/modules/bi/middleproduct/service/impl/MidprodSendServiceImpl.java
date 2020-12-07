@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.microtomato.hirun.framework.util.ArrayUtils;
 import com.microtomato.hirun.modules.bi.middleproduct.entity.dto.PushDataStatisticDTO;
+import com.microtomato.hirun.modules.bi.middleproduct.entity.dto.QueryPushDataDetailDTO;
 import com.microtomato.hirun.modules.bi.middleproduct.entity.dto.QueryPushDataStatisticDTO;
 import com.microtomato.hirun.modules.bi.middleproduct.entity.po.MidprodSend;
 import com.microtomato.hirun.modules.bi.middleproduct.mapper.MidprodSendMapper;
@@ -14,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.DecimalFormat;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -119,6 +119,36 @@ public class MidprodSendServiceImpl extends ServiceImpl<MidprodSendMapper, Midpr
                 return shopSendList;
             }
         }
+        return null;
+    }
+
+    @Override
+    public List<PushDataStatisticDTO> queryTopData(QueryPushDataStatisticDTO dto) {
+        QueryWrapper<QueryPushDataStatisticDTO> queryWrapper = new QueryWrapper<>();
+        queryWrapper.groupBy(" b.title ");
+        queryWrapper.orderByDesc(" count(b.title) ");
+        String shopLine="";
+        if(dto.getShopId()==null){
+            shopLine= orgService.listShopLine();
+        }else{
+            shopLine=dto.getShopId()+"";
+        }
+        queryWrapper.apply("b.shop_id in ("+shopLine+")");
+
+        if(StringUtils.equals(dto.getQueryType(),"1")){
+            queryWrapper.ge(dto.getStartTime()!=null,"b.send_time",dto.getStartTime());
+            queryWrapper.le(dto.getEndTime()!=null,"b.send_time",dto.getEndTime());
+            List<PushDataStatisticDTO> list=this.midprodSendMapper.queryTopPush(queryWrapper);
+            return list;
+        }
+
+        if(StringUtils.equals(dto.getQueryType(),"2")){
+            queryWrapper.ge(dto.getStartTime()!=null,"b.open_time",dto.getStartTime());
+            queryWrapper.le(dto.getEndTime()!=null,"b.open_time",dto.getEndTime());
+            List<PushDataStatisticDTO> list=this.midprodSendMapper.queryTopOpen(queryWrapper);
+            return list;
+        }
+
         return null;
     }
 

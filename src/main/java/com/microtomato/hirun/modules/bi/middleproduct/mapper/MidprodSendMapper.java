@@ -46,4 +46,14 @@ public interface MidprodSendMapper extends BaseMapper<MidprodSend> {
             " FROM ins_midprod_send a ,ins_org b , ins_midprod_open c " +
             " ${ew.customSqlSegment}")
     List<PushDataStatisticDTO> queryOpenByShop(@Param(Constants.WRAPPER) Wrapper wrapper);
+
+    @Select("SELECT b.title as name,count(b.title) as pushNum " +
+            " FROM ins_midprod_send b " +
+            " ${ew.customSqlSegment}")
+    List<PushDataStatisticDTO> queryTopPush(@Param(Constants.WRAPPER) Wrapper wrapper);
+
+    @Select("SELECT b.title as name ,count(b.title) as pushNum " +
+            " FROM ins_midprod_open b " +
+            " ${ew.customSqlSegment}")
+    List<PushDataStatisticDTO> queryTopOpen(@Param(Constants.WRAPPER) Wrapper wrapper);
 }

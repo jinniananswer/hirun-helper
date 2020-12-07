@@ -22,4 +22,11 @@ public interface IMidprodSendService extends IService<MidprodSend> {
      * @return
      */
     List<PushDataStatisticDTO> querySendCountData(QueryPushDataStatisticDTO dto);
+
+    /**
+     * 查询top业务
+     * @param dto
+     * @return
+     */
+    List<PushDataStatisticDTO> queryTopData(QueryPushDataStatisticDTO dto);
 }
