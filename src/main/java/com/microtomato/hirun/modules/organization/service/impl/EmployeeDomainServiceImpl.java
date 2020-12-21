@@ -648,6 +648,15 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
             List<EmployeeHoliday> holidays=this.holidayService.list(new QueryWrapper<EmployeeHoliday>().lambda()
                     .eq(EmployeeHoliday::getEmployeeId,employeeInfo.getEmployeeId()).orderByDesc(EmployeeHoliday::getCreateTime));
 
+            List<EmployeeTag> employeeTags=employeeTagService.list(new QueryWrapper<EmployeeTag>().lambda()
+                    .eq(EmployeeTag::getEmployeeId,employeeInfo.getEmployeeId())
+                    .eq(EmployeeTag::getTagType,"2"));
+            if(ArrayUtils.isEmpty(employeeTags)){
+                employeeInfo.setSecondEntry("否");
+            }else {
+                employeeInfo.setSecondEntry("是");
+            }
+
             if(ArrayUtils.isEmpty(holidays)){
                 continue;
             }

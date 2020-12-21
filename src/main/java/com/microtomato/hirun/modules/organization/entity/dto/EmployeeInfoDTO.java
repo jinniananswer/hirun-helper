@@ -32,6 +32,14 @@ public class EmployeeInfoDTO implements Serializable {
     @ExcelProperty("员工姓名")
     private String name;
 
+    @ColumnWidth(20)
+    @ExcelProperty("公司常用名")
+    private String companyUsedName;
+
+    @ColumnWidth(20)
+    @ExcelProperty("是否二次入职")
+    private String secondEntry;
+
     @ExcelIgnore
     private String mobileNo;
 
@@ -156,6 +164,10 @@ public class EmployeeInfoDTO implements Serializable {
     @ExcelProperty("工作年限")
     private String jobAge;
 
+    @ColumnWidth(30)
+    @ExcelProperty("社会工作年限备注")
+    private String beforeHirunYear;
+
     @ExcelIgnore
     private LocalDate jobDate;
 
@@ -198,9 +210,6 @@ public class EmployeeInfoDTO implements Serializable {
 
     @ExcelIgnore
     private String hrEmployeeName;
-
-    @ExcelIgnore
-    private String secondEntry;
 
     @ColumnWidth(20)
     @ExcelProperty(value = "离职时间",converter = LocalDateTimeConvert.class)
