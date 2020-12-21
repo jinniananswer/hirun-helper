@@ -286,6 +286,10 @@ public class EmployeeDomainServiceImpl implements IEmployeeDomainService {
 
         Employee employee = new Employee();
         BeanUtils.copyProperties(employeeDTO, employee);
+        /**如果常用名为空，设置姓名为常用名*/
+        if(StringUtils.isBlank(employeeDTO.getCompanyUsedName())){
+            employee.setCompanyUsedName(employeeDTO.getName());
+        }
 
         EmployeeJobRole jobRole = null;
         EmployeeJobRoleDTO jobRoleDTO = employeeDTO.getEmployeeJobRole();

@@ -165,4 +165,6 @@ public class Employee extends BaseEntity {
     @TableField(value="update_user_id", fill = FieldFill.INSERT_UPDATE)
     private Long updateUserId;
 
+    @TableField("company_used_name")
+    private String companyUsedName;
 }

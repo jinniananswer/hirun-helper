@@ -109,4 +109,6 @@ public class EmployeeDTO implements Serializable {
     private List<EmployeeChildrenDTO> children;
 
     private String beforeHirunYear;
+
+    private String companyUsedName;
 }
