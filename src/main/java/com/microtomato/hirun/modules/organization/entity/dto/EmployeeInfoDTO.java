@@ -40,7 +40,7 @@ public class EmployeeInfoDTO implements Serializable {
     @ExcelProperty("是否二次入职")
     private String secondEntry;
 
-    @ExcelIgnore
+    @ColumnWidth(20)
     private String mobileNo;
 
     @ColumnWidth(20)
