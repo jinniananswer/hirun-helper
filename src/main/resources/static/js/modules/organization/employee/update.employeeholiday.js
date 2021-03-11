@@ -7,6 +7,7 @@ layui.extend({}).define(['ajax', 'form', 'layer', 'element', 'laydate', 'select'
         init: function () {
 
             layui.select.init('holidayType', 'HOLIDAY_TYPE', $('#holidayTypeValue').val(), true);
+            layui.select.init('isSurrenderInsurance', 'YES_NO', $('#isSurrenderInsurance').val(), true);
 
             laydate.render({
                 elem: '#startTime',

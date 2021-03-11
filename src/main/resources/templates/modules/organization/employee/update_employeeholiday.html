@@ -89,9 +89,16 @@
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label">缴纳请假期间保险</label>
-                    <div class="layui-input-block">
+<!--                    <div class="layui-input-block">
                         <input type="checkbox" name="isSurrenderInsurance" id="isSurrenderInsurance"
                                lay-skin="switch" lay-text="是|否">
+                    </div>-->
+                    <div class="layui-input-block">
+                        <div class="layui-form" lay-filter="isSurrenderInsurance">
+                            <select id="isSurrenderInsurance" name="isSurrenderInsurance" required layui-required="required">
+
+                            </select>
+                        </div>
                     </div>
                 </div>
                 <div class="layui-form-item layui-hide">

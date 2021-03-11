@@ -109,7 +109,7 @@ layui.extend({
                     body.find('#startTime').val(data.startTime);
                     body.find('#endTime').val(data.endTime);
                     body.find('#remark').val(data.remark);
-                    body.find('#isSurrenderInsurance').val(data.remark);
+                    body.find('#isSurrenderInsurance').val(data.isSurrenderInsurance);
                     body.find('#holidayTypeValue').val(data.holidayType);
                     body.find('#id').val(data.id);
                     form.render();
